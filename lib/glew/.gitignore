@@ -23,4 +23,3 @@
 auto/EGL-Registry
 auto/OpenGL-Registry
 auto/glfixes
-!/src/glew.c
