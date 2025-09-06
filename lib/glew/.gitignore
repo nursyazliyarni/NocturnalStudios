@@ -1,4 +1,6 @@
 *.pc
+/src/*.c
+/include/GL/*.h
 /build/vc6/*.rc
 /build/*.rc
 /build/*/*.sdf
@@ -13,6 +15,7 @@
 /build/cmake/Makefile
 /auto/extensions
 /auto/registry
+/bin
 /lib
 /tmp
 /out
@@ -23,17 +26,9 @@ auto/glfixes
 
 
 
-# Unignore the lib folder and the GLEW subtree
-!/lib/
-!/lib/glew/
-!/lib/glew/src/
-!/lib/glew/include/
-!/lib/glew/build/
-
 # Required GLEW files (static/shared builds)
 !/lib/glew/src/glew.c
 !/lib/glew/src/glewinfo.c
 !/lib/glew/src/visualinfo.c
 !/lib/glew/include/GL/glew.h
 !/lib/glew/include/GL/wglew.h
-!/lib/glew/build/glew.rc
