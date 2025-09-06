@@ -1,5 +1,4 @@
 *.pc
-/include/GL/*.h
 /build/vc6/*.rc
 /build/*.rc
 /build/*/*.sdf
@@ -26,4 +25,6 @@ auto/glfixes
 
 !/src/glew.c
 !/src/glewinfo.c
-!/src/visualinfo.c
+!/src/visualinfo.
+!/include/GL/glew.h
+!/include/GL/wglew.h
