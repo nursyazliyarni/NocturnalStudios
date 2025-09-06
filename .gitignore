@@ -1,0 +1,8 @@
+/build/
+/.vs/
+*.sln
+*.vcxproj*
+CMakeFiles/
+CMakeCache.txt
+Debug/
+Release/
