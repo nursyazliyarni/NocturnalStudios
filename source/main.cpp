@@ -36,7 +36,7 @@ int main() {
             glfwSetWindowTitle(win, title); frames = 0; acc = 0.0;
         }
 
-        glClearColor(0.1f,0.1f,0.12f,1.f);
+        glClearColor(0.1f, 0.1f, 0.12f, 1.f);
         glClear(GL_COLOR_BUFFER_BIT);
 
         glfwSwapBuffers(win);

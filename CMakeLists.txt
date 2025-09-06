@@ -1,95 +1,119 @@
 cmake_minimum_required(VERSION 3.20)
-project(NocturnalStudios CXX)
+project(NocturnalStudios LANGUAGES C CXX)
 
-# C++ Standard + warnings
+#  Toolchain / warnings 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE) # prefer static everywhere
+
 if (MSVC)
-  add_compile_options(/W4 /permissive- /MP)  # strict warnings, multiproc compile
+  add_compile_options(/W4 /permissive- /MP)
 else()
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
-#  Prefer static libs (avoid DLL issues) 
-set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
-
-# GLFW (vendored, source with CMake) 
+#  GLFW (build from source) 
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_TESTS    OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_DOCS     OFF CACHE BOOL "" FORCE)
 set(GLFW_INSTALL        OFF CACHE BOOL "" FORCE)
 add_subdirectory(${CMAKE_SOURCE_DIR}/lib/glfw)
 
-# Your sources (auto-pick everything under source/) 
+#  GLEW as a subproject (like your screenshot) 
+# Point GLEW's BINARY DIR to build/lib/glew so it drops vcxproj/glew.sln there.
+# Build BOTH static and shared (you can link whichever you want).
+set(glew-cmake_BUILD_STATIC ON  CACHE BOOL "" FORCE)
+set(glew-cmake_BUILD_SHARED ON  CACHE BOOL "" FORCE)
+set(BUILD_UTILS              OFF CACHE BOOL "" FORCE)
+
+# Add GLEW with an explicit binary directory
+add_subdirectory(${CMAKE_SOURCE_DIR}/lib/glew ${CMAKE_BINARY_DIR}/lib/glew)
+
+# Put libs into build/lib and DLLs/exes into build/bin (for all configs)
+if(CMAKE_CONFIGURATION_TYPES)
+  foreach(tgt IN ITEMS libglew_static glew_s glew_shared glew)
+    if(TARGET ${tgt})
+      foreach(cfg IN LISTS CMAKE_CONFIGURATION_TYPES)
+        set_target_properties(${tgt} PROPERTIES
+          ARCHIVE_OUTPUT_DIRECTORY_${cfg} ${CMAKE_BINARY_DIR}/lib
+          LIBRARY_OUTPUT_DIRECTORY_${cfg} ${CMAKE_BINARY_DIR}/bin
+          RUNTIME_OUTPUT_DIRECTORY_${cfg} ${CMAKE_BINARY_DIR}/bin)
+      endforeach()
+    endif()
+  endforeach()
+else()
+  foreach(tgt IN ITEMS libglew_static glew_s glew_shared glew)
+    if(TARGET ${tgt})
+      set_target_properties(${tgt} PROPERTIES
+        ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib
+        LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin
+        RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+    endif()
+  endforeach()
+endif()
+
+
+#  Your sources
 file(GLOB_RECURSE SRC CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/source/*.cpp")
+if (NOT SRC)
+  message(FATAL_ERROR "No sources found in source/. Add at least source/main.cpp")
+endif()
+
 add_executable(NocturnalEngine ${SRC})
 
-# Mirror folder structure in Solution Explorer
+# Force exe into build/bin (no Debug/Release folders)
+if(CMAKE_CONFIGURATION_TYPES)
+  foreach(cfg IN LISTS CMAKE_CONFIGURATION_TYPES)
+    set_target_properties(NocturnalEngine PROPERTIES
+      RUNTIME_OUTPUT_DIRECTORY_${cfg} ${CMAKE_BINARY_DIR}/bin)
+  endforeach()
+else()
+  set_target_properties(NocturnalEngine PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+endif()
+
+# VS Solution Explorer: mirror folder structure
 source_group(TREE "${CMAKE_SOURCE_DIR}/source" PREFIX "Source Files" FILES ${SRC})
 
-# Include paths (GLM is header-only, engine headers in include/) 
+#  Includes 
 target_include_directories(NocturnalEngine PRIVATE
   ${CMAKE_SOURCE_DIR}/source
-  ${CMAKE_SOURCE_DIR}/include         # engine headers
+  ${CMAKE_SOURCE_DIR}/include
   ${CMAKE_SOURCE_DIR}/lib/glm
-  ${CMAKE_SOURCE_DIR}/lib/glfw/include
-  ${CMAKE_SOURCE_DIR}/lib/glew/include
 )
 
-# Link OpenGL + GLFW 
+#  Linkage
 if (MSVC)
   target_link_libraries(NocturnalEngine PRIVATE opengl32)
 endif()
 target_link_libraries(NocturnalEngine PRIVATE glfw)
 
-# GLEW (handles both source repo and prebuilt .lib) 
-set(GLEW_Linked FALSE)
-if (EXISTS "${CMAKE_SOURCE_DIR}/lib/glew/CMakeLists.txt")
-  set(glew-cmake_BUILD_SHARED OFF CACHE BOOL "" FORCE)
-  set(glew-cmake_BUILD_STATIC ON  CACHE BOOL "" FORCE)
-  add_compile_definitions(GLEW_STATIC)
-  add_subdirectory(${CMAKE_SOURCE_DIR}/lib/glew)
-
-  if (TARGET libglew_static)
-    target_link_libraries(NocturnalEngine PRIVATE libglew_static)
-    set(GLEW_Linked TRUE)
-  elseif (TARGET glew_s)
-    target_link_libraries(NocturnalEngine PRIVATE glew_s)
-    set(GLEW_Linked TRUE)
-  elseif (TARGET glew) # shared fallback
-    target_link_libraries(NocturnalEngine PRIVATE glew)
-    set(GLEW_Linked TRUE)
-  endif()
+# Prefer static if present; otherwise use shared
+if (TARGET libglew_static)
+  target_link_libraries(NocturnalEngine PRIVATE libglew_static)
+  target_compile_definitions(NocturnalEngine PRIVATE GLEW_STATIC)
+elseif (TARGET glew_s)
+  target_link_libraries(NocturnalEngine PRIVATE glew_s)
+  target_compile_definitions(NocturnalEngine PRIVATE GLEW_STATIC)
+elseif (TARGET glew_shared)
+  target_link_libraries(NocturnalEngine PRIVATE glew_shared)
+elseif (TARGET glew)
+  target_link_libraries(NocturnalEngine PRIVATE glew)
+else()
+  message(FATAL_ERROR "No GLEW target exported by subproject.")
 endif()
 
-if (NOT GLEW_Linked)
-  find_library(GLEW_LIB
-    NAMES glew32s glew32 glew
-    PATHS ${CMAKE_SOURCE_DIR}/lib/glew ${CMAKE_SOURCE_DIR}/lib/glew/lib
-          ${CMAKE_SOURCE_DIR}/lib/glew/lib/Release
-          ${CMAKE_SOURCE_DIR}/lib/glew/lib/Debug
-  )
-  if (GLEW_LIB)
-    get_filename_component(_glew_name "${GLEW_LIB}" NAME_WE)
-    if (_glew_name MATCHES "glew32s|glew_s|glewstatic")
-      add_compile_definitions(GLEW_STATIC)
-    endif()
-    target_link_libraries(NocturnalEngine PRIVATE "${GLEW_LIB}")
-    set(GLEW_Linked TRUE)
-  endif()
-endif()
-
-if (NOT GLEW_Linked)
-  message(FATAL_ERROR "GLEW not found. Keep lib/glew (source with CMake OR prebuilt .lib + include).")
-endif()
-
-# Output exe in build/bin 
+# Output + assets
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
-# Copy assets/ next to exe (optional) 
 if (EXISTS "${CMAKE_SOURCE_DIR}/assets")
   add_custom_command(TARGET NocturnalEngine POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
-            ${CMAKE_SOURCE_DIR}/assets
-            $<TARGET_FILE_DIR:NocturnalEngine>/assets)
+            "${CMAKE_SOURCE_DIR}/assets"
+            "$<TARGET_FILE_DIR:NocturnalEngine>/assets")
 endif()
+
+# Messages
+message(STATUS "GLFW: using subdirectory at lib/glfw")
+message(STATUS "GLEW: subproject binary dir -> ${CMAKE_BINARY_DIR}/lib/glew")
+message(STATUS "Outputs: exe -> build/bin, libs -> build/lib")
