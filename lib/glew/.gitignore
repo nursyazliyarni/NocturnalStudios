@@ -27,5 +27,3 @@ auto/glfixes
 !/src/glew.c
 !/src/glewinfo.c
 !/src/visualinfo.c
-!/include/GL/glew.h
-!/include/GL/wglew.h
