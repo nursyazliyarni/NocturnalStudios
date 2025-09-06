@@ -27,8 +27,8 @@ auto/glfixes
 
 
 # Required GLEW files (static/shared builds)
-!/lib/glew/src/glew.c
-!/lib/glew/src/glewinfo.c
-!/lib/glew/src/visualinfo.c
-!/lib/glew/include/GL/glew.h
-!/lib/glew/include/GL/wglew.h
+!/src/glew.c
+!/src/glewinfo.c
+!/src/visualinfo.c
+!/include/GL/glew.h
+!/include/GL/wglew.h
