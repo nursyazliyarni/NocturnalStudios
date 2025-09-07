@@ -20,13 +20,10 @@ set(GLFW_INSTALL        OFF CACHE BOOL "" FORCE)
 add_subdirectory(${CMAKE_SOURCE_DIR}/lib/glfw)
 
 #  GLEW as a subproject (like your screenshot) 
-# Point GLEW's BINARY DIR to build/lib/glew so it drops vcxproj/glew.sln there.
-# Build BOTH static and shared (you can link whichever you want).
 set(glew-cmake_BUILD_STATIC ON  CACHE BOOL "" FORCE)
-set(glew-cmake_BUILD_SHARED ON  CACHE BOOL "" FORCE)
+set(glew-cmake_BUILD_SHARED OFF CACHE BOOL "" FORCE)  # <- static-only
 set(BUILD_UTILS              OFF CACHE BOOL "" FORCE)
 
-# Add GLEW with an explicit binary directory
 add_subdirectory(${CMAKE_SOURCE_DIR}/lib/glew ${CMAKE_BINARY_DIR}/lib/glew)
 
 # Put libs into build/lib and DLLs/exes into build/bin (for all configs)
@@ -52,14 +49,27 @@ else()
   endforeach()
 endif()
 
-
 #  Your sources
 file(GLOB_RECURSE SRC CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/source/*.cpp")
+file(GLOB_RECURSE HDR CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/include/*.hpp")
+
 if (NOT SRC)
   message(FATAL_ERROR "No sources found in source/. Add at least source/main.cpp")
 endif()
 
-add_executable(NocturnalEngine ${SRC})
+add_executable(NocturnalEngine ${SRC} ${HDR})
+
+# After: add_executable(NocturnalEngine ${SRC})
+
+# Make NocturnalEngine the default Startup Project in Visual Studio
+set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT NocturnalEngine)
+
+# (Nice-to-have) Ensure F5 runs from the right working dir and with args/env if you need them
+set_target_properties(NocturnalEngine PROPERTIES
+  VS_DEBUGGER_WORKING_DIRECTORY "$<TARGET_FILE_DIR:NocturnalEngine>"
+  # VS_DEBUGGER_COMMAND_ARGUMENTS "--your-args-here"
+  # VS_DEBUGGER_ENVIRONMENT "MY_VAR=1;OTHER=foo"
+)
 
 # Force exe into build/bin (no Debug/Release folders)
 if(CMAKE_CONFIGURATION_TYPES)
@@ -74,6 +84,7 @@ endif()
 
 # VS Solution Explorer: mirror folder structure
 source_group(TREE "${CMAKE_SOURCE_DIR}/source" PREFIX "Source Files" FILES ${SRC})
+source_group(TREE "${CMAKE_SOURCE_DIR}/include" PREFIX "Header Files" FILES ${HDR})
 
 #  Includes 
 target_include_directories(NocturnalEngine PRIVATE
