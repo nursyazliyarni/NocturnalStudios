@@ -2,7 +2,7 @@
 #include <GLFW/glfw3.h>
 #include <chrono>
 #include <cstdio>
-#include <string>                 // <-- needed for std::string
+#include <string>  // needed for std::string
 #include <vector>
 
 #include <rapidjson/document.h>
