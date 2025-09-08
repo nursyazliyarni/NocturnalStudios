@@ -94,6 +94,16 @@ target_include_directories(NocturnalEngine PRIVATE
   ${CMAKE_SOURCE_DIR}/lib/rapidjson/include
 )
 
+
+if (MSVC)
+  target_compile_options(NocturnalEngine PRIVATE
+    /external:anglebrackets
+    /external:W0
+    /external:I${CMAKE_SOURCE_DIR}/lib/rapidjson/include
+  )
+endif()
+
+
 #  Linkage
 if (MSVC)
   target_link_libraries(NocturnalEngine PRIVATE opengl32)
