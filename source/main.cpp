@@ -1,6 +1,6 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include <chrono>
+#include <chrono>   //C++’s time library
 #include <cstdio>
 
 int main() {
@@ -19,10 +19,6 @@ int main() {
     if (glewInit() != GLEW_OK) { std::fprintf(stderr, "GLEW init error\n"); return -1; }
     glGetError(); // clear harmless GL error from glewInit
 
-    std::printf("OpenGL version: %s\n", glGetString(GL_VERSION));
-    std::printf("GPU renderer:   %s\n", glGetString(GL_RENDERER));
-
-
     auto last = std::chrono::high_resolution_clock::now();
     int frames = 0; double acc = 0.0;
 
@@ -36,7 +32,7 @@ int main() {
             glfwSetWindowTitle(win, title); frames = 0; acc = 0.0;
         }
 
-        glClearColor(0.1f, 0.1f, 0.12f, 1.f);
+        glClearColor(0.1f,0.1f,0.12f,1.f);
         glClear(GL_COLOR_BUFFER_BIT);
 
         glfwSwapBuffers(win);
