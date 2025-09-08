@@ -1,0 +1,25 @@
+# GLFW
+set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_TESTS    OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_DOCS     OFF CACHE BOOL "" FORCE)
+set(GLFW_INSTALL        OFF CACHE BOOL "" FORCE)
+if (EXISTS ${CMAKE_SOURCE_DIR}/lib/glfw/CMakeLists.txt)
+  add_subdirectory(${CMAKE_SOURCE_DIR}/lib/glfw)
+  set(NS_HAVE_GLFW ON)
+endif()
+
+# GLEW
+set(glew-cmake_BUILD_STATIC ON  CACHE BOOL "" FORCE)
+set(glew-cmake_BUILD_SHARED OFF CACHE BOOL "" FORCE)
+set(BUILD_UTILS              OFF CACHE BOOL "" FORCE)
+if (EXISTS ${CMAKE_SOURCE_DIR}/lib/glew/CMakeLists.txt)
+  add_subdirectory(${CMAKE_SOURCE_DIR}/lib/glew ${CMAKE_BINARY_DIR}/lib/glew)
+  set(NS_HAVE_GLEW ON)
+endif()
+
+# RapidJSON (header-only)
+if (EXISTS ${CMAKE_SOURCE_DIR}/lib/rapidjson/include/rapidjson)
+  add_library(rapidjson INTERFACE)
+  target_include_directories(rapidjson INTERFACE ${CMAKE_SOURCE_DIR}/lib/rapidjson/include)
+  set(NS_HAVE_RAPIDJSON ON)
+endif()

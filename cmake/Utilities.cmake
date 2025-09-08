@@ -1,0 +1,8 @@
+function(ns_set_common_warnings)
+  if (MSVC)
+    add_compile_options(/W4 /permissive- /MP)
+  else()
+    add_compile_options(-Wall -Wextra -Wpedantic)
+  endif()
+  set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
+endfunction()
