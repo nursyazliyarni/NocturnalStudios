@@ -1,0 +1,18 @@
+project(NocturnalGame LANGUAGES C CXX)
+
+file(GLOB_RECURSE GAME_SRC CONFIGURE_DEPENDS
+  "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp" "${CMAKE_CURRENT_SOURCE_DIR}/*.cxx"
+)
+file(GLOB_RECURSE GAME_HDR CONFIGURE_DEPENDS
+  "${CMAKE_CURRENT_SOURCE_DIR}/*.h"   "${CMAKE_CURRENT_SOURCE_DIR}/*.hpp"
+)
+
+add_executable(NocturnalGame ${GAME_SRC} ${GAME_HDR})
+target_link_libraries(NocturnalGame PRIVATE Engine)
+
+source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" PREFIX "Source Files" FILES ${GAME_SRC})
+source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" PREFIX "Header Files" FILES ${GAME_HDR})
+
+set_target_properties(NocturnalGame PROPERTIES
+  VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+)
