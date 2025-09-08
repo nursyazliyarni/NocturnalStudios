@@ -23,3 +23,16 @@ if (EXISTS ${CMAKE_SOURCE_DIR}/lib/rapidjson/include/rapidjson)
   target_include_directories(rapidjson INTERFACE ${CMAKE_SOURCE_DIR}/lib/rapidjson/include)
   set(NS_HAVE_RAPIDJSON ON)
 endif()
+
+# ImGui
+if (EXISTS ${CMAKE_SOURCE_DIR}/lib/imgui/CMakeLists.txt)
+  add_subdirectory(${CMAKE_SOURCE_DIR}/lib/imgui)
+  set(NS_HAVE_IMGUI ON)
+endif()
+
+# stb (header-only)
+if (EXISTS ${CMAKE_SOURCE_DIR}/lib/stb/stb_image.h)
+  add_library(stb INTERFACE)
+  target_include_directories(stb INTERFACE ${CMAKE_SOURCE_DIR}/lib/stb)
+  set(NS_HAVE_STB ON)
+endif()

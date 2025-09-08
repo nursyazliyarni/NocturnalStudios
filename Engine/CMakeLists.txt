@@ -31,6 +31,14 @@ if (NS_HAVE_RAPIDJSON)
   target_link_libraries(Engine PUBLIC rapidjson)
 endif()
 
+if (NS_HAVE_IMGUI)
+  target_link_libraries(Engine PUBLIC imgui)
+endif()
+
+if (NS_HAVE_STB)
+  target_link_libraries(Engine PUBLIC stb)
+endif()
+
 if (WIN32)
   target_link_libraries(Engine PUBLIC opengl32)
 endif()
