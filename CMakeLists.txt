@@ -51,7 +51,7 @@ endif()
 
 #  Your sources
 file(GLOB_RECURSE SRC CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/source/*.cpp")
-file(GLOB_RECURSE HDR CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/include/*.hpp")
+file(GLOB_RECURSE HDR CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/include/*.h")
 
 if (NOT SRC)
   message(FATAL_ERROR "No sources found in source/. Add at least source/main.cpp")
@@ -91,6 +91,7 @@ target_include_directories(NocturnalEngine PRIVATE
   ${CMAKE_SOURCE_DIR}/source
   ${CMAKE_SOURCE_DIR}/include
   ${CMAKE_SOURCE_DIR}/lib/glm
+  ${CMAKE_SOURCE_DIR}/lib/rapidjson/include
 )
 
 #  Linkage

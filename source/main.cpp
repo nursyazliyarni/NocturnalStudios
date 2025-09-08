@@ -1,19 +1,49 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include <chrono>   //C++’s time library
+#include <chrono>
 #include <cstdio>
+#include <string>                 // <-- needed for std::string
+#include <vector>
+
+#include <rapidjson/document.h>
+#include <rapidjson/filereadstream.h>
 
 int main() {
+    // Defaults
+    int         cfgWidth = 1280;
+    int         cfgHeight = 720;
+    std::string cfgTitle = "NocturnalStudios";
+    bool        cfgVsync = true;
+
+    // Try load config.json
+    if (FILE* fp = fopen("assets/config.json", "rb")) {
+       // char buffer[65536];
+        //rapidjson::FileReadStream is(fp, buffer, sizeof(buffer));
+        std::vector<char> buf(1u << 16);                // 64 KB on heap
+        rapidjson::FileReadStream is(fp, buf.data(), buf.size());
+        rapidjson::Document doc;
+        doc.ParseStream(is);
+        fclose(fp);
+
+        if (!doc.HasParseError() && doc.HasMember("window") && doc["window"].IsObject()) {
+            const auto& w = doc["window"];
+            if (w.HasMember("width") && w["width"].IsInt())     cfgWidth = w["width"].GetInt();
+            if (w.HasMember("height") && w["height"].IsInt())    cfgHeight = w["height"].GetInt();
+            if (w.HasMember("title") && w["title"].IsString())  cfgTitle = w["title"].GetString(); // copy = safe
+            if (w.HasMember("vsync") && w["vsync"].IsBool())    cfgVsync = w["vsync"].GetBool();
+        }
+    }
+
     if (!glfwInit()) { std::fprintf(stderr, "GLFW init failed\n"); return -1; }
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
-    GLFWwindow* win = glfwCreateWindow(1280, 720, "NocturnalStudios", nullptr, nullptr);
+    GLFWwindow* win = glfwCreateWindow(cfgWidth, cfgHeight, cfgTitle.c_str(), nullptr, nullptr);
     if (!win) { std::fprintf(stderr, "Window creation failed\n"); glfwTerminate(); return -1; }
     glfwMakeContextCurrent(win);
-    glfwSwapInterval(1); // vsync
+    glfwSwapInterval(cfgVsync ? 1 : 0);   // set in JSON
 
     glewExperimental = GL_TRUE;
     if (glewInit() != GLEW_OK) { std::fprintf(stderr, "GLEW init error\n"); return -1; }
@@ -28,16 +58,19 @@ int main() {
         last = now; acc += dt; frames++;
 
         if (acc >= 1.0) {
-            char title[64]; std::snprintf(title, sizeof(title), "NocturnalStudios | FPS: %d", frames);
-            glfwSetWindowTitle(win, title); frames = 0; acc = 0.0;
+            char title[256];
+            std::snprintf(title, sizeof(title), "%s | FPS: %d", cfgTitle.c_str(), frames);
+            glfwSetWindowTitle(win, title);
+            frames = 0; acc = 0.0;
         }
 
-        glClearColor(0.1f,0.1f,0.12f,1.f);
+        glClearColor(0.1f, 0.1f, 0.12f, 1.f);
         glClear(GL_COLOR_BUFFER_BIT);
 
         glfwSwapBuffers(win);
         glfwPollEvents();
     }
+
     glfwDestroyWindow(win);
     glfwTerminate();
     return 0;
