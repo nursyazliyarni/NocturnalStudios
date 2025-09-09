@@ -1,0 +1,1 @@
+// load config (width/height/vsync) from file
