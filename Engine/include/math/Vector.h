@@ -15,6 +15,7 @@ using namespace std;
 template <size_t N>
 class Matrix;
 
+//********* Vector Class Template Declaration **********//
 template <size_t N>
 class Vector {
 public:
@@ -206,11 +207,12 @@ float length(const Vector<N>& a) {
     return sqrt(result);
 }
 
+// Normalize a vector
 template <size_t N>
 Vector<N> normal(Vector<N>&& a) {
     float result = length(a);
-    if (result <= 0.0f) return a; // error case - normalizing a zero vector or negative length vector
-    
+    if (result == 0.0f) return a; // error case - normalizing a zero vector
+
     return a /= result;
 }
 
