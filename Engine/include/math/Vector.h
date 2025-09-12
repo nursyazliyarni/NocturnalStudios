@@ -24,12 +24,12 @@ public:
     Vector(const Vector& other);
     Vector& operator=(const Vector& other) noexcept;
 
-    // Addition operator
+    // Arithmetic operators
     Vector operator+(const Vector& other) const noexcept;
     Vector operator-(const Vector& other) const noexcept;
 
     // Assignment operators
-    Vector& operator+=(const Vector& other) noexcept;
+    Vector& operator+=(const Vector& other) noexcept; 
     Vector& operator-=(const Vector& other) noexcept;
     Vector& operator*=(float scalar) noexcept;
     Vector& operator/=(float scalar);
@@ -211,7 +211,7 @@ float length(const Vector<N>& a) {
 template <size_t N>
 Vector<N> normal(Vector<N>&& a) {
     float result = length(a);
-    if (result == 0.0f) return a; // error case - normalizing a zero vector
+	if (result == 0.0f) return a; // error case - normalizing a zero vector @Todo (axewhy): Handle error to logger
 
     return a /= result;
 }
@@ -284,7 +284,7 @@ Vector<N>& Vector<N>::operator*=(float scalar) noexcept {
 // Division assignment operator
 template <size_t N>
 Vector<N>& Vector<N>::operator/=(float scalar) {
-    if (scalar == 0.0f) return *this; // error case - division by zero
+	if (scalar == 0.0f) return *this; // error case - division by zero @Todo (axewhy): Handle error to logger
     for (size_t i = 0; i < N; ++i)
         data[i] /= scalar;
     return *this;
