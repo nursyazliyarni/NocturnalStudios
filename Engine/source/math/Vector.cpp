@@ -36,15 +36,13 @@ Vector2D& Vector2D::operator=(const glm::vec2& other) {
 }
 
 // Matrix multiplication
-// @todo (for axewhy): Implement Matrix class and operator overloads
-#if 0
 Vector2D Vector2D::operator*(const Matrix<2>& mat) const {
 	Vector2D result;
 	result.data[0] = mat[0][0] * data[0] + mat[0][1] * data[1];
 	result.data[1] = mat[1][0] * data[0] + mat[1][1] * data[1];
 	return result;
 }
-#endif
+
 // Conversion operator to float pointer
 Vector2D::operator float* () {
 	return data;
@@ -95,8 +93,6 @@ Vector3D& Vector3D::operator=(const glm::vec3& other) {
 }
 
 // Matrix multiplication
-// @todo (for axewhy): Implement Matrix class and operator overloads
-#if 0
 Vector3D Vector3D::operator*(const Matrix<3>& mat) const {
 	Vector3D result;
 	result.data[0] = mat[0][0] * data[0] + mat[0][1] * data[1] + mat[0][2] * data[2];
@@ -104,7 +100,6 @@ Vector3D Vector3D::operator*(const Matrix<3>& mat) const {
 	result.data[2] = mat[2][0] * data[0] + mat[2][1] * data[1] + mat[2][2] * data[2];
 	return result;
 }
-#endif
 
 // Conversion operator to float pointer
 Vector3D::operator float* () {
@@ -176,8 +171,6 @@ Vector4D& Vector4D::operator=(const glm::vec4& other) {
 }
 
 // Matrix multiplication
-// @todo (for axewhy): Implement Matrix class and operator overloads
-#if 0
 Vector4D Vector4D::operator*(const Matrix<4>& mat) const {
 	Vector4D result;
 	result.data[0] = mat[0][0] * data[0] + mat[0][1] * data[1] + mat[0][2] * data[2] + mat[0][3] * data[3];
@@ -186,7 +179,6 @@ Vector4D Vector4D::operator*(const Matrix<4>& mat) const {
 	result.data[3] = mat[3][0] * data[0] + mat[3][1] * data[1] + mat[3][2] * data[2] + mat[3][3] * data[3];
 	return result;
 }
-#endif
 
 // Conversion operator to float pointer
 Vector4D::operator float* () {
