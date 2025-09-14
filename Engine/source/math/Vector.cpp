@@ -2,6 +2,7 @@
 #include "../include/math/Matrix.h"
 
 //********* 2D Vector Implementation **********//
+
 // Default constructor
 Vector2D::Vector2D() : Vector<2>() {}
 
@@ -67,6 +68,7 @@ float& Vector2D::y() {
 }
 
 //********* 3D Vector Implementation **********//
+
 // Default constructor
 Vector3D::Vector3D() : Vector<3>() {}
 
@@ -143,6 +145,7 @@ float Vector3D::crossProductMag(const Vector3D& vec) const noexcept {
 }
 
 //********* 4D Vector Implementation **********//
+
 // Default constructor
 Vector4D::Vector4D() : Vector<4>() {}
 

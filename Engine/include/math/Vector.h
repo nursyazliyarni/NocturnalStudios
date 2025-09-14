@@ -16,6 +16,7 @@ template <size_t N>
 class Matrix;
 
 //********* Vector Class Template Declaration **********//
+
 template <size_t N>
 class Vector {
 public:
@@ -143,6 +144,7 @@ public:
 };
 
 //********* Non-member operators **********//
+
 // Scalar division
 template <size_t N>
 Vector<N> operator/(const Vector<N>& vec, float scalar) {
@@ -172,6 +174,7 @@ std::ostream& operator<<(std::ostream& os, const Vector<N>& vector) {
 }
 
 //********* Useful Functions For Vectors **********//
+
 // Calculate the square distance between two vectors
 template <size_t N>
 float distanceSquared(const Vector<N>& a, const Vector<N>& b) {
@@ -217,6 +220,7 @@ Vector<N> normal(Vector<N>&& a) {
 }
 
 //********* Vector Class Template Implementation **********//
+
 // Default constructor
 template <size_t N>
 Vector<N>::Vector() {

@@ -19,6 +19,7 @@ template <size_t N>
 class Vector;
 
 //********* Matrix Class Template Declaration **********//
+
 template <size_t N>
 class Matrix {
 public:
@@ -108,6 +109,7 @@ public:
 };
 
 //********* Non-Member Functions **********//
+
 Matrix<3> Translate3x3(const Matrix<3>& transformMatModel, float x, float y);
 Matrix<3> RotateRad3x3(const Matrix<3>& transformMatModel, float radAngle);
 Matrix<3> RotateDeg3x3(const Matrix<3>& transformMatModel, float degAngle);
@@ -119,6 +121,7 @@ Matrix<4> RotateDeg4x4(const Matrix<4>& transformMatModel, float degAngle);
 Matrix<4> Scale4x4(const Matrix<4>& transformMatModel, float x, float y, float z);
 
 //********* Matrix Class Template Implementation **********//
+
 // Constructors
 template <size_t N>
 Matrix<N>::Matrix() : data{} {};

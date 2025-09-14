@@ -2,6 +2,7 @@
 #include "../include/math/Matrix.h"
 
 //********* 3x3 Non-Member Functions Implementation  **********//
+
 Matrix<3> Translate3x3(const Matrix<3>& transformMatModel, float x, float y) {
 	Matrix<3> translationMatrix;
 	translationMatrix.Identity();
@@ -40,6 +41,7 @@ Matrix<3> Scale3x3(const Matrix<3>& transformMatModel, float x, float y) {
 }
 
 //********* 4x4 Non-Member Functions Implementation  **********//
+
 Matrix<4> Translate4x4(const Matrix<4>& transformMatModel, float x, float y, float z) {
 	Matrix<4> translationMatrix;
 	translationMatrix.Identity();
