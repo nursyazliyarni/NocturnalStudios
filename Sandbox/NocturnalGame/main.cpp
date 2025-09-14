@@ -4,7 +4,7 @@
 #include <cstdio>
 #include <string>  // needed for std::string
 #include <vector>
-#include "core/Time.h"
+#include "core/GameLoop.h"
 
 #include <rapidjson/document.h>
 #include <rapidjson/filereadstream.h>
@@ -70,11 +70,15 @@ int main() {
     auto last = std::chrono::high_resolution_clock::now();
     int frames = 0; double acc = 0.0;
 
+    Input game_input_obj;
     Game_Loop game_loop_obj;
     while (!glfwWindowShouldClose(win)) {
         double dt = game_loop_obj.calculate_DT(); //our deltaTime
         double total_time = game_loop_obj.get_accum_GT(); //our accumulated game time
         game_loop_obj.display_FPS(win, cfgTitle, dt); //display game FPS
+
+        //Main Game Loop Update Here
+        game_loop_obj.update(win);
 
         /*auto now = std::chrono::high_resolution_clock::now();
         double dt = std::chrono::duration<double>(now - last).count();
