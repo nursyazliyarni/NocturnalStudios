@@ -108,15 +108,15 @@ public:
 };
 
 //********* Non-Member Functions **********//
-Matrix<3> Translate3x3(const Matrix<3>& mat, float x, float y);
-Matrix<3> RotateRad3x3(const Matrix<3>& mat, float radAngle);
-Matrix<3> RotateDeg3x3(const Matrix<3>& mat, float degAngle);
-Matrix<3> Scale3x3(const Matrix<3>& mat, float x, float y);
+Matrix<3> Translate3x3(const Matrix<3>& transformMatModel, float x, float y);
+Matrix<3> RotateRad3x3(const Matrix<3>& transformMatModel, float radAngle);
+Matrix<3> RotateDeg3x3(const Matrix<3>& transformMatModel, float degAngle);
+Matrix<3> Scale3x3(const Matrix<3>& transformMatModel, float x, float y);
 
-Matrix<4> Translate4x4(const Matrix<4>& mat, float x, float y, float z);
-Matrix<4> RotateRad4x4(const Matrix<4>& mat, float radAngle);
-Matrix<4> RotateDeg4x4(const Matrix<4>& mat, float degAngle);
-Matrix<4> Scale4x4(const Matrix<4>& mat, float x, float y, float z);
+Matrix<4> Translate4x4(const Matrix<4>& transformMatModel, float x, float y, float z);
+Matrix<4> RotateRad4x4(const Matrix<4>& transformMatModel, float radAngle);
+Matrix<4> RotateDeg4x4(const Matrix<4>& transformMatModel, float degAngle);
+Matrix<4> Scale4x4(const Matrix<4>& transformMatModel, float x, float y, float z);
 
 //********* Matrix Class Template Implementation **********//
 // Constructors
