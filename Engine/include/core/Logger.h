@@ -4,14 +4,18 @@
 #include <iostream>
 #include <string>
 #include <deque>
+#include <chrono>
+#include <filesystem>
+#include <sstream>
+#include <fstream>
 
 class Logger {
 public:
-	void error(std::string message);
-	void log(std::string message);
-	void warning(std::string message);
+	void error(std::string_view message);
+	void log(std::string_view message);
+	void warning(std::string_view message);
 
-	std::deque<std::string> getLogs() const;
+	std::deque<std::string> getLogs() const&;
 
 	static std::string getCurrentTime();
 	static std::string getUniqueTimeId();
