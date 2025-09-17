@@ -9,8 +9,11 @@
 #include "../glm/glm/vec2.hpp"
 #include "../glm/glm/vec3.hpp"
 #include "../glm/glm/vec4.hpp"
+#include "../include/core/logger.h"
 
 using namespace std;
+
+extern Logger logger;
 
 template <size_t N>
 class Matrix;
@@ -214,7 +217,10 @@ float length(const Vector<N>& a) {
 template <size_t N>
 Vector<N> normal(Vector<N>&& a) {
     float result = length(a);
-	if (result == 0.0f) return a; // error case - normalizing a zero vector @Todo (axewhy): Handle error to logger
+    if (result == 0.0f) {
+        logger.error("Cannot normalize a zero-length vector.");
+        return a; 
+    }
 
     return a /= result;
 }
@@ -288,7 +294,10 @@ Vector<N>& Vector<N>::operator*=(float scalar) noexcept {
 // Division assignment operator
 template <size_t N>
 Vector<N>& Vector<N>::operator/=(float scalar) {
-	if (scalar == 0.0f) return *this; // error case - division by zero @Todo (axewhy): Handle error to logger
+    if (scalar == 0.0f) {
+        logger.error("Division by zero in vector division assignment.");
+		return *this;
+    }
     for (size_t i = 0; i < N; ++i)
         data[i] /= scalar;
     return *this;

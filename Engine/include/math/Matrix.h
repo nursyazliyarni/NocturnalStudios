@@ -10,10 +10,12 @@
 
 #include "../glm/glm/matrix.hpp"
 #include "../include/math/Vector.h"
+#include "../include/core/Logger.h"
 
 constexpr double PI = 3.14159265358979323846;
 
 using namespace std;
+extern Logger logger;
 
 template <size_t N>
 class Vector;
@@ -134,7 +136,7 @@ Matrix<N>::Matrix(const Matrix<N>& other) : data(other.data) {}
 template <size_t N>
 Matrix<N>::Matrix(std::initializer_list<float> list) {
 	if (list.size() != N * N) {
-		// @Todo (axewhy): Handle error to logger
+		logger.error("Matrix initializer list size does not match matrix dimensions.");
 		return;
 	}
 	std::copy(list.begin(), list.end(), data.begin());
@@ -211,8 +213,10 @@ Matrix<N>& Matrix<N>::operator*=(float scalar) noexcept {
 // Division assignment operator
 template <size_t N>
 Matrix<N>& Matrix<N>::operator/=(float scalar) {
-	if (scalar == 0.0f) return *this; // error case - division by zero @Todo (axewhy): Handle error to logger
-
+	if (scalar == 0.0f) {
+		logger.error("Division by zero in matrix division assignment.");
+		return *this;
+	}
 	for (size_t i{}; i < N * N; ++i)
 		data[i] /= scalar;
 	return *this;
@@ -275,7 +279,7 @@ inline Matrix<4>::operator glm::mat4x4() const {
 template <size_t N>
 float Matrix<N>::getElement(size_t row, size_t col) const {
 	if (row > N || col > N) {
-		// @Todo (axewhy): Handle error to logger
+		logger.error("Matrix index out of bounds in getElement.");
 		return 0.f;
 	}
 
@@ -329,7 +333,10 @@ inline Matrix<3>& Matrix<3>::Inverse() noexcept {
 	// Calculate determinant
 	determinant = data[0] * adjugate.data[0] + data[1] * adjugate.data[3] + data[2] * adjugate.data[6];
 
-	if (determinant == 0.f) return *this; // error case - non-invertible matrix @Todo (axewhy): Handle error to logger
+	if (determinant == 0.f) {
+		logger.error("Matrix is singular and cannot be inverted.");
+		return *this;
+	}
 
 	// Calculate inverse
 	float invDeterminant = 1.f / determinant;
@@ -369,7 +376,10 @@ inline Matrix<4>& Matrix<4>::Inverse() noexcept {
 	// Calculate determinant
 	determinant = data[0] * adjugate.data[0] + data[1] * adjugate.data[4] + data[2] * adjugate.data[8] + data[3] * adjugate.data[12];
 
-	if (determinant == 0.f) return *this; // error case - non-invertible matrix @Todo (axewhy): Handle error to logger
+	if (determinant == 0.f) {
+		logger.error("Matrix is singular and cannot be inverted.");
+		return *this;
+	}
 
 	// Calculate inverse
 	float invDeterminant = 1.f / determinant;
