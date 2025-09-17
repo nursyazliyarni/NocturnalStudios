@@ -4,6 +4,7 @@
 #include <cstdio>
 #include <string>  // needed for std::string
 #include <vector>
+#include "core/GameLoop.h"
 
 #include <rapidjson/document.h>
 #include <rapidjson/filereadstream.h>
@@ -69,8 +70,17 @@ int main() {
     auto last = std::chrono::high_resolution_clock::now();
     int frames = 0; double acc = 0.0;
 
+    Input game_input_obj;
+    Game_Loop game_loop_obj;
     while (!glfwWindowShouldClose(win)) {
-        auto now = std::chrono::high_resolution_clock::now();
+        double dt = game_loop_obj.calculate_DT(); //our deltaTime
+        double total_time = game_loop_obj.get_accum_GT(); //our accumulated game time
+        game_loop_obj.display_FPS(win, cfgTitle, dt); //display game FPS
+
+        //Main Game Loop Update Here
+        game_loop_obj.update(win);
+
+        /*auto now = std::chrono::high_resolution_clock::now();
         double dt = std::chrono::duration<double>(now - last).count();
         last = now; acc += dt; frames++;
 
@@ -79,7 +89,7 @@ int main() {
             std::snprintf(title, sizeof(title), "%s | FPS: %d", cfgTitle.c_str(), frames);
             glfwSetWindowTitle(win, title);
             frames = 0; acc = 0.0;
-        }
+        }*/
 
         glClearColor(0.1f, 0.1f, 0.12f, 1.f);
         glClear(GL_COLOR_BUFFER_BIT);
