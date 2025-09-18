@@ -19,19 +19,21 @@
 // [========================================*========================================]
 class GameObject {
 private:
-	size_t num_ID;
-	bool active, enabled;
-	Vector3D global_position, local_position;
-	Matrix<4> global_transform;
-	GameObject* parent_object;
+	size_t num_ID{0};
+	bool active{ false }, enabled{ false };
+	float scale{ 1.f };
+	Vector3D global_position{}, local_position{};
+	Matrix<4> global_transform{};
+	std::string sprite_path{};
+	GameObject* parent_object{ nullptr };
 public:
 
 	// [====================*====================]
 	//  Constructors & Destructors
 	// [====================*====================]
-	GameObject();
-	GameObject(GameObject const& to_copy );
-	GameObject& operator=(GameObject const& other);
+	// Default Constructor - rule of zero
+	GameObject()=default;
+
 
 
 	~GameObject();
@@ -87,10 +89,13 @@ public:
 	//do i add children?
 
 	// [====================*====================]
-	//  Print
+	//  Print & Load
 	// [====================*====================]
 	virtual void Print(std::ostream&) const;
+	virtual void Load(std::istream&);
+
 };
+std::istream& operator>>(std::istream& in, GameObject& obj);
 std::ostream& operator<<(std::ostream& out, const GameObject& obj);
 namespace GameObjects{ 
 	void GameObject_test(); 

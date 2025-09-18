@@ -15,23 +15,8 @@
 // [====================*====================]
 //  Constructors & Destructors
 // [====================*====================]
-GameObject::GameObject() :num_ID{ 0 }, active{ false }, enabled{ false }, 
-						  global_position{}, local_position{}, global_transform{}, 
-						  parent_object{ nullptr } {}
-GameObject::GameObject( GameObject const& to_copy) :num_ID{ to_copy.num_ID }, active{ false }, enabled{ false }, 
-													global_position{to_copy.global_position}, local_position{to_copy.local_position}, global_transform{to_copy.global_transform}, 
-													parent_object{ to_copy.parent_object } {}
-GameObject& GameObject::operator=(GameObject const& other) {
-	GameObject temp{ other };
-	std::swap(num_ID, temp.num_ID);
-	std::swap(active, temp.active);
-	std::swap(enabled, temp.enabled);
-	std::swap(global_position, temp.global_position);
-	std::swap(local_position, temp.local_position);
-	std::swap(global_transform, temp.global_transform);
-	std::swap(parent_object, temp.parent_object);
-	return *this;
-}
+// Default Constructor
+
 
 
 GameObject::~GameObject() { ClearParent(); }
@@ -81,7 +66,7 @@ void GameObject::EnabledStatus(bool state) { enabled = state; }
 // [====================*====================]
 //  Parenting
 // [====================*====================]
-GameObject* GameObject::Parent() const{}
+GameObject* GameObject::Parent() const { return parent_object; }
 bool GameObject::MakeParent(GameObject* to_parent){
 	if (to_parent&&to_parent->ActiveStatus())
 	{
@@ -97,12 +82,20 @@ bool GameObject::MakeParent(GameObject* to_parent){
 void GameObject::ClearParent() {parent_object = nullptr;}
 
 // [====================*====================]
-//  Print
+//  Print & Load
 // [====================*====================]
 void GameObject::Print(std::ostream& out) const {
 	out << "GameObject " << num_ID
 		<< " - Active: " << active << ", Enabled: " << enabled << '\n'
 		<< "Position: " << global_position << '\n';
+}
+
+void GameObject::Load(std::istream&) {
+
+}
+
+std::istream& operator>>(std::istream& in, GameObject& obj) {
+	return in;
 }
 
 std::ostream& operator<<( std::ostream& out,const GameObject& obj) {
