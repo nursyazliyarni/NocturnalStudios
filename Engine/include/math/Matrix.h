@@ -1,4 +1,18 @@
-// Requires GLM Library
+/*!------------------------------------------------------------------------------------------------
+	File: Matrix.h
+	Project: NocturnalStudio
+
+	This file contains the declarations and implementation of a templated Matrix class and its
+	specializations for 3x3 and 4x4 matrices. It includes matrix operations such as addition,
+	subtraction, scalar multiplication/division, and transposition.
+
+	Primary Author:
+		Lau Xiang Yang (100%)
+		- Created the Matrix class template and its specializations.
+
+	All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
+
 #ifndef MATRIX_H
 #define MATRIX_H
 

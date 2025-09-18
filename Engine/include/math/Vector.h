@@ -1,4 +1,18 @@
-// Requires GLM Library
+/*!------------------------------------------------------------------------------------------------
+    File: Vector.h
+    Project: NocturnalStudio
+
+    This file contains the declarations and implementation of a templated Vector class and its
+    specializations for 2D, 3D and 4D vectors. It includes vector arithmetic operations, accessors,
+    mutators and useful vector functions like dot product, cross product magnitude, distance and 
+    normalization.
+
+    Primary Author:
+        Lau Xiang Yang (100%)
+        - Created the Vector class template and its specializations.
+
+    All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
 
 #ifndef VECTOR_H
 #define VECTOR_H
