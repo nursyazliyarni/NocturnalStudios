@@ -254,6 +254,7 @@ Vector<N>& Vector<N>::operator=(const Vector& other) noexcept {
 template <size_t N>
 Vector<N> Vector<N>::operator+(const Vector& other) const noexcept {
     Vector<N> result;
+	for (size_t i = 0; i < N; ++i)
         result.data[i] = data[i] + other.data[i];
     return result;
 }
