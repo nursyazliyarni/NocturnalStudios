@@ -27,6 +27,12 @@ if (NS_HAVE_GLEW)
   endif()
 endif()
 
+if (NS_HAVE_GLM)
+  target_link_libraries(Engine PUBLIC glm)
+  target_compile_definitions(Engine PUBLIC NS_HAVE_GLM=1)
+endif()
+
+
 if (NS_HAVE_RAPIDJSON)
   target_link_libraries(Engine PUBLIC rapidjson)
 endif()
