@@ -47,7 +47,7 @@ GameConfig loadConfig(const std::string& filename) {
         WindowConfig window{
             win["width"].GetInt(),
             win["height"].GetInt(),
-            win["fullscreen"].GetBool()
+            win["vsync"].GetBool()
         };
 
         return { window };
