@@ -1,4 +1,18 @@
-// Requires GLM Library
+/*!------------------------------------------------------------------------------------------------
+	File: Matrix.h
+	Project: NocturnalStudio
+
+	This file contains the declarations and implementation of a templated Matrix class and its
+	specializations for 3x3 and 4x4 matrices. It includes matrix operations such as addition,
+	subtraction, scalar multiplication/division, and transposition.
+
+	Primary Author:
+		Lau Xiang Yang (100%)
+		- Created the Matrix class template and its specializations.
+
+	All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
+
 #ifndef MATRIX_H
 #define MATRIX_H
 
@@ -234,7 +248,7 @@ Matrix<N> Matrix<N>::operator-() const noexcept {
 // Assignment operator for glm::mat3x3
 template <size_t N>
 inline Matrix<N>::Matrix(glm::mat3x3 other) requires(N == 3) {
-	for (glm::length i = 0; i < N; ++i) {
+	for (glm::length_t i = 0; i < N; ++i) {
 		for (glm::length_t j = 0; j < N; ++j) {
 			(*this)[i][j] = static_cast<float>(other[i][j]);
 		}
@@ -292,7 +306,7 @@ float Matrix<N>::getElement(size_t row, size_t col) const {
 template <size_t N>
 Matrix<N>& Matrix<N>::Identity() noexcept {
 	data.fill(0.f);
-	for (size_t i{}; i < N ++i) {
+	for (size_t i = 0; i < N; ++i) {
 		if (i % (N + 1) == 0)
 			data[i] = 1.f;
 	}
@@ -303,8 +317,8 @@ Matrix<N>& Matrix<N>::Identity() noexcept {
 template <size_t N>
 Matrix<N>& Matrix<N>::Transpose() noexcept {
 	Matrix<N> temp = *this;
-	for (size_t i{}; i < N; ++i) {
-		for (size_t j{}; j < N; ++j) {
+	for (size_t i = 0; i < N; ++i) {
+		for (size_t j = 0; j < N; ++j) {
 			(*this)[i][j] = temp[j][i];
 		}
 	}
@@ -340,7 +354,7 @@ inline Matrix<3>& Matrix<3>::Inverse() noexcept {
 
 	// Calculate inverse
 	float invDeterminant = 1.f / determinant;
-	for (size_t i{}; i < 9; ++i)
+	for (size_t i = 0; i < 9; ++i)
 		data[i] = adjugate.data[i] * invDeterminant;
 
 	return *this;
@@ -383,7 +397,7 @@ inline Matrix<4>& Matrix<4>::Inverse() noexcept {
 
 	// Calculate inverse
 	float invDeterminant = 1.f / determinant;
-	for (size_t i{}; i < 16; ++i)
+	for (size_t i = 0; i < 16; ++i)
 		data[i] = adjugate.data[i] * invDeterminant;
 
 	return *this;
