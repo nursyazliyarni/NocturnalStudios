@@ -31,6 +31,18 @@ if (NS_HAVE_RAPIDJSON)
   target_link_libraries(Engine PUBLIC rapidjson)
 endif()
 
+# Silence RapidJSON code-analysis warnings on MSVC only
+if (MSVC)
+  # treat external headers quietly
+  target_compile_options(Engine PRIVATE /external:anglebrackets /external:W0)
+  # hush RapidJSON warnings seen via Config.cpp
+  set_source_files_properties(
+    ${CMAKE_CURRENT_SOURCE_DIR}/source/core/Config.cpp
+    PROPERTIES COMPILE_OPTIONS "/wd26495;/wd33010"
+  )
+endif()
+
+
 if (NS_HAVE_IMGUI)
   target_link_libraries(Engine PUBLIC imgui)
 endif()
