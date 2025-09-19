@@ -45,10 +45,10 @@ Vector2D ImGuiManager::getWindowBottomRight() const {
 void ImGuiManager::showMousePosOverlayUI() {
 	if (!showOverlay) return;
 
-	constexpr float width = 200.0f;
+	constexpr float width = 300.0f;
 	constexpr float height = 100.0f;
 
-	ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize |
+	ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDecoration |
 		ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
 
 	// Get mouse position in different coordinate spaces
@@ -78,10 +78,10 @@ void ImGuiManager::showMousePosOverlayUI() {
 
 void ImGuiManager::showPerformanceOverlayUI(double& dt) {
 	constexpr double secondsToMs = 1000.0;
-	constexpr float width = 200.0f;
+	constexpr float width = 300.0f;
 	constexpr float height = 50.0f;
 
-	ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize |
+	ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDecoration |
 		ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
 
 	// Position the overlay at the top-right corner of the window, below mouse position overlay
@@ -92,6 +92,99 @@ void ImGuiManager::showPerformanceOverlayUI(double& dt) {
 
 	ImGui::Begin("Performance", nullptr, windowFlags);
 	ImGui::Text("Current FPS: %.2f %.2lfms", 1 / dt, dt * secondsToMs);
+
+	// @Todo (axewhy): Add more performance metrics like the percentage of usage between different systems
+
+	ImGui::End();
+}
+
+void ImGuiManager::showEntityListUI(/* Maybe an enum of paramEntityType, Maybe a Reference to a std::vector of objectList?*/) {
+	// Fixed size for entity list window
+	constexpr float width = 300.0f;
+	constexpr float height = 100.0f;
+
+	ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDecoration |
+		ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
+
+	// Position the overlay at the top-right corner of the window, below performance overlay
+	ImVec2 windowTopRightPos = { windowBottomRight.x - width, windowTopLeft.y + 150.0f };
+	ImGui::SetNextWindowPos(windowTopRightPos);
+	ImGui::SetNextWindowBgAlpha(0.35f);
+	ImGui::SetNextWindowSize({ width, height });
+
+	ImGui::Begin("Entity Picker", nullptr, windowFlags);
+	ImGui::Text("Entity List");
+
+	// Clamp selected ID
+	if (selectedEntityID < 0) selectedEntityID = 0;
+
+	// if (selectedEntityID == paramEntityIDList::MAX) selectedEntityID = paramEntityIDList::MAX - 1; // we assume paramEntityIDList is an enum with it's last entry as MAX
+	// e.g enum paramEntityIDList { ENTITY_A, ENTITY_B, ENTITY_C, MAX };
+
+	// Picker controls
+	ImGui::Text("Selected Entity: %d", selectedEntityID);
+	ImGui::SameLine();
+	if (ImGui::Button("-")) 
+		 selectedEntityID--;
+	ImGui::SameLine();
+	if (ImGui::Button("+")) 
+		 selectedEntityID++;
+
+	// Clone the selected entity
+	if (ImGui::Button("Clone")) {
+		// @Todo (axewhy):
+		// Call factory function and pass the selected entity ID
+		// e.g., EntityFactory::cloneEntity(selectedEntityID);
+		logger.log("Cloning entity with ID Type: " + std::to_string(selectedEntityID));
+	}
+	ImGui::SameLine();
+	// Delete the selected entity
+	if (ImGui::Button("Delete")) {
+		// @Todo (axewhy):
+		// Check if the vector or array containing the entities is not empty or if there are entities to delete
+		// e.g., if (!EntityManager::getEntities().empty()) {
+		//		// Call destroy function and pass the selected entity ID
+		//		// e.g., EntityManager::destroyEntity(selectedEntityID);
+		//		}
+		logger.log("Deleting entity with ID Type: " + std::to_string(selectedEntityID));
+	}
+
+	ImGui::End();
+}
+
+void ImGuiManager::showTransformUI(/* A reference to a vector of object list objectList */) {
+	// Fixed size for transform window
+	constexpr float width = 300.0f;
+	constexpr float height = 200.0f;
+
+	ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDecoration |
+		ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
+
+	// Position the overlay at the top-right corner of the window, below entity list overlay
+	ImVec2 windowTopRightPos = { windowBottomRight.x - width, windowTopLeft.y + 250.0f };
+	ImGui::SetNextWindowPos(windowTopRightPos);
+	ImGui::SetNextWindowBgAlpha(0.35f);
+	ImGui::SetNextWindowSize({ width, height });
+	ImGui::Begin("Transform", nullptr, windowFlags);
+	ImGui::Text("Transform Controls");
+
+	// @Todo (axewhy): Change this with the selected entity transform. This is only a placeholder
+	static Vector2D position(0.f, 0.f);
+	static Matrix<3> rotationMatrix = Matrix<3>().Identity();
+	static Matrix<3> scaleMatrix = Matrix<3>().Identity();	
+
+	
+	// Position controls
+	ImGui::SliderFloat("Position X", &position.x(), -1000.0f, 1000.0f);
+	ImGui::SliderFloat("Position Y", &position.y(), -1000.0f, 1000.0f);
+
+	// Scaling controls
+	ImGui::SliderFloat("Scale X", &scaleMatrix[0][0], 0.1f, 10.0f);
+	ImGui::SliderFloat("Scale Y", &scaleMatrix[1][1], 0.1f, 10.0f);
+
+	// Rotation controls (in degrees)
+	static float rotationDegrees = 0.0f;
+	ImGui::SliderFloat("Rotation", &rotationDegrees, -180.0f, 180.0f);
 
 	ImGui::End();
 }
@@ -113,11 +206,6 @@ void ImGuiManager::showLogsOverlayUI() {
 
 	// Add a Child window to enable vertical and horizontal scrolling
 	ImGui::BeginChild("LogRegionHorizontal", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar);
-
-	// test log message
-	logger.log("This is a repeated message");
-	logger.warning("This is a repeated warning message");
-	logger.error("This is a repeated long log message to test the wrapping functionality of the log window. It will wrap around and be fully visible within the window.");
 
     for (auto const& log : logger.getLogs()) {
         if (log.find("[ERROR]") != std::string::npos)

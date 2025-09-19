@@ -89,9 +89,12 @@ int main() {
         ImGui::Text("ImGui is working!");
         ImGui::End();
 
+		// @Todo (axewhy): replace all the overlay with a single function call to ImGuiManager
 		imGuiManager.showMousePosOverlayUI();
         imGuiManager.showPerformanceOverlayUI(dt);
 		imGuiManager.showLogsOverlayUI();
+		imGuiManager.showEntityListUI();
+		imGuiManager.showTransformUI();
 
 		imGuiManager.endFrame();
 
