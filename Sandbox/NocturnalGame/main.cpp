@@ -20,6 +20,8 @@
 
 #include "../include/core/ImGuiManager.h"
 
+Logger logger;
+
 int main() {
     // Defaults
     int         cfgWidth = 1280;
@@ -87,7 +89,9 @@ int main() {
         ImGui::Text("ImGui is working!");
         ImGui::End();
 
-		imGuiManager.showOverlayUI();
+		imGuiManager.showMousePosOverlayUI();
+        imGuiManager.showPerformanceOverlayUI(dt);
+		imGuiManager.showLogsOverlayUI();
 
 		imGuiManager.endFrame();
 

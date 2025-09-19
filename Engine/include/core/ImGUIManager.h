@@ -7,6 +7,9 @@
 #include "../imgui/backends/imgui_impl_opengl3.h"
 
 #include "../include/math/Vector.h"
+#include "../include/core/Logger.h"
+
+extern Logger logger;
 
 class ImGuiManager {
 public:
@@ -19,7 +22,9 @@ public:
 	Vector2D getWindowTopLeft() const;
 	Vector2D getWindowBottomRight() const;
 
-	void showOverlayUI();
+	void showMousePosOverlayUI();
+	void showPerformanceOverlayUI(double& dt);
+	void showLogsOverlayUI();
 
 private:
 	ImVec2 windowTopLeft;
