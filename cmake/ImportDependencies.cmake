@@ -17,6 +17,15 @@ if (EXISTS ${CMAKE_SOURCE_DIR}/lib/glew/CMakeLists.txt)
   set(NS_HAVE_GLEW ON)
 endif()
 
+# GLM (header-only)
+if (EXISTS ${CMAKE_SOURCE_DIR}/lib/glm/glm/glm.hpp)
+  add_library(glm INTERFACE)
+  # NOTE: point to the folder that contains the inner "glm/" directory
+  target_include_directories(glm INTERFACE ${CMAKE_SOURCE_DIR}/lib/glm)
+  set(NS_HAVE_GLM ON)
+endif()
+
+
 # RapidJSON (header-only)
 if (EXISTS ${CMAKE_SOURCE_DIR}/lib/rapidjson/include/rapidjson)
   add_library(rapidjson INTERFACE)
