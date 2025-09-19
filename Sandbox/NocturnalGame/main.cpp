@@ -18,6 +18,7 @@
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include <stb_image_write.h>
 
+#include "../include/core/ImGuiManager.h"
 
 int main() {
     // Defaults
@@ -60,11 +61,7 @@ int main() {
     if (glewInit() != GLEW_OK) { std::fprintf(stderr, "GLEW init error\n"); return -1; }
     glGetError(); // clear harmless GL error from glewInit
 
-    IMGUI_CHECKVERSION();
-    ImGui::CreateContext();
-    ImGui::StyleColorsDark();
-    ImGui_ImplGlfw_InitForOpenGL(win, true);
-    ImGui_ImplOpenGL3_Init("#version 330");
+	ImGuiManager imGuiManager(win);
 
     auto last = std::chrono::high_resolution_clock::now();
     int frames = 0; double acc = 0.0;
@@ -84,25 +81,21 @@ int main() {
         glClearColor(0.1f, 0.1f, 0.12f, 1.f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        ImGui_ImplOpenGL3_NewFrame();
-        ImGui_ImplGlfw_NewFrame();
-        ImGui::NewFrame();
+		imGuiManager.startFrame();
 
         ImGui::Begin("Hello");
         ImGui::Text("ImGui is working!");
         ImGui::End();
 
-        ImGui::Render();
-        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+		imGuiManager.showOverlayUI();
+
+		imGuiManager.endFrame();
 
 
         glfwSwapBuffers(win);
         glfwPollEvents();
     }
 
-    ImGui_ImplOpenGL3_Shutdown();
-    ImGui_ImplGlfw_Shutdown();
-    ImGui::DestroyContext();
 
     glfwDestroyWindow(win);
     glfwTerminate();
