@@ -41,20 +41,33 @@ int Application::run() {
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     // 3) FPS count
-    double t0 = glfwGetTime();
-    int frames = 0;
+    //double t0 = glfwGetTime();
+    //int frames = 0;
+
+    Input game_input_obj;
+    Game_Loop game_loop_obj;
+
+    std::vector<char const*> vs{ "assets/textures/Circle.png"};
+    Texture txt_obj(vs);
 
     // 4) simple loop
     while (!m_window.shouldClose()) {
         m_window.poll();
 
-        ++frames;
+        double dt = game_loop_obj.calculate_DT(); //our deltaTime
+        double total_time = game_loop_obj.get_accum_GT(); //our accumulated game time
+        game_loop_obj.display_FPS(m_window.handle(), c.title, dt); //display game FPS
+
+        //Main Game Loop Update Here
+        game_loop_obj.update(m_window.handle());
+
+        /*++frames;
         double t = glfwGetTime();
         if (t - t0 >= 1.0) {
             m_window.setTitleFps(c.title, frames);
             frames = 0;
             t0 = t;
-        }
+        }*/
 
         // handle resize: update viewport/projection if size changed (no callbacks)
         int fbw, fbh;

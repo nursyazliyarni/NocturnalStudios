@@ -2,6 +2,8 @@
 
 #pragma once
 #include "graphics/Window.h"
+#include "graphics/Texture.h"
+#include "core/GameLoop.h"
 
 class Application {
 public:
