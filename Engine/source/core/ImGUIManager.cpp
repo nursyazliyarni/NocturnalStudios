@@ -130,6 +130,10 @@ void ImGuiManager::showLogsOverlayUI() {
             ImGui::TextUnformatted(log.c_str());
     }
 
+	// Auto scroll to bottom
+	if (ImGui::GetScrollY() >= ImGui::GetScrollMaxY())
+		ImGui::SetScrollHereY(1.0f);
+
 	ImGui::EndChild();
     ImGui::End();
 }
