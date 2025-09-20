@@ -3,7 +3,13 @@
 void Gui::updateImGuiManager(double& deltaTime, ImGuiManager& imGuiManager) {
 	imGuiManager.updateDeltaTime(deltaTime);
 
+	// Get main viewport position and size
+	ImGuiViewport* mainViewport = ImGui::GetMainViewport();
+	imGuiManager.updateWindowTopLeft(mainViewport->Pos);
+	imGuiManager.updateWindowBottomRight({ mainViewport->Pos.x + mainViewport->Size.x, mainViewport->Pos.y + mainViewport->Size.y });
+
 	imGuiManager.startFrame();
+	imGuiManager.showViewportWindowUI();
 	imGuiManager.showMousePosOverlayUI();
 	imGuiManager.showPerformanceOverlayUI();
 	imGuiManager.showEntityListUI();
@@ -22,7 +28,7 @@ ImGuiManager::ImGuiManager(GLFWwindow*& w) : window{ w }, windowTopLeft{}, windo
 	ImGui_ImplOpenGL3_Init("#version 330");
 
 	// Setup style
-	ImGui::StyleColorsDark();
+	ImGui::StyleColorsClassic();
 	ImGuiIO& io = ImGui::GetIO();
 
 	// Logging
@@ -33,6 +39,14 @@ ImGuiManager::~ImGuiManager() {
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplGlfw_Shutdown();
 	ImGui::DestroyContext();
+}
+
+void ImGuiManager::updateWindowTopLeft(const ImVec2& topLeft) {
+	windowTopLeft = topLeft;
+}
+
+void ImGuiManager::updateWindowBottomRight(const ImVec2& bottomRight) {
+	windowBottomRight = bottomRight;
 }
 
 void ImGuiManager::updateDeltaTime(double& dt) {
@@ -62,6 +76,27 @@ Vector2D ImGuiManager::getWindowBottomRight() const {
 	return Vector2D(windowBottomRight.x, windowBottomRight.y);
 }
 
+void ImGuiManager::showViewportWindowUI() {
+	constexpr float overlayWidthOffset = 300.0f;
+	constexpr float overlayHeightOffset = 200.0f;
+
+	ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoResize;
+
+	// Calculate the size of the viewport window
+	float viewportWidth = windowBottomRight.x - windowTopLeft.x - overlayWidthOffset;
+	float viewportHeight = windowBottomRight.y - windowTopLeft.y - overlayHeightOffset;
+
+	// Position the viewport window at the top-left corner of the main window
+	ImGui::SetNextWindowPos(windowTopLeft);
+	ImGui::SetNextWindowSize(ImVec2(viewportWidth, viewportHeight));
+	ImGui::Begin("Viewport", nullptr, windowFlags);
+
+	// @Todo (axewhy): Render the actual viewport content here, e.g., using a framebuffer texture
+	ImGui::Text("Viewport placeholder");
+
+	ImGui::End();
+}
+
 void ImGuiManager::showMousePosOverlayUI() {
 	constexpr float width = 300.0f;
 	constexpr float height = 100.0f;
@@ -75,11 +110,6 @@ void ImGuiManager::showMousePosOverlayUI() {
 	Vector2D viewPortPosition;
 	Vector2D screenPosition;
 	
-	// Get main viewport position and size
-	ImGuiViewport* mainViewport = ImGui::GetMainViewport();
-	windowTopLeft = mainViewport->Pos;
-	windowBottomRight = { mainViewport->Pos.x + mainViewport->Size.x, mainViewport->Pos.y + mainViewport->Size.y };
-
 	// Position the overlay at the top-right corner of the window
 	ImVec2 windowTopRightPos = { windowBottomRight.x - width, windowTopLeft.y };
 	ImGui::SetNextWindowPos(windowTopRightPos);
@@ -207,7 +237,7 @@ void ImGuiManager::showLogsOverlayUI() {
 	constexpr float width = 600.0f;
 	constexpr float height = 200.0f;
 
-    ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoSavedSettings;
+    ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoResize;
 
 	// Position the overlay at the bottom-center of the window
     ImVec2 initialPos = { (windowTopLeft.x + windowBottomRight.x) / 2, windowBottomRight.y };

@@ -19,6 +19,8 @@ public:
 
 	void updateDeltaTime(double& dt);
 	void getDeltaTime(double& dt) const;
+	void updateWindowTopLeft(const ImVec2& topLeft);
+	void updateWindowBottomRight(const ImVec2& bottomRight);
 
 	void startFrame();
 	void endFrame();
@@ -26,6 +28,7 @@ public:
 	Vector2D getWindowTopLeft() const;
 	Vector2D getWindowBottomRight() const;
 
+	void showViewportWindowUI();
 	void showMousePosOverlayUI();
 	void showPerformanceOverlayUI();
 	void showLogsOverlayUI();
