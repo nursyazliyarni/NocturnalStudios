@@ -1,6 +1,20 @@
 #include "../include/core/ImGuiManager.h"
 
-ImGuiManager::ImGuiManager(GLFWwindow*& window) : windowTopLeft{}, windowBottomRight{}, showOverlay{ true } {
+using namespace ImGui;
+
+void ImGui::updateImGuiManager(double& deltaTime, ImGuiManager& imGuiManager) {
+	imGuiManager.updateDeltaTime(deltaTime);
+
+	imGuiManager.startFrame();
+	imGuiManager.showMousePosOverlayUI();
+	imGuiManager.showPerformanceOverlayUI();
+	imGuiManager.showEntityListUI();
+	imGuiManager.showTransformUI();
+	imGuiManager.showLogsOverlayUI();
+	imGuiManager.endFrame();
+}
+
+ImGuiManager::ImGuiManager(GLFWwindow*& w) : window{ w }, windowTopLeft{}, windowBottomRight{}, deltaTime{0.}, selectedEntityType{} {
 
 	// Init ImGui context
 	ImGui::CreateContext();
@@ -23,6 +37,14 @@ ImGuiManager::~ImGuiManager() {
 	ImGui::DestroyContext();
 }
 
+void ImGuiManager::updateDeltaTime(double& dt) {
+	deltaTime = dt;
+}
+
+void ImGuiManager::getDeltaTime(double& dt) const {
+	dt = deltaTime;
+}
+
 void ImGuiManager::startFrame() {
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplGlfw_NewFrame();
@@ -43,8 +65,6 @@ Vector2D ImGuiManager::getWindowBottomRight() const {
 }
 
 void ImGuiManager::showMousePosOverlayUI() {
-	if (!showOverlay) return;
-
 	constexpr float width = 300.0f;
 	constexpr float height = 100.0f;
 
@@ -76,7 +96,7 @@ void ImGuiManager::showMousePosOverlayUI() {
 	ImGui::End();
 }
 
-void ImGuiManager::showPerformanceOverlayUI(double& dt) {
+void ImGuiManager::showPerformanceOverlayUI() {
 	constexpr double secondsToMs = 1000.0;
 	constexpr float width = 300.0f;
 	constexpr float height = 50.0f;
@@ -91,7 +111,7 @@ void ImGuiManager::showPerformanceOverlayUI(double& dt) {
 	ImGui::SetNextWindowSize({ width, height });
 
 	ImGui::Begin("Performance", nullptr, windowFlags);
-	ImGui::Text("Current FPS: %.2f %.2lfms", 1 / dt, dt * secondsToMs);
+	ImGui::Text("Current FPS: %.2f %.2lfms", 1 / deltaTime, deltaTime * secondsToMs);
 
 	// @Todo (axewhy): Add more performance metrics like the percentage of usage between different systems
 
@@ -115,27 +135,22 @@ void ImGuiManager::showEntityListUI(/* Maybe an enum of paramEntityType, Maybe a
 	ImGui::Begin("Entity Picker", nullptr, windowFlags);
 	ImGui::Text("Entity List");
 
-	// Clamp selected ID
-	if (selectedEntityID < 0) selectedEntityID = 0;
-
 	// if (selectedEntityID == paramEntityIDList::MAX) selectedEntityID = paramEntityIDList::MAX - 1; // we assume paramEntityIDList is an enum with it's last entry as MAX
 	// e.g enum paramEntityIDList { ENTITY_A, ENTITY_B, ENTITY_C, MAX };
 
 	// Picker controls
-	ImGui::Text("Selected Entity: %d", selectedEntityID);
+	ImGui::Text("Selected Entity Type: %d", selectedEntityType);
 	ImGui::SameLine();
-	if (ImGui::Button("-")) 
-		 selectedEntityID--;
+	if (ImGui::Button("-") && selectedEntityType > 0) selectedEntityType--;
 	ImGui::SameLine();
-	if (ImGui::Button("+")) 
-		 selectedEntityID++;
+	if (ImGui::Button("+")) selectedEntityType++;
 
 	// Clone the selected entity
 	if (ImGui::Button("Clone")) {
 		// @Todo (axewhy):
 		// Call factory function and pass the selected entity ID
 		// e.g., EntityFactory::cloneEntity(selectedEntityID);
-		logger.log("Cloning entity with ID Type: " + std::to_string(selectedEntityID));
+		logger.log("Cloning entity of Type: " + std::to_string(selectedEntityType));
 	}
 	ImGui::SameLine();
 	// Delete the selected entity
@@ -146,7 +161,7 @@ void ImGuiManager::showEntityListUI(/* Maybe an enum of paramEntityType, Maybe a
 		//		// Call destroy function and pass the selected entity ID
 		//		// e.g., EntityManager::destroyEntity(selectedEntityID);
 		//		}
-		logger.log("Deleting entity with ID Type: " + std::to_string(selectedEntityID));
+		logger.log("Deleting entity of Type: " + std::to_string(selectedEntityType));
 	}
 
 	ImGui::End();

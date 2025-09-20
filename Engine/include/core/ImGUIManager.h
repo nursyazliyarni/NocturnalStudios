@@ -11,31 +11,39 @@
 #include "../include/core/Logger.h"
 
 extern Logger logger;
+namespace ImGui {
+	class ImGuiManager {
+	public:
+		ImGuiManager(GLFWwindow*& window);
+		~ImGuiManager();
 
-class ImGuiManager {
-public:
-	ImGuiManager(GLFWwindow*& window);
-	~ImGuiManager();
+		void updateDeltaTime(double& dt);
+		void getDeltaTime(double& dt) const;
 
-	void startFrame();
-	void endFrame();
+		void startFrame();
+		void endFrame();
 
-	Vector2D getWindowTopLeft() const;
-	Vector2D getWindowBottomRight() const;
+		Vector2D getWindowTopLeft() const;
+		Vector2D getWindowBottomRight() const;
 
-	void showMousePosOverlayUI();
-	void showPerformanceOverlayUI(double& dt);
-	void showLogsOverlayUI();
-	void showEntityListUI(/* An enum of entityType type, Maybe a reference to someArrayOrVectorType entityList */);
-	void showTransformUI(/* A reference to a vector of objects objectList */);
+		void showMousePosOverlayUI();
+		void showPerformanceOverlayUI();
+		void showLogsOverlayUI();
+		void showEntityListUI(/* An enum of entityType type, Maybe a reference to someArrayOrVectorType entityList */);
+		void showTransformUI(/* A reference to a vector of objects objectList */);
 
-private:
-	ImVec2 windowTopLeft;
-	ImVec2 windowBottomRight;
+	private:
+		GLFWwindow* window;
 
-	bool showOverlay;
+		ImVec2 windowTopLeft;
+		ImVec2 windowBottomRight;
 
-	unsigned int selectedEntityID = 0;
-};
+		double deltaTime;
 
+		unsigned int selectedEntityType;
+	};
+
+	// Non Member functions
+	void updateImGuiManager(double& deltaTime, ImGuiManager& imGuiManager);
+}
 #endif // ImGuiManager_h

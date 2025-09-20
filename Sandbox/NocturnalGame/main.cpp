@@ -63,7 +63,7 @@ int main() {
     if (glewInit() != GLEW_OK) { std::fprintf(stderr, "GLEW init error\n"); return -1; }
     glGetError(); // clear harmless GL error from glewInit
 
-	ImGuiManager imGuiManager(win);
+	ImGui::ImGuiManager imGuiManager(win);
 
     auto last = std::chrono::high_resolution_clock::now();
     int frames = 0; double acc = 0.0;
@@ -83,21 +83,7 @@ int main() {
         glClearColor(0.1f, 0.1f, 0.12f, 1.f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-		imGuiManager.startFrame();
-
-        ImGui::Begin("Hello");
-        ImGui::Text("ImGui is working!");
-        ImGui::End();
-
-		// @Todo (axewhy): replace all the overlay with a single function call to ImGuiManager
-		imGuiManager.showMousePosOverlayUI();
-        imGuiManager.showPerformanceOverlayUI(dt);
-		imGuiManager.showLogsOverlayUI();
-		imGuiManager.showEntityListUI();
-		imGuiManager.showTransformUI();
-
-		imGuiManager.endFrame();
-
+		ImGui::updateImGuiManager(dt, imGuiManager);
 
         glfwSwapBuffers(win);
         glfwPollEvents();
