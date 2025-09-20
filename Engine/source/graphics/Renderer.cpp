@@ -9,6 +9,16 @@ namespace {
     constexpr float TWO_PI = 2.0f * glm::pi<float>();
 }
 
+Renderer::Renderer(const char* vertex_path, const char* fragment_path) {
+    //position->where to render on screen(-1.0 to +1.0)
+    //
+    float vertices[] = {
+        // positions         // colors
+         0.5f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f,  // bottom right
+        -0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,  // bottom left
+         0.0f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f   // top 
+    };
+}
 
 void Renderer::init2D(int w, int h) {
     resize(w, h);                 // set pixel-space projection

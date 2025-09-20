@@ -50,6 +50,9 @@ int Application::run() {
     std::vector<char const*> vs{ "assets/textures/Circle.png"};
     Texture txt_obj(vs);
 
+    // build and compile my background shader program
+    Shader bg_Shader("assets/shaders/background.vert", "assets/shaders/background.frag"); 
+
     // 4) simple loop
     while (!m_window.shouldClose()) {
         m_window.poll();

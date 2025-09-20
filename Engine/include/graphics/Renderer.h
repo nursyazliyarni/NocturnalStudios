@@ -6,6 +6,10 @@
 
 class Renderer {
 public:
+    //constructor for image rendering, need to provide vertex file AND fragment file
+    Renderer(const char* vertex_path, const char* fragment_path);
+
+public:
     // Setup a pixel-space 2D projection (origin = top-left).
     void init2D(int w, int h);
     // Update projection/viewport after window resize.

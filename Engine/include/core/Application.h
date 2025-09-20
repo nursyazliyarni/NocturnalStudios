@@ -4,6 +4,7 @@
 #include "graphics/Window.h"
 #include "graphics/Texture.h"
 #include "core/GameLoop.h"
+#include "graphics/Shader.h"
 
 class Application {
 public:
