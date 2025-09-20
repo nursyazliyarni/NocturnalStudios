@@ -83,7 +83,7 @@ int main() {
         glClearColor(0.1f, 0.1f, 0.12f, 1.f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-		ImGui::updateImGuiManager(dt, imGuiManager);
+		Gui::updateImGuiManager(dt, imGuiManager);
 
         glfwSwapBuffers(win);
         glfwPollEvents();

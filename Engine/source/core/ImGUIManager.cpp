@@ -1,6 +1,6 @@
 #include "../include/core/ImGuiManager.h"
 
-void ImGui::updateImGuiManager(double& deltaTime, ImGuiManager& imGuiManager) {
+void Gui::updateImGuiManager(double& deltaTime, ImGuiManager& imGuiManager) {
 	imGuiManager.updateDeltaTime(deltaTime);
 
 	imGuiManager.startFrame();

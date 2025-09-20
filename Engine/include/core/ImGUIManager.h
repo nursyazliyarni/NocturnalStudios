@@ -44,7 +44,7 @@ private:
 };
 
 
-namespace ImGui {
+namespace Gui {
 	// Non Member functions
 	void updateImGuiManager(double& deltaTime, ImGuiManager& imGuiManager);
 }
