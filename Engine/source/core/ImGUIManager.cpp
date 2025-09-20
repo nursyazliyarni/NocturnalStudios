@@ -1,7 +1,5 @@
 #include "../include/core/ImGuiManager.h"
 
-using namespace ImGui;
-
 void ImGui::updateImGuiManager(double& deltaTime, ImGuiManager& imGuiManager) {
 	imGuiManager.updateDeltaTime(deltaTime);
 

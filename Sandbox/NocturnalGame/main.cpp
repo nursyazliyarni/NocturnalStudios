@@ -63,7 +63,7 @@ int main() {
     if (glewInit() != GLEW_OK) { std::fprintf(stderr, "GLEW init error\n"); return -1; }
     glGetError(); // clear harmless GL error from glewInit
 
-	ImGui::ImGuiManager imGuiManager(win);
+	ImGuiManager imGuiManager(win);
 
     auto last = std::chrono::high_resolution_clock::now();
     int frames = 0; double acc = 0.0;
