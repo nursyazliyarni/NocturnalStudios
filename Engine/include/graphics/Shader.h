@@ -11,6 +11,7 @@ class Shader {
 public:
 	Shader(const char* vertex_path, const char* fragment_path); //constructor reads and builds the shader
 	void user_Shader_program();
+	GLuint& get_programID();
 
 private:
 	//private member functions here

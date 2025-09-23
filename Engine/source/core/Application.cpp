@@ -4,6 +4,7 @@
 #include <GLFW/glfw3.h>        // glViewport/glClearColor/glClear
 #include <cmath>               // cosf, sinf
 #include <glm/gtc/constants.hpp>   // glm::pi<float>()
+#include "math/Vector.h"
 
 namespace {
     constexpr float TWO_PI = 2.0f * glm::pi<float>();
@@ -47,11 +48,11 @@ int Application::run() {
     Input game_input_obj;
     Game_Loop game_loop_obj;
 
-    std::vector<char const*> vs{ "assets/textures/Circle.png"};
+    std::vector<char const*> vs{ "assets/textures/DGPEN_LOGO.png"};
     Texture txt_obj(vs);
 
-    // build and compile my background shader program
-    Shader bg_Shader("assets/shaders/background.vert", "assets/shaders/background.frag"); 
+    //build and compile my background shader program
+    Renderer bg_render("assets/shaders/background.vert", "assets/shaders/background.frag");
 
     // 4) simple loop
     while (!m_window.shouldClose()) {
@@ -87,6 +88,9 @@ int Application::run() {
 
         glClearColor(0.10f, 0.10f, 0.12f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
+
+        bg_render.background_render(txt_obj.get_textureID(0), "bg_texture"); //Render background first
+        glUseProgram(0); //unbind the currently active shader program and go back to fixed-function pipeline mode
 
         // draw some visible geometry (immediate mode)
 
@@ -129,6 +133,8 @@ int Application::run() {
             glVertex2f(pad, pad + bh);
             glEnd();
         }
+
+        
 
         m_window.swap();
     }

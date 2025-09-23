@@ -18,7 +18,7 @@ Texture::Texture(std::vector<char const*> &image_path_v):textureID_storage(image
 		glBindTexture(GL_TEXTURE_2D, textureID_storage[index]); //GLenum texture_target, Gluint
 		//GLenum texture_target,level of mipmap reduction image{0},image_dimension,border(must be 0), 
 		//format of the pixel data,data type of the pixel data,pointer to the image_data
-		glTexImage2D(GL_TEXTURE_2D, 0, num_components, image_width, image_height, 0, num_components, GL_UNSIGNED_BYTE, 
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image_width, image_height, 0, GL_RGBA, GL_UNSIGNED_BYTE,
 			         image_data);
 
 		//Set texture wrapping AND filtering options
@@ -32,14 +32,15 @@ Texture::Texture(std::vector<char const*> &image_path_v):textureID_storage(image
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		stbi_image_free(image_data); //free the loaded image
-		std::cout << "YES\n";
 	}
+}
+
+GLuint Texture::get_textureID(size_t input_index) {
+	return textureID_storage[input_index];
 }
 
 Texture::~Texture() {
 	if (!textureID_storage.empty()) { //if vector.size()!=0
 		glDeleteTextures(textureID_storage.size(), textureID_storage.data()); //delete all textures here
-
-		std::cout << "NO\n";
 	}
 }

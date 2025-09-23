@@ -5,6 +5,7 @@
 #include "graphics/Texture.h"
 #include "core/GameLoop.h"
 #include "graphics/Shader.h"
+#include "graphics/Renderer.h"
 
 class Application {
 public:

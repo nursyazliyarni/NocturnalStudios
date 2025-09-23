@@ -9,15 +9,54 @@ namespace {
     constexpr float TWO_PI = 2.0f * glm::pi<float>();
 }
 
-Renderer::Renderer(const char* vertex_path, const char* fragment_path) {
-    //position->where to render on screen(-1.0 to +1.0)
-    //
+Renderer::Renderer(const char* vertex_path, const char* fragment_path):render_shader(vertex_path,fragment_path) {
+    //vertex position->where to render on screen(-1.0 to +1.0)
+    //texture UV->how to render texture(0.0 to 1.0)
     float vertices[] = {
-        // positions         // colors
-         0.5f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f,  // bottom right
-        -0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,  // bottom left
-         0.0f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f   // top 
+    //vertex positions(x,y)  texture UV
+    -1.0f, 1.0f,             0.0f, 1.0f,  //top left
+    -1.0f, -1.0f,            0.0f, 0.0f,  //bottom left
+    1.0f, 1.0f,              1.0f, 1.0f,  //top right 
+    1.0f, -1.0f,             1.0f, 0.0f,  //bottom right 
     };
+
+    //glGenVertexArrays returns the number of Vertex Array Objects(VAO) and store its unique ID in VAO_arr
+    glGenVertexArrays(1, &VAO_arr);
+    glBindVertexArray(VAO_arr); //glBindVertexArray binds the vertex array object with VAO_arr
+
+    //glGenBuffers generates the number of Vertex Buffer Objects(VBO) and store its unique ID in VBO_arr
+    glGenBuffers(1, &VBO_arr);
+    //GL_ARRAY_BUFFER->vertex buffer that contains positions, colors, texture coordinates
+    glBindBuffer(GL_ARRAY_BUFFER, VBO_arr); //glBindBuffer binds GL_ARRAY_BUFFER with VBO_arr
+    //Assign vertex data stored in vertices to the currently bound vertex buffer(GL_ARRAY_BUFFER) 
+    //the function allocates sizeof(vertices) to GPU
+    //GL_STATIC_DRAW->The data store contents will be modified once and used many times and used for rendering
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+    //Position attribute in background VERT file(location = 0)
+    //The function will go to location 0 and read 2 float data type(8 bytes) starting from first element index postion
+    //Then it will jump 4 * sizeof(float) to get to next vertex's position, GL_FALSE->DO NOT NORMALIZE
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0); //how to read
+    glEnableVertexAttribArray(0); //use location=0 for rendering
+    //Texture coordinate attribute in background VERT file(location = 1)
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
+    glEnableVertexAttribArray(1); //use location=1 for rendering
+    glBindVertexArray(0); //unbinds the currently bound VAO
+}
+
+void Renderer::background_render(GLuint texture_ID, const GLchar* uniform_VARNAME)
+{
+    render_shader.user_Shader_program(); //use this shader program for rendering background image
+    glActiveTexture(GL_TEXTURE0); //specifies which texture unit to make active
+    glBindTexture(GL_TEXTURE_2D, texture_ID); //bind this current texture to texturing target
+    //glGetUniformLocation takes in ID of shader program object AND uniform_VARNAME
+    //to return the location of a uniform variable
+    //glUniform1i takes in location of a uniform variable and 0(this means texture unit is GL_TEXTURE0)
+    glUniform1i(glGetUniformLocation(render_shader.get_programID(), uniform_VARNAME), 0);
+
+    glBindVertexArray(VAO_arr); //Bind Vertex Array Object to background mesh
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4); //Render rectangle(4 vertices = 2 triangles)
+    glBindVertexArray(0); //unbinds the currently bound VAO
 }
 
 void Renderer::init2D(int w, int h) {

@@ -16,7 +16,6 @@ Shader::Shader(const char* vertex_path, const char* fragment_path) :program_obj{
     fragment_Shader_ss << fragment_ShaderFile.rdbuf();
     //close file stream
     vertex_ShaderFile.close(); fragment_ShaderFile.close();
-    std::cout << "1\n";
     Compile_Shaders(vertex_Shader_ss.str().c_str(), fragment_Shader_ss.str().c_str());
 }
 
@@ -42,7 +41,6 @@ void Shader::Compile_Shaders(const char* vertex_Code, const char* fragment_Code)
     if (Check_Shaders_Errors("Compile", fragment_shader, check_status)) {
         return; //exit from this function immediately, 
     }
-    std::cout << "2\n";
     //we will ONLY link the program if no eccur occured for compilation of vertex_shader and fragment_shader
     Link_Program(vertex_shader,fragment_shader);
 }
@@ -65,7 +63,6 @@ void Shader::Link_Program(GLuint &vertex_shader, GLuint &fragment_shader) {
     //the program is created successfully at this stage, deallocate all shader object now
     glDeleteShader(vertex_shader);
     glDeleteShader(fragment_shader);
-    std::cout << "3\n";
 }
 
 bool Shader::Check_Shaders_Errors(const char* check_input, GLuint &shader_obj, GLint &check_status) {
@@ -100,4 +97,8 @@ bool Shader::Check_Shaders_Errors(const char* check_input, GLuint &shader_obj, G
 
 void Shader::user_Shader_program() {
     glUseProgram(program_obj); //The function tells OpenGL to use my shader program for all rendering
+}
+
+GLuint& Shader::get_programID() {
+    return program_obj;
 }

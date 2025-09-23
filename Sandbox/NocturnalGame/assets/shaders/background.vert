@@ -5,15 +5,15 @@
 //shader location must match CPU attribute index
 layout (location = 0) in vec2 input_vert_pos; //vertex position
 layout (location = 1) in vec2 input_Texture_Coord; //texture coordinate
-layout (location = 2) in vec3 input_vert_color; //vertex color(RGB)
+//layout (location = 2) in vec3 input_vert_color; //vertex color(RGB)
 
 //output<-vert become input->fragment
-out vec3 output_color;
+//out vec3 output_color;
 out vec2 output_Tex_Coord;
 
 void main() {
     //gl_Position is the output of the vertex shader
     gl_Position = vec4(input_vert_pos.x, input_vert_pos.y, 0.0, 1.0);
-    output_color = input_vert_color;
+    //output_color = input_vert_color;
     output_Tex_Coord = input_Texture_Coord;
 }

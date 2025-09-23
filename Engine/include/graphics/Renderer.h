@@ -1,8 +1,9 @@
 // OpenGL draw API (clear, drawSprite, debug lines)
 
 #pragma once
-// super–simple immediate-mode 2D renderer (compat profile)
-
+// super-simple immediate-mode 2D renderer (compat profile)
+#include "gl/glew.h"
+#include "graphics/Shader.h"
 
 class Renderer {
 public:
@@ -25,4 +26,11 @@ public:
     void line(float x1, float y1, float x2, float y2);
     void rectOutline(float x, float y, float w, float h);
     void circle(float cx, float cy, float radius, int segments = 32);
+
+    //function to render background image
+    void background_render(GLuint texture_ID, const GLchar* uniform_VARNAME);
+
+private:
+    GLuint VAO_arr, VBO_arr;
+    Shader render_shader;
 };
