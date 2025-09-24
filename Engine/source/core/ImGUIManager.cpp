@@ -1,3 +1,19 @@
+/*!------------------------------------------------------------------------------------------------
+	File: ImGUIManager.cpp
+	Project: NocturnalStudio
+
+	This file contains the implementation of the ImGuiManager class, which manages the integration
+	of the ImGui library into the customize game engine. It handles the initialization,
+	frame updates, and rendering of ImGui components, as well as providing various UI elements
+	for debugging and interaction within the engine.
+
+	Primary Author:
+		Lau Xiang Yang (100%)
+		- Created the ImGuiManager class and its specializations.
+
+	All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
+
 #include "../include/core/ImGuiManager.h"
 
 void Gui::updateImGuiManager(double& deltaTime, ImGuiManager& imGuiManager) {
@@ -141,7 +157,7 @@ void ImGuiManager::showPerformanceOverlayUI() {
 	ImGui::Begin("Performance", nullptr, windowFlags);
 	ImGui::Text("Current FPS: %.2f %.2lfms", 1 / deltaTime, deltaTime * secondsToMs);
 
-	// @Todo (axewhy): Add more performance metrics like the percentage of usage between different systems
+	// @Todo (axewhy): Add more performance metrics like the percentage of usage between different systems in the game engine
 
 	ImGui::End();
 }
