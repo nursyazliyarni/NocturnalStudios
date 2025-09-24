@@ -47,7 +47,7 @@ int main() {
             if (w.HasMember("vsync") && w["vsync"].IsBool())    cfgVsync = w["vsync"].GetBool();
         }
     }
-
+    
     if (!glfwInit()) { std::fprintf(stderr, "GLFW init failed\n"); return -1; }
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);

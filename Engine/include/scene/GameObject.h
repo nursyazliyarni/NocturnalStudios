@@ -11,21 +11,35 @@
 #ifndef GAMEOBJECT_H
 #define GAMEOBJECT_H
 #include <iostream>
+#include <string>
+#include <vector>
+#include <utility>
 #include "./math/Matrix.h"
-
+#include "./scene/Component.h"
 
 // [========================================*========================================]
 //  Base GameObject Class
 // [========================================*========================================]
 class GameObject {
 private:
+	//id & Name
 	size_t num_ID{0};
+	std::string name{ " " };
+
+	//flags to denote activity
 	bool active{ false }, enabled{ false };
+	
+	//Transform
 	float scale{ 1.f };
 	Vector3D global_position{}, local_position{};
 	Matrix<4> global_transform{};
-	std::string sprite_path{};
+
+	//Other Components
+	std::vector<std::unique_ptr<Component>> components{};
+
+	//Parent Obj.. If applicable
 	GameObject* parent_object{ nullptr };
+
 public:
 
 	// [====================*====================]
@@ -33,11 +47,27 @@ public:
 	// [====================*====================]
 	// Default Constructor - rule of zero
 	GameObject()=default;
-
+	
 
 
 	~GameObject();
 
+
+	// [====================*====================]
+	//  Component Attachment
+	// [====================*====================]
+
+	template<typename T, typename... Args>
+	T* Attach(Args&&... args) {
+		static_assert(std::is_base_of<Component, T>::value, "T must derive from Component");
+
+		Component* comp = std::make_unique<T>(std::forward<Args>(args)...);
+		comp->SetOwner(this);
+	
+		T* ptr = static_cast<T*>(comp.get());
+		components.push_back(std::move(comp));
+		return ptr;
+	}
 
 	// [====================*====================]
 	//  Lifecycle Functions
@@ -93,6 +123,11 @@ public:
 	// [====================*====================]
 	virtual void Print(std::ostream&) const;
 	virtual void Load(std::istream&);
+
+	// [====================*====================]
+	//  Print & Load
+	// [====================*====================]
+	void Deserialize();
 
 };
 std::istream& operator>>(std::istream& in, GameObject& obj);
