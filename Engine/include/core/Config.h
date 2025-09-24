@@ -13,6 +13,7 @@
 
     All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
 *------------------------------------------------------------------------------------------------*/
+#pragma once
 #include <string>
 
 #ifndef CONFIG_H
@@ -21,6 +22,7 @@
 struct WindowConfig {
     int width;
     int height;
+    std::string title = "NocturnalStudios";
     bool vsync;
 };
 

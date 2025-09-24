@@ -7,14 +7,15 @@ Application::Application() = default;
 
 int Application::run() {
     // 1) read JSON (with safe defaults)
-    const WindowConfig c = Config::LoadWindowConfig("assets/config.json");
+   //const WindowConfig c = Config::LoadWindowConfig("assets/config.json");
+    GameConfig cfg = loadConfig("assets/config.json");
 
     // 2) create the window
     WindowDesc wd;
-    wd.width = c.width;
-    wd.height = c.height;
-    wd.title = c.title;
-    wd.vsync = c.vsync;
+    wd.width = cfg.window.width;
+    wd.height = cfg.window.height;
+    wd.title = cfg.window.title;
+    wd.vsync = cfg.window.vsync;
 
     if (!m_window.create(wd)) return -1;
 
@@ -29,7 +30,7 @@ int Application::run() {
         ++frames;
         double t = glfwGetTime();
         if (t - t0 >= 1.0) {
-            m_window.setTitleFps(c.title, frames);
+            m_window.setTitleFps(cfg.window.title, frames);
             frames = 0;
             t0 = t;
         }
