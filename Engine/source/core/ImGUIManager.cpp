@@ -34,7 +34,7 @@ void Gui::updateImGuiManager(double& deltaTime, ImGuiManager& imGuiManager) {
 	imGuiManager.endFrame();
 }
 
-ImGuiManager::ImGuiManager(Window& w) : mainWindow{ w }, windowTopLeft{}, windowBottomRight{}, deltaTime{0.}, selectedEntityType{} {
+ImGuiManager::ImGuiManager(Window& w, Renderer& r, Texture& tex) : mainWindow{ w }, renderer{ r }, texture{ tex }, windowTopLeft{}, windowBottomRight{}, deltaTime{0.}, selectedEntityType{} {
 
 	// Init ImGui context
 	ImGui::CreateContext();
@@ -107,11 +107,16 @@ void ImGuiManager::showViewportWindowUI() {
 	ImGui::SetNextWindowSize(ImVec2(viewportWidth, viewportHeight));
 	ImGui::Begin("Viewport", nullptr, windowFlags);
 
-	// @Todo (axewhy): Render the actual viewport content here, e.g., using a framebuffer texture
-	ImGui::Text("Viewport placeholder");
+	// Initialize and bind FBO for rendering
+	renderer.initFBO(viewportHeight, viewportWidth);
+	renderer.bindFBO();
+	renderer.clear(0.1f, 0.1f, 0.12f);
 
-	// Render::square();
-	// Render::bgstuff();
+	// @Todo (axewhy): Render the actual viewport content here, e.g., using a framebuffer texture
+	// Render background to FBO
+	renderer.background_render(texture.get_textureID(0), "bg_texture");
+	renderer.unbindFBO();
+	ImGui::Image((void*)(intptr_t)renderer.getFBOTexture(), ImVec2(viewportWidth, viewportHeight));
 
 	ImGui::End();
 }

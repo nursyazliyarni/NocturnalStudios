@@ -46,9 +46,6 @@ int Application::run() {
     //double t0 = glfwGetTime();
     //int frames = 0;
 
-    // Initialize ImGui Manager
-	ImGuiManager imGuiManager(m_window/*, render*/);
-
     Input game_input_obj;
     Game_Loop game_loop_obj;
 
@@ -57,6 +54,8 @@ int Application::run() {
 
     //build and compile my background shader program
     Renderer bg_render("assets/shaders/background.vert", "assets/shaders/background.frag");
+
+	ImGuiManager imGuiManager(m_window, bg_render, txt_obj);
 
     // 4) simple loop
     while (!m_window.shouldClose()) {
@@ -93,7 +92,7 @@ int Application::run() {
         glClearColor(0.10f, 0.10f, 0.12f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        bg_render.background_render(txt_obj.get_textureID(0), "bg_texture"); //Render background first
+        //bg_render.background_render(txt_obj.get_textureID(0), "bg_texture"); //Render background first
         glUseProgram(0); //unbind the currently active shader program and go back to fixed-function pipeline mode
 
         // draw some visible geometry (immediate mode)
@@ -138,7 +137,7 @@ int Application::run() {
             glEnd();
         }
 
-		Gui::updateImGuiManager(dt, imGuiManager);
+        Gui::updateImGuiManager(dt, imGuiManager);
 
         m_window.swap();
     }

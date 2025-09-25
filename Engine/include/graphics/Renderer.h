@@ -4,6 +4,9 @@
 // super-simple immediate-mode 2D renderer (compat profile)
 #include "gl/glew.h"
 #include "graphics/Shader.h"
+#include "core/Logger.h"
+
+extern Logger logger;
 
 class Renderer {
 public:
@@ -30,7 +33,16 @@ public:
     //function to render background image
     void background_render(GLuint texture_ID, const GLchar* uniform_VARNAME);
 
+    // FBO setup and usage
+    void initFBO(int width, int height);
+    void bindFBO();
+    void unbindFBO();
+    GLuint getFBOTexture() const;
+
 private:
     GLuint VAO_arr, VBO_arr;
+    GLuint viewportFBO, viewportTexture;
+	int fboWidth = 0, fboHeight = 0;
+
     Shader render_shader;
 };

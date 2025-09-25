@@ -12,12 +12,21 @@ namespace {
 Renderer::Renderer(const char* vertex_path, const char* fragment_path):render_shader(vertex_path,fragment_path) {
     //vertex position->where to render on screen(-1.0 to +1.0)
     //texture UV->how to render texture(0.0 to 1.0)
+    //float vertices[] = {
+    ////vertex positions(x,y)  texture UV
+    //-1.0f, 1.0f,             0.0f, 1.0f,  //top left
+    //-1.0f, -1.0f,            0.0f, 0.0f,  //bottom left
+    //1.0f, 1.0f,              1.0f, 1.0f,  //top right 
+    //1.0f, -1.0f,             1.0f, 0.0f,  //bottom right 
+    //};
+
+    // Vertices defined such that the texture is not flipped upside down in ImGui
     float vertices[] = {
-    //vertex positions(x,y)  texture UV
-    -1.0f, 1.0f,             0.0f, 1.0f,  //top left
-    -1.0f, -1.0f,            0.0f, 0.0f,  //bottom left
-    1.0f, 1.0f,              1.0f, 1.0f,  //top right 
-    1.0f, -1.0f,             1.0f, 0.0f,  //bottom right 
+        // vertex positions(x,y)  texture UV
+       -1.0f,  1.0f,  0.0f, 0.0f,  // top left
+       -1.0f, -1.0f,  0.0f, 1.0f,  // bottom left
+        1.0f,  1.0f,  1.0f, 0.0f,  // top right
+        1.0f, -1.0f,  1.0f, 1.0f   // bottom right
     };
 
     //glGenVertexArrays returns the number of Vertex Array Objects(VAO) and store its unique ID in VAO_arr
@@ -42,6 +51,7 @@ Renderer::Renderer(const char* vertex_path, const char* fragment_path):render_sh
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
     glEnableVertexAttribArray(1); //use location=1 for rendering
     glBindVertexArray(0); //unbinds the currently bound VAO
+
 }
 
 void Renderer::background_render(GLuint texture_ID, const GLchar* uniform_VARNAME)
@@ -131,3 +141,37 @@ void Renderer::circle(float cx, float cy, float r, int segments) {
     glEnd();
 }
 
+void Renderer::initFBO(int width, int height) {
+    fboWidth = width;
+    fboHeight = height;
+
+    // Delete old FBO/Texture if they exist
+	if (viewportFBO) glDeleteFramebuffers(1, &viewportFBO);
+	if (viewportTexture) glDeleteTextures(1, &viewportTexture);
+
+	glGenFramebuffers(1, &viewportFBO);
+	glGenTextures(1, &viewportTexture);
+
+	glBindTexture(GL_TEXTURE_2D, viewportTexture);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, fboWidth, fboHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	glBindFramebuffer(GL_FRAMEBUFFER, viewportFBO);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, viewportTexture, 0);
+    
+	glBindFramebuffer(GL_FRAMEBUFFER, 0); // unbind
+}
+
+void Renderer::bindFBO() {
+	glBindFramebuffer(GL_FRAMEBUFFER, viewportFBO);
+	glViewport(0, 0, fboWidth, fboHeight);
+}
+
+void Renderer::unbindFBO() {
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+GLuint Renderer::getFBOTexture() const {
+    return viewportTexture;
+}
