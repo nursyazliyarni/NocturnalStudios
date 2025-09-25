@@ -1,4 +1,1 @@
-#include "./scene/GameObject.h"
-
-
-
+// data-driven creation from JSON/TXT
