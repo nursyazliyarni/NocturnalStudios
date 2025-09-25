@@ -5,6 +5,7 @@
 #include <cmath>               // cosf, sinf
 #include <glm/gtc/constants.hpp>   // glm::pi<float>()
 #include "math/Vector.h"
+#include "core/ImGUIManager.h"
 
 namespace {
     constexpr float TWO_PI = 2.0f * glm::pi<float>();
@@ -44,6 +45,9 @@ int Application::run() {
     // 3) FPS count
     //double t0 = glfwGetTime();
     //int frames = 0;
+
+    // Initialize ImGui Manager
+	ImGuiManager imGuiManager(m_window/*, render*/);
 
     Input game_input_obj;
     Game_Loop game_loop_obj;
@@ -134,7 +138,7 @@ int Application::run() {
             glEnd();
         }
 
-        
+		Gui::updateImGuiManager(dt, imGuiManager);
 
         m_window.swap();
     }

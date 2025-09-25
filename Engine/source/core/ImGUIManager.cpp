@@ -34,13 +34,13 @@ void Gui::updateImGuiManager(double& deltaTime, ImGuiManager& imGuiManager) {
 	imGuiManager.endFrame();
 }
 
-ImGuiManager::ImGuiManager(GLFWwindow*& w) : window{ w }, windowTopLeft{}, windowBottomRight{}, deltaTime{0.}, selectedEntityType{} {
+ImGuiManager::ImGuiManager(Window& w) : mainWindow{ w }, windowTopLeft{}, windowBottomRight{}, deltaTime{0.}, selectedEntityType{} {
 
 	// Init ImGui context
 	ImGui::CreateContext();
 
 	// Setup renderer bindings
-	ImGui_ImplGlfw_InitForOpenGL(window, true);
+	ImGui_ImplGlfw_InitForOpenGL(mainWindow.handle(), true);
 	ImGui_ImplOpenGL3_Init("#version 330");
 
 	// Setup style
@@ -109,6 +109,9 @@ void ImGuiManager::showViewportWindowUI() {
 
 	// @Todo (axewhy): Render the actual viewport content here, e.g., using a framebuffer texture
 	ImGui::Text("Viewport placeholder");
+
+	// Render::square();
+	// Render::bgstuff();
 
 	ImGui::End();
 }

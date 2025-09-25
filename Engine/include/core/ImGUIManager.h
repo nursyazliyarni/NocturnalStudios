@@ -25,12 +25,13 @@
 #include "../include/math/Vector.h"
 #include "../include/math/Matrix.h"
 #include "../include/core/Logger.h"
+#include "../include/graphics/Window.h"
 
 extern Logger logger;
 
 class ImGuiManager {
 public:
-	ImGuiManager(GLFWwindow*& window);
+	ImGuiManager(Window& window/*, render& red*/);
 	~ImGuiManager();
 
 	void updateDeltaTime(double& dt);
@@ -54,7 +55,8 @@ public:
 	void showTransformUI(/* A reference to a vector of objects objectList */);
 
 private:
-	GLFWwindow* window;
+	Window& mainWindow;
+	//Render& bah
 
 	ImVec2 windowTopLeft;
 	ImVec2 windowBottomRight;
