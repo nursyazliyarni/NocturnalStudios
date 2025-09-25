@@ -2,14 +2,22 @@
 #include "input/input.h"
 
 Input::Input() {
-	if (!glfwInit()) //If an error occurred, GLFW_FALSE is returned
-	{
-		//Initialization failed
-	}
+	
 }
 
 Input::~Input() {
-	//glfwTerminate(); //destroys any remaining windows and releases any other resources allocated by GLFW
+	
+}
+
+Vector2D& Input::get_mouse_pos(GLFWwindow* window) {
+	double mouse_Xpos, mouse_Ypos;
+	glfwGetCursorPos(window, &mouse_Xpos, &mouse_Ypos);
+	mouse_pos[0] = mouse_Xpos, mouse_pos[1] = mouse_Ypos;
+	/*if (want_normalize) {
+		return normal(std::move(mouse_pos);
+	}*/
+	return mouse_pos;
+	//return want_normalize? normal(std::move(mouse_pos)) : mouse_pos;
 }
 
 void Input::process_user_input(GLFWwindow* window) {

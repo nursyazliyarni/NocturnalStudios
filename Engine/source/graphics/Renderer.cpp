@@ -57,6 +57,7 @@ void Renderer::background_render(GLuint texture_ID, const GLchar* uniform_VARNAM
     glBindVertexArray(VAO_arr); //Bind Vertex Array Object to background mesh
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4); //Render rectangle(4 vertices = 2 triangles)
     glBindVertexArray(0); //unbinds the currently bound VAO
+    glUseProgram(0); //unbind the currently active shader program and go back to fixed-function pipeline mode
 }
 
 void Renderer::init2D(int w, int h) {

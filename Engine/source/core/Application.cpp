@@ -64,7 +64,7 @@ int Application::run() {
 
         //Main Game Loop Update Here
         game_loop_obj.update(m_window.handle());
-
+        std::cout<<game_input_obj.get_mouse_pos(m_window.handle())<<"\n"; //this is static member function
         /*++frames;
         double t = glfwGetTime();
         if (t - t0 >= 1.0) {
@@ -90,7 +90,6 @@ int Application::run() {
         glClear(GL_COLOR_BUFFER_BIT);
 
         bg_render.background_render(txt_obj.get_textureID(0), "bg_texture"); //Render background first
-        glUseProgram(0); //unbind the currently active shader program and go back to fixed-function pipeline mode
 
         // draw some visible geometry (immediate mode)
 
