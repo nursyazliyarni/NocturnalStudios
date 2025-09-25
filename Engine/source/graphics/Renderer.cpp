@@ -7,17 +7,37 @@
 
 namespace {
     constexpr float TWO_PI = 2.0f * glm::pi<float>();
+
+    // helper used only inside this file: filled circle via triangle fan
+    inline void filledCircle(float cx, float cy, float r, int segments = 64) {
+        glBegin(GL_TRIANGLE_FAN);
+        glVertex2f(cx, cy);
+        for (int i = 0; i <= segments; ++i) {
+            float a = (i * TWO_PI) / static_cast<float>(segments);
+            glVertex2f(cx + r * std::cos(a), cy + r * std::sin(a));
+        }
+        glEnd();
+    }
 }
 
 Renderer::Renderer(const char* vertex_path, const char* fragment_path):render_shader(vertex_path,fragment_path) {
     //vertex position->where to render on screen(-1.0 to +1.0)
     //texture UV->how to render texture(0.0 to 1.0)
+    //float vertices[] = {
+    ////vertex positions(x,y)  texture UV
+    //-1.0f, 1.0f,             0.0f, 1.0f,  //top left
+    //-1.0f, -1.0f,            0.0f, 0.0f,  //bottom left
+    //1.0f, 1.0f,              1.0f, 1.0f,  //top right 
+    //1.0f, -1.0f,             1.0f, 0.0f,  //bottom right 
+    //};
+
+    // Vertices defined such that the texture is not flipped upside down in ImGui
     float vertices[] = {
-    //vertex positions(x,y)  texture UV
-    -1.0f, 1.0f,             0.0f, 1.0f,  //top left
-    -1.0f, -1.0f,            0.0f, 0.0f,  //bottom left
-    1.0f, 1.0f,              1.0f, 1.0f,  //top right 
-    1.0f, -1.0f,             1.0f, 0.0f,  //bottom right 
+        // vertex positions(x,y)  texture UV
+       -1.0f,  1.0f,  0.0f, 0.0f,  // top left
+       -1.0f, -1.0f,  0.0f, 1.0f,  // bottom left
+        1.0f,  1.0f,  1.0f, 0.0f,  // top right
+        1.0f, -1.0f,  1.0f, 1.0f   // bottom right
     };
 
     //glGenVertexArrays returns the number of Vertex Array Objects(VAO) and store its unique ID in VAO_arr
@@ -42,6 +62,7 @@ Renderer::Renderer(const char* vertex_path, const char* fragment_path):render_sh
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
     glEnableVertexAttribArray(1); //use location=1 for rendering
     glBindVertexArray(0); //unbinds the currently bound VAO
+
 }
 
 void Renderer::background_render(GLuint texture_ID, const GLchar* uniform_VARNAME)
@@ -131,3 +152,71 @@ void Renderer::circle(float cx, float cy, float r, int segments) {
     glEnd();
 }
 
+void Renderer::initFBO(int width, int height) {
+    fboWidth = width;
+    fboHeight = height;
+
+    // Delete old FBO/Texture if they exist
+    if (viewportFBO)     glDeleteFramebuffers(1, &viewportFBO);
+    if (viewportTexture) glDeleteTextures(1, &viewportTexture);
+
+    glGenFramebuffers(1, &viewportFBO);
+    glGenTextures(1, &viewportTexture);
+
+    glBindTexture(GL_TEXTURE_2D, viewportTexture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, fboWidth, fboHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    glBindFramebuffer(GL_FRAMEBUFFER, viewportFBO);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, viewportTexture, 0);
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0); // unbind
+}
+
+void Renderer::bindFBO() const {
+    glBindFramebuffer(GL_FRAMEBUFFER, viewportFBO);
+    glViewport(0, 0, fboWidth, fboHeight);
+}
+void Renderer::unbindFBO() const {
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+GLuint Renderer::getFBOTexture() const {
+    return viewportTexture;
+}
+
+
+void Renderer::drawViewportShapes(int w, int h) {
+    // make sure our 2D projection matches the target size
+    resize(w, h);
+
+    // 2D pass: fixed pipeline + no depth
+    glUseProgram(0);
+    glDisable(GL_DEPTH_TEST);
+
+    // RGB triangle (center/top)
+    tri(w * 0.50f, h * 0.20f,
+        w * 0.20f, h * 0.80f,
+        w * 0.80f, h * 0.80f);
+
+    // filled blue circle on the right
+    {
+        float r = h * 0.10f;
+        float margin = w * 0.05f;
+        float cx = w - (r + margin);
+        if (cx < r) cx = r;
+        float cy = h * 0.20f;
+
+        glColor3f(0.f, 0.5f, 1.f);
+        filledCircle(cx, cy, r, 64);
+    }
+
+    // white outline box (bottom-left)
+    {
+        float pad = w * 0.02f;
+        float bw = w * 0.16f;
+        float bh = h * 0.17f;
+        rectOutline(pad, pad, bw, bh);
+    }
+}

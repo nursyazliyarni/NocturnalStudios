@@ -26,12 +26,14 @@
 #include "../include/math/Matrix.h"
 #include "../include/core/Logger.h"
 #include "../include/graphics/Window.h"
+#include "../include/graphics/Renderer.h"
+#include "../include/graphics/Texture.h"
 
 extern Logger logger;
 
 class ImGuiManager {
 public:
-	ImGuiManager(Window& window/*, render& red*/);
+	ImGuiManager(Window& window, Renderer& renderer, Texture& tex);
 	~ImGuiManager();
 
 	void updateDeltaTime(double& dt);
@@ -56,7 +58,8 @@ public:
 
 private:
 	Window& mainWindow;
-	//Render& bah
+	Renderer& renderer;
+	Texture& texture;
 
 	ImVec2 windowTopLeft;
 	ImVec2 windowBottomRight;
