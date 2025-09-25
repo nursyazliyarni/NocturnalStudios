@@ -1,0 +1,29 @@
+[
+    {
+        "type": "Test",
+        "name": "Test1",
+        "ID": 42,
+        "active": true,
+        "position": { "x": 10.0, "y": 2.0, "z": 0.0 },
+        "components": [
+            {
+            "type": "CircleRenderer",
+                "radius": 1.5
+            }
+        ]
+    },
+    {
+        "type": "Test",
+        "name": "Test2",
+        "ID": 1,
+        "active": true,
+        "position": { "x": 10.0, "y": 2.0, "z": 0.0 },
+        "components": [
+            {
+            "type": "RectRenderer",
+                "width": 2.0,
+                "height": 1.0
+            }
+        ]
+    }
+]   
