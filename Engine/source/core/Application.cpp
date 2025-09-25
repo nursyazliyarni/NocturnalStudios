@@ -16,14 +16,15 @@ Application::Application() = default;
 
 int Application::run() {
     // 1) read JSON (with safe defaults)
-    const WindowConfig c = Config::LoadWindowConfig("assets/config.json");
+    //const WindowConfig c = Config::LoadWindowConfig("assets/config.json");
+    GameConfig cfg = loadConfig("assets/config.json");
 
     // 2) create the window
     WindowDesc wd;
-    wd.width = c.width;
-    wd.height = c.height;
-    wd.title = c.title;
-    wd.vsync = c.vsync;
+    wd.width = cfg.window.width;
+    wd.height = cfg.window.height;
+    wd.title = cfg.window.title;
+    wd.vsync = cfg.window.vsync;
 
     if (!m_window.create(wd)) return -1;
 
@@ -64,7 +65,7 @@ int Application::run() {
 
         double dt = game_loop_obj.calculate_DT(); //our deltaTime
         double total_time = game_loop_obj.get_accum_GT(); //our accumulated game time
-        game_loop_obj.display_FPS(m_window.handle(), c.title, dt); //display game FPS
+        game_loop_obj.display_FPS(m_window.handle(), cfg.window.title, dt); //display game FPS
 
         //Main Game Loop Update Here
         game_loop_obj.update(m_window.handle());
