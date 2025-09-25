@@ -1,3 +1,17 @@
+/*!------------------------------------------------------------------------------------------------
+	File: Logger.h
+	Project: NocturnalStudio
+
+	This file contains the implementation of a Logger class for logging errors, warnings
+	and general messages to the console.
+
+	Primary Author:
+		Lau Xiang Yang (100%)
+		- Created the Logger class template and its specializations.
+
+	All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
+
 #include "../include/core/Logger.h"
 
 unsigned int Logger::logCounter = 0;

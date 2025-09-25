@@ -7,11 +7,10 @@ Application::Application() = default;
 
 int Application::run() {
     // 1) read JSON (with safe defaults)
-    const GameConfig g = loadConfig("assets/config.json");
-    const WindowConfig& c = g.window;
+    const WindowConfig c = Config::LoadWindowConfig("assets/config.json");
 
     // 2) create the window
-    WindowDesc wd;  
+    WindowDesc wd;
     wd.width = c.width;
     wd.height = c.height;
     wd.title = c.title;
