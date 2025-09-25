@@ -12,7 +12,7 @@
 #define GAMEOBJECT_H
 #include <iostream>
 #include <string>
-#include <vector>
+//#include <vector>
 #include <utility>
 #include "./math/Matrix.h"
 #include "./scene/Component.h"
@@ -23,16 +23,16 @@
 class GameObject {
 private:
 	//id & Name
-	size_t num_ID{0};
+	size_t id{ };
 	std::string name{ " " };
 
 	//flags to denote activity
 	bool active{ false }, enabled{ false };
 	
 	//Transform
-	float scale{ 1.f };
-	Vector3D global_position{}, local_position{};
-	Matrix<4> global_transform{};
+	//float scale{ 1.f };
+	//Vector3D global_position{}, local_position{};
+	//Matrix<4> global_transform{};
 
 	//Other Components
 	std::vector<std::unique_ptr<Component>> components{};
@@ -47,7 +47,7 @@ public:
 	// [====================*====================]
 	// Default Constructor - rule of zero
 	GameObject()=default;
-	
+	GameObject(std::string);
 
 
 	~GameObject();
@@ -84,8 +84,8 @@ public:
 	// [====================*====================]
 	//  Transform Handling Functions
 	// [====================*====================]
-	void Pos(const Vector3D& pos);
-	Vector3D Pos() const;
+	//void Pos(const Vector3D& pos);
+	//Vector3D Pos() const;
 
 	//void Rot(const Matrix<4>& rot);
 	//Matrix<4> Rot() const;
@@ -93,13 +93,14 @@ public:
 	//void Scale(const Vector3D& scale);
 	//Vector3D Scale() const;
 
-	Matrix<4> Transform() const;
+	//Matrix<4> Transform() const;
 
 
 	// [====================*====================]
 	//  Getters and Setters
 	// [====================*====================]
 	size_t ID()const;
+	void set_ID(size_t i) { id = i; }
 
 	void Activate();
 
@@ -127,7 +128,7 @@ public:
 	// [====================*====================]
 	//  Print & Load
 	// [====================*====================]
-	void Deserialize();
+	
 
 };
 std::istream& operator>>(std::istream& in, GameObject& obj);
@@ -135,6 +136,4 @@ std::ostream& operator<<(std::ostream& out, const GameObject& obj);
 namespace GameObjects{ 
 	void GameObject_test(); 
 }
-
-
 #endif

@@ -17,7 +17,7 @@
 // [====================*====================]
 // Default Constructor
 
-
+GameObject::GameObject(std::string n) :id{}, name{ name }, active{ false }, enabled{ false }, components{}, parent_object{} {}
 
 GameObject::~GameObject() { ClearParent(); }
 
