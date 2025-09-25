@@ -4,6 +4,9 @@
 #include "GLFW/glfw3.h"
 #include <iostream>
 
+#ifndef ENGINE_INPUT_H
+#define ENGINE_INPUT_H
+
 class Input {
 public:
 	Input();
@@ -18,3 +21,5 @@ private:
 	static void keyboard_input_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 	static void mouse_input_callback(GLFWwindow* window, int button, int action, int mods);
 };
+
+#endif //ENGINE_INPUT_H

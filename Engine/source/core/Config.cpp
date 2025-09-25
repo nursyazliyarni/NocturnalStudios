@@ -51,6 +51,9 @@ GameConfig loadConfig(const std::string& filename) {
             win["vsync"].GetBool()
         };
 
+        if (win.HasMember("title") && win["title"].IsString())
+            window.title = win["title"].GetString();
+
         return { window };
     }
 }

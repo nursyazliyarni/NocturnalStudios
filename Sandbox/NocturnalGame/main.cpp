@@ -7,6 +7,9 @@
 #include "core/GameLoop.h"
 #include "math/Vector.h"
 #include "physics/Collision.h"
+#include "input/Input.h"
+#include "input/Input.h"
+#include "graphics/Renderer.h"
 
 #include <rapidjson/document.h>
 #include <rapidjson/filereadstream.h>

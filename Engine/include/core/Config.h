@@ -22,6 +22,7 @@ struct WindowConfig {
     int width;
     int height;
     bool vsync;
+    std::string title = "NocturnalStudios";
 };
 
 struct GameConfig {
