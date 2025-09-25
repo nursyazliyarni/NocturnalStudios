@@ -4,6 +4,7 @@
 #include <GLFW/glfw3.h>        // glViewport/glClearColor/glClear
 #include <cmath>               // cosf, sinf
 #include <glm/gtc/constants.hpp>   // glm::pi<float>()
+#include "math/Vector.h"
 
 namespace {
     constexpr float TWO_PI = 2.0f * glm::pi<float>();
@@ -14,15 +15,14 @@ Application::Application() = default;
 
 int Application::run() {
     // 1) read JSON (with safe defaults)
-   //const WindowConfig c = Config::LoadWindowConfig("assets/config.json");
-    GameConfig cfg = loadConfig("assets/config.json");
+    const WindowConfig c = Config::LoadWindowConfig("assets/config.json");
 
     // 2) create the window
     WindowDesc wd;
-    wd.width = cfg.window.width;
-    wd.height = cfg.window.height;
-    wd.title = cfg.window.title;
-    wd.vsync = cfg.window.vsync;
+    wd.width = c.width;
+    wd.height = c.height;
+    wd.title = c.title;
+    wd.vsync = c.vsync;
 
     if (!m_window.create(wd)) return -1;
 
@@ -42,20 +42,36 @@ int Application::run() {
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     // 3) FPS count
-    double t0 = glfwGetTime();
-    int frames = 0;
+    //double t0 = glfwGetTime();
+    //int frames = 0;
+
+    Input game_input_obj;
+    Game_Loop game_loop_obj;
+
+    std::vector<char const*> vs{ "assets/textures/DGPEN_LOGO.png"};
+    Texture txt_obj(vs);
+
+    //build and compile my background shader program
+    Renderer bg_render("assets/shaders/background.vert", "assets/shaders/background.frag");
 
     // 4) simple loop
     while (!m_window.shouldClose()) {
         m_window.poll();
 
-        ++frames;
+        double dt = game_loop_obj.calculate_DT(); //our deltaTime
+        double total_time = game_loop_obj.get_accum_GT(); //our accumulated game time
+        game_loop_obj.display_FPS(m_window.handle(), c.title, dt); //display game FPS
+
+        //Main Game Loop Update Here
+        game_loop_obj.update(m_window.handle());
+
+        /*++frames;
         double t = glfwGetTime();
         if (t - t0 >= 1.0) {
-            m_window.setTitleFps(cfg.window.title, frames);
+            m_window.setTitleFps(c.title, frames);
             frames = 0;
             t0 = t;
-        }
+        }*/
 
         // handle resize: update viewport/projection if size changed (no callbacks)
         int fbw, fbh;
@@ -72,6 +88,9 @@ int Application::run() {
 
         glClearColor(0.10f, 0.10f, 0.12f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
+
+        bg_render.background_render(txt_obj.get_textureID(0), "bg_texture"); //Render background first
+        glUseProgram(0); //unbind the currently active shader program and go back to fixed-function pipeline mode
 
         // draw some visible geometry (immediate mode)
 
@@ -114,6 +133,8 @@ int Application::run() {
             glVertex2f(pad, pad + bh);
             glEnd();
         }
+
+        
 
         m_window.swap();
     }
