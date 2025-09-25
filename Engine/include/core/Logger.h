@@ -1,17 +1,3 @@
-/*!------------------------------------------------------------------------------------------------
-	File: Logger.h
-	Project: NocturnalStudio
-
-	This file contains the declaration of a Logger class for logging errors, warnings and general
-	messages to the console. It also maintains a history of recent log messages.
-
-	Primary Author:
-		Lau Xiang Yang (100%)
-		- Created the Logger class template and its specializations.
-
-	All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
-*------------------------------------------------------------------------------------------------*/
-
 #ifndef LOGGER_H
 #define LOGGER_H
 
