@@ -23,3 +23,14 @@
 auto/EGL-Registry
 auto/OpenGL-Registry
 auto/glfixes
+
+
+!build/
+!build/glew.rc
+!build/glewinfo.rc
+!build/visualinfo.rc
+!src/glew.c
+!src/glewinfo.c
+!src/visualinfo.c
+!include/GL/glew.h
+!include/GL/wglew.h

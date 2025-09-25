@@ -1,0 +1,1 @@
+// simple subscribe/emit (function pointers/lambdas)
