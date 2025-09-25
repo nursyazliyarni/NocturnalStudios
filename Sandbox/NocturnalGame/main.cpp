@@ -118,3 +118,8 @@ int main() {
     glfwTerminate();
     return 0;
 }
+// #include "core/Application.h"
+// int main() {
+//     Application app;
+//     return app.run();
+// }
