@@ -1,8 +1,12 @@
 // IsKeyDown/WasPressed, mouse, scroll (GLFW wrappe r)\
 
+#pragma once
+
 #define GLFW_INCLUDE_NONE 
 #include "GLFW/glfw3.h"
 #include "math/Vector.h"
+#include "../imgui.h"
+#include "../imgui/backends/imgui_impl_glfw.h"
 #include <iostream>
 
 class Input {

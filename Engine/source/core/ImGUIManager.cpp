@@ -34,7 +34,7 @@ void Gui::updateImGuiManager(double& deltaTime, ImGuiManager& imGuiManager) {
 	imGuiManager.endFrame();
 }
 
-ImGuiManager::ImGuiManager(Window& w) : mainWindow{ w }, windowTopLeft{}, windowBottomRight{}, deltaTime{0.}, selectedEntityType{} {
+ImGuiManager::ImGuiManager(Window& w, Renderer& r, Texture& tex) : mainWindow{ w }, renderer{ r }, texture{ tex }, windowTopLeft{}, windowBottomRight{}, deltaTime{0.}, selectedEntityType{} {
 
 	// Init ImGui context
 	ImGui::CreateContext();
@@ -107,14 +107,42 @@ void ImGuiManager::showViewportWindowUI() {
 	ImGui::SetNextWindowSize(ImVec2(viewportWidth, viewportHeight));
 	ImGui::Begin("Viewport", nullptr, windowFlags);
 
-	// @Todo (axewhy): Render the actual viewport content here, e.g., using a framebuffer texture
-	ImGui::Text("Viewport placeholder");
+	// ?? ADD: actual drawable region (excludes title/padding)
+	const ImVec2 avail = ImGui::GetContentRegionAvail();
+	const int vw = (int)std::max(1.0f, avail.x);
+	const int vh = (int)std::max(1.0f, avail.y);
 
-	// Render::square();
-	// Render::bgstuff();
+	// Initialize and bind FBO for rendering
+	// renderer.initFBO(viewportHeight, viewportWidth);            // REMOVE this (args swapped)
+	renderer.initFBO(vw, vh);                                      // ADD: correct (width, height)
+	renderer.bindFBO();
+
+	// ?? ADD: set viewport + orthographic to pixel-space for the FBO
+	renderer.resize(vw, vh);
+
+	// You can keep your clear (fine for 2D)
+	renderer.clear(0.1f, 0.1f, 0.12f);
+
+	// @Todo (axewhy): Render the actual viewport content here, e.g., using a framebuffer texture
+	// Render background to FBO
+	renderer.background_render(texture.get_textureID(0), "bg_texture");
+
+	// ?? ADD: draw all SHAPES from Renderer.cpp (keeps ImGui clean of GL)
+	renderer.drawViewportShapes(vw, vh);
+
+	renderer.unbindFBO();
+
+	// show FBO in the panel (use the content size so it matches exactly)
+	// ImGui::Image((void*)(intptr_t)renderer.getFBOTexture(), ImVec2(viewportWidth, viewportHeight));
+	// NEW: flip V when sampling the FBO in ImGui
+	ImGui::Image((ImTextureID)(intptr_t)renderer.getFBOTexture(),
+		ImVec2(viewportWidth, viewportHeight),
+		ImVec2(0, 1), ImVec2(1, 0));
+
 
 	ImGui::End();
 }
+
 
 void ImGuiManager::showMousePosOverlayUI() {
 	constexpr float width = 300.0f;
