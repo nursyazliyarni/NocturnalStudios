@@ -9,15 +9,20 @@ Input::~Input() {
 	
 }
 
-Vector2D& Input::get_mouse_pos(GLFWwindow* window) {
+Vector2D& Input::update_mouse_pos(GLFWwindow* window, bool want_normalize, int window_width, int window_height) {
 	double mouse_Xpos, mouse_Ypos;
 	glfwGetCursorPos(window, &mouse_Xpos, &mouse_Ypos);
 	mouse_pos[0] = mouse_Xpos, mouse_pos[1] = mouse_Ypos;
-	/*if (want_normalize) {
-		return normal(std::move(mouse_pos);
-	}*/
+	return want_normalize? normalize_mouse_coor(mouse_pos,window_width,window_height) : mouse_pos;
+}
+
+Vector2D& Input::normalize_mouse_coor(Vector2D& mouse_pos, int window_width, int window_height) {
+	mouse_pos[0] /= window_width, mouse_pos[1] /= window_height;
 	return mouse_pos;
-	//return want_normalize? normal(std::move(mouse_pos)) : mouse_pos;
+}
+
+Vector2D& Input::GET_mouse_pos() {
+	return mouse_pos;
 }
 
 void Input::process_user_input(GLFWwindow* window) {
