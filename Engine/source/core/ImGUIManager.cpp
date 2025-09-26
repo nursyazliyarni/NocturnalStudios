@@ -115,6 +115,7 @@ void ImGuiManager::showViewportWindowUI() {
 	// @Todo (axewhy): Render the actual viewport content here, e.g., using a framebuffer texture
 	// Render background to FBO
 	renderer.background_render(texture.get_textureID(0), "bg_texture");
+
 	renderer.unbindFBO();
 	ImGui::Image((void*)(intptr_t)renderer.getFBOTexture(), ImVec2(viewportWidth, viewportHeight));
 
