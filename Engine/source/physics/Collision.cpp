@@ -11,6 +11,3 @@ bool checkCollision(float x1, float y1, float w1, float h1,	float x2, float y2, 
 	return collisionX && collisionY;
 }
 
-bool isPointInBox(const Vector2D& point, const Vector2D& boxPos, const Vector2D& boxSize) {
-	return point.x() >= boxPos.x() && point.x() <= boxPos.x() + boxSize.x() && point.y() >= boxPos.y() && point.y() <= boxPos.y() + boxSize.y();
-}
