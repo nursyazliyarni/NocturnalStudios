@@ -7,16 +7,22 @@
 #include "math/Vector.h"
 #include "../imgui.h"
 #include "../imgui/backends/imgui_impl_glfw.h"
-#include <iostream>
+
+enum class Input_state {
+	none,press,release,hold
+};
 
 class Input {
 public:
-	Input();
-	~Input();
+	Input(GLFWwindow* window);
 
-	void process_user_input(GLFWwindow* window); 
-	Vector2D& update_mouse_pos(GLFWwindow* window, bool want_normalize, int window_width, int window_height);
-	Vector2D& GET_mouse_pos();
+	void update_mouse_pos(GLFWwindow* window);
+	Vector2D GET_mouse_pos(bool want_normalize, int window_width, int window_height);
+	Vector2D GET_mouse_delta();
+	void process_user_input(GLFWwindow* window);
+
+	void detect_keyboard_event(GLFWwindow* window, int key, Input_state event_action);
+	void detect_mouse_event(GLFWwindow* window, int mouse, Input_state event_action);
 
 private:
 	//Non-static member functions need an object to call it
@@ -25,9 +31,10 @@ private:
 	static void keyboard_input_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 	static void mouse_input_callback(GLFWwindow* window, int button, int action, int mods);
 
-	Vector2D& normalize_mouse_coor(Vector2D& mouse_pos, int window_width, int window_height);
-
 private:
 	//private data member
-	Vector2D mouse_pos;
+	//mouse_pos[0] is previous mouse position, mouse_pos[1] is current mouse_position
+	Vector2D mouse_pos[2];
+	static std::vector<std::pair<int,Input_state>> keyboard_action;
+	static std::vector<std::pair<int,Input_state>> mouse_action;
 };

@@ -6,7 +6,7 @@
 
 class Game_Loop {
 public:
-	Game_Loop();
+	Game_Loop(GLFWwindow* window);
 	double calculate_DT();
 	double get_accum_GT();
 	void display_FPS(GLFWwindow* window, std::string game_title, double deltaTime);

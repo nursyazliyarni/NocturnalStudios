@@ -1,7 +1,8 @@
 // delta, fixedStep, FPS
 #include "core/GameLoop.h"
 
-Game_Loop::Game_Loop() : accum_game_time{ 0.0 }, curr_frame_time{ glfwGetTime() }, display_interval{ 0.0 }{}
+Game_Loop::Game_Loop(GLFWwindow* window) : accum_game_time{ 0.0 }, curr_frame_time{ glfwGetTime() }, 
+display_interval{ 0.0 }, game_loop_input{window} {}
 
 double Game_Loop::calculate_DT() {
 	double new_frame_time = glfwGetTime();
@@ -30,7 +31,7 @@ void Game_Loop::display_FPS(GLFWwindow *window, std::string game_title, double d
 
 void Game_Loop::update(GLFWwindow* window) {
 	//update sequence->Inputs, Logic, Physics, Collision, Audio, Graphics
-	game_loop_input.process_user_input(window); //game loop take charge of game input
+	//game_loop_input.process_user_input(window); //game loop take charge of game input
 	//update logic
 	//update physics
 	//update collision

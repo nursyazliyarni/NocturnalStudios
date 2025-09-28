@@ -50,8 +50,8 @@ int Application::run() {
     Texture  txt_obj(vs);
     Renderer bg_render("assets/shaders/background.vert", "assets/shaders/background.frag");
 
-    Input      game_input_obj;
-    Game_Loop  game_loop_obj;
+    Input      game_input_obj(m_window.handle());
+    Game_Loop  game_loop_obj(m_window.handle());
     ImGuiManager imGuiManager(m_window, bg_render, txt_obj, game_input_obj);
 
     // 4) simple loop
@@ -63,9 +63,14 @@ int Application::run() {
         game_loop_obj.display_FPS(m_window.handle(), c.window.title, dt); // display FPS
 
         // Main Game Loop Update Here
-        game_loop_obj.update(m_window.handle());
-        //true->get normalized value, false->unnormalized value
-        game_input_obj.update_mouse_pos(m_window.handle(),true,c.window.width,c.window.height);
+        //game_loop_obj.update(m_window.handle());
+        game_input_obj.update_mouse_pos(m_window.handle());
+        game_input_obj.GET_mouse_delta();
+        
+        //available input for last parameter->GLFW_PRESS,GLFW_RELEASE,GLFW_REPEAT
+        game_input_obj.detect_keyboard_event(m_window.handle(),GLFW_KEY_W, Input_state::press);
+        game_input_obj.detect_keyboard_event(m_window.handle(), GLFW_KEY_A, Input_state::release);
+        game_input_obj.detect_keyboard_event(m_window.handle(), GLFW_KEY_S, Input_state::hold);
 
         // handle resize: update viewport/projection if size changed (no callbacks)
 

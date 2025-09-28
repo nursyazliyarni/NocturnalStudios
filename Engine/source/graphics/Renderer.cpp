@@ -53,7 +53,6 @@ Renderer::Renderer(const char* vertex_path, const char* fragment_path):render_sh
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
     glEnableVertexAttribArray(1); //use location=1 for rendering
     glBindVertexArray(0); //unbinds the currently bound VAO
-
 }
 
 void Renderer::background_render(GLuint texture_ID, const GLchar* uniform_VARNAME)

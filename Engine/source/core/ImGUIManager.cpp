@@ -40,7 +40,9 @@ ImGuiManager::ImGuiManager(Window& w, Renderer& r, Texture& tex, Input& i) : mai
 	ImGui::CreateContext();
 
 	// Setup renderer bindings
-	ImGui_ImplGlfw_InitForOpenGL(mainWindow.handle(), true);
+	// Set to false->ImGui will not install its own callbacks
+	// My Input class will handle ALL input callbacks
+	ImGui_ImplGlfw_InitForOpenGL(mainWindow.handle(), false);
 	ImGui_ImplOpenGL3_Init("#version 330");
 
 	// Setup style
@@ -156,6 +158,8 @@ void ImGuiManager::showMousePosOverlayUI() {
 	Vector2D worldPosition;
 	Vector2D viewPortPosition;
 	Vector2D screenPosition;
+	//true->get normalized value, false->unnormalized value
+	Vector2D mouse_pos = input.GET_mouse_pos(true, mainWindow.desc().width, mainWindow.desc().height);
 	
 	// Position the overlay at the top-right corner of the window
 	ImVec2 windowTopRightPos = { windowBottomRight.x - width, windowTopLeft.y };
@@ -164,7 +168,7 @@ void ImGuiManager::showMousePosOverlayUI() {
 	ImGui::SetNextWindowSize({ width, height });
 
 	ImGui::Begin("Overlay", nullptr, windowFlags);
-	ImGui::Text("Mouse position: %.2f, %.2f", input.GET_mouse_pos()[0], input.GET_mouse_pos()[1]);
+	ImGui::Text("Mouse position: %.2f, %.2f", mouse_pos[0], mouse_pos[1]);
 	ImGui::Text("World pos: %.2f, %.2f", worldPosition.x(), worldPosition.y());
 	ImGui::Text("View pos: %.2f, %.2f", viewPortPosition.x(), viewPortPosition.y());
 	ImGui::Text("Screen pos: %.2f, %.2f", screenPosition.x(), screenPosition.y());
