@@ -39,7 +39,7 @@ void Gui::updateImGuiManager(double& deltaTime, ImGuiManager& imGuiManager) {
 	imGuiManager.endFrame();
 }
 
-ImGuiManager::ImGuiManager(Window& w, Renderer& r, Texture& tex, Input& i) : mainWindow{ w }, renderer{ r }, texture{ tex }, input{i}, windowTopLeft {}, windowBottomRight{}, deltaTime{ 0. }, selectedEntityType{} {
+ImGuiManager::ImGuiManager(Window& w, Renderer& r, Texture& tex, Input& i) : mainWindow{ w }, renderer{ r }, texture{ tex }, input{ i }, windowTopLeft{}, windowBottomRight{}, deltaTime{ 0. }, imGuiTime{ 0. }, inputTime{ 0. }, logicTime{ 0. }, renderTime{ 0. }, selectedEntityType {} {
 
 	// Init ImGui context
 	ImGui::CreateContext();
@@ -272,7 +272,7 @@ void ImGuiManager::showTransformUI(/* A reference to a vector of object list obj
 		ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
 
 	// Position the overlay at the top-right corner of the window, below entity list overlay
-	ImVec2 windowTopRightPos = { windowBottomRight.x - width, windowTopLeft.y + 250.0f };
+	ImVec2 windowTopRightPos = { windowBottomRight.x - width, windowTopLeft.y + 300.0f };
 	ImGui::SetNextWindowPos(windowTopRightPos);
 	ImGui::SetNextWindowBgAlpha(0.35f);
 	ImGui::SetNextWindowSize({ width, height });
