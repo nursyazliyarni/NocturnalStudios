@@ -4,12 +4,14 @@
 #include <GLFW/glfw3.h>            // glViewport/glClearColor/glClear
 #include <cmath>                   // cosf, sinf
 #include <glm/gtc/constants.hpp>   // glm::pi<float>()
+#include <chrono>
 #include "math/Vector.h"
 #include "core/ImGUIManager.h"
 
 namespace {
     constexpr float TWO_PI = 2.0f * glm::pi<float>();
     constexpr int   CIRCLE_SEGMENTS = 64;
+	using Clock = std::chrono::high_resolution_clock;
 }
 
 Application::Application() = default;
@@ -94,8 +96,13 @@ int Application::run() {
         glClearColor(0.06f, 0.06f, 0.07f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
+		auto imGuiStart = Clock::now();
         // Build & render all ImGui (Viewport will render bg + shapes internally via Renderer)
         Gui::updateImGuiManager(dt, imGuiManager);
+		auto imGuiEnd = Clock::now();
+		double imGuiTime = std::chrono::duration<double>(imGuiEnd - imGuiStart).count();
+
+		imGuiManager.setSystemTimings(imGuiTime, 0.0);
 
         m_window.swap();
     }
