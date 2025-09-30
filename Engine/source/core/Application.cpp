@@ -1,3 +1,15 @@
+/*!------------------------------------------------------------------------------------------------
+    File: Application.cpp
+    Project: NocturnalStudio
+
+    This file contains ...
+
+    Primary Author:
+         Rishika Bimal Attodi
+        - Brief
+
+    All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
 // init(), run(), shutdown()
 #include "core/Application.h"
 #include "core/Config.h"
@@ -29,6 +41,16 @@ int Application::run() {
     wd.vsync = c.window.vsync;
 
     if (!m_window.create(wd)) return -1;
+
+    // Prime the window so there’s no white flash before the first real frame
+    glViewport(0, 0, wd.width, wd.height);
+    glDisable(GL_DEPTH_TEST);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glClearColor(0.06f, 0.06f, 0.07f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
+    m_window.swap();
+
 
     // set up a simple 2D projection (pixel coords, origin = top-left) for the OS window
     int currW = wd.width, currH = wd.height;
@@ -65,6 +87,11 @@ int Application::run() {
     Input      game_input_obj;
     Game_Loop  game_loop_obj;
     ImGuiManager imGuiManager(m_window, bg_render, txt_obj, game_input_obj);
+
+    game_input_obj.process_user_input(m_window.handle()); // installs callbacks + sets user pointer
+
+    // make Input’s scale array match the number of textures
+    game_input_obj.initSpriteScales(txt_obj.count());
 
     // 4) simple loop
     while (!m_window.shouldClose()) {

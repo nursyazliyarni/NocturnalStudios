@@ -10,6 +10,9 @@ public:
 
 	GLuint get_textureID(size_t input_index);
 
+	// How many textures are loaded (used to size the scale array)
+	size_t count() const { return textureID_storage.size(); }
+
 
 private:
 	//use vector to store texture IDs for multiple images

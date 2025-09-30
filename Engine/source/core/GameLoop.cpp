@@ -30,7 +30,10 @@ void Game_Loop::display_FPS(GLFWwindow *window, std::string game_title, double d
 
 void Game_Loop::update(GLFWwindow* window) {
 	//update sequence->Inputs, Logic, Physics, Collision, Audio, Graphics
-	game_loop_input.process_user_input(window); //game loop take charge of game input
+	
+	// rmved the callback installation here; it’s done once via Input::process_user_input
+	//game_loop_input.process_user_input(window); //game loop take charge of game input
+
 	//update logic
 	//update physics
 	//update collision

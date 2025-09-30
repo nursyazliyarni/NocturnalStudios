@@ -29,6 +29,8 @@ Texture::Texture(std::vector<char const*> &image_path_v):textureID_storage(image
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image_width, image_height, 0, GL_RGBA, GL_UNSIGNED_BYTE,
 			         image_data);
 
+
+
 		//Set texture wrapping AND filtering options
 		//S->x-axis,T->y->axis,GL_CLAMP_TO_EDGE->clamp coordinates of texture between 0 and 1
 		//GL_LINEAR->the weighted average of the four texture elements(form the 2x2 square) that are closest to 
@@ -40,6 +42,7 @@ Texture::Texture(std::vector<char const*> &image_path_v):textureID_storage(image
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		stbi_image_free(image_data); //free the loaded image
+
 	}
 }
 

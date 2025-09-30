@@ -1,3 +1,16 @@
+/*!------------------------------------------------------------------------------------------------
+    File: Renderer.cpp
+    Project: NocturnalStudio
+
+    This file contains ...
+
+    Primary Author:
+         Rishika Bimal Attodi
+        - Brief
+
+    All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
+
 // OpenGL draw API (clear, drawSprite, debug lines)
 
 #include "graphics/Renderer.h"
@@ -65,6 +78,7 @@ void Renderer::background_render(GLuint texture_ID, const GLchar* uniform_VARNAM
     //to return the location of a uniform variable
     //glUniform1i takes in location of a uniform variable and 0(this means texture unit is GL_TEXTURE0)
     glUniform1i(glGetUniformLocation(render_shader.get_programID(), uniform_VARNAME), 0);
+
 
     glBindVertexArray(VAO_arr); //Bind Vertex Array Object to background mesh
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4); //Render rectangle(4 vertices = 2 triangles)
@@ -145,16 +159,21 @@ void Renderer::circle(float cx, float cy, float r, int segments) {
 }
 
 
-void Renderer::texturedQuad(GLuint tex, float x, float y, float w, float h) {
+void Renderer::texturedTri(GLuint tex, float x, float y, float w, float h) {
     glUseProgram(0);
     glDisable(GL_DEPTH_TEST);
 
     glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, tex);
 
-    glBegin(GL_QUADS);
+    // two triangles: (x,y)-(x+w,y)-(x+w,y+h) and (x,y)-(x+w,y+h)-(x,y+h)
+    glBegin(GL_TRIANGLES);
+    // tri 1
     glTexCoord2f(0.f, 0.f); glVertex2f(x, y);
     glTexCoord2f(1.f, 0.f); glVertex2f(x + w, y);
+    glTexCoord2f(1.f, 1.f); glVertex2f(x + w, y + h);
+    // tri 2
+    glTexCoord2f(0.f, 0.f); glVertex2f(x, y);
     glTexCoord2f(1.f, 1.f); glVertex2f(x + w, y + h);
     glTexCoord2f(0.f, 1.f); glVertex2f(x, y + h);
     glEnd();
@@ -162,6 +181,7 @@ void Renderer::texturedQuad(GLuint tex, float x, float y, float w, float h) {
     glBindTexture(GL_TEXTURE_2D, 0);
     glDisable(GL_TEXTURE_2D);
 }
+
 
 
 void Renderer::initFBO(int width, int height) {
@@ -265,8 +285,18 @@ void Renderer::drawViewportShapes(int w, int h) {
 //}
 
 
+void Renderer::drawAllSprites(Texture& tex,
+    const std::vector<int>& frontIdxs,
+    bool behindPass)
+{
+    drawAllSprites(tex, frontIdxs, behindPass, /*scales*/ nullptr);
+}
 
-void Renderer::drawAllSprites(Texture& tex, const std::vector<int>& frontIdxs, bool behindPass) {
+void Renderer::drawAllSprites(Texture& tex,
+    const std::vector<int>& frontIdxs,
+    bool behindPass,
+    const float* scales)
+{
     struct QuadArgs { int idx; float x, y, w, h; };
     const QuadArgs sprites[] = {
         { 1,  60.f, 60.f, 128.f, 128.f }, // drink
@@ -278,6 +308,9 @@ void Renderer::drawAllSprites(Texture& tex, const std::vector<int>& frontIdxs, b
     glUseProgram(0);
     glDisable(GL_DEPTH_TEST);
 
+    const size_t texCount = tex.count(); // includes bg at index 0
+
+
     for (int i = 0; i < (int)(sizeof(sprites) / sizeof(sprites[0])); ++i) {
         bool isFront = std::find(frontIdxs.begin(), frontIdxs.end(), sprites[i].idx) != frontIdxs.end();
 
@@ -285,19 +318,38 @@ void Renderer::drawAllSprites(Texture& tex, const std::vector<int>& frontIdxs, b
         if (behindPass && isFront)   continue; // behind pass: skip all “front” sprites
         if (!behindPass && !isFront) continue; // front pass: draw ONLY “front” sprites
 
+        //  SCALE BLOCK GOES HERE 
+        float s = 1.0f;
+        if (scales) {
+            int ti = sprites[i].idx;        // texture index: 1..N-1
+            if (ti >= 0) s = scales[ti];    // array sized by Input::initSpriteScales()
+        }
+        float x = sprites[i].x;
+        float y = sprites[i].y;
+        float w = sprites[i].w * s;
+        float h = sprites[i].h * s;
+
+
         GLuint t = tex.get_textureID((size_t)sprites[i].idx);
 
         glEnable(GL_TEXTURE_2D);
         glBindTexture(GL_TEXTURE_2D, t);
 
-        glBegin(GL_QUADS);
-        glTexCoord2f(0.f, 0.f); glVertex2f(sprites[i].x, sprites[i].y);
-        glTexCoord2f(1.f, 0.f); glVertex2f(sprites[i].x + sprites[i].w, sprites[i].y);
-        glTexCoord2f(1.f, 1.f); glVertex2f(sprites[i].x + sprites[i].w, sprites[i].y + sprites[i].h);
-        glTexCoord2f(0.f, 1.f); glVertex2f(sprites[i].x, sprites[i].y + sprites[i].h);
+        // two triangles (no GL_QUADS)
+        glBegin(GL_TRIANGLES);
+        // tri 1
+        glTexCoord2f(0.f, 0.f); glVertex2f(x, y);
+        glTexCoord2f(1.f, 0.f); glVertex2f(x + w, y);
+        glTexCoord2f(1.f, 1.f); glVertex2f(x + w, y + h);
+        // tri 2
+        glTexCoord2f(0.f, 0.f); glVertex2f(x, y);
+        glTexCoord2f(1.f, 1.f); glVertex2f(x + w, y + h);
+        glTexCoord2f(0.f, 1.f); glVertex2f(x, y + h);
         glEnd();
 
         glBindTexture(GL_TEXTURE_2D, 0);
         glDisable(GL_TEXTURE_2D);
     }
 }
+
+

@@ -11,6 +11,10 @@
 		Lau Xiang Yang (100%)
 		- Created the ImGuiManager class and its specializations.
 
+	Secondary Author:
+		Rishika Bimal Attodi
+		- Integrated drawAllSprites and drawViewportShapes
+
 	All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
 *------------------------------------------------------------------------------------------------*/
 
@@ -126,6 +130,11 @@ void ImGuiManager::showViewportWindowUI() {
 	const int vw = (int)std::max(1.0f, avail.x);
 	const int vh = (int)std::max(1.0f, avail.y);
 
+	 static int lastW = -1, lastH = -1;
+    if (vw != lastW || vh != lastH) {        // recreate only when needed
+        renderer.initFBO(vw, vh);
+        lastW = vw; lastH = vh;
+    }
 	auto render_start = Clock::now();
 
 	// Initialize and bind FBO for rendering
@@ -144,16 +153,15 @@ void ImGuiManager::showViewportWindowUI() {
 	// Render background to FBO
 	renderer.background_render(texture.get_textureID(0), "bg_texture");
 
+	// behind-sprites pass (scaled)
+	renderer.drawAllSprites(texture, { 3,4 }, /*behindPass=*/true, input.getSpriteScalesPtr());
 
-
-	// draw all sprites that should be BEHIND shapes - rishika
-	renderer.drawAllSprites(texture, /*frontIdxs=*/{ 3,4 }, /*behindPass=*/true);
 
 	//draw all SHAPES from Renderer.cpp (keeps ImGui clean of GL) - rishika
 	renderer.drawViewportShapes(vw, vh);
 
-	// draw ONLY the “front” sprites (both cats) - rishika
-	renderer.drawAllSprites(texture, /*frontIdxs=*/{ 3,4 }, /*behindPass=*/false);
+	// front-sprites pass (scaled)
+	renderer.drawAllSprites(texture, { 3,4 }, /*behindPass=*/false, input.getSpriteScalesPtr());
 
 	renderer.unbindFBO();
 	auto render_end = Clock::now();

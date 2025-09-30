@@ -22,11 +22,21 @@ public:
     void rectOutline(float x, float y, float w, float h);
     void circle(float cx, float cy, float radius, int segments = 32);
 
-    void texturedQuad(GLuint tex, float x, float y, float w, float h);
+    void texturedTri(GLuint tex, float x, float y, float w, float h);
 
     //void drawAllSprites(Texture& tex);
 
-    void drawAllSprites(Texture& tex, const std::vector<int>& frontIdxs, bool behindPass);
+   // Renderer.h
+    void drawAllSprites(Texture& tex,
+        const std::vector<int>& frontIdxs,
+        bool behindPass); // wrapper
+
+    void drawAllSprites(Texture& tex,
+        const std::vector<int>& frontIdxs,
+        bool behindPass,
+        const float* scales); // actual impl
+
+
 
 
     void background_render(GLuint texture_ID, const GLchar* uniform_VARNAME);
@@ -51,6 +61,7 @@ private:
     int    fboWidth = 0, fboHeight = 0;
 
 
+
     Shader render_shader;
 };
 
@@ -59,6 +70,6 @@ private:
 static void drawSprite(Renderer& renderer, Texture& tex, int index,
     float x, float y, float w, float h)
 {
-    renderer.texturedQuad(tex.get_textureID(static_cast<size_t>(index)), x, y, w, h);
+    renderer.texturedTri(tex.get_textureID(static_cast<size_t>(index)), x, y, w, h);
 }
 
