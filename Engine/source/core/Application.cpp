@@ -18,14 +18,15 @@ Application::Application() = default;
 
 int Application::run() {
     // 1) read JSON (with safe defaults)
-    const WindowConfig c = Config::LoadWindowConfig("assets/config.json");
+    //const WindowConfig c = Config::LoadWindowConfig("assets/config.json");
+    const GameConfig c = loadConfig("assets/config.json");
 
     // 2) create the window
     WindowDesc wd;
-    wd.width = c.width;
-    wd.height = c.height;
-    wd.title = c.title;
-    wd.vsync = c.vsync;
+    wd.width = c.window.width;
+    wd.height = c.window.height;
+    wd.title = c.window.title;
+    wd.vsync = c.window.vsync;
 
     if (!m_window.create(wd)) return -1;
 
@@ -50,10 +51,10 @@ int Application::run() {
     std::vector<char const*> vs{ "assets/textures/DGPEN_LOGO.png" };
     Texture  txt_obj(vs);
     Renderer bg_render("assets/shaders/background.vert", "assets/shaders/background.frag");
-    ImGuiManager imGuiManager(m_window, bg_render, txt_obj);
 
     Input      game_input_obj;
     Game_Loop  game_loop_obj;
+    ImGuiManager imGuiManager(m_window, bg_render, txt_obj, game_input_obj);
 
     // 4) simple loop
     while (!m_window.shouldClose()) {
@@ -61,10 +62,14 @@ int Application::run() {
 
         double dt = game_loop_obj.calculate_DT();          // our deltaTime
         double total_time = game_loop_obj.get_accum_GT();  // accumulated game time
-        game_loop_obj.display_FPS(m_window.handle(), c.title, dt); // display FPS
+        game_loop_obj.display_FPS(m_window.handle(), c.window.title, dt); // display FPS
 
         // Main Game Loop Update Here
         game_loop_obj.update(m_window.handle());
+        //true->get normalized value, false->unnormalized value
+        game_input_obj.update_mouse_pos(m_window.handle(),true,c.window.width,c.window.height);
+
+        // handle resize: update viewport/projection if size changed (no callbacks)
 
         // handle OS-window resize: keep a sane viewport/projection for the UI backdrop
         int fbw, fbh;

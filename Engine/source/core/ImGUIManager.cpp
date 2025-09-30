@@ -39,7 +39,7 @@ void Gui::updateImGuiManager(double& deltaTime, ImGuiManager& imGuiManager) {
 	imGuiManager.endFrame();
 }
 
-ImGuiManager::ImGuiManager(Window& w, Renderer& r, Texture& tex) : mainWindow{ w }, renderer{ r }, texture{ tex }, windowTopLeft{}, windowBottomRight{}, deltaTime{0.}, selectedEntityType{} {
+ImGuiManager::ImGuiManager(Window& w, Renderer& r, Texture& tex, Input& i) : mainWindow{ w }, renderer{ r }, texture{ tex }, input{i}, windowTopLeft {}, windowBottomRight{}, deltaTime{ 0. }, selectedEntityType{} {
 
 	// Init ImGui context
 	ImGui::CreateContext();
@@ -183,7 +183,7 @@ void ImGuiManager::showMousePosOverlayUI() {
 	ImGui::SetNextWindowSize({ width, height });
 
 	ImGui::Begin("Overlay", nullptr, windowFlags);
-	ImGui::Text("Mouse position");
+	ImGui::Text("Mouse position: %.2f, %.2f", input.GET_mouse_pos()[0], input.GET_mouse_pos()[1]);
 	ImGui::Text("World pos: %.2f, %.2f", worldPosition.x(), worldPosition.y());
 	ImGui::Text("View pos: %.2f, %.2f", viewPortPosition.x(), viewPortPosition.y());
 	ImGui::Text("Screen pos: %.2f, %.2f", screenPosition.x(), screenPosition.y());
