@@ -88,6 +88,8 @@ int Application::run() {
     Game_Loop  game_loop_obj;
     ImGuiManager imGuiManager(m_window, bg_render, txt_obj, game_input_obj);
 
+     
+
     game_input_obj.process_user_input(m_window.handle()); // installs callbacks + sets user pointer
 
     // make Input’s scale array match the number of textures

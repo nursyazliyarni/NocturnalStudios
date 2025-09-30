@@ -21,9 +21,7 @@ Texture::Texture(std::vector<char const*> &image_path_v):textureID_storage(image
 		//GLenum texture_target,level of mipmap reduction image{0},image_dimension,border(must be 0), 
 		//format of the pixel data,data type of the pixel data,pointer to the image_data
 
-		if (num_components == 4) {GLenum fmt = GL_RGBA; }  //to avoid wrong colors/black textures (rishika)
-		else {GLenum fmt = GL_RGB;}
-
+	
 
 
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image_width, image_height, 0, GL_RGBA, GL_UNSIGNED_BYTE,

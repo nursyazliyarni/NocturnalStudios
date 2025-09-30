@@ -2,18 +2,11 @@
     File: Input.cpp
     Project: NocturnalStudio
 
-    This file contains the implementation of the ImGuiManager class, which manages the integration
-    of the ImGui library into the customize game engine. It handles the initialization,
-    frame updates, and rendering of ImGui components, as well as providing various UI elements
-    for debugging and interaction within the engine.
+    This file contains ...
 
     Primary Author:
         ???
         - Created...
-
-    Secondary Author:
-        Rishika Bimal Attodi
-        - Integrated key adjustments dynamic scaling of sprites
 
     All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
 *------------------------------------------------------------------------------------------------*/
@@ -87,6 +80,14 @@ void Input::process_user_input(GLFWwindow* window) {
     glfwSetMouseButtonCallback(window, mouse_input_callback);
 }
 
+// maps top-row 0..9 and numpad 0..9 to a digit, else -1
+inline int keyToDigit(int key) {
+    if (key >= GLFW_KEY_0 && key <= GLFW_KEY_9)   return key - GLFW_KEY_0;
+    if (key >= GLFW_KEY_KP_0 && key <= GLFW_KEY_KP_9) return key - GLFW_KEY_KP_0;
+    return -1;
+}
+
+
 void Input::initSpriteScales(size_t textureCount) {
     spriteCount = (textureCount > 1) ? (textureCount - 1) : 0;
     spriteScales.assign(textureCount, 1.0f);                // [0]=bg, [1-spriteCount]=sprites
@@ -111,6 +112,26 @@ void Input::keyboard_input_callback(GLFWwindow* window, int key, int scancode, i
 
     // Use a reference so we can write self.x (no )
     Input& self = *static_cast<Input*>(up);
+
+    int digit = keyToDigit(key);
+    if (digit != -1) {
+        // 0 toggles ALL / NONE only if we actually have sprites
+        if (digit == 0) {
+            if (self.spriteCount > 0) {
+                self.selectedSprite = (self.selectedSprite == 0) ? -1 : 0;
+                printSel(self.selectedSprite);
+            }
+            return;
+        }
+
+        // 1..9 (or more in future): act ONLY if that sprite exists; no clamping
+        if ((size_t)digit <= self.spriteCount) {
+            self.selectedSprite = (self.selectedSprite == digit) ? -1 : digit; // toggle
+            printSel(self.selectedSprite);
+        }
+        // else: ignore digits beyond spriteCount
+        return;
+    }
 
     //  0 = toggle ALL / NONE (only if we have sprites) 
     if (key == GLFW_KEY_0) {
@@ -257,7 +278,7 @@ void Input::keyboard_input_callback(GLFWwindow* window, int key, int scancode, i
 void Input::mouse_input_callback(GLFWwindow* window, int button, int action, int mods) {
 	ImGui_ImplGlfw_MouseButtonCallback(window, button, action, mods); //Pass mouse input to ImGui
 	ImGuiIO& io = ImGui::GetIO();
-	if (io.WantCaptureMouse) return;
+	//if (io.WantCaptureMouse) return;
 	
 	if (action == GLFW_PRESS) {
 		switch (button) {
