@@ -25,10 +25,10 @@ Renderer::Renderer(const char* vertex_path, const char* fragment_path):render_sh
     //texture UV->how to render texture(0.0 to 1.0)
     float vertices[] = {
     //vertex positions(x,y)  texture UV
-    -1.0f, 1.0f,             0.0f, 1.0f,  //top left
-    -1.0f, -1.0f,            0.0f, 0.0f,  //bottom left
-    1.0f, 1.0f,              1.0f, 1.0f,  //top right 
-    1.0f, -1.0f,             1.0f, 0.0f,  //bottom right 
+    -1.0f,  1.0f,            0.0f, 0.0f,  // top left
+    -1.0f, -1.0f,            0.0f, 1.0f,  // bottom left
+    1.0f,  1.0f,             1.0f, 0.0f,  // top right
+    1.0f, -1.0f,             1.0f, 1.0f   // bottom right
     };
 
     //glGenVertexArrays returns the number of Vertex Array Objects(VAO) and store its unique ID in VAO_arr
@@ -144,6 +144,26 @@ void Renderer::circle(float cx, float cy, float r, int segments) {
     glEnd();
 }
 
+
+void Renderer::texturedQuad(GLuint tex, float x, float y, float w, float h) {
+    glUseProgram(0);
+    glDisable(GL_DEPTH_TEST);
+
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, tex);
+
+    glBegin(GL_QUADS);
+    glTexCoord2f(0.f, 0.f); glVertex2f(x, y);
+    glTexCoord2f(1.f, 0.f); glVertex2f(x + w, y);
+    glTexCoord2f(1.f, 1.f); glVertex2f(x + w, y + h);
+    glTexCoord2f(0.f, 1.f); glVertex2f(x, y + h);
+    glEnd();
+
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glDisable(GL_TEXTURE_2D);
+}
+
+
 void Renderer::initFBO(int width, int height) {
     fboWidth = width;
     fboHeight = height;
@@ -210,5 +230,74 @@ void Renderer::drawViewportShapes(int w, int h) {
         float bw = w * 0.16f;
         float bh = h * 0.17f;
         rectOutline(pad, pad, bw, bh);
+    }
+}
+
+
+//void Renderer::drawAllSprites(Texture& tex) {
+//    struct QuadArgs { int idx; float x, y, w, h; };
+//    const QuadArgs sprites[] = {
+//        { 1,  60.f, 60.f, 128.f, 128.f }, // Circle
+//        { 2, 220.f, 60.f, 128.f, 128.f }, // Square
+//        { 3, 380.f, 60.f, 128.f, 128.f }, // placeholder cat
+//        { 4, 540.f, 60.f, 128.f, 128.f }  // placeholder2 cat
+//    };
+//
+//    glUseProgram(0);
+//    glDisable(GL_DEPTH_TEST);
+//
+//    for (int i = 0; i < (int)(sizeof(sprites) / sizeof(sprites[0])); ++i) {
+//        GLuint t = tex.get_textureID((size_t)sprites[i].idx);
+//
+//        glEnable(GL_TEXTURE_2D);
+//        glBindTexture(GL_TEXTURE_2D, t);
+//
+//        glBegin(GL_QUADS);
+//        glTexCoord2f(0.f, 0.f); glVertex2f(sprites[i].x, sprites[i].y);
+//        glTexCoord2f(1.f, 0.f); glVertex2f(sprites[i].x + sprites[i].w, sprites[i].y);
+//        glTexCoord2f(1.f, 1.f); glVertex2f(sprites[i].x + sprites[i].w, sprites[i].y + sprites[i].h);
+//        glTexCoord2f(0.f, 1.f); glVertex2f(sprites[i].x, sprites[i].y + sprites[i].h);
+//        glEnd();
+//
+//        glBindTexture(GL_TEXTURE_2D, 0);
+//        glDisable(GL_TEXTURE_2D);
+//    }
+//}
+
+
+
+void Renderer::drawAllSprites(Texture& tex, const std::vector<int>& frontIdxs, bool behindPass) {
+    struct QuadArgs { int idx; float x, y, w, h; };
+    const QuadArgs sprites[] = {
+        { 1,  60.f, 60.f, 128.f, 128.f }, // drink
+        { 2, 220.f, 60.f, 128.f, 128.f }, // cupcake
+        { 3, 380.f, 60.f, 200.f, 200.f }, // Cat A
+        { 4, 590.f, 60.f, 200.f, 200.f }  // Cat B
+    };
+
+    glUseProgram(0);
+    glDisable(GL_DEPTH_TEST);
+
+    for (int i = 0; i < (int)(sizeof(sprites) / sizeof(sprites[0])); ++i) {
+        bool isFront = std::find(frontIdxs.begin(), frontIdxs.end(), sprites[i].idx) != frontIdxs.end();
+
+        // pass filter
+        if (behindPass && isFront)   continue; // behind pass: skip all “front” sprites
+        if (!behindPass && !isFront) continue; // front pass: draw ONLY “front” sprites
+
+        GLuint t = tex.get_textureID((size_t)sprites[i].idx);
+
+        glEnable(GL_TEXTURE_2D);
+        glBindTexture(GL_TEXTURE_2D, t);
+
+        glBegin(GL_QUADS);
+        glTexCoord2f(0.f, 0.f); glVertex2f(sprites[i].x, sprites[i].y);
+        glTexCoord2f(1.f, 0.f); glVertex2f(sprites[i].x + sprites[i].w, sprites[i].y);
+        glTexCoord2f(1.f, 1.f); glVertex2f(sprites[i].x + sprites[i].w, sprites[i].y + sprites[i].h);
+        glTexCoord2f(0.f, 1.f); glVertex2f(sprites[i].x, sprites[i].y + sprites[i].h);
+        glEnd();
+
+        glBindTexture(GL_TEXTURE_2D, 0);
+        glDisable(GL_TEXTURE_2D);
     }
 }

@@ -48,7 +48,17 @@ int Application::run() {
     // Initialize ImGui Manager
     // NOTE: ImGuiManager owns the Viewport pass; it will call Renderer to draw bg + shapes into an FBO.
     //       We just pass references here. No drawing is done in this file anymore.
-    std::vector<char const*> vs{ "assets/textures/DGPEN_LOGO.png" };
+    //std::vector<char const*> vs{ "assets/textures/DGPEN_LOGO.png" };
+
+
+    std::vector<char const*> vs{
+    "assets/textures/DGPEN_LOGO.png",   // [0] background ONLY
+    "assets/textures/drink.png",       // [1]
+    "assets/textures/cupcake.png",       // [2]
+    "assets/textures/placeholder.png",  // [3]
+    "assets/textures/placeholder2.png"  // [4]
+    };
+
     Texture  txt_obj(vs);
     Renderer bg_render("assets/shaders/background.vert", "assets/shaders/background.frag");
 

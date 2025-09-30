@@ -139,12 +139,21 @@ void ImGuiManager::showViewportWindowUI() {
 	// You can keep your clear (fine for 2D)
 	renderer.clear(0.1f, 0.1f, 0.12f);
 
+
 	// @Todo (axewhy): Render the actual viewport content here, e.g., using a framebuffer texture
 	// Render background to FBO
 	renderer.background_render(texture.get_textureID(0), "bg_texture");
 
-	// ?? ADD: draw all SHAPES from Renderer.cpp (keeps ImGui clean of GL)
+
+
+	// draw all sprites that should be BEHIND shapes - rishika
+	renderer.drawAllSprites(texture, /*frontIdxs=*/{ 3,4 }, /*behindPass=*/true);
+
+	//draw all SHAPES from Renderer.cpp (keeps ImGui clean of GL) - rishika
 	renderer.drawViewportShapes(vw, vh);
+
+	// draw ONLY the “front” sprites (both cats) - rishika
+	renderer.drawAllSprites(texture, /*frontIdxs=*/{ 3,4 }, /*behindPass=*/false);
 
 	renderer.unbindFBO();
 	auto render_end = Clock::now();

@@ -18,6 +18,7 @@ public:
 	Vector2D& update_mouse_pos(GLFWwindow* window, bool want_normalize, int window_width, int window_height);
 	Vector2D& GET_mouse_pos();
 
+
 private:
 	//Non-static member functions need an object to call it
 	//So declare this function as static to avoid this issue

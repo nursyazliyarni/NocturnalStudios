@@ -2,7 +2,7 @@
 #pragma once
 #include "gl/glew.h"
 #include "graphics/Shader.h"
-#include "graphics/Texture.h"   // <-- add this
+#include "graphics/Texture.h" 
 #include "core/Logger.h"
 
 extern Logger logger;
@@ -21,6 +21,13 @@ public:
     void line(float x1, float y1, float x2, float y2);
     void rectOutline(float x, float y, float w, float h);
     void circle(float cx, float cy, float radius, int segments = 32);
+
+    void texturedQuad(GLuint tex, float x, float y, float w, float h);
+
+    //void drawAllSprites(Texture& tex);
+
+    void drawAllSprites(Texture& tex, const std::vector<int>& frontIdxs, bool behindPass);
+
 
     void background_render(GLuint texture_ID, const GLchar* uniform_VARNAME);
 
@@ -46,3 +53,12 @@ private:
 
     Shader render_shader;
 };
+
+
+// Simple helper to draw a sprite by texture index
+static void drawSprite(Renderer& renderer, Texture& tex, int index,
+    float x, float y, float w, float h)
+{
+    renderer.texturedQuad(tex.get_textureID(static_cast<size_t>(index)), x, y, w, h);
+}
+
