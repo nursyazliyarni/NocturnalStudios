@@ -1,3 +1,19 @@
+/*!------------------------------------------------------------------------------------------------
+	File: ImGUIManager.h
+	Project: NocturnalStudio
+
+	This file contains the declaration of the ImGuiManager class, which manages the integration
+	of the ImGui library into the customize game engine. It handles the initialization,
+	frame updates, and rendering of ImGui components, as well as providing various UI elements
+	for debugging and interaction within the engine.
+
+	Primary Author:
+		Lau Xiang Yang (100%)
+		- Created the ImGuiManager class and its specializations.
+
+	All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
+
 #ifndef ImGuiManager_h
 #define ImGuiManager_h
 
@@ -9,18 +25,26 @@
 #include "../include/math/Vector.h"
 #include "../include/math/Matrix.h"
 #include "../include/core/Logger.h"
+#include "../include/graphics/Window.h"
+#include "../include/graphics/Renderer.h"
+#include "../include/graphics/Texture.h"
+#include "../include/input/Input.h"
 
 extern Logger logger;
 
 class ImGuiManager {
 public:
-	ImGuiManager(GLFWwindow*& window);
+	ImGuiManager(Window& window, Renderer& renderer, Texture& tex, Input& input);
 	~ImGuiManager();
 
 	void updateDeltaTime(double& dt);
 	void getDeltaTime(double& dt) const;
 	void updateWindowTopLeft(const ImVec2& topLeft);
 	void updateWindowBottomRight(const ImVec2& bottomRight);
+	void setSystemTimings(double imGuiTime, double input);
+	
+	// temp setter for render time since renderer is called in showViewportWindowUI
+	void setRenderTime(double time);
 
 	void startFrame();
 	void endFrame();
@@ -30,18 +54,28 @@ public:
 
 	void showViewportWindowUI();
 	void showMousePosOverlayUI();
-	void showPerformanceOverlayUI();
 	void showLogsOverlayUI();
+
+	// @Todo(axewhy): These functions are not fully implemented yet
+	void showPerformanceOverlayUI();
 	void showEntityListUI(/* An enum of entityType type, Maybe a reference to someArrayOrVectorType entityList */);
 	void showTransformUI(/* A reference to a vector of objects objectList */);
 
 private:
-	GLFWwindow* window;
+	Window& mainWindow;
+	Renderer& renderer;
+	Texture& texture;
+	Input& input;
 
 	ImVec2 windowTopLeft;
 	ImVec2 windowBottomRight;
 
 	double deltaTime;
+	double imGuiTime;
+	double inputTime;
+	double logicTime;
+	double renderTime;
+
 
 	unsigned int selectedEntityType;
 };

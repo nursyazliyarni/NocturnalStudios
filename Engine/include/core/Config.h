@@ -3,15 +3,21 @@
 #pragma once
 #include <string>
 
-//The defaults in Config.h are just a fallback if the JSON is missing/broken/not found.
+#ifndef CONFIG_H
+#define CONFIG_H
+
 struct WindowConfig {
-    int         width = 1280;
-    int         height = 720;
+    int width;
+    int height;
     std::string title = "NocturnalStudios";
-    bool        vsync = true;
+    bool vsync;
 };
 
-// Loads assets/config.json; if file missing/invalid, returns defaults above.
-namespace Config {
-    WindowConfig LoadWindowConfig(const char* path = "assets/config.json");
-}
+struct GameConfig {
+    WindowConfig window;
+};
+
+GameConfig loadConfig(const std::string& filename);
+
+
+#endif 

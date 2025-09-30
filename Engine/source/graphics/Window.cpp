@@ -1,4 +1,17 @@
+/*!------------------------------------------------------------------------------------------------
+    File: Application.cpp
+    Project: NocturnalStudio
+
+    This file contains ...
+
+    Primary Author:
+         Rishika Bimal Attodi
+        - Brief
+
+    All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
 #include "graphics/Window.h"
+#include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <cstdio>
 
@@ -19,8 +32,12 @@ bool Window::create(const WindowDesc& desc) {
         glfwTerminate();
         return false;
     }
-
     glfwMakeContextCurrent(m_win);
+
+    // Initialize GLEW
+    if (glewInit() != GLEW_OK) {
+        std::fprintf(stderr, "Failed to initialize GLEW\n");
+    }
     glfwSwapInterval(m_desc.vsync ? 1 : 0);
     return true;
 }
