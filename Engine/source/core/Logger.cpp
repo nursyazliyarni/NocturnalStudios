@@ -58,4 +58,3 @@ std::string Logger::getUniqueTimeId() {
 #pragma warning(default : 4996)
 	return ss.str() + std::to_string(logCounter++);
 }
-

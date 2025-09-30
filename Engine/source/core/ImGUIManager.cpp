@@ -11,10 +11,19 @@
 		Lau Xiang Yang (100%)
 		- Created the ImGuiManager class and its specializations.
 
+	Secondary Author:
+		Rishika Bimal Attodi
+		- Integrated drawAllSprites and drawViewportShapes
+
 	All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
 *------------------------------------------------------------------------------------------------*/
 
 #include "../include/core/ImGuiManager.h"
+#include <chrono>
+
+namespace {
+	using Clock = std::chrono::high_resolution_clock;
+}
 
 void Gui::updateImGuiManager(double& deltaTime, ImGuiManager& imGuiManager) {
 	imGuiManager.updateDeltaTime(deltaTime);
@@ -34,7 +43,7 @@ void Gui::updateImGuiManager(double& deltaTime, ImGuiManager& imGuiManager) {
 	imGuiManager.endFrame();
 }
 
-ImGuiManager::ImGuiManager(Window& w, Renderer& r, Texture& tex, Input& i) : mainWindow{ w }, renderer{ r }, texture{ tex }, input{i}, windowTopLeft {}, windowBottomRight{}, deltaTime{ 0. }, selectedEntityType{} {
+ImGuiManager::ImGuiManager(Window& w, Renderer& r, Texture& tex, Input& i) : mainWindow{ w }, renderer{ r }, texture{ tex }, input{ i }, windowTopLeft{}, windowBottomRight{}, deltaTime{ 0. }, imGuiTime{ 0. }, inputTime{ 0. }, logicTime{ 0. }, renderTime{ 0. }, selectedEntityType {} {
 
 	// Init ImGui context
 	ImGui::CreateContext();
@@ -92,6 +101,15 @@ Vector2D ImGuiManager::getWindowBottomRight() const {
 	return Vector2D(windowBottomRight.x, windowBottomRight.y);
 }
 
+void ImGuiManager::setSystemTimings(double imGuITime, double logic) {
+	imGuiTime = imGuITime;
+	logicTime = logic;
+}
+
+void ImGuiManager::setRenderTime(double time) {
+	renderTime = time;
+}
+
 void ImGuiManager::showViewportWindowUI() {
 	constexpr float overlayWidthOffset = 300.0f;
 	constexpr float overlayHeightOffset = 200.0f;
@@ -112,6 +130,13 @@ void ImGuiManager::showViewportWindowUI() {
 	const int vw = (int)std::max(1.0f, avail.x);
 	const int vh = (int)std::max(1.0f, avail.y);
 
+	 static int lastW = -1, lastH = -1;
+    if (vw != lastW || vh != lastH) {        // recreate only when needed
+        renderer.initFBO(vw, vh);
+        lastW = vw; lastH = vh;
+    }
+	auto render_start = Clock::now();
+
 	// Initialize and bind FBO for rendering
 	// renderer.initFBO(viewportHeight, viewportWidth);            // REMOVE this (args swapped)
 	renderer.initFBO(vw, vh);                                      // ADD: correct (width, height)
@@ -123,14 +148,25 @@ void ImGuiManager::showViewportWindowUI() {
 	// You can keep your clear (fine for 2D)
 	renderer.clear(0.1f, 0.1f, 0.12f);
 
+
 	// @Todo (axewhy): Render the actual viewport content here, e.g., using a framebuffer texture
 	// Render background to FBO
 	renderer.background_render(texture.get_textureID(0), "bg_texture");
 
-	// ?? ADD: draw all SHAPES from Renderer.cpp (keeps ImGui clean of GL)
+	// behind-sprites pass (scaled)
+	renderer.drawAllSprites(texture, { 3,4 }, /*behindPass=*/true, input.getSpriteScalesPtr());
+
+
+	//draw all SHAPES from Renderer.cpp (keeps ImGui clean of GL) - rishika
 	renderer.drawViewportShapes(vw, vh);
 
+	// front-sprites pass (scaled)
+	renderer.drawAllSprites(texture, { 3,4 }, /*behindPass=*/false, input.getSpriteScalesPtr());
+
 	renderer.unbindFBO();
+	auto render_end = Clock::now();
+	double renderTime = std::chrono::duration<double>(render_end - render_start).count();
+	setRenderTime(renderTime);
 
 	// show FBO in the panel (use the content size so it matches exactly)
 	// ImGui::Image((void*)(intptr_t)renderer.getFBOTexture(), ImVec2(viewportWidth, viewportHeight));
@@ -174,7 +210,7 @@ void ImGuiManager::showMousePosOverlayUI() {
 void ImGuiManager::showPerformanceOverlayUI() {
 	constexpr double secondsToMs = 1000.0;
 	constexpr float width = 300.0f;
-	constexpr float height = 50.0f;
+	constexpr float height = 100.0f;
 
 	ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDecoration |
 		ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
@@ -189,6 +225,8 @@ void ImGuiManager::showPerformanceOverlayUI() {
 	ImGui::Text("Current FPS: %.2f %.2lfms", 1 / deltaTime, deltaTime * secondsToMs);
 
 	// @Todo (axewhy): Add more performance metrics like the percentage of usage between different systems in the game engine
+	ImGui::Text("ImGui: %.2f ms (%.1f%%)", imGuiTime * secondsToMs, (imGuiTime / deltaTime) * 100.0);
+	ImGui::Text("Renderer: %.2f ms (%.1f%%)", renderTime * secondsToMs, (renderTime / deltaTime) * 100.0);
 
 	ImGui::End();
 }
@@ -202,7 +240,7 @@ void ImGuiManager::showEntityListUI(/* Maybe an enum of paramEntityType, Maybe a
 		ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
 
 	// Position the overlay at the top-right corner of the window, below performance overlay
-	ImVec2 windowTopRightPos = { windowBottomRight.x - width, windowTopLeft.y + 150.0f };
+	ImVec2 windowTopRightPos = { windowBottomRight.x - width, windowTopLeft.y + 200.0f };
 	ImGui::SetNextWindowPos(windowTopRightPos);
 	ImGui::SetNextWindowBgAlpha(0.35f);
 	ImGui::SetNextWindowSize({ width, height });
@@ -251,7 +289,7 @@ void ImGuiManager::showTransformUI(/* A reference to a vector of object list obj
 		ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
 
 	// Position the overlay at the top-right corner of the window, below entity list overlay
-	ImVec2 windowTopRightPos = { windowBottomRight.x - width, windowTopLeft.y + 250.0f };
+	ImVec2 windowTopRightPos = { windowBottomRight.x - width, windowTopLeft.y + 300.0f };
 	ImGui::SetNextWindowPos(windowTopRightPos);
 	ImGui::SetNextWindowBgAlpha(0.35f);
 	ImGui::SetNextWindowSize({ width, height });
