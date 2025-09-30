@@ -8,6 +8,7 @@
 //and have a copy of one of each of the object in here?
 
 PrefabManager::PrefabManager(std::string filename) :list{} {
+
 	std::ifstream objFile(filename);
 	if (objFile)
 	{
@@ -24,7 +25,11 @@ PrefabManager::PrefabManager(std::string filename) :list{} {
 				{
 					for (const auto& comp : item["components"].GetArray()) {
 
-						
+						//need to add error checking 
+						if (true)
+						{
+
+						}
 
 
 					}
