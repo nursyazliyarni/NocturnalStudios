@@ -40,6 +40,10 @@ public:
 	void getDeltaTime(double& dt) const;
 	void updateWindowTopLeft(const ImVec2& topLeft);
 	void updateWindowBottomRight(const ImVec2& bottomRight);
+	void setSystemTimings(double imGuiTime, double input);
+	
+	// temp setter for render time since renderer is called in showViewportWindowUI
+	void setRenderTime(double time);
 
 	void startFrame();
 	void endFrame();
@@ -65,6 +69,11 @@ private:
 	ImVec2 windowBottomRight;
 
 	double deltaTime;
+	double imGuiTime;
+	double inputTime;
+	double logicTime;
+	double renderTime;
+
 
 	unsigned int selectedEntityType;
 };
