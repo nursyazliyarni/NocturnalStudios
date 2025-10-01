@@ -302,13 +302,14 @@ void Renderer::drawAllSprites(Texture& tex,
     bool behindPass,
     int viewportW, int viewportH)
 {
-    drawAllSprites(tex, frontIdxs, behindPass, /*scales*/ nullptr, viewportW, viewportH);
+    drawAllSprites(tex, frontIdxs, behindPass, /*scales*/ nullptr, /*rotations*/ nullptr, viewportW, viewportH);
 }
 
 void Renderer::drawAllSprites(Texture& tex,
     const std::vector<int>& frontIdxs,
     bool behindPass,
     const float* scales,
+    const float* rotations,
     int viewportW, int viewportH)
 {
     //struct QuadArgs { int idx; float x, y, w, h; };
@@ -352,6 +353,16 @@ void Renderer::drawAllSprites(Texture& tex,
             int ti = sprites[i].idx;        // texture index: 1..N-1
             if (ti >= 0) s = scales[ti];    // array sized by Input::initSpriteScales()
         }
+
+        // ROTATION 
+        float angle = 0.0f;
+        if (rotations != nullptr) {
+            int ti = sprites[i].idx;
+            if (ti >= 0) {
+                //angle = rotations[ti]; // in radians
+                angle = rotations[ti] * glm::pi<float>() / 180.0f; // deg TO rad
+            }
+        }
         //float x = sprites[i].x;
         //float y = sprites[i].y;
         //float w = sprites[i].w * s;
@@ -364,22 +375,72 @@ void Renderer::drawAllSprites(Texture& tex,
         float h = sprites[i].nh * viewportH * s;
 
 
+        // Find center
+        float cx = x + w * 0.5f;
+        float cy = y + h * 0.5f;
+
+        // Compute rotated corners
+        float cosA = std::cos(angle);
+        float sinA = std::sin(angle);
+
+        // Helper to rotate each corner
+        float x0, y0, x1, y1, x2, y2, x3, y3;
+
+        // top-left
+        float dx = x - cx;
+        float dy = y - cy;
+        x0 = cx + dx * cosA - dy * sinA;
+        y0 = cy + dx * sinA + dy * cosA;
+
+        // top-right
+        dx = (x + w) - cx;
+        dy = y - cy;
+        x1 = cx + dx * cosA - dy * sinA;
+        y1 = cy + dx * sinA + dy * cosA;
+
+        // bottom-right
+        dx = (x + w) - cx;
+        dy = (y + h) - cy;
+        x2 = cx + dx * cosA - dy * sinA;
+        y2 = cy + dx * sinA + dy * cosA;
+
+        // bottom-left
+        dx = x - cx;
+        dy = (y + h) - cy;
+        x3 = cx + dx * cosA - dy * sinA;
+        y3 = cy + dx * sinA + dy * cosA;
+
+
+
         GLuint t = tex.get_textureID((size_t)sprites[i].idx);
 
         glEnable(GL_TEXTURE_2D);
         glBindTexture(GL_TEXTURE_2D, t);
 
-        // two triangles (no GL_QUADS)
+        //// two triangles 
+        //glBegin(GL_TRIANGLES);
+        //// tri 1
+        //glTexCoord2f(0.f, 0.f); glVertex2f(x, y);
+        //glTexCoord2f(1.f, 0.f); glVertex2f(x + w, y);
+        //glTexCoord2f(1.f, 1.f); glVertex2f(x + w, y + h);
+        //// tri 2
+        //glTexCoord2f(0.f, 0.f); glVertex2f(x, y);
+        //glTexCoord2f(1.f, 1.f); glVertex2f(x + w, y + h);
+        //glTexCoord2f(0.f, 1.f); glVertex2f(x, y + h);
+        //glEnd();
+
+        // two triangles using rotated corners
         glBegin(GL_TRIANGLES);
         // tri 1
-        glTexCoord2f(0.f, 0.f); glVertex2f(x, y);
-        glTexCoord2f(1.f, 0.f); glVertex2f(x + w, y);
-        glTexCoord2f(1.f, 1.f); glVertex2f(x + w, y + h);
+        glTexCoord2f(0.f, 0.f); glVertex2f(x0, y0);
+        glTexCoord2f(1.f, 0.f); glVertex2f(x1, y1);
+        glTexCoord2f(1.f, 1.f); glVertex2f(x2, y2);
         // tri 2
-        glTexCoord2f(0.f, 0.f); glVertex2f(x, y);
-        glTexCoord2f(1.f, 1.f); glVertex2f(x + w, y + h);
-        glTexCoord2f(0.f, 1.f); glVertex2f(x, y + h);
+        glTexCoord2f(0.f, 0.f); glVertex2f(x0, y0);
+        glTexCoord2f(1.f, 1.f); glVertex2f(x2, y2);
+        glTexCoord2f(0.f, 1.f); glVertex2f(x3, y3);
         glEnd();
+
 
         glBindTexture(GL_TEXTURE_2D, 0);
         glDisable(GL_TEXTURE_2D);

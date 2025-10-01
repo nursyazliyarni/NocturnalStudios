@@ -36,6 +36,7 @@ public:
         const std::vector<int>& frontIdxs,
         bool behindPass,
         const float* scales,
+        const float* rotations,
         int viewportW, int viewportH); // actual impl
 
 

@@ -153,9 +153,15 @@ void ImGuiManager::showViewportWindowUI() {
 	// Render background to FBO
 	renderer.background_render(texture.get_textureID(0), "bg_texture");
 
+	input.updateRotations();
+
 	// behind-sprites pass (scaled)
 	//renderer.drawAllSprites(texture, { 3,4 }, /*behindPass=*/true,  input.getSpriteScalesPtr());
-	renderer.drawAllSprites(texture, { 3,4 }, true, input.getSpriteScalesPtr(), vw, vh);
+	//renderer.drawAllSprites(texture, { 3,4 }, true, input.getSpriteScalesPtr(), input.getSpriteScalesPtr(), input.getSpriteRotationsPtr(), vw, vh);
+	renderer.drawAllSprites(texture, { 3,4 }, true,
+		input.getSpriteScalesPtr(),
+		input.getSpriteRotationsPtr(),
+		vw, vh);
 
 
 
@@ -164,7 +170,12 @@ void ImGuiManager::showViewportWindowUI() {
 
 	// front-sprites pass (scaled)
 	//renderer.drawAllSprites(texture, { 3,4 }, /*behindPass=*/false, input.getSpriteScalesPtr());
-	renderer.drawAllSprites(texture, { 3,4 }, false, input.getSpriteScalesPtr(), vw, vh);
+	//renderer.drawAllSprites(texture, { 3,4 }, false, input.getSpriteScalesPtr(), input.getSpriteScalesPtr(), input.getSpriteRotationsPtr(), vw, vh);
+	renderer.drawAllSprites(texture, { 3,4 }, false,
+		input.getSpriteScalesPtr(),
+		input.getSpriteRotationsPtr(),
+		vw, vh);
+
 
 	renderer.unbindFBO();
 	auto render_end = Clock::now();

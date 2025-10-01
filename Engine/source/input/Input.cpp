@@ -88,18 +88,82 @@ inline int keyToDigit(int key) {
 }
 
 
+//void Input::initSpriteScales(size_t textureCount) {
+//    if (textureCount > 1) {
+//        spriteCount = textureCount - 1;
+//    }
+//    else {
+//        spriteCount = 0;
+//    }
+//
+//    spriteScales.assign(textureCount, 1.0f);     // all scales = 1.0
+//    spriteRotations.assign(textureCount, 0.0f);  // all rotations = 0.0
+//
+//    if (spriteCount == 0) {
+//        selectedSprite = -1;
+//    }
+//    else if (selectedSprite > (int)spriteCount) {
+//        selectedSprite = -1;
+//    }
+//}
+
+
 void Input::initSpriteScales(size_t textureCount) {
-    spriteCount = (textureCount > 1) ? (textureCount - 1) : 0;
-    spriteScales.assign(textureCount, 1.0f);                // [0]=bg, [1-spriteCount]=sprites
-    if (spriteCount == 0) selectedSprite = -1;              // none if no sprites
-    else if (selectedSprite > (int)spriteCount) selectedSprite = -1;
+    if (textureCount > 1) {
+        spriteCount = textureCount - 1;   // skip background
+    }
+    else {
+        spriteCount = 0;
+    }
+
+    // assign default values
+    spriteScales.assign(textureCount, 1.0f);      // all scales = 1.0
+    spriteRotations.assign(textureCount, 0.0f);   // all rotations = 0 deg
+    spriteRotatingCW.assign(textureCount, false); // all toggles off
+    spriteRotatingCCW.assign(textureCount, false);
+
+    if (spriteCount == 0) {
+        selectedSprite = -1;
+    }
+    else if (selectedSprite > (int)spriteCount) {
+        selectedSprite = -1;
+    }
 }
+
+
+
 
 static inline void printSel(int s) {
     if (s < 0) std::cout << "Selected sprite: NONE\n";
     else if (s == 0) std::cout << "Selected sprite: ALL\n";
     else std::cout << "Selected sprite: " << s << "\n";
 }
+
+void Input::initSpriteRotations(size_t count) {
+    spriteRotations.assign(count, 0.0f);       // all start at 0 deg
+    spriteRotatingCW.assign(count, false);     // not rotating initially
+    spriteRotatingCCW.assign(count, false);
+}
+
+// return pointer (for renderer)
+const float* Input::getSpriteRotationsPtr() const {
+    if (spriteRotations.empty()) return nullptr;
+    return spriteRotations.data();
+}
+
+void Input::updateRotations() {
+    for (size_t i = 1; i < spriteRotations.size(); ++i) {
+        if (spriteRotatingCW[i]) {
+            spriteRotations[i] += 1.0f;    // 1 deg per frame (adjust speed if needed)
+            if (spriteRotations[i] >= 360.0f) spriteRotations[i] -= 360.0f;
+        }
+        if (spriteRotatingCCW[i]) {
+            spriteRotations[i] -= 1.0f;
+            if (spriteRotations[i] < 0.0f) spriteRotations[i] += 360.0f;
+        }
+    }
+}
+
 
 void Input::keyboard_input_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
     ImGui_ImplGlfw_KeyCallback(window, key, scancode, action, mods);
@@ -249,6 +313,113 @@ void Input::keyboard_input_callback(GLFWwindow* window, int key, int scancode, i
         }
         return;
     }
+
+    // Toggle counter-clockwise rotation (Q key)
+    if (key == GLFW_KEY_Q) {
+        if (self.spriteCount > 0) {
+            if (self.selectedSprite == 0) {
+                // ALL mode ? check if currently rotating CCW
+                bool allCCW = true;
+                for (size_t i = 1; i <= self.spriteCount && i < self.spriteRotatingCCW.size(); ++i) {
+                    if (!self.spriteRotatingCCW[i]) {
+                        allCCW = false;
+                        break;
+                    }
+                }
+
+                if (allCCW) {
+                    // If already CCW, turn OFF
+                    for (size_t i = 1; i <= self.spriteCount && i < self.spriteRotatingCCW.size(); ++i) {
+                        self.spriteRotatingCCW[i] = false;
+                    }
+                    std::cout << "All sprites CCW = OFF\n";
+                }
+                else {
+                    // Else turn CCW ON and CW OFF
+                    for (size_t i = 1; i <= self.spriteCount && i < self.spriteRotatingCCW.size(); ++i) {
+                        self.spriteRotatingCCW[i] = true;
+                        self.spriteRotatingCW[i] = false;
+                    }
+                    std::cout << "All sprites CCW = ON\n";
+                }
+            }
+            else if (self.selectedSprite >= 1 &&
+                (size_t)self.selectedSprite < self.spriteRotatingCCW.size()) {
+                bool nowOn = !self.spriteRotatingCCW[self.selectedSprite];
+                self.spriteRotatingCCW[self.selectedSprite] = nowOn;
+                self.spriteRotatingCW[self.selectedSprite] = false;
+                std::cout << "Sprite[" << self.selectedSprite << "] CCW = "
+                    << (nowOn ? "ON" : "OFF") << "\n";
+            }
+        }
+        return;
+    }
+
+    // Toggle clockwise rotation (E key)
+    if (key == GLFW_KEY_E) {
+        if (self.spriteCount > 0) {
+            if (self.selectedSprite == 0) {
+                // ALL mode ? check if currently rotating CW
+                bool allCW = true;
+                for (size_t i = 1; i <= self.spriteCount && i < self.spriteRotatingCW.size(); ++i) {
+                    if (!self.spriteRotatingCW[i]) {
+                        allCW = false;
+                        break;
+                    }
+                }
+
+                if (allCW) {
+                    // If already CW, turn OFF
+                    for (size_t i = 1; i <= self.spriteCount && i < self.spriteRotatingCW.size(); ++i) {
+                        self.spriteRotatingCW[i] = false;
+                    }
+                    std::cout << "All sprites CW = OFF\n";
+                }
+                else {
+                    // Else turn CW ON and CCW OFF
+                    for (size_t i = 1; i <= self.spriteCount && i < self.spriteRotatingCW.size(); ++i) {
+                        self.spriteRotatingCW[i] = true;
+                        self.spriteRotatingCCW[i] = false;
+                    }
+                    std::cout << "All sprites CW = ON\n";
+                }
+            }
+            else if (self.selectedSprite >= 1 &&
+                (size_t)self.selectedSprite < self.spriteRotatingCW.size()) {
+                bool nowOn = !self.spriteRotatingCW[self.selectedSprite];
+                self.spriteRotatingCW[self.selectedSprite] = nowOn;
+                self.spriteRotatingCCW[self.selectedSprite] = false;
+                std::cout << "Sprite[" << self.selectedSprite << "] CW = "
+                    << (nowOn ? "ON" : "OFF") << "\n";
+            }
+        }
+        return;
+    }
+
+
+    // Reset all sprites (O key)
+    if (key == GLFW_KEY_O) {
+        if (self.spriteCount > 0) {
+            // Reset scales
+            for (size_t i = 1; i <= self.spriteCount && i < self.spriteScales.size(); ++i) {
+                self.spriteScales[i] = 1.0f;
+            }
+
+            // Reset rotations
+            for (size_t i = 1; i <= self.spriteCount && i < self.spriteRotations.size(); ++i) {
+                self.spriteRotations[i] = 0.0f;
+                self.spriteRotatingCW[i] = false;
+                self.spriteRotatingCCW[i] = false;
+            }
+
+            std::cout << "All sprites reset to original position, size, and rotation.\n";
+        }
+        return;
+    }
+
+
+
+
 
     // your original WASD prints 
         switch (key) {
