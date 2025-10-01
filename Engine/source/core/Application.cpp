@@ -74,8 +74,6 @@ int Application::run() {
     // Initialize ImGui Manager
     // NOTE: ImGuiManager owns the Viewport pass; it will call Renderer to draw bg + shapes into an FBO.
     //       We just pass references here. No drawing is done in this file anymore.
-    //std::vector<char const*> vs{ "assets/textures/DGPEN_LOGO.png" };
-
 
     std::vector<char const*> vs{
     "assets/textures/DGPEN_LOGO.png",   // [0] background ONLY
@@ -88,16 +86,13 @@ int Application::run() {
     Texture  txt_obj(vs);
     Renderer bg_render("assets/shaders/background.vert", "assets/shaders/background.frag");
 
-    Input      game_input_obj;
-    Game_Loop  game_loop_obj;
-    ImGuiManager imGuiManager(m_window, bg_render, txt_obj, game_input_obj);
-
-     
-
-    game_input_obj.process_user_input(m_window.handle()); // installs callbacks + sets user pointer
+    Input      game_input_obj(m_window.handle());
+    Physics    game_physics_obj;
+    Game_Loop  game_loop_obj(m_window.handle());
+    ImGuiManager imGuiManager(m_window, bg_render, txt_obj, game_input_obj, game_physics_obj);
 
     // make Input’s scale array match the number of textures
-    game_input_obj.initSpriteScales(txt_obj.count());
+    //game_input_obj.initSpriteScales(txt_obj.count());
 
     // 4) simple loop
     while (!m_window.shouldClose()) {
@@ -106,11 +101,8 @@ int Application::run() {
         double dt = game_loop_obj.calculate_DT();          // our deltaTime
         double total_time = game_loop_obj.get_accum_GT();  // accumulated game time
         game_loop_obj.display_FPS(m_window.handle(), c.window.title, dt); // display FPS
-
-        // Main Game Loop Update Here
-        game_loop_obj.update(m_window.handle());
-        //true->get normalized value, false->unnormalized value
-        game_input_obj.update_mouse_pos(m_window.handle(),true,c.window.width,c.window.height);
+        game_input_obj.update_mouse_pos(m_window.handle());
+        game_input_obj.GET_mouse_delta();
 
         // handle resize: update viewport/projection if size changed (no callbacks)
 

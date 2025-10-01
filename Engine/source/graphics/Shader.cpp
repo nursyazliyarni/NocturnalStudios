@@ -6,7 +6,7 @@ Shader::Shader(const char* vertex_path, const char* fragment_path) :program_obj{
     std::ifstream vertex_ShaderFile{ vertex_path };
     std::ifstream fragment_ShaderFile{ fragment_path };
     if (!vertex_ShaderFile || !fragment_ShaderFile) { //if file fails to open
-        std::cerr << "File cannot be opened!\n";
+        logger.error("Shader File cannot be opened!");
         return;
     }
 
@@ -19,6 +19,21 @@ Shader::Shader(const char* vertex_path, const char* fragment_path) :program_obj{
     Compile_Shaders(vertex_Shader_ss.str().c_str(), fragment_Shader_ss.str().c_str());
 }
 
+Shader::~Shader() { glDeleteProgram(program_obj); }
+
+Shader::Shader(Shader&& rhs_shader) noexcept :program_obj{ rhs_shader.program_obj } {
+    rhs_shader.program_obj = 0; //release ownership of rhs_shader
+}
+
+Shader& Shader::operator=(Shader&& rhs_shader) noexcept {
+    if (this != &rhs_shader) { //prevent self-copy assignment here
+        glDeleteProgram(program_obj); //delete this->program_obj
+        program_obj = rhs_shader.program_obj; //this->program_obj steal resources
+        rhs_shader.program_obj = 0; //release ownership of rhs_shader
+    }
+    return *this;
+}
+
 void Shader::Compile_Shaders(const char* vertex_Code, const char* fragment_Code) {
     GLuint vertex_shader, fragment_shader; GLint check_status;
     //glCreateShader creates empty shader object
@@ -29,7 +44,7 @@ void Shader::Compile_Shaders(const char* vertex_Code, const char* fragment_Code)
     glShaderSource(vertex_shader, 1, &vertex_Code, NULL);
     glCompileShader(vertex_shader); //compile vertex_shader object
     //if return is true, it means occur has occured during compilation
-    if (Check_Shaders_Errors("Compile", vertex_shader, check_status)) { 
+    if (Check_Shaders_Errors(Shader_check_state::compile, vertex_shader, check_status)) { 
         return; //exit from this function immediately, 
     }
 
@@ -38,7 +53,7 @@ void Shader::Compile_Shaders(const char* vertex_Code, const char* fragment_Code)
     glShaderSource(fragment_shader, 1, &fragment_Code, NULL);
     glCompileShader(fragment_shader);
     //if return is true, it means occur has occured during compilation
-    if (Check_Shaders_Errors("Compile", fragment_shader, check_status)) {
+    if (Check_Shaders_Errors(Shader_check_state::compile, fragment_shader, check_status)) {
         return; //exit from this function immediately, 
     }
     //we will ONLY link the program if no eccur occured for compilation of vertex_shader and fragment_shader
@@ -53,7 +68,7 @@ void Shader::Link_Program(GLuint &vertex_shader, GLuint &fragment_shader) {
     glAttachShader(program_obj, fragment_shader);
     glLinkProgram(program_obj); //glLinkProgram links the program object
     //if return is true, it means occur has occured during linking
-    if (Check_Shaders_Errors("Link", program_obj, check_status)) {
+    if (Check_Shaders_Errors(Shader_check_state::link, program_obj, check_status)) {
         glDeleteShader(vertex_shader);
         glDeleteShader(fragment_shader);
         return; //exit from this function immediately, 
@@ -65,8 +80,8 @@ void Shader::Link_Program(GLuint &vertex_shader, GLuint &fragment_shader) {
     glDeleteShader(fragment_shader);
 }
 
-bool Shader::Check_Shaders_Errors(const char* check_input, GLuint &shader_obj, GLint &check_status) {
-    if (check_input != "Link") { //check if any error occurs while compiling
+bool Shader::Check_Shaders_Errors(Shader_check_state check_input, GLuint &shader_obj, GLint &check_status) {
+    if (check_input == Shader_check_state::compile) { //check if any error occurs while compiling
         glGetShaderiv(shader_obj, GL_COMPILE_STATUS, &check_status);
         if (!check_status) { //if compile operation on vertex_shader/vertex_fragment fails
             GLint info_length{ 0 };
@@ -74,7 +89,7 @@ bool Shader::Check_Shaders_Errors(const char* check_input, GLuint &shader_obj, G
             std::vector<GLchar>info_log(info_length);
             //use nullptr since number of char written to info_log is not important here
             glGetShaderInfoLog(shader_obj, info_length, nullptr, info_log.data());
-            std::cerr << "Compilation fails here:" << info_log.data() << "\n";
+            logger.error("Compilation fails here: " + static_cast<std::string>(info_log.data()));
             glDeleteShader(shader_obj); //deallocate vertex_shader/vertex_fragment object
             return true; //error has occured
         }
@@ -88,7 +103,7 @@ bool Shader::Check_Shaders_Errors(const char* check_input, GLuint &shader_obj, G
             std::vector<GLchar>info_log(info_length);
             //use nullptr since number of char written to info_log is not important here
             glGetProgramInfoLog(shader_obj, info_length, nullptr, info_log.data());
-            std::cerr << "Link operation fails here:" << info_log.data() << "\n";
+            logger.error("Link operation fails here: " + static_cast<std::string>(info_log.data()));
             return true; //error has occured
         }
     }
@@ -101,4 +116,53 @@ void Shader::user_Shader_program() {
 
 GLuint& Shader::get_programID() {
     return program_obj;
+}
+
+//A single float uniform
+void Shader::SET_uniform_variable(const GLchar* uniform_VARNAME, GLfloat uniform_value) {
+    glUniform1f(glGetUniformLocation(program_obj, uniform_VARNAME), uniform_value);
+}
+
+//A 2-component float vector(vec2)
+void Shader::SET_uniform_variable(const GLchar* uniform_VARNAME, GLfloat uniform_value_v1, GLfloat uniform_value_v2) {
+    glUniform2f(glGetUniformLocation(program_obj, uniform_VARNAME), uniform_value_v1, uniform_value_v2);
+}
+
+//A single integer uniform
+void Shader::SET_uniform_variable(const GLchar* uniform_VARNAME, GLint uniform_value) {
+    glUniform1i(glGetUniformLocation(program_obj, uniform_VARNAME),uniform_value);
+}
+
+//A 2-component int vector(vec2)
+void Shader::SET_uniform_variable(const GLchar* uniform_VARNAME, GLint uniform_value_v1, GLint uniform_value_v2) {
+    glUniform2i(glGetUniformLocation(program_obj, uniform_VARNAME), uniform_value_v1, uniform_value_v2);
+}
+
+//A 1d-array of 1 OR 2-float component
+void Shader::SET_arr_uniform_variable(const GLchar* uniform_VARNAME, GLsizei num_value, 
+    const GLfloat* uniform_value_arr, arr_num_component num_component) 
+{
+    //the user decides whether they want 1d-array of 1-float component OR 2-float component
+    //size of array == value for each component * num of component
+    if (num_component == arr_num_component::one_component) {
+        glUniform1fv(glGetUniformLocation(program_obj, uniform_VARNAME), num_value, uniform_value_arr);
+    }
+
+    else { //two-component
+        glUniform2fv(glGetUniformLocation(program_obj, uniform_VARNAME), num_value, uniform_value_arr);
+    }
+}
+
+//A 1d-array of 1 OR 2-integer component
+void Shader::SET_arr_uniform_variable(const GLchar* uniform_VARNAME, GLsizei num_value,
+    const GLint* uniform_value_arr, arr_num_component num_component)
+{
+    //the user decides whether they want 1d-array of 1-integer component OR 2-integer component 
+    if (num_component == arr_num_component::one_component) {
+        glUniform1iv(glGetUniformLocation(program_obj, uniform_VARNAME), num_value, uniform_value_arr);
+    }
+
+    else { //two-component
+        glUniform2iv(glGetUniformLocation(program_obj, uniform_VARNAME), num_value, uniform_value_arr);
+    }
 }

@@ -29,12 +29,13 @@
 #include "../include/graphics/Renderer.h"
 #include "../include/graphics/Texture.h"
 #include "../include/input/Input.h"
+#include "../include/physics/Physics.h"
 
 extern Logger logger;
 
 class ImGuiManager {
 public:
-	ImGuiManager(Window& window, Renderer& renderer, Texture& tex, Input& input);
+	ImGuiManager(Window& window, Renderer& renderer, Texture& tex, Input& input, Physics& physics);
 	~ImGuiManager();
 
 	void updateDeltaTime(double& dt);
@@ -66,6 +67,7 @@ private:
 	Renderer& renderer;
 	Texture& texture;
 	Input& input;
+	Physics& physics;
 
 	ImVec2 windowTopLeft;
 	ImVec2 windowBottomRight;
