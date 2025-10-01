@@ -17,10 +17,22 @@
 // [====================*====================]
 // Default Constructor
 
-GameObject::GameObject(std::string n) :id{}, name{ name }, active{ false }, enabled{ false }, components{}, parent_object{} {}
+GameObject::GameObject(std::string n) :id{}, name{ n }, active{ false }, enabled{ false }, components{}, parent_object{} {}
+
+GameObject::GameObject(const GameObject& obj) :id{}, name{ obj.name }, active{ obj.active }, enabled{ obj.enabled }, components{}, parent_object{ obj.parent_object } {
+	for ( const auto& comp:obj.components)
+	{
+		components.push_back(comp->Clone());
+	}
+	for (const auto& comp : components)
+	{
+		comp->SetOwner(this);
+	}
+}
+
 
 GameObject::~GameObject() {
-	ClearParent(); std::cout << "destroyed " << name << '\n';
+	ClearParent(); //std::cout << "destroyed " << name << '\n';
 }
 
 
@@ -80,8 +92,13 @@ void GameObject::ClearParent() {parent_object = nullptr;}
 //  Print & Load
 // [====================*====================]
 void GameObject::Print(std::ostream& out) const {
-	out << "GameObject " << id
-		<< " - Active: " << active << ", Enabled: " << enabled << '\n';
+	out << "GameObject " << name
+		<< " - Active: " << active << ", Enabled: " << enabled<<", Components: ";
+	for (const auto& comp : components)
+	{
+		out << comp->ComponenetName() << ' ';
+	}
+	out << '\n';
 }
 
 void GameObject::Load(std::istream&) {

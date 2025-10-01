@@ -29,30 +29,34 @@ PrefabManager::PrefabManager(std::string filename) :list{} {
 
 		if (doc.IsArray()) {
 			for (const auto& item : doc.GetArray()) {
-				//std::cout << "Name: " << item["name"].GetString() << std::endl;
+				//std::cout << "Creating Gameobj. Name: " << item["name"].GetString();
 				std::string name{ item["name"].GetString() };
 				list.emplace(name, std::make_unique<GameObject>(name));
 				GameObject* obj = list[name].get();
 				if (item["components"].IsArray())
 				{
+					//std::cout << "|| Components: ";
 					for (const auto& comp : item["components"].GetArray()) {
 
 						//need to add error checking 
 						if (comp["type"].IsString())
 						{ 
+							//std::cout << comp["type"].GetString()<<"{";
 							std::unique_ptr<Component> component{};
 							component = ComponentFactory::TryCreate(comp["type"].GetString(), comp);
 							if (component)
 							{
 								obj->Attach(std::move(component));
-								std::cout << "Component Attatched: " << comp["type"].GetString() << std::endl;
+								//std::cout << "Component Attatched: " << comp["type"].GetString() << std::endl;
 							}
+							//std::cout <<"} ";
 						}
 
 
 					}
+					//std::cout << "||";
 				}
-				//std::cout << "GameObject Registered: " << name << '\n';
+				//std::cout <<  '\n';
 			}
 		}
 	}

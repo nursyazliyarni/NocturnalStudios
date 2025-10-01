@@ -28,11 +28,6 @@ private:
 
 	//flags to denote activity
 	bool active{ false }, enabled{ false };
-	
-	//Transform
-	//float scale{ 1.f };
-	//Vector3D global_position{}, local_position{};
-	//Matrix<4> global_transform{};
 
 	//Other Components
 	std::vector<std::unique_ptr<Component>> components{};
@@ -49,8 +44,11 @@ public:
 	GameObject()=default;
 	GameObject(std::string);
 
+	GameObject(const GameObject&);
+
 
 	~GameObject();
+
 
 
 	// [====================*====================]

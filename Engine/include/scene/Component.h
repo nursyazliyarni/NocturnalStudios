@@ -41,6 +41,7 @@ public:
 	virtual void Render();
 	virtual bool Collide();
 	virtual void Logic();
+    std::string ComponenetName() const;
 };
 
 

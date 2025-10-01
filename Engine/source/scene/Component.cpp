@@ -3,7 +3,9 @@
 
 Component::Component(COMPONENT_TYPE t, std::string s) :type{ t }, c_name{ s }, owner{ nullptr } {}
 Component::Component(const Component& comp) :type{ comp.type }, c_name{ comp.c_name }, owner{ nullptr } {}
-
+std::string Component::ComponenetName() const {
+	return c_name;
+}
 void Component::SetOwner(GameObject* o) { owner = o; }
 
 CircleRenderer::CircleRenderer(float r) :Component{ RENDERING,"Cricle Renderer" }, radius{ r } {}
@@ -11,6 +13,7 @@ CircleRenderer::CircleRenderer(const rapidjson::Value& j) :Component{ RENDERING,
 	if (j["radius"].IsFloat())
 	{
 		radius = j["radius"].GetFloat();
+		//std::cout<<" radius: "<< j["radius"].GetFloat();
 	}
 }
 CircleRenderer::CircleRenderer(const CircleRenderer& c) :Component{ c }, radius{ c.radius } {}
@@ -24,10 +27,12 @@ RectRenderer::RectRenderer(const rapidjson::Value& j) :Component{ RENDERING,"Rec
 	if (j["width"].IsFloat())
 	{
 		width = j["width"].GetFloat();
+		//std::cout << " width: " << j["width"].GetFloat();
 	}
 	if (j["height"].IsFloat())
 	{
 		height = j["height"].GetFloat();
+		//std::cout << " height: " << j["height"].GetFloat();
 	}
 }
 RectRenderer::RectRenderer(const RectRenderer& c) :Component{ c }, width{ c.width }, height{ c.height } {}
