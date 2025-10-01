@@ -2,32 +2,29 @@
 #include "stb_image.h"
 #include "graphics/Texture.h"
 
-Texture::Texture(std::vector<char const*> &image_path_v):textureID_storage(image_path_v.size()) {
-	stbi_set_flip_vertically_on_load(false);
-	int image_width, image_height, num_components;
+Texture::Texture(std::vector<char const*> &image_path_v):texture_info_vector(image_path_v.size()) {
+	//stbi_set_flip_vertically_on_load(true);
+	int num_components;
 	for (size_t index{ 0 }; index < image_path_v.size(); index++) {
-		//image in pixel, num_components->image components for image file,
-		unsigned char* image_data{ stbi_load(image_path_v[index], &image_width, &image_height, &num_components, 0)};
+		//image in pixel, width, height num_components->image components for image file,
+		unsigned char* image_data{ stbi_load(image_path_v[index], &texture_info_vector[index].image_dimension.first, 
+			&texture_info_vector[index].image_dimension.second, &num_components, 0)};
 		if (!image_data) { //if image loading fails
-			std::cout << "Failed to load texture: " << stbi_failure_reason() << "\n";
+			logger.error("Failed to load texture "+ std::string(image_path_v[index])+": "+
+				        ((stbi_failure_reason())));
 			continue; //skip this iteration
 		}
+		logger.log("Texture "+std::string(image_path_v[index])+" loads successfully");
 
 		//GLuint/Glenum->unsigned int, Glsizei->int
-		//glGenTextures(textureID_storage.size(), &textureID_storage[index]); //GLsizei, GLuint*
-		glGenTextures(1, &textureID_storage[index]);
+		//generate 1 unique textureID at a time
+		glGenTextures(1, &texture_info_vector[index].textureID_storage); //GLsizei, GLuint*
+		glBindTexture(GL_TEXTURE_2D, texture_info_vector[index].textureID_storage); //GLenum texture_target, Gluint
 
-		glBindTexture(GL_TEXTURE_2D, textureID_storage[index]); //GLenum texture_target, Gluint
 		//GLenum texture_target,level of mipmap reduction image{0},image_dimension,border(must be 0), 
 		//format of the pixel data,data type of the pixel data,pointer to the image_data
-
-	
-
-
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image_width, image_height, 0, GL_RGBA, GL_UNSIGNED_BYTE,
-			         image_data);
-
-
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texture_info_vector[index].image_dimension.first, 
+			texture_info_vector[index].image_dimension.second, 0, GL_RGBA, GL_UNSIGNED_BYTE, image_data);
 
 		//Set texture wrapping AND filtering options
 		//S->x-axis,T->y->axis,GL_CLAMP_TO_EDGE->clamp coordinates of texture between 0 and 1
@@ -40,16 +37,31 @@ Texture::Texture(std::vector<char const*> &image_path_v):textureID_storage(image
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		stbi_image_free(image_data); //free the loaded image
-
 	}
-}
-
-GLuint Texture::get_textureID(size_t input_index) {
-	return textureID_storage[input_index];
 }
 
 Texture::~Texture() {
-	if (!textureID_storage.empty()) { //if vector.size()!=0
-		glDeleteTextures(textureID_storage.size(), textureID_storage.data()); //delete all textures here
+	if (!texture_info_vector.empty()) { //if vector.size()!=0
+		for (size_t index{ 0 }; index < get_totalTexture(); index++) {
+			//delete 1 unique textureID at a time
+			glDeleteTextures(1, &texture_info_vector[index].textureID_storage);
+		}
 	}
+}
+
+//How many textures are loaded (used to size the scale array)
+size_t Texture::get_totalTexture() const {
+	return texture_info_vector.size();
+}
+
+const GLuint& Texture::get_textureID(size_t input_index) const {
+	return texture_info_vector[input_index].textureID_storage;
+}
+
+const int& Texture::get_texture_width(size_t input_index) const {
+	return texture_info_vector[input_index].image_dimension.first;
+}
+
+const int& Texture::get_texture_height(size_t input_index) const {
+	return texture_info_vector[input_index].image_dimension.second;
 }

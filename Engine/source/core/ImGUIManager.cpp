@@ -43,8 +43,10 @@ void Gui::updateImGuiManager(double& deltaTime, ImGuiManager& imGuiManager) {
 	imGuiManager.endFrame();
 }
 
-ImGuiManager::ImGuiManager(Window& w, Renderer& r, Texture& tex, Input& i) : mainWindow{ w }, renderer{ r }, texture{ tex }, input{ i }, windowTopLeft{}, windowBottomRight{}, deltaTime{ 0. }, imGuiTime{ 0. }, inputTime{ 0. }, logicTime{ 0. }, renderTime{ 0. }, selectedEntityType {} {
-
+ImGuiManager::ImGuiManager(Window& w, Renderer& r, Texture& tex, Input& i, Physics& p) : mainWindow{ w }, renderer{ r }, 
+texture{ tex }, input{ i }, physics{ p }, windowTopLeft {}, windowBottomRight{}, deltaTime{ 0. }, imGuiTime{ 0. }, 
+inputTime{ 0. }, logicTime{ 0. }, renderTime{ 0. }, selectedEntityType{} 
+{
 	// Init ImGui context
 	ImGui::CreateContext();
 
@@ -57,6 +59,8 @@ ImGuiManager::ImGuiManager(Window& w, Renderer& r, Texture& tex, Input& i) : mai
 	// Setup style
 	ImGui::StyleColorsClassic();
 	ImGuiIO& io = ImGui::GetIO();
+
+	r.initAllSprites(); //init all the sprite needed for later rendering
 
 	// Logging
 	logger.log("ImGui initialized successfully.");
@@ -134,9 +138,11 @@ void ImGuiManager::showViewportWindowUI() {
 
 	 static int lastW = -1, lastH = -1;
     if (vw != lastW || vh != lastH) {        // recreate only when needed
-        renderer.initFBO(vw, vh);
+        //renderer.initFBO(vw, vh);
         lastW = vw; lastH = vh;
     }
+	physics.update_sprite_movement(renderer, input);
+
 	auto render_start = Clock::now();
 
 	// Initialize and bind FBO for rendering

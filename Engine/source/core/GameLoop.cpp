@@ -2,7 +2,7 @@
 #include "core/GameLoop.h"
 
 Game_Loop::Game_Loop(GLFWwindow* window) : accum_game_time{ 0.0 }, curr_frame_time{ glfwGetTime() }, 
-display_interval{ 0.0 }, game_loop_input{window} {}
+display_interval{ 0.0 } {}
 
 double Game_Loop::calculate_DT() {
 	double new_frame_time = glfwGetTime();
@@ -10,7 +10,6 @@ double Game_Loop::calculate_DT() {
 	curr_frame_time = new_frame_time;
 	accum_game_time += DT; //accumulate total game time
 	display_interval += DT;
-
 	return DT;
 }
 
@@ -31,7 +30,6 @@ void Game_Loop::display_FPS(GLFWwindow *window, std::string game_title, double d
 
 void Game_Loop::update(GLFWwindow* window) {
 	//update sequence->Inputs, Logic, Physics, Collision, Audio, Graphics
-	//game_loop_input.process_user_input(window); //game loop take charge of game input
 	
 	// rmved the callback installation here; it�s done once via Input::process_user_input
 	//game_loop_input.process_user_input(window); //game loop take charge of game input

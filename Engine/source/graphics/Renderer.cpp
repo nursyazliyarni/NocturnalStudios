@@ -37,11 +37,12 @@ Renderer::Renderer(const char* vertex_path, const char* fragment_path):render_sh
     //vertex position->where to render on screen(-1.0 to +1.0)
     //texture UV->how to render texture(0.0 to 1.0)
     float vertices[] = {
-    //vertex positions(x,y)  texture UV
-    -1.0f,  1.0f,            0.0f, 0.0f,  // top left
-    -1.0f, -1.0f,            0.0f, 1.0f,  // bottom left
-    1.0f,  1.0f,             1.0f, 0.0f,  // top right
-    1.0f, -1.0f,             1.0f, 1.0f   // bottom right
+    //flip the texture UV to produce correct image
+    //vertex positions(x,y)  texture UV   vertex positions(x,y) texture UV 
+    -1.0f,  1.0f,            0.0f, 0.0f,  //top left            //bottom left
+    -1.0f, -1.0f,            0.0f, 1.0f,  //bottom left         //top left
+    1.0f,  1.0f,             1.0f, 0.0f,  //top right           //bottom right
+    1.0f, -1.0f,             1.0f, 1.0f   //bottom right        //top right
     };
 
     //glGenVertexArrays returns the number of Vertex Array Objects(VAO) and store its unique ID in VAO_arr
@@ -291,45 +292,55 @@ void Renderer::drawAllSprites(Texture& tex,
     drawAllSprites(tex, frontIdxs, behindPass, /*scales*/ nullptr);
 }
 
+void Renderer::initAllSprites() {
+                      //int idx;|    float x, y, w, h;     |float scale_value;
+    sprite_vector.push_back({ 1,  60.f, 60.f, 128.f, 128.f, 1.0f }); // drink 
+    sprite_vector.push_back({ 2, 220.f, 60.f, 128.f, 128.f, 1.0f }); // cupcake
+    sprite_vector.push_back({ 3, 380.f, 60.f, 200.f, 200.f, 1.0f }); // Cat A
+    sprite_vector.push_back({ 4, 590.f, 60.f, 200.f, 200.f, 1.0f }); // Cat B
+
+    //  SCALE BLOCK GOES HERE 
+}
+
 void Renderer::drawAllSprites(Texture& tex,
     const std::vector<int>& frontIdxs,
     bool behindPass,
     const float* scales)
 {
-    struct QuadArgs { int idx; float x, y, w, h; };
-    const QuadArgs sprites[] = {
-        { 1,  60.f, 60.f, 128.f, 128.f }, // drink
-        { 2, 220.f, 60.f, 128.f, 128.f }, // cupcake
-        { 3, 380.f, 60.f, 200.f, 200.f }, // Cat A
-        { 4, 590.f, 60.f, 200.f, 200.f }  // Cat B
-    };
+    //put them in initAllSprites() function
+    //struct QuadArgs { int idx; float x, y, w, h; };
+    //const QuadArgs sprites[] = {
+    //    { 1,  800.f, 60.f, 128.f, 128.f }, // drink 
+    //    { 2, 220.f, 60.f, 128.f, 128.f }, // cupcake
+    //    { 3, 380.f, 60.f, 200.f, 200.f }, // Cat A
+    //    { 4, 590.f, 60.f, 200.f, 200.f }  // Cat B
+    //};
 
     glUseProgram(0);
     glDisable(GL_DEPTH_TEST);
 
-    const size_t texCount = tex.count(); // includes bg at index 0
+    const size_t texCount = tex.get_totalTexture(); // includes bg at index 0
 
-
-    for (int i = 0; i < (int)(sizeof(sprites) / sizeof(sprites[0])); ++i) {
-        bool isFront = std::find(frontIdxs.begin(), frontIdxs.end(), sprites[i].idx) != frontIdxs.end();
+    for (int i = 0; i<sprite_vector.size(); ++i) {
+        bool isFront = std::find(frontIdxs.begin(), frontIdxs.end(), sprite_vector[i].idx) != frontIdxs.end();
 
         // pass filter
         if (behindPass && isFront)   continue; // behind pass: skip all “front” sprites
         if (!behindPass && !isFront) continue; // front pass: draw ONLY “front” sprites
 
+        //put them in initAllSprites() function
         //  SCALE BLOCK GOES HERE 
-        float s = 1.0f;
-        if (scales) {
-            int ti = sprites[i].idx;        // texture index: 1..N-1
-            if (ti >= 0) s = scales[ti];    // array sized by Input::initSpriteScales()
-        }
-        float x = sprites[i].x;
-        float y = sprites[i].y;
-        float w = sprites[i].w * s;
-        float h = sprites[i].h * s;
+        //float s = 1.0f;
+        //if (scales) {
+        //    int ti = sprite_vector[i].idx;        // texture index: 1..N-1
+        //    if (ti >= 0) s = scales[ti];    // array sized by Input::initSpriteScales()
+        //}
+        //float x = sprite_vector[i].x;
+        //float y = sprite_vector[i].y;
+        //float w = sprite_vector[i].w * s;
+        //float h = sprite_vector[i].h * s;
 
-
-        GLuint t = tex.get_textureID((size_t)sprites[i].idx);
+        GLuint t = tex.get_textureID((size_t)sprite_vector[i].idx);
 
         glEnable(GL_TEXTURE_2D);
         glBindTexture(GL_TEXTURE_2D, t);
@@ -337,18 +348,22 @@ void Renderer::drawAllSprites(Texture& tex,
         // two triangles (no GL_QUADS)
         glBegin(GL_TRIANGLES);
         // tri 1
-        glTexCoord2f(0.f, 0.f); glVertex2f(x, y);
-        glTexCoord2f(1.f, 0.f); glVertex2f(x + w, y);
-        glTexCoord2f(1.f, 1.f); glVertex2f(x + w, y + h);
+        glTexCoord2f(0.f, 0.f); glVertex2f(sprite_vector[i].x, sprite_vector[i].y);
+        glTexCoord2f(1.f, 0.f); glVertex2f(sprite_vector[i].x + sprite_vector[i].w, sprite_vector[i].y);
+        glTexCoord2f(1.f, 1.f); glVertex2f(sprite_vector[i].x + sprite_vector[i].w, sprite_vector[i].y + sprite_vector[i].h);
         // tri 2
-        glTexCoord2f(0.f, 0.f); glVertex2f(x, y);
-        glTexCoord2f(1.f, 1.f); glVertex2f(x + w, y + h);
-        glTexCoord2f(0.f, 1.f); glVertex2f(x, y + h);
+        glTexCoord2f(0.f, 0.f); glVertex2f(sprite_vector[i].x, sprite_vector[i].y);
+        glTexCoord2f(1.f, 1.f); glVertex2f(sprite_vector[i].x + sprite_vector[i].w, sprite_vector[i].y + sprite_vector[i].h);
+        glTexCoord2f(0.f, 1.f); glVertex2f(sprite_vector[i].x, sprite_vector[i].y + sprite_vector[i].h);
         glEnd();
 
         glBindTexture(GL_TEXTURE_2D, 0);
         glDisable(GL_TEXTURE_2D);
     }
+}
+
+std::vector<Renderer::sprite>& Renderer::get_sprite_vector() {
+    return sprite_vector;
 }
 
 
