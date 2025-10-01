@@ -70,8 +70,6 @@ int Application::run() {
     // Initialize ImGui Manager
     // NOTE: ImGuiManager owns the Viewport pass; it will call Renderer to draw bg + shapes into an FBO.
     //       We just pass references here. No drawing is done in this file anymore.
-    //std::vector<char const*> vs{ "assets/textures/DGPEN_LOGO.png" };
-
 
     std::vector<char const*> vs{
     "assets/textures/DGPEN_LOGO.png",   // [0] background ONLY
@@ -99,9 +97,6 @@ int Application::run() {
         double dt = game_loop_obj.calculate_DT();          // our deltaTime
         double total_time = game_loop_obj.get_accum_GT();  // accumulated game time
         game_loop_obj.display_FPS(m_window.handle(), c.window.title, dt); // display FPS
-
-        // Main Game Loop Update Here
-        //game_loop_obj.update(m_window.handle());
         game_input_obj.update_mouse_pos(m_window.handle());
         game_input_obj.GET_mouse_delta();
 

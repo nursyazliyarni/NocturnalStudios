@@ -69,7 +69,7 @@ private:
     struct sprite {
         int idx; 
         float x, y, w, h;
-        float scale_value;
+        float angle;
     };
     std::vector<sprite> sprite_vector;
 

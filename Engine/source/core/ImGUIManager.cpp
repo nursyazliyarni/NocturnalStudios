@@ -142,6 +142,8 @@ void ImGuiManager::showViewportWindowUI() {
         lastW = vw; lastH = vh;
     }
 	physics.update_sprite_movement(renderer, input);
+	physics.update_sprite_scaling(renderer, input);
+	physics.update_sprite_rotation(renderer, input);
 
 	auto render_start = Clock::now();
 
@@ -156,7 +158,6 @@ void ImGuiManager::showViewportWindowUI() {
 	// You can keep your clear (fine for 2D)
 	renderer.clear(0.1f, 0.1f, 0.12f);
 
-
 	// @Todo (axewhy): Render the actual viewport content here, e.g., using a framebuffer texture
 	// Render background to FBO
 	renderer.background_render(texture.get_textureID(0), "bg_texture");
@@ -165,25 +166,20 @@ void ImGuiManager::showViewportWindowUI() {
 
 	// behind-sprites pass (scaled)
 	//renderer.drawAllSprites(texture, { 3,4 }, /*behindPass=*/true,  input.getSpriteScalesPtr());
-	//renderer.drawAllSprites(texture, { 3,4 }, true, input.getSpriteScalesPtr(), input.getSpriteScalesPtr(), input.getSpriteRotationsPtr(), vw, vh);
 	renderer.drawAllSprites(texture, { 3,4 }, true,
 		input.getSpriteScalesPtr(),
 		input.getSpriteRotationsPtr(),
 		vw, vh);
-
-
 
 	//draw all SHAPES from Renderer.cpp (keeps ImGui clean of GL) - rishika
 	renderer.drawViewportShapes(vw, vh);
 
 	// front-sprites pass (scaled)
 	//renderer.drawAllSprites(texture, { 3,4 }, /*behindPass=*/false, input.getSpriteScalesPtr());
-	//renderer.drawAllSprites(texture, { 3,4 }, false, input.getSpriteScalesPtr(), input.getSpriteScalesPtr(), input.getSpriteRotationsPtr(), vw, vh);
 	renderer.drawAllSprites(texture, { 3,4 }, false,
 		input.getSpriteScalesPtr(),
 		input.getSpriteRotationsPtr(),
 		vw, vh);
-
 
 	renderer.unbindFBO();
 	auto render_end = Clock::now();
@@ -196,7 +192,6 @@ void ImGuiManager::showViewportWindowUI() {
 	ImGui::Image((ImTextureID)(intptr_t)renderer.getFBOTexture(),
 		ImVec2(viewportWidth, viewportHeight),
 		ImVec2(0, 1), ImVec2(1, 0));
-
 
 	ImGui::End();
 }

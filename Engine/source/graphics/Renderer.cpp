@@ -306,13 +306,11 @@ void Renderer::drawAllSprites(Texture& tex,
 }
 
 void Renderer::initAllSprites() {
-                      //int idx;|    float x, y, w, h;     |float scale_value;
-    sprite_vector.push_back({ 1,  60.f, 60.f, 128.f, 128.f, 1.0f }); // drink 
-    sprite_vector.push_back({ 2, 220.f, 60.f, 128.f, 128.f, 1.0f }); // cupcake
-    sprite_vector.push_back({ 3, 380.f, 60.f, 200.f, 200.f, 1.0f }); // Cat A
-    sprite_vector.push_back({ 4, 590.f, 60.f, 200.f, 200.f, 1.0f }); // Cat B
-
-    //  SCALE BLOCK GOES HERE 
+                      //int idx;|  float x, y, w, h;  |float scale_value;
+    sprite_vector.push_back({ 1, 0.01f, 0.10f, 0.15f, 0.25f, 0.0f }); // drink (5% from left, 10% from top, 10% width, 15% height)
+    sprite_vector.push_back({ 2, 0.15f, 0.10f, 0.15f, 0.25f, 0.0f }); // cupcake
+    sprite_vector.push_back({ 3, 0.40f, 0.35f, 0.25f, 0.30f, 0.0f }); // Cat A
+    sprite_vector.push_back({ 4, 0.70f, 0.25f, 0.25f, 0.30f, 0.0f }); // Cat B
 }
 
 void Renderer::drawAllSprites(Texture& tex,
@@ -322,36 +320,6 @@ void Renderer::drawAllSprites(Texture& tex,
     const float* rotations,
     int viewportW, int viewportH)
 {
-    //put them in initAllSprites() function
-    //struct QuadArgs { int idx; float x, y, w, h; };
-    //const QuadArgs sprites[] = {
-    //    { 1,  800.f, 60.f, 128.f, 128.f }, // drink 
-    //    { 2, 220.f, 60.f, 128.f, 128.f }, // cupcake
-    //    { 3, 380.f, 60.f, 200.f, 200.f }, // Cat A
-    //    { 4, 590.f, 60.f, 200.f, 200.f }  // Cat B
-    //};
-    //struct QuadArgs { int idx; float x, y, w, h; };
-    struct QuadArgs {
-        int idx;   // texture index
-        float nx, ny; // normalized pos (0-1 of screen)
-        float nw, nh; // normalized size (0-1 of screen)
-    };
-
-    //const QuadArgs sprites[] = {
-    //    { 1,  35.f, 60.f, 128.f, 128.f }, // drink
-    //    { 2, 195.f, 60.f, 128.f, 128.f }, // cupcake
-    //    { 3, 380.f, 170.f, 200.f, 200.f }, // Cat A
-    //    { 4, 600.f, 170.f, 200.f, 200.f }  // Cat B
-    //};
-
-    const QuadArgs sprites[] = {
-    { 1, 0.01f, 0.10f, 0.15f, 0.25f }, // drink (5% from left, 10% from top, 10% width, 15% height)
-    { 2, 0.15f, 0.10f, 0.15f, 0.25f }, // cupcake
-    { 3, 0.40f, 0.35f, 0.25f, 0.30f }, // Cat A
-    { 4, 0.70f, 0.25f, 0.25f, 0.30f }  // Cat B
-    };
-
-
     glUseProgram(0);
     glDisable(GL_DEPTH_TEST);
 
@@ -363,53 +331,22 @@ void Renderer::drawAllSprites(Texture& tex,
         // pass filter
         if (behindPass && isFront)   continue; // behind pass: skip all �front� sprites
         if (!behindPass && !isFront) continue; // front pass: draw ONLY �front� sprites
-
-        //put them in initAllSprites() function
-        //  SCALE BLOCK GOES HERE 
-        //float s = 1.0f;
-        //if (scales) {
-        //    int ti = sprite_vector[i].idx;        // texture index: 1..N-1
-        //    if (ti >= 0) s = scales[ti];    // array sized by Input::initSpriteScales()
-        //}
-        //float x = sprite_vector[i].x;
-        //float y = sprite_vector[i].y;
-        //float w = sprite_vector[i].w * s;
-        //float h = sprite_vector[i].h * s;
-         //SCALE BLOCK GOES HERE 
-        float s = 1.0f;
-        if (scales) {
-            int ti = sprites[i].idx;        // texture index: 1..N-1
-            if (ti >= 0) s = scales[ti];    // array sized by Input::initSpriteScales()
-        }
-
-        // ROTATION 
-        float angle = 0.0f;
-        if (rotations != nullptr) {
-            int ti = sprites[i].idx;
-            if (ti >= 0) {
-                //angle = rotations[ti]; // in radians
-                angle = rotations[ti] * glm::pi<float>() / 180.0f; // deg TO rad
-            }
-        }
-        //float x = sprites[i].x;
-        //float y = sprites[i].y;
-        //float w = sprites[i].w * s;
-        //float h = sprites[i].h * s;
+        float s = 1.0f;// SCALING
+        float angle = 0.0f;// ROTATION 
 
         // Convert normalized to pixels
-        float x = sprites[i].nx * viewportW;
-        float y = sprites[i].ny * viewportH;
-        float w = sprites[i].nw * viewportW * s;
-        float h = sprites[i].nh * viewportH * s;
-
+        float x = sprite_vector[i].x * viewportW;
+        float y = sprite_vector[i].y * viewportH;
+        float w = sprite_vector[i].w * viewportW * s;
+        float h = sprite_vector[i].h * viewportH * s;
 
         // Find center
         float cx = x + w * 0.5f;
         float cy = y + h * 0.5f;
 
         // Compute rotated corners
-        float cosA = std::cos(angle);
-        float sinA = std::sin(angle);
+        float cosA = std::cos(sprite_vector[i].angle);
+        float sinA = std::sin(sprite_vector[i].angle);
 
         // Helper to rotate each corner
         float x0, y0, x1, y1, x2, y2, x3, y3;
@@ -438,7 +375,6 @@ void Renderer::drawAllSprites(Texture& tex,
         x3 = cx + dx * cosA - dy * sinA;
         y3 = cy + dx * sinA + dy * cosA;
 
-
         GLuint t = tex.get_textureID((size_t)sprite_vector[i].idx);
 
         glEnable(GL_TEXTURE_2D);
@@ -458,14 +394,18 @@ void Renderer::drawAllSprites(Texture& tex,
 
         // two triangles using rotated corners
         glBegin(GL_TRIANGLES);
+        //// tri 1
+        //glTexCoord2f(0.f, 0.f); glVertex2f(sprite_vector[i].x, sprite_vector[i].y);
+        //glTexCoord2f(1.f, 0.f); glVertex2f(sprite_vector[i].x + sprite_vector[i].w, sprite_vector[i].y);
+        //glTexCoord2f(1.f, 1.f); glVertex2f(sprite_vector[i].x + sprite_vector[i].w, sprite_vector[i].y + sprite_vector[i].h);
+
+        //// tri 2
+        //glTexCoord2f(0.f, 0.f); glVertex2f(x0, y0);
+        //glTexCoord2f(1.f, 1.f); glVertex2f(x2, y2);
+        //glTexCoord2f(0.f, 1.f); glVertex2f(x3, y3);
+        //glEnd();
+
         // tri 1
-        glTexCoord2f(0.f, 0.f); glVertex2f(sprite_vector[i].x, sprite_vector[i].y);
-        glTexCoord2f(1.f, 0.f); glVertex2f(sprite_vector[i].x + sprite_vector[i].w, sprite_vector[i].y);
-        glTexCoord2f(1.f, 1.f); glVertex2f(sprite_vector[i].x + sprite_vector[i].w, sprite_vector[i].y + sprite_vector[i].h);
-        // tri 2
-        glTexCoord2f(0.f, 0.f); glVertex2f(sprite_vector[i].x, sprite_vector[i].y);
-        glTexCoord2f(1.f, 1.f); glVertex2f(sprite_vector[i].x + sprite_vector[i].w, sprite_vector[i].y + sprite_vector[i].h);
-        glTexCoord2f(0.f, 1.f); glVertex2f(sprite_vector[i].x, sprite_vector[i].y + sprite_vector[i].h);
         glTexCoord2f(0.f, 0.f); glVertex2f(x0, y0);
         glTexCoord2f(1.f, 0.f); glVertex2f(x1, y1);
         glTexCoord2f(1.f, 1.f); glVertex2f(x2, y2);
@@ -474,7 +414,6 @@ void Renderer::drawAllSprites(Texture& tex,
         glTexCoord2f(1.f, 1.f); glVertex2f(x2, y2);
         glTexCoord2f(0.f, 1.f); glVertex2f(x3, y3);
         glEnd();
-
 
         glBindTexture(GL_TEXTURE_2D, 0);
         glDisable(GL_TEXTURE_2D);

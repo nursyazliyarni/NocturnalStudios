@@ -24,15 +24,24 @@ Input::Input(GLFWwindow* window) {
 	glfwSetKeyCallback(window, keyboard_input_callback); //setup keyboard input callback before main game loop
 	glfwSetMouseButtonCallback(window, mouse_input_callback); //setup mouse input callback before main game loop
 
+	//input key to decide which sprite to control
 	detect_keyboard_event(window, GLFW_KEY_1, GLFW_PRESS);
 	detect_keyboard_event(window, GLFW_KEY_2, GLFW_PRESS);
 	detect_keyboard_event(window, GLFW_KEY_3, GLFW_PRESS);
 	detect_keyboard_event(window, GLFW_KEY_4, GLFW_PRESS);
 
+	//input key for movement of sprite
 	detect_keyboard_event(window, GLFW_KEY_W, GLFW_REPEAT);
 	detect_keyboard_event(window, GLFW_KEY_S, GLFW_REPEAT);
 	detect_keyboard_event(window, GLFW_KEY_A, GLFW_REPEAT);
 	detect_keyboard_event(window, GLFW_KEY_D, GLFW_REPEAT);
+
+	//input key for scaling sprite
+	detect_keyboard_event(window, GLFW_KEY_U, GLFW_REPEAT); //bigger
+	detect_keyboard_event(window, GLFW_KEY_I, GLFW_REPEAT); //smaller
+	//input key for rotating sprite
+	detect_keyboard_event(window, GLFW_KEY_J, GLFW_REPEAT); //clockwise
+	detect_keyboard_event(window, GLFW_KEY_K, GLFW_REPEAT); //anti-clockwise
 }
 
 void Input::update_mouse_pos(GLFWwindow* window) {
@@ -101,7 +110,7 @@ void Input::keyboard_input_callback(GLFWwindow* window, int key, int scancode, i
     //scancode works for all keyboard layout regardless of their types
     //mods is a combination of modifier keys that are held down when the key event occurred
     else { //store my game keyboard input state here
-		static int track_number{ -1 };
+		static int track_number{ -1 }; //this is to track which key is pressed last time
 		for (auto& [tuple_key, event_action, key_action] : keyboard_action) {
 			if (tuple_key == key) {
 
@@ -135,7 +144,7 @@ void Input::keyboard_input_callback(GLFWwindow* window, int key, int scancode, i
 					break;
 
 				case GLFW_KEY_W:
-					if (action == static_cast<int>(event_action)) {
+					if (action == event_action) {
 						key_action = Input_action::move_up;
 					}
 
@@ -145,7 +154,7 @@ void Input::keyboard_input_callback(GLFWwindow* window, int key, int scancode, i
 					break;
 
 				case GLFW_KEY_S:
-					if (action == static_cast<int>(event_action)) {
+					if (action == event_action) {
 						key_action = Input_action::move_down;
 					}
 
@@ -155,7 +164,7 @@ void Input::keyboard_input_callback(GLFWwindow* window, int key, int scancode, i
 					break;
 
 				case GLFW_KEY_A:
-					if (action == static_cast<int>(event_action)) {
+					if (action == event_action) {
 						key_action = Input_action::move_left;
 					}
 
@@ -165,7 +174,7 @@ void Input::keyboard_input_callback(GLFWwindow* window, int key, int scancode, i
 					break;
 
 				case GLFW_KEY_D:
-					if (action == static_cast<int>(event_action)) {
+					if (action == event_action) {
 						key_action = Input_action::move_right;
 					}
 
@@ -173,6 +182,47 @@ void Input::keyboard_input_callback(GLFWwindow* window, int key, int scancode, i
 						key_action = Input_action::no_action;
 					}
 					break;
+
+				case GLFW_KEY_U:
+					if (action == event_action) {
+						key_action = Input_action::magnify;
+					}
+
+					else {
+						key_action = Input_action::no_action;
+					}
+					break;
+
+				case GLFW_KEY_I:
+					if (action == event_action) {
+						key_action = Input_action::minify;
+					}
+
+					else {
+						key_action = Input_action::no_action;
+					}
+					break;
+
+				case GLFW_KEY_J:
+					if (action == event_action) {
+						key_action = Input_action::rotate_clockwise;
+					}
+
+					else {
+						key_action = Input_action::no_action;
+					}
+					break;
+
+				case GLFW_KEY_K:
+					if (action == event_action) {
+						key_action = Input_action::rotate_anticlockwise;
+					}
+
+					else {
+						key_action = Input_action::no_action;
+					}
+					break;
+
 				}
 			}
 		}
@@ -184,29 +234,6 @@ void Input::keyboard_input_callback(GLFWwindow* window, int key, int scancode, i
 				}
 			}
 		}
-
-
-            //if (pair.first == key) { //the key trigger by user is registered inside this keyboard_action vector
-            //    switch (pair.second) {
-            //    case Input_state::press:
-            //        if (action == GLFW_PRESS) {
-            //            logger.log("player press a specific key");
-            //        }
-            //        break;
-
-            //    case Input_state::release:
-            //        if (action == GLFW_RELEASE) {
-            //            logger.log("player release a specific key");
-            //        }
-            //        break;
-
-            //    case Input_state::hold:
-            //        if (action == GLFW_REPEAT) {
-            //            logger.log("player holds down a specific key");
-            //        }
-            //        break;
-            //    }
-            //}
     }
 }
 
@@ -216,35 +243,7 @@ void Input::mouse_input_callback(GLFWwindow* window, int button, int action, int
 	if (io.WantCaptureMouse && action == GLFW_PRESS) {
 		logger.log("IMGUI wants to use the mouse");
 	}
-
-	//else { //store my game mouse input state here
-		//for (auto& [tuple_mouse, tuple_action, tuple_state] : mouse_action) {
-		//	if (tuple_mouse == button) { //the button trigger by user is registered inside this mouse_action vector
-		//		switch (tuple_action) {
-		//		case Input_state::press:
-		//			if (action == GLFW_PRESS) {
-		//				logger.log("player press the mouse");
-		//			}
-		//			break;
-
-		//		case Input_state::release:
-		//			if (action == GLFW_RELEASE) {
-		//				logger.log("player release the mouse");
-		//			}
-		//			break;
-		//		}
-		//	}
-		//}
-	//}
 }
-
-// maps top-row 0..9 and numpad 0..9 to a digit, else -1
-//inline int keyToDigit(int key) {
-//    if (key >= GLFW_KEY_0 && key <= GLFW_KEY_9)   return key - GLFW_KEY_0;
-//    if (key >= GLFW_KEY_KP_0 && key <= GLFW_KEY_KP_9) return key - GLFW_KEY_KP_0;
-//    return -1;
-//}
-
 
 //void Input::initSpriteScales(size_t textureCount) {
 //    spriteCount = (textureCount > 1) ? (textureCount - 1) : 0;
@@ -301,6 +300,33 @@ static inline void printSel(int s) {
     else if (s == 0) std::cout << "Selected sprite: ALL\n";
     else std::cout << "Selected sprite: " << s << "\n";
 }
+
+
+void Input::initSpriteRotations(size_t count) {
+    spriteRotations.assign(count, 0.0f);       // all start at 0 deg
+    spriteRotatingCW.assign(count, false);     // not rotating initially
+    spriteRotatingCCW.assign(count, false);
+}
+
+// return pointer (for renderer)
+const float* Input::getSpriteRotationsPtr() const {
+    if (spriteRotations.empty()) return nullptr;
+    return spriteRotations.data();
+}
+
+void Input::updateRotations() {
+    for (size_t i = 1; i < spriteRotations.size(); ++i) {
+        if (spriteRotatingCW[i]) {
+            spriteRotations[i] += 1.0f;    // 1 deg per frame (adjust speed if needed)
+            if (spriteRotations[i] >= 360.0f) spriteRotations[i] -= 360.0f;
+        }
+        if (spriteRotatingCCW[i]) {
+            spriteRotations[i] -= 1.0f;
+            if (spriteRotations[i] < 0.0f) spriteRotations[i] += 360.0f;
+        }
+    }
+}
+
 
 //void Input::keyboard_input_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
 //    ImGui_ImplGlfw_KeyCallback(window, key, scancode, action, mods);
@@ -451,354 +477,105 @@ static inline void printSel(int s) {
 //        return;
 //    }
 //
-//    // your original WASD prints 
-//        switch (key) {
-//        case GLFW_KEY_W:
-//            std::cout << "I am moving up\n";
-//            break;
+//    // Toggle counter-clockwise rotation (Q key)
+//    if (key == GLFW_KEY_R) {
+//        if (self.spriteCount > 0) {
+//            if (self.selectedSprite == 0) {
+//                // ALL mode ? check if currently rotating CCW
+//                bool allCCW = true;
+//                for (size_t i = 1; i <= self.spriteCount && i < self.spriteRotatingCCW.size(); ++i) {
+//                    if (!self.spriteRotatingCCW[i]) {
+//                        allCCW = false;
+//                        break;
+//                    }
+//                }
 //
-//        case GLFW_KEY_S:
-//            std::cout << "I am moving down\n";
-//            break;
-//
-//        case GLFW_KEY_A:
-//            std::cout << "I am moving left\n";
-//            break;
-//
-//        case GLFW_KEY_D:
-//            std::cout << "I am moving right\n";
-//            break;
-//
-//        case GLFW_KEY_ESCAPE:
-//            //glfwDestroyWindow(window);
-//            break;
+//                if (allCCW) {
+//                    // If already CCW, turn OFF
+//                    for (size_t i = 1; i <= self.spriteCount && i < self.spriteRotatingCCW.size(); ++i) {
+//                        self.spriteRotatingCCW[i] = false;
+//                    }
+//                    std::cout << "All sprites CCW = OFF\n";
+//                }
+//                else {
+//                    // Else turn CCW ON and CW OFF
+//                    for (size_t i = 1; i <= self.spriteCount && i < self.spriteRotatingCCW.size(); ++i) {
+//                        self.spriteRotatingCCW[i] = true;
+//                        self.spriteRotatingCW[i] = false;
+//                    }
+//                    std::cout << "All sprites CCW = ON\n";
+//                }
+//            }
+//            else if (self.selectedSprite >= 1 &&
+//                (size_t)self.selectedSprite < self.spriteRotatingCCW.size()) {
+//                bool nowOn = !self.spriteRotatingCCW[self.selectedSprite];
+//                self.spriteRotatingCCW[self.selectedSprite] = nowOn;
+//                self.spriteRotatingCW[self.selectedSprite] = false;
+//                std::cout << "Sprite[" << self.selectedSprite << "] CCW = "
+//                    << (nowOn ? "ON" : "OFF") << "\n";
+//            }
 //        }
+//        return;
+//    }
+//
+//    // Toggle clockwise rotation (E key)
+//    if (key == GLFW_KEY_T) {
+//        if (self.spriteCount > 0) {
+//            if (self.selectedSprite == 0) {
+//                // ALL mode ? check if currently rotating CW
+//                bool allCW = true;
+//                for (size_t i = 1; i <= self.spriteCount && i < self.spriteRotatingCW.size(); ++i) {
+//                    if (!self.spriteRotatingCW[i]) {
+//                        allCW = false;
+//                        break;
+//                    }
+//                }
+//
+//                if (allCW) {
+//                    // If already CW, turn OFF
+//                    for (size_t i = 1; i <= self.spriteCount && i < self.spriteRotatingCW.size(); ++i) {
+//                        self.spriteRotatingCW[i] = false;
+//                    }
+//                    std::cout << "All sprites CW = OFF\n";
+//                }
+//                else {
+//                    // Else turn CW ON and CCW OFF
+//                    for (size_t i = 1; i <= self.spriteCount && i < self.spriteRotatingCW.size(); ++i) {
+//                        self.spriteRotatingCW[i] = true;
+//                        self.spriteRotatingCCW[i] = false;
+//                    }
+//                    std::cout << "All sprites CW = ON\n";
+//                }
+//            }
+//            else if (self.selectedSprite >= 1 &&
+//                (size_t)self.selectedSprite < self.spriteRotatingCW.size()) {
+//                bool nowOn = !self.spriteRotatingCW[self.selectedSprite];
+//                self.spriteRotatingCW[self.selectedSprite] = nowOn;
+//                self.spriteRotatingCCW[self.selectedSprite] = false;
+//                std::cout << "Sprite[" << self.selectedSprite << "] CW = "
+//                    << (nowOn ? "ON" : "OFF") << "\n";
+//            }
+//        }
+//        return;
+//    }
+//
+//
+//    // Reset all sprites (O key)
+//    if (key == GLFW_KEY_X) {
+//        if (self.spriteCount > 0) {
+//            // Reset scales
+//            for (size_t i = 1; i <= self.spriteCount && i < self.spriteScales.size(); ++i) {
+//                self.spriteScales[i] = 1.0f;
+//            }
+//
+//            // Reset rotations
+//            for (size_t i = 1; i <= self.spriteCount && i < self.spriteRotations.size(); ++i) {
+//                self.spriteRotations[i] = 0.0f;
+//                self.spriteRotatingCW[i] = false;
+//                self.spriteRotatingCCW[i] = false;
+//            }
+//
+//            std::cout << "All sprites reset to original position, size, and rotation.\n";
+//        }
+//    }
 //}
-void Input::initSpriteRotations(size_t count) {
-    spriteRotations.assign(count, 0.0f);       // all start at 0 deg
-    spriteRotatingCW.assign(count, false);     // not rotating initially
-    spriteRotatingCCW.assign(count, false);
-}
-
-// return pointer (for renderer)
-const float* Input::getSpriteRotationsPtr() const {
-    if (spriteRotations.empty()) return nullptr;
-    return spriteRotations.data();
-}
-
-void Input::updateRotations() {
-    for (size_t i = 1; i < spriteRotations.size(); ++i) {
-        if (spriteRotatingCW[i]) {
-            spriteRotations[i] += 1.0f;    // 1 deg per frame (adjust speed if needed)
-            if (spriteRotations[i] >= 360.0f) spriteRotations[i] -= 360.0f;
-        }
-        if (spriteRotatingCCW[i]) {
-            spriteRotations[i] -= 1.0f;
-            if (spriteRotations[i] < 0.0f) spriteRotations[i] += 360.0f;
-        }
-    }
-}
-
-
-void Input::keyboard_input_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
-    ImGui_ImplGlfw_KeyCallback(window, key, scancode, action, mods);
-    ImGuiIO& io = ImGui::GetIO();
-    if (io.WantCaptureKeyboard) return;
-
-    void* up = glfwGetWindowUserPointer(window);
-    if (up == NULL) return;
-    if (action != GLFW_PRESS) return;
-
-    // Use a reference so we can write self.x (no )
-    Input& self = *static_cast<Input*>(up);
-
-    int digit = keyToDigit(key);
-    if (digit != -1) {
-        // 0 toggles ALL / NONE only if we actually have sprites
-        if (digit == 0) {
-            if (self.spriteCount > 0) {
-                self.selectedSprite = (self.selectedSprite == 0) ? -1 : 0;
-                printSel(self.selectedSprite);
-            }
-            return;
-        }
-
-        // 1..9 (or more in future): act ONLY if that sprite exists; no clamping
-        if ((size_t)digit <= self.spriteCount) {
-            self.selectedSprite = (self.selectedSprite == digit) ? -1 : digit; // toggle
-            printSel(self.selectedSprite);
-        }
-        // else: ignore digits beyond spriteCount
-        return;
-    }
-
-    //  0 = toggle ALL / NONE (only if we have sprites) 
-    if (key == GLFW_KEY_0) {
-        if (self.spriteCount > 0) {
-            if (self.selectedSprite == 0) self.selectedSprite = -1;  // deselect ALL / NONE
-            else self.selectedSprite = 0;                             // select ALL
-            if (self.selectedSprite == 0) std::cout << "Selected sprite: ALL\n";
-            else std::cout << "Selected sprite: NONE\n";
-        }
-        return;
-    }
-
-    //  number keys 1-9 toggle that sprite if it exists
-    if (key >= GLFW_KEY_1 && key <= GLFW_KEY_9) {
-        int want = key - GLFW_KEY_0; // 1-9
-        if ((size_t)want <= self.spriteCount) {
-            if (self.selectedSprite == want) {
-                self.selectedSprite = -1;  // toggle off - NONE
-                std::cout << "Selected sprite: NONE\n";
-            }
-            else {
-                self.selectedSprite = want;
-                std::cout << "Selected sprite: " << self.selectedSprite << "\n";
-            }
-        }
-        return;
-    }
-
-
-    if (key == GLFW_KEY_RIGHT) {
-        if (self.spriteCount > 0) {
-            if (self.selectedSprite < 0) self.selectedSprite = 0; // NONE 4 ALL
-            else if (self.selectedSprite < (int)self.spriteCount) self.selectedSprite += 1; 
-            else self.selectedSprite = -1; 
-            if (self.selectedSprite < 0) std::cout << "Selected sprite: NONE\n";
-            else if (self.selectedSprite == 0) std::cout << "Selected sprite: ALL\n";
-            else std::cout << "Selected sprite: " << self.selectedSprite << "\n";
-        }
-        return;
-    }
-    if (key == GLFW_KEY_LEFT) {
-        if (self.spriteCount > 0) {
-            if (self.selectedSprite < 0) self.selectedSprite = (int)self.spriteCount; 
-            else if (self.selectedSprite == 0) self.selectedSprite = -1;
-            else self.selectedSprite -= 1;
-            if (self.selectedSprite < 0) std::cout << "Selected sprite: NONE\n";
-            else if (self.selectedSprite == 0) std::cout << "Selected sprite: ALL\n";
-            else std::cout << "Selected sprite: " << self.selectedSprite << "\n";
-        }
-        return;
-    }
-
-    // scale DOWN ( -  or keypad - ) 
-    if (key == GLFW_KEY_MINUS || key == GLFW_KEY_KP_SUBTRACT) {
-        if (self.spriteCount == 0) return;
-
-        if (self.selectedSprite == 0) {
-            size_t i = 1;
-            while (i <= self.spriteCount && i < self.spriteScales.size()) {
-                float& s = self.spriteScales[i];
-                s -= 0.1f;
-                if (s < 0.2f) s = 0.2f;
-                ++i;
-            }
-           if (self.spriteCount >= 1 && self.spriteScales.size() > 1)
-                std::cout << "Scale[ALL] = " << self.spriteScales[1] << "\n";
-            return;
-        }
-        else if (self.selectedSprite >= 1 &&
-            (size_t)self.selectedSprite < self.spriteScales.size()) {
-            float& s = self.spriteScales[self.selectedSprite];
-            s -= 0.1f;
-            if (s < 0.2f) s = 0.2f;
-            s = std::round(s * 10.0f) / 10.0f;                    
-            std::cout << "Scale[" << self.selectedSprite << "] = "
-                << std::fixed << std::setprecision(1) << s << "\n";
-
-        }
-        else {
-            std::cout << "No sprite selected.\n";
-        }
-        return;
-    }
-
-    // scale UP ( =/+  or keypad + )
-    if (key == GLFW_KEY_EQUAL || key == GLFW_KEY_KP_ADD) {
-        if (self.spriteCount == 0) return;
-
-        if (self.selectedSprite == 0) {
-            size_t i = 1;
-            while (i <= self.spriteCount && i < self.spriteScales.size()) {
-                float& s = self.spriteScales[i];
-                s += 0.1f;
-                if (s > 3.0f) s = 3.0f;
-                ++i;
-            }
-            float shown = (self.spriteScales.size() > 1) ? self.spriteScales[1] : 0.f;
-            shown = std::round(shown * 10.0f) / 10.0f;
-            if (self.spriteCount >= 1 && self.spriteScales.size() > 1)
-                std::cout << "Scale[ALL] = " << std::fixed << std::setprecision(1) << shown << "\n";
-            return;
-        }
-        else if (self.selectedSprite >= 1 &&
-            (size_t)self.selectedSprite < self.spriteScales.size()) {
-            float& s = self.spriteScales[self.selectedSprite];
-            s += 0.1f;
-            if (s > 3.0f) s = 3.0f;
-            s = std::round(s * 10.0f) / 10.0f;                      // snap to 0.1 steps
-            std::cout << "Scale[" << self.selectedSprite << "] = "
-                << std::fixed << std::setprecision(1) << s << "\n";
-
-        }
-        else {
-            std::cout << "No sprite selected.\n";
-        }
-        return;
-    }
-
-    // Toggle counter-clockwise rotation (Q key)
-    if (key == GLFW_KEY_R) {
-        if (self.spriteCount > 0) {
-            if (self.selectedSprite == 0) {
-                // ALL mode ? check if currently rotating CCW
-                bool allCCW = true;
-                for (size_t i = 1; i <= self.spriteCount && i < self.spriteRotatingCCW.size(); ++i) {
-                    if (!self.spriteRotatingCCW[i]) {
-                        allCCW = false;
-                        break;
-                    }
-                }
-
-                if (allCCW) {
-                    // If already CCW, turn OFF
-                    for (size_t i = 1; i <= self.spriteCount && i < self.spriteRotatingCCW.size(); ++i) {
-                        self.spriteRotatingCCW[i] = false;
-                    }
-                    std::cout << "All sprites CCW = OFF\n";
-                }
-                else {
-                    // Else turn CCW ON and CW OFF
-                    for (size_t i = 1; i <= self.spriteCount && i < self.spriteRotatingCCW.size(); ++i) {
-                        self.spriteRotatingCCW[i] = true;
-                        self.spriteRotatingCW[i] = false;
-                    }
-                    std::cout << "All sprites CCW = ON\n";
-                }
-            }
-            else if (self.selectedSprite >= 1 &&
-                (size_t)self.selectedSprite < self.spriteRotatingCCW.size()) {
-                bool nowOn = !self.spriteRotatingCCW[self.selectedSprite];
-                self.spriteRotatingCCW[self.selectedSprite] = nowOn;
-                self.spriteRotatingCW[self.selectedSprite] = false;
-                std::cout << "Sprite[" << self.selectedSprite << "] CCW = "
-                    << (nowOn ? "ON" : "OFF") << "\n";
-            }
-        }
-        return;
-    }
-
-    // Toggle clockwise rotation (E key)
-    if (key == GLFW_KEY_T) {
-        if (self.spriteCount > 0) {
-            if (self.selectedSprite == 0) {
-                // ALL mode ? check if currently rotating CW
-                bool allCW = true;
-                for (size_t i = 1; i <= self.spriteCount && i < self.spriteRotatingCW.size(); ++i) {
-                    if (!self.spriteRotatingCW[i]) {
-                        allCW = false;
-                        break;
-                    }
-                }
-
-                if (allCW) {
-                    // If already CW, turn OFF
-                    for (size_t i = 1; i <= self.spriteCount && i < self.spriteRotatingCW.size(); ++i) {
-                        self.spriteRotatingCW[i] = false;
-                    }
-                    std::cout << "All sprites CW = OFF\n";
-                }
-                else {
-                    // Else turn CW ON and CCW OFF
-                    for (size_t i = 1; i <= self.spriteCount && i < self.spriteRotatingCW.size(); ++i) {
-                        self.spriteRotatingCW[i] = true;
-                        self.spriteRotatingCCW[i] = false;
-                    }
-                    std::cout << "All sprites CW = ON\n";
-                }
-            }
-            else if (self.selectedSprite >= 1 &&
-                (size_t)self.selectedSprite < self.spriteRotatingCW.size()) {
-                bool nowOn = !self.spriteRotatingCW[self.selectedSprite];
-                self.spriteRotatingCW[self.selectedSprite] = nowOn;
-                self.spriteRotatingCCW[self.selectedSprite] = false;
-                std::cout << "Sprite[" << self.selectedSprite << "] CW = "
-                    << (nowOn ? "ON" : "OFF") << "\n";
-            }
-        }
-        return;
-    }
-
-
-    // Reset all sprites (O key)
-    if (key == GLFW_KEY_X) {
-        if (self.spriteCount > 0) {
-            // Reset scales
-            for (size_t i = 1; i <= self.spriteCount && i < self.spriteScales.size(); ++i) {
-                self.spriteScales[i] = 1.0f;
-            }
-
-            // Reset rotations
-            for (size_t i = 1; i <= self.spriteCount && i < self.spriteRotations.size(); ++i) {
-                self.spriteRotations[i] = 0.0f;
-                self.spriteRotatingCW[i] = false;
-                self.spriteRotatingCCW[i] = false;
-            }
-
-            std::cout << "All sprites reset to original position, size, and rotation.\n";
-        }
-        return;
-    }
-
-
-
-
-
-    // your original WASD prints 
-        switch (key) {
-        case GLFW_KEY_W:
-            std::cout << "I am moving up\n";
-            break;
-
-        case GLFW_KEY_S:
-            std::cout << "I am moving down\n";
-            break;
-
-        case GLFW_KEY_A:
-            std::cout << "I am moving left\n";
-            break;
-
-        case GLFW_KEY_D:
-            std::cout << "I am moving right\n";
-            break;
-
-        case GLFW_KEY_ESCAPE:
-            //glfwDestroyWindow(window);
-            break;
-        }
-}
-
-
-void Input::mouse_input_callback(GLFWwindow* window, int button, int action, int mods) {
-	ImGui_ImplGlfw_MouseButtonCallback(window, button, action, mods); //Pass mouse input to ImGui
-	ImGuiIO& io = ImGui::GetIO();
-	//if (io.WantCaptureMouse) return;
-	
-	if (action == GLFW_PRESS) {
-		switch (button) {
-		case GLFW_MOUSE_BUTTON_LEFT:
-			std::cout << "left mouse button is pressed\n";
-			break;
-
-		case GLFW_MOUSE_BUTTON_RIGHT:
-			std::cout << "right mouse button is pressed\n";
-			break;
-
-		case GLFW_MOUSE_BUTTON_MIDDLE:
-			std::cout << "middle mouse button is pressed\n";
-			break;
-		}
-	}
-}

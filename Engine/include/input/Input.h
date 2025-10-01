@@ -1,5 +1,4 @@
-// IsKeyDown/WasPressed, mouse, scroll (GLFW wrappe r)\
-
+// IsKeyDown/WasPressed, mouse, scroll (GLFW wrappe r)
 #pragma once
 
 #define GLFW_INCLUDE_NONE 
@@ -8,13 +7,10 @@
 #include "../imgui.h"
 #include "../imgui/backends/imgui_impl_glfw.h"
 
-//enum class Input_state {
-//	press,release,hold
-//};
-
 enum class Input_action {
 	no_action,take_control,
-	move_up,move_down,move_left,move_right
+	move_up,move_down,move_left,move_right,
+	magnify,minify,rotate_clockwise,rotate_anticlockwise
 };
 
 class Input {
@@ -35,14 +31,6 @@ public:
 	// pointer for renderer (nullptr if no sprites)
 
 	void initSpriteRotations(size_t count);
-
-	//// pointer for renderer (nullptr if no sprites)
-	//const float* getSpriteScalesPtr() const {
-	//	if (spriteScales.empty()) return nullptr;
-	//	return spriteScales.data();
-	//}
-	
-
 
 	// expose raw pointers for Renderer
 	const float* getSpriteScalesPtr() const {

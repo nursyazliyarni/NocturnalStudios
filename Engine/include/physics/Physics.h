@@ -11,6 +11,8 @@ public:
 	
 	int take_control(Renderer& render_obj, Input& input_obj);
 	void update_sprite_movement(Renderer& render_obj, Input& input_obj);
+	void update_sprite_scaling(Renderer& render_obj, Input& input_obj);
+	void update_sprite_rotation(Renderer& render_obj, Input& input_obj);
 
 private:
 
