@@ -228,9 +228,21 @@ void Renderer::drawViewportShapes(int w, int h) {
     glDisable(GL_DEPTH_TEST);
 
     // RGB triangle (center/top)
-    tri(w * 0.50f, h * 0.20f,
+    /*tri(w * 0.50f, h * 0.20f,
         w * 0.20f, h * 0.80f,
-        w * 0.80f, h * 0.80f);
+        w * 0.80f, h * 0.80f);*/
+
+        // shrink factor (20%)
+    float scale = 0.8f;
+    float cx = w * 0.5f;
+    float cy = h * 0.5f;
+
+    tri(
+        cx + (w * 0.50f - cx) * scale, cy + (h * 0.20f - cy) * scale,   // top
+        cx + (w * 0.20f - cx) * scale, cy + (h * 0.80f - cy) * scale,   // bottom-left
+        cx + (w * 0.80f - cx) * scale, cy + (h * 0.80f - cy) * scale    // bottom-right
+    );
+
 
     // filled blue circle on the right
     {
@@ -246,9 +258,9 @@ void Renderer::drawViewportShapes(int w, int h) {
 
     // white outline box (bottom-left)
     {
-        float pad = w * 0.02f;
-        float bw = w * 0.16f;
-        float bh = h * 0.17f;
+        float pad = w * 0.01f;
+        float bw = w * 0.35f;
+        float bh = h * 0.5f;
         rectOutline(pad, pad, bw, bh);
     }
 }
@@ -287,23 +299,39 @@ void Renderer::drawViewportShapes(int w, int h) {
 
 void Renderer::drawAllSprites(Texture& tex,
     const std::vector<int>& frontIdxs,
-    bool behindPass)
+    bool behindPass,
+    int viewportW, int viewportH)
 {
-    drawAllSprites(tex, frontIdxs, behindPass, /*scales*/ nullptr);
+    drawAllSprites(tex, frontIdxs, behindPass, /*scales*/ nullptr, viewportW, viewportH);
 }
 
 void Renderer::drawAllSprites(Texture& tex,
     const std::vector<int>& frontIdxs,
     bool behindPass,
-    const float* scales)
+    const float* scales,
+    int viewportW, int viewportH)
 {
-    struct QuadArgs { int idx; float x, y, w, h; };
-    const QuadArgs sprites[] = {
-        { 1,  60.f, 60.f, 128.f, 128.f }, // drink
-        { 2, 220.f, 60.f, 128.f, 128.f }, // cupcake
-        { 3, 380.f, 60.f, 200.f, 200.f }, // Cat A
-        { 4, 590.f, 60.f, 200.f, 200.f }  // Cat B
+    //struct QuadArgs { int idx; float x, y, w, h; };
+    struct QuadArgs {
+        int idx;   // texture index
+        float nx, ny; // normalized pos (0-1 of screen)
+        float nw, nh; // normalized size (0-1 of screen)
     };
+
+    //const QuadArgs sprites[] = {
+    //    { 1,  35.f, 60.f, 128.f, 128.f }, // drink
+    //    { 2, 195.f, 60.f, 128.f, 128.f }, // cupcake
+    //    { 3, 380.f, 170.f, 200.f, 200.f }, // Cat A
+    //    { 4, 600.f, 170.f, 200.f, 200.f }  // Cat B
+    //};
+
+    const QuadArgs sprites[] = {
+    { 1, 0.01f, 0.10f, 0.15f, 0.25f }, // drink (5% from left, 10% from top, 10% width, 15% height)
+    { 2, 0.15f, 0.10f, 0.15f, 0.25f }, // cupcake
+    { 3, 0.40f, 0.35f, 0.25f, 0.30f }, // Cat A
+    { 4, 0.70f, 0.25f, 0.25f, 0.30f }  // Cat B
+    };
+
 
     glUseProgram(0);
     glDisable(GL_DEPTH_TEST);
@@ -318,16 +346,22 @@ void Renderer::drawAllSprites(Texture& tex,
         if (behindPass && isFront)   continue; // behind pass: skip all “front” sprites
         if (!behindPass && !isFront) continue; // front pass: draw ONLY “front” sprites
 
-        //  SCALE BLOCK GOES HERE 
+         //SCALE BLOCK GOES HERE 
         float s = 1.0f;
         if (scales) {
             int ti = sprites[i].idx;        // texture index: 1..N-1
             if (ti >= 0) s = scales[ti];    // array sized by Input::initSpriteScales()
         }
-        float x = sprites[i].x;
-        float y = sprites[i].y;
-        float w = sprites[i].w * s;
-        float h = sprites[i].h * s;
+        //float x = sprites[i].x;
+        //float y = sprites[i].y;
+        //float w = sprites[i].w * s;
+        //float h = sprites[i].h * s;
+
+        // Convert normalized to pixels
+        float x = sprites[i].nx * viewportW;
+        float y = sprites[i].ny * viewportH;
+        float w = sprites[i].nw * viewportW * s;
+        float h = sprites[i].nh * viewportH * s;
 
 
         GLuint t = tex.get_textureID((size_t)sprites[i].idx);
