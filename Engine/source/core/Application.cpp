@@ -19,6 +19,7 @@
 #include <chrono>
 #include "math/Vector.h"
 #include "core/ImGUIManager.h"
+#include <crtdbg.h>              // _CrtSetDbgFlag
 
 namespace {
     constexpr float TWO_PI = 2.0f * glm::pi<float>();
@@ -26,7 +27,10 @@ namespace {
 	using Clock = std::chrono::high_resolution_clock;
 }
 
-Application::Application() = default;
+//Application::Application() = default;
+Application::Application() {
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF); //enable memory leak check at program exit
+}
 
 int Application::run() {
     // 1) read JSON (with safe defaults)
