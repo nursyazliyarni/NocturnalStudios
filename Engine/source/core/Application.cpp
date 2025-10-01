@@ -19,6 +19,7 @@
 #include <chrono>
 #include "math/Vector.h"
 #include "core/ImGUIManager.h"
+#include "./scene/Prefab.h"
 
 namespace {
     constexpr float TWO_PI = 2.0f * glm::pi<float>();
@@ -67,6 +68,10 @@ int Application::run() {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+
+    //Register GameObject Components
+    RegisterAllComponents();
+
     // Initialize ImGui Manager
     // NOTE: ImGuiManager owns the Viewport pass; it will call Renderer to draw bg + shapes into an FBO.
     //       We just pass references here. No drawing is done in this file anymore.
@@ -86,7 +91,7 @@ int Application::run() {
     Physics    game_physics_obj;
     Game_Loop  game_loop_obj(m_window.handle());
     ImGuiManager imGuiManager(m_window, bg_render, txt_obj, game_input_obj, game_physics_obj);
-
+    PrefabManager prefab_man;
     // make Input’s scale array match the number of textures
     //game_input_obj.initSpriteScales(txt_obj.count());
 

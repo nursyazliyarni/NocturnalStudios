@@ -5,6 +5,14 @@
 #include "./scene/Prefab.h"
 #include "./scene/Component.h"
 
+void RegisterAllComponents() {
+	ComponentFactory::RegisterType<CircleRenderer>("CircleRenderer");
+	ComponentFactory::RegisterType<RectRenderer>("RectRenderer");
+	ComponentFactory::RegisterType<SpriteRenderer>("SpriteRenderer");
+	ComponentFactory::RegisterType<AABBCollider>("AABBCollider");
+	ComponentFactory::RegisterType<AnimalBehaviour>("AnimalBehaviour");
+}
+
 //prefab wil load the gameobjects from a file, 
 //and have a copy of one of each of the object in here?
 
@@ -37,6 +45,7 @@ PrefabManager::PrefabManager(std::string filename) :list{} {
 							if (component)
 							{
 								obj->Attach(std::move(component));
+								std::cout << "Component Attatched: " << comp["type"].GetString() << std::endl;
 							}
 						}
 

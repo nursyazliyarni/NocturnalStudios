@@ -1,5 +1,5 @@
 #include "./scene/Component.h"
-
+#include <iostream>
 
 Component::Component(COMPONENT_TYPE t, std::string s) :type{ t }, c_name{ s }, owner{ nullptr } {}
 Component::Component(const Component& comp) :type{ comp.type }, c_name{ comp.c_name }, owner{ nullptr } {}

@@ -6,6 +6,7 @@
 
 //prefab parses game objects from a json folder
 //which is then accessed by the Factory when making game scenes
+//shld be made static
 class PrefabManager {
 private:
 
@@ -16,3 +17,5 @@ public:
 	const GameObject* operator[](const char* key)const;
 
 };
+
+void RegisterAllComponents();
