@@ -27,7 +27,7 @@
         "components": [
             {
             "type": "SpriteRenderer",
-                "path": "assets/textures/placeholder2.png"
+                "sprite_path": "assets/textures/placeholder2.png"
             }
         ]
     }
