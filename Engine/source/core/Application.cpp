@@ -1,3 +1,15 @@
+/*!------------------------------------------------------------------------------------------------
+    File: Application.cpp
+    Project: NocturnalStudio
+
+    This file contains ...
+
+    Primary Author:
+         Rishika Bimal Attodi
+        - Brief
+
+    All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
 // init(), run(), shutdown()
 #include "core/Application.h"
 #include "core/Config.h"
@@ -30,6 +42,16 @@ int Application::run() {
 
     if (!m_window.create(wd)) return -1;
 
+    // Prime the window so there’s no white flash before the first real frame
+    glViewport(0, 0, wd.width, wd.height);
+    glDisable(GL_DEPTH_TEST);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glClearColor(0.06f, 0.06f, 0.07f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
+    m_window.swap();
+
+
     // set up a simple 2D projection (pixel coords, origin = top-left) for the OS window
     int currW = wd.width, currH = wd.height;
     glfwGetFramebufferSize(m_window.handle(), &currW, &currH);
@@ -48,13 +70,30 @@ int Application::run() {
     // Initialize ImGui Manager
     // NOTE: ImGuiManager owns the Viewport pass; it will call Renderer to draw bg + shapes into an FBO.
     //       We just pass references here. No drawing is done in this file anymore.
-    std::vector<char const*> vs{ "assets/textures/DGPEN_LOGO.png" };
+    //std::vector<char const*> vs{ "assets/textures/DGPEN_LOGO.png" };
+
+
+    std::vector<char const*> vs{
+    "assets/textures/DGPEN_LOGO.png",   // [0] background ONLY
+    "assets/textures/drink.png",       // [1]
+    "assets/textures/cupcake.png",       // [2]
+    "assets/textures/placeholder.png",  // [3]
+    "assets/textures/placeholder2.png"  // [4]
+    };
+
     Texture  txt_obj(vs);
     Renderer bg_render("assets/shaders/background.vert", "assets/shaders/background.frag");
 
     Input      game_input_obj(m_window.handle());
     Game_Loop  game_loop_obj(m_window.handle());
     ImGuiManager imGuiManager(m_window, bg_render, txt_obj, game_input_obj);
+
+     
+
+    game_input_obj.process_user_input(m_window.handle()); // installs callbacks + sets user pointer
+
+    // make Input’s scale array match the number of textures
+    game_input_obj.initSpriteScales(txt_obj.count());
 
     // 4) simple loop
     while (!m_window.shouldClose()) {
