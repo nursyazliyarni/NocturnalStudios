@@ -57,6 +57,8 @@ public:
 	//  Component Attachment
 	// [====================*====================]
 
+	void Attach(std::unique_ptr<Component>&&);
+
 	template<typename T, typename... Args>
 	T* Attach(Args&&... args) {
 		static_assert(std::is_base_of<Component, T>::value, "T must derive from Component");

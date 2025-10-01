@@ -36,7 +36,7 @@ public:
 	Component() = default;
 	Component(COMPONENT_TYPE t,std::string s);
     Component(const Component&);
-    virtual std::unique_ptr<Component> Clone() const;
+    virtual std::unique_ptr<Component> Clone() const=0;
 	void SetOwner(GameObject* o);
 	virtual void Render();
 	virtual bool Collide();
@@ -63,6 +63,7 @@ public:
 	RectRenderer(float w=1.f,float h=1.f);
     RectRenderer(const rapidjson::Value& j);
     RectRenderer(const RectRenderer&);
+    std::unique_ptr<Component> Clone() const;
 	void Render() override;
 
 };
@@ -74,6 +75,7 @@ public:
 	SpriteRenderer(std::string="");
     SpriteRenderer(const rapidjson::Value& j);
     SpriteRenderer(const SpriteRenderer&);
+    std::unique_ptr<Component> Clone() const;
 	void Render() override;
 };
 
@@ -85,6 +87,7 @@ public:
 	AABBCollider(float bbsize=1.f);
     AABBCollider(const rapidjson::Value& j);
     AABBCollider(const AABBCollider&);
+    std::unique_ptr<Component> Clone() const;
 	bool Collide() override;
 };
 
@@ -96,6 +99,7 @@ public:
 	AnimalBehaviour(std::string s="");
     AnimalBehaviour(const rapidjson::Value& j);
     AnimalBehaviour(const AnimalBehaviour&);
+    std::unique_ptr<Component> Clone() const;
 	void Logic() override;
 };
 

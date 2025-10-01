@@ -11,8 +11,8 @@ private:
 
 	std::map<std::string, std::unique_ptr<GameObject>> list;
 public:
-	PrefabManager(std::string filename = "assets/prefabs/GameObjs.json");
+	PrefabManager(std::string filename = "assets/prefabs/GameObj.json");
 
-	GameObject* operator[](const char* key)const;
+	const GameObject* operator[](const char* key)const;
 
 };
