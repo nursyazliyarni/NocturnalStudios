@@ -315,7 +315,7 @@ void Input::keyboard_input_callback(GLFWwindow* window, int key, int scancode, i
     }
 
     // Toggle counter-clockwise rotation (Q key)
-    if (key == GLFW_KEY_Q) {
+    if (key == GLFW_KEY_R) {
         if (self.spriteCount > 0) {
             if (self.selectedSprite == 0) {
                 // ALL mode ? check if currently rotating CCW
@@ -356,7 +356,7 @@ void Input::keyboard_input_callback(GLFWwindow* window, int key, int scancode, i
     }
 
     // Toggle clockwise rotation (E key)
-    if (key == GLFW_KEY_E) {
+    if (key == GLFW_KEY_T) {
         if (self.spriteCount > 0) {
             if (self.selectedSprite == 0) {
                 // ALL mode ? check if currently rotating CW
@@ -398,7 +398,7 @@ void Input::keyboard_input_callback(GLFWwindow* window, int key, int scancode, i
 
 
     // Reset all sprites (O key)
-    if (key == GLFW_KEY_O) {
+    if (key == GLFW_KEY_X) {
         if (self.spriteCount > 0) {
             // Reset scales
             for (size_t i = 1; i <= self.spriteCount && i < self.spriteScales.size(); ++i) {
