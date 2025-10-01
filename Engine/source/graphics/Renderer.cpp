@@ -37,11 +37,12 @@ Renderer::Renderer(const char* vertex_path, const char* fragment_path):render_sh
     //vertex position->where to render on screen(-1.0 to +1.0)
     //texture UV->how to render texture(0.0 to 1.0)
     float vertices[] = {
-    //vertex positions(x,y)  texture UV
-    -1.0f,  1.0f,            0.0f, 0.0f,  // top left
-    -1.0f, -1.0f,            0.0f, 1.0f,  // bottom left
-    1.0f,  1.0f,             1.0f, 0.0f,  // top right
-    1.0f, -1.0f,             1.0f, 1.0f   // bottom right
+    //flip the texture UV to produce correct image
+    //vertex positions(x,y)  texture UV   vertex positions(x,y) texture UV 
+    -1.0f,  1.0f,            0.0f, 0.0f,  //top left            //bottom left
+    -1.0f, -1.0f,            0.0f, 1.0f,  //bottom left         //top left
+    1.0f,  1.0f,             1.0f, 0.0f,  //top right           //bottom right
+    1.0f, -1.0f,             1.0f, 1.0f   //bottom right        //top right
     };
 
     //glGenVertexArrays returns the number of Vertex Array Objects(VAO) and store its unique ID in VAO_arr
@@ -66,7 +67,6 @@ Renderer::Renderer(const char* vertex_path, const char* fragment_path):render_sh
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
     glEnableVertexAttribArray(1); //use location=1 for rendering
     glBindVertexArray(0); //unbinds the currently bound VAO
-
 }
 
 void Renderer::background_render(GLuint texture_ID, const GLchar* uniform_VARNAME)
@@ -93,7 +93,7 @@ void Renderer::init2D(int w, int h) {
     glDisable(GL_DEPTH_TEST);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // ensure we’re not in wireframe
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // ensure weï¿½re not in wireframe
 }
 
 void Renderer::resize(int w, int h) {
@@ -228,9 +228,21 @@ void Renderer::drawViewportShapes(int w, int h) {
     glDisable(GL_DEPTH_TEST);
 
     // RGB triangle (center/top)
-    tri(w * 0.50f, h * 0.20f,
+    /*tri(w * 0.50f, h * 0.20f,
         w * 0.20f, h * 0.80f,
-        w * 0.80f, h * 0.80f);
+        w * 0.80f, h * 0.80f);*/
+
+        // shrink factor (20%)
+    float scale = 0.8f;
+    float cx = w * 0.5f;
+    float cy = h * 0.5f;
+
+    tri(
+        cx + (w * 0.50f - cx) * scale, cy + (h * 0.20f - cy) * scale,   // top
+        cx + (w * 0.20f - cx) * scale, cy + (h * 0.80f - cy) * scale,   // bottom-left
+        cx + (w * 0.80f - cx) * scale, cy + (h * 0.80f - cy) * scale    // bottom-right
+    );
+
 
     // filled blue circle on the right
     {
@@ -246,9 +258,9 @@ void Renderer::drawViewportShapes(int w, int h) {
 
     // white outline box (bottom-left)
     {
-        float pad = w * 0.02f;
-        float bw = w * 0.16f;
-        float bh = h * 0.17f;
+        float pad = w * 0.01f;
+        float bw = w * 0.35f;
+        float bh = h * 0.5f;
         rectOutline(pad, pad, bw, bh);
     }
 }
@@ -287,69 +299,129 @@ void Renderer::drawViewportShapes(int w, int h) {
 
 void Renderer::drawAllSprites(Texture& tex,
     const std::vector<int>& frontIdxs,
-    bool behindPass)
+    bool behindPass,
+    int viewportW, int viewportH)
 {
-    drawAllSprites(tex, frontIdxs, behindPass, /*scales*/ nullptr);
+    drawAllSprites(tex, frontIdxs, behindPass, /*scales*/ nullptr, /*rotations*/ nullptr, viewportW, viewportH);
+}
+
+void Renderer::initAllSprites() {
+                      //int idx;|  float x, y, w, h;  |float scale_value;
+    sprite_vector.push_back({ 1, 0.01f, 0.10f, 0.15f, 0.25f, 0.0f }); // drink (5% from left, 10% from top, 10% width, 15% height)
+    sprite_vector.push_back({ 2, 0.15f, 0.10f, 0.15f, 0.25f, 0.0f }); // cupcake
+    sprite_vector.push_back({ 3, 0.40f, 0.35f, 0.25f, 0.30f, 0.0f }); // Cat A
+    sprite_vector.push_back({ 4, 0.70f, 0.25f, 0.25f, 0.30f, 0.0f }); // Cat B
 }
 
 void Renderer::drawAllSprites(Texture& tex,
     const std::vector<int>& frontIdxs,
     bool behindPass,
-    const float* scales)
+    const float* scales,
+    const float* rotations,
+    int viewportW, int viewportH)
 {
-    struct QuadArgs { int idx; float x, y, w, h; };
-    const QuadArgs sprites[] = {
-        { 1,  60.f, 60.f, 128.f, 128.f }, // drink
-        { 2, 220.f, 60.f, 128.f, 128.f }, // cupcake
-        { 3, 380.f, 60.f, 200.f, 200.f }, // Cat A
-        { 4, 590.f, 60.f, 200.f, 200.f }  // Cat B
-    };
-
     glUseProgram(0);
     glDisable(GL_DEPTH_TEST);
 
-    const size_t texCount = tex.count(); // includes bg at index 0
+    const size_t texCount = tex.get_totalTexture(); // includes bg at index 0
 
-
-    for (int i = 0; i < (int)(sizeof(sprites) / sizeof(sprites[0])); ++i) {
-        bool isFront = std::find(frontIdxs.begin(), frontIdxs.end(), sprites[i].idx) != frontIdxs.end();
+    for (int i = 0; i<sprite_vector.size(); ++i) {
+        bool isFront = std::find(frontIdxs.begin(), frontIdxs.end(), sprite_vector[i].idx) != frontIdxs.end();
 
         // pass filter
-        if (behindPass && isFront)   continue; // behind pass: skip all “front” sprites
-        if (!behindPass && !isFront) continue; // front pass: draw ONLY “front” sprites
+        if (behindPass && isFront)   continue; // behind pass: skip all ï¿½frontï¿½ sprites
+        if (!behindPass && !isFront) continue; // front pass: draw ONLY ï¿½frontï¿½ sprites
+        float s = 1.0f;// SCALING
+        float angle = 0.0f;// ROTATION 
 
-        //  SCALE BLOCK GOES HERE 
-        float s = 1.0f;
-        if (scales) {
-            int ti = sprites[i].idx;        // texture index: 1..N-1
-            if (ti >= 0) s = scales[ti];    // array sized by Input::initSpriteScales()
-        }
-        float x = sprites[i].x;
-        float y = sprites[i].y;
-        float w = sprites[i].w * s;
-        float h = sprites[i].h * s;
+        // Convert normalized to pixels
+        float x = sprite_vector[i].x * viewportW;
+        float y = sprite_vector[i].y * viewportH;
+        float w = sprite_vector[i].w * viewportW * s;
+        float h = sprite_vector[i].h * viewportH * s;
 
+        // Find center
+        float cx = x + w * 0.5f;
+        float cy = y + h * 0.5f;
 
-        GLuint t = tex.get_textureID((size_t)sprites[i].idx);
+        // Compute rotated corners
+        float cosA = std::cos(sprite_vector[i].angle);
+        float sinA = std::sin(sprite_vector[i].angle);
+
+        // Helper to rotate each corner
+        float x0, y0, x1, y1, x2, y2, x3, y3;
+
+        // top-left
+        float dx = x - cx;
+        float dy = y - cy;
+        x0 = cx + dx * cosA - dy * sinA;
+        y0 = cy + dx * sinA + dy * cosA;
+
+        // top-right
+        dx = (x + w) - cx;
+        dy = y - cy;
+        x1 = cx + dx * cosA - dy * sinA;
+        y1 = cy + dx * sinA + dy * cosA;
+
+        // bottom-right
+        dx = (x + w) - cx;
+        dy = (y + h) - cy;
+        x2 = cx + dx * cosA - dy * sinA;
+        y2 = cy + dx * sinA + dy * cosA;
+
+        // bottom-left
+        dx = x - cx;
+        dy = (y + h) - cy;
+        x3 = cx + dx * cosA - dy * sinA;
+        y3 = cy + dx * sinA + dy * cosA;
+
+        GLuint t = tex.get_textureID((size_t)sprite_vector[i].idx);
 
         glEnable(GL_TEXTURE_2D);
         glBindTexture(GL_TEXTURE_2D, t);
 
-        // two triangles (no GL_QUADS)
+        //// two triangles 
+        //glBegin(GL_TRIANGLES);
+        //// tri 1
+        //glTexCoord2f(0.f, 0.f); glVertex2f(x, y);
+        //glTexCoord2f(1.f, 0.f); glVertex2f(x + w, y);
+        //glTexCoord2f(1.f, 1.f); glVertex2f(x + w, y + h);
+        //// tri 2
+        //glTexCoord2f(0.f, 0.f); glVertex2f(x, y);
+        //glTexCoord2f(1.f, 1.f); glVertex2f(x + w, y + h);
+        //glTexCoord2f(0.f, 1.f); glVertex2f(x, y + h);
+        //glEnd();
+
+        // two triangles using rotated corners
         glBegin(GL_TRIANGLES);
+        //// tri 1
+        //glTexCoord2f(0.f, 0.f); glVertex2f(sprite_vector[i].x, sprite_vector[i].y);
+        //glTexCoord2f(1.f, 0.f); glVertex2f(sprite_vector[i].x + sprite_vector[i].w, sprite_vector[i].y);
+        //glTexCoord2f(1.f, 1.f); glVertex2f(sprite_vector[i].x + sprite_vector[i].w, sprite_vector[i].y + sprite_vector[i].h);
+
+        //// tri 2
+        //glTexCoord2f(0.f, 0.f); glVertex2f(x0, y0);
+        //glTexCoord2f(1.f, 1.f); glVertex2f(x2, y2);
+        //glTexCoord2f(0.f, 1.f); glVertex2f(x3, y3);
+        //glEnd();
+
         // tri 1
-        glTexCoord2f(0.f, 0.f); glVertex2f(x, y);
-        glTexCoord2f(1.f, 0.f); glVertex2f(x + w, y);
-        glTexCoord2f(1.f, 1.f); glVertex2f(x + w, y + h);
+        glTexCoord2f(0.f, 0.f); glVertex2f(x0, y0);
+        glTexCoord2f(1.f, 0.f); glVertex2f(x1, y1);
+        glTexCoord2f(1.f, 1.f); glVertex2f(x2, y2);
         // tri 2
-        glTexCoord2f(0.f, 0.f); glVertex2f(x, y);
-        glTexCoord2f(1.f, 1.f); glVertex2f(x + w, y + h);
-        glTexCoord2f(0.f, 1.f); glVertex2f(x, y + h);
+        glTexCoord2f(0.f, 0.f); glVertex2f(x0, y0);
+        glTexCoord2f(1.f, 1.f); glVertex2f(x2, y2);
+        glTexCoord2f(0.f, 1.f); glVertex2f(x3, y3);
         glEnd();
 
         glBindTexture(GL_TEXTURE_2D, 0);
         glDisable(GL_TEXTURE_2D);
     }
+}
+
+std::vector<Renderer::sprite>& Renderer::get_sprite_vector() {
+    return sprite_vector;
 }
 
 

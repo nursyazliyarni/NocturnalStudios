@@ -6,6 +6,7 @@
 #include "core/GameLoop.h"
 #include "graphics/Shader.h"
 #include "graphics/Renderer.h"
+#include "physics/Physics.h"
 #include "core/Logger.h"
 
 class Application {

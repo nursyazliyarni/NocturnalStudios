@@ -43,18 +43,24 @@ void Gui::updateImGuiManager(double& deltaTime, ImGuiManager& imGuiManager) {
 	imGuiManager.endFrame();
 }
 
-ImGuiManager::ImGuiManager(Window& w, Renderer& r, Texture& tex, Input& i) : mainWindow{ w }, renderer{ r }, texture{ tex }, input{ i }, windowTopLeft{}, windowBottomRight{}, deltaTime{ 0. }, imGuiTime{ 0. }, inputTime{ 0. }, logicTime{ 0. }, renderTime{ 0. }, selectedEntityType {} {
-
+ImGuiManager::ImGuiManager(Window& w, Renderer& r, Texture& tex, Input& i, Physics& p) : mainWindow{ w }, renderer{ r }, 
+texture{ tex }, input{ i }, physics{ p }, windowTopLeft {}, windowBottomRight{}, deltaTime{ 0. }, imGuiTime{ 0. }, 
+inputTime{ 0. }, logicTime{ 0. }, renderTime{ 0. }, selectedEntityType{} 
+{
 	// Init ImGui context
 	ImGui::CreateContext();
 
 	// Setup renderer bindings
-	ImGui_ImplGlfw_InitForOpenGL(mainWindow.handle(), true);
+	// Set to false->ImGui will not install its own callbacks
+	// My Input class will handle ALL input callbacks
+	ImGui_ImplGlfw_InitForOpenGL(mainWindow.handle(), false);
 	ImGui_ImplOpenGL3_Init("#version 330");
 
 	// Setup style
 	ImGui::StyleColorsClassic();
 	ImGuiIO& io = ImGui::GetIO();
+
+	r.initAllSprites(); //init all the sprite needed for later rendering
 
 	// Logging
 	logger.log("ImGui initialized successfully.");
@@ -132,9 +138,13 @@ void ImGuiManager::showViewportWindowUI() {
 
 	 static int lastW = -1, lastH = -1;
     if (vw != lastW || vh != lastH) {        // recreate only when needed
-        renderer.initFBO(vw, vh);
+        //renderer.initFBO(vw, vh);
         lastW = vw; lastH = vh;
     }
+	physics.update_sprite_movement(renderer, input);
+	physics.update_sprite_scaling(renderer, input);
+	physics.update_sprite_rotation(renderer, input);
+
 	auto render_start = Clock::now();
 
 	// Initialize and bind FBO for rendering
@@ -148,20 +158,28 @@ void ImGuiManager::showViewportWindowUI() {
 	// You can keep your clear (fine for 2D)
 	renderer.clear(0.1f, 0.1f, 0.12f);
 
-
 	// @Todo (axewhy): Render the actual viewport content here, e.g., using a framebuffer texture
 	// Render background to FBO
 	renderer.background_render(texture.get_textureID(0), "bg_texture");
 
-	// behind-sprites pass (scaled)
-	renderer.drawAllSprites(texture, { 3,4 }, /*behindPass=*/true, input.getSpriteScalesPtr());
+	input.updateRotations();
 
+	// behind-sprites pass (scaled)
+	//renderer.drawAllSprites(texture, { 3,4 }, /*behindPass=*/true,  input.getSpriteScalesPtr());
+	renderer.drawAllSprites(texture, { 3,4 }, true,
+		input.getSpriteScalesPtr(),
+		input.getSpriteRotationsPtr(),
+		vw, vh);
 
 	//draw all SHAPES from Renderer.cpp (keeps ImGui clean of GL) - rishika
 	renderer.drawViewportShapes(vw, vh);
 
 	// front-sprites pass (scaled)
-	renderer.drawAllSprites(texture, { 3,4 }, /*behindPass=*/false, input.getSpriteScalesPtr());
+	//renderer.drawAllSprites(texture, { 3,4 }, /*behindPass=*/false, input.getSpriteScalesPtr());
+	renderer.drawAllSprites(texture, { 3,4 }, false,
+		input.getSpriteScalesPtr(),
+		input.getSpriteRotationsPtr(),
+		vw, vh);
 
 	renderer.unbindFBO();
 	auto render_end = Clock::now();
@@ -174,7 +192,6 @@ void ImGuiManager::showViewportWindowUI() {
 	ImGui::Image((ImTextureID)(intptr_t)renderer.getFBOTexture(),
 		ImVec2(viewportWidth, viewportHeight),
 		ImVec2(0, 1), ImVec2(1, 0));
-
 
 	ImGui::End();
 }
@@ -192,6 +209,8 @@ void ImGuiManager::showMousePosOverlayUI() {
 	Vector2D worldPosition;
 	Vector2D viewPortPosition;
 	Vector2D screenPosition;
+	//true->get normalized value, false->unnormalized value
+	Vector2D mouse_pos = input.GET_mouse_pos(true, mainWindow.desc().width, mainWindow.desc().height);
 	
 	// Position the overlay at the top-right corner of the window
 	ImVec2 windowTopRightPos = { windowBottomRight.x - width, windowTopLeft.y };
@@ -200,7 +219,7 @@ void ImGuiManager::showMousePosOverlayUI() {
 	ImGui::SetNextWindowSize({ width, height });
 
 	ImGui::Begin("Overlay", nullptr, windowFlags);
-	ImGui::Text("Mouse position: %.2f, %.2f", input.GET_mouse_pos()[0], input.GET_mouse_pos()[1]);
+	ImGui::Text("Mouse position: %.2f, %.2f", mouse_pos[0], mouse_pos[1]);
 	ImGui::Text("World pos: %.2f, %.2f", worldPosition.x(), worldPosition.y());
 	ImGui::Text("View pos: %.2f, %.2f", viewPortPosition.x(), viewPortPosition.y());
 	ImGui::Text("Screen pos: %.2f, %.2f", screenPosition.x(), screenPosition.y());
