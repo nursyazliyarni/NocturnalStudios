@@ -31,12 +31,15 @@ public:
 
     void drawAllSprites(Texture& tex,
         const std::vector<int>& frontIdxs,
-        bool behindPass); // wrapper
+        bool behindPass,
+        int viewportW, int viewportH); // wrapper
 
     void drawAllSprites(Texture& tex,
         const std::vector<int>& frontIdxs,
         bool behindPass,
-        const float* scales); // actual impl
+        const float* scales,
+        const float* rotations,
+        int viewportW, int viewportH); // actual impl
 
 
 

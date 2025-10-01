@@ -33,10 +33,26 @@ public:
 	// initialize per-sprite scales to 1.0f for all textures
 	void initSpriteScales(size_t textureCount);
 	// pointer for renderer (nullptr if no sprites)
+
+	void initSpriteRotations(size_t count);
+
+	//// pointer for renderer (nullptr if no sprites)
+	//const float* getSpriteScalesPtr() const {
+	//	if (spriteScales.empty()) return nullptr;
+	//	return spriteScales.data();
+	//}
+	
+
+
+	// expose raw pointers for Renderer
 	const float* getSpriteScalesPtr() const {
 		if (spriteScales.empty()) return nullptr;
 		return spriteScales.data();
 	}
+	const float* getSpriteRotationsPtr() const;
+
+	//update rotations every frame
+	void updateRotations();
 
 private:
 	//Non-static member functions need an object to call it
@@ -54,6 +70,15 @@ private:
 	// per-sprite scale values, sized dynamically to textureCount
 	std::vector<float> spriteScales;
 
+	std::vector<float> spriteRotations;  // per-sprite rotation angles (in degrees), current angle in degrees
+
+    // toggles for continuous rotation
+	std::vector<bool> spriteRotatingCW;     // clockwise
+	std::vector<bool> spriteRotatingCCW;    // counter-clockwise
+
+
+
+private:
 	//private data member
 	//mouse_pos[0] is previous mouse position, mouse_pos[1] is current mouse_position
 	Vector2D mouse_pos[2];
