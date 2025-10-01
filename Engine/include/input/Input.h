@@ -9,18 +9,19 @@
 #include "../imgui/backends/imgui_impl_glfw.h"
 
 enum class Input_state {
-	none,press,release,hold
+	press,release,hold
 };
 
 class Input {
 public:
+	//RULE OF ZERO APPLY
 	Input(GLFWwindow* window);
 
 	void update_mouse_pos(GLFWwindow* window);
 	Vector2D GET_mouse_pos(bool want_normalize, int window_width, int window_height);
 	Vector2D GET_mouse_delta();
-	void process_user_input(GLFWwindow* window);
 
+	void process_user_input(GLFWwindow* window); //still needs further implementation
 	void detect_keyboard_event(GLFWwindow* window, int key, Input_state event_action);
 	void detect_mouse_event(GLFWwindow* window, int mouse, Input_state event_action);
 
@@ -31,7 +32,6 @@ private:
 	static void keyboard_input_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 	static void mouse_input_callback(GLFWwindow* window, int button, int action, int mods);
 
-private:
 	//private data member
 	//mouse_pos[0] is previous mouse position, mouse_pos[1] is current mouse_position
 	Vector2D mouse_pos[2];

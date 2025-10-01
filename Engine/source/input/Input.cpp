@@ -1,6 +1,5 @@
 // IsKeyDown/WasPressed, mouse, scroll (GLFW wrappe r)
 #include "input/input.h"
-extern float value;
 
 std::vector<std::pair<int, Input_state>> Input::keyboard_action;
 std::vector<std::pair<int, Input_state>> Input::mouse_action;
@@ -83,22 +82,19 @@ void Input::keyboard_input_callback(GLFWwindow* window, int key, int scancode, i
 				switch (pair.second) {
 				case Input_state::press:
 					if (action == GLFW_PRESS) {
-						logger.log("player press unknown key");
-						pair.second = Input_state::none;
+						logger.log("player press a specific key");
 					}
 					break;
 
 				case Input_state::release:
 					if (action == GLFW_RELEASE) {
-						logger.log("player release unknown key");
-						pair.second = Input_state::none;
+						logger.log("player release a specific key");
 					}
 					break;
 
 				case Input_state::hold:
 					if (action == GLFW_REPEAT) {
-						logger.log("player holds down unknown key");
-						pair.second = Input_state::none;
+						logger.log("player holds down a specific key");
 					}
 					break;
 				}
@@ -120,15 +116,13 @@ void Input::mouse_input_callback(GLFWwindow* window, int button, int action, int
 				switch (pair.second) {
 				case Input_state::press:
 					if (action == GLFW_PRESS) {
-						logger.log("player press unknown mouse");
-						pair.second = Input_state::none;
+						logger.log("player press the mouse");
 					}
 					break;
 
 				case Input_state::release:
 					if (action == GLFW_RELEASE) {
-						logger.log("player release unknown mouse");
-						pair.second = Input_state::none;
+						logger.log("player release the mouse");
 					}
 					break;
 				}
