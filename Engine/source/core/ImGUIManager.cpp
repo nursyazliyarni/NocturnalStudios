@@ -154,14 +154,17 @@ void ImGuiManager::showViewportWindowUI() {
 	renderer.background_render(texture.get_textureID(0), "bg_texture");
 
 	// behind-sprites pass (scaled)
-	renderer.drawAllSprites(texture, { 3,4 }, /*behindPass=*/true, input.getSpriteScalesPtr());
+	//renderer.drawAllSprites(texture, { 3,4 }, /*behindPass=*/true,  input.getSpriteScalesPtr());
+	renderer.drawAllSprites(texture, { 3,4 }, true, input.getSpriteScalesPtr(), vw, vh);
+
 
 
 	//draw all SHAPES from Renderer.cpp (keeps ImGui clean of GL) - rishika
 	renderer.drawViewportShapes(vw, vh);
 
 	// front-sprites pass (scaled)
-	renderer.drawAllSprites(texture, { 3,4 }, /*behindPass=*/false, input.getSpriteScalesPtr());
+	//renderer.drawAllSprites(texture, { 3,4 }, /*behindPass=*/false, input.getSpriteScalesPtr());
+	renderer.drawAllSprites(texture, { 3,4 }, false, input.getSpriteScalesPtr(), vw, vh);
 
 	renderer.unbindFBO();
 	auto render_end = Clock::now();

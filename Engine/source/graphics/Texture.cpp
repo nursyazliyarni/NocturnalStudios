@@ -13,6 +13,17 @@ Texture::Texture(std::vector<char const*> &image_path_v):textureID_storage(image
 			continue; //skip this iteration
 		}
 
+
+
+
+		if (!image_data) {
+			std::cout << "Failed to load texture: "
+				<< image_path_v[index] << " ("
+				<< stbi_failure_reason() << ")\n";
+			continue; // skip this texture, move on
+		}
+
+
 		//GLuint/Glenum->unsigned int, Glsizei->int
 		//glGenTextures(textureID_storage.size(), &textureID_storage[index]); //GLsizei, GLuint*
 		glGenTextures(1, &textureID_storage[index]);
@@ -24,8 +35,33 @@ Texture::Texture(std::vector<char const*> &image_path_v):textureID_storage(image
 	
 
 
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image_width, image_height, 0, GL_RGBA, GL_UNSIGNED_BYTE,
-			         image_data);
+		/*glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image_width, image_height, 0, GL_RGBA, GL_UNSIGNED_BYTE,
+			         image_data);*/
+
+
+
+					 // Pick correct format depending on how many channels stb_image gave
+		GLenum format = GL_RGB;
+		if (num_components == 4)      format = GL_RGBA;  // has alpha
+		else if (num_components == 3) format = GL_RGB;   // standard RGB
+		else if (num_components == 1) format = GL_RED;   // grayscale
+
+		// Prevent row padding issues for images whose width is not multiple of 4
+		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+		// Upload pixel data into OpenGL texture
+		glTexImage2D(
+			GL_TEXTURE_2D,   // target
+			0,               // mipmap level
+			format,          // internal format
+			image_width,     // width
+			image_height,    // height
+			0,               // border (must be 0)
+			format,          // format of pixel data
+			GL_UNSIGNED_BYTE,// type of pixel data
+			image_data       // actual pixel buffer
+		);
+
 
 
 
