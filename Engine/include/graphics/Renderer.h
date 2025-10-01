@@ -11,7 +11,7 @@ class Renderer {
 public:
     //constructor for image rendering, need to provide vertex file AND fragment file
     Renderer(const char* vertex_path, const char* fragment_path);
-public:
+
     void init2D(int w, int h);
     void resize(int w, int h);
     void clear(float r, float g, float b);
@@ -27,6 +27,8 @@ public:
     //void drawAllSprites(Texture& tex);
 
    // Renderer.h
+    void initAllSprites();
+
     void drawAllSprites(Texture& tex,
         const std::vector<int>& frontIdxs,
         bool behindPass,
@@ -63,9 +65,16 @@ private:
     GLuint viewportFBO = 0, viewportTexture = 0;
     int    fboWidth = 0, fboHeight = 0;
 
-
-
     Shader render_shader;
+    struct sprite {
+        int idx; 
+        float x, y, w, h;
+        float angle;
+    };
+    std::vector<sprite> sprite_vector;
+
+public:
+    std::vector<sprite>& get_sprite_vector(); //get the entire sprite vector
 };
 
 

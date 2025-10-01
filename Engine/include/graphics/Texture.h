@@ -2,20 +2,26 @@
 #include <GL/glew.h>
 #include <iostream>
 #include <vector>
+#include "core/Logger.h"
+
+extern Logger logger;
 
 class Texture {
 public:
 	Texture(std::vector<char const*>& image_path_v);
 	~Texture();
 
-	GLuint get_textureID(size_t input_index);
-
-	// How many textures are loaded (used to size the scale array)
-	size_t count() const { return textureID_storage.size(); }
-
+	size_t get_totalTexture() const; //How many textures are loaded (used to size the scale array)
+	const GLuint& get_textureID(size_t input_index) const;
+	const int& get_texture_width(size_t input_index) const;
+	const int& get_texture_height(size_t input_index) const;
 
 private:
-	//use vector to store texture IDs for multiple images
-	std::vector<GLuint> textureID_storage;
+	struct Texture_Info {
+		GLuint textureID_storage; //texture ID
+		std::pair<int, int> image_dimension; //pair.first==width,pair.second==height
+	};
 
+	//use vector to store Texture_Info
+	std::vector<Texture_Info> texture_info_vector;
 };
