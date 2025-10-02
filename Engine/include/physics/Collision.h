@@ -1,5 +1,20 @@
+/*!------------------------------------------------------------------------------------------------
+	File: Collision.h
+	Project: NocturnalStudio
+
+	This file contains collision checks & responses using AABB wrapper.
+
+	Primary Author:
+		 Chang Qi Xuan Celest (100%)
+		- Created collision functions using AABB wrapper.
+
+	All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
+
 // collision checks & responses
+
 #include "math/Vector.h"
+#include "physics/AABB.h"
 
 #ifndef COLLISION_H
 #define COLLISION_H

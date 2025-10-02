@@ -20,6 +20,7 @@
 #include "math/Vector.h"
 #include "core/ImGUIManager.h"
 #include "./scene/Prefab.h"
+#include "physics/AABB.h"
 
 namespace {
     constexpr float TWO_PI = 2.0f * glm::pi<float>();
@@ -117,6 +118,23 @@ int Application::run() {
         game_loop_obj.display_FPS(m_window.handle(), c.window.title, dt); // display FPS
         game_input_obj.update_mouse_pos(m_window.handle());
         game_input_obj.GET_mouse_delta();
+
+		//mouse click detection for sprites
+        double mouseX, mouseY;
+        glfwGetCursorPos(m_window.handle(), &mouseX, &mouseY);
+        Vector2D mousePos(static_cast<float>(mouseX), static_cast<float>(mouseY));
+
+		//hardcoded cupcake AABB (for test)
+        Vector2D cupcakePos(200.0f, 200.0f);
+        Vector2D cupcakeSize(64.0f, 64.0f);
+
+        if (glfwGetMouseButton(m_window.handle(), GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
+            if (isPointInAABB(mousePos, cupcakePos, cupcakeSize)) {
+                std::cout << "Cupcake clicked at (" << mouseX << ", " << mouseY << ")\n";
+                //drag logic to be implemented
+            }
+        }
+
 
         // handle resize: update viewport/projection if size changed (no callbacks)
 
