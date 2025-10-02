@@ -245,6 +245,10 @@ void Input::mouse_input_callback(GLFWwindow* window, int button, int action, int
 	}
 }
 
+//void Input::SendMesssage() {
+//
+//}
+
 //void Input::initSpriteScales(size_t textureCount) {
 //    spriteCount = (textureCount > 1) ? (textureCount - 1) : 0;
 //    spriteScales.assign(textureCount, 1.0f);                // [0]=bg, [1-spriteCount]=sprites
