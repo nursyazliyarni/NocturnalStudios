@@ -55,10 +55,7 @@ EntityID ECS::createEntity(std::string name, EntityID entityID) {
 
 EntityID ECS::cloneEntity(EntityID entityID) {
 	auto const& it = entityMetadataMap.find(entityID);
-	if (it == entityMetadataMap.end()) {
-		logger.error(std::string{ "ECS::cloneEntity - Entity does not exist\nEntityID: " } + std::to_string(entityID) + "\n");
-		return INVALID_ENTITY_ID;
-	}
+	assert(it != entityMetadataMap.end());
 
 	EntityID newID = createEntity("copy");
 	if (newID == INVALID_ENTITY_ID) {
@@ -93,12 +90,15 @@ bool ECS::deleteEntity(EntityID entityID) {
 	auto const& it = entityMetadataMap.find(entityID);
 	if (it == entityMetadataMap.end()) return false;
 
+	assert(it->first == entityID);
+
 	for (auto const& componentID : it->second.componentIDs) {
 		auto& pool = componentPools[componentID];
 		if (!pool) continue;
 
 		if (pool->removeComponent(entityID)) {
 			auto componentDataIt = getComponentData(componentID);
+			assert(componentDataIt != componentMetadata.end());
 			componentDataIt->size -= 1;
 		}
 	}
@@ -107,8 +107,44 @@ bool ECS::deleteEntity(EntityID entityID) {
 	deletedEntities.push_back(entityID);
 	entityMetadataMap.erase(entityMetadataMap.find(entityID));
 	auto iterator = std::find_if(allEntities.begin(), allEntities.end(), [&](auto const& id) { return id == entityID; });
+	assert(iterator != allEntities.end());
 
 	allEntities.erase(iterator);
 	reUpdateMetadata();
 	return true;
+}
+
+std::string& ECS::getEntityName(EntityID entityID) {
+	auto it = entityMetadataMap.find(entityID);
+	assert(it != entityMetadataMap.end());
+	return it->second.name;
+}
+
+EntityID ECS::findEntityByName(std::string const& name) const {
+	for (auto const& [id, metadata] : entityMetadataMap) {
+		if (metadata.name == name) return id;
+	}
+	return INVALID_ENTITY_ID;
+}
+
+std::vector<EntityID> const& ECS::getAllEntities() const {
+	return allEntities;
+}
+
+bool ECS::removeComponent(EntityID entityID, ComponentID componentID) {
+	auto it = getComponentData(componentID);
+	assert(it != componentMetadata.end());
+	return removeComponent(entityID, it->componentID);
+}
+
+std::vector<ComponentData>::const_iterator ECS::getComponentData(ComponentID componentID) const {
+	return std::find_if(componentMetadata.begin(), componentMetadata.end(), [&](auto const& data) { return data.componentID == componentID; });
+}
+
+std::vector<ComponentData>::iterator ECS::getComponentData(ComponentID componentID) {
+	return std::find_if(componentMetadata.begin(), componentMetadata.end(), [&](auto const& data) { return data.componentID == componentID; });
+}
+
+void ECS::reUpdateMetadata() {
+	std::sort(componentMetadata.begin(), componentMetadata.end(), [](auto const& lhs, auto const& rhs) { return lhs.size < rhs.size; });
 }

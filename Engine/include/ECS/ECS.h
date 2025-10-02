@@ -128,10 +128,8 @@ bool ECS::removeComponent(EntityID entityID) {
 
 	pool = componentPools[type].get();
 	ComponentPool<T>* specificPool = dynamic_cast<ComponentPool<T>*>(pool);
-	if (!specificPool) {
-		logger.error(std::string{ "ECS::removeComponent - Failed to derive correct component pool\nComponentID: " } + std::to_string(type) + "\n");
-		return false;
-	}
+	assert(specificPool != nullptr);
+
 	if (!specificPool->removeComponent(entityID)) {
 		logger.error(std::string{ "ECS::removeComponent - Failed to remove component from entity\nEntityID: " } + std::to_string(entityID) + "\n");
 		return false;
