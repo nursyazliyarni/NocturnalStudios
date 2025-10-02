@@ -4,10 +4,10 @@
 
 namespace Messaging
 {
-    class MessageHandler
+    class IMessageHandler
     {
     public:
-        virtual ~MessageHandler() = default;
-        virtual void HandleMessage(const Message& msg) = 0;
+        virtual ~IMessageHandler() = default;
+        virtual void HandleMessage(Message* msg) = 0;
     };
 }

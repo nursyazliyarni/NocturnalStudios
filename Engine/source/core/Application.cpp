@@ -43,6 +43,8 @@ int Application::run() {
 
     if (!m_window.create(wd)) return -1;
 
+    
+
     // Prime the window so there’s no white flash before the first real frame
     glViewport(0, 0, wd.width, wd.height);
     glDisable(GL_DEPTH_TEST);
@@ -94,6 +96,13 @@ int Application::run() {
     PrefabManager prefab_man;
     // make Input’s scale array match the number of textures
     //game_input_obj.initSpriteScales(txt_obj.count());
+
+    //broadcasted messaging system for input keyboard and mouse
+    Messaging::MessageBus bus;
+    Messaging::InputSystemMessaging input(bus, m_window.handle());
+
+    // Register GameLoop as a listener
+    bus.Register(&game_loop_obj);
 
     // 4) simple loop
     while (!m_window.shouldClose()) {

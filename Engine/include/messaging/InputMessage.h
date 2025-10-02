@@ -2,27 +2,41 @@
 
 #include "messaging/Message.h"
 
-namespace InputMessaging {
+namespace Messaging {
 
-	class KeyMessage : public Messaging::Message {
+    //Message class for when a key is pressed
+	class KeyMessage : public Message {
 		public:
-        KeyMessage(int key, bool pressed)
-            : Message(Messaging::Mid::KEY_EVENT), keyCode(key), isPressed(pressed) {
+        KeyMessage(int key, int action)
+            : Message(Mid::KEY_EVENT), keyCode(key), action(action) {
         }
 
         int keyCode;
-        bool isPressed;
+        int action;
     };
 
-    // Mouse message
-    class MouseMessage : public Messaging::Message {
+    // Message class for when the mouse is clicked
+    /*class MovingMouseMessage : public Message {
     public:
-        MouseMessage(int button, int x, int y)
-            : Message(Messaging::Mid::MOUSEBUTTON), button(button), x(x), y(y) {
+        MovingMouseMessage( float x, float y)
+            : Message(Mid::MOUSEMOVE), x(x), y(y) {
         }
 
-        int button;
-        int x, y;
+        float x, y;
+    };*/
+
+    class ClickedMouseMessage : public Message {
+    public:
+        ClickedMouseMessage(int button, bool pressed, float x, float y)
+            : Message(Mid::MOUSEBUTTON), MouseButtonIndex(button),
+            buttonPressed(pressed), mouseX(x), mouseY(y) {
+        }
+
+
+        int MouseButtonIndex;
+        bool buttonPressed;
+        float mouseX;
+        float mouseY;
     };
 	
 }
