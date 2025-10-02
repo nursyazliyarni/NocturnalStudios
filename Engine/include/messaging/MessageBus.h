@@ -1,3 +1,17 @@
+/*!------------------------------------------------------------------------------------------------
+    File: MessageBus.h
+    Project: NocturnalStudio
+
+    This file contains the functions register, deregister and broadcast
+
+    Primary Author:
+        Nur Syazliyarni (100%)
+        - Created for the messaging system using a basic broadcasting system where 
+         we can register specific listeners to get the messages
+
+    All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
+
 #pragma once
 #include <vector>
 #include <algorithm>

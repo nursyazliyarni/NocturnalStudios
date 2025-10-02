@@ -1,3 +1,16 @@
+/*!------------------------------------------------------------------------------------------------
+    File: InputMessage.h
+    Project: NocturnalStudio
+
+    This file contains the messaging classes for the input system
+
+    Primary Author:
+        Nur Syazliyarni (100%)
+        - Created...
+
+    All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
+
 #pragma once
 
 #include "messaging/Message.h"
@@ -11,8 +24,8 @@ namespace Messaging {
             : Message(Mid::KEY_EVENT), keyCode(key), action(action) {
         }
 
-        int keyCode;
-        int action;
+        int keyCode; // 
+        int action; // key released or pressed
     };
 
     // Message class for when the mouse is clicked
@@ -25,6 +38,7 @@ namespace Messaging {
         float x, y;
     };*/
 
+    //message class for when mouse is clicked
     class ClickedMouseMessage : public Message {
     public:
         ClickedMouseMessage(int button, bool pressed, float x, float y)
@@ -33,10 +47,10 @@ namespace Messaging {
         }
 
 
-        int MouseButtonIndex;
-        bool buttonPressed;
-        float mouseX;
-        float mouseY;
+        int MouseButtonIndex; //mouse button left or right
+        bool buttonPressed; 
+        float mouseX; //mouse pos x
+        float mouseY; //mouse pos  y
     };
 	
 }

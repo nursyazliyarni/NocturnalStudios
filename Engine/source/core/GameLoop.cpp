@@ -51,10 +51,6 @@ void Game_Loop::HandleMessage(Messaging::Message* msg) {
         auto* keyMsg = static_cast<Messaging::KeyMessage*>(msg);
         if (keyMsg->action == GLFW_PRESS) {
             std::cout << "[GameLoop] Key pressed: " << keyMsg->keyCode << "\n";
-            /*if (keyMsg->keyCode == GLFW_KEY_P) {
-                paused = !paused;
-                std::cout << "[GameLoop] Pause: " << (paused ? "ON" : "OFF") << "\n";
-            }*/
         }
         else if (keyMsg->action == GLFW_RELEASE) {
             std::cout << "[GameLoop] Key released: " << keyMsg->keyCode << "\n";
