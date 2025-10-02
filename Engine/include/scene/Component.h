@@ -16,6 +16,7 @@
 #include <memory>
 #include <stdexcept>
 #include <rapidjson/document.h>
+#include "graphics/Renderer.h"
 
 enum COMPONENT_TYPE {
 	NONE=0,
@@ -38,10 +39,11 @@ public:
     Component(const Component&);
     virtual std::unique_ptr<Component> Clone() const=0;
 	void SetOwner(GameObject* o);
-	virtual void Render();
+	virtual void Render(Renderer&);
 	virtual bool Collide();
 	virtual void Logic();
     std::string ComponenetName() const;
+    COMPONENT_TYPE Type() const;
 };
 
 
@@ -54,7 +56,7 @@ public:
     CircleRenderer(const rapidjson::Value& j);
     CircleRenderer(const CircleRenderer&);
     std::unique_ptr<Component> Clone() const;
-	void Render() override;
+	void Render(Renderer&) override;
 };
 
 class RectRenderer :public Component {
@@ -65,7 +67,7 @@ public:
     RectRenderer(const rapidjson::Value& j);
     RectRenderer(const RectRenderer&);
     std::unique_ptr<Component> Clone() const;
-	void Render() override;
+	void Render(Renderer&) override;
 
 };
 
@@ -77,7 +79,8 @@ public:
     SpriteRenderer(const rapidjson::Value& j);
     SpriteRenderer(const SpriteRenderer&);
     std::unique_ptr<Component> Clone() const;
-	void Render() override;
+	void Render(Renderer&) override;
+    
 };
 
 //Collision Components

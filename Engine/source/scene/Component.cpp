@@ -1,6 +1,8 @@
 #include "./scene/Component.h"
 #include <iostream>
 
+COMPONENT_TYPE Component::Type() const { return type; }
+
 Component::Component(COMPONENT_TYPE t, std::string s) :type{ t }, c_name{ s }, owner{ nullptr } {}
 Component::Component(const Component& comp) :type{ comp.type }, c_name{ comp.c_name }, owner{ nullptr } {}
 std::string Component::ComponenetName() const {
@@ -77,7 +79,7 @@ std::unique_ptr<Component> AnimalBehaviour::Clone() const {
 	return std::make_unique<AnimalBehaviour>(AnimalBehaviour(*this));
 }
 
-void Component::Render() {
+void Component::Render(Renderer&) {
 	
 }
 bool  Component::Collide() {
@@ -89,18 +91,18 @@ void  Component::Logic() {
 
 
 
-void CircleRenderer::Render() {
+void CircleRenderer::Render(Renderer&) {
 
 }
-void RectRenderer::Render() {
+void RectRenderer::Render(Renderer&) {
 
 }
-void SpriteRenderer::Render() {
-
+void SpriteRenderer::Render(Renderer& r) {
+	r.get_sprite_vector().push_back({ 4, 0.25f, 0.65f, 0.15f, 0.10f, 0.0f});
 }
 bool AABBCollider::Collide() {
 	return true;
 }
 void AnimalBehaviour::Logic() {
-
+	
 }

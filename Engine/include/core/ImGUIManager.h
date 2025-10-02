@@ -46,6 +46,8 @@ public:
 	
 	// temp setter for render time since renderer is called in showViewportWindowUI
 	void setRenderTime(double time);
+	void setPhysicTime(double time);
+	void setInputTime(double time);
 
 	void startFrame();
 	void endFrame();
@@ -77,6 +79,7 @@ private:
 	double inputTime;
 	double logicTime;
 	double renderTime;
+	double physicsTime;
 
 
 	unsigned int selectedEntityType;

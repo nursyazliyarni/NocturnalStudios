@@ -76,7 +76,7 @@ public:
 
 	virtual void Update();
 
-	virtual void Render();
+	virtual void Render(Renderer&);
 
 	virtual void Kill();
 
