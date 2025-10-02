@@ -109,6 +109,7 @@ int Application::run() {
         {
             cats.push_back(std::make_unique<GameObject>(AlphaCat));
             cats[catnum]->Render(bg_render);
+            std::cout << "cat " << catnum + 1 << " Spawned\n";
             catnum++;
         }
 

@@ -1,4 +1,5 @@
 #include "./scene/Component.h"
+#include "./math/Rand.h"
 #include <iostream>
 
 COMPONENT_TYPE Component::Type() const { return type; }
@@ -98,7 +99,7 @@ void RectRenderer::Render(Renderer&) {
 
 }
 void SpriteRenderer::Render(Renderer& r) {
-	r.get_sprite_vector().push_back({ 4, 0.25f, 0.65f, 0.15f, 0.10f, 0.0f});
+	r.get_sprite_vector().push_back({ 4, Random_Range(-0.3f,0.3f), Random_Range(-0.3f,0.3f), Random_Range(0.25f,0.55f), Random_Range(0.10f,0.4f), 0.0f});
 }
 bool AABBCollider::Collide() {
 	return true;
