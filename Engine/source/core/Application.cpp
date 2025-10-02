@@ -95,9 +95,22 @@ int Application::run() {
     // make Input’s scale array match the number of textures
     //game_input_obj.initSpriteScales(txt_obj.count());
 
+    //to demonstrate cloning and rendering of gameobjects, this willl be moved into levelmanager
+    int catnum{};
+    GameObject AlphaCat{ *prefab_man["Cat"] };
+    std::vector<std::unique_ptr<GameObject>> cats{};
+
     // 4) simple loop
     while (!m_window.shouldClose()) {
         m_window.poll();
+
+        //spawns 3 cats
+        if (catnum<3)
+        {
+            cats.push_back(std::make_unique<GameObject>(AlphaCat));
+            cats[catnum]->Render(bg_render);
+            catnum++;
+        }
 
         double dt = game_loop_obj.calculate_DT();          // our deltaTime
         double total_time = game_loop_obj.get_accum_GT();  // accumulated game time

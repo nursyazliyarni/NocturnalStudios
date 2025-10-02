@@ -43,7 +43,15 @@ void GameObject::Start(){}
 
 void GameObject::Update(){}
 
-void GameObject::Render(){}
+void GameObject::Render(Renderer& r){
+	for (const auto& comp:components)
+	{
+		if (comp->Type()==RENDERING)
+		{
+			comp->Render(r);
+		}
+	}
+}
 
 void GameObject::Kill(){}
 
