@@ -1,5 +1,5 @@
-#ifndef COMPONENTPOOL_H
-#define COMPONENTPOOL_H
+#ifndef ECS_COMPONENTPOOL_H
+#define ECS_COMPONENTPOOL_H
 
 /*!------------------------------------------------------------------------------------------------
 	File: ECS.h
