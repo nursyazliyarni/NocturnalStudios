@@ -8,6 +8,9 @@
 	This file contains the class definition for the Entity Component System (ECS). ECS is a game
 	object manager that employs the Entity-Component-System design pattern.
 
+	ECS also manages scenes, layers and prefabs (if needed), providing users the interface to edit
+	the game objects in the scene.
+
 	Primary Author:
 		
 		
@@ -55,6 +58,14 @@ public:
 	bool removeComponent(EntityID entityID, ComponentID componentID);
 	template <typename T>
 	T* getComponent(EntityID entityID);
+
+	// TODO: Layer and Scene
+	struct Layer { 
+
+	};
+	struct Scene {
+
+	};
 
 private:
 	std::vector<ComponentData>::const_iterator getComponentData(ComponentID componentID) const;
