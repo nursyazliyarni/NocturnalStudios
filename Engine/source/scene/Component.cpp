@@ -10,7 +10,7 @@ std::string Component::ComponenetName() const {
 	return c_name;
 }
 void Component::SetOwner(GameObject* o) { owner = o; }
-
+void Component::Transform(){}
 CircleRenderer::CircleRenderer(float r) :Component{ RENDERING,"Cricle Renderer" }, radius{ r } {}
 CircleRenderer::CircleRenderer(const rapidjson::Value& j) :Component{ RENDERING,"Cricle Renderer" }, radius{} {
 	if (j["radius"].IsFloat())
@@ -99,7 +99,7 @@ void RectRenderer::Render(Renderer&) {
 
 }
 void SpriteRenderer::Render(Renderer& r) {
-	r.get_sprite_vector().push_back({ 4, Random_Range(-0.3f,0.3f), Random_Range(-0.3f,0.3f), Random_Range(0.25f,0.55f), Random_Range(0.10f,0.4f), 0.0f});
+	r.get_sprite_vector().push_back({ 5, Random_Range(0.f,0.75f), Random_Range(0.f,0.75f),0.15, 0.15, Random_Range(0.0f,360.f)});
 }
 bool AABBCollider::Collide() {
 	return true;

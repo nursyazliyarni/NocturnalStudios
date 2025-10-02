@@ -49,7 +49,7 @@ public:
 
 	~GameObject();
 
-
+	std::unique_ptr<GameObject> Clone() const;
 
 	// [====================*====================]
 	//  Component Attachment
