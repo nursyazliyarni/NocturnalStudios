@@ -282,6 +282,7 @@ void ImGuiManager::showEntityListUI(/* Maybe an enum of paramEntityType, Maybe a
 		// @Todo (axewhy):
 		// Call factory function and pass the selected entity ID
 		// e.g., EntityFactory::cloneEntity(selectedEntityID);
+		// @Todo (sarah) provide cloning function
 		logger.log("Cloning entity of Type: " + std::to_string(selectedEntityType));
 	}
 	ImGui::SameLine();

@@ -1,28 +1,33 @@
 [
     {
-        "type": "Test",
-        "name": "Test1",
-        "ID": 42,
-        "active": true,
-        "position": { "x": 10.0, "y": 2.0, "z": 0.0 },
-        "components": [
-            {
-            "type": "CircleRenderer",
-                "radius": 1.5
-            }
-        ]
+        "name": "Circle",
+      "components": [
+        {
+          "type": "CircleRenderer",
+          "radius": 1.5
+        }
+      ]
     },
     {
-        "type": "Test",
-        "name": "Test2",
-        "ID": 1,
-        "active": true,
-        "position": { "x": 10.0, "y": 2.0, "z": 0.0 },
+        "name": "Square",
         "components": [
             {
             "type": "RectRenderer",
                 "width": 2.0,
                 "height": 1.0
+            },
+            {
+            "type": "CircleRenderer",
+                "radius": 3424.3
+            }
+        ]
+    },
+    {
+        "name": "Cat",
+        "components": [
+            {
+            "type": "SpriteRenderer",
+                "sprite_path": "assets/textures/placeholder2.png"
             }
         ]
     }

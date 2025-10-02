@@ -23,6 +23,7 @@ public:
         freeList.pop();
 
         pool[index] = std::make_unique<T>(std::forward<Args>(args)...);
+        pool[index].get()->set_ID(index);
 
         return static_cast<T*>(pool[index].get());
     }

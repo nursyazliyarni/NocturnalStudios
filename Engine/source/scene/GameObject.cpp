@@ -17,9 +17,23 @@
 // [====================*====================]
 // Default Constructor
 
+GameObject::GameObject(std::string n) :id{}, name{ n }, active{ false }, enabled{ false }, components{}, parent_object{} {}
+
+GameObject::GameObject(const GameObject& obj) :id{}, name{ obj.name }, active{ obj.active }, enabled{ obj.enabled }, components{}, parent_object{ obj.parent_object } {
+	for ( const auto& comp:obj.components)
+	{
+		components.push_back(comp->Clone());
+	}
+	for (const auto& comp : components)
+	{
+		comp->SetOwner(this);
+	}
+}
 
 
-GameObject::~GameObject() { ClearParent(); }
+GameObject::~GameObject() {
+	ClearParent(); //std::cout << "destroyed " << name << '\n';
+}
 
 
 // [====================*====================]
@@ -37,22 +51,15 @@ void GameObject::Kill(){}
 // [====================*====================]
 //  Transform Handling Functions
 // [====================*====================]
-void GameObject::Pos(const Vector3D& pos) { global_position=pos; }
-Vector3D GameObject::Pos() const { return global_position; }
-
-//void GameObject::Rot(const Matrix<4>& rot){}
-//Matrix<4> GameObject::Rot() const{}
-
-//void GameObject::Scale(const Vector3D& scale){}
-//Vector3D GameObject::Scale() const{}
-
-Matrix<4> GameObject::Transform() const { return global_transform; }
-
+void GameObject::Attach(std::unique_ptr<Component>&& comp) {
+	comp->SetOwner(this);
+	components.push_back(std::move(comp));
+}
 
 // [====================*====================]
 //  Getters and Setters
 // [====================*====================]
-size_t GameObject::ID()const { return num_ID; }
+size_t GameObject::ID()const { return id; }
 
 void GameObject::Activate() { active = true; enabled = true; }
 
@@ -85,9 +92,13 @@ void GameObject::ClearParent() {parent_object = nullptr;}
 //  Print & Load
 // [====================*====================]
 void GameObject::Print(std::ostream& out) const {
-	out << "GameObject " << num_ID
-		<< " - Active: " << active << ", Enabled: " << enabled << '\n'
-		<< "Position: " << global_position << '\n';
+	out << "GameObject " << name
+		<< " - Active: " << active << ", Enabled: " << enabled<<", Components: ";
+	for (const auto& comp : components)
+	{
+		out << comp->ComponenetName() << ' ';
+	}
+	out << '\n';
 }
 
 void GameObject::Load(std::istream&) {

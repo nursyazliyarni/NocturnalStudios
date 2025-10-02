@@ -10,7 +10,7 @@ void  EntityPool::Kill(size_t idx){
 
 }
 
-void  EntityPool::Render(){
+void EntityPool::Render(){
 }
 
 void  EntityPool::UpdateAll(float dt){

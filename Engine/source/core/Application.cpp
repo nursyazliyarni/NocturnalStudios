@@ -20,6 +20,7 @@
 #include "math/Vector.h"
 #include "core/ImGUIManager.h"
 #include <crtdbg.h>              // _CrtSetDbgFlag
+#include "./scene/Prefab.h"
 
 namespace {
     constexpr float TWO_PI = 2.0f * glm::pi<float>();
@@ -46,7 +47,7 @@ int Application::run() {
 
     if (!m_window.create(wd)) return -1;
 
-    // Prime the window so there’s no white flash before the first real frame
+    // Prime the window so thereï¿½s no white flash before the first real frame
     glViewport(0, 0, wd.width, wd.height);
     glDisable(GL_DEPTH_TEST);
     glEnable(GL_BLEND);
@@ -71,6 +72,10 @@ int Application::run() {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+
+    //Register GameObject Components
+    RegisterAllComponents();
+
     // Initialize ImGui Manager
     // NOTE: ImGuiManager owns the Viewport pass; it will call Renderer to draw bg + shapes into an FBO.
     //       We just pass references here. No drawing is done in this file anymore.
@@ -90,8 +95,8 @@ int Application::run() {
     Physics    game_physics_obj;
     Game_Loop  game_loop_obj(m_window.handle());
     ImGuiManager imGuiManager(m_window, bg_render, txt_obj, game_input_obj, game_physics_obj);
-
-    // make Input’s scale array match the number of textures
+    PrefabManager prefab_man;
+    // make Inputï¿½s scale array match the number of textures
     //game_input_obj.initSpriteScales(txt_obj.count());
 
     // 4) simple loop
