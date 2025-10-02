@@ -6,6 +6,7 @@
 #include "math/Vector.h"
 #include "../imgui.h"
 #include "../imgui/backends/imgui_impl_glfw.h"
+#include "../messaging/Message.h"
 
 enum class Input_action {
 	no_action,take_control,
@@ -41,6 +42,8 @@ public:
 
 	//update rotations every frame
 	void updateRotations();
+
+	void inputMessage();
 
 private:
 	//Non-static member functions need an object to call it
