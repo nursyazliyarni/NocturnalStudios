@@ -43,9 +43,21 @@ void Gui::updateImGuiManager(double& deltaTime, ImGuiManager& imGuiManager) {
 	imGuiManager.endFrame();
 }
 
-ImGuiManager::ImGuiManager(Window& w, Renderer& r, Texture& tex, Input& i, Physics& p) : mainWindow{ w }, renderer{ r }, 
-texture{ tex }, input{ i }, physics{ p }, windowTopLeft {}, windowBottomRight{}, deltaTime{ 0. }, imGuiTime{ 0. }, 
-inputTime{ 0. }, logicTime{ 0. }, renderTime{ 0. }, selectedEntityType{} 
+ImGuiManager::ImGuiManager(Window& w, Renderer& r, Texture& tex, Input& i, Physics& p) : 
+	mainWindow{ w }, 
+	renderer{ r }, 
+	texture{ tex }, 
+	input{ i }, 
+	physics{ p }, 
+	windowTopLeft {}, 
+	windowBottomRight{}, 
+	deltaTime{ 0. }, 
+	imGuiTime{ 0. }, 
+	inputTime{ 0. }, 
+	logicTime{ 0. }, 
+	renderTime{ 0. }, 
+	physicsTime{ 0. }, 
+	selectedEntityType {} 
 {
 	// Init ImGui context
 	ImGui::CreateContext();
@@ -116,6 +128,14 @@ void ImGuiManager::setRenderTime(double time) {
 	renderTime = time;
 }
 
+void ImGuiManager::setPhysicTime(double time) {
+	physicsTime = time;
+}
+
+void ImGuiManager::setInputTime(double time) {
+	inputTime = time;
+}
+
 void ImGuiManager::showViewportWindowUI() {
 	constexpr float overlayWidthOffset = 300.0f;
 	constexpr float overlayHeightOffset = 200.0f;
@@ -141,9 +161,16 @@ void ImGuiManager::showViewportWindowUI() {
         //renderer.initFBO(vw, vh);
         lastW = vw; lastH = vh;
     }
+
+	auto physicsStart = Clock::now();
+
 	physics.update_sprite_movement(renderer, input);
 	physics.update_sprite_scaling(renderer, input);
 	physics.update_sprite_rotation(renderer, input);
+
+	auto physicsEnd = Clock::now();
+	double physicsTime = std::chrono::duration<double>(physicsEnd - physicsStart).count();
+	setPhysicTime(physicsTime);
 
 	auto render_start = Clock::now();
 
@@ -161,6 +188,8 @@ void ImGuiManager::showViewportWindowUI() {
 	// @Todo (axewhy): Render the actual viewport content here, e.g., using a framebuffer texture
 	// Render background to FBO
 	renderer.background_render(texture.get_textureID(0), "bg_texture");
+
+	auto input_start = Clock::now();
 
 	input.updateRotations();
 
@@ -182,6 +211,10 @@ void ImGuiManager::showViewportWindowUI() {
 		vw, vh);
 
 	renderer.unbindFBO();
+	auto input_end = Clock::now();
+	double inputTime = std::chrono::duration<double>(input_end - input_start).count();
+	setInputTime(inputTime);
+
 	auto render_end = Clock::now();
 	double renderTime = std::chrono::duration<double>(render_end - render_start).count();
 	setRenderTime(renderTime);
@@ -244,8 +277,10 @@ void ImGuiManager::showPerformanceOverlayUI() {
 	ImGui::Text("Current FPS: %.2f %.2lfms", 1 / deltaTime, deltaTime * secondsToMs);
 
 	// @Todo (axewhy): Add more performance metrics like the percentage of usage between different systems in the game engine
-	ImGui::Text("ImGui: %.2f ms (%.1f%%)", imGuiTime * secondsToMs, (imGuiTime / deltaTime) * 100.0);
-	ImGui::Text("Renderer: %.2f ms (%.1f%%)", renderTime * secondsToMs, (renderTime / deltaTime) * 100.0);
+	ImGui::Text("ImGui: %.2f ms (%.2f%%)", imGuiTime * secondsToMs, (imGuiTime / deltaTime) * 100.0);
+	ImGui::Text("Renderer: %.2f ms (%.2f%%)", renderTime * secondsToMs, (renderTime / deltaTime) * 100.0);
+	ImGui::Text("Physics: %.2f ms (%.2f%%)", physicsTime * secondsToMs, (physicsTime / deltaTime) * 100.0);
+	ImGui::Text("Input: %.2f ms (%.2f%%)", inputTime * secondsToMs, (inputTime / deltaTime) * 100.0);
 
 	ImGui::End();
 }
