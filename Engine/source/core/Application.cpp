@@ -24,7 +24,7 @@
 namespace {
     constexpr float TWO_PI = 2.0f * glm::pi<float>();
     constexpr int   CIRCLE_SEGMENTS = 64;
-	using Clock = std::chrono::high_resolution_clock;
+    using Clock = std::chrono::high_resolution_clock;
 }
 
 Application::Application() = default;
@@ -88,6 +88,13 @@ int Application::run() {
     Renderer bg_render("assets/shaders/background.vert", "assets/shaders/background.frag");
 
     Input      game_input_obj(m_window.handle());
+
+    game_input_obj.initSpriteScales(txt_obj.get_totalTexture());
+
+
+    game_input_obj.initSpriteScales(txt_obj.get_totalTexture());  // sets spriteCount = textures-1
+
+
     Physics    game_physics_obj;
     Game_Loop  game_loop_obj(m_window.handle());
     ImGuiManager imGuiManager(m_window, bg_render, txt_obj, game_input_obj, game_physics_obj);
@@ -105,7 +112,7 @@ int Application::run() {
         m_window.poll();
 
         //spawns 3 cats
-        if (catnum<3)
+        if (catnum < 3)
         {
             cats.push_back(std::make_unique<GameObject>(AlphaCat));
             cats[catnum]->Render(bg_render);
@@ -140,13 +147,13 @@ int Application::run() {
         glClearColor(0.06f, 0.06f, 0.07f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-		auto imGuiStart = Clock::now();
+        auto imGuiStart = Clock::now();
         // Build & render all ImGui (Viewport will render bg + shapes internally via Renderer)
         Gui::updateImGuiManager(dt, imGuiManager);
-		auto imGuiEnd = Clock::now();
-		double imGuiTime = std::chrono::duration<double>(imGuiEnd - imGuiStart).count();
+        auto imGuiEnd = Clock::now();
+        double imGuiTime = std::chrono::duration<double>(imGuiEnd - imGuiStart).count();
 
-		imGuiManager.setSystemTimings(imGuiTime, 0.0);
+        imGuiManager.setSystemTimings(imGuiTime, 0.0);
 
         m_window.swap();
     }
