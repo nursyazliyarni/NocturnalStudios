@@ -28,8 +28,8 @@
 #include <any>
 #include <functional>
 
-#include "../include/ECS/Component.h"
-#include "../include/ECS/ComponentPool.h"
+#include "../include/ECS/ECS_Component.h"
+#include "../include/ECS/ECS_ComponentPool.h"
 #include "../include/ECS/ECS_Def.h"
 
 class ECS {
@@ -38,7 +38,7 @@ public:
 
 	EntityID createEntity(std::string name = "", EntityID entityID = INVALID_ENTITY_ID);
 	EntityID cloneEntity(EntityID entityID);
-	bool destroyEntity(EntityID entityID);
+	bool deleteEntity(EntityID entityID);
 
 	std::string& getEntityName(EntityID entityID);
 	EntityID findEntityByName(const std::string& name) const;
@@ -60,7 +60,6 @@ private:
 	std::vector<ComponentData>::const_iterator getComponentData(ComponentID componentID) const;
 	std::vector<ComponentData>::iterator getComponentData(ComponentID componentID);
 	void reUpdateMetadata();
-	bool destroyEntity(EntityID ID);
 
 	EntityID totalEntityID = 0;
 	std::list<EntityID> deletedEntities;
@@ -77,7 +76,7 @@ private:
 
 template <typename T>
 bool ECS::addComponent(EntityID entityID, T const& component) {
-	ComponentID type = Family::get<T>();
+	ComponentID type = Family::getID<T>();
 	if (componentPools.find(type) == componentPools.end()) registerComponent<T>();
 
 	BaseComponentPool* pool = componentPools.at(type).get();
@@ -98,14 +97,14 @@ bool ECS::addComponent(EntityID entityID, T const& component) {
 	}
 
 	componentData->size += 1;
-	entityMetadataMap[entityId].componentIDs.insert(type);
+	entityMetadataMap[entityID].componentIDs.insert(type);
 	reUpdateMetadata();
 	return true;
 }
 
 template <typename T>
 void ECS::registerComponent() {
-	ComponentID type = Family::get<T>();
+	ComponentID type = Family::getID<T>();
 	auto [it, inserted] = componentPools.insert({ type, std::make_unique<ComponentPool<T>>() });
 	if (!inserted) {
 		logger.warning(std::string{ "ECS::registerComponent - Component already registered" });
@@ -120,7 +119,7 @@ void ECS::registerComponent() {
 
 template <typename T>
 bool ECS::removeComponent(EntityID entityID) {
-	ComponentID type = Family::get<T>();
+	ComponentID type = Family::getID<T>();
 	BaseComponentPool* pool;
 	if (componentPools.find(type) == componentPools.end()) {
 		logger.error(std::string{ "ECS::removeComponent - Failed to find component pool" });
@@ -152,7 +151,7 @@ bool ECS::removeComponent(EntityID entityID) {
 
 template <typename T>
 T* ECS::getComponent(EntityID entityID) {
-	ComponentID type = Family::get<T>();
+	ComponentID type = Family::getID<T>();
 	if (componentPools.find(type) == componentPools.end()) {
 		logger.error(std::string{ "ECS::getComponent - Failed to find component pool\nComponentID: " } + std::to_string(type) + "\n");
 		return nullptr;

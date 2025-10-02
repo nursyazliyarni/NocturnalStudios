@@ -2,7 +2,7 @@
 #define ECS_COMPONENTPOOL_H
 
 /*!------------------------------------------------------------------------------------------------
-	File: ECS.h
+	File: ECS_ComponentPool.h
 	Project: NocturnalStudio
 
 	This file contains the defination of template class ComponentPool, which represents all the

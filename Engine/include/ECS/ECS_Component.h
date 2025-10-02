@@ -2,7 +2,7 @@
 #define ECS_COMPONENT_H
 
 /*!------------------------------------------------------------------------------------------------
-	File: ECS.h
+	File: ECS_Component.h
 	Project: NocturnalStudio
 
 	This file contains the struct definition of the different component types that can be used in 
