@@ -2,11 +2,16 @@
     File: Application.cpp
     Project: NocturnalStudio
 
-    This file contains ...
+	This file contains the main application loop that initializes the window creation, OpenGL initialization,
+	sprite rendering, input handling, drag and drop interations, frame updates, ImGui systems.
 
     Primary Author:
-         Rishika Bimal Attodi
+         
         - Brief
+
+    Secondary Author:
+		Chang Qi Xuan Celest (35%)
+		- Integrated drag and drop functionality for sprites.
 
     All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
 *------------------------------------------------------------------------------------------------*/

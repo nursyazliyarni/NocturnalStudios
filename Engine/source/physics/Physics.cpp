@@ -1,3 +1,20 @@
+/*!------------------------------------------------------------------------------------------------
+    File: Physics.cpp
+    Project: NocturnalStudio
+
+    This file contains ...
+
+    Primary Author:
+         Name (%)
+        -Brief
+
+    Secondary Author:
+        Chang Qi Xuan Celest (7%)
+		- Implemented stop movement on collision in update_sprite_movement.
+
+    All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
+
 // integration, gravity, movement
 #include <algorithm> // std::fill
 #include "input/Input.h"

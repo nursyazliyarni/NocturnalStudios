@@ -1,3 +1,20 @@
+/*!------------------------------------------------------------------------------------------------
+	File: Rand.h
+	Project: NocturnalStudio
+
+	This file contains ...
+
+	Primary Author:
+		 Name (%)
+		-Brief
+
+	Secondary Author:
+		 Name (%)
+		-Brief
+
+	All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
+
 #ifndef RAND_H
 #define RAND_H
 #include <cstdlib>  // For rand() and srand()

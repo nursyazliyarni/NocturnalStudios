@@ -1,3 +1,20 @@
+/* !------------------------------------------------------------------------------------------------
+	File: Texture.cpp
+	Project : NocturnalStudio
+
+	This file contains ...
+
+	Primary Author :
+		Name(%)
+		- Brief
+
+	Secondary Author :
+		Name(%)
+		- Brief
+
+All content(c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+* ------------------------------------------------------------------------------------------------ */
+
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 #include "graphics/Texture.h"

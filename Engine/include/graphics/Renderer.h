@@ -1,3 +1,20 @@
+/*!------------------------------------------------------------------------------------------------
+    File: Renderer.h
+    Project: NocturnalStudio
+
+    This file contains ...
+
+    Primary Author:
+         Name (%)
+        -Brief
+
+    Secondary Author:
+         Name (%)
+        -Brief
+
+    All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
+
 // Renderer.h
 #pragma once
 #include "gl/glew.h"
