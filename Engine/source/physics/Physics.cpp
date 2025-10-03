@@ -32,6 +32,9 @@ void Physics::update_sprite_movement(Renderer& render_obj, Input& input_obj){
 
 	if (index >= 0) {
 		auto& sprite = sprite_vector[index]; //get sprite to move
+		//save old position in case of collision
+		float oldX = sprite.x;
+		float oldY = sprite.y;
 		auto& keyboard_action = input_obj.GET_keyboard();
 		for (auto& [tuple_key, event_action, key_action] : keyboard_action) {
 			if (key_action == Input_action::move_up) {
@@ -51,7 +54,8 @@ void Physics::update_sprite_movement(Renderer& render_obj, Input& input_obj){
 			}
 		}
 		//collision detection with other sprites through movement and AABB
-		for (size_t i = 0; i < sprite_vector.size(); i++) { //ignore background at index 0
+		bool collided = false; //flag to indicate if a collision occurred
+		for (size_t i = 0; i < sprite_vector.size(); i++) {
 			if (i == index) continue; //skip the controlled sprite
 			const auto& other = sprite_vector[i];
 
@@ -63,9 +67,13 @@ void Physics::update_sprite_movement(Renderer& render_obj, Input& input_obj){
 
 			if (checkAABBCollision(pos1, size1, pos2, size2)) {
 				std::cout << "Collision detected with sprite " << i+1 << std::endl;
-
-				// Optional: Handle the collision (undo movement, bounce back, etc.)
+				collided = true; //set flag
+				break; //exit loop on first collision
 			}
+		}if (collided) {
+			//revert to old position on collision
+			sprite.x = oldX;
+			sprite.y = oldY; 
 		}
 	}
 }
