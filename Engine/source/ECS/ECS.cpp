@@ -5,7 +5,7 @@
 	This file contains the implementation of non templated member function of the ECS class.
 
 	Primary Author:
-		Lau Xiang Yang (100%)
+		Lau Xiang Yang 
 		- Created the file and implemented the ECS class member functions
 
 

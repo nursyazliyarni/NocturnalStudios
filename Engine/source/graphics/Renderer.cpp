@@ -8,6 +8,10 @@
          Rishika Bimal Attodi
         - Brief
 
+    Secondary Author:
+         Lau Xiang Yang 
+		 - Implemented FBO
+
     All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
 *------------------------------------------------------------------------------------------------*/
 

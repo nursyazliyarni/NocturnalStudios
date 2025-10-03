@@ -9,8 +9,8 @@
         -Brief
 
     Secondary Author:
-         Name (%)
-        -Brief
+         Lau Xiang Yang
+         - Implemented FBO
 
     All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
 *------------------------------------------------------------------------------------------------*/
