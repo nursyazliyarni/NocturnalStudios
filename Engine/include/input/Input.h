@@ -44,6 +44,10 @@ public:
 	//update rotations every frame
 	void updateRotations();
 
+	// selection: -1 = NONE, 0 = ALL, 1=spriteCount = specific sprite
+	int selectedSprite = -1;
+	bool isDragging = false; //true if we are dragging a sprite with the mouse
+
 private:
 	//Non-static member functions need an object to call it
 	//So declare this function as static to avoid this issue
@@ -53,9 +57,6 @@ private:
 
 	// number of sprites that can be scaled (we skip index 0 = background)
 	size_t spriteCount = 0;
-
-	// selection: -1 = NONE, 0 = ALL, 1=spriteCount = specific sprite
-	int selectedSprite = -1;
 
 	// per-sprite scale values, sized dynamically to textureCount
 	std::vector<float> spriteScales;
