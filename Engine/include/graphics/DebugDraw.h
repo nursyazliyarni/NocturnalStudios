@@ -1,19 +1,17 @@
 
-#pragma once //Makes sure this header is only included once
+#pragma once 
 #include "../math/Matrix.h"
 #include "../math/Vector.h"
 
-#ifndef DEBUGDRAW_H
-#define DEBUGDRAW_H
-
 namespace Debug
 {
-	class Drawer 
+	class Drawer
 	{
 	public:
-		void DebugDrawRectangle();
-		void DebugDrawCircle();
-	};
-} 
+		// Draws a rectangle given bottom-left position + width/height
+		void DebugDrawRectangle(float x, float y, float w, float h, unsigned int color);
 
-#endif
+		// Draws a circle (for later use if needed)
+		void DebugDrawCircle(float cx, float cy, float r, unsigned int color, int segments = 32);
+	};
+}

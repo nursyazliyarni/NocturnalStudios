@@ -17,6 +17,8 @@
 std::vector<std::tuple<int, int, Input_action>> Input::keyboard_action;
 std::vector<std::tuple<int, int, Input_action>> Input::mouse_action;
 
+//showCollision = false;
+
 Input::Input(GLFWwindow* window) {
 	//GLFWkeyfun glfwSetKeyCallback(GLFWwindow * window, GLFWkeyfun callback)
 	//typedef void(* GLFWkeyfun) (GLFWwindow *window, int key, int scancode, int action, int mods)
@@ -440,6 +442,16 @@ void Input::keyboard_input_callback(GLFWwindow* window, int key, int scancode, i
 					break;
 				}
 
+				case GLFW_KEY_B:
+				{
+					if (action == GLFW_PRESS) {
+						key_action = Input_action::toggle_collision;
+					}
+					else {
+						key_action = Input_action::no_action;
+					}
+					break;
+				}
 
 
 				}

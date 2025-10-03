@@ -3,6 +3,9 @@
 #include "input/Input.h"
 #include "physics/Physics.h"
 #include "physics/AABB.h"
+#include "graphics/DebugDraw.h"
+
+static bool showCollision = false;
 
 int Physics::take_control(Renderer& render_obj, Input& input_obj) {
     int sel = -1; // NONE by default
@@ -26,48 +29,70 @@ int Physics::take_control(Renderer& render_obj, Input& input_obj) {
 }
 
 
-void Physics::update_sprite_movement(Renderer& render_obj, Input& input_obj){
-	int index = take_control(render_obj, input_obj);
-	auto& sprite_vector = render_obj.get_sprite_vector();
+void Physics::update_sprite_movement(Renderer& render_obj, Input& input_obj) {
+    for (auto& [tuple_key, event_action, key_action] : input_obj.GET_keyboard()) {
+        if (key_action == Input_action::toggle_collision) {
+            static bool pressed = false;
+            if (!pressed) {
+                showCollision = !showCollision;  // flip flag
+                pressed = true;
+            }
 
-	if (index >= 0) {
-		auto& sprite = sprite_vector[index]; //get sprite to move
-		auto& keyboard_action = input_obj.GET_keyboard();
-		for (auto& [tuple_key, event_action, key_action] : keyboard_action) {
-			if (key_action == Input_action::move_up) {
-				sprite_vector[index].y -= 0.001f;
-			}
+            else {
+                // reset when key is released
+                pressed = false;
+            }
+        }
 
-			else if (key_action == Input_action::move_down) {
-				sprite_vector[index].y += 0.001f;
-			}
+        int index = take_control(render_obj, input_obj);
+        auto& sprite_vector = render_obj.get_sprite_vector();
 
-			else if (key_action == Input_action::move_left) {
-				sprite_vector[index].x -= 0.001f;
-			}
+        if (index >= 0) {
+            auto& sprite = sprite_vector[index]; //get sprite to move
+            auto& keyboard_action = input_obj.GET_keyboard();
+            for (auto& [tuple_key, event_action, key_action] : keyboard_action) {
+                if (key_action == Input_action::move_up) {
+                    sprite_vector[index].y -= 0.001f;
+                }
 
-			else if (key_action == Input_action::move_right) {
-				sprite_vector[index].x += 0.001f;
-			}
-		}
-		//collision detection with other sprites through movement and AABB
-		for (size_t i = 0; i < sprite_vector.size(); i++) { //ignore background at index 0
-			if (i == index) continue; //skip the controlled sprite
-			const auto& other = sprite_vector[i];
+                else if (key_action == Input_action::move_down) {
+                    sprite_vector[index].y += 0.001f;
+                }
 
-			Vector2D pos1(sprite.x, sprite.y);
-			Vector2D size1(sprite.w, sprite.h);
+                else if (key_action == Input_action::move_left) {
+                    sprite_vector[index].x -= 0.001f;
+                }
 
-			Vector2D pos2(other.x, other.y);
-			Vector2D size2(other.w, other.h);
+                else if (key_action == Input_action::move_right) {
+                    sprite_vector[index].x += 0.001f;
+                }
+            }
+            //collision detection with other sprites through movement and AABB
+            for (size_t i = 0; i < sprite_vector.size(); i++) { //ignore background at index 0
+                if (i == index) continue; //skip the controlled sprite
+                const auto& other = sprite_vector[i];
 
-			if (checkAABBCollision(pos1, size1, pos2, size2)) {
-				std::cout << "Collision detected with sprite " << i+1 << std::endl;
+                Vector2D pos1(sprite.x, sprite.y);
+                Vector2D size1(sprite.w, sprite.h);
 
-				// Optional: Handle the collision (undo movement, bounce back, etc.)
-			}
-		}
-	}
+                Vector2D pos2(other.x, other.y);
+                Vector2D size2(other.w, other.h);
+
+                if (checkAABBCollision(pos1, size1, pos2, size2)) {
+                    std::cout << "Collision detected with sprite " << i + 1 << std::endl;
+
+                    // Optional: Handle the collision (undo movement, bounce back, etc.)
+                }
+            }
+        }
+
+        if (showCollision) {
+            Debug::Drawer drawer;
+            for (auto& sprite : sprite_vector) {
+                drawer.DebugDrawRectangle(sprite.x, sprite.y, sprite.w, sprite.h, 0xFF00FF00);
+            }
+        }
+    }
 }
 
 static void reset_selection_transforms(
