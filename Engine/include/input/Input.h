@@ -6,11 +6,13 @@
 #include "math/Vector.h"
 #include "../imgui.h"
 #include "../imgui/backends/imgui_impl_glfw.h"
+#include "../messaging/MessageBus.h"
+#include "../messaging/InputMessage.h"
 
 enum class Input_action {
 	no_action,take_control,
 	move_up,move_down,move_left,move_right,
-	magnify,minify,rotate_clockwise,rotate_anticlockwise
+	magnify,minify,rotate_clockwise,rotate_anticlockwise, reset_transform,
 };
 
 class Input {
@@ -73,3 +75,52 @@ private:
 	static std::vector<std::tuple<int,int,Input_action>> keyboard_action;
 	static std::vector<std::tuple<int,int,Input_action>> mouse_action;
 };
+
+//Messaging namespace implemented for input system here
+namespace Messaging 
+{
+	class InputSystemMessaging
+	{
+	public:
+		InputSystemMessaging(MessageBus& bus, GLFWwindow* window)
+			: bus(bus), window(window)
+		{
+			glfwSetWindowUserPointer(window, this);
+			glfwSetKeyCallback(window, KeyCallback);
+			//glfwSetCursorPosCallback(window, MouseMoveCallback);
+			glfwSetMouseButtonCallback(window, MouseButtonCallback);
+		}
+	
+	private:
+        MessageBus& bus;
+        GLFWwindow* window;
+
+		static void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
+			auto* self = static_cast<InputSystemMessaging*>(glfwGetWindowUserPointer(window));
+			if (!self) return;
+
+			auto msg = std::make_unique<KeyMessage>(key, action);
+			self->bus.Broadcast(std::move(msg));
+		}
+
+		/*static void MouseMoveCallback(GLFWwindow* window, double xpos, double ypos) {
+			auto* self = static_cast<InputSystemMessaging*>(glfwGetWindowUserPointer(window));
+			if (!self) return;
+
+			auto msg = std::make_unique<MovingMouseMessage>((float)xpos, (float)ypos);
+			self->bus.Broadcast(std::move(msg));
+		}*/
+
+		static void MouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
+			auto* self = static_cast<InputSystemMessaging*>(glfwGetWindowUserPointer(window));
+			if (!self) return;
+
+			double xpos, ypos;
+			glfwGetCursorPos(window, &xpos, &ypos);
+
+			bool pressed = (action == GLFW_PRESS);
+			auto msg = std::make_unique<ClickedMouseMessage>(button, pressed, (float)xpos, (float)ypos);
+			self->bus.Broadcast(std::move(msg));
+		}
+    };
+}
