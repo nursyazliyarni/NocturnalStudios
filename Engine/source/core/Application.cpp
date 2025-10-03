@@ -20,11 +20,12 @@
 #include "math/Vector.h"
 #include "core/ImGUIManager.h"
 #include "./scene/Prefab.h"
+#include "physics/AABB.h"
 
 namespace {
     constexpr float TWO_PI = 2.0f * glm::pi<float>();
     constexpr int   CIRCLE_SEGMENTS = 64;
-    using Clock = std::chrono::high_resolution_clock;
+	using Clock = std::chrono::high_resolution_clock;
 }
 
 Application::Application() = default;
@@ -88,13 +89,6 @@ int Application::run() {
     Renderer bg_render("assets/shaders/background.vert", "assets/shaders/background.frag");
 
     Input      game_input_obj(m_window.handle());
-
-    game_input_obj.initSpriteScales(txt_obj.get_totalTexture());
-
-
-    game_input_obj.initSpriteScales(txt_obj.get_totalTexture());  // sets spriteCount = textures-1
-
-
     Physics    game_physics_obj;
     Game_Loop  game_loop_obj(m_window.handle());
     ImGuiManager imGuiManager(m_window, bg_render, txt_obj, game_input_obj, game_physics_obj);
@@ -112,7 +106,7 @@ int Application::run() {
         m_window.poll();
 
         //spawns 3 cats
-        if (catnum < 3)
+        if (catnum<3)
         {
             cats.push_back(std::make_unique<GameObject>(AlphaCat));
             cats[catnum]->Render(bg_render);
@@ -124,6 +118,23 @@ int Application::run() {
         game_loop_obj.display_FPS(m_window.handle(), c.window.title, dt); // display FPS
         game_input_obj.update_mouse_pos(m_window.handle());
         game_input_obj.GET_mouse_delta();
+
+		//mouse click detection for sprites
+        double mouseX, mouseY;
+        glfwGetCursorPos(m_window.handle(), &mouseX, &mouseY);
+        Vector2D mousePos(static_cast<float>(mouseX), static_cast<float>(mouseY));
+
+		//hardcoded cupcake AABB (for test)
+        Vector2D cupcakePos(200.0f, 200.0f);
+        Vector2D cupcakeSize(64.0f, 64.0f);
+
+        if (glfwGetMouseButton(m_window.handle(), GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
+            if (isPointInAABB(mousePos, cupcakePos, cupcakeSize)) {
+                std::cout << "Cupcake clicked at (" << mouseX << ", " << mouseY << ")\n";
+                //drag logic to be implemented
+            }
+        }
+
 
         // handle resize: update viewport/projection if size changed (no callbacks)
 
@@ -147,13 +158,13 @@ int Application::run() {
         glClearColor(0.06f, 0.06f, 0.07f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        auto imGuiStart = Clock::now();
+		auto imGuiStart = Clock::now();
         // Build & render all ImGui (Viewport will render bg + shapes internally via Renderer)
         Gui::updateImGuiManager(dt, imGuiManager);
-        auto imGuiEnd = Clock::now();
-        double imGuiTime = std::chrono::duration<double>(imGuiEnd - imGuiStart).count();
+		auto imGuiEnd = Clock::now();
+		double imGuiTime = std::chrono::duration<double>(imGuiEnd - imGuiStart).count();
 
-        imGuiManager.setSystemTimings(imGuiTime, 0.0);
+		imGuiManager.setSystemTimings(imGuiTime, 0.0);
 
         m_window.swap();
     }
