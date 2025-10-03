@@ -90,7 +90,8 @@ int Application::run() {
     "assets/textures/drink.png",       // [1]
     "assets/textures/cupcake.png",       // [2]
     "assets/textures/placeholder.png",  // [3]
-    "assets/textures/placeholder2.png"  // [4]
+    "assets/textures/placeholder2.png",  // [4]
+    "assets/textures/placeholder3.png"
     };
 
     Texture  txt_obj(vs);
@@ -112,7 +113,7 @@ int Application::run() {
     bus.Register(&game_loop_obj);
 
     //to demonstrate cloning and rendering of gameobjects, this willl be moved into levelmanager
-    int catnum{};
+    int catnum{}, maxcats{ 3 };
     GameObject AlphaCat{ *prefab_man["Cat"] };
     std::vector<std::unique_ptr<GameObject>> cats{};
 
@@ -120,13 +121,15 @@ int Application::run() {
     while (!m_window.shouldClose()) {
         m_window.poll();
 
-        //spawns 3 cats
-        if (catnum<3)
+        //spawns 1 cat per frame, up to maxcats
+        if (catnum<maxcats)
         {
             cats.push_back(std::make_unique<GameObject>(AlphaCat));
             cats[catnum]->Render(bg_render);
             catnum++;
         }
+        if (maxcats<4&&glfwGetKey(m_window.handle(), GLFW_KEY_O) == GLFW_PRESS)maxcats = 2500;
+
 
         double dt = game_loop_obj.calculate_DT();          // our deltaTime
         double total_time = game_loop_obj.get_accum_GT();  // accumulated game time

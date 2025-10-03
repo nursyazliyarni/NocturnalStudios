@@ -129,7 +129,7 @@ public:
     template<typename T>
     static void RegisterType(const std::string& name) {
         Register(name, [](const Json& j) {
-            return std::unique_ptr<Component>(new T(j));
+            return std::make_unique<T>(j);
             });
     }
 
