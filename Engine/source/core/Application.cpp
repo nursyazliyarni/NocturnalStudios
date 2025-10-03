@@ -20,8 +20,6 @@
 #include "math/Vector.h"
 #include "core/ImGUIManager.h"
 #include "./scene/Prefab.h"
-#include "physics/AABB.h"
-#include <crtdbg.h> //for memory leak detection
 
 namespace {
     constexpr float TWO_PI = 2.0f * glm::pi<float>();
@@ -29,13 +27,9 @@ namespace {
 	using Clock = std::chrono::high_resolution_clock;
 }
 
-bool isDragging = false; //is a sprite being dragged
-int draggedSpriteIndex = -1; //index into sprite_vector
-Vector2D dragOffset(0.0f, 0.0f); //mouse offset from top-left of sprite
-
 //Application::Application() = default;
 Application::Application() {
-	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF); //enable memory leak check at program exit
+    _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF); //enable memory leak check at program exit
 }
 
 int Application::run() {
@@ -101,6 +95,7 @@ int Application::run() {
     Game_Loop  game_loop_obj(m_window.handle());
     ImGuiManager imGuiManager(m_window, bg_render, txt_obj, game_input_obj, game_physics_obj);
     PrefabManager prefab_man;
+
     // make Input�s scale array match the number of textures
     //game_input_obj.initSpriteScales(txt_obj.count());
 
@@ -127,7 +122,7 @@ int Application::run() {
         game_input_obj.update_mouse_pos(m_window.handle());
         game_input_obj.GET_mouse_delta();
 
-		//mouse click detection for sprites
+        //mouse click detection for sprites
         double mouseX, mouseY;
         glfwGetCursorPos(m_window.handle(), &mouseX, &mouseY);
         Vector2D mousePos(static_cast<float>(mouseX), static_cast<float>(mouseY));

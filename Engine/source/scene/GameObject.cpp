@@ -32,7 +32,8 @@ GameObject::GameObject(const GameObject& obj) :id{}, name{ obj.name }, active{ o
 
 
 GameObject::~GameObject() {
-	ClearParent(); //std::cout << "destroyed " << name << '\n';
+	ClearParent();
+	// Components will be deleted by unique_ptr in vector
 }
 
 

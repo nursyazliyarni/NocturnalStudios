@@ -46,10 +46,7 @@ public:
 
 	GameObject(const GameObject&);
 
-
-	~GameObject();
-
-
+	virtual ~GameObject(); // Ensure virtual destructor
 
 	// [====================*====================]
 	//  Component Attachment
