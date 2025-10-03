@@ -36,7 +36,8 @@ std::unique_ptr<GameObject> GameObject::Clone() const {
 
 
 GameObject::~GameObject() {
-	ClearParent(); //std::cout << "destroyed " << name << '\n';
+	ClearParent();
+	// Components will be deleted by unique_ptr in vector
 }
 
 

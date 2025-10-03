@@ -20,7 +20,6 @@
 #include "math/Vector.h"
 #include "core/ImGUIManager.h"
 #include "./scene/Prefab.h"
-#include "physics/AABB.h"
 
 namespace {
     constexpr float TWO_PI = 2.0f * glm::pi<float>();
@@ -28,7 +27,10 @@ namespace {
 	using Clock = std::chrono::high_resolution_clock;
 }
 
-Application::Application() = default;
+//Application::Application() = default;
+Application::Application() {
+    _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF); //enable memory leak check at program exit
+}
 
 int Application::run() {
     // 1) read JSON (with safe defaults)
@@ -44,7 +46,7 @@ int Application::run() {
 
     if (!m_window.create(wd)) return -1;
 
-    // Prime the window so thereï¿½s no white flash before the first real frame
+    // Prime the window so there’s no white flash before the first real frame
     glViewport(0, 0, wd.width, wd.height);
     glDisable(GL_DEPTH_TEST);
     glEnable(GL_BLEND);
@@ -93,15 +95,9 @@ int Application::run() {
     Game_Loop  game_loop_obj(m_window.handle());
     ImGuiManager imGuiManager(m_window, bg_render, txt_obj, game_input_obj, game_physics_obj);
     PrefabManager prefab_man;
-    // make Inputï¿½s scale array match the number of textures
+
+    // make Input’s scale array match the number of textures
     //game_input_obj.initSpriteScales(txt_obj.count());
-
-    //broadcasted messaging system for input keyboard and mouse
-    Messaging::MessageBus bus;
-    Messaging::InputSystemMessaging input(bus, m_window.handle());
-
-    // Register GameLoop as a listener
-    bus.Register(&game_loop_obj);
 
     //to demonstrate cloning and rendering of gameobjects, this willl be moved into levelmanager
     int catnum{};
@@ -125,23 +121,6 @@ int Application::run() {
         game_loop_obj.display_FPS(m_window.handle(), c.window.title, dt); // display FPS
         game_input_obj.update_mouse_pos(m_window.handle());
         game_input_obj.GET_mouse_delta();
-
-		//mouse click detection for sprites
-        double mouseX, mouseY;
-        glfwGetCursorPos(m_window.handle(), &mouseX, &mouseY);
-        Vector2D mousePos(static_cast<float>(mouseX), static_cast<float>(mouseY));
-
-		//hardcoded cupcake AABB (for test)
-        Vector2D cupcakePos(200.0f, 200.0f);
-        Vector2D cupcakeSize(64.0f, 64.0f);
-
-        if (glfwGetMouseButton(m_window.handle(), GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
-            if (isPointInAABB(mousePos, cupcakePos, cupcakeSize)) {
-                std::cout << "Cupcake clicked at (" << mouseX << ", " << mouseY << ")\n";
-                //drag logic to be implemented
-            }
-        }
-
 
         // handle resize: update viewport/projection if size changed (no callbacks)
 
