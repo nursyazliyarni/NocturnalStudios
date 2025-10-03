@@ -3,7 +3,6 @@
 #include "graphics/Texture.h"
 
 Texture::Texture(std::vector<char const*> &image_path_v):texture_info_vector(image_path_v.size()) {
-	//stbi_set_flip_vertically_on_load(true);
 	int num_components;
 	for (size_t index{ 0 }; index < image_path_v.size(); index++) {
 		//image in pixel, width, height num_components->image components for image file,

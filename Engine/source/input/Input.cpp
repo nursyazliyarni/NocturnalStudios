@@ -50,6 +50,8 @@ Input::Input(GLFWwindow* window) {
 
 	detect_keyboard_event(window, GLFW_KEY_X, GLFW_PRESS); // reset transform
 
+	detect_mouse_event(window, GLFW_MOUSE_BUTTON_LEFT, GLFW_PRESS); //detect left mouse press
+	detect_mouse_event(window, GLFW_MOUSE_BUTTON_RIGHT, GLFW_PRESS); //detect right mouse press
 }
 
 void Input::update_mouse_pos(GLFWwindow* window) {
@@ -107,11 +109,9 @@ void Input::detect_mouse_event(GLFWwindow* window, int mouse, int event_action) 
 }
 
 void Input::keyboard_input_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
-	//std::cout << keyboard_action.size() << "\n";
 	ImGui_ImplGlfw_KeyCallback(window, key, scancode, action, mods); //Pass keyboard input to ImGui
 	ImGuiIO& io = ImGui::GetIO();
 	if (io.WantCaptureKeyboard && action == GLFW_PRESS) {
-		//logger.log("IMGUI wants to use the keyboard");
 		return;
 	}
 
@@ -122,7 +122,6 @@ void Input::keyboard_input_callback(GLFWwindow* window, int key, int scancode, i
 		static int track_number{ -1 }; //this is to track which key is pressed last time
 		for (auto& [tuple_key, event_action, key_action] : keyboard_action) {
 			if (tuple_key == key) {
-
 
 				if (key >= GLFW_KEY_1 && key <= GLFW_KEY_9) {
 					// get 'self' so we can read spriteCount
@@ -196,8 +195,6 @@ void Input::keyboard_input_callback(GLFWwindow* window, int key, int scancode, i
 					} // skip the switch for digit keys
 				}
 
-
-
 				// handle 0 = select ALL sprites
 				// handle '0' as ALL
 				// handle '0' = ALL (toggle on press)
@@ -237,34 +234,6 @@ void Input::keyboard_input_callback(GLFWwindow* window, int key, int scancode, i
 
 
 				switch (key) {
-					/*case GLFW_KEY_1:
-						if (action == event_action) {
-							track_number = key;
-							key_action = Input_action::take_control;
-						}
-						break;
-
-					case GLFW_KEY_2:
-						if (action == event_action) {
-							track_number = key;
-							key_action = Input_action::take_control;
-						}
-						break;
-
-					case GLFW_KEY_3:
-						if (action == event_action) {
-							track_number = key;
-							key_action = Input_action::take_control;
-						}
-						break;
-
-					case GLFW_KEY_4:
-						if (action == event_action) {
-							track_number = key;
-							key_action = Input_action::take_control;
-						}
-						break;*/
-
 				case GLFW_KEY_W:
 				{
 					if (action == GLFW_PRESS || action == GLFW_REPEAT) {
@@ -493,36 +462,31 @@ void Input::mouse_input_callback(GLFWwindow* window, int button, int action, int
 	if (io.WantCaptureMouse && action == GLFW_PRESS) {
 		logger.log("IMGUI wants to use the mouse");
 	}
+
+	else { //store my game mouse input state here
+		for (auto& [tuple_mouse, event_action, mouse_action] : mouse_action) {
+			if (tuple_mouse == button) {
+				switch (tuple_mouse) {
+				case GLFW_MOUSE_BUTTON_LEFT:
+					if (action == event_action) {
+						logger.log("left mouse is pressed");
+					}
+					break;
+
+				case GLFW_MOUSE_BUTTON_RIGHT:
+					if (action == event_action) {
+						logger.log("right mouse is pressed");
+					}
+					break;
+				}
+			}
+		}
+	}
 }
 
 //void Input::SendMesssage() {
 //
 //}
-
-//void Input::initSpriteScales(size_t textureCount) {
-//    spriteCount = (textureCount > 1) ? (textureCount - 1) : 0;
-//    spriteScales.assign(textureCount, 1.0f);                // [0]=bg, [1-spriteCount]=sprites
-//    if (spriteCount == 0) selectedSprite = -1;              // none if no sprites
-//    else if (selectedSprite > (int)spriteCount) selectedSprite = -1;
-//}
-//    if (textureCount > 1) {
-//        spriteCount = textureCount - 1;
-//    }
-//    else {
-//        spriteCount = 0;
-//    }
-//
-//    spriteScales.assign(textureCount, 1.0f);     // all scales = 1.0
-//    spriteRotations.assign(textureCount, 0.0f);  // all rotations = 0.0
-//
-//    if (spriteCount == 0) {
-//        selectedSprite = -1;
-//    }
-//    else if (selectedSprite > (int)spriteCount) {
-//        selectedSprite = -1;
-//    }
-//}
-
 
 void Input::initSpriteScales(size_t textureCount) {
 	if (textureCount > 1) {
@@ -545,9 +509,6 @@ void Input::initSpriteScales(size_t textureCount) {
 		selectedSprite = -1;
 	}
 }
-
-
-
 
 static inline void printSel(int s) {
 	if (s < 0) std::cout << "Selected sprite: NONE\n";
