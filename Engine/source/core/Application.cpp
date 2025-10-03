@@ -10,6 +10,11 @@
         - Brief
 
     Secondary Author:
+        Rishika Bimal Attodi 
+        - - Implemented main loop scaffolding: window creation, OpenGL setup, 
+        sprite batching
+
+    Secondary Author:
 		Chang Qi Xuan Celest (35%)
 		- Integrated drag and drop functionality for sprites.
 

@@ -4,9 +4,8 @@
 
 	This file contains Application class to start the application defined in Application.cpp.
 
-    Primary Author:
-         Name (%)
-        -Brief
+    Rishika Bimal Attodi
+        - Declared Application interface and main run entrypoint.
 
     Secondary Author:
          Name (%)

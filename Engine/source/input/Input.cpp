@@ -2,11 +2,17 @@
 	File: Input.cpp
 	Project: NocturnalStudio
 
-	This file contains ...
+	This file contains the platform window wrapper: creation/destruction of a GLFW window,
+	OpenGL context setup (GLEW init), VSync control, event polling, buffer swap, and FPS-in-title helper.
+
 
 	Primary Author:
 		???
 		- Created...
+
+	Secondary Author:
+		Rishika Bimal Attodi
+		- Implemented sprite selection/deselection and sprite rotation/scaling input handling.
 
 	All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
 *------------------------------------------------------------------------------------------------*/

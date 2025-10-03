@@ -4,9 +4,10 @@
 
     This file contains ...
 
-    Primary Author:
+     Author:
          Rishika Bimal Attodi
-        - Brief
+        -  Implemented sprite init/draw (excluding background), per-sprite rotation & scaling, 
+        and front/behind passes.
 
     All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
 *------------------------------------------------------------------------------------------------*/

@@ -9,6 +9,10 @@
         -Brief
 
     Secondary Author:
+        Rishika Bimal Attodi
+       - Implemented center-preserving sprite scaling (min 0.2–max 3.0) and rotation toggles (J/K) with reset (X), plus selection/deselection of sprites.
+
+    Secondary Author:
         Chang Qi Xuan Celest (7%)
 		- Implemented stop movement on collision in update_sprite_movement.
 
