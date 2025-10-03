@@ -96,6 +96,13 @@ int Application::run() {
     // make Input�s scale array match the number of textures
     //game_input_obj.initSpriteScales(txt_obj.count());
 
+    //broadcasted messaging system for input keyboard and mouse
+    Messaging::MessageBus bus;
+    Messaging::InputSystemMessaging input(bus, m_window.handle());
+
+    // Register GameLoop as a listener
+    bus.Register(&game_loop_obj);
+
     //to demonstrate cloning and rendering of gameobjects, this willl be moved into levelmanager
     int catnum{};
     GameObject AlphaCat{ *prefab_man["Cat"] };
