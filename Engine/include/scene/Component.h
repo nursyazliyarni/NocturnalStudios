@@ -37,6 +37,7 @@ public:
 	Component() = default;
 	Component(COMPONENT_TYPE t,std::string s);
     Component(const Component&);
+    virtual ~Component() = default; // Ensure virtual destructor
     virtual std::unique_ptr<Component> Clone() const=0;
 	void SetOwner(GameObject* o);
 	virtual void Render(Renderer&);

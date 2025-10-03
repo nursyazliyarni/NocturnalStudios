@@ -27,7 +27,10 @@ namespace {
 	using Clock = std::chrono::high_resolution_clock;
 }
 
-Application::Application() = default;
+//Application::Application() = default;
+Application::Application() {
+    _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF); //enable memory leak check at program exit
+}
 
 int Application::run() {
     // 1) read JSON (with safe defaults)
@@ -92,6 +95,7 @@ int Application::run() {
     Game_Loop  game_loop_obj(m_window.handle());
     ImGuiManager imGuiManager(m_window, bg_render, txt_obj, game_input_obj, game_physics_obj);
     PrefabManager prefab_man;
+
     // make Input’s scale array match the number of textures
     //game_input_obj.initSpriteScales(txt_obj.count());
 
