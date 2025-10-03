@@ -19,10 +19,9 @@
 #include "graphics/Renderer.h"
 
 enum COMPONENT_TYPE {
-    NONE = 0,
-    TRANSFORM = 1,
-	RENDERING =2,
-	COLLISION =3,
+	NONE=0,
+	RENDERING =1,
+	COLLISION =2,
 	//PHYSICS=3,
 	LOGIC=4
 };
@@ -38,18 +37,14 @@ public:
 	Component() = default;
 	Component(COMPONENT_TYPE t,std::string s);
     Component(const Component&);
-    virtual ~Component() = default; // Ensure virtual destructor
     virtual std::unique_ptr<Component> Clone() const=0;
 	void SetOwner(GameObject* o);
 	virtual void Render(Renderer&);
-    virtual void Transform();
 	virtual bool Collide();
 	virtual void Logic();
     std::string ComponenetName() const;
     COMPONENT_TYPE Type() const;
 };
-
-//Transform Components
 
 
 //Renderer Components
@@ -113,7 +108,6 @@ public:
 };
 
 
-
 class ComponentFactory {
 public:
     using Json = rapidjson::Value;
@@ -129,7 +123,7 @@ public:
     template<typename T>
     static void RegisterType(const std::string& name) {
         Register(name, [](const Json& j) {
-            return std::make_unique<T>(j);
+            return std::unique_ptr<Component>(new T(j));
             });
     }
 

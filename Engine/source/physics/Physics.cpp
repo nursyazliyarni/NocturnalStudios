@@ -43,16 +43,6 @@ void Physics::update_sprite_movement(Renderer& render_obj, Input& input_obj) {
                 pressed = false;
             }
         }
-	if (index >= 0) {
-		auto& sprite = sprite_vector[index]; //get sprite to move
-		//save old position in case of collision
-		float oldX = sprite.x;
-		float oldY = sprite.y;
-		auto& keyboard_action = input_obj.GET_keyboard();
-		for (auto& [tuple_key, event_action, key_action] : keyboard_action) {
-			if (key_action == Input_action::move_up) {
-				sprite_vector[index].y -= 0.001f;
-			}
 
         int index = take_control(render_obj, input_obj);
         auto& sprite_vector = render_obj.get_sprite_vector();
@@ -68,15 +58,6 @@ void Physics::update_sprite_movement(Renderer& render_obj, Input& input_obj) {
                 else if (key_action == Input_action::move_down) {
                     sprite_vector[index].y += 0.001f;
                 }
-			else if (key_action == Input_action::move_right) {
-				sprite_vector[index].x += 0.001f;
-			}
-		}
-		//collision detection with other sprites through movement and AABB
-		bool collided = false; //flag to indicate if a collision occurred
-		for (size_t i = 0; i < sprite_vector.size(); i++) {
-			if (i == index) continue; //skip the controlled sprite
-			const auto& other = sprite_vector[i];
 
                 else if (key_action == Input_action::move_left) {
                     sprite_vector[index].x -= 0.001f;
@@ -112,17 +93,6 @@ void Physics::update_sprite_movement(Renderer& render_obj, Input& input_obj) {
             }
         }
     }
-			if (checkAABBCollision(pos1, size1, pos2, size2)) {
-				std::cout << "Collision detected with sprite " << i+1 << std::endl;
-				collided = true; //set flag
-				break; //exit loop on first collision
-			}
-		}if (collided) {
-			//revert to old position on collision
-			sprite.x = oldX;
-			sprite.y = oldY; 
-		}
-	}
 }
 
 static void reset_selection_transforms(
@@ -349,7 +319,7 @@ void Physics::update_sprite_rotation(Renderer& render_obj, Input& input_obj)
     // reset (X)
     if (doReset) {
         reset_selection_transforms(render_obj, sel, cw, ccw, ox, oy, ow, oh, oang);
-        // (donï¿½t early-return; allow J/K edges to be seen this frame too)
+        // (don’t early-return; allow J/K edges to be seen this frame too)
     }
 
     // J/K edge detection
@@ -376,7 +346,7 @@ void Physics::update_sprite_rotation(Renderer& render_obj, Input& input_obj)
         if (nowCW && !prevCW) { bool on = !cw[(size_t)sel];  cw[(size_t)sel] = on; if (on) ccw[(size_t)sel] = false; }
         if (nowCCW && !prevCCW) { bool on = !ccw[(size_t)sel]; ccw[(size_t)sel] = on; if (on) cw[(size_t)sel] = false; }
     }
-    // NONE: donï¿½t change toggles (keys locked)
+    // NONE: don’t change toggles (keys locked)
 
     prevCW = nowCW;
     prevCCW = nowCCW;

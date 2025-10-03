@@ -195,7 +195,7 @@ void ImGuiManager::showViewportWindowUI() {
 
 	// behind-sprites pass (scaled)
 	//renderer.drawAllSprites(texture, { 3,4 }, /*behindPass=*/true,  input.getSpriteScalesPtr());
-	renderer.drawAllSprites(texture, { 3,4 ,5}, true,
+	renderer.drawAllSprites(texture, { 3,4 }, true,
 		input.getSpriteScalesPtr(),
 		input.getSpriteRotationsPtr(),
 		vw, vh);
@@ -205,7 +205,7 @@ void ImGuiManager::showViewportWindowUI() {
 
 	// front-sprites pass (scaled)
 	//renderer.drawAllSprites(texture, { 3,4 }, /*behindPass=*/false, input.getSpriteScalesPtr());
-	renderer.drawAllSprites(texture, { 3,4,5 }, false,
+	renderer.drawAllSprites(texture, { 3,4 }, false,
 		input.getSpriteScalesPtr(),
 		input.getSpriteRotationsPtr(),
 		vw, vh);

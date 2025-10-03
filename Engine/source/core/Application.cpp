@@ -21,6 +21,7 @@
 #include "core/ImGUIManager.h"
 #include "./scene/Prefab.h"
 #include "physics/AABB.h"
+#include <crtdbg.h> //for memory leak detection
 
 namespace {
     constexpr float TWO_PI = 2.0f * glm::pi<float>();
@@ -30,12 +31,11 @@ namespace {
 
 bool isDragging = false; //is a sprite being dragged
 int draggedSpriteIndex = -1; //index into sprite_vector
-int duplicateIndex = -1; //where clone is in the vector
 Vector2D dragOffset(0.0f, 0.0f); //mouse offset from top-left of sprite
 
 //Application::Application() = default;
 Application::Application() {
-    _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF); //enable memory leak check at program exit
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF); //enable memory leak check at program exit
 }
 
 int Application::run() {
@@ -90,9 +90,7 @@ int Application::run() {
     "assets/textures/drink.png",       // [1]
     "assets/textures/cupcake.png",       // [2]
     "assets/textures/placeholder.png",  // [3]
-    "assets/textures/placeholder2.png",  // [4]
-	"assets/textures/catate.png",    // [5]
-	"assets/textures/catate2.png"   // [6]
+    "assets/textures/placeholder2.png"  // [4]
     };
 
     Texture  txt_obj(vs);
@@ -103,11 +101,9 @@ int Application::run() {
     Game_Loop  game_loop_obj(m_window.handle());
     ImGuiManager imGuiManager(m_window, bg_render, txt_obj, game_input_obj, game_physics_obj);
     PrefabManager prefab_man;
-
     // make Input�s scale array match the number of textures
     //game_input_obj.initSpriteScales(txt_obj.count());
 
-    
     /* UNCOMMENT THIS SECTION TO TEST FOR MESSAGING SYSTEM */
     
     //Messaging::MessageBus bus;//broadcasted messaging system for input keyboard and mouse
@@ -116,9 +112,8 @@ int Application::run() {
     //bus.Register(&game_loop_obj);// Register GameLoop as a listener
     /*UNCOMMENT THIS SECTION TO TEST FOR MESSAGING SYSTEM*/
 
-
     //to demonstrate cloning and rendering of gameobjects, this willl be moved into levelmanager
-    int catnum{}, maxcats{ 3 };
+    int catnum{};
     GameObject AlphaCat{ *prefab_man["Cat"] };
     std::vector<std::unique_ptr<GameObject>> cats{};
 
@@ -127,105 +122,74 @@ int Application::run() {
         m_window.poll();
 
         //spawns 3 cats
-        if (catnum<maxcats)
+        if (catnum<3)
         {
             cats.push_back(std::make_unique<GameObject>(AlphaCat));
             cats[catnum]->Render(bg_render);
-            logger.log(std::string{"cat "+std::to_string(catnum)});
             catnum++;
         }
-        if (catnum < 4 && glfwGetKey(m_window.handle(), GLFW_KEY_O) == GLFW_PRESS)maxcats = 2500;
-            
+
         double dt = game_loop_obj.calculate_DT();          // our deltaTime
         double total_time = game_loop_obj.get_accum_GT();  // accumulated game time
         game_loop_obj.display_FPS(m_window.handle(), c.window.title, dt); // display FPS
         game_input_obj.update_mouse_pos(m_window.handle());
         game_input_obj.GET_mouse_delta();
 
-
-        //---------------------DRAG AND DROP---------------------------
+		//mouse click detection for sprites
         double mouseX, mouseY;
         glfwGetCursorPos(m_window.handle(), &mouseX, &mouseY);
         Vector2D mousePos(static_cast<float>(mouseX), static_cast<float>(mouseY));
 
+		//get sprite vector from renderer
         auto& sprites = bg_render.get_sprite_vector();
-        std::vector<int> frontIdxs; //indices to draw on top
 
-        if (!isDragging) {
-            if (glfwGetMouseButton(m_window.handle(), GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
+		if (!isDragging) { //only check for clicks if not already dragging
+            if(glfwGetMouseButton(m_window.handle(), GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS){
                 for (int i = 0; i < (int)sprites.size(); i++) {
-                    if (i != 0 && i != 1) continue; //only drink & cupcake are draggable
-                    const auto& spr = sprites[i];
-
+					const auto& spr = sprites[i];
+                    //convert normalized to pixel coords
                     float x = spr.x * currW;
                     float y = spr.y * currH;
                     float w = spr.w * currW;
                     float h = spr.h * currH;
 
-                    if (isPointInAABB(mousePos, { x, y }, { w, h })) {
-                        //create duplicate and bring it to front
-                        sprites.push_back(spr);
-                        duplicateIndex = (int)sprites.size() - 1;
-                        draggedSpriteIndex = i;
-                        isDragging = true;
-                        dragOffset = mousePos - Vector2D(x, y);
-
-                        frontIdxs.push_back(sprites[duplicateIndex].idx); //ensure duplicate is drawn on top
+			        //AABB box
+                    Vector2D pos(x, y);
+                    Vector2D size(w, h);
+                    
+			        //check if mouse is in box and left click
+                    if (isPointInAABB(mousePos,pos,size)) {
+                        std::cout << "Clicked sprite with index: " << spr.idx << std::endl;
+						draggedSpriteIndex = i; //store index into sprite_vector
+						isDragging = true;
+						dragOffset = mousePos - Vector2D(x, y); //store offset from mouse to top-left of sprite
                         break;
+
+                        //specific action for a sprite type (optional)
+                        //if (spr.idx == 2) { // cupcake
+                        //    std::cout << "Cupcake clicked at (" << mouseX << ", " << mouseY << ")\n";
+                        //}
                     }
                 }
             }
         }
-        else { //isDragging
+        else {
             if (glfwGetMouseButton(m_window.handle(), GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE) {
-                if (duplicateIndex >= 0 && duplicateIndex < (int)sprites.size()) {
-                    auto& dup = sprites[duplicateIndex];
-                    frontIdxs.push_back(sprites[duplicateIndex].idx);
-
-                    //check drop target
-                    for (int i = 0; i < (int)sprites.size(); ++i) {
-                        if (i == draggedSpriteIndex || i == duplicateIndex) continue;
-                        auto& target = sprites[i];
-                        //target is a cat
-                        if (target.idx == 3 || target.idx == 4) {
-                            float tx = target.x * currW;
-                            float ty = target.y * currH;
-                            float tw = target.w * currW;
-                            float th = target.h * currH;
-
-                            if (isPointInAABB(Vector2D(dup.x * currW, dup.y * currH), { tx, ty }, { tw, th })) {
-                                if(target.idx==3)target.idx=5; //change cat A texture to cat A ate
-                                if(target.idx==4)target.idx=6; //change cat B texture to cat B ate
-                            }
-                        }
-                    }
-
-                    // remove duplicate
-                    sprites.erase(sprites.begin() + duplicateIndex);
-                }
-
                 isDragging = false;
                 draggedSpriteIndex = -1;
-                duplicateIndex = -1;
-                frontIdxs.clear();
             }
             else {
-                // move duplicate with mouse
-                auto& spr = sprites[duplicateIndex];
+                // update dragged sprite position
+                auto& spr = sprites[draggedSpriteIndex];
+
                 float newX = mousePos.x() - dragOffset.x();
                 float newY = mousePos.y() - dragOffset.y();
+
+                // convert back to normalized coordinates
                 spr.x = newX / currW;
                 spr.y = newY / currH;
-
-                frontIdxs.clear();
-                frontIdxs.push_back(spr.idx); // always draw duplicate on top
             }
         }
-
-        // draw sprites: first behind pass (everything except front), then front pass
-        bg_render.drawAllSprites(txt_obj, frontIdxs, true, currW, currH);   // behind pass
-        bg_render.drawAllSprites(txt_obj, frontIdxs, false, currW, currH);  // front pass
-        //---------------------END DRAG AND DROP---------------------------
 
         // handle resize: update viewport/projection if size changed (no callbacks)
 

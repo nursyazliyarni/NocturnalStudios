@@ -13,7 +13,6 @@ private:
 	std::map<std::string, std::unique_ptr<GameObject>> list;
 public:
 	PrefabManager(std::string filename = "assets/prefabs/GameObj.json");
-	~PrefabManager(); // Added destructor
 
 	const GameObject* operator[](const char* key)const;
 

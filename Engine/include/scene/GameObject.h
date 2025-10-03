@@ -46,9 +46,10 @@ public:
 
 	GameObject(const GameObject&);
 
-	virtual ~GameObject(); // Ensure virtual destructor
 
-	std::unique_ptr<GameObject> Clone() const;
+	~GameObject();
+
+
 
 	// [====================*====================]
 	//  Component Attachment

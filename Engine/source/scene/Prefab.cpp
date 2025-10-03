@@ -1,3 +1,4 @@
+
 #include "rapidjson/document.h"
 #include <rapidjson/istreamwrapper.h>
 #include <fstream>
@@ -13,7 +14,7 @@ void RegisterAllComponents() {
 }
 
 //prefab wil load the gameobjects from a file, 
-//and have a copy of one of the object in here?
+//and have a copy of one of each of the object in here?
 
 PrefabManager::PrefabManager(std::string filename) :list{} {
 	//std::cout << "Prefab manager init " << filename << '\n';
@@ -62,11 +63,6 @@ PrefabManager::PrefabManager(std::string filename) :list{} {
 		
 		
 }
-
-PrefabManager::~PrefabManager() {
-    list.clear(); // unique_ptr will delete all GameObjects
-}
-
 const GameObject* PrefabManager::operator[](const char* key)const {
 	auto it = list.find(key);
 	if (it!=list.end())
@@ -77,6 +73,5 @@ const GameObject* PrefabManager::operator[](const char* key)const {
 		return nullptr;
 	}
 }
-
 
 

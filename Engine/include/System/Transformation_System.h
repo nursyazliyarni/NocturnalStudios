@@ -1,1 +1,0 @@
-// Should check and update transform matrix of all entities every frame
