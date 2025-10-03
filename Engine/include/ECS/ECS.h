@@ -67,7 +67,10 @@ public:
 	};
 	struct Scene {
 		// layers should be grouped into scenes
+
+
 	};
+
 
 private:
 	std::vector<ComponentData>::const_iterator getComponentData(ComponentID componentID) const;
