@@ -26,7 +26,7 @@ Shader::Shader(Shader&& rhs_shader) noexcept :program_obj{ rhs_shader.program_ob
 }
 
 Shader& Shader::operator=(Shader&& rhs_shader) noexcept {
-    if (this != &rhs_shader) { //prevent self-copy assignment here
+    if (this != &rhs_shader) { //prevent self assignment here
         glDeleteProgram(program_obj); //delete this->program_obj
         program_obj = rhs_shader.program_obj; //this->program_obj steal resources
         rhs_shader.program_obj = 0; //release ownership of rhs_shader

@@ -1,16 +1,7 @@
 // integration, gravity, movement
+#include <algorithm> // std::fill
 #include "input/Input.h"
 #include "physics/Physics.h"
-
-//int Physics::take_control(Renderer& render_obj, Input& input_obj) {
-//	auto& keyboard_action = input_obj.GET_keyboard();
-//	for (auto& [tuple_key, event_action, key_action] : keyboard_action) {
-//		if (key_action == Input_action::take_control) {
-//			return tuple_key - GLFW_KEY_1;
-//		}
-//	}
-//	return -1; //return invalid index here
-//}
 
 int Physics::take_control(Renderer& render_obj, Input& input_obj) {
     int sel = -1; // NONE by default
@@ -60,7 +51,6 @@ void Physics::update_sprite_movement(Renderer& render_obj, Input& input_obj){
 	}
 }
 
-
 static void reset_selection_transforms(
     Renderer& render_obj, int sel,
     std::vector<bool>& cw, std::vector<bool>& ccw,
@@ -89,8 +79,6 @@ static void reset_selection_transforms(
         cw[(size_t)sel] = false; ccw[(size_t)sel] = false;
     }
 }
-
-
 
 void Physics::update_sprite_scaling(Renderer& render_obj, Input& input_obj)
 {
@@ -249,11 +237,6 @@ void Physics::update_sprite_scaling(Renderer& render_obj, Input& input_obj)
     s << std::setprecision(1) << scaleFactor[index];
     logger.log(s.str());
 }
-
-
-
-
-#include <algorithm> // std::fill
 
 void Physics::update_sprite_rotation(Renderer& render_obj, Input& input_obj)
 {
