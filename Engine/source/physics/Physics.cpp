@@ -185,7 +185,7 @@ void Physics::update_sprite_scaling(Renderer& render_obj, Input& input_obj)
         k = k + 1;
     }
 
-    const float minScale = 1.0f;
+    const float minScale = 0.2f;
     const float maxScale = 3.0f;
     const float step = 0.1f;
 
