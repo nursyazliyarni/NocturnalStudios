@@ -12,7 +12,7 @@
 enum class Input_action {
 	no_action,take_control,
 	move_up,move_down,move_left,move_right,
-	magnify,minify,rotate_clockwise,rotate_anticlockwise
+	magnify,minify,rotate_clockwise,rotate_anticlockwise, reset_transform,
 };
 
 class Input {
