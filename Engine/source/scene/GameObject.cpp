@@ -30,9 +30,14 @@ GameObject::GameObject(const GameObject& obj) :id{}, name{ obj.name }, active{ o
 	}
 }
 
+std::unique_ptr<GameObject> GameObject::Clone() const {
+	return std::make_unique<GameObject>(*this);
+}
+
 
 GameObject::~GameObject() {
-	ClearParent(); //std::cout << "destroyed " << name << '\n';
+	ClearParent();
+	// Components will be deleted by unique_ptr in vector
 }
 
 
