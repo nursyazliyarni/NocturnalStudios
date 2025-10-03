@@ -184,6 +184,7 @@ int Application::run() {
                             if (isPointInAABB(Vector2D(dup.x * currW, dup.y * currH), { tx, ty }, { tw, th })) {
                                 if(target.idx==3)target.idx=5; //change cat A texture to cat A ate
                                 if(target.idx==4)target.idx=6; //change cat B texture to cat B ate
+								std::cout << "Dropped on cat!\n";
                             }
                         }
                     }
