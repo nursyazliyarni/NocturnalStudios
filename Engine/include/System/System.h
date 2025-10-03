@@ -9,8 +9,8 @@
 	that provides the common interface for all system in the ECS architecture.
 
 	Primary Author:
-
-
+		Lau Xiang Yang (100%)
+		- Created the System class and its interface.
 
 	All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
 *------------------------------------------------------------------------------------------------*/

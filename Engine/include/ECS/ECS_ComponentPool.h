@@ -10,7 +10,8 @@
 	while keeping track of which entity does the component data belong to.
 
 	Primary Author:
-		
+		Lau Xiang Yang (100%)
+		- Created the file and implemented the ComponentPool class
 		
 
 	All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.

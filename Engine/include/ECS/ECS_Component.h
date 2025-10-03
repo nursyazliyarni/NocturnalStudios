@@ -9,7 +9,8 @@
 	the ECS.
 
 	Primary Author:
-		
+		Lau Xiang Yang (100%)
+		- Created the file and implemented the ECS component structs
 		
 
 	All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
