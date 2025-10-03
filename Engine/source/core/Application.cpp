@@ -108,7 +108,7 @@ int Application::run() {
     //game_input_obj.initSpriteScales(txt_obj.count());
 
     //to demonstrate cloning and rendering of gameobjects, this willl be moved into levelmanager
-    int catnum{};
+    int catnum{}, maxcats{ 3 };
     GameObject AlphaCat{ *prefab_man["Cat"] };
     std::vector<std::unique_ptr<GameObject>> cats{};
 
@@ -117,13 +117,15 @@ int Application::run() {
         m_window.poll();
 
         //spawns 3 cats
-        if (catnum<3)
+        if (catnum<maxcats)
         {
             cats.push_back(std::make_unique<GameObject>(AlphaCat));
             cats[catnum]->Render(bg_render);
+            logger.log(std::string{"cat "+std::to_string(catnum)});
             catnum++;
         }
-
+        if (catnum < 4 && glfwGetKey(m_window.handle(), GLFW_KEY_O) == GLFW_PRESS)maxcats = 2500;
+            
         double dt = game_loop_obj.calculate_DT();          // our deltaTime
         double total_time = game_loop_obj.get_accum_GT();  // accumulated game time
         game_loop_obj.display_FPS(m_window.handle(), c.window.title, dt); // display FPS
