@@ -30,6 +30,11 @@ void Physics::update_sprite_movement(Renderer& render_obj, Input& input_obj){
 	int index = take_control(render_obj, input_obj);
 	auto& sprite_vector = render_obj.get_sprite_vector();
 
+    static std::vector<bool> wasColliding;
+    if (wasColliding.size() < sprite_vector.size())
+        wasColliding.resize(sprite_vector.size(), false);
+
+
 	if (index >= 0) {
 		auto& sprite = sprite_vector[index]; //get sprite to move
 		//save old position in case of collision
@@ -65,11 +70,14 @@ void Physics::update_sprite_movement(Renderer& render_obj, Input& input_obj){
 			Vector2D pos2(other.x, other.y);
 			Vector2D size2(other.w, other.h);
 
-			if (checkAABBCollision(pos1, size1, pos2, size2)) {
-				std::cout << "Collision detected with sprite " << i+1 << std::endl;
-				collided = true; //set flag
-				break; //exit loop on first collision
-			}
+            bool hit = checkAABBCollision(pos1, size1, pos2, size2);
+            if (hit && !wasColliding[i]) {
+                std::cout << "Collision detected with sprite " << (i + 1) << std::endl;
+            }
+            wasColliding[i] = hit;
+            if (hit) collided = true;
+
+
 		}if (collided) {
 			//revert to old position on collision
 			sprite.x = oldX;

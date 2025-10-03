@@ -98,7 +98,15 @@ int Application::run() {
     Texture  txt_obj(vs);
     Renderer bg_render("assets/shaders/background.vert", "assets/shaders/background.frag");
 
+
     Input      game_input_obj(m_window.handle());
+
+    game_input_obj.initSpriteScales(txt_obj.get_totalTexture());
+
+    game_input_obj.initSpriteScales(txt_obj.get_totalTexture());
+    game_input_obj.initSpriteRotations(txt_obj.get_totalTexture());
+
+
     Physics    game_physics_obj;
     Game_Loop  game_loop_obj(m_window.handle());
     ImGuiManager imGuiManager(m_window, bg_render, txt_obj, game_input_obj, game_physics_obj);
