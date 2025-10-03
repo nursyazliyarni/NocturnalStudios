@@ -2,11 +2,15 @@
     File: Physics.cpp
     Project: NocturnalStudio
 
-    This file contains ...
+    This file contains all the behaviour of our sprite when the correct input key is detected
 
     Primary Author:
-         Name (%)
-        -Brief
+         Ang Yu Xuan (60%)
+        - implement functions for movement, scaling and rotation for our sprite.
+
+    Secondary Author:
+        Rishika Bimal Attodi (33%)
+        - upgrade the scaling and rotation function.
 
     Secondary Author:
         Chang Qi Xuan Celest (7%)

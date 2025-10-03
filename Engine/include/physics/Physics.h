@@ -2,15 +2,19 @@
     File: Physics.h
     Project: NocturnalStudio
 
-    This file contains ...
+    This file contains all the behaviour of our sprite when the correct input key is detected
 
     Primary Author:
-         Name (%)
-        -Brief
+         Ang Yu Xuan (60%)
+        - implement functions for movement, scaling and rotation for our sprite.
 
     Secondary Author:
-		 Name (%)
-        -Brief
+        Rishika Bimal Attodi (33%)
+        - upgrade the scaling and rotation function.
+
+    Secondary Author:
+        Chang Qi Xuan Celest (7%)
+        - Implemented stop movement on collision in update_sprite_movement.
 
     All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
 *------------------------------------------------------------------------------------------------*/
