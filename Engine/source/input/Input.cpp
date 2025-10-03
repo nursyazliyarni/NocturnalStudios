@@ -439,7 +439,16 @@ void Input::keyboard_input_callback(GLFWwindow* window, int key, int scancode, i
 					}
 					break;
 				}
-
+				case GLFW_KEY_B:
+				{
+					if (action == GLFW_PRESS) {
+						key_action = Input_action::toggle_collision;
+					}
+					else {
+						key_action = Input_action::no_action;
+					}
+					break;
+				}
 
 
 				}

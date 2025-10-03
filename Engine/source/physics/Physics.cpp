@@ -3,6 +3,9 @@
 #include "input/Input.h"
 #include "physics/Physics.h"
 #include "physics/AABB.h"
+#include "graphics/DebugDraw.h"
+
+static bool showCollision = false;
 
 int Physics::take_control(Renderer& render_obj, Input& input_obj) {
     int sel = -1; // NONE by default
@@ -27,6 +30,21 @@ int Physics::take_control(Renderer& render_obj, Input& input_obj) {
 
 
 void Physics::update_sprite_movement(Renderer& render_obj, Input& input_obj){
+    for (auto& [tuple_key, event_action, key_action] : input_obj.GET_keyboard()) {
+        if (key_action == Input_action::toggle_collision) {
+            static bool pressed = false;
+            if (!pressed) {
+                showCollision = !showCollision;  // flip flag
+                pressed = true;
+            }
+
+            else {
+                // reset when key is released
+                pressed = false;
+            }
+        }
+    }
+
 	int index = take_control(render_obj, input_obj);
 	auto& sprite_vector = render_obj.get_sprite_vector();
 
@@ -84,6 +102,13 @@ void Physics::update_sprite_movement(Renderer& render_obj, Input& input_obj){
 			sprite.y = oldY; 
 		}
 	}
+
+    if (showCollision) {
+        Debug::Drawer drawer;
+        for (auto& sprite : sprite_vector) {
+            drawer.DebugDrawRectangle(sprite.x, sprite.y, sprite.w, sprite.h, 0xFF00FF00);
+        }
+    }
 }
 
 static void reset_selection_transforms(
