@@ -5,7 +5,7 @@
     This file contains ...
 
     Primary Author:
-         
+         Nur Syazliyarni (100%)
         - Brief
 
     All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
