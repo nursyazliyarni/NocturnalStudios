@@ -62,10 +62,11 @@ public:
 
 	// TODO: Layer and Scene
 	struct Layer { 
+		// Entities should be grouped into layers
 
 	};
 	struct Scene {
-
+		// layers should be grouped into scenes
 	};
 
 private:
