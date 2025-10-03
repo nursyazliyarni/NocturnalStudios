@@ -1,3 +1,17 @@
+/*!------------------------------------------------------------------------------------------------
+	File: Vector.cpp
+	Project: NocturnalStudio
+
+	This file contains the implementation of a templated Vector class and its
+	specializations for 2D, 3D and 4D vectors.
+
+	Primary Author:
+		Lau Xiang Yang (100%)
+		- Created the Vector class template and its specializations.
+
+	All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
+
 #include "../include/math/Vector.h"
 #include "../include/math/Matrix.h"
 
