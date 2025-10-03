@@ -9,8 +9,8 @@
         -Brief
 
     Secondary Author:
-         Name (%)
-        -Brief
+         Nur Syazliyarni (20%)
+        -Added  the messaging system as part of game loop
 
     All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
 *------------------------------------------------------------------------------------------------*/

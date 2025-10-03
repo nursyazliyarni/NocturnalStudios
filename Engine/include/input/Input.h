@@ -9,8 +9,8 @@
 		-Brief
 
 	Secondary Author:
-		 Name (%)
-		-Brief
+		 Nur Syazliyarni (25%)
+		-Created the messaging system for input
 
 	All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
 *------------------------------------------------------------------------------------------------*/
