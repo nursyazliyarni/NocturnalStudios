@@ -2,10 +2,10 @@
     File: DebugDraw.h
     Project: NocturnalStudio
 
-    This file contains the declaratioon of debug draw rectangle and circle
+    This file contains ...
 
     Primary Author:
-         Name : Nur Syazliyarni (100%)
+         Name (%)
         -Brief
 
     Secondary Author:

@@ -6,7 +6,7 @@
 	messages to the console. It also maintains a history of recent log messages.
 
 	Primary Author:
-		Lau Xiang Yang
+		Lau Xiang Yang (100%)
 		- Created the Logger class template and its specializations.
 
 	All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.

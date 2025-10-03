@@ -1,19 +1,18 @@
 /*!------------------------------------------------------------------------------------------------
-    File: GameLoop.h
-    Project: NocturnalStudio
+	File: GameLoop.h
+	Project: NocturnalStudio
 
-    This file contains functions that calculates deltaTime which is needed for physics,
-    accumulated game time and FPS when the game is running.
+	This file contains ...
 
-    Primary Author:
-         Ang Yu Xuan (80%)
-        -Implement the function to calculate deltaTime, accumulated game time and FPS
+	Primary Author:
+		 Name (%)
+		-Brief
 
-    Secondary Author:
-         Nur Syazliyarni (20%)
-        -Added  the messaging system as part of game loop
+	Secondary Author:
+		 Name (%)
+		-Brief
 
-    All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+	All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
 *------------------------------------------------------------------------------------------------*/
 
 // delta, fixedStep, FPS

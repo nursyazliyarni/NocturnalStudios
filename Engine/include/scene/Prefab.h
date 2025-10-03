@@ -1,20 +1,3 @@
-/* !------------------------------------------------------------------------------------------------
-	File: Prefab.h
-	Project : NocturnalStudio
-
-	This file contains the class declarations for a prefab manager and loader
-
-	Primary Author :
-		Laycock Enhui Sarah (e.laycock@digipen.edu)
-		- Brief
-
-	Secondary Author :
-		Name(%)
-		- Brief
-
-All content(c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
-* ------------------------------------------------------------------------------------------------ */
-
 #include "./scene/GameObject.h"
 #include <map>
 

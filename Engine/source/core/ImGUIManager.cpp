@@ -8,7 +8,7 @@
 	for debugging and interaction within the engine.
 
 	Primary Author:
-		Lau Xiang Yang
+		Lau Xiang Yang (100%)
 		- Created the ImGuiManager class and its specializations.
 
 	Secondary Author:

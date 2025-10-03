@@ -2,10 +2,10 @@
     File: DebugDraw.cpp
     Project: NocturnalStudio
 
-    This file contains functions for debug draw rectangle and circle
+    This file contains ...
 
     Primary Author:
-         Name : Nur Syazliyarni (100%)
+         Name (%)
         -Brief
 
     Secondary Author:

@@ -2,10 +2,10 @@
 	File: Prefab.cpp
 	Project : NocturnalStudio
 
-	This file contains the class definitions for a prefab manager and loader
+	This file contains ...
 
 	Primary Author :
-		Laycock Enhui Sarah (e.laycock@digipen.edu) (100%)
+		Name(%)
 		- Brief
 
 	Secondary Author :

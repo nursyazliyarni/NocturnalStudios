@@ -1,17 +1,19 @@
-/*!------------------------------------------------------------------------------------------------
+/* !------------------------------------------------------------------------------------------------
 	File: Texture.cpp
-	Project: NocturnalStudio
+	Project : NocturnalStudio
 
-	This file contains functions that loads the images from assets folder to be used for rendering
-	our sprites.
+	This file contains ...
 
-	Primary Author:
-		 Ang Yu Xuan (100%)
-		-This file contains functions that loads the images from assets folder and free the textures when they 
-		are out of scope. Functions such as get image width and height is also available.
+	Primary Author :
+		Name(%)
+		- Brief
 
-	All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
-*------------------------------------------------------------------------------------------------*/
+	Secondary Author :
+		Name(%)
+		- Brief
+
+All content(c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+* ------------------------------------------------------------------------------------------------ */
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"

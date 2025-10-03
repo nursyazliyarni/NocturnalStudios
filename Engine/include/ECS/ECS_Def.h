@@ -9,7 +9,7 @@
 	implementation details exposed in ECS.h
 
 	Primary Author:
-		Lau Xiang Yang 
+		Lau Xiang Yang (100%)
 		- Created the file and implemented the ECS class member functions
 
 
