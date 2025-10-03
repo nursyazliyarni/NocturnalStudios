@@ -9,7 +9,7 @@
 	the ECS.
 
 	Primary Author:
-		Lau Xiang Yang (100%)
+		Lau Xiang Yang 
 		- Created the file and implemented the ECS component structs
 		
 

@@ -2,10 +2,10 @@
 	File: Component.cpp
 	Project : NocturnalStudio
 
-	This file contains ...
+	This file contains the definition of the component class and its' derived types various member functions
 
 	Primary Author :
-		Name(%)
+		Laycock Enhui Sarah (e.laycock@digipen.edu)
 		- Brief
 
 	Secondary Author :

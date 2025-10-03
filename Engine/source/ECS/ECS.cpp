@@ -5,7 +5,7 @@
 	This file contains the implementation of non templated member function of the ECS class.
 
 	Primary Author:
-		Lau Xiang Yang (100%)
+		Lau Xiang Yang 
 		- Created the file and implemented the ECS class member functions
 
 
@@ -133,9 +133,27 @@ std::vector<EntityID> const& ECS::getAllEntities() const {
 }
 
 bool ECS::removeComponent(EntityID entityID, ComponentID componentID) {
-	auto it = getComponentData(componentID);
-	assert(it != componentMetadata.end());
-	return removeComponent(entityID, it->componentID);
+    auto it = getComponentData(componentID);
+    assert(it != componentMetadata.end());
+
+    // Find the component pool for the given componentID
+    auto poolIt = componentPools.find(componentID);
+    if (poolIt == componentPools.end() || !poolIt->second) {
+        logger.error("ECS::removeComponent - Failed to find component pool");
+        return false;
+    }
+
+    // Remove the component from the pool
+    if (!poolIt->second->removeComponent(entityID)) {
+        logger.error("ECS::removeComponent - Failed to remove component from entity\nEntityID: " + std::to_string(entityID) + "\n");
+        return false;
+    }
+
+    // Update component metadata and entity metadata
+    it->size -= 1;
+    entityMetadataMap[entityID].componentIDs.erase(componentID);
+    reUpdateMetadata();
+    return true;
 }
 
 std::vector<ComponentData>::const_iterator ECS::getComponentData(ComponentID componentID) const {

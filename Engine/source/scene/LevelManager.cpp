@@ -2,10 +2,10 @@
 	File: LevelManager.cpp
 	Project : NocturnalStudio
 
-	This file contains ...
+	This file contains the base for a level manager and a entity pool, will be mopved to ECS
 
 	Primary Author :
-		Name(%)
+		Laycock Enhui Sarah (e.laycock@digipen.edu) (100%)
 		- Brief
 
 	Secondary Author :

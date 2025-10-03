@@ -2,10 +2,11 @@
     File: Config.h
     Project: NocturnalStudio
 
-    This file contains ...
+    This file contains the windowconfig struct and declaration
+    of function loadconfig
 
     Primary Author:
-         Name (%)
+         Nur Syazliyarni (100%)
         -Brief
 
     Secondary Author:

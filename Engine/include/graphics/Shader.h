@@ -2,15 +2,12 @@
 	File: Shader.h
 	Project: NocturnalStudio
 
-	This file contains ...
+	This file contains functions that loads, compiles and links vertex file and fragment file into 
+	a usable shader program to be used by renderer class for background image.
 
 	Primary Author:
-		 Name (%)
-		-Brief
-
-	Secondary Author:
-		 Name (%)
-		-Brief
+		 Ang Yu Xuan (100%)
+		-This file contains functions that loads, compiles and links vertex file.
 
 	All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
 *------------------------------------------------------------------------------------------------*/
