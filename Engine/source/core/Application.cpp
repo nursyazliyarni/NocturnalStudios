@@ -21,6 +21,7 @@
 #include "core/ImGUIManager.h"
 #include "./scene/Prefab.h"
 #include "physics/AABB.h"
+#include <crtdbg.h> //for memory leak detection
 
 namespace {
     constexpr float TWO_PI = 2.0f * glm::pi<float>();
@@ -28,7 +29,14 @@ namespace {
 	using Clock = std::chrono::high_resolution_clock;
 }
 
-Application::Application() = default;
+bool isDragging = false; //is a sprite being dragged
+int draggedSpriteIndex = -1; //index into sprite_vector
+Vector2D dragOffset(0.0f, 0.0f); //mouse offset from top-left of sprite
+
+//Application::Application() = default;
+Application::Application() {
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF); //enable memory leak check at program exit
+}
 
 int Application::run() {
     // 1) read JSON (with safe defaults)
@@ -131,17 +139,56 @@ int Application::run() {
         glfwGetCursorPos(m_window.handle(), &mouseX, &mouseY);
         Vector2D mousePos(static_cast<float>(mouseX), static_cast<float>(mouseY));
 
-		//hardcoded cupcake AABB (for test)
-        Vector2D cupcakePos(200.0f, 200.0f);
-        Vector2D cupcakeSize(64.0f, 64.0f);
+		//get sprite vector from renderer
+        auto& sprites = bg_render.get_sprite_vector();
 
-        if (glfwGetMouseButton(m_window.handle(), GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
-            if (isPointInAABB(mousePos, cupcakePos, cupcakeSize)) {
-                std::cout << "Cupcake clicked at (" << mouseX << ", " << mouseY << ")\n";
-                //drag logic to be implemented
+		if (!isDragging) { //only check for clicks if not already dragging
+            if(glfwGetMouseButton(m_window.handle(), GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS){
+                for (int i = 0; i < (int)sprites.size(); i++) {
+					const auto& spr = sprites[i];
+                    //convert normalized to pixel coords
+                    float x = spr.x * currW;
+                    float y = spr.y * currH;
+                    float w = spr.w * currW;
+                    float h = spr.h * currH;
+
+			        //AABB box
+                    Vector2D pos(x, y);
+                    Vector2D size(w, h);
+                    
+			        //check if mouse is in box and left click
+                    if (isPointInAABB(mousePos,pos,size)) {
+                        std::cout << "Clicked sprite with index: " << spr.idx << std::endl;
+						draggedSpriteIndex = i; //store index into sprite_vector
+						isDragging = true;
+						dragOffset = mousePos - Vector2D(x, y); //store offset from mouse to top-left of sprite
+                        break;
+
+                        //specific action for a sprite type (optional)
+                        //if (spr.idx == 2) { // cupcake
+                        //    std::cout << "Cupcake clicked at (" << mouseX << ", " << mouseY << ")\n";
+                        //}
+                    }
+                }
             }
         }
+        else {
+            if (glfwGetMouseButton(m_window.handle(), GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE) {
+                isDragging = false;
+                draggedSpriteIndex = -1;
+            }
+            else {
+                // update dragged sprite position
+                auto& spr = sprites[draggedSpriteIndex];
 
+                float newX = mousePos.x() - dragOffset.x();
+                float newY = mousePos.y() - dragOffset.y();
+
+                // convert back to normalized coordinates
+                spr.x = newX / currW;
+                spr.y = newY / currH;
+            }
+        }
 
         // handle resize: update viewport/projection if size changed (no callbacks)
 
