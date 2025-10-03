@@ -2,15 +2,22 @@
     File: Physics.h
     Project: NocturnalStudio
 
-    This file contains ...
+     This file contains the physics/runtime transform utilities for sprites:
+    - Selection routing (which sprite or ALL is under control)
+    - Per-frame movement integration (WASD) with simple AABB blocking
+    - Discrete scaling steps with min/max clamping and center-preserving resize
+    - Toggleable continuous rotation (J/K) plus reset (X)
 
     Primary Author:
-         Name (%)
-        -Brief
+		 Yu Xuan (%)
+		-Brief
 
-    Secondary Author:
-		 Name (%)
-        -Brief
+	Rishika Bimal Attodi:
+		-Added scaling and rotation systems (limits, toggles, reset), and selection handshake
+          with the input layer.
+
+
+		Celeste
 
     All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
 *------------------------------------------------------------------------------------------------*/
