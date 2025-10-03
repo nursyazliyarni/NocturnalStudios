@@ -20,6 +20,8 @@
 #include "math/Vector.h"
 #include "core/ImGUIManager.h"
 #include "./scene/Prefab.h"
+#include "physics/AABB.h"
+#include <crtdbg.h> //for memory leak detection
 
 namespace {
     constexpr float TWO_PI = 2.0f * glm::pi<float>();
@@ -27,9 +29,13 @@ namespace {
 	using Clock = std::chrono::high_resolution_clock;
 }
 
+bool isDragging = false; //is a sprite being dragged
+int draggedSpriteIndex = -1; //index into sprite_vector
+Vector2D dragOffset(0.0f, 0.0f); //mouse offset from top-left of sprite
+
 //Application::Application() = default;
 Application::Application() {
-    _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF); //enable memory leak check at program exit
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF); //enable memory leak check at program exit
 }
 
 int Application::run() {
@@ -46,7 +52,7 @@ int Application::run() {
 
     if (!m_window.create(wd)) return -1;
 
-    // Prime the window so there’s no white flash before the first real frame
+    // Prime the window so thereï¿½s no white flash before the first real frame
     glViewport(0, 0, wd.width, wd.height);
     glDisable(GL_DEPTH_TEST);
     glEnable(GL_BLEND);
@@ -95,9 +101,15 @@ int Application::run() {
     Game_Loop  game_loop_obj(m_window.handle());
     ImGuiManager imGuiManager(m_window, bg_render, txt_obj, game_input_obj, game_physics_obj);
     PrefabManager prefab_man;
-
-    // make Input’s scale array match the number of textures
+    // make Inputï¿½s scale array match the number of textures
     //game_input_obj.initSpriteScales(txt_obj.count());
+
+    //broadcasted messaging system for input keyboard and mouse
+    Messaging::MessageBus bus;
+    Messaging::InputSystemMessaging input(bus, m_window.handle());
+
+    // Register GameLoop as a listener
+    bus.Register(&game_loop_obj);
 
     //to demonstrate cloning and rendering of gameobjects, this willl be moved into levelmanager
     int catnum{};
@@ -121,6 +133,62 @@ int Application::run() {
         game_loop_obj.display_FPS(m_window.handle(), c.window.title, dt); // display FPS
         game_input_obj.update_mouse_pos(m_window.handle());
         game_input_obj.GET_mouse_delta();
+
+		//mouse click detection for sprites
+        double mouseX, mouseY;
+        glfwGetCursorPos(m_window.handle(), &mouseX, &mouseY);
+        Vector2D mousePos(static_cast<float>(mouseX), static_cast<float>(mouseY));
+
+		//get sprite vector from renderer
+        auto& sprites = bg_render.get_sprite_vector();
+
+		if (!isDragging) { //only check for clicks if not already dragging
+            if(glfwGetMouseButton(m_window.handle(), GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS){
+                for (int i = 0; i < (int)sprites.size(); i++) {
+					const auto& spr = sprites[i];
+                    //convert normalized to pixel coords
+                    float x = spr.x * currW;
+                    float y = spr.y * currH;
+                    float w = spr.w * currW;
+                    float h = spr.h * currH;
+
+			        //AABB box
+                    Vector2D pos(x, y);
+                    Vector2D size(w, h);
+                    
+			        //check if mouse is in box and left click
+                    if (isPointInAABB(mousePos,pos,size)) {
+                        std::cout << "Clicked sprite with index: " << spr.idx << std::endl;
+						draggedSpriteIndex = i; //store index into sprite_vector
+						isDragging = true;
+						dragOffset = mousePos - Vector2D(x, y); //store offset from mouse to top-left of sprite
+                        break;
+
+                        //specific action for a sprite type (optional)
+                        //if (spr.idx == 2) { // cupcake
+                        //    std::cout << "Cupcake clicked at (" << mouseX << ", " << mouseY << ")\n";
+                        //}
+                    }
+                }
+            }
+        }
+        else {
+            if (glfwGetMouseButton(m_window.handle(), GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE) {
+                isDragging = false;
+                draggedSpriteIndex = -1;
+            }
+            else {
+                // update dragged sprite position
+                auto& spr = sprites[draggedSpriteIndex];
+
+                float newX = mousePos.x() - dragOffset.x();
+                float newY = mousePos.y() - dragOffset.y();
+
+                // convert back to normalized coordinates
+                spr.x = newX / currW;
+                spr.y = newY / currH;
+            }
+        }
 
         // handle resize: update viewport/projection if size changed (no callbacks)
 

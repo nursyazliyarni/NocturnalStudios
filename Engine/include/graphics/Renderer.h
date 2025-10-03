@@ -58,7 +58,11 @@ public:
     //void drawViewportContent(int w, int h, GLuint texId, const char* name);  // overload 2
 
     void drawViewportShapes(int w, int h);
-
+    struct sprite {
+            int idx; 
+            float x, y, w, h;
+            float angle;
+        };
 
 private:
     GLuint VAO_arr = 0, VBO_arr = 0;
@@ -66,11 +70,7 @@ private:
     int    fboWidth = 0, fboHeight = 0;
 
     Shader render_shader;
-    struct sprite {
-        int idx; 
-        float x, y, w, h;
-        float angle;
-    };
+    
     std::vector<sprite> sprite_vector;
 
 public:
