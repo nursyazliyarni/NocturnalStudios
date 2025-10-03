@@ -19,9 +19,10 @@
 #include "graphics/Renderer.h"
 
 enum COMPONENT_TYPE {
-	NONE=0,
-	RENDERING =1,
-	COLLISION =2,
+    NONE = 0,
+    TRANSFORM = 1,
+	RENDERING =2,
+	COLLISION =3,
 	//PHYSICS=3,
 	LOGIC=4
 };
@@ -40,11 +41,14 @@ public:
     virtual std::unique_ptr<Component> Clone() const=0;
 	void SetOwner(GameObject* o);
 	virtual void Render(Renderer&);
+    virtual void Transform();
 	virtual bool Collide();
 	virtual void Logic();
     std::string ComponenetName() const;
     COMPONENT_TYPE Type() const;
 };
+
+//Transform Components
 
 
 //Renderer Components
@@ -106,6 +110,7 @@ public:
     std::unique_ptr<Component> Clone() const;
 	void Logic() override;
 };
+
 
 
 class ComponentFactory {

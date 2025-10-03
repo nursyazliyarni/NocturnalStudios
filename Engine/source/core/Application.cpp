@@ -81,7 +81,8 @@ int Application::run() {
     "assets/textures/drink.png",       // [1]
     "assets/textures/cupcake.png",       // [2]
     "assets/textures/placeholder.png",  // [3]
-    "assets/textures/placeholder2.png"  // [4]
+    "assets/textures/placeholder2.png",  // [4]
+    "assets/textures/placeholder3.png" //[5]
     };
 
     Texture  txt_obj(vs);
@@ -104,11 +105,12 @@ int Application::run() {
     while (!m_window.shouldClose()) {
         m_window.poll();
 
-        //spawns 3 cats
-        if (catnum<3)
+        //spawns 2500 cats
+        if (catnum<2500)
         {
             cats.push_back(std::make_unique<GameObject>(AlphaCat));
             cats[catnum]->Render(bg_render);
+            std::cout << "cat " << catnum + 1 << " Spawned\n";
             catnum++;
         }
 
