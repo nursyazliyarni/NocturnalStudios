@@ -2,11 +2,17 @@
 	File: Input.cpp
 	Project: NocturnalStudio
 
-	This file contains ...
+	This file contains functions for captures user keyboard input and mouse input which will be
+	used for later physics and logic.
 
 	Primary Author:
-		???
-		- Created...
+		 Ang Yu Xuan (75%)
+		-implement functions for captures user keyboard input and mouse input and the respective
+		callback functions. The callback functions will update the input action accordingly.
+
+	Secondary Author:
+		 Nur Syazliyarni (25%)
+		-Created the messaging system for input
 
 	All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
 *------------------------------------------------------------------------------------------------*/

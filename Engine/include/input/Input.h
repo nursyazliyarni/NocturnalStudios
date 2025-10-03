@@ -2,11 +2,13 @@
 	File: Input.h
 	Project: NocturnalStudio
 
-	This file contains ...
+	This file contains functions for captures user keyboard input and mouse input which will be
+	used for later physics and logic.
 
 	Primary Author:
-		 Name (%)
-		-Brief
+		 Ang Yu Xuan (75%)
+		-implement functions for captures user keyboard input and mouse input and the respective 
+		callback functions. The callback functions will update the input action accordingly.
 
 	Secondary Author:
 		 Nur Syazliyarni (25%)

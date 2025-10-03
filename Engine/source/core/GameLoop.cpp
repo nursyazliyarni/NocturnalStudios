@@ -2,11 +2,12 @@
     File: GameLoop.cpp
     Project: NocturnalStudio
 
-    This file contains ...
+    This file contains functions that calculates deltaTime which is needed for physics, 
+    accumulated game time and FPS when the game is running.
 
     Primary Author:
-         Name (%)
-        -Brief
+         Ang Yu Xuan (80%)
+        -Implement the function to calculate deltaTime, accumulated game time and FPS
 
     Secondary Author:
          Nur Syazliyarni (20%)
