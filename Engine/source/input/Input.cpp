@@ -5,14 +5,21 @@
 	This file contains the platform window wrapper: creation/destruction of a GLFW window,
 	OpenGL context setup (GLEW init), VSync control, event polling, buffer swap, and FPS-in-title helper.
 
+	used for later physics and logic.
 
 	Primary Author:
-		???
-		- Created...
+		 Ang Yu Xuan (55%)
+		-implement functions for captures user keyboard input and mouse input and the respective
+		callback functions. The callback functions will update the input action accordingly.
 
 	Secondary Author:
-		Rishika Bimal Attodi
-		- Implemented sprite selection/deselection and sprite rotation/scaling input handling.
+		 Nur Syazliyarni (15%)
+		-Created the messaging system for input
+
+	Secondary Author:
+		 Rishika Bimal Attodi  (35%)
+		-Added sprite selection/deselection logic and the scaling/rotation key handling,
+		plus per-sprite transform helpers (init/get pointers, rotation updates)
 
 	All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
 *------------------------------------------------------------------------------------------------*/

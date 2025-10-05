@@ -8,16 +8,21 @@
     - Register and query action states (movement, scaling, rotation, reset, toggle-collision)
     - Broadcast input via the MessageBus (Key/Mouse messages)
     - Manage per-sprite helpers for selection/deselection, scaling, and rotation
+	used for later physics and logic.
 
+		Primary Author:
+		 Ang Yu Xuan (55%)
+		-implement functions for captures user keyboard input and mouse input and the respective
+		callback functions. The callback functions will update the input action accordingly.
 
-	Primary Author:
-		 Yu Xuan (%)
-		-Brief
+	Secondary Author:
+		 Nur Syazliyarni (15%)
+		-Created the messaging system for input
 
-	Rishika Bimal Attodi:
-		- Added sprite selection/deselection logic and the scaling/rotation key handling,
-          plus per-sprite transform helpers (init/get pointers, rotation updates)
-
+	Secondary Author:
+		 Rishika Bimal Attodi  (35%)
+		-Added sprite selection/deselection logic and the scaling/rotation key handling,
+		plus per-sprite transform helpers (init/get pointers, rotation updates)
 
 	All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
 *------------------------------------------------------------------------------------------------*/
