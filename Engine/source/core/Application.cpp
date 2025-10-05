@@ -9,10 +9,18 @@
          
         - Brief
 
-    Secondary Author:
+    Primary Author:
         Rishika Bimal Attodi 
-        - - Implemented main loop scaffolding: window creation, OpenGL setup, 
+        - Implemented main loop scaffolding: window creation, OpenGL setup, 
         sprite batching
+
+    Secondary Author:
+        Yu Xuan
+        -  Background
+
+    Secondary Authod
+        Xiang Yang
+        - FBO
 
     Secondary Author:
 		Chang Qi Xuan Celest (35%)

@@ -9,6 +9,10 @@
         -  Implemented sprite init/draw (excluding background), per-sprite rotation & scaling, 
         and front/behind passes.
 
+        Secondary Author:
+         Lau Xiang Yang
+         - Implemented FBO
+
     All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
 *------------------------------------------------------------------------------------------------*/
 
