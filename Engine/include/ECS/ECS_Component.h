@@ -25,7 +25,12 @@
 //-------------------------- Add new ECS component type here --------------------------//
 
 struct Transform;
-struct Image;
+struct Renderer;
+struct ImageRenderer;
+struct CircleRenderer;
+struct RectRenderer;
+struct AABBCollider;
+struct AnimalBehavior;
 
 //-------------------------- ECS Component Definitions --------------------------//
 
@@ -49,13 +54,28 @@ struct Transform {
 	bool isVisible = true;
 };
 
-struct Image {
-	int textureID = -1; // Default to -1 (no texture)
+//renderer base struct
+struct Renderer {
 	float opacity = 1.0f; // Default to fully opaque
 	bool isVisible = true;
 
-	Vector4D colorTint = { 1.0f, 1.0f, 1.0f, 1.0f }; 
+	Vector4D colorTint = { 1.0f, 1.0f, 1.0f, 1.0f };
 	Vector4D colorToAdd = {};
 };
 
+struct ImageRenderer: public Renderer {
+	int textureID = -1; // Default to -1 (no texture)
+};
+struct CircleRenderer : public Renderer {
+	float radius{ 1.f };
+};
+struct RectRenderer : public Renderer {
+	float width{ 1.f }, height{ 1.f };
+};
+struct AABBCollider {
+	float bounding_box_size{ 1.f };
+};
+struct AnimalBehavior {
+	std::string sound{ "moo" };
+};
 #endif // COMPONENT_H

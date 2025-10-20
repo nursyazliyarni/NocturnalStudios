@@ -21,7 +21,11 @@ extern Logger logger;
 ECS::ECS() {
 	// Register all components here
 	registerComponent<Transform>();
-	registerComponent<Image>();
+	registerComponent<ImageRenderer>();
+	registerComponent<CircleRenderer>();
+	registerComponent<RectRenderer>();
+	registerComponent<AABBCollider>();
+	registerComponent<AnimalBehavior>();
 }
 
 EntityID ECS::createEntity(std::string name, EntityID entityID) {

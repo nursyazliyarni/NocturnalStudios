@@ -12,7 +12,7 @@
 	the game objects in the scene.
 
 	Primary Author:
-		Lau Xiang Yang (100%)
+		Lau Xiang Yang (100%) (141 lns as of 20/10/2025)
 		- Created the file and implemented the ECS class member functions
 		
 
@@ -40,30 +40,49 @@ class ECS {
 public:
 	ECS();
 
+	/**
+	 * ECS::createEntity()
+	 * 
+	 * 
+	 * 
+	 * \param name
+	 * \param entityID
+	 * \return 
+	 */
 	EntityID createEntity(std::string name = "", EntityID entityID = INVALID_ENTITY_ID);
+
 	EntityID cloneEntity(EntityID entityID);
+
 	bool deleteEntity(EntityID entityID);
 
 	std::string& getEntityName(EntityID entityID);
+
 	EntityID findEntityByName(const std::string& name) const;
+
 	std::vector<EntityID> const& getAllEntities() const;
 
 	template <typename T>
 	bool addComponent(EntityID entityID, T const& component);
+
 	template <typename T>
 	void registerComponent();
+
 	template <typename T>
 	bool hasComponent(EntityID entityID) const;
+
 	template <typename T>
 	bool removeComponent(EntityID entityID);
+
 	bool removeComponent(EntityID entityID, ComponentID componentID);
+
 	template <typename T>
 	T* getComponent(EntityID entityID);
 
 	// TODO: Layer and Scene
 	struct Layer { 
 		// Entities should be grouped into layers
-
+		using Layers = std::vector<EntityID>;
+		std::vector<Layers> layers{};
 	};
 	struct Scene {
 		// layers should be grouped into scenes
