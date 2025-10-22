@@ -59,7 +59,7 @@ struct Image {
 };
 
 struct AudioData {
-	struct Audio {
+	struct Individual {
 		unsigned resourceID;
 		std::string name;
 
@@ -79,7 +79,7 @@ struct AudioData {
 		} group = Group::SFX;
 	};
 
-	std::vector<Audio> audios;
+	std::vector<Individual> audios;
 	bool listener = false;
 };
 
