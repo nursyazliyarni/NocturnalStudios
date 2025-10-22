@@ -25,6 +25,8 @@
 #include <any>
 
 using ComponentID = std::size_t;
+using SceneID = std::size_t; //added by iwa
+using LayerID = std::size_t; //added by iwa
 using EntityID = std::size_t;
 using SystemID = std::size_t;
 
@@ -55,6 +57,9 @@ struct ViewData {
 	std::vector<ComponentID> componentIDs{};
 };
 
+/**
+ * this basically just ensures ids are unique
+ */
 class Family {
 private:
 	static std::size_t identifier() {
