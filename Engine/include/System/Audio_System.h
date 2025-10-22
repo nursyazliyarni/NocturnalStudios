@@ -2,6 +2,7 @@
 
 #include <string>
 #include <unordered_map>
+
 #include <../fmod/fmod.hpp>
 #include <../fmod/fmod_errors.h>
 
@@ -26,13 +27,12 @@ public:
 	void setSFXVolume(float volume);
 
 private:
-	FMOD::System* fmodSystem = nullptr;
+	FMOD_SYSTEM* fmodSystem{ nullptr };
 	std::unordered_map<std::string, FMOD_SOUND*> soundMap;
-	FMOD::Channel* bgmChannel{ nullptr };
+	FMOD_CHANNEL* bgmChannel{ nullptr };
 
 	float bgmVolume{ 1.0f };
 	float sfxVolume{ 1.0f };
 
 	void logFMODError(FMOD_RESULT result, const std::string& context);
-
 };

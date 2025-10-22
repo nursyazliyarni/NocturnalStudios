@@ -1,4 +1,3 @@
-
 // Add filepath here
 constexpr char DEFAULT_AUDIO_FILEPATH[] = "DefaultAudio";
 
@@ -9,17 +8,92 @@ constexpr char DEFAULT_AUDIO_FILEPATH[] = "DefaultAudio";
 #include "ECS/ECS.h"
 #include "resources/ResourceManager.h"
 #include "core/Logger.h"
+#include "System/Audio_System.h"
 
 extern Logger logger;
 
-ResourceManager::ResourceManager(ECS& ecs) : defaultAudio{ 0, "Default", DEFAULT_AUDIO_FILEPATH }, ecs{ ecs } {
+/**
+ * ResourceManager
+ *
+ * Constructs a ResourceManager which owns a reference to the project's ECS and
+ * an optional AudioSystem pointer.
+ *
+ * Parameters:
+ *  - ecs: Reference to the engine ECS. The ResourceManager uses this when
+ *         resource-related entities/components need to be created or queried.
+ *  - audioSystem: Optional pointer to an AudioSystem. If provided, the
+ *         ResourceManager forwards audio load requests to the AudioSystem so
+ *         FMOD resources are prepared.
+ *
+ * Side-effects:
+ *  - Initializes the builtin/default audio entry `defaultAudio`.
+ *  - (TODO) Intended to deserialize resource metadata (placeholder).
+ *
+ * Simple usage:
+ *  ECS ecs;
+ *  AudioSystem* audioSys = /* create or get AudioSystem * /;
+ *  ResourceManager rm(ecs, audioSys);
+ */
+ResourceManager::ResourceManager(ECS& ecs, AudioSystem* audioSystem) 
+	: defaultAudio{ 0, "Default", DEFAULT_AUDIO_FILEPATH }, ecs{ ecs }, audioSystem{ audioSystem } {
 	// Deserialize the asset meta data here (TODO)
 }
 
+/**
+ * ~ResourceManager
+ *
+ * Destructor. Intended to perform cleanup and serialize resource metadata.
+ *
+ * Side-effects:
+ *  - (TODO) Serialize asset metadata to disk if required.
+ *
+ * Simple usage:
+ *  // Automatic when ResourceManager goes out of scope or during engine shutdown.
+ */
 ResourceManager::~ResourceManager() {
 	// Serialize the asset meta data here (TODO)
 }
 
+/**
+ * setAudioSystem
+ *
+ * Assigns or replaces the AudioSystem instance used by the ResourceManager.
+ *
+ * Parameters:
+ *  - audioSystemPtr: pointer to the AudioSystem. May be nullptr to remove the
+ *    association.
+ *
+ * Side-effects:
+ *  - Future audio loads will be forwarded to the provided AudioSystem if not null.
+ *
+ * Simple usage:
+ *  ResourceManager rm(ecs);
+ *  rm.setAudioSystem(audioSys); // now audio loads inform the AudioSystem
+ */
+void ResourceManager::setAudioSystem(AudioSystem* audioSystemPtr) {
+	audioSystem = audioSystemPtr;
+}
+
+/**
+ * loadResources
+ *
+ * Searches the Resources directory (and subdirectories) for files of the
+ * type indicated by `resourceFilePath` and loads them. Currently supports
+ * "Audio" as a resourceFilePath value.
+ *
+ * Parameters:
+ *  - resourceFilePath: subdirectory under "Resources" to scan. If empty,
+ *    defaults to scanning "Resources".
+ *
+ * Behavior:
+ *  - Walks the directory tree under "Resources[/resourceFilePath]".
+ *  - For each file that has an extension and matches a supported resource
+ *    type, calls the appropriate loader (e.g., loadAudio).
+ *
+ * Simple usage:
+ *  rm.loadResources();           // scan Resources and load supported resource types
+ *  rm.loadResources("Audio");    // only scan Resources/Audio and load audio files
+ */
 void ResourceManager::loadResources(std::string const& resourceFilePath) {
 	std::cout << "Loading resources\n";
 
@@ -46,6 +120,37 @@ void ResourceManager::loadResources(std::string const& resourceFilePath) {
 	std::cout << "Finished loading resources\n" << std::endl;
 }
 
+/**
+ * loadAudio
+ *
+ * Loads an audio resource into the manager and (optionally) informs the
+ * AudioSystem to create the underlying FMOD sound.
+ *
+ * Parameters:
+ *  - name: human-readable key used to reference the audio (e.g., "BGM_Main").
+ *  - filePath: filesystem path to the audio file.
+ *  - id: optional ResourceID to assign. If set to NEW_RESOURCE, a new unique ID
+ *        is generated via getNewAssetID().
+ *
+ * Returns:
+ *  - Reference to the stored Audio instance.
+ *
+ * Behavior and side-effects:
+ *  - If an audio with the identical file path is already loaded, returns the
+ *    existing Audio.
+ *  - Inserts a new Audio into the internal `audios` map with the chosen ID.
+ *  - Logs the load operation via `logger`.
+ *  - If an AudioSystem is present, heuristically determines whether to stream
+ *    the file (large files treated as streamed looped music) and requests the
+ *    AudioSystem to load the FMOD sound.
+ *
+ * Simple usage:
+ *  // Let ResourceManager pick an ID:
+ *  Audio& a = rm.loadAudio("MainTheme", "Resources/Audio/MainTheme.mp3");
+ *
+ *  // Provide an explicit ID (e.g., when deserializing metadata):
+ *  Audio& a2 = rm.loadAudio("SFX_Hit", "Resources/Audio/hit.wav", 42);
+ */
 Audio& ResourceManager::loadAudio(const std::string& name, const std::string& filePath, ResourceID id) {
 	for (auto& [key, audio] : audios) {
 		if (std::filesystem::path{ audio.getFilePath() } == std::filesystem::path{ filePath }) {
@@ -57,9 +162,50 @@ Audio& ResourceManager::loadAudio(const std::string& name, const std::string& fi
 	audios.emplace(id, Audio{ id, name, filePath });
 
 	logger.log("Loaded Audio: " + name + " from " + filePath);
+
+	// Inform AudioSystem to load the underlying FMOD sound (if available)
+	if (audioSystem) {
+		bool stream = false;
+		bool loop = false;
+
+		// Heuristic: treat large files as music (stream + loop), small as SFX (sample, no loop).
+		try {
+			auto size = std::filesystem::file_size(filePath);
+			const std::uintmax_t STREAM_THRESHOLD = 1'000'000; // 1 MB
+			if (size > STREAM_THRESHOLD) {
+				stream = true;
+				loop = true;
+			}
+		}
+		catch (std::filesystem::filesystem_error const& e) {
+			// If we can't determine size, fall back to non-streaming SFX
+			logger.warning(std::string("ResourceManager::loadAudio - could not read file size: ") + e.what());
+		}
+
+		if (!audioSystem->loadSound(name, filePath, stream, loop)) {
+			logger.warning("AudioSystem failed to load sound: " + filePath);
+		}
+	}
+
 	return audios.at(id);
 }
 
+/**
+ * getAudio
+ *
+ * Retrieves a previously loaded Audio by its ResourceID.
+ *
+ * Parameters:
+ *  - id: the ResourceID to look up.
+ *
+ * Returns:
+ *  - Reference to the found Audio object.
+ *  - If no matching Audio exists, returns `defaultAudio` (and logs an error).
+ *
+ * Simple usage:
+ *  ResourceID id = /* previously obtained id * /;
+ *  Audio& a = rm.getAudio(id); // returns defaultAudio if id not found
+ */
 Audio& ResourceManager::getAudio(ResourceID id) {
 	auto found = audios.find(id);
 	if (found == audios.end()) {
@@ -69,6 +215,23 @@ Audio& ResourceManager::getAudio(ResourceID id) {
 	return found->second;
 }
 
+/**
+ * insertUsedID
+ *
+ * Marks a ResourceID as used in the ResourceManager's internal registry.
+ * This is useful when restoring resource metadata (deserialization) so the
+ * automatic ID allocator doesn't reissue IDs that are already present.
+ *
+ * Parameters:
+ *  - id: reference to the ResourceID to insert into the used set.
+ *
+ * Side-effects:
+ *  - Inserts `id` into `usedIDs`. If `id` already existed, a warning is logged.
+ *
+ * Simple usage:
+ *  ResourceID idFromFile = 100;
+ *  rm.insertUsedID(idFromFile); // prevents getNewAssetID() from returning 100
+ */
 void ResourceManager::insertUsedID(ResourceID& id) {
 	auto [it, success] = usedIDs.insert(id);
 
@@ -77,10 +240,38 @@ void ResourceManager::insertUsedID(ResourceID& id) {
 	}
 }
 
+/**
+ * getAudios
+ *
+ * Accessor that returns a mutable reference to the internal map of audios.
+ * Use this to iterate or manipulate audios directly (careful: mutating keys
+ * is undefined behavior; prefer ResourceManager operations).
+ *
+ * Returns:
+ *  - Reference to std::unordered_map<ResourceID, Audio>
+ *
+ * Simple usage:
+ *  auto& map = rm.getAudios();
+ *  for (auto& [id, audio] : map) {  // inspect audio  }
+ */
 std::unordered_map<ResourceID, Audio>& ResourceManager::getAudios() {
 	return audios;
 }
 
+/**
+ * getNewAssetID
+ *
+ * Allocates and returns a new ResourceID that is not present in `usedIDs`.
+ * The function advances `totalResourceID` until an unused value is found,
+ * inserts it into `usedIDs`, and returns it.
+ *
+ * Returns:
+ *  - A unique ResourceID for new resources.
+ *
+ * Simple usage:
+ *  ResourceID newId = rm.getNewAssetID();
+ *  // then use newId for newly-created resources
+ */
 ResourceID ResourceManager::getNewAssetID() {
 	while (usedIDs.find(totalResourceID) != usedIDs.end()) {
 		++totalResourceID;

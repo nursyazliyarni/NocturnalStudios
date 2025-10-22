@@ -12,6 +12,7 @@
 #include "Audio.h"
 #include "Font.h"
 
+class AudioSystem;
 class ECS;
 
 class ResourceManager {
@@ -23,7 +24,7 @@ public:
 		NONE
 	};
 
-	ResourceManager(ECS& ecs);
+	ResourceManager(ECS& ecs, AudioSystem* audioSystem = nullptr);
 	~ResourceManager();
 
 	ResourceManager(ResourceManager const& other) = delete;
@@ -52,9 +53,13 @@ public:
 	ResourceID getNewAssetID();
 	Audio defaultAudio;
 
+	void setAudioSystem(AudioSystem* audioSystem);
+
 private:
 	ECS& ecs;
 	std::unordered_map<ResourceID, Audio> audios;
+
+	AudioSystem* audioSystem{ nullptr };
 
 	ResourceID totalResourceID = 1;
 	std::unordered_set<ResourceID> usedIDs;
