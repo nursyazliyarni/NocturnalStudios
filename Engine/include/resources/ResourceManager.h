@@ -7,7 +7,8 @@
 #include <unordered_set>
 #include <concepts>
 
-#include "../include/resources/Audio.h"
+#include "resources/Resource.h"
+#include "ECS/ECS_Component.h"
 
 class ECS;
 
@@ -23,11 +24,87 @@ public:
 	ResourceManager(ECS& ecs);
 	~ResourceManager();
 
+	ResourceManager(ResourceManager const& other) = delete;
+	ResourceManager& operator=(ResourceManager const& other) = delete;
+	ResourceManager(ResourceManager&& other) = delete;
+	ResourceManager& operator=(ResourceManager&& other) = delete;
+
 	void loadResources(std::string const& resourceFilePath = "");
-	
-	Audio& loadAudio(const std::string& name, const std::string& filePath, );
-	Audio& getAudio();
+
+	Audio& loadAudio(const std::string& name, const std::string& filePath, ResourceID id = NEW_RESOURCE);
+	Audio& getAudio(ResourceID id);
+
+	void insertUsedID(ResourceID& id);
+	void load(ResourceID id);
+
+	std::unordered_map<ResourceID, Audio>& getAudios();
+
+	template <typename T>
+	ResourceID findResource(const std::string& ResourceName);
+
+	template <typename T>
+	void getResourceMetaData(ResourceType resourceType, ResourceID id, T callback);
+
+	template <typename T>
+	std::pair<std::string, std::string> getName(ResourceID id);
+
+	ResourceID getNewAssetID();
+	Audio defaultAudio;
+
+private:
+	ECS& ecs;
+	std::unordered_map<ResourceID, Audio> audios;
+
+	ResourceID totalResourceID = 1;
+	std::unordered_set<ResourceID> usedIDs;
 };
+
+template <typename T>
+ResourceID ResourceManager::findResource(const std::string& ResourceName) {
+	if constexpr (std::same_as<T, Audio>) {
+		auto it = std::find_if(audios.begin(), audios.end(), [&](std::pair<const ResourceID, Audio> const& pair) {
+			return pair.second.getKey() == ResourceName;
+		});
+
+		if (it == audios.end()) return NO_RESOURCE_ID;
+
+		return it->first;
+	}
+	else {
+		[]<bool flag = false>() {
+			static_assert(flag, "Unsupported resource type in findResource");
+		}();
+	}
+}
+
+template <typename T>
+void ResourceManager::getResourceMetaData(ResourceType resourceType, ResourceID id, T callback) {
+	switch (resourceType) {
+		using enum ResourceType;
+	case AUDIO:
+		callback(getAudio(id), getAudios());
+		break;
+
+	default:
+		break;
+	}
+}
+
+template <typename T>
+std::pair<std::string, std::string> ResourceManager::getName(ResourceID id) {
+	if constexpr (std::same_as<T, AudioData>) {
+		auto it = audios.find(id);
+		if (it == audios.end()) {
+			return { "Audio", "Default" };
+		}
+		return { "Audio",audios.at(id).getKey() };
+	}
+	else {
+		[]<bool flag = false>() {
+			static_assert(flag, "Template argument is not a Resource!");
+		}();
+	}
+}
 
 
 #endif // RESOURCEMANAGER_H
