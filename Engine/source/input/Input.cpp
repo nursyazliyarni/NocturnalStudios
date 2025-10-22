@@ -472,29 +472,42 @@ void Input::keyboard_input_callback(GLFWwindow* window, int key, int scancode, i
 					break;
 				}
 
+				//case GLFW_KEY_X:
+				//{
+				//	// Only allow reset when we have a valid selection (ALL or existing digit)
+				//	void* up = glfwGetWindowUserPointer(window);
+				//	Input* self = static_cast<Input*>(up);
+
+				//	bool hasSelection = false;
+				//	if (track_number == GLFW_KEY_0) {
+				//		hasSelection = (self && self->spriteCount > 0);
+				//	}
+				//	else if (track_number >= GLFW_KEY_1 && track_number <= GLFW_KEY_9) {
+				//		int digitSel = track_number - GLFW_KEY_0; // 1..9
+				//		hasSelection = (self && (size_t)digitSel <= self->spriteCount);
+				//	}
+
+				//	if (hasSelection && action == GLFW_PRESS) {
+				//		key_action = Input_action::reset_transform;
+				//	}
+				//	else {
+				//		key_action = Input_action::no_action;
+				//	}
+				//	break;
+				//}
+
 				case GLFW_KEY_X:
 				{
-					// Only allow reset when we have a valid selection (ALL or existing digit)
-					void* up = glfwGetWindowUserPointer(window);
-					Input* self = static_cast<Input*>(up);
-
-					bool hasSelection = false;
-					if (track_number == GLFW_KEY_0) {
-						hasSelection = (self && self->spriteCount > 0);
-					}
-					else if (track_number >= GLFW_KEY_1 && track_number <= GLFW_KEY_9) {
-						int digitSel = track_number - GLFW_KEY_0; // 1..9
-						hasSelection = (self && (size_t)digitSel <= self->spriteCount);
-					}
-
-					if (hasSelection && action == GLFW_PRESS) {
-						key_action = Input_action::reset_transform;
+					if (action == GLFW_PRESS) {
+						key_action = Input_action::reset_transform;  // trigger once
 					}
 					else {
-						key_action = Input_action::no_action;
+						key_action = Input_action::no_action;        // clear on release
 					}
 					break;
 				}
+
+
 				case GLFW_KEY_B:
 				{
 					if (action == GLFW_PRESS) {

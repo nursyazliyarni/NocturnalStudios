@@ -15,6 +15,8 @@ struct SpriteArchetype {
 	//float w{ 0.12f }, h{ 0.18f }; // default normalized size
 	float w{ 0.f }, h{ 0.f };   // set by JSON; 0.f means “not specified”
 	bool  draggable{ true };  // from JSON (items true, animals false)
+	bool rotatable = false;	
+	bool scalable = false;
 };
 
 
@@ -50,6 +52,11 @@ public:
 	template<typename F>
 	void forEachSprite(F&& fn) const {
 		for (const auto& kv : sprites) fn(kv.first, kv.second);
+	}
+
+	// Return reference to all sprite archetypes (used for prefab-driven rotation)
+	const std::unordered_map<std::string, SpriteArchetype>& getAllSprites() const {
+		return sprites;
 	}
 
 

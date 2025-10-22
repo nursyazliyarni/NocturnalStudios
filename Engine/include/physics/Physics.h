@@ -49,6 +49,11 @@ public:
     void update_sprite_rotation(Renderer& render_obj, Input& input_obj, double dt, int forcedSel);
 
 
+    void update_sprite_scaling(Renderer& render_obj, Input& input_obj, double dt, int spriteIndex, int sceneId);
+    static std::unordered_map<int, std::vector<float>> sceneScales;
+    static bool globalResetRequested;
+
 private:
+
 
 };

@@ -309,7 +309,8 @@ void Renderer::drawAllSprites(Texture& tex,
     bool behindPass,
     int viewportW, int viewportH)
 {
-    drawAllSprites(tex, frontIdxs, behindPass, /*scales*/ nullptr, /*rotations*/ nullptr, viewportW, viewportH);
+    drawAllSprites(tex, frontIdxs, behindPass, /*scales*/ nullptr, /*
+        ions*/ nullptr, viewportW, viewportH);
 }
 
 void Renderer::initAllSprites() {

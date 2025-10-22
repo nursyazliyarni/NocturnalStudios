@@ -56,6 +56,7 @@
 #include <unordered_set>
 
 #include <cmath>
+#include "physics/Physics.h"
 
 
 namespace {
@@ -66,6 +67,15 @@ namespace {
 
 static inline float clamp01f(float v) { return v < 0.f ? 0.f : (v > 1.f ? 1.f : v); }
 
+Application::Application() {
+    // Seed random generator once at startup for random spawn
+    srand(static_cast<unsigned>(time(nullptr)));
+
+#ifdef _DEBUG
+    // Enable memory leak detection in debug builds
+    _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+#endif
+}
 
 static std::string FindFileUpwards(const std::string& rel) {
     namespace fs = std::filesystem;
@@ -158,9 +168,9 @@ int duplicateIndex = -1; //where clone is in the vector
 Vector2D dragOffset(0.0f, 0.0f); //mouse offset from top-left of sprite
 
 //Application::Application() = default;
-Application::Application() {
-    _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF); //enable memory leak check at program exit
-}
+//Application::Application() {
+//    _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF); //enable memory leak check at program exit
+//}
 
 int Application::run() {
     // 1) read JSON (with safe defaults)
@@ -261,6 +271,21 @@ int Application::run() {
     PrefabManager prefab_man;  // create here so switchScene can use it
     prefab_man.loadSpriteArchetypes("assets/prefabs/prefabSprites.json", gTexIndexByTag);
 
+    for (auto& kv : prefab_man.getAllSprites()) {
+        const std::string& prefabName = kv.first;   // e.g. "Food", "Toy", etc.
+        SpriteArchetype& arch = const_cast<SpriteArchetype&>(kv.second);  // make modifiable copy
+        //auto it = gTexIndexByTag.find(prefabName);
+
+        std::string lowerName = prefabName;
+        std::transform(lowerName.begin(), lowerName.end(), lowerName.begin(), ::tolower);
+        auto it = gTexIndexByTag.find(lowerName);
+
+
+        if (it != gTexIndexByTag.end()) {
+            arch.texId = static_cast<int>(it->second);
+        }
+    }
+
 
     //build a set of draggable texture IDs (from prefab)
     std::unordered_set<int> draggableTexIds;
@@ -271,6 +296,21 @@ int Application::run() {
     }
 
 
+    // build a set of rotatable texture IDs (from prefab)
+    std::unordered_set<int> rotatableTexIds;
+    {
+        prefab_man.forEachSprite([&](const std::string&, const SpriteArchetype& a) {
+            if (a.rotatable) rotatableTexIds.insert(a.texId);
+            });
+    }
+
+    // build a set of scalable texture IDs (from prefab)
+    std::unordered_set<int> scalableTexIds;
+    {
+        prefab_man.forEachSprite([&](const std::string&, const SpriteArchetype& a) {
+            if (a.scalable) scalableTexIds.insert(a.texId);
+            });
+    }
 
 
     //  keep aspect if only one dimension is provided (w or h)
@@ -353,96 +393,54 @@ int Application::run() {
 
 
 
-        ////  EXTRA FOOD SPAWN (deterministic "random-ish", no <random>)
-        //if (sceneId != 0) {
-        //    auto itFood = std::find_if(gZoo.items.begin(), gZoo.items.end(),
-        //        [](const ItemDef& d) { return d.name == "food"; });
 
-        //    if (itFood != gZoo.items.end()) {
-        //        auto fs = sc->itemSpawns.find("food"); // guard: scene has a 'food' rect
-        //        if (fs != sc->itemSpawns.end()) {
-        //            const auto& r = fs->second; // [x,y,w,h] area where food can appear
-        //            float rx = r[0], ry = r[1], rw = r[2], rh = r[3];
-
-        //            // prefab size override if present
-        //            float fw = rw, fh = rh;
-        //            if (const auto* arch = prefab_man.getSprite("Food")) {
-        //                if (arch->w > 0.f) fw = arch->w;
-        //                if (arch->h > 0.f) fh = arch->h;
-        //            }
-
-        //            auto clamp01 = [](float v) { return std::clamp(v, 0.0f, 1.0f); };
-        //            int foodTex = static_cast<int>(gTexIndexByTag.at("food"));
-
-        //            // tiny hash -> [0,1) using only sinf/floorf (deterministic)
-        //            auto hash01 = [](int x) -> float {
-        //                float s = std::sinf(x * 12.9898f) * 43758.5453f;
-        //                return s - std::floor(s);
-        //                };
-
-        //            const int copies = 6;
-        //            const int base = sceneId * 10007;
-
-        //            for (int i = 0; i < copies; ++i) {
-        //                float u = hash01(base + i * 2 + 1);
-        //                float v = hash01(base + i * 2 + 2);
-
-        //                // primary placement: keep whole sprite within rect
-        //                float availW = rw - fw;
-        //                float availH = rh - fh;
-
-        //                float px, py;
-        //                if (availW > 0.0f || availH > 0.0f) {
-        //                    px = clamp01(rx + std::max(0.0f, availW) * u);
-        //                    py = clamp01(ry + std::max(0.0f, availH) * v);
-        //                }
-        //                else {
-        //                    // fallback jitter when rect == sprite size (or smaller)
-        //                    float jx = (u - 0.5f) * fw * 0.6f;
-        //                    float jy = (v - 0.5f) * fh * 0.6f;
-        //                    px = clamp01(rx + jx);
-        //                    py = clamp01(ry + jy);
-        //                }
-
-        //                sprites.push_back({ foodTex, px, py, fw, fh, 0.0f });
-        //            }
-        //        }
-        //    }
-        //}
-        ////  END EXTRA FOOD SPAWN im ded
-
-
-        //  EXTRA FOOD SPAWN ACROSS THE VIEWPORT (deterministic; no <random>)
+    // === RANDOM FOOD SPAWN (size from JSON item_spawns["food"]) ===
         {
             int foodTex = static_cast<int>(gTexIndexByTag.at("food"));
 
-            float fw = 0.15f, fh = 0.22f;
-            bool wFromPrefab = false, hFromPrefab = false;
-            if (const auto* arch = prefab_man.getSprite("Food")) {
-                if (arch->w > 0.f) { fw = arch->w; wFromPrefab = true; }
-                if (arch->h > 0.f) { fh = arch->h; hFromPrefab = true; }
-            }
+            // find this scene's "food" item spawn box
+            auto it = sc->itemSpawns.find("food");
+            if (it != sc->itemSpawns.end()) {
+                const auto& rect = it->second; // [x, y, w, h]
+                /*float baseW = rect[2];
+                float baseH = rect[3];*/
 
-            // keep aspect if only one side provided by prefab
-            if (wFromPrefab && !hFromPrefab) fh = 0.f;
-            if (hFromPrefab && !wFromPrefab) fw = 0.f;
-            fillAspectFromTex(fw, fh, foodTex);
+                float baseW = 0.f, baseH = 0.f;
+                if (const auto* arch = prefab_man.getSprite("Food")) {
+                    baseW = arch->w;
+                    baseH = arch->h;
+                }
 
-            auto hash01 = [](int x)->float { float s = std::sinf(x * 12.9898f) * 43758.5453f; return s - std::floor(s); };
-            auto clampRange = [](float v, float lo, float hi) { return std::max(lo, std::min(v, hi)); };
 
-            const int copies = 8;
-            const int base = sceneId * 10007 + 42;
+                const int copies = 8; // how many random cupcakes to spawn
+                for (int i = 0; i < copies; ++i) {
+                    float px = static_cast<float>(rand()) / RAND_MAX * (1.0f - baseW);
+                    float py = static_cast<float>(rand()) / RAND_MAX * (1.0f - baseH);
 
-            for (int i = 0; i < copies; ++i) {
-                float u = hash01(base + i * 2 + 1);
-                float v = hash01(base + i * 2 + 2);
-                float px = clampRange(u * (1.0f - fw), 0.0f, 1.0f - fw);
-                float py = clampRange(v * (1.0f - fh), 0.0f, 1.0f - fh);
-                sprites.push_back({ foodTex, px, py, fw, fh, 0.0f });
+                    bg_render.get_sprite_vector().push_back({ foodTex, px, py, baseW, baseH, 0.0f });
+                }
             }
         }
+        // === END RANDOM FOOD SPAWN ===
 
+
+        // --- Reapply saved per-scene scales (if any) ---
+        auto itScale = Physics::sceneScales.find(sceneId);
+        if (itScale != Physics::sceneScales.end()) {
+            const auto& scales = itScale->second;
+            auto& sprites = bg_render.get_sprite_vector();
+            for (size_t i = 0; i < sprites.size() && i < scales.size(); ++i) {
+                float s = scales[i];
+                if (s != 1.0f) {
+                    float cx = sprites[i].x + sprites[i].w * 0.5f;
+                    float cy = sprites[i].y + sprites[i].h * 0.5f;
+                    sprites[i].w *= s;
+                    sprites[i].h *= s;
+                    sprites[i].x = cx - sprites[i].w * 0.5f;
+                    sprites[i].y = cy - sprites[i].h * 0.5f;
+                }
+            }
+        }
 
 
 
@@ -504,108 +502,6 @@ int Application::run() {
         game_input_obj.update_mouse_pos(m_window.handle());
         game_input_obj.GET_mouse_delta();
 
-
-        //---------------------DRAG AND DROP---------------------------
-        //double mouseX, mouseY;
-        //glfwGetCursorPos(m_window.handle(), &mouseX, &mouseY);
-        //Vector2D mousePos(static_cast<float>(mouseX), static_cast<float>(mouseY));
-
-        //auto& sprites = bg_render.get_sprite_vector();
-        //std::vector<int> frontIdxs; //indices to draw on top
-
-        //if (!isDragging) {
-        //    if (glfwGetMouseButton(m_window.handle(), GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
-        //        for (int i = 0; i < (int)sprites.size(); i++) {
-        //            // in each scene: sprites[0] is the animal, sprites[1..3] are items (drink/food/toy)
-        //            //if (i < 1 || i > 3) continue; // only the three items are draggable
-        //            if (!draggableTexIds.count(sprites[i].idx)) continue; // prefab-driven draggability
-        //            const auto& spr = sprites[i];
-
-        //            float x = spr.x * currW;
-        //            float y = spr.y * currH;
-        //            float w = spr.w * currW;
-        //            float h = spr.h * currH;
-
-        //            if (isPointInAABB(mousePos, { x, y }, { w, h })) {
-        //                //create duplicate and bring it to front
-        //                sprites.push_back(spr);
-        //                duplicateIndex = (int)sprites.size() - 1;
-        //                draggedSpriteIndex = i;
-        //                isDragging = true;
-        //                dragOffset = mousePos - Vector2D(x, y);
-
-        //                frontIdxs.push_back(sprites[duplicateIndex].idx); //ensure duplicate is drawn on top
-        //                break;
-        //            }
-        //        }
-        //    }
-        //}
-        //else { //isDragging
-        //    if (glfwGetMouseButton(m_window.handle(), GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE) {
-        //        if (duplicateIndex >= 0 && duplicateIndex < (int)sprites.size()) {
-        //            auto& dup = sprites[duplicateIndex];
-        //            frontIdxs.push_back(sprites[duplicateIndex].idx);
-
-        //            //check drop target
-        //            for (int i = 0; i < (int)sprites.size(); ++i) {
-        //                if (!draggableTexIds.count(sprites[i].idx)) continue; // prefab-driven draggability
-        //                auto& target = sprites[i];
-        //                //target is a cat
-        //                                   // snap test: drop onto the ANIMAL (sprites[0])
-        //                if (!sprites.empty()) {
-        //                    auto& animal = sprites[0];
-        //                    float tx = animal.x * currW;
-        //                    float ty = animal.y * currH;
-        //                    float tw = animal.w * currW;
-        //                    float th = animal.h * currH;
-
-        //                    if (isPointInAABB(Vector2D(dup.x * currW, dup.y * currH), { tx, ty }, { tw, th })) {
-        //                        // if the current animal has a "_happy" variant, swap it
-        //                        // find scene by matching background slot
-        //                        const SceneDef* sc = nullptr;
-        //                        // we can deduce scene by checking current bg slot vs known tags, but simpler:
-        //                        // check all scenes for animal.id == this sprite's "animal"
-        //                        // here we infer from the current gCurrentBgTexSlot in ImGui pass (background)
-        //                        // instead, use the 1st sprite texture tag to find the animal name
-        //                        // we don't have a reverse map -> keep it simple: try all scenes for a matching "animal" sprite index
-        //                        for (auto& s : gZoo.scenes) {
-        //                            size_t aniIdx = gTexIndexByTag[s.animal];
-        //                            if ((int)aniIdx == animal.idx) { sc = &s; break; }
-        //                        }
-        //                        if (sc && !sc->happy.empty()) {
-        //                            animal.idx = (int)gTexIndexByTag[sc->animal + "_happy"];
-        //                        }
-        //                    }
-        //                }
-
-        //            }
-
-        //            // remove duplicate
-        //            sprites.erase(sprites.begin() + duplicateIndex);
-        //        }
-
-        //        isDragging = false;
-        //        draggedSpriteIndex = -1;
-        //        duplicateIndex = -1;
-        //        frontIdxs.clear();
-        //    }
-        //    else {
-        //        // move duplicate with mouse
-        //        auto& spr = sprites[duplicateIndex];
-        //        float newX = mousePos.x() - dragOffset.x();
-        //        float newY = mousePos.y() - dragOffset.y();
-        //        spr.x = newX / currW;
-        //        spr.y = newY / currH;
-
-        //        frontIdxs.clear();
-        //        frontIdxs.push_back(spr.idx); // always draw duplicate on top
-        //    }
-        //}
-
-        // draw sprites: first behind pass (everything except front), then front pass
-        //bg_render.drawAllSprites(txt_obj, frontIdxs, true, currW, currH);   // behind pass
-        //bg_render.drawAllSprites(txt_obj, frontIdxs, false, currW, currH);  // front pass
-        //---------------------END DRAG AND DROP---------------------------
 
         // handle resize: update viewport/projection if size changed (no callbacks)
 
@@ -753,42 +649,63 @@ int Application::run() {
                 }
             }
 
-            // Always hand the list to ImGuiManager each frame (even if empty)
-            imGuiManager.setFrontSpriteIdxs(frontIdxs);
 
-            // time-based rotation on the hovered sprite (J/K toggles)
-            /*game_physics_obj.update_sprite_rotation(bg_render, game_input_obj, dt, hoveredIndex);*/
-            // time-based rotation on the hovered sprite (J/K toggles)
+            //  ROTATION: prefab-driven (rotatable=true in prefabSprites.json) 
+            {
+                auto& sprites = bg_render.get_sprite_vector();
+
+                // Loop through every sprite in the scene
+                for (int i = 0; i < (int)sprites.size(); ++i) {
+                    // If this sprite’s texture is marked rotatable in prefab, rotate it
+                    if (rotatableTexIds.count(sprites[i].idx)) {
+                        game_physics_obj.update_sprite_rotation(bg_render, game_input_obj, dt, i);
+                    }
+                }
+            }
+            //  END ROTATION 
 
 
-           // === ROTATION: toy-only (no hover) ===
+            //  SCALING: prefab-driven (scalable=true in prefabSprites.json)
+            /*{
+                auto& sprites = bg_render.get_sprite_vector();
+                for (int i = 0; i < (int)sprites.size(); ++i) {
+                    if (scalableTexIds.count(sprites[i].idx)) {
+                        game_physics_obj.update_sprite_scale(bg_render, game_input_obj, dt, i);
+                    }
+                }
+            }*/
+            //  END SCALING
 
-// Resolve the TOY texture id once (safe if tag is missing) RISHIKA
-            static int toyTexId = [] {
-                auto it = gTexIndexByTag.find("toy");     // if your JSON uses "ball", change to "ball"
-                return (it != gTexIndexByTag.end()) ? (int)it->second : -1;
-                }();
+            // === SCALING: prefab-driven (scalable=true in prefabSprites.json) ===
+            {
+                static int currentSceneId = 0;
 
-            // Find the current toy *sprite index* in the renderer’s sprite list
-            int toySpriteIndex = -1;
-            if (toyTexId >= 0) {
-                const auto& sprites = bg_render.get_sprite_vector();
-                for (int i = (int)sprites.size() - 1; i >= 0; --i) {
-                    if (sprites[i].idx == toyTexId) {     // this sprite uses the toy texture
-                        toySpriteIndex = i;
+                // Detect what scene we’re in (based on background texture ID)
+                for (auto& s : gZoo.scenes) {
+                    if (gTexIndexByTag[s.animal + "_bg"] == gCurrentBgTexSlot) {
+                        currentSceneId = s.id;
                         break;
+                    }
+                }
+
+                auto& sprites = bg_render.get_sprite_vector();
+                for (int i = 0; i < (int)sprites.size(); ++i) {
+                    if (scalableTexIds.count(sprites[i].idx)) {
+                        game_physics_obj.update_sprite_scaling(bg_render, game_input_obj, dt, i, currentSceneId);
                     }
                 }
             }
 
-            // Call rotation update with our forced selection (only the toy rotates)
-            game_physics_obj.update_sprite_rotation(bg_render, game_input_obj, dt, toySpriteIndex);
+            // === END SCALING ===
 
+           
+            imGuiManager.setFrontSpriteIdxs(frontIdxs);
 
+         
+     
 
         }
 
-        // === END DRAG & DROP ===
 
 
 

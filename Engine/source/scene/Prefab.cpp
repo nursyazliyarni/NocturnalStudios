@@ -148,6 +148,9 @@ bool PrefabManager::loadSpriteArchetypes(
 		if (node.HasMember("w") && node["w"].IsNumber()) arch.w = node["w"].GetFloat();
 		if (node.HasMember("h") && node["h"].IsNumber()) arch.h = node["h"].GetFloat();
 		if (node.HasMember("draggable") && node["draggable"].IsBool()) arch.draggable = node["draggable"].GetBool();
+		if (node.HasMember("rotatable") && node["rotatable"].IsBool()) arch.rotatable = node["rotatable"].GetBool();
+		if (node.HasMember("scalable") && node["scalable"].IsBool()) arch.scalable = node["scalable"].GetBool();
+
 
 		sprites[prefabName] = arch;
 
@@ -155,9 +158,16 @@ bool PrefabManager::loadSpriteArchetypes(
 		{
 			std::stringstream ss;
 			ss << "Prefab '" << prefabName << "' -> tag '" << tag << "' (texId=" << arch.texId
-				<< "), w=" << arch.w << ", h=" << arch.h << ", draggable=" << (arch.draggable ? "true" : "false");
+				<< "), w=" << arch.w << ", h=" << arch.h
+				<< ", draggable=" << (arch.draggable ? "true" : "false")
+				<< ", rotatable=" << (arch.rotatable ? "true" : "false")
+				<< ", scalable=" << (arch.scalable ? "true" : "false");
+
 			logger.log(ss.str());
 		}
+
+		logger.log("Prefab archetype data stored successfully for " + prefabName);
+
 	}
 
 	return true;
