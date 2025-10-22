@@ -98,7 +98,7 @@ void ResourceManager::getResourceMetaData(ResourceType resourceType, ResourceID 
 
 template <typename T>
 std::pair<std::string, std::string> ResourceManager::getName(ResourceID id) {
-	if constexpr (std::same_as<T, AudioData>) {
+	if constexpr (std::same_as<T, Audio>) {
 		auto it = audios.find(id);
 		if (it == audios.end()) {
 			return { "Audio", "Default" };
