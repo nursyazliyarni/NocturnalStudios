@@ -38,12 +38,15 @@ public:
 	ImGuiManager(Window& window, Renderer& renderer, Texture& tex, Input& input, Physics& physics);
 	~ImGuiManager();
 
+	ImVec2 getViewportImagePos()  const { return viewportImgPos; }
+	ImVec2 getViewportImageSize() const { return viewportImgSize; }
+
 	void updateDeltaTime(double& dt);
 	void getDeltaTime(double& dt) const;
 	void updateWindowTopLeft(const ImVec2& topLeft);
 	void updateWindowBottomRight(const ImVec2& bottomRight);
 	void setSystemTimings(double imGuiTime, double input);
-	
+
 	// temp setter for render time since renderer is called in showViewportWindowUI
 	void setRenderTime(double time);
 	void setPhysicTime(double time);
@@ -64,7 +67,14 @@ public:
 	void showEntityListUI(/* An enum of entityType type, Maybe a reference to someArrayOrVectorType entityList */);
 	void showTransformUI(/* A reference to a vector of objects objectList */);
 
+	void setFrontSpriteIdxs(const std::vector<int>& v) { frontIdxs = v; }
+
+
 private:
+	ImVec2        viewportImgPos{ 0.f, 0.f }; // top-left of the displayed Image(...)
+	ImVec2        viewportImgSize{ 0.f, 0.f }; // size of the displayed Image(...)
+
+
 	Window& mainWindow;
 	Renderer& renderer;
 	Texture& texture;
@@ -83,6 +93,9 @@ private:
 
 
 	unsigned int selectedEntityType;
+
+	std::vector<int> frontIdxs;
+
 };
 
 

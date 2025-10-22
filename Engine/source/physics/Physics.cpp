@@ -319,84 +319,64 @@ void Physics::update_sprite_scaling(Renderer& render_obj, Input& input_obj)
     logger.log(s.str());
 }
 
-void Physics::update_sprite_rotation(Renderer& render_obj, Input& input_obj)
+
+
+
+
+
+void Physics::update_sprite_rotation(Renderer& render_obj, Input& input_obj, double dt, int forcedSel)
 {
-    int sel = take_control(render_obj, input_obj); // -1 NONE, -2 ALL, 0..N-1
     auto& sprites = render_obj.get_sprite_vector();
-    size_t n = sprites.size();
+    const size_t n = sprites.size();
     if (n == 0) return;
 
-    // persistent per-sprite rotation toggles
+    // which sprite do we rotate? (hovered index provided by the app)
+    int sel = (forcedSel >= 0 && (size_t)forcedSel < n) ? forcedSel : -1;
+
+    // persistent per-sprite toggles (same lifetime as process)
     static std::vector<bool> cw, ccw;
     if (cw.size() != n || ccw.size() != n) {
         cw.assign(n, false);
         ccw.assign(n, false);
     }
 
-    // cache originals once (position, size, angle)
-    static std::vector<float> ox, oy, ow, oh, oang;
-    if (ox.size() != n) {
-        ox.resize(n); oy.resize(n); ow.resize(n); oh.resize(n); oang.resize(n);
-        for (size_t i = 0; i < n; ++i) {
-            const auto& s = sprites[i];
-            ox[i] = s.x; oy[i] = s.y; ow[i] = s.w; oh[i] = s.h; oang[i] = s.angle;
-        }
-    }
-
-    // read keys this frame
+    // edge-detect J/K
     auto& keys = input_obj.GET_keyboard();
-    bool nowCW = false, nowCCW = false, doReset = false;
+    bool nowCW = false, nowCCW = false;
     for (size_t i = 0; i < keys.size(); ++i) {
         Input_action a = std::get<2>(keys[i]);
-        if (a == Input_action::rotate_clockwise)     nowCW = true;
-        if (a == Input_action::rotate_anticlockwise) nowCCW = true;
-        if (a == Input_action::reset_transform)      doReset = true;
+        if (a == Input_action::rotate_clockwise)     nowCW = true; // J
+        if (a == Input_action::rotate_anticlockwise) nowCCW = true; // K
     }
-
-    // reset (X)
-    if (doReset) {
-        reset_selection_transforms(render_obj, sel, cw, ccw, ox, oy, ow, oh, oang);
-        // (don’t early-return; allow J/K edges to be seen this frame too)
-    }
-
-    // J/K edge detection
     static bool prevCW = false, prevCCW = false;
 
-    if (sel == -2) {
-        // ALL: press J or K again to stop all
-        bool allCW = (n > 0), allCCW = (n > 0);
-        for (size_t i = 0; i < n; ++i) {
-            allCW &= (cw[i] && !ccw[i]);
-            allCCW &= (ccw[i] && !cw[i]);
-        }
+    if (sel >= 0) {
+        // J toggles CW; K toggles CCW. Press same key again to stop. Switching keys flips direction.
         if (nowCW && !prevCW) {
-            if (allCW) { std::fill(cw.begin(), cw.end(), false); std::fill(ccw.begin(), ccw.end(), false); }
-            else { std::fill(cw.begin(), cw.end(), true); std::fill(ccw.begin(), ccw.end(), false); }
+            bool on = !cw[(size_t)sel];
+            cw[(size_t)sel] = on;
+            if (on) ccw[(size_t)sel] = false;
         }
         if (nowCCW && !prevCCW) {
-            if (allCCW) { std::fill(cw.begin(), cw.end(), false); std::fill(ccw.begin(), ccw.end(), false); }
-            else { std::fill(ccw.begin(), ccw.end(), true); std::fill(cw.begin(), cw.end(), false); }
+            bool on = !ccw[(size_t)sel];
+            ccw[(size_t)sel] = on;
+            if (on) cw[(size_t)sel] = false;
         }
     }
-    else if (sel >= 0 && (size_t)sel < n) {
-        // SINGLE: toggle only that sprite
-        if (nowCW && !prevCW) { bool on = !cw[(size_t)sel];  cw[(size_t)sel] = on; if (on) ccw[(size_t)sel] = false; }
-        if (nowCCW && !prevCCW) { bool on = !ccw[(size_t)sel]; ccw[(size_t)sel] = on; if (on) cw[(size_t)sel] = false; }
-    }
-    // NONE: don’t change toggles (keys locked)
 
     prevCW = nowCW;
     prevCCW = nowCCW;
 
-    // apply rotation
-    const float step = 0.1f;
-    for (size_t i = 0; i < n; ++i) {
-        if (cw[i])  sprites[i].angle -= step;
-        if (ccw[i]) sprites[i].angle += step;
+    // rotate by time (deg/sec)
+    constexpr float ROT_DEG_PER_SEC = 180.0f;
+    const float step = ROT_DEG_PER_SEC * static_cast<float>(dt);
 
-        if (sprites[i].angle >= 360.0f) sprites[i].angle -= 360.0f;
-        else if (sprites[i].angle < 0.0f) sprites[i].angle += 360.0f;
+    for (size_t i = 0; i < n; ++i) {
+        if (cw[i])  sprites[i].angle -= step;   // clockwise
+        if (ccw[i]) sprites[i].angle += step;   // counter-clockwise
+
+        // wrap to [0,360)
+        sprites[i].angle = std::fmod(sprites[i].angle, 360.0f);
+        if (sprites[i].angle < 0.0f) sprites[i].angle += 360.0f;
     }
 }
-
-
