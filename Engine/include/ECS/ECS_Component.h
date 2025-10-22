@@ -58,29 +58,4 @@ struct Image {
 	Vector4D colorToAdd = {};
 };
 
-struct AudioData {
-	struct Individual {
-		unsigned resourceID;
-		std::string name;
-
-		bool loop;
-		bool toPlayAtStart;
-		bool locality = false;
-		bool persistOnEntityDestruction = false;
-		bool persistOnSceneChange = false;
-
-		float volume = 1.0f;
-		float pitch = 1.0f;
-		float distanceMult = 1.0f;
-
-		enum class Group {
-			Music,
-			SFX,
-		} group = Group::SFX;
-	};
-
-	std::vector<Individual> audios;
-	bool listener = false;
-};
-
 #endif // COMPONENT_H
