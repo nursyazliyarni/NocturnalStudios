@@ -7,8 +7,10 @@
 #include <unordered_set>
 #include <concepts>
 
-#include "resources/Resource.h"
+#include "Resource.h"
 #include "ECS/ECS_Component.h"
+#include "Audio.h"
+#include "Font.h"
 
 class ECS;
 
@@ -35,7 +37,6 @@ public:
 	Audio& getAudio(ResourceID id);
 
 	void insertUsedID(ResourceID& id);
-	void load(ResourceID id);
 
 	std::unordered_map<ResourceID, Audio>& getAudios();
 

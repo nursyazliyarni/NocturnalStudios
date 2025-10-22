@@ -1,11 +1,12 @@
 #pragma once
 
-#include "../include/resources/ResourceManager.h"
+#include "resources/Resource.h"
 #include <string>
 
-class Audio : public ResourceManager {
+class Audio : public Resource {
 public:
-	Audio(const std::string& key, const std::string& filePath);
+	Audio(ResourceID id, const std::string& key, const std::string& filePath);
+
 	Audio(Audio const& other) = delete;
 	Audio& operator=(Audio const& other) = delete;
 	Audio(Audio&& other) = default;
