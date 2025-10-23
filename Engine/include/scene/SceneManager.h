@@ -29,6 +29,7 @@ public:
     struct Layer {
         std::vector<EntityID> entities{};
         LayerID id{ 0 }; //by default 0
+        bool isActive{ false }, isVisible{ false };
         std::string name{};
     };
     struct Scene {

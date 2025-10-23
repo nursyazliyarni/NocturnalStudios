@@ -146,7 +146,12 @@ bool ECS::removeComponent(EntityID entityID, ComponentID componentID) {
 	return removeComponent(entityID, it->componentID);
 }
 
+//added by sarah
 bool ECS::emptyAllEntities() {
+	size_t i{ 0 };
+	while (deletedEntities.size() < allEntities.size()) {
+		deleteEntity(allEntities.at(i++));
+	}
 	return true;
 }
 
