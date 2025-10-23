@@ -49,6 +49,13 @@ void SceneManager::Render(){
 	}
 }
 
+void SceneManager::UnloadAllEntities() {
+	ECS::getECS().emptyAllEntities();
+}
+void SceneManager::LoadAllEntities() {
+
+}
+
 SceneManager::SceneManager() :scenes{/*will be loaded from resouce manger perhaps? either thatt*/} {
-	ECS& ecs = ECS::getECS();
+	ECS& ecs = ECS::getECS(); //this is just to test that ECS works
 }

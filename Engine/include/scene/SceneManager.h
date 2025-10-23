@@ -37,7 +37,24 @@ public:
         SceneID id{ 0 };//by default 0, might use axewhys family thingy for this later
         std::string name{};
     };
+private:
+    std::vector<Scene> scenes{};
+    std::unique_ptr<Scene> curr_scene{ nullptr };
 
+    std::vector<LayerID> allLayers;
+
+
+    SceneManager(); //singleton, constructor is private.
+
+    SceneManager(const SceneManager&) = delete;
+    SceneManager& operator=(const SceneManager&) = delete;
+
+    SceneManager(SceneManager&&) = delete;
+    SceneManager& operator=(SceneManager&&) = delete;
+
+    void UnloadAllEntities();
+    void LoadAllEntities();
+public:
     static SceneManager& GetSceneManager() {
         static SceneManager thisInstance;
         return thisInstance;
@@ -48,20 +65,4 @@ public:
     void Update();
 
     void Render();
-
-private:
-
-    SceneManager(); //singleton, constructor is private.
-
-    SceneManager(const SceneManager&) = delete;
-    SceneManager& operator=(const SceneManager&) = delete;
-
-    SceneManager(SceneManager&&) = delete;
-    SceneManager& operator=(SceneManager&&) = delete;
-
-    std::vector<Scene> scenes{};
-    std::unique_ptr<Scene> curr_scene{ nullptr };
-
-    std::vector<LayerID> allLayers;
-    
 };

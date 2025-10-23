@@ -146,6 +146,10 @@ bool ECS::removeComponent(EntityID entityID, ComponentID componentID) {
 	return removeComponent(entityID, it->componentID);
 }
 
+bool ECS::emptyAllEntities() {
+	return true;
+}
+
 std::vector<ComponentData>::const_iterator ECS::getComponentData(ComponentID componentID) const {
 	return std::find_if(componentMetadata.begin(), componentMetadata.end(), [&](auto const& data) { return data.componentID == componentID; });
 }

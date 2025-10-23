@@ -47,6 +47,7 @@ public:
 		return dis;
 	}
 	
+	bool emptyAllEntities();
 
 	/**
 	 * ECS::createEntity()
