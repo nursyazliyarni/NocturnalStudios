@@ -27,7 +27,7 @@ ECS::ECS() {
 	registerComponent<RectRenderer>();
 	registerComponent<AnimalBehavior>();
 	registerComponent<AudioData>();
-	registerComponent<PhysicsComponent>();
+	registerComponent<Physics>();
 	registerComponent<BoxCollider>();
 }
 
@@ -146,15 +146,6 @@ bool ECS::removeComponent(EntityID entityID, ComponentID componentID) {
 	return removeComponent(entityID, it->componentID);
 }
 
-//added by sarah
-bool ECS::emptyAllEntities() {
-	size_t i{ 0 };
-	while (deletedEntities.size() < allEntities.size()) {
-		deleteEntity(allEntities.at(i++));
-	}
-	return true;
-}
-
 std::vector<ComponentData>::const_iterator ECS::getComponentData(ComponentID componentID) const {
 	return std::find_if(componentMetadata.begin(), componentMetadata.end(), [&](auto const& data) { return data.componentID == componentID; });
 }
@@ -166,3 +157,4 @@ std::vector<ComponentData>::iterator ECS::getComponentData(ComponentID component
 void ECS::reUpdateMetadata() {
 	std::sort(componentMetadata.begin(), componentMetadata.end(), [](auto const& lhs, auto const& rhs) { return lhs.size < rhs.size; });
 }
+ECS ecs;

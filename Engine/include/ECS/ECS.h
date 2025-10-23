@@ -42,14 +42,16 @@
 class ECS {
 public:
 	/**
-	 * singleton ECS caller.
-	 * 
-	 * \return 
+	 * @brief Construct an empty ECS manager.
+	 *
+	 * The constructor initializes internal containers used to track entities,
+	 * component pools and metadata. No components are implicitly registered.
+	 *
+	 * Usage:
+	 *   // global 'ecs' instance is available (extern ECS ecs;)
+	 *   ECS localEcs; // create a separate ECS instance
 	 */
-	static ECS& getECS() {
-		static ECS dis;
-		return dis;
-	}
+	ECS();
 
 	/**
 	 * @brief Create a new entity.
@@ -235,7 +237,7 @@ public:
 	template <typename T>
 	T* getComponent(EntityID entityID);
 
-	bool emptyAllEntities();
+	
 
 private:
 	/**
@@ -257,13 +259,6 @@ private:
 	void reUpdateMetadata();
 
 
-	ECS(); //singleton, constructor is private.
-
-	ECS(const ECS&) = delete;
-	ECS& operator=(const ECS&) = delete;
-
-	ECS(ECS&&) = delete;
-	ECS& operator=(ECS&&) = delete;
 	
 	EntityID totalEntityID = 0;
 	std::list<EntityID> deletedEntities;
@@ -368,7 +363,7 @@ T* ECS::getComponent(EntityID entityID) {
 	return specificPool->getComponent(entityID);
 }
 
-
+extern ECS ecs;
 
 
 // [====================*====================]
