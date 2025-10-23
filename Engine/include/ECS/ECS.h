@@ -52,41 +52,41 @@ public:
 	 * \param entityID
 	 * \return 
 	 */
-	EntityID CreateEntity(std::string name = "", EntityID entityID = INVALID_ENTITY_ID);
+	EntityID createEntity(std::string name = "", EntityID entityID = INVALID_ENTITY_ID);
 
-	EntityID CloneEntity(EntityID entityID);
+	EntityID cloneEntity(EntityID entityID);
 
-	bool DeleteEntity(EntityID entityID);
+	bool deleteEntity(EntityID entityID);
 
-	std::string& GetEntityName(EntityID entityID);
+	std::string& getEntityName(EntityID entityID);
 
-	EntityID FindEntityByName(const std::string& name) const;
+	EntityID findEntityByName(const std::string& name) const;
 
-	std::vector<EntityID> const& GetAllEntities() const;
-
-	template <typename T>
-	bool AddComponent(EntityID entityID, T const& component);
+	std::vector<EntityID> const& getAllEntities() const;
 
 	template <typename T>
-	void RegisterComponent();
+	bool addComponent(EntityID entityID, T const& component);
 
 	template <typename T>
-	bool HasComponent(EntityID entityID) const;
+	void registerComponent();
 
 	template <typename T>
-	bool RemoveComponent(EntityID entityID);
-
-	bool RemoveComponent(EntityID entityID, ComponentID componentID);
+	bool hasComponent(EntityID entityID) const;
 
 	template <typename T>
-	T* GetComponent(EntityID entityID);
+	bool removeComponent(EntityID entityID);
+
+	bool removeComponent(EntityID entityID, ComponentID componentID);
+
+	template <typename T>
+	T* getComponent(EntityID entityID);
 
 	
 
 private:
-	std::vector<ComponentData>::const_iterator GetComponentData(ComponentID componentID) const;
-	std::vector<ComponentData>::iterator GetComponentData(ComponentID componentID);
-	void ReUpdateMetadata();
+	std::vector<ComponentData>::const_iterator getComponentData(ComponentID componentID) const;
+	std::vector<ComponentData>::iterator getComponentData(ComponentID componentID);
+	void reUpdateMetadata();
 
 
 	
@@ -105,9 +105,9 @@ private:
 //********* ECS Class Template Implementation **********//
 
 template <typename T>
-bool ECS::AddComponent(EntityID entityID, T const& component) {
+bool ECS::addComponent(EntityID entityID, T const& component) {
 	ComponentID type = Family::getID<T>();
-	if (componentPools.find(type) == componentPools.end()) RegisterComponent<T>();
+	if (componentPools.find(type) == componentPools.end()) registerComponent<T>();
 
 	BaseComponentPool* pool = componentPools.at(type).get();
 	ComponentPool<T>* specificPool = dynamic_cast<ComponentPool<T>*>(pool);
@@ -133,11 +133,11 @@ bool ECS::AddComponent(EntityID entityID, T const& component) {
 }
 
 template <typename T>
-void ECS::RegisterComponent() {
+void ECS::registerComponent() {
 	ComponentID type = Family::getID<T>();
 	auto [it, inserted] = componentPools.insert({ type, std::make_unique<ComponentPool<T>>() });
 	if (!inserted) {
-		logger.warning(std::string{ "ECS::RegisterComponent - Component already registered" });
+		logger.warning(std::string{ "ECS::registerComponent - Component already registered" });
 		return;
 	}
 
@@ -148,7 +148,7 @@ void ECS::RegisterComponent() {
 }
 
 template <typename T>
-bool ECS::RemoveComponent(EntityID entityID) {
+bool ECS::removeComponent(EntityID entityID) {
 	ComponentID type = Family::getID<T>();
 	BaseComponentPool* pool;
 	if (componentPools.find(type) == componentPools.end()) {
@@ -178,7 +178,7 @@ bool ECS::RemoveComponent(EntityID entityID) {
 }
 
 template <typename T>
-T* ECS::GetComponent(EntityID entityID) {
+T* ECS::getComponent(EntityID entityID) {
 	ComponentID type = Family::getID<T>();
 	if (componentPools.find(type) == componentPools.end()) {
 		logger.error(std::string{ "ECS::getComponent - Failed to find component pool\nComponentID: " } + std::to_string(type) + "\n");

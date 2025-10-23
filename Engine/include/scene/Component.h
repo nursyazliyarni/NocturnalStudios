@@ -15,6 +15,7 @@
 #include <functional>
 #include <memory>
 #include <stdexcept>
+#include <any>
 #include <rapidjson/document.h>
 #include "graphics/Renderer.h"
 
