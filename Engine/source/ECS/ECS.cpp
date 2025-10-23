@@ -27,7 +27,7 @@ ECS::ECS() {
 	registerComponent<RectRenderer>();
 	registerComponent<AnimalBehavior>();
 	registerComponent<AudioData>();
-	registerComponent<Physics>();
+	registerComponent<PhysicsComponent>();
 	registerComponent<BoxCollider>();
 }
 
@@ -157,4 +157,3 @@ std::vector<ComponentData>::iterator ECS::getComponentData(ComponentID component
 void ECS::reUpdateMetadata() {
 	std::sort(componentMetadata.begin(), componentMetadata.end(), [](auto const& lhs, auto const& rhs) { return lhs.size < rhs.size; });
 }
-ECS ecs;

@@ -24,16 +24,24 @@
 
 class SceneManager{
 public:
+
+
     struct Layer {
         std::vector<EntityID> entities{};
         LayerID id{ 0 }; //by default 0
         std::string name{};
     };
     struct Scene {
-        std::vector<Layer> layers{};
-        SceneID id{ 0 };//by default 0
+        std::vector<LayerID> layers{};
+        LayerID layerCount{};
+        SceneID id{ 0 };//by default 0, might use axewhys family thingy for this later
         std::string name{};
     };
+
+    static SceneManager& GetSceneManager() {
+        static SceneManager thisInstance;
+        return thisInstance;
+    }
 
     void InitScene(SceneID);
 
@@ -42,6 +50,18 @@ public:
     void Render();
 
 private:
-    std::unique_ptr<Scene> curr_scene{ nullptr };
+
+    SceneManager(); //singleton, constructor is private.
+
+    SceneManager(const SceneManager&) = delete;
+    SceneManager& operator=(const SceneManager&) = delete;
+
+    SceneManager(SceneManager&&) = delete;
+    SceneManager& operator=(SceneManager&&) = delete;
+
     std::vector<Scene> scenes{};
+    std::unique_ptr<Scene> curr_scene{ nullptr };
+
+    std::vector<LayerID> allLayers;
+    
 };

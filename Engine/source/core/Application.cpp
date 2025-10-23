@@ -39,6 +39,7 @@
 #include "core/ImGUIManager.h"
 #include "./scene/Prefab.h"
 #include "physics/AABB.h"
+#include "./scene/SceneManager.h"
 
 namespace {
     constexpr float TWO_PI = 2.0f * glm::pi<float>();
@@ -124,7 +125,7 @@ int Application::run() {
     game_input_obj.initSpriteScales(txt_obj.get_totalTexture());
     game_input_obj.initSpriteRotations(txt_obj.get_totalTexture());
 
-
+    SceneManager& scene = SceneManager::GetSceneManager();
     Physics    game_physics_obj;
     Game_Loop  game_loop_obj(m_window.handle());
     ImGuiManager imGuiManager(m_window, bg_render, txt_obj, game_input_obj, game_physics_obj);

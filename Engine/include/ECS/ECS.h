@@ -41,7 +41,12 @@
 
 class ECS {
 public:
-	ECS();
+
+	static ECS& getECS() {
+		static ECS dis;
+		return dis;
+	}
+	
 
 	/**
 	 * ECS::createEntity()
@@ -84,6 +89,15 @@ public:
 	
 
 private:
+
+	ECS(); //singleton, constructor is private.
+
+	ECS(const ECS&) = delete;
+	ECS& operator=(const ECS&) = delete;
+
+	ECS( ECS&&) = delete;
+	ECS& operator=( ECS&&) = delete;
+
 	std::vector<ComponentData>::const_iterator getComponentData(ComponentID componentID) const;
 	std::vector<ComponentData>::iterator getComponentData(ComponentID componentID);
 	void reUpdateMetadata();
@@ -192,8 +206,6 @@ T* ECS::getComponent(EntityID entityID) {
 	}
 	return specificPool->getComponent(entityID);
 }
-
-extern ECS ecs;
 
 
 // [====================*====================]

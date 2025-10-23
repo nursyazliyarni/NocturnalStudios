@@ -26,7 +26,7 @@
 #include "../include/math/Vector.h"
 
 //-------------------------- Add new ECS component type here --------------------------//
-struct Renderer;
+struct RendererComponent;
 struct Collider;
 
 struct Transform;
@@ -51,7 +51,7 @@ struct Collider {
 };
 
 //renderer base struct
-struct Renderer {
+struct RendererComponent {
 	float opacity = 1.0f; // Default to fully opaque
 	bool isVisible = true;
 
@@ -81,13 +81,13 @@ struct Transform {
 };
 
 
-struct ImageRenderer: public Renderer {
+struct ImageRenderer: public RendererComponent {
 	int textureID = -1; // Default to -1 (no texture)
 };
-struct CircleRenderer : public Renderer {
+struct CircleRenderer : public RendererComponent {
 	float radius{ 1.f };
 };
-struct RectRenderer : public Renderer {
+struct RectRenderer : public RendererComponent {
 	float width{ 1.f }, height{ 1.f };
 };
 
@@ -120,7 +120,7 @@ struct AudioData {
 	bool listener = false;
 };
 
-struct Physics
+struct PhysicsComponent
 {
 	Vector2D position, velocity{ 0.f,0.f }, acceleration{ 0.f,0.f };
 	bool gravityEnabled{ true };

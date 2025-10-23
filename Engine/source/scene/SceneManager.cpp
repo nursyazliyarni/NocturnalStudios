@@ -32,7 +32,7 @@ void SceneManager::InitScene(SceneID id){
 void SceneManager::Update(){
 	if (curr_scene)
 	{
-		for (Layer l : curr_scene->layers)
+		for (LayerID l : curr_scene->layers)
 		{
 			//TODO: to add logic & Physics code in here once implemented
 		}
@@ -42,9 +42,13 @@ void SceneManager::Update(){
 void SceneManager::Render(){
 	if (curr_scene)
 	{
-		for (Layer l : curr_scene->layers)
+		for (LayerID l : curr_scene->layers)
 		{
 			//TODO: to add rendering  code in here once implemented
 		}
 	}
+}
+
+SceneManager::SceneManager() :scenes{/*will be loaded from resouce manger perhaps? either thatt*/} {
+	ECS& ecs = ECS::getECS();
 }
