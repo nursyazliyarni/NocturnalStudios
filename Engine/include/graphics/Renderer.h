@@ -26,6 +26,8 @@
 #include "graphics/Texture.h" 
 #include "core/Logger.h"
 
+#include "physics/AABB.h"
+
 extern Logger logger;
 
 class Renderer {
@@ -84,6 +86,7 @@ public:
             float x, y, w, h;
             float angle;
         };
+
 
 private:
     GLuint VAO_arr = 0, VBO_arr = 0;

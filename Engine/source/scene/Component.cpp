@@ -116,9 +116,15 @@ void CircRenderer::Render(Renderer&) {
 void RectaRenderer::Render(Renderer&) {
 
 }
+//void SpriteRenderer::Render(Renderer& r) {
+//	r.get_sprite_vector().push_back({ 5, Random_Range(0.f,0.75f), Random_Range(0.f,0.75f),0.15, 0.15, Random_Range(0.0f,360.f)});
+//}
 void SpriteRenderer::Render(Renderer& r) {
-	r.get_sprite_vector().push_back({ 5, Random_Range(0.f,0.75f), Random_Range(0.f,0.75f),0.15, 0.15, Random_Range(0.0f,360.f)});
+	// TODO: In LevelManager or GameObject spawn, push the sprite with prefab data.
+	// This Render() should only ensure the sprite is drawn later, not spawned here.
 }
+
+
 bool AABBCollider::Collide() {
 	return true;
 }

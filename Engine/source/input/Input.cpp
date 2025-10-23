@@ -30,6 +30,10 @@
 std::vector<std::tuple<int, int, Input_action>> Input::keyboard_action;
 std::vector<std::tuple<int, int, Input_action>> Input::mouse_action;
 
+
+int Input::pendingSceneSwitch = -1;
+
+
 Input::Input(GLFWwindow* window) {
 	//GLFWkeyfun glfwSetKeyCallback(GLFWwindow * window, GLFWkeyfun callback)
 	//typedef void(* GLFWkeyfun) (GLFWwindow *window, int key, int scancode, int action, int mods)
@@ -65,6 +69,21 @@ Input::Input(GLFWwindow* window) {
 
 	detect_mouse_event(window, GLFW_MOUSE_BUTTON_LEFT, GLFW_PRESS); //detect left mouse press
 	detect_mouse_event(window, GLFW_MOUSE_BUTTON_RIGHT, GLFW_PRESS); //detect right mouse press
+
+
+
+	// scene switching (menu + 4 animals) -> M N B V C
+	detect_keyboard_event(window, GLFW_KEY_M, GLFW_PRESS); // menu
+	detect_keyboard_event(window, GLFW_KEY_N, GLFW_PRESS); // flamingo
+	detect_keyboard_event(window, GLFW_KEY_H, GLFW_PRESS); // seal
+	detect_keyboard_event(window, GLFW_KEY_V, GLFW_PRESS); // owl
+	detect_keyboard_event(window, GLFW_KEY_C, GLFW_PRESS); // horse
+
+	// moved collision toggle from B -> T (to avoid conflict)
+	detect_keyboard_event(window, GLFW_KEY_B, GLFW_PRESS);
+
+
+
 }
 
 void Input::update_mouse_pos(GLFWwindow* window) {
@@ -214,35 +233,36 @@ void Input::keyboard_input_callback(GLFWwindow* window, int key, int scancode, i
 				// handle '0' = ALL (toggle on press)
 				// handle '0' = ALL (toggle on press)
 				if (key == GLFW_KEY_0) {
-            if (action == event_action) {
-                if (track_number == GLFW_KEY_0) {
-                    // ALL currently selected ? deselect to NONE
-                    track_number = -1;
-                    // clear any lingering take_control so Physics reads NONE
-                    for (auto& t : keyboard_action) {
-                        Input_action& a = std::get<2>(t);
-                        if (a == Input_action::take_control) a = Input_action::no_action;
-                    }
-                    logger.log("ALL deselected (NONE) — rotations keep running, keys locked");
-                } else {
-                    // turn ALL ON
-                    track_number = GLFW_KEY_0;
-                    key_action   = Input_action::take_control;
+					if (action == event_action) {
+						if (track_number == GLFW_KEY_0) {
+							// ALL currently selected ? deselect to NONE
+							track_number = -1;
+							// clear any lingering take_control so Physics reads NONE
+							for (auto& t : keyboard_action) {
+								Input_action& a = std::get<2>(t);
+								if (a == Input_action::take_control) a = Input_action::no_action;
+							}
+							logger.log("ALL deselected (NONE) — rotations keep running, keys locked");
+						}
+						else {
+							// turn ALL ON
+							track_number = GLFW_KEY_0;
+							key_action = Input_action::take_control;
 
-                    // clear any digit’s take_control so ALL is the single active selection
-                    for (auto& t : keyboard_action) {
-                        int  k2 = std::get<0>(t);
-                        auto& a2 = std::get<2>(t);
-                        if (k2 >= GLFW_KEY_1 && k2 <= GLFW_KEY_9) {
-                            if (a2 == Input_action::take_control) a2 = Input_action::no_action;
-                        }
-                    }
-                    logger.log("Selected sprite: ALL");
-                }
-            }
-            // ignore release (don’t clear on key-up)
-            continue; // skip switch for digit keys
-        }
+							// clear any digit’s take_control so ALL is the single active selection
+							for (auto& t : keyboard_action) {
+								int  k2 = std::get<0>(t);
+								auto& a2 = std::get<2>(t);
+								if (k2 >= GLFW_KEY_1 && k2 <= GLFW_KEY_9) {
+									if (a2 == Input_action::take_control) a2 = Input_action::no_action;
+								}
+							}
+							logger.log("Selected sprite: ALL");
+						}
+					}
+					// ignore release (don’t clear on key-up)
+					continue; // skip switch for digit keys
+				}
 
 
 
@@ -400,14 +420,25 @@ void Input::keyboard_input_callback(GLFWwindow* window, int key, int scancode, i
 
 
 
+				//case GLFW_KEY_J:
+				//{
+				//	// only allow when some sprite (1..9) or ALL (0) is selected
+				//	bool hasSelection = (track_number == GLFW_KEY_0) ||
+				//		(track_number >= GLFW_KEY_1 && track_number <= GLFW_KEY_9);
+
+				//	if (hasSelection && (action == GLFW_PRESS || action == GLFW_REPEAT)) {
+				//		key_action = Input_action::rotate_clockwise;
+				//	}
+				//	else {
+				//		key_action = Input_action::no_action;
+				//	}
+				//	break;
+				//}
+
 				case GLFW_KEY_J:
 				{
-					// only allow when some sprite (1..9) or ALL (0) is selected
-					bool hasSelection = (track_number == GLFW_KEY_0) ||
-						(track_number >= GLFW_KEY_1 && track_number <= GLFW_KEY_9);
-
-					if (hasSelection && (action == GLFW_PRESS || action == GLFW_REPEAT)) {
-						key_action = Input_action::rotate_clockwise;
+					if (action == GLFW_PRESS || action == GLFW_REPEAT) {
+						key_action = Input_action::rotate_clockwise;    // toggle handled in Physics
 					}
 					else {
 						key_action = Input_action::no_action;
@@ -415,7 +446,8 @@ void Input::keyboard_input_callback(GLFWwindow* window, int key, int scancode, i
 					break;
 				}
 
-				case GLFW_KEY_K:
+
+				/*case GLFW_KEY_K:
 				{
 					bool hasSelection = (track_number == GLFW_KEY_0) ||
 						(track_number >= GLFW_KEY_1 && track_number <= GLFW_KEY_9);
@@ -427,35 +459,121 @@ void Input::keyboard_input_callback(GLFWwindow* window, int key, int scancode, i
 						key_action = Input_action::no_action;
 					}
 					break;
-				}
+				}*/
 
-				case GLFW_KEY_X:
+				case GLFW_KEY_K:
 				{
-					// Only allow reset when we have a valid selection (ALL or existing digit)
-					void* up = glfwGetWindowUserPointer(window);
-					Input* self = static_cast<Input*>(up);
-
-					bool hasSelection = false;
-					if (track_number == GLFW_KEY_0) {
-						hasSelection = (self && self->spriteCount > 0);
-					}
-					else if (track_number >= GLFW_KEY_1 && track_number <= GLFW_KEY_9) {
-						int digitSel = track_number - GLFW_KEY_0; // 1..9
-						hasSelection = (self && (size_t)digitSel <= self->spriteCount);
-					}
-
-					if (hasSelection && action == GLFW_PRESS) {
-						key_action = Input_action::reset_transform;
+					if (action == GLFW_PRESS || action == GLFW_REPEAT) {
+						key_action = Input_action::rotate_anticlockwise; // toggle handled in Physics
 					}
 					else {
 						key_action = Input_action::no_action;
 					}
 					break;
 				}
+
+				//case GLFW_KEY_X:
+				//{
+				//	// Only allow reset when we have a valid selection (ALL or existing digit)
+				//	void* up = glfwGetWindowUserPointer(window);
+				//	Input* self = static_cast<Input*>(up);
+
+				//	bool hasSelection = false;
+				//	if (track_number == GLFW_KEY_0) {
+				//		hasSelection = (self && self->spriteCount > 0);
+				//	}
+				//	else if (track_number >= GLFW_KEY_1 && track_number <= GLFW_KEY_9) {
+				//		int digitSel = track_number - GLFW_KEY_0; // 1..9
+				//		hasSelection = (self && (size_t)digitSel <= self->spriteCount);
+				//	}
+
+				//	if (hasSelection && action == GLFW_PRESS) {
+				//		key_action = Input_action::reset_transform;
+				//	}
+				//	else {
+				//		key_action = Input_action::no_action;
+				//	}
+				//	break;
+				//}
+
+				case GLFW_KEY_X:
+				{
+					if (action == GLFW_PRESS) {
+						key_action = Input_action::reset_transform;  // trigger once
+					}
+					else {
+						key_action = Input_action::no_action;        // clear on release
+					}
+					break;
+				}
+
+
 				case GLFW_KEY_B:
 				{
 					if (action == GLFW_PRESS) {
 						key_action = Input_action::toggle_collision;
+					}
+					else {
+						key_action = Input_action::no_action;
+					}
+					break;
+				}
+
+				// --- scene switching (one-shot on PRESS) ---
+				case GLFW_KEY_M:
+				{
+					if (action == GLFW_PRESS) {
+						key_action = Input_action::switch_scene_menu;
+						pendingSceneSwitch = 0;
+						logger.log("Switch scene -> MENU");
+					}
+					else {
+						key_action = Input_action::no_action;
+					}
+					break;
+				}
+				case GLFW_KEY_N:
+				{
+					if (action == GLFW_PRESS) {
+						key_action = Input_action::switch_scene_flamingo;
+						pendingSceneSwitch = 1;
+						logger.log("Switch scene -> FLAMINGO");
+					}
+					else {
+						key_action = Input_action::no_action;
+					}
+					break;
+				}
+				case GLFW_KEY_H:
+				{
+					if (action == GLFW_PRESS) {
+						key_action = Input_action::switch_scene_seal;
+						pendingSceneSwitch = 4;
+						logger.log("Switch scene -> SEAL");
+					}
+					else {
+						key_action = Input_action::no_action;
+					}
+					break;
+				}
+				case GLFW_KEY_V:
+				{
+					if (action == GLFW_PRESS) {
+						key_action = Input_action::switch_scene_owl;
+						pendingSceneSwitch = 3;
+						logger.log("Switch scene -> OWL");
+					}
+					else {
+						key_action = Input_action::no_action;
+					}
+					break;
+				}
+				case GLFW_KEY_C:
+				{
+					if (action == GLFW_PRESS) {
+						key_action = Input_action::switch_scene_horse;
+						pendingSceneSwitch = 2;
+						logger.log("Switch scene -> HORSE");
 					}
 					else {
 						key_action = Input_action::no_action;
@@ -565,4 +683,9 @@ void Input::updateRotations() {
 }
 
 
+int Input::consumeSceneSwitch() {
+	int v = pendingSceneSwitch;
+	pendingSceneSwitch = -1;
+	return v;
+}
 
