@@ -43,8 +43,17 @@ public:
 	int take_control(Renderer& render_obj, Input& input_obj);
 	void update_sprite_movement(Renderer& render_obj, Input& input_obj);
 	void update_sprite_scaling(Renderer& render_obj, Input& input_obj);
-	void update_sprite_rotation(Renderer& render_obj, Input& input_obj);
+	//void update_sprite_rotation(Renderer& render_obj, Input& input_obj);
+
+   // time-based rotation; 'forcedSel' = hovered sprite index (-1 if none)
+    void update_sprite_rotation(Renderer& render_obj, Input& input_obj, double dt, int forcedSel);
+
+
+    void update_sprite_scaling(Renderer& render_obj, Input& input_obj, double dt, int spriteIndex, int sceneId);
+    static std::unordered_map<int, std::vector<float>> sceneScales;
+    static bool globalResetRequested;
 
 private:
+
 
 };

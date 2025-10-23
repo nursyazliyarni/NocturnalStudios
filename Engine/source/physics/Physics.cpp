@@ -26,7 +26,14 @@
 #include "physics/AABB.h"
 #include "graphics/DebugDraw.h"
 
+#include <unordered_map>
+#include <vector>
+
 static bool showCollision = false;
+
+std::unordered_map<int, std::vector<float>> Physics::sceneScales;
+bool Physics::globalResetRequested = false;
+
 
 int Physics::take_control(Renderer& render_obj, Input& input_obj) {
     int sel = -1; // NONE by default
@@ -319,84 +326,151 @@ void Physics::update_sprite_scaling(Renderer& render_obj, Input& input_obj)
     logger.log(s.str());
 }
 
-void Physics::update_sprite_rotation(Renderer& render_obj, Input& input_obj)
+
+
+
+
+
+void Physics::update_sprite_rotation(Renderer& render_obj, Input& input_obj, double dt, int spriteIndex)
 {
-    int sel = take_control(render_obj, input_obj); // -1 NONE, -2 ALL, 0..N-1
     auto& sprites = render_obj.get_sprite_vector();
+    if (spriteIndex < 0 || spriteIndex >= (int)sprites.size()) return;
+
+    constexpr float ROT_DEG_PER_SEC = 90.0f;
+    float step = ROT_DEG_PER_SEC * static_cast<float>(dt);
+
+    // persistent spin toggles per sprite
+    static std::vector<bool> spinCW;
+    static std::vector<bool> spinCCW;
+    static std::vector<bool> prevPressCW;
+    static std::vector<bool> prevPressCCW;
+
     size_t n = sprites.size();
-    if (n == 0) return;
-
-    // persistent per-sprite rotation toggles
-    static std::vector<bool> cw, ccw;
-    if (cw.size() != n || ccw.size() != n) {
-        cw.assign(n, false);
-        ccw.assign(n, false);
+    if (spinCW.size() != n) {
+        spinCW.assign(n, false);
+        spinCCW.assign(n, false);
+        prevPressCW.assign(n, false);
+        prevPressCCW.assign(n, false);
     }
 
-    // cache originals once (position, size, angle)
-    static std::vector<float> ox, oy, ow, oh, oang;
-    if (ox.size() != n) {
-        ox.resize(n); oy.resize(n); ow.resize(n); oh.resize(n); oang.resize(n);
-        for (size_t i = 0; i < n; ++i) {
-            const auto& s = sprites[i];
-            ox[i] = s.x; oy[i] = s.y; ow[i] = s.w; oh[i] = s.h; oang[i] = s.angle;
-        }
+    // --- detect current key states ---
+    bool pressCW = false, pressCCW = false;
+    for (auto& [tuple_key, event_action, key_action] : input_obj.GET_keyboard()) {
+        if (key_action == Input_action::rotate_clockwise)     pressCW = true;   // J
+        if (key_action == Input_action::rotate_anticlockwise) pressCCW = true;  // K
     }
 
-    // read keys this frame
-    auto& keys = input_obj.GET_keyboard();
-    bool nowCW = false, nowCCW = false, doReset = false;
-    for (size_t i = 0; i < keys.size(); ++i) {
-        Input_action a = std::get<2>(keys[i]);
-        if (a == Input_action::rotate_clockwise)     nowCW = true;
-        if (a == Input_action::rotate_anticlockwise) nowCCW = true;
-        if (a == Input_action::reset_transform)      doReset = true;
+    // --- toggle only on *new* press (not held down) ---
+    if (pressCW && !prevPressCW[spriteIndex]) {
+        spinCW[spriteIndex] = !spinCW[spriteIndex];      // toggle spin
+        if (spinCW[spriteIndex]) spinCCW[spriteIndex] = false;
+    }
+    if (pressCCW && !prevPressCCW[spriteIndex]) {
+        spinCCW[spriteIndex] = !spinCCW[spriteIndex];    // toggle spin
+        if (spinCCW[spriteIndex]) spinCW[spriteIndex] = false;
     }
 
-    // reset (X)
-    if (doReset) {
-        reset_selection_transforms(render_obj, sel, cw, ccw, ox, oy, ow, oh, oang);
-        // (don’t early-return; allow J/K edges to be seen this frame too)
-    }
+    prevPressCW[spriteIndex] = pressCW;
+    prevPressCCW[spriteIndex] = pressCCW;
 
-    // J/K edge detection
-    static bool prevCW = false, prevCCW = false;
+    // --- apply spin if toggled ---
+    if (spinCW[spriteIndex])  sprites[spriteIndex].angle += step;
+    if (spinCCW[spriteIndex]) sprites[spriteIndex].angle -= step;
 
-    if (sel == -2) {
-        // ALL: press J or K again to stop all
-        bool allCW = (n > 0), allCCW = (n > 0);
-        for (size_t i = 0; i < n; ++i) {
-            allCW &= (cw[i] && !ccw[i]);
-            allCCW &= (ccw[i] && !cw[i]);
-        }
-        if (nowCW && !prevCW) {
-            if (allCW) { std::fill(cw.begin(), cw.end(), false); std::fill(ccw.begin(), ccw.end(), false); }
-            else { std::fill(cw.begin(), cw.end(), true); std::fill(ccw.begin(), ccw.end(), false); }
-        }
-        if (nowCCW && !prevCCW) {
-            if (allCCW) { std::fill(cw.begin(), cw.end(), false); std::fill(ccw.begin(), ccw.end(), false); }
-            else { std::fill(ccw.begin(), ccw.end(), true); std::fill(cw.begin(), cw.end(), false); }
-        }
-    }
-    else if (sel >= 0 && (size_t)sel < n) {
-        // SINGLE: toggle only that sprite
-        if (nowCW && !prevCW) { bool on = !cw[(size_t)sel];  cw[(size_t)sel] = on; if (on) ccw[(size_t)sel] = false; }
-        if (nowCCW && !prevCCW) { bool on = !ccw[(size_t)sel]; ccw[(size_t)sel] = on; if (on) cw[(size_t)sel] = false; }
-    }
-    // NONE: don’t change toggles (keys locked)
-
-    prevCW = nowCW;
-    prevCCW = nowCCW;
-
-    // apply rotation
-    const float step = 0.1f;
-    for (size_t i = 0; i < n; ++i) {
-        if (cw[i])  sprites[i].angle -= step;
-        if (ccw[i]) sprites[i].angle += step;
-
-        if (sprites[i].angle >= 360.0f) sprites[i].angle -= 360.0f;
-        else if (sprites[i].angle < 0.0f) sprites[i].angle += 360.0f;
-    }
+    // --- wrap to [0, 360) ---
+    if (sprites[spriteIndex].angle >= 360.0f) sprites[spriteIndex].angle -= 360.0f;
+    if (sprites[spriteIndex].angle < 0.0f)    sprites[spriteIndex].angle += 360.0f;
 }
 
 
+void Physics::update_sprite_scaling(Renderer& render_obj, Input& input_obj, double dt, int spriteIndex, int sceneId)
+{
+    auto& sprites = render_obj.get_sprite_vector();
+    if (spriteIndex < 0 || spriteIndex >= (int)sprites.size()) return;
+
+    constexpr float STEP = 0.1f;
+    constexpr float MIN_SCALE = 0.3f;
+    constexpr float MAX_SCALE = 1.5f;
+
+    // --- detect input states ---
+    bool scaleUp = false, scaleDown = false, resetAll = false;
+    bool resetPressed = false;
+
+    // edge-trigger detection
+    static bool prevReset = false;
+
+    for (auto& [tuple_key, event_action, key_action] : input_obj.GET_keyboard()) {
+        if (key_action == Input_action::magnify)  scaleUp = true;   // U
+        if (key_action == Input_action::minify)   scaleDown = true; // I
+        if (key_action == Input_action::reset_transform) resetAll = true; // X
+    }
+
+    // trigger reset only when first pressed, not while held
+    if (resetPressed && !prevReset)
+        globalResetRequested = true;
+
+    // --- global reset flag ---
+    if (resetAll)
+        globalResetRequested = true;
+
+    // --- prepare per-scene scales ---
+    auto& scales = sceneScales[sceneId];
+    if (scales.size() != sprites.size())
+        scales.assign(sprites.size(), 1.0f);
+
+    // --- handle reset across all scenes ---
+    if (globalResetRequested) {
+        for (auto& [sid, vec] : sceneScales) {
+            for (float& s : vec) s = 1.0f;
+        }
+        for (auto& spr : sprites) {
+            float cx = spr.x + spr.w * 0.5f;
+            float cy = spr.y + spr.h * 0.5f;
+            spr.w = spr.w / spr.w * spr.w; // reset logic below will fix
+        }
+        logger.log("Global scale reset triggered (X)");
+        globalResetRequested = false;
+        return;
+    }
+
+    // --- single-step press detection ---
+    static std::unordered_map<int, std::vector<bool>> prevUpMap;
+    static std::unordered_map<int, std::vector<bool>> prevDownMap;
+
+    auto& prevUp = prevUpMap[sceneId];
+    auto& prevDown = prevDownMap[sceneId];
+    if (prevUp.size() != sprites.size()) {
+        prevUp.assign(sprites.size(), false);
+        prevDown.assign(sprites.size(), false);
+    }
+
+    bool pressedUp = scaleUp && !prevUp[spriteIndex];
+    bool pressedDown = scaleDown && !prevDown[spriteIndex];
+
+    prevUp[spriteIndex] = scaleUp;
+    prevDown[spriteIndex] = scaleDown;
+
+    // --- apply scale ---
+    float& s = scales[spriteIndex];
+    float prev = s;
+
+    if (pressedUp) s += STEP;
+    if (pressedDown) s -= STEP;
+    s = std::clamp(s, MIN_SCALE, MAX_SCALE);
+
+    if (s != prev) {
+        float cx = sprites[spriteIndex].x + sprites[spriteIndex].w * 0.5f;
+        float cy = sprites[spriteIndex].y + sprites[spriteIndex].h * 0.5f;
+        sprites[spriteIndex].w *= (s / prev);
+        sprites[spriteIndex].h *= (s / prev);
+        sprites[spriteIndex].x = cx - sprites[spriteIndex].w * 0.5f;
+        sprites[spriteIndex].y = cy - sprites[spriteIndex].h * 0.5f;
+
+        std::stringstream ss;
+        ss << "Scene " << sceneId
+            << " scaled sprite[" << spriteIndex << "] "
+            << (pressedUp ? "up" : "down")
+            << " to " << std::fixed << std::setprecision(1) << s;
+        logger.log(ss.str());
+    }
+}

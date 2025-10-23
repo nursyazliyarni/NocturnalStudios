@@ -5,7 +5,7 @@
     This file contains ...
 
     Primary Author:
-         
+
         - Brief
 
     All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
@@ -46,5 +46,13 @@ GameConfig loadConfig(const std::string& filename) {
         win["vsync"].GetBool()
     };
 
-    return { window };
+    int sceneId = 0;
+    if (doc.HasMember("scene_id") && doc["scene_id"].IsInt())
+        sceneId = doc["scene_id"].GetInt();
+
+    GameConfig cfg;
+    cfg.window = window;
+    cfg.scene_id = sceneId;
+    return cfg;
+
 }

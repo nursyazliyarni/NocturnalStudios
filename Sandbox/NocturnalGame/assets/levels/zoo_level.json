@@ -1,0 +1,73 @@
+{
+    "menu": { "background": "menu_bg.png" },
+
+    "items": [
+        {
+            "name": "drink",
+            "file": "drink.png"
+        },
+        {
+            "name": "food",
+            "file": "food.png"
+        },
+        {
+            "name": "toy",
+            "file": "toy.png"
+        }
+    ],
+
+    "scenes": [
+        {
+            "id": 1,
+            "animal": "flamingo",
+            "background": "flamingo_bg.png",
+            "sprite": "flamingo.png",
+            "happy": null,
+            "spawn": [ 0.18, 0.28, 0.26, 0.34 ],
+            "item_spawns": {
+                "drink": [ 0.06, 0.10, 0.15, 0.22 ],
+                "food": [ 0.22, 0.10, 0.15, 0.22 ],
+                "toy": [ 0.38, 0.10, 0.15, 0.22 ]
+            }
+        },
+        {
+            "id": 2,
+            "animal": "horse",
+            "background": "horse_bg.png",
+            "sprite": "horse.png",
+            "happy": null,
+            "spawn": [ 0.44, 0.26, 0.28, 0.36 ],
+            "item_spawns": {
+                "drink": [ 0.08, 0.12, 0.16, 0.22 ],
+                "food": [ 0.22, 0.10, 0.15, 0.22 ],
+                "toy": [ 0.40, 0.12, 0.16, 0.22 ]
+            }
+        },
+        {
+            "id": 3,
+            "animal": "owl",
+            "background": "owl_bg.png",
+            "sprite": "owl.png",
+            "happy": null,
+            "spawn": [ 0.64, 0.30, 0.22, 0.30 ],
+            "item_spawns": {
+                "drink": [ 0.06, 0.12, 0.15, 0.22 ],
+                "food": [ 0.22, 0.12, 0.15, 0.22 ],
+                "toy": [ 0.38, 0.12, 0.15, 0.22 ]
+            }
+        },
+        {
+            "id": 4,
+            "animal": "seal",
+            "background": "seal_bg.png",
+            "sprite": "seal.png",
+            "happy": null,
+            "spawn": [ 0.76, 0.28, 0.24, 0.32 ],
+            "item_spawns": {
+                "drink": [ 0.06, 0.10, 0.15, 0.22 ],
+                "food": [ 0.22, 0.10, 0.15, 0.22 ],
+                "toy": [ 0.38, 0.10, 0.15, 0.22 ]
+            }
+        }
+    ]
+}
