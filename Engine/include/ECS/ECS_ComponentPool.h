@@ -61,14 +61,14 @@ public:
 		return components;
 	}
 
-	bool hasComponent(EntityID ID) const {
+	bool HasComponent(EntityID ID) const {
 		if (ID >= sparseEntities.size()) return false;
 		if (sparseEntities[ID] >= denseEntities.size()) return false;
 
 		return denseEntities[sparseEntities[ID]] == ID;
 	}
 
-	T* getComponent(EntityID ID) {
+	T* GetComponent(EntityID ID) {
 		if (ID >= sparseEntities.size()) return nullptr;
 
 		std::size_t index = sparseEntities[ID];
@@ -77,7 +77,7 @@ public:
 		return &components[index];
 	}
 
-	bool addComponent(EntityID ID, T const& component) {
+	bool AddComponent(EntityID ID, T const& component) {
 		if (ID == INVALID_ENTITY_ID) {
 			logger.error("ComponentPool::addComponent - Attempting to add component to invalid entity ID");
 			return false;
@@ -99,7 +99,7 @@ public:
 		return true;
 	}
 
-	bool removeComponent(EntityID ID) final {
+	bool RemoveComponent(EntityID ID) final {
 		if (ID >= sparseEntities.size()) return false;
 		if (!denseEntities.size()) return false;
 
@@ -120,7 +120,7 @@ public:
 		return true;
 	}
 
-	bool cloneComponent(EntityID srcID, EntityID newID) final {
+	bool CloneComponent(EntityID srcID, EntityID newID) final {
 		if (srcID >= sparseEntities.size()) return false;
 		return addComponent(newID, components[sparseEntities[srcID]]);
 	}
