@@ -12,7 +12,7 @@
 	the game objects in the scene.
 
 	Primary Author:
-		Lau Xiang Yang (100%) (141 lns as of 20/10/2025)
+		Lau Xiang Yang (100%)
 		- Created the file and implemented the ECS class member functions
 
 
@@ -32,68 +32,54 @@
 #include <any>
 #include <functional>
 
-#include <rapidjson/document.h>
 #include "../include/ECS/ECS_Component.h"
 #include "../include/ECS/ECS_ComponentPool.h"
 #include "../include/ECS/ECS_Def.h"
-
-
 
 class ECS {
 public:
 	ECS();
 
-	/**
-	 * ECS::createEntity()
-	 *
-	 *
-	 *
-	 * \param name
-	 * \param entityID
-	 * \return
-	 */
-	EntityID CreateEntity(std::string name = "", EntityID entityID = INVALID_ENTITY_ID);
+	EntityID createEntity(std::string name = "", EntityID entityID = INVALID_ENTITY_ID);
+	EntityID cloneEntity(EntityID entityID);
+	bool deleteEntity(EntityID entityID);
 
-	EntityID CloneEntity(EntityID entityID);
-
-	bool DeleteEntity(EntityID entityID);
-
-	std::string& GetEntityName(EntityID entityID);
-
-	EntityID FindEntityByName(const std::string& name) const;
-
-	std::vector<EntityID> const& GetAllEntities() const;
+	std::string& getEntityName(EntityID entityID);
+	EntityID findEntityByName(const std::string& name) const;
+	std::vector<EntityID> const& getAllEntities() const;
 
 	template <typename T>
-	bool AddComponent(EntityID entityID, T const& component);
-
+	bool addComponent(EntityID entityID, T const& component);
 	template <typename T>
-	void RegisterComponent();
-
+	void registerComponent();
 	template <typename T>
-	bool HasComponent(EntityID entityID) const;
-
+	bool hasComponent(EntityID entityID) const;
 	template <typename T>
-	bool RemoveComponent(EntityID entityID);
-
-	bool RemoveComponent(EntityID entityID, ComponentID componentID);
-
+	bool removeComponent(EntityID entityID);
+	bool removeComponent(EntityID entityID, ComponentID componentID);
 	template <typename T>
-	T* GetComponent(EntityID entityID);
+	T* getComponent(EntityID entityID);
 
+	// TODO: Layer and Scene
+	struct Layer {
+		// Entities should be grouped into layers
+
+	};
+	struct Scene {
+		// layers should be grouped into scenes
+
+
+	};
 
 
 private:
-	std::vector<ComponentData>::const_iterator GetComponentData(ComponentID componentID) const;
-	std::vector<ComponentData>::iterator GetComponentData(ComponentID componentID);
+	std::vector<ComponentData>::const_iterator getComponentData(ComponentID componentID) const;
+	std::vector<ComponentData>::iterator getComponentData(ComponentID componentID);
 	void reUpdateMetadata();
-
-
 
 	EntityID totalEntityID = 0;
 	std::list<EntityID> deletedEntities;
 	std::vector<EntityID> allEntities;
-
 	std::unordered_map<EntityID, EntityMetadata> entityMetadataMap;
 
 	std::unordered_map<ComponentID, std::unique_ptr<BaseComponentPool>> componentPools;
@@ -105,9 +91,9 @@ private:
 //********* ECS Class Template Implementation **********//
 
 template <typename T>
-bool ECS::AddComponent(EntityID entityID, T const& component) {
+bool ECS::addComponent(EntityID entityID, T const& component) {
 	ComponentID type = Family::getID<T>();
-	if (componentPools.find(type) == componentPools.end()) RegisterComponent<T>();
+	if (componentPools.find(type) == componentPools.end()) registerComponent<T>();
 
 	BaseComponentPool* pool = componentPools.at(type).get();
 	ComponentPool<T>* specificPool = dynamic_cast<ComponentPool<T>*>(pool);
@@ -133,11 +119,11 @@ bool ECS::AddComponent(EntityID entityID, T const& component) {
 }
 
 template <typename T>
-void ECS::RegisterComponent() {
+void ECS::registerComponent() {
 	ComponentID type = Family::getID<T>();
 	auto [it, inserted] = componentPools.insert({ type, std::make_unique<ComponentPool<T>>() });
 	if (!inserted) {
-		logger.warning(std::string{ "ECS::RegisterComponent - Component already registered" });
+		logger.warning(std::string{ "ECS::registerComponent - Component already registered" });
 		return;
 	}
 
@@ -148,7 +134,7 @@ void ECS::RegisterComponent() {
 }
 
 template <typename T>
-bool ECS::RemoveComponent(EntityID entityID) {
+bool ECS::removeComponent(EntityID entityID) {
 	ComponentID type = Family::getID<T>();
 	BaseComponentPool* pool;
 	if (componentPools.find(type) == componentPools.end()) {
@@ -178,7 +164,7 @@ bool ECS::RemoveComponent(EntityID entityID) {
 }
 
 template <typename T>
-T* ECS::GetComponent(EntityID entityID) {
+T* ECS::getComponent(EntityID entityID) {
 	ComponentID type = Family::getID<T>();
 	if (componentPools.find(type) == componentPools.end()) {
 		logger.error(std::string{ "ECS::getComponent - Failed to find component pool\nComponentID: " } + std::to_string(type) + "\n");
@@ -193,35 +179,4 @@ T* ECS::GetComponent(EntityID entityID) {
 	return specificPool->getComponent(entityID);
 }
 
-extern ECS ecs;
-
-
-// [====================*====================]
-//  Component Factory for Json Parsing
-// [====================*====================]
-
-//check compatability with the register component function
-//if this section causes any problems, comment it out
-class ComponentFactory { //basically copied my component factory but modified it for structs, I need to check how to do the loading afterwards
-public:
-	using Json = rapidjson::Value;
-	using Creator = std::function<std::any(const Json&)>;
-
-	static void Register(const std::string& name, Creator creator) {
-		GetMap()[name] = std::move(creator);
-	}
-
-	static std::any Create(const std::string& name, const Json& j) {
-		auto& map = GetMap();
-		auto it = map.find(name);
-		if (it != map.end()) return it->second(j);
-		throw std::runtime_error("Unknown component type: " + name);
-	}
-
-private:
-	static std::unordered_map<std::string, Creator>& GetMap() {
-		static std::unordered_map<std::string, Creator> map;
-		return map;
-	}
-};
 #endif // ECS_H

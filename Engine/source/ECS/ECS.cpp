@@ -17,21 +17,14 @@
 
 extern Logger logger;
 
-
 //-------------------------- ECS Class Implementation --------------------------//
 ECS::ECS() {
 	// Register all components here
-	RegisterComponent<Transform>();
-	RegisterComponent<ImageRenderer>();
-	RegisterComponent<CircleRenderer>();
-	RegisterComponent<RectRenderer>();
-	RegisterComponent<AnimalBehavior>();
-	RegisterComponent<AudioData>();
-	RegisterComponent<Physics>();
-	RegisterComponent<BoxCollider>();
+	registerComponent<Transform>();
+	registerComponent<Image>();
 }
 
-EntityID ECS::CreateEntity(std::string name, EntityID entityID) {
+EntityID ECS::createEntity(std::string name, EntityID entityID) {
 	EntityID newID;
 	if (entityID != INVALID_ENTITY_ID) {
 		auto it = std::find(deletedEntities.begin(), deletedEntities.end(), entityID);
@@ -61,11 +54,11 @@ EntityID ECS::CreateEntity(std::string name, EntityID entityID) {
 	return newID;
 }
 
-EntityID ECS::CloneEntity(EntityID entityID) {
+EntityID ECS::cloneEntity(EntityID entityID) {
 	auto const& it = entityMetadataMap.find(entityID);
 	assert(it != entityMetadataMap.end());
 
-	EntityID newID = CreateEntity("copy");
+	EntityID newID = createEntity("copy");
 	if (newID == INVALID_ENTITY_ID) {
 		logger.error(std::string{ "ECS::cloneEntity - Failed to create new entity\nEntityID: " } + std::to_string(entityID) + "\n");
 		return INVALID_ENTITY_ID;
@@ -80,7 +73,7 @@ EntityID ECS::CloneEntity(EntityID entityID) {
 
 		if (pool->cloneComponent(entityID, newID)) {
 			entityMetadataMap[newID].componentIDs.insert(componentID);
-			auto componentData = GetComponentData(componentID);
+			auto componentData = getComponentData(componentID);
 
 			if (componentData == componentMetadata.end()) {
 				logger.error(std::string{ "ECS::cloneEntity - Component metadata did not contain data for component ID " } + std::to_string(componentID) + "\n");
@@ -94,7 +87,7 @@ EntityID ECS::CloneEntity(EntityID entityID) {
 	return newID;
 }
 
-bool ECS::DeleteEntity(EntityID entityID) {
+bool ECS::deleteEntity(EntityID entityID) {
 	auto const& it = entityMetadataMap.find(entityID);
 	if (it == entityMetadataMap.end()) return false;
 
@@ -105,7 +98,7 @@ bool ECS::DeleteEntity(EntityID entityID) {
 		if (!pool) continue;
 
 		if (pool->removeComponent(entityID)) {
-			auto componentDataIt = GetComponentData(componentID);
+			auto componentDataIt = getComponentData(componentID);
 			assert(componentDataIt != componentMetadata.end());
 			componentDataIt->size -= 1;
 		}
@@ -122,39 +115,37 @@ bool ECS::DeleteEntity(EntityID entityID) {
 	return true;
 }
 
-std::string& ECS::GetEntityName(EntityID entityID) {
+std::string& ECS::getEntityName(EntityID entityID) {
 	auto it = entityMetadataMap.find(entityID);
 	assert(it != entityMetadataMap.end());
 	return it->second.name;
 }
 
-
-EntityID ECS::FindEntityByName(std::string const& name) const {
+EntityID ECS::findEntityByName(std::string const& name) const {
 	for (auto const& [id, metadata] : entityMetadataMap) {
 		if (metadata.name == name) return id;
 	}
 	return INVALID_ENTITY_ID;
 }
 
-std::vector<EntityID> const& ECS::GetAllEntities() const {
+std::vector<EntityID> const& ECS::getAllEntities() const {
 	return allEntities;
 }
 
-bool ECS::RemoveComponent(EntityID entityID, ComponentID componentID) {
-	auto it = GetComponentData(componentID);
+bool ECS::removeComponent(EntityID entityID, ComponentID componentID) {
+	auto it = getComponentData(componentID);
 	assert(it != componentMetadata.end());
-	return RemoveComponent(entityID, it->componentID);
+	return removeComponent(entityID, it->componentID);
 }
 
-std::vector<ComponentData>::const_iterator ECS::GetComponentData(ComponentID componentID) const {
+std::vector<ComponentData>::const_iterator ECS::getComponentData(ComponentID componentID) const {
 	return std::find_if(componentMetadata.begin(), componentMetadata.end(), [&](auto const& data) { return data.componentID == componentID; });
 }
 
-std::vector<ComponentData>::iterator ECS::GetComponentData(ComponentID componentID) {
+std::vector<ComponentData>::iterator ECS::getComponentData(ComponentID componentID) {
 	return std::find_if(componentMetadata.begin(), componentMetadata.end(), [&](auto const& data) { return data.componentID == componentID; });
 }
 
 void ECS::reUpdateMetadata() {
 	std::sort(componentMetadata.begin(), componentMetadata.end(), [](auto const& lhs, auto const& rhs) { return lhs.size < rhs.size; });
 }
-ECS ecs;
