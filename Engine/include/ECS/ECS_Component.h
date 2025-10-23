@@ -61,13 +61,13 @@ struct RendererComponent {
 
 
 struct Transform {
-	Vector2D position;
-	Vector2D scale;
+	Vector2D position{ 250.f,350.f };
+	Vector2D scale{100.f,100.f};
 	Vector2D lastPosition = {};
 	Vector2D lastScale = {};
 
-	float rotation;
-	float height;
+	float rotation{};
+	float height{};
 	float lastRotation = rotation;
 	float lastHeight = height;
 

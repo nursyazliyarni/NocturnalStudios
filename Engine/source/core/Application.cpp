@@ -296,7 +296,7 @@ int Application::run() {
             });
     }
 
-
+    
     // build a set of rotatable texture IDs (from prefab)
     std::unordered_set<int> rotatableTexIds;
     {
@@ -423,7 +423,9 @@ int Application::run() {
             }
         }
         // === END RANDOM FOOD SPAWN ===
-
+        
+       
+        
 
         // --- Reapply saved per-scene scales (if any) ---
         auto itScale = Physics::sceneScales.find(sceneId);
@@ -482,7 +484,7 @@ int Application::run() {
     //        prefab_man.registerSprite("Food", food);
     //    }
     //}
-
+    int i = 0;
     // 4) simple loop
     while (!m_window.shouldClose()) {
         m_window.poll();
@@ -494,8 +496,8 @@ int Application::run() {
                 switchScene(sw);
             }
         }
-
-
+        
+      
 
         double dt = game_loop_obj.calculate_DT();          // our deltaTime
         double total_time = game_loop_obj.get_accum_GT();  // accumulated game time
@@ -649,7 +651,6 @@ int Application::run() {
                     }
                 }
             }
-
 
             //  ROTATION: prefab-driven (rotatable=true in prefabSprites.json) 
             {

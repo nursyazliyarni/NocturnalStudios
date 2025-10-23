@@ -368,7 +368,7 @@ T* ECS::getComponent(EntityID entityID) {
 	return specificPool->getComponent(entityID);
 }
 
-extern ECS ecs;
+
 
 
 // [====================*====================]

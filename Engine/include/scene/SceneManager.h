@@ -21,10 +21,8 @@
 #include "../include/ECS/ECS.h"
 
 
-
 class SceneManager{
 public:
-
 
     struct Layer {
         std::vector<EntityID> entities{};
@@ -38,12 +36,14 @@ public:
         SceneID id{ 0 };//by default 0, might use axewhys family thingy for this later
         std::string name{};
     };
+    
 private:
-    std::vector<Scene> scenes{};
-    std::unique_ptr<Scene> curr_scene{ nullptr };
+    std::shared_ptr<Scene> curr_scene{ nullptr };
+
 
     std::vector<LayerID> allLayers;
 
+    std::unordered_map<SceneID,shared_ptr<Scene>> scene_prefabs;
 
     SceneManager(); //singleton, constructor is private.
 
