@@ -1,77 +1,133 @@
-#ifndef NOCTURNAL_ECS_COMPONENT_H
-#define NOCTURNAL_ECS_COMPONENT_H
+#ifndef ECS_COMPONENT_H
+#define ECS_COMPONENT_H
 
+/*!------------------------------------------------------------------------------------------------
+	File: ECS_Component.h
+	Project: NocturnalStudio
+
+	This file contains the struct definition of the different component types that can be used in
+	the ECS.
+
+	Secondary Author:
+		Lau Xiang Yang (30%)
+		- Created the file and implemented the ECS component structs - Image (now renderer), Transform
+		- Implemented AudioData
+
+
+
+
+	All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
+
+#include <string>
 #include <type_traits>
-#include <typeindex>
-#include <unordered_map>
-#include <vector>
-#include <memory>
-#include "ECS_Def.h"
 
-namespace ecs
+#include "../include/math/Matrix.h"
+#include "../include/math/Vector.h"
+
+//-------------------------- Add new ECS component type here --------------------------//
+struct Renderer;
+struct Collider;
+
+struct Transform;
+
+struct ImageRenderer;
+struct CircleRenderer;
+struct RectRenderer;
+
+struct AnimalBehavior;
+
+struct AudioData;
+struct Physics;
+
+struct BoxCollider;
+
+//-------------------------- ECS Component Definitions --------------------------//
+
+
+//collider base struct
+struct Collider {
+	bool isColliding{ false };
+};
+
+//renderer base struct
+struct Renderer {
+	float opacity = 1.0f; // Default to fully opaque
+	bool isVisible = true;
+
+	Vector4D colorTint = { 1.0f, 1.0f, 1.0f, 1.0f };
+	Vector4D colorToAdd = {};
+};
+
+
+struct Transform {
+	Vector2D position;
+	Vector2D scale;
+	Vector2D lastPosition = {};
+	Vector2D lastScale = {};
+
+	float rotation;
+	float height;
+	float lastRotation = rotation;
+	float lastHeight = height;
+
+	enum class CoordinateSpace {
+		World,
+		Viewport
+	};
+
+	CoordinateSpace space = CoordinateSpace::World;
+	bool isVisible = true;
+};
+
+
+struct ImageRenderer : public Renderer {
+	int textureID = -1; // Default to -1 (no texture)
+};
+struct CircleRenderer : public Renderer {
+	float radius{ 1.f };
+};
+struct RectRenderer : public Renderer {
+	float width{ 1.f }, height{ 1.f };
+};
+
+
+struct AnimalBehavior {
+	std::string sound{ "moo" };
+};
+struct AudioData {
+	struct Individual {
+		unsigned resourceID;
+		std::string name;
+
+		bool loop;
+		bool toPlayAtStart;
+		bool locality = false;
+		bool persistOnEntityDestruction = false;
+		bool persistOnSceneChange = false;
+
+		float volume = 1.0f;
+		float pitch = 1.0f;
+		float distanceMult = 1.0f;
+
+		enum class Group {
+			Music,
+			SFX,
+		} group = Group::SFX;
+	};
+
+	std::vector<Individual> audios;
+	bool listener = false;
+};
+
+struct Physics
 {
-    /**
-     * @brief Optional base tag for components.
-     *
-     * Use when you want a polymorphic interface or to store heterogeneous
-     * component instances as `IComponent*`. Not required for the component
-     * ID system below, which is type-based.
-     */
-    struct IComponent { virtual ~IComponent() = default; };
+	Vector2D position, velocity{ 0.f,0.f }, acceleration{ 0.f,0.f };
+	bool gravityEnabled{ true };
 
-    /**
-     * @brief Map a runtime `std::type_index` to a compact size_t id.
-     *
-     * This function keeps an internal `static` map that assigns an incremental
-     * id to each unique `std::type_index` the first time it is seen.
-     *
-     * Notes:
-     * - Static data is initialized in a thread-safe manner in C++11 and later,
-     *   but concurrent registrations (multiple threads calling this while
-     *   inserting new types) may still race on the map itself. If you need
-     *   lock-free multi-threaded registration, provide external synchronization.
-     *
-     * Usage:
-     * ```
-     * std::size_t id = ecs::component_type_id(std::type_index(typeid(MyComp)));
-     * ```
-     *
-     * @param ti The type index to get an id for.
-     * @return A unique id for that runtime type (0..N-1 as types are registered).
-     */
-    inline std::size_t component_type_id(std::type_index ti)
-    {
-        static std::unordered_map<std::type_index, std::size_t> ids;
-        static std::size_t counter = 0;
-        auto it = ids.find(ti);
-        if (it != ids.end()) return it->second;
-        auto id = counter++;
-        ids.emplace(ti, id);
-        return id;
-    }
+};
 
-    /**
-     * @brief Template helper to get a compile-time-friendly component id.
-     *
-     * Convenience wrapper around the `std::type_index` based registration. Call
-     * as `ecs::component_type_id<MyComponent>()` to obtain a stable small id
-     * for the given component type.
-     *
-     * Usage:
-     * ```
-     * struct Transform { float x,y; };
-     * std::size_t tid = ecs::component_type_id<Transform>();
-     * ```
-     *
-     * @tparam T Component type.
-     * @return A unique id for `T`.
-     */
-    template<typename T>
-    inline std::size_t component_type_id()
-    {
-        static const std::size_t id = component_type_id(std::type_index(typeid(T)));
-        return id;
-    }
-}
-
-#endif // NOCTURNAL_ECS_COMPONENT_H
+struct BoxCollider :public Collider {
+	float width{ 0.f }, height{ 0.f };
+};
+#endif // ECS_COMPONENT_H
