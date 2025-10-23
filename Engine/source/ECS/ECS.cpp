@@ -27,7 +27,7 @@ ECS::ECS() {
 	registerComponent<RectRenderer>();
 	registerComponent<AnimalBehavior>();
 	registerComponent<AudioData>();
-	registerComponent<Physics>();
+	registerComponent<PhysicsComponent>();
 	registerComponent<BoxCollider>();
 }
 
