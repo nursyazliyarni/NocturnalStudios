@@ -23,11 +23,11 @@ All content(c) 2025 DigiPen Institute of Technology Singapore, all rights reserv
 #include "./scene/Component.h"
 
 void RegisterAllComponents() {
-	ComponentFactory::RegisterType<CircleRenderer>("CircleRenderer");
-	ComponentFactory::RegisterType<RectRenderer>("RectRenderer");
-	ComponentFactory::RegisterType<SpriteRenderer>("SpriteRenderer");
-	ComponentFactory::RegisterType<AABBCollider>("AABBCollider");
-	ComponentFactory::RegisterType<AnimalBehaviour>("AnimalBehaviour");
+	ComponentFatory::RegisterType<CircRenderer>("CircleRenderer");
+	ComponentFatory::RegisterType<RectaRenderer>("RectRenderer");
+	ComponentFatory::RegisterType<SpriteRenderer>("SpriteRenderer");
+	ComponentFatory::RegisterType<AABBCollider>("AABBCollider");
+	ComponentFatory::RegisterType<AnimalBehaviou>("AnimalBehaviour");
 }
 
 //prefab wil load the gameobjects from a file, 
@@ -60,7 +60,7 @@ PrefabManager::PrefabManager(std::string filename) :list{} {
 						{ 
 							//std::cout << comp["type"].GetString()<<"{";
 							std::unique_ptr<Component> component{};
-							component = ComponentFactory::TryCreate(comp["type"].GetString(), comp);
+							component = ComponentFatory::TryCreate(comp["type"].GetString(), comp);
 							if (component)
 							{
 								obj->Attach(std::move(component));

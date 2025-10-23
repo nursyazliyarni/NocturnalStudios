@@ -54,24 +54,24 @@ public:
 
 
 //Renderer Components
-class CircleRenderer :public Component {
+class CircRenderer :public Component {
 private:
 	float radius{ 1.f };
 public:
-	CircleRenderer(float r=1.f);
-    CircleRenderer(const rapidjson::Value& j);
-    CircleRenderer(const CircleRenderer&);
+	CircRenderer(float r=1.f);
+    CircRenderer(const rapidjson::Value& j);
+    CircRenderer(const CircRenderer&);
     std::unique_ptr<Component> Clone() const;
 	void Render(Renderer&) override;
 };
 
-class RectRenderer :public Component {
+class RectaRenderer :public Component {
 private:
 	float width{ 1.f }, height{ 1.f };
 public:
-	RectRenderer(float w=1.f,float h=1.f);
-    RectRenderer(const rapidjson::Value& j);
-    RectRenderer(const RectRenderer&);
+	RectaRenderer(float w=1.f,float h=1.f);
+    RectaRenderer(const rapidjson::Value& j);
+    RectaRenderer(const RectaRenderer&);
     std::unique_ptr<Component> Clone() const;
 	void Render(Renderer&) override;
 
@@ -102,20 +102,20 @@ public:
 };
 
 //Logic Components
-class AnimalBehaviour :public Component {
+class AnimalBehaviou :public Component {
 private:
 	std::string sound{ "moo" };
 public:
-	AnimalBehaviour(std::string s="");
-    AnimalBehaviour(const rapidjson::Value& j);
-    AnimalBehaviour(const AnimalBehaviour&);
+	AnimalBehaviou(std::string s="");
+    AnimalBehaviou(const rapidjson::Value& j);
+    AnimalBehaviou(const AnimalBehaviou&);
     std::unique_ptr<Component> Clone() const;
 	void Logic() override;
 };
 
 
 
-class ComponentFactory {
+class ComponentFatory {
 public:
     using Json = rapidjson::Value;
     using Creator = std::function<std::unique_ptr<Component>(const Json&)>;

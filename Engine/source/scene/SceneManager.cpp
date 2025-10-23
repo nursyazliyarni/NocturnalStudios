@@ -20,21 +20,15 @@ All content(c) 2025 DigiPen Institute of Technology Singapore, all rights reserv
 
 void SceneManager::InitScene(SceneID id){
 
-	for (Scene s:scenes)
-	{
-		if (s.id==id)
-		{
-			curr_scene = std::make_unique<Scene>(s);
-		}
-	}
+	
 }
 
 void SceneManager::Update(){
 	if (curr_scene)
 	{
-		for (Layer l : curr_scene->layers)
+		for (LayerID l : curr_scene->layers)
 		{
-			//TODO: to add logic & Physics code in here once implemented
+			//TODO: to add Physics, and then logic code in here once implemented
 		}
 	}
 	
@@ -42,9 +36,20 @@ void SceneManager::Update(){
 void SceneManager::Render(){
 	if (curr_scene)
 	{
-		for (Layer l : curr_scene->layers)
+		for (LayerID l : curr_scene->layers)
 		{
 			//TODO: to add rendering  code in here once implemented
 		}
 	}
+}
+
+void SceneManager::UnloadAllEntities() {
+	ECS::getECS().emptyAllEntities();
+}
+void SceneManager::LoadAllEntities() {
+
+}
+
+SceneManager::SceneManager() {
+	ECS& ecs = ECS::getECS(); //this is just to test that ECS works
 }

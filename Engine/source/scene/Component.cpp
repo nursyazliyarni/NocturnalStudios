@@ -29,22 +29,22 @@ std::string Component::ComponenetName() const {
 }
 void Component::SetOwner(GameObject* o) { owner = o; }
 void Component::Transform(){}
-CircleRenderer::CircleRenderer(float r) :Component{ RENDERING,"Cricle Renderer" }, radius{ r } {}
-CircleRenderer::CircleRenderer(const rapidjson::Value& j) :Component{ RENDERING,"Cricle Renderer" }, radius{} {
+CircRenderer::CircRenderer(float r) :Component{ RENDERING,"Cricle Renderer" }, radius{ r } {}
+CircRenderer::CircRenderer(const rapidjson::Value& j) :Component{ RENDERING,"Cricle Renderer" }, radius{} {
 	if (j["radius"].IsFloat())
 	{
 		radius = j["radius"].GetFloat();
 		//std::cout<<" radius: "<< j["radius"].GetFloat();
 	}
 }
-CircleRenderer::CircleRenderer(const CircleRenderer& c) :Component{ c }, radius{ c.radius } {}
+CircRenderer::CircRenderer(const CircRenderer& c) :Component{ c }, radius{ c.radius } {}
 
-std::unique_ptr<Component> CircleRenderer::Clone() const {
-	return std::make_unique<CircleRenderer>(CircleRenderer(*this));
+std::unique_ptr<Component> CircRenderer::Clone() const {
+	return std::make_unique<CircRenderer>(CircRenderer(*this));
 }
 
-RectRenderer::RectRenderer(float w, float h) :Component{ RENDERING,"Rect Renderer" }, width{ w }, height{ h } {}
-RectRenderer::RectRenderer(const rapidjson::Value& j) :Component{ RENDERING,"Rect Renderer" }, width{  }, height{  } {
+RectaRenderer::RectaRenderer(float w, float h) :Component{ RENDERING,"Rect Renderer" }, width{ w }, height{ h } {}
+RectaRenderer::RectaRenderer(const rapidjson::Value& j) :Component{ RENDERING,"Rect Renderer" }, width{  }, height{  } {
 	if (j["width"].IsFloat())
 	{
 		width = j["width"].GetFloat();
@@ -56,9 +56,9 @@ RectRenderer::RectRenderer(const rapidjson::Value& j) :Component{ RENDERING,"Rec
 		//std::cout << " height: " << j["height"].GetFloat();
 	}
 }
-RectRenderer::RectRenderer(const RectRenderer& c) :Component{ c }, width{ c.width }, height{ c.height } {}
-std::unique_ptr<Component> RectRenderer::Clone() const {
-	return std::make_unique<RectRenderer>(RectRenderer(*this));
+RectaRenderer::RectaRenderer(const RectaRenderer& c) :Component{ c }, width{ c.width }, height{ c.height } {}
+std::unique_ptr<Component> RectaRenderer::Clone() const {
+	return std::make_unique<RectaRenderer>(RectaRenderer(*this));
 }
 
 
@@ -86,16 +86,16 @@ std::unique_ptr<Component> AABBCollider::Clone() const {
 	return std::make_unique<AABBCollider>(AABBCollider(*this));
 }
 
-AnimalBehaviour::AnimalBehaviour(std::string s):Component{ LOGIC,"Animal Behaviour" },sound{s}{}
-AnimalBehaviour::AnimalBehaviour(const rapidjson::Value& j) :Component{ LOGIC,"Animal Behaviour" }, sound{  } {
+AnimalBehaviou::AnimalBehaviou(std::string s):Component{ LOGIC,"Animal Behaviour" },sound{s}{}
+AnimalBehaviou::AnimalBehaviou(const rapidjson::Value& j) :Component{ LOGIC,"Animal Behaviour" }, sound{  } {
 	if (j["sound"].IsString())
 	{
 		sound = j["sound"].GetString();
 	}
 }
-AnimalBehaviour::AnimalBehaviour(const AnimalBehaviour& c) :Component{ c }, sound{ c.sound } {}
-std::unique_ptr<Component> AnimalBehaviour::Clone() const {
-	return std::make_unique<AnimalBehaviour>(AnimalBehaviour(*this));
+AnimalBehaviou::AnimalBehaviou(const AnimalBehaviou& c) :Component{ c }, sound{ c.sound } {}
+std::unique_ptr<Component> AnimalBehaviou::Clone() const {
+	return std::make_unique<AnimalBehaviou>(AnimalBehaviou(*this));
 }
 
 void Component::Render(Renderer&) {
@@ -110,10 +110,10 @@ void  Component::Logic() {
 
 
 
-void CircleRenderer::Render(Renderer&) {
+void CircRenderer::Render(Renderer&) {
 
 }
-void RectRenderer::Render(Renderer&) {
+void RectaRenderer::Render(Renderer&) {
 
 }
 void SpriteRenderer::Render(Renderer& r) {
@@ -122,6 +122,6 @@ void SpriteRenderer::Render(Renderer& r) {
 bool AABBCollider::Collide() {
 	return true;
 }
-void AnimalBehaviour::Logic() {
+void AnimalBehaviou::Logic() {
 	
 }
