@@ -21,9 +21,6 @@
 #include "../include/core/ImGuiManager.h"
 #include <chrono>
 
-extern size_t gCurrentBgTexSlot; // provided by Application.cpp
-extern bool   isDragging;
-
 namespace {
 	using Clock = std::chrono::high_resolution_clock;
 }
@@ -46,21 +43,21 @@ void Gui::updateImGuiManager(double& deltaTime, ImGuiManager& imGuiManager) {
 	imGuiManager.endFrame();
 }
 
-ImGuiManager::ImGuiManager(Window& w, Renderer& r, Texture& tex, Input& i, Physics& p) :
-	mainWindow{ w },
-	renderer{ r },
-	texture{ tex },
-	input{ i },
-	physics{ p },
-	windowTopLeft{},
-	windowBottomRight{},
-	deltaTime{ 0. },
-	imGuiTime{ 0. },
-	inputTime{ 0. },
-	logicTime{ 0. },
-	renderTime{ 0. },
-	physicsTime{ 0. },
-	selectedEntityType{}
+ImGuiManager::ImGuiManager(Window& w, Renderer& r, Texture& tex, Input& i, Physics& p) : 
+	mainWindow{ w }, 
+	renderer{ r }, 
+	texture{ tex }, 
+	input{ i }, 
+	physics{ p }, 
+	windowTopLeft {}, 
+	windowBottomRight{}, 
+	deltaTime{ 0. }, 
+	imGuiTime{ 0. }, 
+	inputTime{ 0. }, 
+	logicTime{ 0. }, 
+	renderTime{ 0. }, 
+	physicsTime{ 0. }, 
+	selectedEntityType {} 
 {
 	// Init ImGui context
 	ImGui::CreateContext();
@@ -75,7 +72,7 @@ ImGuiManager::ImGuiManager(Window& w, Renderer& r, Texture& tex, Input& i, Physi
 	ImGui::StyleColorsClassic();
 	ImGuiIO& io = ImGui::GetIO();
 
-	//r.initAllSprites(); //init all the sprite needed for later rendering
+	r.initAllSprites(); //init all the sprite needed for later rendering
 
 	// Logging
 	logger.log("ImGui initialized successfully.");
@@ -122,13 +119,6 @@ Vector2D ImGuiManager::getWindowBottomRight() const {
 	return Vector2D(windowBottomRight.x, windowBottomRight.y);
 }
 
-
-//
-//ImVec2 ImGuiManager::getViewportImagePos() const { return viewportImgPos; }
-//ImVec2 ImGuiManager::getViewportImageSize() const { return viewportImgSize; }
-
-
-
 void ImGuiManager::setSystemTimings(double imGuITime, double logic) {
 	imGuiTime = imGuITime;
 	logicTime = logic;
@@ -166,33 +156,19 @@ void ImGuiManager::showViewportWindowUI() {
 	const int vw = (int)std::max(1.0f, avail.x);
 	const int vh = (int)std::max(1.0f, avail.y);
 
-	static int lastW = -1, lastH = -1;
-	if (vw != lastW || vh != lastH) {        // recreate only when needed
-		//renderer.initFBO(vw, vh);
-		lastW = vw; lastH = vh;
-	}
+	 static int lastW = -1, lastH = -1;
+    if (vw != lastW || vh != lastH) {        // recreate only when needed
+        //renderer.initFBO(vw, vh);
+        lastW = vw; lastH = vh;
+    }
 
-	/*auto physicsStart = Clock::now();
+	auto physicsStart = Clock::now();
 
 	physics.update_sprite_movement(renderer, input);
 	physics.update_sprite_scaling(renderer, input);
 	physics.update_sprite_rotation(renderer, input);
 
-	auto physicsEnd = Clock::now();*/
-
-	//physics.update_sprite_rotation(renderer, input, deltaTime);
-
-	auto physicsStart = Clock::now();
-
-	if (!isDragging) { // <-- Guard while dragging
-		physics.update_sprite_movement(renderer, input);
-		physics.update_sprite_scaling(renderer, input);
-		// physics.update_sprite_rotation(renderer, input); // (comment out if ignoring rotation)
-	}
-
 	auto physicsEnd = Clock::now();
-
-
 	double physicsTime = std::chrono::duration<double>(physicsEnd - physicsStart).count();
 	setPhysicTime(physicsTime);
 
@@ -203,13 +179,6 @@ void ImGuiManager::showViewportWindowUI() {
 	renderer.initFBO(vw, vh);                                      // ADD: correct (width, height)
 	renderer.bindFBO();
 
-
-	// ensure 2D blend, no depth
-	glDisable(GL_DEPTH_TEST);
-	glDepthMask(GL_FALSE);
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
 	// ?? ADD: set viewport + orthographic to pixel-space for the FBO
 	renderer.resize(vw, vh);
 
@@ -218,42 +187,28 @@ void ImGuiManager::showViewportWindowUI() {
 
 	// @Todo (axewhy): Render the actual viewport content here, e.g., using a framebuffer texture
 	// Render background to FBO
-	renderer.background_render(texture.get_textureID((int)gCurrentBgTexSlot), "bg_texture");
+	renderer.background_render(texture.get_textureID(0), "bg_texture");
+
+	auto input_start = Clock::now();
+
+	input.updateRotations();
+
+	// behind-sprites pass (scaled)
+	//renderer.drawAllSprites(texture, { 3,4 }, /*behindPass=*/true,  input.getSpriteScalesPtr());
+	renderer.drawAllSprites(texture, { 3,4 ,5}, true,
+		input.getSpriteScalesPtr(),
+		input.getSpriteRotationsPtr(),
+		vw, vh);
 
 	//draw all SHAPES from Renderer.cpp (keeps ImGui clean of GL) - rishika
 	renderer.drawViewportShapes(vw, vh);
 
-	auto input_start = Clock::now();
-
-	//input.updateRotations();
-
-	// behind-sprites pass (scaled)
-	//renderer.drawAllSprites(texture, { 3,4 }, /*behindPass=*/true,  input.getSpriteScalesPtr());
-	//renderer.drawAllSprites(texture, { 3,4 ,5}, true,
-	//	input.getSpriteScalesPtr(),
-	//	input.getSpriteRotationsPtr(),
-	//	vw, vh);
-
-	//// front-sprites pass (scaled)
-	////renderer.drawAllSprites(texture, { 3,4 }, /*behindPass=*/false, input.getSpriteScalesPtr());
-	//renderer.drawAllSprites(texture, { 3,4,5 }, false,
-	//	input.getSpriteScalesPtr(),
-	//	input.getSpriteRotationsPtr(),
-	//	vw, vh);
-
-	/*renderer.drawAllSprites(texture, frontIdxs, true, input.getSpriteScalesPtr(), input.getSpriteRotationsPtr(), vw, vh);
-	renderer.drawAllSprites(texture, frontIdxs, false, input.getSpriteScalesPtr(), input.getSpriteRotationsPtr(), vw, vh);*/
-
-	renderer.drawAllSprites(texture, frontIdxs, true,
+	// front-sprites pass (scaled)
+	//renderer.drawAllSprites(texture, { 3,4 }, /*behindPass=*/false, input.getSpriteScalesPtr());
+	renderer.drawAllSprites(texture, { 3,4,5 }, false,
 		input.getSpriteScalesPtr(),
-		/*rotations*/ nullptr,
+		input.getSpriteRotationsPtr(),
 		vw, vh);
-
-	renderer.drawAllSprites(texture, frontIdxs, false,
-		input.getSpriteScalesPtr(),
-		/*rotations*/ nullptr,
-		vw, vh);
-
 
 	renderer.unbindFBO();
 	auto input_end = Clock::now();
@@ -267,18 +222,8 @@ void ImGuiManager::showViewportWindowUI() {
 	// show FBO in the panel (use the content size so it matches exactly)
 	// ImGui::Image((void*)(intptr_t)renderer.getFBOTexture(), ImVec2(viewportWidth, viewportHeight));
 	// NEW: flip V when sampling the FBO in ImGui
-	/*ImGui::Image((ImTextureID)(intptr_t)renderer.getFBOTexture(),
-		ImVec2(viewportWidth, viewportHeight),
-		ImVec2(0, 1), ImVec2(1, 0));
-
-	ImGui::End();*/
-
-	viewportImgPos = ImGui::GetCursorScreenPos();
-	viewportImgSize = ImVec2((float)vw, (float)vh);
-
-	// draw the FBO into the window using the same size used to render the FBO
 	ImGui::Image((ImTextureID)(intptr_t)renderer.getFBOTexture(),
-		ImVec2((float)vw, (float)vh),
+		ImVec2(viewportWidth, viewportHeight),
 		ImVec2(0, 1), ImVec2(1, 0));
 
 	ImGui::End();
@@ -299,7 +244,7 @@ void ImGuiManager::showMousePosOverlayUI() {
 	Vector2D screenPosition;
 	//true->get normalized value, false->unnormalized value
 	Vector2D mouse_pos = input.GET_mouse_pos(true, mainWindow.desc().width, mainWindow.desc().height);
-
+	
 	// Position the overlay at the top-right corner of the window
 	ImVec2 windowTopRightPos = { windowBottomRight.x - width, windowTopLeft.y };
 	ImGui::SetNextWindowPos(windowTopRightPos);
@@ -409,9 +354,9 @@ void ImGuiManager::showTransformUI(/* A reference to a vector of object list obj
 	// @Todo (axewhy): Change this with the selected entity transform. This is only a placeholder
 	static Vector2D position(0.f, 0.f);
 	static Matrix<3> rotationMatrix = Matrix<3>().Identity();
-	static Matrix<3> scaleMatrix = Matrix<3>().Identity();
+	static Matrix<3> scaleMatrix = Matrix<3>().Identity();	
 
-
+	
 	// Position controls
 	ImGui::SliderFloat("Position X", &position.x(), -1000.0f, 1000.0f);
 	ImGui::SliderFloat("Position Y", &position.y(), -1000.0f, 1000.0f);
@@ -432,34 +377,34 @@ void ImGuiManager::showLogsOverlayUI() {
 	constexpr float width = 600.0f;
 	constexpr float height = 200.0f;
 
-	ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoResize;
+    ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoResize;
 
 	// Position the overlay at the bottom-center of the window
-	ImVec2 initialPos = { (windowTopLeft.x + windowBottomRight.x) / 2, windowBottomRight.y };
-	ImGui::SetNextWindowPos(initialPos, ImGuiCond_Always, ImVec2(0.5f, 1.0f));
-	ImGui::SetNextWindowBgAlpha(0.35f);
+    ImVec2 initialPos = { (windowTopLeft.x + windowBottomRight.x) / 2, windowBottomRight.y };
+    ImGui::SetNextWindowPos(initialPos, ImGuiCond_Always, ImVec2(0.5f, 1.0f));
+    ImGui::SetNextWindowBgAlpha(0.35f);
 	ImGui::SetNextWindowSize({ width, height });
 
-	ImGui::Begin("Logs", nullptr, windowFlags);
+    ImGui::Begin("Logs", nullptr, windowFlags);
 
 	// Add a Child window to enable vertical and horizontal scrolling
 	ImGui::BeginChild("LogRegionHorizontal", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar);
 
-	for (auto const& log : logger.getLogs()) {
-		if (log.find("[ERROR]") != std::string::npos)
-			ImGui::TextColored(ImVec4(255 / 255.f, 130 / 255.f, 130 / 255.f, 1.f), log.c_str());
-		else if (log.find("[WARNING]") != std::string::npos)
-			ImGui::TextColored(ImVec4(255 / 255.f, 255 / 255.f, 130 / 255.f, 1.f), log.c_str());
-		else if (log.find("[LOG]") != std::string::npos)
-			ImGui::TextColored(ImVec4(33 / 255.f, 165 / 255.f, 57 / 255.f, 1.f), log.c_str());
-		else
-			ImGui::TextUnformatted(log.c_str());
-	}
+    for (auto const& log : logger.getLogs()) {
+        if (log.find("[ERROR]") != std::string::npos)
+            ImGui::TextColored(ImVec4(255 / 255.f, 130 / 255.f, 130 / 255.f, 1.f), log.c_str());
+        else if (log.find("[WARNING]") != std::string::npos)
+            ImGui::TextColored(ImVec4(255 / 255.f, 255 / 255.f, 130 / 255.f, 1.f), log.c_str());
+        else if (log.find("[LOG]") != std::string::npos)
+            ImGui::TextColored(ImVec4(33 / 255.f, 165 / 255.f, 57 / 255.f, 1.f), log.c_str());
+        else
+            ImGui::TextUnformatted(log.c_str());
+    }
 
 	// Auto scroll to bottom
 	if (ImGui::GetScrollY() >= ImGui::GetScrollMaxY())
 		ImGui::SetScrollHereY(1.0f);
 
 	ImGui::EndChild();
-	ImGui::End();
+    ImGui::End();
 }

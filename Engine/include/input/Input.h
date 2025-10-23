@@ -3,11 +3,11 @@
 	Project: NocturnalStudio
 
 	This header declares the engine’s input layer. It wraps GLFW (with ImGui forwarding) to:
-	- Capture keyboard and mouse events
-	- Track mouse position/delta (normalized & unnormalized)
-	- Register and query action states (movement, scaling, rotation, reset, toggle-collision)
-	- Broadcast input via the MessageBus (Key/Mouse messages)
-	- Manage per-sprite helpers for selection/deselection, scaling, and rotation
+    - Capture keyboard and mouse events
+    - Track mouse position/delta (normalized & unnormalized)
+    - Register and query action states (movement, scaling, rotation, reset, toggle-collision)
+    - Broadcast input via the MessageBus (Key/Mouse messages)
+    - Manage per-sprite helpers for selection/deselection, scaling, and rotation
 	used for later physics and logic.
 
 		Primary Author:
@@ -39,16 +39,9 @@
 #include "../messaging/InputMessage.h"
 
 enum class Input_action {
-	no_action, take_control,
-	move_up, move_down, move_left, move_right,
-	magnify, minify, rotate_clockwise, rotate_anticlockwise, reset_transform, toggle_collision
-
-	, switch_scene_menu
-	, switch_scene_flamingo
-	, switch_scene_seal
-	, switch_scene_owl
-	, switch_scene_horse
-
+	no_action,take_control,
+	move_up,move_down,move_left,move_right,
+	magnify,minify,rotate_clockwise,rotate_anticlockwise, reset_transform, toggle_collision
 };
 
 class Input {
@@ -84,12 +77,6 @@ public:
 	int selectedSprite = -1;
 	bool isDragging = false; //true if we are dragging a sprite with the mouse
 
-
-
-	// returns -1 if no pending switch, else {0=menu,1=flamingo,2=horse,3=owl,4=seal}
-	int consumeSceneSwitch();
-
-
 private:
 	//Non-static member functions need an object to call it
 	//So declare this function as static to avoid this issue
@@ -105,7 +92,7 @@ private:
 
 	std::vector<float> spriteRotations;  // per-sprite rotation angles (in degrees), current angle in degrees
 
-	// toggles for continuous rotation
+    // toggles for continuous rotation
 	std::vector<bool> spriteRotatingCW;     // clockwise
 	std::vector<bool> spriteRotatingCCW;    // counter-clockwise
 
@@ -115,16 +102,12 @@ private:
 	//private data member
 	//mouse_pos[0] is previous mouse position, mouse_pos[1] is current mouse_position
 	Vector2D mouse_pos[2];
-	static std::vector<std::tuple<int, int, Input_action>> keyboard_action;
-	static std::vector<std::tuple<int, int, Input_action>> mouse_action;
-
-
-	static int pendingSceneSwitch; // -1 none, else 0..4
-
+	static std::vector<std::tuple<int,int,Input_action>> keyboard_action;
+	static std::vector<std::tuple<int,int,Input_action>> mouse_action;
 };
 
 //Messaging namespace implemented for input system here
-namespace Messaging
+namespace Messaging 
 {
 	class InputSystemMessaging
 	{
@@ -137,10 +120,10 @@ namespace Messaging
 			//glfwSetCursorPosCallback(window, MouseMoveCallback);
 			glfwSetMouseButtonCallback(window, MouseButtonCallback);
 		}
-
+	
 	private:
-		MessageBus& bus;
-		GLFWwindow* window;
+        MessageBus& bus;
+        GLFWwindow* window;
 
 		static void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
 			auto* self = static_cast<InputSystemMessaging*>(glfwGetWindowUserPointer(window));
@@ -169,5 +152,5 @@ namespace Messaging
 			auto msg = std::make_unique<ClickedMouseMessage>(button, pressed, (float)xpos, (float)ypos);
 			self->bus.Broadcast(std::move(msg));
 		}
-	};
+    };
 }

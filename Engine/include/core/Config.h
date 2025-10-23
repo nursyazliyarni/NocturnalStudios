@@ -32,11 +32,9 @@ struct WindowConfig {
 
 struct GameConfig {
     WindowConfig window;
-    int scene_id{ 0 };
 };
 
 GameConfig loadConfig(const std::string& filename);
 
 
 #endif 
-

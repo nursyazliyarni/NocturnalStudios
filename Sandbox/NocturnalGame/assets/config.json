@@ -1,9 +1,8 @@
 {
     "window": {
-        "width": 1500,
-        "height": 940,
-        "title": "Nocturnal Studio",
+        "width": 1280,
+        "height": 720,
+        "title": "NocturnalStudios",
         "vsync": true
-    },
-    "scene_id": 0
+    }
 }
