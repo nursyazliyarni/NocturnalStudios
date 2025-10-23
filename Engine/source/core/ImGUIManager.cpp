@@ -221,7 +221,7 @@ void ImGuiManager::showViewportWindowUI() {
 	renderer.background_render(texture.get_textureID((int)gCurrentBgTexSlot), "bg_texture");
 
 	//draw all SHAPES from Renderer.cpp (keeps ImGui clean of GL) - rishika
-	renderer.drawViewportShapes(vw, vh);
+	//renderer.drawViewportShapes(vw, vh);
 
 	auto input_start = Clock::now();
 

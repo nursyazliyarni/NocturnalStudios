@@ -17,6 +17,7 @@ struct SpriteArchetype {
 	bool  draggable{ true };  // from JSON (items true, animals false)
 	bool rotatable = false;	
 	bool scalable = false;
+	bool movable = false;
 };
 
 

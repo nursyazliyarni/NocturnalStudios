@@ -150,6 +150,7 @@ bool PrefabManager::loadSpriteArchetypes(
 		if (node.HasMember("draggable") && node["draggable"].IsBool()) arch.draggable = node["draggable"].GetBool();
 		if (node.HasMember("rotatable") && node["rotatable"].IsBool()) arch.rotatable = node["rotatable"].GetBool();
 		if (node.HasMember("scalable") && node["scalable"].IsBool()) arch.scalable = node["scalable"].GetBool();
+		if (node.HasMember("movable") && node["movable"].IsBool()) arch.movable = node["movable"].GetBool();
 
 
 		sprites[prefabName] = arch;
@@ -161,7 +162,8 @@ bool PrefabManager::loadSpriteArchetypes(
 				<< "), w=" << arch.w << ", h=" << arch.h
 				<< ", draggable=" << (arch.draggable ? "true" : "false")
 				<< ", rotatable=" << (arch.rotatable ? "true" : "false")
-				<< ", scalable=" << (arch.scalable ? "true" : "false");
+				<< ", scalable=" << (arch.scalable ? "true" : "false")
+				<< ", movable=" << (arch.movable ? "true" : "false");
 
 			logger.log(ss.str());
 		}

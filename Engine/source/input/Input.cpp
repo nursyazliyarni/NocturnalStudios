@@ -80,7 +80,7 @@ Input::Input(GLFWwindow* window) {
 	detect_keyboard_event(window, GLFW_KEY_C, GLFW_PRESS); // horse
 
 	// moved collision toggle from B -> T (to avoid conflict)
-	detect_keyboard_event(window, GLFW_KEY_B, GLFW_PRESS);
+	//detect_keyboard_event(window, GLFW_KEY_B, GLFW_PRESS);
 
 
 

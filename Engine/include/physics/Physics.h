@@ -50,6 +50,10 @@ public:
 
 
     void update_sprite_scaling(Renderer& render_obj, Input& input_obj, double dt, int spriteIndex, int sceneId);
+
+    void update_sprite_movement(Renderer& render_obj, Input& input_obj, double dt, int spriteIndex);
+
+
     static std::unordered_map<int, std::vector<float>> sceneScales;
     static bool globalResetRequested;
 

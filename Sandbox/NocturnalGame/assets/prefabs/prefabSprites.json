@@ -7,7 +7,8 @@
             "h": 0.25,
             "draggable": true,
             "rotatable": false,
-            "scalable": true
+            "scalable": true,
+            "movable":  false
         },
 
         "Food": {
@@ -16,7 +17,8 @@
             "h": 0.14,
             "draggable": true,
             "rotatable": true,
-            "scalable": false
+            "scalable": false,
+            "movable": false
         },
 
         "Toy": {
@@ -25,7 +27,8 @@
             "h": 0.22,
             "draggable": true,
             "rotatable": true,
-            "scalable": false
+            "scalable": false,
+            "movable": false
         },
 
         "Flamingo": {
@@ -34,15 +37,17 @@
             "h": 0.0,
             "draggable": false,
             "rotatable": false,
-            "scalable": true
+            "scalable": true,
+            "movable": true
         },
         "Horse": {
             "tag": "horse",
-            "w": 0.28,
-            "h": 0.36,
+            "w": 0.48,
+            "h": 0.76,
             "draggable": false,
             "rotatable": false,
-            "scalable": false
+            "scalable": false,
+            "movable": true
         },
         "Owl": {
             "tag": "owl",
@@ -50,7 +55,8 @@
             "h": 0.30,
             "draggable": false,
             "rotatable": false,
-            "scalable": false
+            "scalable": false,
+            "movable": true
         },
         "Seal": {
             "tag": "seal",
@@ -58,7 +64,8 @@
             "h": 0.32,
             "draggable": false,
             "rotatable": false,
-            "scalable": false
+            "scalable": false,
+            "movable": true
         }
     }
 }

@@ -474,3 +474,96 @@ void Physics::update_sprite_scaling(Renderer& render_obj, Input& input_obj, doub
         logger.log(ss.str());
     }
 }
+
+
+
+
+
+void Physics::update_sprite_movement(Renderer& render_obj, Input& input_obj, double dt, int spriteIndex) {
+
+    auto& sprites = render_obj.get_sprite_vector();
+    if (spriteIndex < 0 || spriteIndex >= (int)sprites.size()) return;
+
+
+    for (auto& [tuple_key, event_action, key_action] : input_obj.GET_keyboard()) {
+
+        if (key_action == Input_action::toggle_collision) {
+            static bool pressed = false;
+            if (!pressed) {
+                showCollision = !showCollision;  // flip flag
+                pressed = true;
+            }
+
+            else {
+                // reset when key is released
+                pressed = false;
+            }
+        }
+    }
+
+
+    //int index = take_control(render_obj, input_obj);
+    //auto& sprite_vector = render_obj.get_sprite_vector();
+
+    static std::vector<bool> wasColliding;
+    if (wasColliding.size() < sprites.size())
+        wasColliding.resize(sprites.size(), false);
+
+
+    if (spriteIndex >= 0) {
+        auto& sprite = sprites[spriteIndex]; //get sprite to move
+        //save old position in case of collision
+        float oldX = sprite.x;
+        float oldY = sprite.y;
+        auto& keyboard_action = input_obj.GET_keyboard();
+        for (auto& [tuple_key, event_action, key_action] : keyboard_action) {
+            if (key_action == Input_action::move_up) {
+                sprites[spriteIndex].y -= 0.001f;
+            }
+
+            else if (key_action == Input_action::move_down) {
+                sprites[spriteIndex].y += 0.001f;
+            }
+
+            else if (key_action == Input_action::move_left) {
+                sprites[spriteIndex].x -= 0.001f;
+            }
+
+            else if (key_action == Input_action::move_right) {
+                sprites[spriteIndex].x += 0.001f;
+            }
+        }
+        //collision detection with other sprites through movement and AABB
+        bool collided = false; //flag to indicate if a collision occurred
+        for (size_t i = 0; i < sprites.size(); i++) {
+            if (i == spriteIndex) continue; //skip the controlled sprite
+            const auto& other = sprites[i];
+
+            Vector2D pos1(sprite.x, sprite.y);
+            Vector2D size1(sprite.w, sprite.h);
+
+            Vector2D pos2(other.x, other.y);
+            Vector2D size2(other.w, other.h);
+
+            bool hit = checkAABBCollision(pos1, size1, pos2, size2);
+            if (hit && !wasColliding[i]) {
+                std::cout << "Collision detected with sprite " << (i + 1) << std::endl;
+            }
+            wasColliding[i] = hit;
+            if (hit) collided = true;
+
+
+        }if (collided) {
+            //revert to old position on collision
+            sprite.x = oldX;
+            sprite.y = oldY;
+        }
+    }
+
+    if (showCollision) {
+        Debug::Drawer drawer;
+        for (auto& sprite : sprites) {
+            drawer.DebugDrawRectangle(sprite.x, sprite.y, sprite.w, sprite.h, 0xFF00FF00);
+        }
+    }
+}

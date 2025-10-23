@@ -312,6 +312,14 @@ int Application::run() {
             });
     }
 
+    // build a set of movable texture IDs (from prefab)
+    std::unordered_set<int> movableTexIds;
+    {
+        prefab_man.forEachSprite([&](const std::string&, const SpriteArchetype& a) {
+            if (a.movable) movableTexIds.insert(a.texId);
+            });
+    }
+
 
     //  keep aspect if only one dimension is provided (w or h)
     auto fillAspectFromTex = [&](float& w, float& h, int texId) {
@@ -698,7 +706,23 @@ int Application::run() {
 
             // === END SCALING ===
 
-           
+
+            // === START MOVEMENT ===
+            {
+                auto& sprites = bg_render.get_sprite_vector();
+
+                // Loop through every sprite in the scene
+                for (int i = 0; i < (int)sprites.size(); ++i) {
+                    // If this sprite’s texture is marked rotatable in prefab, rotate it
+                    if (movableTexIds.count(sprites[i].idx)) {
+                        game_physics_obj.update_sprite_movement(bg_render, game_input_obj, dt, i);
+                    }
+                }
+            }
+
+            // === END MOVEMENT ===
+
+
             imGuiManager.setFrontSpriteIdxs(frontIdxs);
 
          
