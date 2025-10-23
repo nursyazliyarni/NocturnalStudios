@@ -41,66 +41,221 @@
 
 class ECS {
 public:
-
-	static ECS& getECS() {
-		static ECS dis;
-		return dis;
-	}
-	
-	bool emptyAllEntities();
+	/**
+	 * @brief Construct an empty ECS manager.
+	 *
+	 * The constructor initializes internal containers used to track entities,
+	 * component pools and metadata. No components are implicitly registered.
+	 *
+	 * Usage:
+	 *   // global 'ecs' instance is available (extern ECS ecs;)
+	 *   ECS localEcs; // create a separate ECS instance
+	 */
+	ECS();
 
 	/**
-	 * ECS::createEntity()
-	 * 
-	 * 
-	 * 
-	 * \param name
-	 * \param entityID
-	 * \return 
+	 * @brief Create a new entity.
+	 *
+	 * Creates a new entity and registers it in the ECS. If a non-zero valid
+	 * EntityID is provided it will attempt to use that ID (useful when loading
+	 * or restoring saved scenes). The provided name is stored in the entity's metadata.
+	 *
+	 * @param name Optional human-readable name for the entity.
+	 * @param entityID Optional explicit EntityID to assign. Pass INVALID_ENTITY_ID
+	 *                 (default) to auto-allocate a new ID.
+	 * @return The created entity's EntityID, or INVALID_ENTITY_ID on failure.
+	 *
+	 * Simple usage:
+	 *   EntityID player = ecs.createEntity("Player");
+	 *   EntityID copy  = ecs.createEntity("ClonedPlayer", suggestedId);
 	 */
 	EntityID createEntity(std::string name = "", EntityID entityID = INVALID_ENTITY_ID);
 
+	/**
+	 * @brief Clone an existing entity.
+	 *
+	 * Creates a new entity and copies all components from the source entity.
+	 * Component copying is delegated to the component pools' clone routines.
+	 *
+	 * @param entityID The source entity to clone.
+	 * @return The new entity's ID, or INVALID_ENTITY_ID on failure.
+	 *
+	 * Simple usage:
+	 *   EntityID enemy = ecs.createEntity("Enemy");
+	 *   // ... add components to 'enemy'
+	 *   EntityID enemyCopy = ecs.cloneEntity(enemy);
+	 */
 	EntityID cloneEntity(EntityID entityID);
 
+	/**
+	 * @brief Delete an entity and remove its components.
+	 *
+	 * Marks the entity for deletion, removes components and frees its metadata.
+	 * Returns true on success.
+	 *
+	 * @param entityID The entity to delete.
+	 * @return true if the entity was successfully deleted; false otherwise.
+	 *
+	 * Simple usage:
+	 *   if (!ecs.deleteEntity(playerId)) { /* handle error *\/ }
+	 */
 	bool deleteEntity(EntityID entityID);
 
+	/**
+	 * @brief Get the name assigned to an entity.
+	 *
+	 * Returns a reference to the stored name. Behavior is undefined if the
+	 * entity does not exist — check existence before calling if uncertain.
+	 *
+	 * @param entityID The entity to query.
+	 * @return Reference to the entity name string.
+	 *
+	 * Simple usage:
+	 *   std::string& name = ecs.getEntityName(playerId);
+	 *   std::cout << "Name: " << name << '\n';
+	 */
 	std::string& getEntityName(EntityID entityID);
 
+	/**
+	 * @brief Find an entity by its stored name.
+	 *
+	 * Returns the EntityID for the first matching entity name or INVALID_ENTITY_ID
+	 * if no entity matches.
+	 *
+	 * @param name The name to search for.
+	 * @return Matching EntityID or INVALID_ENTITY_ID.
+	 *
+	 * Simple usage:
+	 *   EntityID id = ecs.findEntityByName("Player");
+	 *   if (id != INVALID_ENTITY_ID) { /* found *\/ }
+	 */
 	EntityID findEntityByName(const std::string& name) const;
 
+	/**
+	 * @brief Retrieve the list of all active entity IDs.
+	 *
+	 * Returns a const reference to the internal vector of entity IDs. Do not modify
+	 * the returned vector directly.
+	 *
+	 * @return const reference to vector of EntityID
+	 *
+	 * Simple usage:
+	 *   for (EntityID id : ecs.getAllEntities()) { /* iterate entities *\/ }
+	 */
 	std::vector<EntityID> const& getAllEntities() const;
 
+	/**
+	 * @brief Attach a component of type T to an entity.
+	 *
+	 * If the component pool for T is not registered it will be registered
+	 * automatically. Returns true on success.
+	 *
+	 * @tparam T Component type (a POD/struct representing component data)
+	 * @param entityID Target entity
+	 * @param component The component instance to copy into the pool
+	 * @return true on success; false on failure
+	 *
+	 * Simple usage:
+	 *   Transform t{ ... };
+	 *   ecs.addComponent<Transform>(playerId, t);
+	 */
 	template <typename T>
 	bool addComponent(EntityID entityID, T const& component);
 
+	/**
+	 * @brief Register a component type T with the ECS.
+	 *
+	 * Creates an internal ComponentPool for T and registers metadata. This
+	 * is done automatically by addComponent if needed, but you can call it
+	 * early to ensure pools exist before loading data.
+	 *
+	 * @tparam T Component type
+	 *
+	 * Simple usage:
+	 *   ecs.registerComponent<Transform>();
+	 */
 	template <typename T>
 	void registerComponent();
 
+	/**
+	 * @brief Query whether an entity has a component of type T.
+	 *
+	 * @tparam T Component type
+	 * @param entityID Entity to query
+	 * @return true if entity has component T; false otherwise
+	 *
+	 * Simple usage:
+	 *   if (ecs.hasComponent<Health>(enemyId)) { /* has health *\/ }
+	 */
 	template <typename T>
 	bool hasComponent(EntityID entityID) const;
 
+	/**
+	 * @brief Remove component of type T from an entity.
+	 *
+	 * @tparam T Component type
+	 * @param entityID Target entity
+	 * @return true on success; false on failure
+	 *
+	 * Simple usage:
+	 *   ecs.removeComponent<Weapon>(playerId);
+	 */
 	template <typename T>
 	bool removeComponent(EntityID entityID);
 
+	/**
+	 * @brief Remove a component from an entity by component ID.
+	 *
+	 * Non-templated API variant that uses a ComponentID, useful for editors
+	 * or serialized systems where only numeric IDs are known at runtime.
+	 *
+	 * @param entityID Target entity
+	 * @param componentID ComponentID (use Family::getID<T>() to obtain)
+	 * @return true on success; false on failure
+	 *
+	 * Simple usage:
+	 *   ComponentID cid = Family::getID<Health>();
+	 *   ecs.removeComponent(playerId, cid);
+	 */
 	bool removeComponent(EntityID entityID, ComponentID componentID);
 
+	/**
+	 * @brief Get pointer to component T for an entity.
+	 *
+	 * Returns a pointer to the component stored in the pool or nullptr if the
+	 * entity does not have that component or the pool is not registered.
+	 *
+	 * @tparam T Component type
+	 * @param entityID Target entity
+	 * @return Pointer to component instance or nullptr
+	 *
+	 * Simple usage:
+	 *   if (auto* h = ecs.getComponent<Health>(playerId)) {
+	 *       h->hp -= 10;
+	 *   }
+	 */
 	template <typename T>
 	T* getComponent(EntityID entityID);
 
 	
 
 private:
-
-	ECS(); //singleton, constructor is private.
-
-	ECS(const ECS&) = delete;
-	ECS& operator=(const ECS&) = delete;
-
-	ECS( ECS&&) = delete;
-	ECS& operator=( ECS&&) = delete;
-
+	/**
+	 * @brief Find the ComponentData entry for a component ID (const).
+	 *
+	 * Returns an iterator to the matching entry in componentMetadata or
+	 * componentMetadata.end() if not found.
+	 */
 	std::vector<ComponentData>::const_iterator getComponentData(ComponentID componentID) const;
 	std::vector<ComponentData>::iterator getComponentData(ComponentID componentID);
+
+	/**
+	 * @brief Recompute any cached metadata that depends on components/entities.
+	 *
+	 * This function is called internally when components are added/removed.
+	 * It should be considered implementation detail and is not intended for
+	 * public use.
+	 */
 	void reUpdateMetadata();
 
 
@@ -207,6 +362,8 @@ T* ECS::getComponent(EntityID entityID) {
 	}
 	return specificPool->getComponent(entityID);
 }
+
+extern ECS ecs;
 
 
 // [====================*====================]
