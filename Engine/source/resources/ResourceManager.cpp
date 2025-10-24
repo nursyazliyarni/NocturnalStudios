@@ -152,9 +152,6 @@ void ResourceManager::loadResources(std::string const& resourceFilePath) {
  *  - Not thread-safe. Concurrent calls that mutate `audios` or ID state
  *    require external synchronization.
  *
- * Complexity:
- *  - O(N) to check for existing audio (N = number of loaded audios) and
- *    average O(1) for the unordered_map insertion.
  *
  * Notes:
  *  - This function only manages the Audio resource metadata stored in the

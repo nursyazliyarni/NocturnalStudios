@@ -334,11 +334,11 @@ void ImGuiManager::showEntityListUI(/* Maybe an enum of paramEntityType, Maybe a
 
 	ImGui::Text("BGM Audio Control:");
 	if (ImGui::Button("Play BGM")) {
-		//audioSystem.playBGM("bgm");
+		
 	}
 	ImGui::SameLine();
 	if (ImGui::Button("Pause BGM")) {
-		//audioSystem.stopBGM();
+		
 	}
 
 	ImGui::Text("SFX Audio Control:");
