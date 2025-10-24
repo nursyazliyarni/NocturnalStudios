@@ -82,11 +82,11 @@ void ResourceManager::setAudioSystem(AudioSystem* audioSystemPtr) {
  * "Audio" as a resourceFilePath value.
  *
  * Parameters:
- *  - resourceFilePath: subdirectory under "Resources" to scan. If empty,
- *    defaults to scanning "Resources".
+ *  - resourceFilePath: subdirectory under "assets" to scan. If empty,
+ *    defaults to scanning "assets".
  *
  * Behavior:
- *  - Walks the directory tree under "Resources[/resourceFilePath]". 
+ *  - Walks the directory tree under "assets[/resourceFilePath]". 
  *  - For each file that has an extension and matches a supported resource
  *    type, calls the appropriate loader (e.g., loadAudio).
  *
@@ -97,7 +97,7 @@ void ResourceManager::setAudioSystem(AudioSystem* audioSystemPtr) {
 void ResourceManager::loadResources(std::string const& resourceFilePath) {
 	std::cout << "Loading resources\n";
 
-	std::string resourcePath{ "Resources" };
+	std::string resourcePath{ "assets" };
 	std::string directoryPath{ resourceFilePath };
 
 	if (!directoryPath.empty()) {

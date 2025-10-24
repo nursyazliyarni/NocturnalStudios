@@ -356,7 +356,13 @@ void ImGuiManager::showEntityListUI(/* Maybe an enum of paramEntityType, Maybe a
 				audio.toPlayAtStart = false;
 				audio.group = AudioData::IndividualAudioData::Group::Music;
 				auto opt = audioSystem.createAudioInstance(audio, INVALID_ENTITY_ID);
-				if (opt) activeInstances[resID] = *opt;
+				if (opt) {
+					activeInstances[resID] = *opt;
+					// Start playback immediately — created channels are initially paused.
+					if (!audioSystem.resumeSound(activeInstances[resID])) {
+						logger.warning("Failed to start BGM instance " + std::to_string(activeInstances[resID]));
+					}
+				}
 				else logger.error("Failed to create BGM audio instance for resource " + std::to_string(resID));
 			}
 		}
@@ -384,13 +390,16 @@ void ImGuiManager::showEntityListUI(/* Maybe an enum of paramEntityType, Maybe a
 			if (opt) {
 				// store the last instance for this resource so Pause could work if needed
 				activeInstances[resID] = *opt;
+				// Immediately start the SFX instance as well.
+				if (!audioSystem.resumeSound(activeInstances[resID])) {
+					logger.warning("Failed to start SFX instance " + std::to_string(activeInstances[resID]));
+				}
 			}
 			else {
 				logger.error("Failed to create SFX audio instance for resource " + std::to_string(resID));
 			}
 		}
 	}
-
 	ImGui::End();
 }
 
