@@ -92,7 +92,7 @@ void ResourceManager::setAudioSystem(AudioSystem* audioSystemPtr) {
  *
  * Simple usage:
  *  rm.loadResources();           // scan Resources and load supported resource types
- *  rm.loadResources("Audio");    // only scan Resources/Audio and load audio files
+ *  rm.loadResources("Audio");    // only scan assets/Audio and load audio files
  */
 void ResourceManager::loadResources(std::string const& resourceFilePath) {
 	std::cout << "Loading resources\n";
