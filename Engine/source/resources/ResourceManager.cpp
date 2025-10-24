@@ -86,7 +86,7 @@ void ResourceManager::setAudioSystem(AudioSystem* audioSystemPtr) {
  *    defaults to scanning "Resources".
  *
  * Behavior:
- *  - Walks the directory tree under "Resources[/resourceFilePath]".
+ *  - Walks the directory tree under "Resources[/resourceFilePath]". 
  *  - For each file that has an extension and matches a supported resource
  *    type, calls the appropriate loader (e.g., loadAudio).
  *
@@ -176,6 +176,18 @@ Audio& ResourceManager::loadAudio(const std::string& name, const std::string& fi
 	audios.emplace(id, Audio{ id, name, filePath });
 
 	logger.log("Loaded Audio: " + name + " from " + filePath);
+
+	// If an AudioSystem is attached, forward the newly created Audio so FMOD
+	// can create the FMOD::Sound immediately. This makes it easy to call
+	// loadAudio(...) after setAudioSystem(...) from application code.
+	if (audioSystem) {
+		try {
+			audioSystem->loadSound(audios.at(id));
+		} catch (...) {
+			// avoid throwing from resource manager; log and continue
+			logger.error("Failed to forward audio to AudioSystem for: " + name);
+		}
+	}
 
 	return audios.at(id);
 }

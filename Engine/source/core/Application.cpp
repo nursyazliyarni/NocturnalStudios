@@ -134,7 +134,22 @@ int Application::run() {
 
     Physics    game_physics_obj;
     Game_Loop  game_loop_obj(m_window.handle());
-    ImGuiManager imGuiManager(m_window, bg_render, txt_obj, game_input_obj, game_physics_obj, audioSystem);
+
+    // ----- Load a couple of audio resources for quick testing -----
+    // These will be forwarded to AudioSystem::loadSound by ResourceManager because
+    // we called setAudioSystem(&audioSystem) above.
+    // Place your audio files under Resources/Audio/... or adapt paths as needed.
+    auto& bgmA = resourceManager.loadAudio("BGM01", "Resources/Audio/background/bgm01.wav");
+    auto& bgmB = resourceManager.loadAudio("BGM02", "Resources/Audio/background/bgm02.wav");
+    auto& sfx1 = resourceManager.loadAudio("SFX01", "Resources/Audio/sfx01.wav");
+    auto& sfx2 = resourceManager.loadAudio("SFX02", "Resources/Audio/sfx02.wav");
+    auto& sfx3 = resourceManager.loadAudio("SFX03", "Resources/Audio/sfx03.wav");
+
+    std::vector<ResourceID> bgms = { bgmA.getID(), bgmB.getID() };
+    std::vector<ResourceID> sfxs = { sfx1.getID(), sfx2.getID(), sfx3.getID() };
+
+    ImGuiManager imGuiManager(m_window, bg_render, txt_obj, game_input_obj, game_physics_obj, audioSystem, bgms, sfxs);
+    // --------------------------------------------------------------
 
     // --- ECS Integration: mirror renderer sprites to ECS entities ---
     // ImGuiManager constructor calls renderer.initAllSprites(), so sprites exist now.

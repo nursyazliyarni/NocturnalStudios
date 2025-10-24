@@ -77,6 +77,8 @@ if (EXISTS "${FMOD_CORE_INC}/fmod.h")
 
   message(STATUS "FMOD include: ${FMOD_CORE_INC}")
   message(STATUS "FMOD lib dir: ${FMOD_LIB_DIR}")
+  message(STATUS "FMOD dll (Release): ${FMOD_DLL_RELEASE}")
+  message(STATUS "FMOD dll (Debug): ${FMOD_DLL_DEBUG}")
 
   # For multi-config generators we must set import lib per-config. Use Release for RelWithDebInfo/MinSizeRel if vendor doesn't provide separate libs.
   if (EXISTS "${FMOD_IMPORT_LIB_RELEASE}")
@@ -114,4 +116,12 @@ if (EXISTS "${FMOD_CORE_INC}/fmod.h")
   set(NS_HAVE_FMOD ON)
 else()
   message(STATUS "FMOD not found at ${FMOD_CORE_INC}; FMOD disabled")
+endif()
+
+if (EXISTS ${CMAKE_SOURCE_DIR}/lib/fmod/api/core/lib/x64/fmodL.dll)
+  message (STATUS "FMOD L lib found")
+endif()
+
+if (EXISTS ${CMAKE_SOURCE_DIR}/lib/fmod/api/core/lib/x64/fmod.dll)
+  message (STATUS "FMOD lib found")
 endif()

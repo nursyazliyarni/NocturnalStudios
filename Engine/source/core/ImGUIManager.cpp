@@ -43,22 +43,26 @@ void Gui::updateImGuiManager(double& deltaTime, ImGuiManager& imGuiManager) {
 	imGuiManager.endFrame();
 }
 
-ImGuiManager::ImGuiManager(Window& w, Renderer& r, Texture& tex, Input& i, Physics& p, AudioSystem& audio) : 
-	mainWindow{ w }, 
-	renderer{ r }, 
-	texture{ tex }, 
-	input{ i }, 
-	physics{ p }, 
+ImGuiManager::ImGuiManager(Window& w, Renderer& r, Texture& tex, Input& i, Physics& p, AudioSystem& audio,
+	std::vector<ResourceID> bgmResIDs, std::vector<ResourceID> sfxResIDs) :
+	mainWindow{ w },
+	renderer{ r },
+	texture{ tex },
+	input{ i },
+	physics{ p },
 	audioSystem{ audio },
-	windowTopLeft {}, 
-	windowBottomRight{}, 
-	deltaTime{ 0. }, 
-	imGuiTime{ 0. }, 
-	inputTime{ 0. }, 
-	logicTime{ 0. }, 
-	renderTime{ 0. }, 
-	physicsTime{ 0. }, 
-	selectedEntityType {} 
+	windowTopLeft{},
+	windowBottomRight{},
+	deltaTime{ 0. },
+	imGuiTime{ 0. },
+	inputTime{ 0. },
+	logicTime{ 0. },
+	renderTime{ 0. },
+	physicsTime{ 0. },
+	selectedEntityType{},
+	bgmResourceIDs{ std::move(bgmResIDs) },
+	sfxResourceIDs{ std::move(sfxResIDs) },
+	activeInstances{}
 {
 	// Init ImGui context
 	ImGui::CreateContext();
@@ -334,17 +338,57 @@ void ImGuiManager::showEntityListUI(/* Maybe an enum of paramEntityType, Maybe a
 	}
 
 	ImGui::Text("BGM Audio Control:");
-	if (ImGui::Button("Play BGM")) {
-		
-	}
-	ImGui::SameLine();
-	if (ImGui::Button("Pause BGM")) {
-		
+	for (auto resID : bgmResourceIDs) {
+		// Show simple label for resource id (you can replace with name lookup)
+		ImGui::Text("BGM %u", resID);
+		ImGui::SameLine();
+		if (ImGui::Button(("Play##bgm" + std::to_string(resID)).c_str())) {
+			// If already have an instance for this resource, resume it. Otherwise create looping instance.
+			auto it = activeInstances.find(resID);
+			if (it != activeInstances.end() && it->second != 0) {
+				audioSystem.resumeSound(it->second);
+			}
+			else {
+				AudioData::IndividualAudioData audio{};
+				audio.resourceID = resID;
+				audio.volume = 1.0f;
+				audio.loop = true;
+				audio.toPlayAtStart = false;
+				audio.group = AudioData::IndividualAudioData::Group::Music;
+				auto opt = audioSystem.createAudioInstance(audio, INVALID_ENTITY_ID);
+				if (opt) activeInstances[resID] = *opt;
+				else logger.error("Failed to create BGM audio instance for resource " + std::to_string(resID));
+			}
+		}
+		ImGui::SameLine();
+		if (ImGui::Button(("Pause##bgm" + std::to_string(resID)).c_str())) {
+			auto it = activeInstances.find(resID);
+			if (it != activeInstances.end() && it->second != 0) {
+				audioSystem.pauseSound(it->second);
+			}
+		}
 	}
 
 	ImGui::Text("SFX Audio Control:");
-	if (ImGui::Button("Play SFX")) {
-		
+	for (auto resID : sfxResourceIDs) {
+		ImGui::Text("SFX %u", resID);
+		ImGui::SameLine();
+		if (ImGui::Button(("Play##sfx" + std::to_string(resID)).c_str())) {
+			AudioData::IndividualAudioData audio{};
+			audio.resourceID = resID;
+			audio.volume = 1.0f;
+			audio.loop = false;
+			audio.toPlayAtStart = false;
+			audio.group = AudioData::IndividualAudioData::Group::SFX;
+			auto opt = audioSystem.createAudioInstance(audio, INVALID_ENTITY_ID);
+			if (opt) {
+				// store the last instance for this resource so Pause could work if needed
+				activeInstances[resID] = *opt;
+			}
+			else {
+				logger.error("Failed to create SFX audio instance for resource " + std::to_string(resID));
+			}
+		}
 	}
 
 	ImGui::End();
