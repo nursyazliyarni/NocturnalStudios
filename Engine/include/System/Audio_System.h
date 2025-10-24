@@ -82,6 +82,9 @@ public:
 	float getReserved1Volume() const;
 	float getReserved2Volume() const;
 
+	AudioInstanceID playBGM(ResourceID id);
+	AudioInstanceID playSFX(ResourceID id);
+
 private:
 	float bgmVolume;
 	float sfxVolume;

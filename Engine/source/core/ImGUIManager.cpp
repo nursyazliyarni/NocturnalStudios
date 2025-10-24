@@ -43,14 +43,14 @@ void Gui::updateImGuiManager(double& deltaTime, ImGuiManager& imGuiManager) {
 	imGuiManager.endFrame();
 }
 
-ImGuiManager::ImGuiManager(Window& w, Renderer& r, Texture& tex, Input& i, Physics& p, AudioSystem& audio,
-	std::vector<ResourceID> bgmResIDs, std::vector<ResourceID> sfxResIDs) :
+ImGuiManager::ImGuiManager(Window& w, Renderer& r, Texture& tex, Input& i, Physics& p, AudioSystem& audio, ResourceManager& resourceManager) :
 	mainWindow{ w },
 	renderer{ r },
 	texture{ tex },
 	input{ i },
 	physics{ p },
 	audioSystem{ audio },
+	resourceManager{ resourceManager },
 	windowTopLeft{},
 	windowBottomRight{},
 	deltaTime{ 0. },
@@ -60,8 +60,6 @@ ImGuiManager::ImGuiManager(Window& w, Renderer& r, Texture& tex, Input& i, Physi
 	renderTime{ 0. },
 	physicsTime{ 0. },
 	selectedEntityType{},
-	bgmResourceIDs{ std::move(bgmResIDs) },
-	sfxResourceIDs{ std::move(sfxResIDs) },
 	activeInstances{}
 {
 	// Init ImGui context
@@ -337,69 +335,89 @@ void ImGuiManager::showEntityListUI(/* Maybe an enum of paramEntityType, Maybe a
 		logger.log("Deleting entity of Type: " + std::to_string(selectedEntityType));
 	}
 
-	ImGui::Text("BGM Audio Control:");
-	for (auto resID : bgmResourceIDs) {
-		// Show simple label for resource id (you can replace with name lookup)
-		ImGui::Text("BGM %u", resID);
-		ImGui::SameLine();
-		if (ImGui::Button(("Play##bgm" + std::to_string(resID)).c_str())) {
-			// If already have an instance for this resource, resume it. Otherwise create looping instance.
-			auto it = activeInstances.find(resID);
-			if (it != activeInstances.end() && it->second != 0) {
+	// --- build vectors for combo display (cheap, rebuild each frame) ---
+	std::vector<ResourceID> audioIDs;
+	std::vector<std::string> audioNames;
+	audioIDs.reserve(resourceManager.getAudios().size());
+	audioNames.reserve(resourceManager.getAudios().size());
+	for (auto const& kv : resourceManager.getAudios()) {
+		audioIDs.push_back(kv.first);
+		audioNames.push_back(kv.second.getKey());
+	}
+
+	// BGM selector
+	static int bgmIndex = 0;
+	if (!audioNames.empty()) {
+		if (bgmIndex >= (int)audioNames.size()) bgmIndex = 0;
+		ImGui::Text("Looping Audio:");
+		if (ImGui::BeginCombo("Select Audio", audioNames[bgmIndex].c_str())) {
+			for (int i = 0; i < (int)audioNames.size(); ++i) {
+				bool selected = (i == bgmIndex);
+				if (ImGui::Selectable(audioNames[i].c_str(), selected)) {
+					bgmIndex = i;
+				}
+				if (selected) ImGui::SetItemDefaultFocus();
+			}
+			ImGui::EndCombo();
+		}
+
+		ResourceID bgmRID = audioIDs[bgmIndex];
+		if (ImGui::Button("Play Audio")) {
+			// create persistent instance and store mapping
+			auto it = activeInstances.find(bgmRID);
+			if (it != activeInstances.end()) {
 				audioSystem.resumeSound(it->second);
 			}
 			else {
-				AudioData::IndividualAudioData audio{};
-				audio.resourceID = resID;
-				audio.volume = 1.0f;
-				audio.loop = true;
-				audio.toPlayAtStart = false;
-				audio.group = AudioData::IndividualAudioData::Group::Music;
-				auto opt = audioSystem.createAudioInstance(audio, INVALID_ENTITY_ID);
+				AudioData::IndividualAudioData d{};
+				d.resourceID = bgmRID;
+				d.name = audioNames[bgmIndex];
+				d.loop = true;
+				d.group = AudioData::IndividualAudioData::Group::Music;
+				d.volume = audioSystem.getBGMVolume();
+				auto opt = audioSystem.createAudioInstance(d, INVALID_ENTITY_ID);
 				if (opt) {
-					activeInstances[resID] = *opt;
-					// Start playback immediately — created channels are initially paused.
-					if (!audioSystem.resumeSound(activeInstances[resID])) {
-						logger.warning("Failed to start BGM instance " + std::to_string(activeInstances[resID]));
-					}
+					activeInstances[bgmRID] = *opt;
+					audioSystem.resumeSound(*opt); // createAudioInstance starts paused
 				}
-				else logger.error("Failed to create BGM audio instance for resource " + std::to_string(resID));
 			}
 		}
 		ImGui::SameLine();
-		if (ImGui::Button(("Pause##bgm" + std::to_string(resID)).c_str())) {
-			auto it = activeInstances.find(resID);
-			if (it != activeInstances.end() && it->second != 0) {
-				audioSystem.pauseSound(it->second);
+		if (ImGui::Button("Pause Audio")) {
+			ResourceID rid = bgmRID;
+			auto it = activeInstances.find(rid);
+			if (it != activeInstances.end()) audioSystem.pauseSound(it->second);
+		}
+	}
+
+	// SFX selector / one-shot play
+	static int sfxIndex = 0;
+	if (!audioNames.empty()) {
+		if (sfxIndex >= (int)audioNames.size()) sfxIndex = 0;
+		ImGui::Text("One-shot Audio:");
+		if (ImGui::BeginCombo("Select Audio", audioNames[sfxIndex].c_str())) {
+			for (int i = 0; i < (int)audioNames.size(); ++i) {
+				bool selected = (i == sfxIndex);
+				if (ImGui::Selectable(audioNames[i].c_str(), selected)) sfxIndex = i;
+				if (selected) ImGui::SetItemDefaultFocus();
+			}
+			ImGui::EndCombo();
+		}
+
+		ResourceID sfxRID = audioIDs[sfxIndex];
+		if (ImGui::Button("Play Audio")) {
+			// One-shot: just call playSFX every time (no mapping)
+			AudioInstanceID inst = audioSystem.playSFX(sfxRID);
+			if (inst == 0) {
+				logger.log("[ERROR] Failed to play Audio: " + std::to_string(sfxRID));
+			}
+			else {
+				// optional: don't store for one-shots; if you need pause/resume, store and check validity on resume
 			}
 		}
 	}
 
-	ImGui::Text("SFX Audio Control:");
-	for (auto resID : sfxResourceIDs) {
-		ImGui::Text("SFX %u", resID);
-		ImGui::SameLine();
-		if (ImGui::Button(("Play##sfx" + std::to_string(resID)).c_str())) {
-			AudioData::IndividualAudioData audio{};
-			audio.resourceID = resID;
-			audio.volume = 1.0f;
-			audio.loop = false;
-			audio.toPlayAtStart = false;
-			audio.group = AudioData::IndividualAudioData::Group::SFX;
-			auto opt = audioSystem.createAudioInstance(audio, INVALID_ENTITY_ID);
-			if (opt) {
-				// store the last instance for this resource so Pause could work if needed
-				activeInstances[resID] = *opt;
-				// Immediately start the SFX instance as well.
-				if (!audioSystem.resumeSound(activeInstances[resID])) {
-					logger.warning("Failed to start SFX instance " + std::to_string(activeInstances[resID]));
-				}
-			}
-			else {
-				logger.error("Failed to create SFX audio instance for resource " + std::to_string(resID));
-			}
-		}
-	}
+
 	ImGui::End();
 }
 

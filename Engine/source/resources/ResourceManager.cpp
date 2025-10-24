@@ -112,7 +112,7 @@ void ResourceManager::loadResources(std::string const& resourceFilePath) {
 		if (!filename.has_extension()) continue;
 
 		// Check Resource type here
-		if (resourceFilePath == "Audio") {
+		if (resourceFilePath == "audio") {
 			loadAudio(stem.string(), path.string());
 		}
 	}

@@ -700,3 +700,55 @@ float AudioSystem::getReserved2Volume() const {
 	reserved2ChannelGroup->getVolume(&volume);
 	return volume;
 }
+
+AudioInstanceID AudioSystem::playBGM(ResourceID id) {
+	auto it = soundMap.find(id);
+	if (it == soundMap.end()) {
+		logger.error("AudioSystem::playBGM: Failed to find audio resource with ID: " + std::to_string(id));
+		return 0;
+	}
+
+	FMOD::Channel* channel = nullptr;
+	FMOD_RESULT result = fmodSystem->playSound(it->second, bgmChannelGroup, false, &channel);
+	if (result != FMOD_OK) {
+		logger.error("AudioSystem::playBGM: Failed to play BGM sound for audio resource ID: " + std::to_string(id));
+		return 0;
+	}
+
+	AudioInstance inst{};
+	inst.channel = channel;
+	inst.isPlaying = true;
+	inst.volume = bgmVolume;
+	++totalInstanceCount;
+	audioInstances[totalInstanceCount] = std::move(inst);
+
+	channel->setVolume(bgmVolume);
+	return totalInstanceCount;
+}
+
+AudioInstanceID AudioSystem::playSFX(ResourceID id) {
+	auto it = soundMap.find(id);
+	if (it == soundMap.end()) {
+		logger.error("AudioSystem::playSFX: Failed to find audio resource with ID: " + std::to_string(id));
+		return 0;
+	}
+
+	logger.log("AudioSystem::playSFX: Playing SFX with audio resource ID: " + std::to_string(id));
+
+	FMOD::Channel* channel = nullptr;
+	FMOD_RESULT result = fmodSystem->playSound(it->second, sfxChannelGroup, false, &channel);
+	if (result != FMOD_OK) {
+		logger.error("AudioSystem::playSFX: Failed to play SFX sound for audio resource ID: " + std::to_string(id));
+		return 0;
+	}
+
+	AudioInstance inst{};
+	inst.channel = channel;
+	inst.isPlaying = true;
+	inst.volume = sfxVolume;
+	++totalInstanceCount;
+	audioInstances[totalInstanceCount] = std::move(inst);
+
+	channel->setVolume(sfxVolume);
+	return totalInstanceCount;
+}
