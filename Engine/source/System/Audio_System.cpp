@@ -329,7 +329,7 @@ bool AudioSystem::resumeSound(AudioInstanceID id) {
 	auto it = audioInstances.find(id);
 	if (it == audioInstances.end()) {
 		logger.warning("Attempted to resume non-existent audio instance with ID: " + std::to_string(id));
-		return;
+		return false;
 	}
 
 	FMOD::Channel* channel = it->second.channel;

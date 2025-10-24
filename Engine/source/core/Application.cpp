@@ -41,7 +41,7 @@
 // #include "./scene/Prefab.h"
 #include "physics/AABB.h"
 #include "ECS/ECS.h"
-#include "System/Audio_System.h"
+#include "resources/ResourceManager.h"
 
 namespace {
     constexpr float TWO_PI = 2.0f * glm::pi<float>();
@@ -128,12 +128,13 @@ int Application::run() {
     game_input_obj.initSpriteRotations(txt_obj.get_totalTexture());
 
 
-
-	//audioSystem.loadSound("bgm", "../Assets/audio/bgm.wav", true, true);
+    ResourceManager resourceManager(ecs);
+    AudioSystem audioSystem("AudioSystem", ecs, resourceManager);
+	resourceManager.setAudioSystem(&audioSystem);
 
     Physics    game_physics_obj;
     Game_Loop  game_loop_obj(m_window.handle());
-    ImGuiManager imGuiManager(m_window, bg_render, txt_obj, game_input_obj, game_physics_obj);
+    ImGuiManager imGuiManager(m_window, bg_render, txt_obj, game_input_obj, game_physics_obj, audioSystem);
 
     // --- ECS Integration: mirror renderer sprites to ECS entities ---
     // ImGuiManager constructor calls renderer.initAllSprites(), so sprites exist now.

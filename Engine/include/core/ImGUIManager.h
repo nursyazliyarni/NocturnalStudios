@@ -36,7 +36,7 @@ extern Logger logger;
 
 class ImGuiManager {
 public:
-	ImGuiManager(Window& window, Renderer& renderer, Texture& tex, Input& input, Physics& physics);
+	ImGuiManager(Window& window, Renderer& renderer, Texture& tex, Input& input, Physics& physics, AudioSystem& audio);
 	~ImGuiManager();
 
 	void updateDeltaTime(double& dt);
@@ -71,6 +71,7 @@ private:
 	Texture& texture;
 	Input& input;
 	Physics& physics;
+	AudioSystem& audioSystem;
 
 	ImVec2 windowTopLeft;
 	ImVec2 windowBottomRight;

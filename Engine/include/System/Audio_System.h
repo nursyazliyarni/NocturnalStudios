@@ -7,8 +7,11 @@
 #include <iostream>
 #include <algorithm>
 
-#include <../fmod/fmod.hpp>
-#include <../fmod/fmod_errors.h>
+//#include <../fmod/fmod.hpp>
+//#include <../fmod/fmod_errors.h>
+
+#include "fmod.hpp"
+#include "fmod_errors.h"
 
 #include "ECS/ECS_Component.h"
 #include "ECS/ECS_Def.h"

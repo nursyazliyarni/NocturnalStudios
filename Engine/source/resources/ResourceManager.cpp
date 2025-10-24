@@ -3,7 +3,7 @@ constexpr char DEFAULT_AUDIO_FILEPATH[] = "DefaultAudio/filepath";
 
 #include <iostream>
 #include <filesystem>
-#include <../fmod/fmod_errors.h>
+#include "fmod_errors.h"
 
 #include "ECS/ECS.h"
 #include "resources/ResourceManager.h"

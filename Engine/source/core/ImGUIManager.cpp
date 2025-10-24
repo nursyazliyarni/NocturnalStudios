@@ -43,12 +43,13 @@ void Gui::updateImGuiManager(double& deltaTime, ImGuiManager& imGuiManager) {
 	imGuiManager.endFrame();
 }
 
-ImGuiManager::ImGuiManager(Window& w, Renderer& r, Texture& tex, Input& i, Physics& p) : 
+ImGuiManager::ImGuiManager(Window& w, Renderer& r, Texture& tex, Input& i, Physics& p, AudioSystem& audio) : 
 	mainWindow{ w }, 
 	renderer{ r }, 
 	texture{ tex }, 
 	input{ i }, 
 	physics{ p }, 
+	audioSystem{ audio },
 	windowTopLeft {}, 
 	windowBottomRight{}, 
 	deltaTime{ 0. }, 
