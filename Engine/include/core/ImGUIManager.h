@@ -30,6 +30,7 @@
 #include "../include/graphics/Texture.h"
 #include "../include/input/Input.h"
 #include "../include/physics/Physics.h"
+#include "../System/Audio_System.h"
 
 extern Logger logger;
 

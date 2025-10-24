@@ -1,5 +1,5 @@
 // Add filepath here
-constexpr char DEFAULT_AUDIO_FILEPATH[] = "DefaultAudio";
+constexpr char DEFAULT_AUDIO_FILEPATH[] = "DefaultAudio/filepath";
 
 #include <iostream>
 #include <filesystem>
@@ -162,30 +162,6 @@ Audio& ResourceManager::loadAudio(const std::string& name, const std::string& fi
 	audios.emplace(id, Audio{ id, name, filePath });
 
 	logger.log("Loaded Audio: " + name + " from " + filePath);
-
-	// Inform AudioSystem to load the underlying FMOD sound (if available)
-	if (audioSystem) {
-		bool stream = false;
-		bool loop = false;
-
-		// Heuristic: treat large files as music (stream + loop), small as SFX (sample, no loop).
-		try {
-			auto size = std::filesystem::file_size(filePath);
-			const std::uintmax_t STREAM_THRESHOLD = 1'000'000; // 1 MB
-			if (size > STREAM_THRESHOLD) {
-				stream = true;
-				loop = true;
-			}
-		}
-		catch (std::filesystem::filesystem_error const& e) {
-			// If we can't determine size, fall back to non-streaming SFX
-			logger.warning(std::string("ResourceManager::loadAudio - could not read file size: ") + e.what());
-		}
-
-		if (!audioSystem->loadSound(name, filePath, stream, loop)) {
-			logger.warning("AudioSystem failed to load sound: " + filePath);
-		}
-	}
 
 	return audios.at(id);
 }

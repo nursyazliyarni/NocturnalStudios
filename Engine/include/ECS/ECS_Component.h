@@ -28,7 +28,7 @@
 //-------------------------- Add new ECS component type here --------------------------//
 struct RenderComponent;
 struct Collider;
-
+struct AudioData;
 struct Transform;
 
 struct ImageRenderer;
@@ -96,7 +96,7 @@ struct AnimalBehavior {
 	std::string sound{ "moo" };
 };
 struct AudioData {
-	struct Individual {
+	struct IndividualAudioData {
 		unsigned resourceID;
 		std::string name;
 
@@ -113,10 +113,12 @@ struct AudioData {
 		enum class Group {
 			Music,
 			SFX,
+			RESERVED1,
+			RESERVED2
 		} group = Group::SFX;
 	};
 
-	std::vector<Individual> audios;
+	std::vector<IndividualAudioData> audios;
 	bool listener = false;
 };
 

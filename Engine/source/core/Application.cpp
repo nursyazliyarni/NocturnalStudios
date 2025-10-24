@@ -41,6 +41,7 @@
 // #include "./scene/Prefab.h"
 #include "physics/AABB.h"
 #include "ECS/ECS.h"
+#include "System/Audio_System.h"
 
 namespace {
     constexpr float TWO_PI = 2.0f * glm::pi<float>();
@@ -126,6 +127,9 @@ int Application::run() {
     game_input_obj.initSpriteScales(txt_obj.get_totalTexture());
     game_input_obj.initSpriteRotations(txt_obj.get_totalTexture());
 
+
+
+	//audioSystem.loadSound("bgm", "../Assets/audio/bgm.wav", true, true);
 
     Physics    game_physics_obj;
     Game_Loop  game_loop_obj(m_window.handle());
