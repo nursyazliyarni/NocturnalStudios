@@ -293,7 +293,7 @@ void ImGuiManager::showPerformanceOverlayUI() {
 void ImGuiManager::showEntityListUI(/* Maybe an enum of paramEntityType, Maybe a Reference to a std::vector of objectList?*/) {
 	// Fixed size for entity list window
 	constexpr float width = 300.0f;
-	constexpr float height = 200.0f;
+	constexpr float height = 400.0f;
 
 	ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDecoration |
 		ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
@@ -403,7 +403,7 @@ void ImGuiManager::showTransformUI(/* A reference to a vector of object list obj
 		ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
 
 	// Position the overlay at the top-right corner of the window, below entity list overlay
-	ImVec2 windowTopRightPos = { windowBottomRight.x - width, windowTopLeft.y + 400.0f };
+	ImVec2 windowTopRightPos = { windowBottomRight.x - width, windowTopLeft.y + 600.0f };
 	ImGui::SetNextWindowPos(windowTopRightPos);
 	ImGui::SetNextWindowBgAlpha(0.35f);
 	ImGui::SetNextWindowSize({ width, height });
