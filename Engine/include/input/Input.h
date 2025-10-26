@@ -1,3 +1,32 @@
+/*!------------------------------------------------------------------------------------------------
+	File: Input.h
+	Project: NocturnalStudio
+
+	This header declares the engine�s input layer. It wraps GLFW (with ImGui forwarding) to:
+    - Capture keyboard and mouse events
+    - Track mouse position/delta (normalized & unnormalized)
+    - Register and query action states (movement, scaling, rotation, reset, toggle-collision)
+    - Broadcast input via the MessageBus (Key/Mouse messages)
+    - Manage per-sprite helpers for selection/deselection, scaling, and rotation
+	used for later physics and logic.
+
+		Primary Author:
+		 Ang Yu Xuan (55%)
+		-implement functions for captures user keyboard input and mouse input and the respective
+		callback functions. The callback functions will update the input action accordingly.
+
+	Secondary Author:
+		 Nur Syazliyarni (15%)
+		-Created the messaging system for input
+
+	Secondary Author:
+		 Rishika Bimal Attodi  (35%)
+		-Added sprite selection/deselection logic and the scaling/rotation key handling,
+		plus per-sprite transform helpers (init/get pointers, rotation updates)
+
+	All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
+
 // IsKeyDown/WasPressed, mouse, scroll (GLFW wrappe r)
 #pragma once
 
@@ -14,8 +43,7 @@
 enum class Input_action {
 	no_action,take_control,
 	move_up,move_down,move_left,move_right,
-	magnify,minify,rotate_clockwise,rotate_anticlockwise, reset_transform,
-	toggle_collision
+	magnify,minify,rotate_clockwise,rotate_anticlockwise, reset_transform, toggle_collision
 };
 
 class Input {

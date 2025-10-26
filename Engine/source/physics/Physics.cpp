@@ -1,3 +1,24 @@
+/*!------------------------------------------------------------------------------------------------
+    File: Physics.cpp
+    Project: NocturnalStudio
+
+    This file contains all the behaviour of our sprite when the correct input key is detected
+
+    Primary Author:
+         Ang Yu Xuan (60%)
+        - implement functions for movement, scaling and rotation for our sprite.
+
+    Secondary Author:
+        Rishika Bimal Attodi (33%)
+        - upgrade the scaling and rotation function.
+
+    Secondary Author:
+        Chang Qi Xuan Celest (7%)
+            - Implemented stop movement on collision in update_sprite_movement.
+
+    All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
+
 // integration, gravity, movement
 #include <algorithm> // std::fill
 #include "input/Input.h"
@@ -29,7 +50,7 @@ int Physics::take_control(Renderer& render_obj, Input& input_obj) {
 }
 
 
-void Physics::update_sprite_movement(Renderer& render_obj, Input& input_obj) {
+void Physics::update_sprite_movement(Renderer& render_obj, Input& input_obj){
     for (auto& [tuple_key, event_action, key_action] : input_obj.GET_keyboard()) {
         if (key_action == Input_action::toggle_collision) {
             static bool pressed = false;
@@ -43,6 +64,26 @@ void Physics::update_sprite_movement(Renderer& render_obj, Input& input_obj) {
                 pressed = false;
             }
         }
+    }
+
+	int index = take_control(render_obj, input_obj);
+	auto& sprite_vector = render_obj.get_sprite_vector();
+
+    static std::vector<bool> wasColliding;
+    if (wasColliding.size() < sprite_vector.size())
+        wasColliding.resize(sprite_vector.size(), false);
+
+
+	if (index >= 0) {
+		auto& sprite = sprite_vector[index]; //get sprite to move
+		//save old position in case of collision
+		float oldX = sprite.x;
+		float oldY = sprite.y;
+		auto& keyboard_action = input_obj.GET_keyboard();
+		for (auto& [tuple_key, event_action, key_action] : keyboard_action) {
+			if (key_action == Input_action::move_up) {
+				sprite_vector[index].y -= 0.001f;
+			}
 
         int index = take_control(render_obj, input_obj);
         auto& sprite_vector = render_obj.get_sprite_vector();
@@ -72,25 +113,25 @@ void Physics::update_sprite_movement(Renderer& render_obj, Input& input_obj) {
                 if (i == index) continue; //skip the controlled sprite
                 const auto& other = sprite_vector[i];
 
-                Vector2D pos1(sprite.x, sprite.y);
-                Vector2D size1(sprite.w, sprite.h);
-
-                Vector2D pos2(other.x, other.y);
-                Vector2D size2(other.w, other.h);
-
-                if (checkAABBCollision(pos1, size1, pos2, size2)) {
-                    std::cout << "Collision detected with sprite " << i + 1 << std::endl;
-
-                    // Optional: Handle the collision (undo movement, bounce back, etc.)
-                }
+            bool hit = checkAABBCollision(pos1, size1, pos2, size2);
+            if (hit && !wasColliding[i]) {
+                std::cout << "Collision detected with sprite " << (i + 1) << std::endl;
             }
-        }
+            wasColliding[i] = hit;
+            if (hit) collided = true;
 
-        if (showCollision) {
-            Debug::Drawer drawer;
-            for (auto& sprite : sprite_vector) {
-                drawer.DebugDrawRectangle(sprite.x, sprite.y, sprite.w, sprite.h, 0xFF00FF00);
-            }
+
+		}if (collided) {
+			//revert to old position on collision
+			sprite.x = oldX;
+			sprite.y = oldY; 
+		}
+	}
+
+    if (showCollision) {
+        Debug::Drawer drawer;
+        for (auto& sprite : sprite_vector) {
+            drawer.DebugDrawRectangle(sprite.x, sprite.y, sprite.w, sprite.h, 0xFF00FF00);
         }
     }
 }
@@ -169,7 +210,7 @@ void Physics::update_sprite_scaling(Renderer& render_obj, Input& input_obj)
         k = k + 1;
     }
 
-    const float minScale = 1.0f;
+    const float minScale = 0.2f;
     const float maxScale = 3.0f;
     const float step = 0.1f;
 
@@ -319,7 +360,7 @@ void Physics::update_sprite_rotation(Renderer& render_obj, Input& input_obj)
     // reset (X)
     if (doReset) {
         reset_selection_transforms(render_obj, sel, cw, ccw, ox, oy, ow, oh, oang);
-        // (don’t early-return; allow J/K edges to be seen this frame too)
+        // (donï¿½t early-return; allow J/K edges to be seen this frame too)
     }
 
     // J/K edge detection
@@ -346,7 +387,7 @@ void Physics::update_sprite_rotation(Renderer& render_obj, Input& input_obj)
         if (nowCW && !prevCW) { bool on = !cw[(size_t)sel];  cw[(size_t)sel] = on; if (on) ccw[(size_t)sel] = false; }
         if (nowCCW && !prevCCW) { bool on = !ccw[(size_t)sel]; ccw[(size_t)sel] = on; if (on) cw[(size_t)sel] = false; }
     }
-    // NONE: don’t change toggles (keys locked)
+    // NONE: donï¿½t change toggles (keys locked)
 
     prevCW = nowCW;
     prevCCW = nowCCW;

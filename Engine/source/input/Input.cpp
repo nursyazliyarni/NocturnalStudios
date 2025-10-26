@@ -2,11 +2,24 @@
 	File: Input.cpp
 	Project: NocturnalStudio
 
-	This file contains ...
+	This file contains the platform window wrapper: creation/destruction of a GLFW window,
+	OpenGL context setup (GLEW init), VSync control, event polling, buffer swap, and FPS-in-title helper.
+
+	used for later physics and logic.
 
 	Primary Author:
-		???
-		- Created...
+		 Ang Yu Xuan (55%)
+		-implement functions for captures user keyboard input and mouse input and the respective
+		callback functions. The callback functions will update the input action accordingly.
+
+	Secondary Author:
+		 Nur Syazliyarni (15%)
+		-Created the messaging system for input
+
+	Secondary Author:
+		 Rishika Bimal Attodi  (35%)
+		-Added sprite selection/deselection logic and the scaling/rotation key handling,
+		plus per-sprite transform helpers (init/get pointers, rotation updates)
 
 	All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
 *------------------------------------------------------------------------------------------------*/
@@ -152,7 +165,7 @@ void Input::keyboard_input_callback(GLFWwindow* window, int key, int scancode, i
 								track_number = key;
 								key_action = Input_action::take_control;
 
-								// clear any other digit’s take_control flag
+								// clear any other digitï¿½s take_control flag
 								for (size_t idx = 0; idx < keyboard_action.size(); ++idx) {
 									int tuple_key2 = std::get<0>(keyboard_action[idx]);
 									Input_action& key_action2 = std::get<2>(keyboard_action[idx]);
@@ -212,13 +225,13 @@ void Input::keyboard_input_callback(GLFWwindow* window, int key, int scancode, i
                         Input_action& a = std::get<2>(t);
                         if (a == Input_action::take_control) a = Input_action::no_action;
                     }
-                    logger.log("ALL deselected (NONE) — rotations keep running, keys locked");
+                    logger.log("ALL deselected (NONE) ï¿½ rotations keep running, keys locked");
                 } else {
                     // turn ALL ON
                     track_number = GLFW_KEY_0;
                     key_action   = Input_action::take_control;
 
-                    // clear any digit’s take_control so ALL is the single active selection
+                    // clear any digitï¿½s take_control so ALL is the single active selection
                     for (auto& t : keyboard_action) {
                         int  k2 = std::get<0>(t);
                         auto& a2 = std::get<2>(t);
@@ -229,7 +242,7 @@ void Input::keyboard_input_callback(GLFWwindow* window, int key, int scancode, i
                     logger.log("Selected sprite: ALL");
                 }
             }
-            // ignore release (don’t clear on key-up)
+            // ignore release (donï¿½t clear on key-up)
             continue; // skip switch for digit keys
         }
 
@@ -441,7 +454,6 @@ void Input::keyboard_input_callback(GLFWwindow* window, int key, int scancode, i
 					}
 					break;
 				}
-
 				case GLFW_KEY_B:
 				{
 					if (action == GLFW_PRESS) {

@@ -1,5 +1,5 @@
 /*!------------------------------------------------------------------------------------------------
-    File: Application.cpp
+    File: Window.cpp
     Project: NocturnalStudio
 
     This file contains ...
