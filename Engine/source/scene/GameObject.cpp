@@ -30,6 +30,10 @@ GameObject::GameObject(const GameObject& obj) :id{}, name{ obj.name }, active{ o
 	}
 }
 
+std::unique_ptr<GameObject> GameObject::Clone() const {
+	return std::make_unique<GameObject>(*this);
+}
+
 
 GameObject::~GameObject() {
 	ClearParent();

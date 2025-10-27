@@ -1,9 +1,22 @@
+/* !------------------------------------------------------------------------------------------------
+	File: Texture.cpp
+	Project : NocturnalStudio
+
+		This file contains functions that loads the images from assets folder to be used for rendering
+	    our sprites.
+
+	Ang Yu Xuan (100%)
+		-This file contains functions that loads the images from assets folder and free the textures when they
+		are out of scope. Functions such as get image width and height is also available.
+
+All content(c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+* ------------------------------------------------------------------------------------------------ */
+
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 #include "graphics/Texture.h"
 
 Texture::Texture(std::vector<char const*> &image_path_v):texture_info_vector(image_path_v.size()) {
-	//stbi_set_flip_vertically_on_load(true);
 	int num_components;
 	for (size_t index{ 0 }; index < image_path_v.size(); index++) {
 		//image in pixel, width, height num_components->image components for image file,

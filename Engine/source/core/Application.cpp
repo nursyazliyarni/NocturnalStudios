@@ -2,11 +2,29 @@
     File: Application.cpp
     Project: NocturnalStudio
 
-    This file contains ...
+	This file contains the main application loop that initializes the window creation, OpenGL initialization,
+	sprite rendering, input handling, drag and drop interations, frame updates, ImGui systems.
 
     Primary Author:
-         Rishika Bimal Attodi
+         
         - Brief
+
+    Primary Author:
+        Rishika Bimal Attodi 
+        - Implemented main loop scaffolding: window creation, OpenGL setup, 
+        sprite batching
+
+    Secondary Author:
+        Yu Xuan
+        -  Background
+
+    Secondary Authod
+        Xiang Yang
+        - FBO
+
+    Secondary Author:
+		Chang Qi Xuan Celest (35%)
+		- Integrated drag and drop functionality for sprites.
 
     All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
 *------------------------------------------------------------------------------------------------*/
@@ -98,7 +116,15 @@ int Application::run() {
     Texture  txt_obj(vs);
     Renderer bg_render("assets/shaders/background.vert", "assets/shaders/background.frag");
 
+
     Input      game_input_obj(m_window.handle());
+
+    game_input_obj.initSpriteScales(txt_obj.get_totalTexture());
+
+    game_input_obj.initSpriteScales(txt_obj.get_totalTexture());
+    game_input_obj.initSpriteRotations(txt_obj.get_totalTexture());
+
+
     Physics    game_physics_obj;
     Game_Loop  game_loop_obj(m_window.handle());
     ImGuiManager imGuiManager(m_window, bg_render, txt_obj, game_input_obj, game_physics_obj);
@@ -108,7 +134,7 @@ int Application::run() {
     //game_input_obj.initSpriteScales(txt_obj.count());
 
     //to demonstrate cloning and rendering of gameobjects, this willl be moved into levelmanager
-    int catnum{};
+    int catnum{}, maxcats{ 3 };
     GameObject AlphaCat{ *prefab_man["Cat"] };
     std::vector<std::unique_ptr<GameObject>> cats{};
 
@@ -117,13 +143,15 @@ int Application::run() {
         m_window.poll();
 
         //spawns 3 cats
-        if (catnum<3)
+        if (catnum<maxcats)
         {
             cats.push_back(std::make_unique<GameObject>(AlphaCat));
             cats[catnum]->Render(bg_render);
+            logger.log(std::string{"cat "+std::to_string(catnum)});
             catnum++;
         }
-
+        if (catnum < 4 && glfwGetKey(m_window.handle(), GLFW_KEY_O) == GLFW_PRESS)maxcats = 2500;
+            
         double dt = game_loop_obj.calculate_DT();          // our deltaTime
         double total_time = game_loop_obj.get_accum_GT();  // accumulated game time
         game_loop_obj.display_FPS(m_window.handle(), c.window.title, dt); // display FPS
@@ -184,7 +212,6 @@ int Application::run() {
                             if (isPointInAABB(Vector2D(dup.x * currW, dup.y * currH), { tx, ty }, { tw, th })) {
                                 if(target.idx==3)target.idx=5; //change cat A texture to cat A ate
                                 if(target.idx==4)target.idx=6; //change cat B texture to cat B ate
-								std::cout << "Dropped on cat!\n";
                             }
                         }
                     }

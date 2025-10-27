@@ -1,3 +1,17 @@
+/* !------------------------------------------------------------------------------------------------
+    File: Shader.cpp
+    Project : NocturnalStudio
+
+    This file contains functions that loads, compiles and links vertex file and fragment file into 
+	a usable shader program to be used by renderer class for background image.
+
+     Ang Yu Xuan (100%)
+		-This file contains functions that loads, compiles and links vertex file.
+
+All content(c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+* ------------------------------------------------------------------------------------------------ */
+
+
 #include "graphics/Shader.h"
 
 Shader::Shader(const char* vertex_path, const char* fragment_path) :program_obj{ 0 } {
@@ -26,7 +40,7 @@ Shader::Shader(Shader&& rhs_shader) noexcept :program_obj{ rhs_shader.program_ob
 }
 
 Shader& Shader::operator=(Shader&& rhs_shader) noexcept {
-    if (this != &rhs_shader) { //prevent self-copy assignment here
+    if (this != &rhs_shader) { //prevent self assignment here
         glDeleteProgram(program_obj); //delete this->program_obj
         program_obj = rhs_shader.program_obj; //this->program_obj steal resources
         rhs_shader.program_obj = 0; //release ownership of rhs_shader

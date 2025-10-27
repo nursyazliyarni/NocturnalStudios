@@ -1,3 +1,32 @@
+/*!------------------------------------------------------------------------------------------------
+	File: Input.h
+	Project: NocturnalStudio
+
+	This header declares the engine’s input layer. It wraps GLFW (with ImGui forwarding) to:
+    - Capture keyboard and mouse events
+    - Track mouse position/delta (normalized & unnormalized)
+    - Register and query action states (movement, scaling, rotation, reset, toggle-collision)
+    - Broadcast input via the MessageBus (Key/Mouse messages)
+    - Manage per-sprite helpers for selection/deselection, scaling, and rotation
+	used for later physics and logic.
+
+		Primary Author:
+		 Ang Yu Xuan (55%)
+		-implement functions for captures user keyboard input and mouse input and the respective
+		callback functions. The callback functions will update the input action accordingly.
+
+	Secondary Author:
+		 Nur Syazliyarni (15%)
+		-Created the messaging system for input
+
+	Secondary Author:
+		 Rishika Bimal Attodi  (35%)
+		-Added sprite selection/deselection logic and the scaling/rotation key handling,
+		plus per-sprite transform helpers (init/get pointers, rotation updates)
+
+	All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
+
 // IsKeyDown/WasPressed, mouse, scroll (GLFW wrappe r)
 #pragma once
 
@@ -6,11 +35,13 @@
 #include "math/Vector.h"
 #include "../imgui.h"
 #include "../imgui/backends/imgui_impl_glfw.h"
+#include "../messaging/MessageBus.h"
+#include "../messaging/InputMessage.h"
 
 enum class Input_action {
 	no_action,take_control,
 	move_up,move_down,move_left,move_right,
-	magnify,minify,rotate_clockwise,rotate_anticlockwise
+	magnify,minify,rotate_clockwise,rotate_anticlockwise, reset_transform, toggle_collision
 };
 
 class Input {
@@ -74,3 +105,52 @@ private:
 	static std::vector<std::tuple<int,int,Input_action>> keyboard_action;
 	static std::vector<std::tuple<int,int,Input_action>> mouse_action;
 };
+
+//Messaging namespace implemented for input system here
+namespace Messaging 
+{
+	class InputSystemMessaging
+	{
+	public:
+		InputSystemMessaging(MessageBus& bus, GLFWwindow* window)
+			: bus(bus), window(window)
+		{
+			glfwSetWindowUserPointer(window, this);
+			glfwSetKeyCallback(window, KeyCallback);
+			//glfwSetCursorPosCallback(window, MouseMoveCallback);
+			glfwSetMouseButtonCallback(window, MouseButtonCallback);
+		}
+	
+	private:
+        MessageBus& bus;
+        GLFWwindow* window;
+
+		static void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
+			auto* self = static_cast<InputSystemMessaging*>(glfwGetWindowUserPointer(window));
+			if (!self) return;
+
+			auto msg = std::make_unique<KeyMessage>(key, action);
+			self->bus.Broadcast(std::move(msg));
+		}
+
+		/*static void MouseMoveCallback(GLFWwindow* window, double xpos, double ypos) {
+			auto* self = static_cast<InputSystemMessaging*>(glfwGetWindowUserPointer(window));
+			if (!self) return;
+
+			auto msg = std::make_unique<MovingMouseMessage>((float)xpos, (float)ypos);
+			self->bus.Broadcast(std::move(msg));
+		}*/
+
+		static void MouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
+			auto* self = static_cast<InputSystemMessaging*>(glfwGetWindowUserPointer(window));
+			if (!self) return;
+
+			double xpos, ypos;
+			glfwGetCursorPos(window, &xpos, &ypos);
+
+			bool pressed = (action == GLFW_PRESS);
+			auto msg = std::make_unique<ClickedMouseMessage>(button, pressed, (float)xpos, (float)ypos);
+			self->bus.Broadcast(std::move(msg));
+		}
+    };
+}
