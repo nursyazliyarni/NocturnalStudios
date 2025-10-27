@@ -127,6 +127,7 @@ int Application::run() {
     game_input_obj.initSpriteScales(txt_obj.get_totalTexture());
     game_input_obj.initSpriteRotations(txt_obj.get_totalTexture());
 
+    ECS &ecs = ECS::getECS();
 
     ResourceManager resourceManager(ecs);
     AudioSystem audioSystem("AudioSystem", ecs, resourceManager);
