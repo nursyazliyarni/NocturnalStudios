@@ -44,6 +44,8 @@ public:
     bool popQuitRequested();               // returns & clears quit flag
 
 
+
+
 private:
     std::unordered_map<std::string, Scene> scenes;
     std::unordered_map<int, std::string> keyMap; // GLFW_KEY_* -> scene name

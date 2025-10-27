@@ -29,8 +29,10 @@ std::string Component::ComponenetName() const {
 }
 void Component::SetOwner(GameObject* o) { owner = o; }
 void Component::Transform(){}
-CircleRenderer::CircleRenderer(float r) :Component{ RENDERING,"Cricle Renderer" }, radius{ r } {}
-CircleRenderer::CircleRenderer(const rapidjson::Value& j) :Component{ RENDERING,"Cricle Renderer" }, radius{} {
+//CircleRenderer::CircleRenderer(float r) :Component{ RENDERING,"Cricle Renderer" }, radius{ r } {}
+//CircleRenderer::CircleRenderer(const rapidjson::Value& j) :Component{ RENDERING,"Cricle Renderer" }, radius{} {
+CircleRenderer::CircleRenderer(float r) :Component{ RENDERING,"Circle Renderer" }, radius{ r } {}
+CircleRenderer::CircleRenderer(const rapidjson::Value& j) :Component{ RENDERING,"Circle Renderer" }, radius{} {
 	if (j["radius"].IsFloat())
 	{
 		radius = j["radius"].GetFloat();
@@ -86,16 +88,16 @@ std::unique_ptr<Component> AABBCollider::Clone() const {
 	return std::make_unique<AABBCollider>(AABBCollider(*this));
 }
 
-AnimalBehaviour::AnimalBehaviour(std::string s):Component{ LOGIC,"Animal Behaviour" },sound{s}{}
-AnimalBehaviour::AnimalBehaviour(const rapidjson::Value& j) :Component{ LOGIC,"Animal Behaviour" }, sound{  } {
+AnimalBehavior::AnimalBehavior(std::string s):Component{ LOGIC,"Animal Behaviour" },sound{s}{}
+AnimalBehavior::AnimalBehavior(const rapidjson::Value& j) :Component{ LOGIC,"Animal Behaviour" }, sound{  } {
 	if (j["sound"].IsString())
 	{
 		sound = j["sound"].GetString();
 	}
 }
-AnimalBehaviour::AnimalBehaviour(const AnimalBehaviour& c) :Component{ c }, sound{ c.sound } {}
-std::unique_ptr<Component> AnimalBehaviour::Clone() const {
-	return std::make_unique<AnimalBehaviour>(AnimalBehaviour(*this));
+AnimalBehavior::AnimalBehavior(const AnimalBehavior& c) :Component{ c }, sound{ c.sound } {}
+std::unique_ptr<Component> AnimalBehavior::Clone() const {
+	return std::make_unique<AnimalBehavior>(AnimalBehavior(*this));
 }
 
 void Component::Render(Renderer&) {
@@ -122,6 +124,6 @@ void SpriteRenderer::Render(Renderer& r) {
 bool AABBCollider::Collide() {
 	return true;
 }
-void AnimalBehaviour::Logic() {
+void AnimalBehavior::Logic() {
 	
 }

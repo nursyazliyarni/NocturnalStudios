@@ -20,6 +20,7 @@
 #include <memory>
 #include "../include/ECS/ECS.h"
 
+#include <string> 
 
 
 class SceneManager{
@@ -40,6 +41,12 @@ public:
     void Update();
 
     void Render();
+    
+    SceneID ResolveSceneKey(int idx) const; 
+
+    void SetScenesJsonPath(const std::string & path);
+
+
 
 private:
     std::unique_ptr<Scene> curr_scene{ nullptr };

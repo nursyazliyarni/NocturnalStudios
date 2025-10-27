@@ -28,10 +28,15 @@ public:
 	Texture(std::vector<char const*>& image_path_v);
 	~Texture();
 
-	size_t get_totalTexture() const; //How many textures are loaded (used to size the scale array)
-	const GLuint& get_textureID(size_t input_index) const;
-	const int& get_texture_width(size_t input_index) const;
-	const int& get_texture_height(size_t input_index) const;
+	//size_t get_totalTexture() const; //How many textures are loaded (used to size the scale array)
+	//const GLuint& get_textureID(size_t input_index) const;
+	//const int& get_texture_width(size_t input_index) const;
+	//const int& get_texture_height(size_t input_index) const;
+
+	size_t get_totalTexture() const;
+	GLuint get_textureID(size_t) const;     
+	int get_texture_width(size_t) const; 
+	int get_texture_height(size_t) const;
 
 private:
 	struct Texture_Info {

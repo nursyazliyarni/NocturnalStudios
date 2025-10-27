@@ -102,13 +102,13 @@ public:
 };
 
 //Logic Components
-class AnimalBehaviour :public Component {
+class AnimalBehavior :public Component {
 private:
 	std::string sound{ "moo" };
 public:
-	AnimalBehaviour(std::string s="");
-    AnimalBehaviour(const rapidjson::Value& j);
-    AnimalBehaviour(const AnimalBehaviour&);
+    AnimalBehavior(std::string s="");
+    AnimalBehavior(const rapidjson::Value& j);
+    AnimalBehavior(const AnimalBehavior&);
     std::unique_ptr<Component> Clone() const;
 	void Logic() override;
 };
