@@ -10,6 +10,21 @@ file(GLOB_RECURSE GAME_HDR CONFIGURE_DEPENDS
 add_executable(NocturnalGame ${GAME_SRC} ${GAME_HDR})
 target_link_libraries(NocturnalGame PRIVATE Engine)
 
+
+
+
+# Copy the correct FMOD runtime DLL next to the EXE after build
+if (NS_HAVE_FMOD)
+  add_custom_command(TARGET NocturnalGame POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            $<IF:$<CONFIG:Debug>,${FMOD_DLL_DEBUG},${FMOD_DLL_RELEASE}>
+            $<TARGET_FILE_DIR:NocturnalGame>
+  )
+endif()
+
+
+
+
 source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" PREFIX "Source Files" FILES ${GAME_SRC})
 source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" PREFIX "Header Files" FILES ${GAME_HDR})
 

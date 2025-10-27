@@ -1,0 +1,23 @@
+{
+  "prefabs": {
+    "animal": {
+      "components": [
+        { "type": "SpriteRenderer", "sprite_path": "" },
+        { "type": "AABBCollider",  "bounding_box_size": 1.0 }
+      ],
+      "defaults": { "w": 0.28, "h": 0.42, "angle": 0.0 }
+    },
+    "food": {
+      "components": [ { "type": "SpriteRenderer", "sprite_path": "" } ],
+      "defaults": { "w": 0.16, "h": 0.18 }
+    },
+    "drink": {
+      "components": [ { "type": "SpriteRenderer", "sprite_path": "" } ],
+      "defaults": { "w": 0.12, "h": 0.18 }
+    },
+    "button": {
+      "components": [ { "type": "SpriteRenderer", "sprite_path": "" } ],
+      "defaults": { "w": 0.24, "h": 0.12 }
+    }
+  }
+}
