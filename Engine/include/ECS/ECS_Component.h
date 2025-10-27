@@ -14,7 +14,7 @@
 		- Implemented AudioData
 
 
-
+		
 
 	All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
 *------------------------------------------------------------------------------------------------*/
@@ -26,9 +26,9 @@
 #include "../include/math/Vector.h"
 
 //-------------------------- Add new ECS component type here --------------------------//
-struct RendererComponent;
+struct RenderComponent;
 struct Collider;
-
+struct AudioData;
 struct Transform;
 
 struct ImageRenderer;
@@ -38,7 +38,7 @@ struct RectRenderer;
 struct AnimalBehavior;
 
 struct AudioData;
-struct Physics;
+struct PhysicsComponent;
 
 struct BoxCollider;
 
@@ -50,8 +50,8 @@ struct Collider {
 	bool isColliding{ false };
 };
 
-//renderer base struct
-struct RendererComponent {
+//renderer base struct (renamed to avoid collision with graphics::Renderer)
+struct RenderComponent {
 	float opacity = 1.0f; // Default to fully opaque
 	bool isVisible = true;
 
@@ -61,13 +61,13 @@ struct RendererComponent {
 
 
 struct Transform {
-	Vector2D position{ 250.f,350.f };
-	Vector2D scale{ 100.f,100.f };
+	Vector2D position;
+	Vector2D scale;
 	Vector2D lastPosition = {};
 	Vector2D lastScale = {};
 
-	float rotation{};
-	float height{};
+	float rotation;
+	float height;
 	float lastRotation = rotation;
 	float lastHeight = height;
 
@@ -81,13 +81,13 @@ struct Transform {
 };
 
 
-struct ImageRenderer : public RendererComponent {
+struct ImageRenderer: public RenderComponent {
 	int textureID = -1; // Default to -1 (no texture)
 };
-struct CircleRenderer : public RendererComponent {
+struct CircleRenderer : public RenderComponent {
 	float radius{ 1.f };
 };
-struct RectRenderer : public RendererComponent {
+struct RectRenderer : public RenderComponent {
 	float width{ 1.f }, height{ 1.f };
 };
 
@@ -96,7 +96,7 @@ struct AnimalBehavior {
 	std::string sound{ "moo" };
 };
 struct AudioData {
-	struct Individual {
+	struct IndividualAudioData {
 		unsigned resourceID;
 		std::string name;
 
@@ -113,10 +113,12 @@ struct AudioData {
 		enum class Group {
 			Music,
 			SFX,
+			RESERVED1,
+			RESERVED2
 		} group = Group::SFX;
 	};
 
-	std::vector<Individual> audios;
+	std::vector<IndividualAudioData> audios;
 	bool listener = false;
 };
 

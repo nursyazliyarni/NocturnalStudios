@@ -37,8 +37,11 @@
 #include <chrono>
 #include "math/Vector.h"
 #include "core/ImGUIManager.h"
-#include "./scene/Prefab.h"
+// Removed old prefab/gameobject include
+// #include "./scene/Prefab.h"
 #include "physics/AABB.h"
+#include "ECS/ECS.h"
+#include "resources/ResourceManager.h"
 
 namespace {
     constexpr float TWO_PI = 2.0f * glm::pi<float>();
@@ -70,7 +73,7 @@ int Application::run() {
 
     if (!m_window.create(wd)) return -1;
 
-    // Prime the window so there�s no white flash before the first real frame
+    // Prime the window so theres no white flash before the first real frame
     glViewport(0, 0, wd.width, wd.height);
     glDisable(GL_DEPTH_TEST);
     glEnable(GL_BLEND);
@@ -96,8 +99,8 @@ int Application::run() {
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 
-    //Register GameObject Components
-    RegisterAllComponents();
+    //Register GameObject Components (deprecated)
+    //RegisterAllComponents();
 
     // Initialize ImGui Manager
     // NOTE: ImGuiManager owns the Viewport pass; it will call Renderer to draw bg + shapes into an FBO.
@@ -125,32 +128,51 @@ int Application::run() {
     game_input_obj.initSpriteRotations(txt_obj.get_totalTexture());
 
 
+    ResourceManager resourceManager(ecs);
+    AudioSystem audioSystem("AudioSystem", ecs, resourceManager);
+	resourceManager.setAudioSystem(&audioSystem);
+
+    resourceManager.loadResources("audio");
+
     Physics    game_physics_obj;
     Game_Loop  game_loop_obj(m_window.handle());
-    ImGuiManager imGuiManager(m_window, bg_render, txt_obj, game_input_obj, game_physics_obj);
-    PrefabManager prefab_man;
 
-    // make Input�s scale array match the number of textures
-    //game_input_obj.initSpriteScales(txt_obj.count());
+
+    ImGuiManager imGuiManager(m_window, bg_render, txt_obj, game_input_obj, game_physics_obj, audioSystem, resourceManager);
+    // --------------------------------------------------------------
+
+    // --- ECS Integration: mirror renderer sprites to ECS entities ---
+    // ImGuiManager constructor calls renderer.initAllSprites(), so sprites exist now.
+    auto& initSprites = bg_render.get_sprite_vector();
+    std::vector<EntityID> spriteEntityIds;
+    spriteEntityIds.reserve(initSprites.size());
+    for (size_t i = 0; i < initSprites.size(); ++i) {
+        const auto& spr = initSprites[i];
+        EntityID e = ecs.createEntity(std::string("Sprite ") + std::to_string(i));
+        // Attach Transform (store normalized position/size in Transform.position/scale)
+        Transform tf{};
+        tf.position = Vector2D(spr.x, spr.y);
+        tf.scale = Vector2D(spr.w, spr.h);
+        tf.rotation = spr.angle;
+        tf.height = 0.0f;
+        tf.space = Transform::CoordinateSpace::Viewport; // normalized in viewport space
+        ecs.addComponent<Transform>(e, tf);
+        // Attach ImageRenderer
+        ImageRenderer img{};
+        img.textureID = spr.idx;
+        ecs.addComponent<ImageRenderer>(e, img);
+        spriteEntityIds.push_back(e);
+    }
 
     //to demonstrate cloning and rendering of gameobjects, this willl be moved into levelmanager
-    int catnum{}, maxcats{ 3 };
-    GameObject AlphaCat{ *prefab_man["Cat"] };
-    std::vector<std::unique_ptr<GameObject>> cats{};
+    // (Removed old GameObject/Prefab usage; now using ECS)
 
     // 4) simple loop
     while (!m_window.shouldClose()) {
         m_window.poll();
 
-        //spawns 3 cats
-        if (catnum<maxcats)
-        {
-            cats.push_back(std::make_unique<GameObject>(AlphaCat));
-            cats[catnum]->Render(bg_render);
-            logger.log(std::string{"cat "+std::to_string(catnum)});
-            catnum++;
-        }
-        if (catnum < 4 && glfwGetKey(m_window.handle(), GLFW_KEY_O) == GLFW_PRESS)maxcats = 2500;
+        // allow increasing number of sprites for stress test
+        // if (catnum < 4 && glfwGetKey(m_window.handle(), GLFW_KEY_O) == GLFW_PRESS)maxcats = 2500;
             
         double dt = game_loop_obj.calculate_DT();          // our deltaTime
         double total_time = game_loop_obj.get_accum_GT();  // accumulated game time
@@ -186,6 +208,24 @@ int Application::run() {
                         isDragging = true;
                         dragOffset = mousePos - Vector2D(x, y);
 
+                        // ECS: clone the corresponding entity for the duplicate
+                        if (duplicateIndex >= (int)spriteEntityIds.size()) {
+                            // ensure mapping stays aligned if sprites grew unexpectedly
+                            spriteEntityIds.resize(sprites.size(), INVALID_ENTITY_ID);
+                        }
+                        if (i >= 0 && i < (int)spriteEntityIds.size()) {
+                            EntityID cloneId = ecs.cloneEntity(spriteEntityIds[i]);
+                            if (duplicateIndex < (int)spriteEntityIds.size()) spriteEntityIds[duplicateIndex] = cloneId;
+                            else spriteEntityIds.push_back(cloneId);
+                        } else {
+                            // if mapping missing, create a fresh entity
+                            EntityID e = ecs.createEntity("Sprite dup");
+                            Transform tf{}; tf.position = Vector2D(spr.x, spr.y); tf.scale = Vector2D(spr.w, spr.h); tf.rotation = spr.angle; tf.space = Transform::CoordinateSpace::Viewport;
+                            ecs.addComponent<Transform>(e, tf);
+                            ImageRenderer img{}; img.textureID = spr.idx; ecs.addComponent<ImageRenderer>(e, img);
+                            if (duplicateIndex < (int)spriteEntityIds.size()) spriteEntityIds[duplicateIndex] = e; else spriteEntityIds.push_back(e);
+                        }
+
                         frontIdxs.push_back(sprites[duplicateIndex].idx); //ensure duplicate is drawn on top
                         break;
                     }
@@ -210,13 +250,25 @@ int Application::run() {
                             float th = target.h * currH;
 
                             if (isPointInAABB(Vector2D(dup.x * currW, dup.y * currH), { tx, ty }, { tw, th })) {
-                                if(target.idx==3)target.idx=5; //change cat A texture to cat A ate
-                                if(target.idx==4)target.idx=6; //change cat B texture to cat B ate
+                                if(target.idx==3) target.idx=5; //change cat A texture to cat A ate
+                                if(target.idx==4) target.idx=6; //change cat B texture to cat B ate
+
+                                // ECS: update ImageRenderer for target entity
+                                if (i >= 0 && i < (int)spriteEntityIds.size()) {
+                                    if (auto* img = ecs.getComponent<ImageRenderer>(spriteEntityIds[i])) {
+                                        img->textureID = target.idx;
+                                    }
+                                }
                             }
                         }
                     }
 
-                    // remove duplicate
+                    // remove duplicate (and its ECS entity)
+                    if (duplicateIndex >= 0 && duplicateIndex < (int)spriteEntityIds.size()) {
+                        EntityID dupE = spriteEntityIds[duplicateIndex];
+                        if (dupE != INVALID_ENTITY_ID) ecs.deleteEntity(dupE);
+                        spriteEntityIds.erase(spriteEntityIds.begin() + duplicateIndex);
+                    }
                     sprites.erase(sprites.begin() + duplicateIndex);
                 }
 
@@ -232,6 +284,15 @@ int Application::run() {
                 float newY = mousePos.y() - dragOffset.y();
                 spr.x = newX / currW;
                 spr.y = newY / currH;
+
+                // ECS: sync duplicate transform (normalized coords)
+                if (duplicateIndex >= 0 && duplicateIndex < (int)spriteEntityIds.size()) {
+                    if (auto* tf = ecs.getComponent<Transform>(spriteEntityIds[duplicateIndex])) {
+                        tf->position = Vector2D(spr.x, spr.y);
+                        tf->scale = Vector2D(spr.w, spr.h);
+                        tf->rotation = spr.angle;
+                    }
+                }
 
                 frontIdxs.clear();
                 frontIdxs.push_back(spr.idx); // always draw duplicate on top

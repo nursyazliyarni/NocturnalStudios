@@ -1,9 +1,9 @@
 // Add filepath here
-constexpr char DEFAULT_AUDIO_FILEPATH[] = "DefaultAudio";
+constexpr char DEFAULT_AUDIO_FILEPATH[] = "DefaultAudio/filepath";
 
 #include <iostream>
 #include <filesystem>
-#include <../fmod/fmod_errors.h>
+#include "fmod_errors.h"
 
 #include "ECS/ECS.h"
 #include "resources/ResourceManager.h"
@@ -82,22 +82,22 @@ void ResourceManager::setAudioSystem(AudioSystem* audioSystemPtr) {
  * "Audio" as a resourceFilePath value.
  *
  * Parameters:
- *  - resourceFilePath: subdirectory under "Resources" to scan. If empty,
- *    defaults to scanning "Resources".
+ *  - resourceFilePath: subdirectory under "assets" to scan. If empty,
+ *    defaults to scanning "assets".
  *
  * Behavior:
- *  - Walks the directory tree under "Resources[/resourceFilePath]".
+ *  - Walks the directory tree under "assets[/resourceFilePath]". 
  *  - For each file that has an extension and matches a supported resource
  *    type, calls the appropriate loader (e.g., loadAudio).
  *
  * Simple usage:
  *  rm.loadResources();           // scan Resources and load supported resource types
- *  rm.loadResources("Audio");    // only scan Resources/Audio and load audio files
+ *  rm.loadResources("Audio");    // only scan assets/Audio and load audio files
  */
 void ResourceManager::loadResources(std::string const& resourceFilePath) {
 	std::cout << "Loading resources\n";
 
-	std::string resourcePath{ "Resources" };
+	std::string resourcePath{ "assets" };
 	std::string directoryPath{ resourceFilePath };
 
 	if (!directoryPath.empty()) {
@@ -112,7 +112,7 @@ void ResourceManager::loadResources(std::string const& resourceFilePath) {
 		if (!filename.has_extension()) continue;
 
 		// Check Resource type here
-		if (resourceFilePath == "Audio") {
+		if (resourceFilePath == "audio") {
 			loadAudio(stem.string(), path.string());
 		}
 	}
@@ -123,33 +123,47 @@ void ResourceManager::loadResources(std::string const& resourceFilePath) {
 /**
  * loadAudio
  *
- * Loads an audio resource into the manager and (optionally) informs the
- * AudioSystem to create the underlying FMOD sound.
+ * Load or reuse an Audio resource record in the ResourceManager.
+ *
+ * Description:
+ *  - Ensures a single in-memory Audio record exists per file path. If an
+ *    Audio with an identical file path is already present, that Audio is
+ *    returned. Otherwise a new Audio object is constructed and stored.
  *
  * Parameters:
- *  - name: human-readable key used to reference the audio (e.g., "BGM_Main").
- *  - filePath: filesystem path to the audio file.
- *  - id: optional ResourceID to assign. If set to NEW_RESOURCE, a new unique ID
- *        is generated via getNewAssetID().
+ *  - name: Human-readable key for the audio (e.g. "BGM_Main").
+ *  - filePath: Filesystem path to the audio file.
+ *  - id: Optional ResourceID to assign. If set to NEW_RESOURCE a new unique
+ *        ResourceID is allocated via getNewAssetID().
  *
  * Returns:
- *  - Reference to the stored Audio instance.
+ *  - Reference to the stored Audio instance (existing or newly-inserted).
  *
- * Behavior and side-effects:
- *  - If an audio with the identical file path is already loaded, returns the
- *    existing Audio.
- *  - Inserts a new Audio into the internal `audios` map with the chosen ID.
- *  - Logs the load operation via `logger`.
- *  - If an AudioSystem is present, heuristically determines whether to stream
- *    the file (large files treated as streamed looped music) and requests the
- *    AudioSystem to load the FMOD sound.
+ * Behavior & side-effects:
+ *  - Performs a linear scan of `audios` to detect an existing audio by
+ *    comparing std::filesystem::path values. This comparison is syntactic
+ *    (string-based); it does not resolve symlinks or canonicalize paths.
+ *  - If `id == NEW_RESOURCE`, a new unique ResourceID is generated and
+ *    recorded in the ResourceManager's used ID registry.
+ *  - Inserts a new `Audio` into the `audios` map with the chosen ID.
+ *  - Logs the load operation through the global `logger`.
  *
- * Simple usage:
- *  // Let ResourceManager pick an ID:
+ * Thread-safety:
+ *  - Not thread-safe. Concurrent calls that mutate `audios` or ID state
+ *    require external synchronization.
+ *
+ *
+ * Notes:
+ *  - This function only manages the Audio resource metadata stored in the
+ *    ResourceManager. It does not call into `AudioSystem` or initialize any
+ *    FMOD objects. If FMOD sound objects are required, call the appropriate
+ *    AudioSystem API (e.g., `AudioSystem::loadSound`) after obtaining the
+ *    returned Audio reference.
+ *
+ * Example:
  *  Audio& a = rm.loadAudio("MainTheme", "Resources/Audio/MainTheme.mp3");
- *
- *  // Provide an explicit ID (e.g., when deserializing metadata):
- *  Audio& a2 = rm.loadAudio("SFX_Hit", "Resources/Audio/hit.wav", 42);
+ *  // If you need the FMOD sound:
+ *  // if (rm.getAudioSystem()) rm.getAudioSystem()->loadSound(a);
  */
 Audio& ResourceManager::loadAudio(const std::string& name, const std::string& filePath, ResourceID id) {
 	for (auto& [key, audio] : audios) {
@@ -163,27 +177,15 @@ Audio& ResourceManager::loadAudio(const std::string& name, const std::string& fi
 
 	logger.log("Loaded Audio: " + name + " from " + filePath);
 
-	// Inform AudioSystem to load the underlying FMOD sound (if available)
+	// If an AudioSystem is attached, forward the newly created Audio so FMOD
+	// can create the FMOD::Sound immediately. This makes it easy to call
+	// loadAudio(...) after setAudioSystem(...) from application code.
 	if (audioSystem) {
-		bool stream = false;
-		bool loop = false;
-
-		// Heuristic: treat large files as music (stream + loop), small as SFX (sample, no loop).
 		try {
-			auto size = std::filesystem::file_size(filePath);
-			const std::uintmax_t STREAM_THRESHOLD = 1'000'000; // 1 MB
-			if (size > STREAM_THRESHOLD) {
-				stream = true;
-				loop = true;
-			}
-		}
-		catch (std::filesystem::filesystem_error const& e) {
-			// If we can't determine size, fall back to non-streaming SFX
-			logger.warning(std::string("ResourceManager::loadAudio - could not read file size: ") + e.what());
-		}
-
-		if (!audioSystem->loadSound(name, filePath, stream, loop)) {
-			logger.warning("AudioSystem failed to load sound: " + filePath);
+			audioSystem->loadSound(audios.at(id));
+		} catch (...) {
+			// avoid throwing from resource manager; log and continue
+			logger.error("Failed to forward audio to AudioSystem for: " + name);
 		}
 	}
 
