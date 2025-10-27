@@ -9,15 +9,19 @@
     },
     "food": {
       "components": [ { "type": "SpriteRenderer", "sprite_path": "" } ],
-      "defaults": { "w": 0.16, "h": 0.18 }
+      "defaults": { "w": 0.16, "h": 0.18, "angle": 0.0 }
     },
     "drink": {
       "components": [ { "type": "SpriteRenderer", "sprite_path": "" } ],
-      "defaults": { "w": 0.12, "h": 0.18 }
+      "defaults": { "w": 0.12, "h": 0.18, "angle": 0.0 }
+    },
+    "toy": {
+      "components": [ { "type": "SpriteRenderer", "sprite_path": "" } ],
+      "defaults": { "w": 0.14, "h": 0.14, "angle": 0.0 }
     },
     "button": {
       "components": [ { "type": "SpriteRenderer", "sprite_path": "" } ],
-      "defaults": { "w": 0.24, "h": 0.12 }
+      "defaults": { "w": 0.40, "h": 0.09, "angle": 0.0 }
     }
   }
 }

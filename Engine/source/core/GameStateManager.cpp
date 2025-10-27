@@ -262,12 +262,14 @@ bool GameStateManager::handleClick(float nx, float ny) {
     if (it == scenes.end()) return false;
     const Scene& sc = it->second;
 
+
     for (const auto& cr : sc.clicks) {
         if (nx >= cr.x && nx <= cr.x + cr.w &&
             ny >= cr.y && ny <= cr.y + cr.h) {
             if (cr.quit) {
                 requestedQuit = true;
             }
+
             else if (!cr.gotoScene.empty()) {
                 requestScene(cr.gotoScene);
             }
