@@ -16,3 +16,20 @@ source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" PREFIX "Header Files" FILES ${GA
 set_target_properties(NocturnalGame PROPERTIES
   VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
 )
+if (NS_HAVE_FMOD)
+  add_custom_command(TARGET NocturnalGame POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            $<IF:$<CONFIG:Debug>,${FMOD_DLL_DEBUG},${FMOD_DLL_RELEASE}>
+            $<TARGET_FILE_DIR:NocturnalGame>
+  )
+endif()
+
+
+
+
+source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" PREFIX "Source Files" FILES ${GAME_SRC})
+source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" PREFIX "Header Files" FILES ${GAME_HDR})
+
+set_target_properties(NocturnalGame PROPERTIES
+  VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+)
