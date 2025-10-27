@@ -39,6 +39,8 @@
 #include "core/ImGUIManager.h"
 #include "./scene/Prefab.h"
 #include "physics/AABB.h"
+#include <ft2build.h>
+#include FT_FREETYPE_H
 
 namespace {
     constexpr float TWO_PI = 2.0f * glm::pi<float>();
@@ -137,6 +139,26 @@ int Application::run() {
     int catnum{}, maxcats{ 3 };
     GameObject AlphaCat{ *prefab_man["Cat"] };
     std::vector<std::unique_ptr<GameObject>> cats{};
+
+    FT_Library ft;
+    if (FT_Init_FreeType(&ft)) {
+        std::cerr << "ERROR: Could not initialize FreeType Library!" << std::endl;
+        return -1;
+    }
+    else {
+        std::cout << "FreeType initialized successfully." << std::endl;
+    }
+
+    // Load the font
+    FT_Face face;
+    if (FT_New_Face(ft, "assets/fonts/NanumBrushScript-Regular.ttf", 0, &face)) {
+        std::cerr << "Failed to load font file!\n";
+    }
+    else {
+        std::cout << "Font loaded successfully!\n";
+        FT_Set_Pixel_Sizes(face, 0, 48); // Set pixel size for the font (48px height)
+        std::cout << "Font family: " << face->family_name << std::endl;
+    }
 
     // 4) simple loop
     while (!m_window.shouldClose()) {
@@ -275,6 +297,8 @@ int Application::run() {
 
         m_window.swap();
     }
+    FT_Done_Face(face);
+    FT_Done_FreeType(ft);
 
     m_window.destroy();
     return 0;

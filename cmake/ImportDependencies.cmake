@@ -45,3 +45,20 @@ if (EXISTS ${CMAKE_SOURCE_DIR}/lib/stb/stb_image.h)
   target_include_directories(stb INTERFACE ${CMAKE_SOURCE_DIR}/lib/stb)
   set(NS_HAVE_STB ON)
 endif()
+
+
+# FreeType
+# if (EXISTS ${CMAKE_SOURCE_DIR}/lib/freetype/devel/ft2build.h)
+#   add_library(freetype INTERFACE)
+#   target_include_directories(freetype INTERFACE
+#     ${CMAKE_SOURCE_DIR}/lib/freetype/devel
+#     ${CMAKE_SOURCE_DIR}/lib/freetype/include
+#   )
+#   set(NS_HAVE_FREETYPE ON)
+# endif()
+
+# FreeType
+if (EXISTS ${CMAKE_SOURCE_DIR}/lib/freetype/CMakeLists.txt)
+  add_subdirectory(${CMAKE_SOURCE_DIR}/lib/freetype ${CMAKE_BINARY_DIR}/lib/freetype)
+  set(NS_HAVE_FREETYPE ON)
+endif()
