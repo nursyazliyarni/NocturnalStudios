@@ -117,7 +117,7 @@ void RectRenderer::Render(Renderer&) {
 
 }
 void SpriteRenderer::Render(Renderer& r) {
-	r.get_sprite_vector().push_back({ 5, Random_Range(0.f,0.75f), Random_Range(0.f,0.75f),0.15, 0.15, Random_Range(0.0f,360.f)});
+	//r.get_sprite_vector().push_back({ 5, Random_Range(0.f,0.75f), Random_Range(0.f,0.75f),0.15, 0.15, Random_Range(0.0f,360.f)});
 }
 bool AABBCollider::Collide() {
 	return true;

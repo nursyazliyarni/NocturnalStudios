@@ -1,0 +1,70 @@
+{
+  "states": {
+    "initial": "MainMenu",
+    "keymap": { "1":"Flamingo", "2":"Seal", "3":"Owl", "4":"Horse", "ESC":"MainMenu" }
+  },
+
+  "scenes": {
+    "MainMenu": {
+      "background": "textures/menu_bg.png",
+      "entities": [
+        { "prefab":"button","name":"btn_play",
+          "overrides": { "x":0.38,"y":0.45, "w":0.26, "h":0.09, "sprite_path":"textures/menuPLAY_btn.png" }, "goto":"Flamingo" },
+        { "prefab":"button","name":"btn_load",
+          "overrides": { "x":0.38,"y":0.60, "w":0.26, "h":0.09, "sprite_path":"textures/menuLOAD.png" }, "goto":"Flamingo" },
+        { "prefab":"button","name":"btn_settings",
+          "overrides": { "x":0.38,"y":0.75, "w":0.26, "h":0.09, "sprite_path":"textures/menuSETTINGS_btn.png" } },
+        { "prefab":"button","name":"btn_quit",
+          "overrides": { "x":0.38,"y":0.90, "w":0.26, "h":0.09, "sprite_path":"textures/menuQUIT.png" }, "quit": true }
+      ]
+    },
+
+    "Flamingo": {
+      "background":"textures/flamingo_bg.png",
+      "entities":[
+        { "prefab":"animal","name":"flamingo",
+          "overrides": { "x":0.10,"y":0.44, "w":0.26, "h":0.50, "sprite_path":"textures/flamingo.png" } },
+        { "prefab":"food","name":"flamingo_food",
+          "overrides": { "x":0.72,"y":0.60, "sprite_path":"textures/flamingo_food.png" } },
+        { "prefab":"drink","name":"flamingo_drink",
+          "overrides": { "x":0.86,"y":0.60, "sprite_path":"textures/flamingo_drink.png" } }
+      ]
+    },
+
+    "Seal": {
+      "background":"textures/seal_bg.png",
+      "entities":[
+        { "prefab":"animal","name":"seal",
+          "overrides": { "x":0.10,"y":0.46, "w":0.34, "h":0.30, "sprite_path":"textures/seal.png" } },
+        { "prefab":"food","name":"seal_food",
+          "overrides": { "x":0.72,"y":0.60, "sprite_path":"textures/seal_food.png" } },
+        { "prefab":"drink","name":"seal_drink",
+          "overrides": { "x":0.86,"y":0.60, "sprite_path":"textures/seal_drink.png" } }
+      ]
+    },
+
+    "Owl": {
+      "background":"textures/owl_bg.png",
+      "entities":[
+        { "prefab":"animal","name":"owl",
+          "overrides": { "x":0.12,"y":0.40, "w":0.24, "h":0.34, "sprite_path":"textures/owl.png" } },
+        { "prefab":"food","name":"owl_food",
+          "overrides": { "x":0.72,"y":0.60, "sprite_path":"textures/owl_food.png" } },
+        { "prefab":"drink","name":"owl_drink",
+          "overrides": { "x":0.86,"y":0.60, "sprite_path":"textures/owl_drink.png" } }
+      ]
+    },
+
+    "Horse": {
+      "background":"textures/horse_bg.png",
+      "entities":[
+        { "prefab":"animal","name":"horse",
+          "overrides": { "x":0.10,"y":0.40, "w":0.50, "h":0.66, "sprite_path":"textures/horse.png" } },
+        { "prefab":"food","name":"horse_food",
+          "overrides": { "x":0.72,"y":0.60, "sprite_path":"textures/horse_food.png" } },
+        { "prefab":"drink","name":"horse_drink",
+          "overrides": { "x":0.86,"y":0.60, "sprite_path":"textures/horse_drink.png" } }
+      ]
+    }
+  }
+}

@@ -43,6 +43,10 @@ public:
     GLFWwindow* handle() const { return m_win; }
     const WindowDesc& desc() const { return m_desc; }
 
+   /* void size(int& w, int& h) const;
+    GLFWwindow* native() const { return m_win; }*/
+
+
 private:
     GLFWwindow* m_win = nullptr;
     WindowDesc  m_desc{};

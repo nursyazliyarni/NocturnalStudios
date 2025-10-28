@@ -35,13 +35,15 @@
 
 #include <vector>
 #include <unordered_map>
+#include "GameStateManager.h"
 
 extern Logger logger;
 
 class ImGuiManager {
 public:
 	// Accept lists of resource IDs for quick audio testing.
-	ImGuiManager(Window& window, Renderer& renderer, Texture& tex, Input& input, Physics& physics, AudioSystem& audio, ResourceManager& resourceManager);
+	ImGuiManager(Window& window, Renderer& renderer,  Input& input, 
+		Physics& physics, AudioSystem& audio, ResourceManager& resourceManager, GameStateManager& gsm);
 	~ImGuiManager();
 
 	void updateDeltaTime(double& dt);
@@ -70,14 +72,17 @@ public:
 	void showEntityListUI(/* An enum of entityType type, Maybe a reference to someArrayOrVectorType entityList */);
 	void showTransformUI(/* A reference to a vector of objects objectList */);
 
+	void getViewportRectWindow(ImVec2& outMin, ImVec2& outMax) const { outMin = vpMinWin; outMax = vpMaxWin; }
+
 private:
 	Window& mainWindow;
 	Renderer& renderer;
-	Texture& texture;
+	//Texture& texture;
 	Input& input;
 	Physics& physics;
 	AudioSystem& audioSystem;
 	ResourceManager& resourceManager;
+	GameStateManager& gsm;
 
 	ImVec2 windowTopLeft;
 	ImVec2 windowBottomRight;
@@ -94,6 +99,8 @@ private:
 
 	// Track the active instance for each resource (if created)
 	std::unordered_map<ResourceID, AudioInstanceID> activeInstances;
+
+	ImVec2 vpMinWin{}, vpMaxWin{};
 };
 
 

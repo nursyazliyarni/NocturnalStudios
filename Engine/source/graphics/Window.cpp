@@ -51,6 +51,13 @@ bool Window::shouldClose() const { return m_win && glfwWindowShouldClose(m_win);
 void Window::poll() { glfwPollEvents(); }
 void Window::swap() { glfwSwapBuffers(m_win); }
 
+
+//void Window::size(int& w, int& h) const {
+//    if (!m_win) { w = h = 0; return; }
+//    glfwGetFramebufferSize(m_win, &w, &h);
+//}
+
+
 void Window::setTitleFps(const std::string& base, int fps) {
     if (!m_win) return;
     char buf[256];
