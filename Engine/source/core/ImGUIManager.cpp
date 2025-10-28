@@ -196,6 +196,10 @@ void ImGuiManager::showViewportWindowUI() {
 
 	input.updateRotations();
 
+	auto input_end = Clock::now();
+	double inputTime = std::chrono::duration<double>(input_end - input_start).count();
+	setInputTime(inputTime);
+
 	// behind-sprites pass (scaled)
 	//renderer.drawAllSprites(texture, { 3,4 }, /*behindPass=*/true,  input.getSpriteScalesPtr());
 	renderer.drawAllSprites(texture, { 3,4 ,5}, true,
@@ -214,9 +218,6 @@ void ImGuiManager::showViewportWindowUI() {
 		vw, vh);
 
 	renderer.unbindFBO();
-	auto input_end = Clock::now();
-	double inputTime = std::chrono::duration<double>(input_end - input_start).count();
-	setInputTime(inputTime);
 
 	auto render_end = Clock::now();
 	double renderTime = std::chrono::duration<double>(render_end - render_start).count();
