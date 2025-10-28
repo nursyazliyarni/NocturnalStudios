@@ -30,12 +30,18 @@
 #include "../include/graphics/Texture.h"
 #include "../include/input/Input.h"
 #include "../include/physics/Physics.h"
+#include "../System/Audio_System.h"
+#include "../resources/ResourceManager.h"
+
+#include <vector>
+#include <unordered_map>
 
 extern Logger logger;
 
 class ImGuiManager {
 public:
-	ImGuiManager(Window& window, Renderer& renderer, Texture& tex, Input& input, Physics& physics);
+	// Accept lists of resource IDs for quick audio testing.
+	ImGuiManager(Window& window, Renderer& renderer, Texture& tex, Input& input, Physics& physics, AudioSystem& audio, ResourceManager& resourceManager);
 	~ImGuiManager();
 
 	void updateDeltaTime(double& dt);
@@ -70,6 +76,8 @@ private:
 	Texture& texture;
 	Input& input;
 	Physics& physics;
+	AudioSystem& audioSystem;
+	ResourceManager& resourceManager;
 
 	ImVec2 windowTopLeft;
 	ImVec2 windowBottomRight;
@@ -83,6 +91,9 @@ private:
 
 
 	unsigned int selectedEntityType;
+
+	// Track the active instance for each resource (if created)
+	std::unordered_map<ResourceID, AudioInstanceID> activeInstances;
 };
 
 
