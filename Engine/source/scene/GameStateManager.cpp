@@ -7,7 +7,7 @@
  *********************************************************************/
 
 #include "../include/Scene/GameStateManager.h"
-
+#include <GLFW/glfw3.h>    
 void GameStateManager::StateMachine() {
 	switch (currState)
 	{
@@ -27,6 +27,7 @@ void GameStateManager::StateMachine() {
 	case LOSE:
 		break;
 	case QUIT:
+		QuitGame();
 		break;
 	default:
 		break;
@@ -130,4 +131,29 @@ void GameStateManager::PlayState() {
 
 		innerState = 0;//reset innerstate to entry state
 	}
+}
+void GameStateManager::QuitGame() {
+	if (innerState == 0)
+	{
+		//ngl idk what u plan to do for loading, but i made a state for it 
+		innerState++; //move to the next state after execution
+	}
+	if (innerState == 1)
+	{
+		//probably not needed for loading state
+		if (true)//all files loaded or smth
+		{
+			
+			innerState++; //this increments the innerState
+		}
+
+	}
+	if (innerState == 2)
+	{
+		glfwSetWindowShouldClose(window.handle(), 1);
+	}
+	
+}
+GameStateManager::GameStateManager(Window& w) :window{ w } {
+	
 }

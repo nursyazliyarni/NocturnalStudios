@@ -7,10 +7,8 @@
  *********************************************************************/
 
 #include "../include/Scene/SceneManager.h"
+#include "graphics/Window.h"
 
-namespace {
-
-}
 class GameStateManager {
 private:
 	enum PLAYERSTATE
@@ -34,13 +32,27 @@ private:
 	PLAYERSTATE currState{ MAIN_MENU }, nextState{ MAIN_MENU };
 	int innerState{ 0 };
 	LEVEL currLvl{ NONE }, nextLevel{ NONE };
+	SceneManager& sceneManager{ SceneManager::GetSceneManager() };
+	Window& window;
 
 	void MainMenuState();
 	void LoadState();
 	void PlayState();
+	void QuitGame();
 
+	GameStateManager(Window&);
 
+	GameStateManager(const GameStateManager&) = delete;
+	GameStateManager& operator=(const GameStateManager&) = delete;
+
+	GameStateManager(GameStateManager&&) = delete;
+	GameStateManager& operator=(GameStateManager&&) = delete;
 public:
 	void StateMachine();
+
+	static GameStateManager& getGSM(Window& w) {
+		static GameStateManager instance(w);
+		return instance;
+	}
 
 };
