@@ -95,7 +95,7 @@ void ResourceManager::setAudioSystem(AudioSystem* audioSystemPtr) {
  *  rm.loadResources("Audio");    // only scan assets/Audio and load audio files
  */
 void ResourceManager::loadResources(std::string const& resourceFilePath) {
-	std::cout << "Loading resources\n";
+	logger.log("Beginning resource loading...");
 
 	std::string resourcePath{ "assets" };
 	std::string directoryPath{ resourceFilePath };
@@ -115,9 +115,12 @@ void ResourceManager::loadResources(std::string const& resourceFilePath) {
 		if (resourceFilePath == "audio") {
 			loadAudio(stem.string(), path.string());
 		}
+		else if (resourceFilePath == "shaders") {
+			loadShader(stem.string(), path.string());
+		}
 	}
 
-	std::cout << "Finished loading resources\n" << std::endl;
+	logger.log("Resource loading complete.");
 }
 
 /**
@@ -218,6 +221,79 @@ Audio& ResourceManager::getAudio(ResourceID id) {
 }
 
 /**
+ * loadShader
+ *
+ * Load or reuse a ShaderFile resource record in the ResourceManager.
+ *
+ * Description:
+ *  - Ensures a single in-memory ShaderFile record exists per file path. If a
+ *    ShaderFile with an identical file path is already present, that
+ *    ShaderFile is returned. Otherwise a new ShaderFile object is constructed
+ *    and stored.
+ *
+ * Parameters:
+ *  - name: Human-readable key for the shader (e.g. "StandardLit").
+ *  - filePath: Filesystem path to the shader file.
+ *  - id: Optional ResourceID to assign. If set to NEW_RESOURCE a new unique
+ *        ResourceID is allocated via getNewAssetID().
+ *
+ * Returns:
+ *  - Reference to the stored ShaderFile instance (existing or newly-inserted).
+ *
+ * Behavior & side-effects:
+ *  - Performs a linear scan of `shaderFiles` to detect an existing shader by
+ *    comparing std::filesystem::path values. This comparison is syntactic
+ *    (string-based); it does not resolve symlinks or canonicalize paths.
+ *  - If `id == NEW_RESOURCE`, a new unique ResourceID is generated and
+ *    recorded in the ResourceManager's used ID registry.
+ *  - Inserts a new `ShaderFile` into the `shaderFiles` map with the chosen ID.
+ *  - Logs the load operation through the global `logger`.
+ *
+ * Thread-safety:
+ *  - Not thread-safe. Concurrent calls that mutate `shaderFiles` or ID state
+ *    require external synchronization.
+ *
+ * Example:
+ *  ShaderFile& s = rm.loadShader("Standard", "assets/shaders/standard.glsl");
+ */
+ShaderFile& ResourceManager::loadShader(const std::string& name, const std::string& filePath, ResourceID id) {
+	for (auto& [key, shaderFile] : shaderFiles) {
+		if (std::filesystem::path{ shaderFile.getFilePath() } == std::filesystem::path{ filePath }) {
+			return shaderFile;
+		}
+	}
+
+	if (id == NEW_RESOURCE) id = getNewAssetID();
+
+	shaderFiles.emplace(id, ShaderFile{ id, name, filePath });
+	logger.log("Loaded Shader: " + name + " from " + filePath);
+	return shaderFiles.at(id);
+}
+
+/**
+ * getShader
+ *
+ * Retrieve a previously loaded ShaderFile by its ResourceID.
+ *
+ * Parameters:
+ *  - id: the ResourceID to look up.
+ *
+ * Returns:
+ *  - Reference to the found ShaderFile object.
+ *  - If no matching ShaderFile exists the function asserts (caller should
+ *    ensure id validity) — consistent with existing usage in this codebase.
+ *
+ * Simple usage:
+ *  ResourceID id = /* previously obtained id * /;
+ *  ShaderFile& s = rm.getShader(id);
+ */
+ShaderFile& ResourceManager::getShader(ResourceID id) {
+	auto found = shaderFiles.find(id);
+	assert(found != shaderFiles.end());
+	return found->second;
+}
+
+/**
  * insertUsedID
  *
  * Marks a ResourceID as used in the ResourceManager's internal registry.
@@ -258,6 +334,24 @@ void ResourceManager::insertUsedID(ResourceID& id) {
  */
 std::unordered_map<ResourceID, Audio>& ResourceManager::getAudios() {
 	return audios;
+}
+
+/**
+ * getShaders
+ *
+ * Accessor that returns a mutable reference to the internal map of shader files.
+ * Use this to iterate or manipulate shader entries directly (careful: mutating
+ * keys is undefined behavior; prefer ResourceManager operations).
+ *
+ * Returns:
+ *  - Reference to std::unordered_map<ResourceID, ShaderFile>
+ *
+ * Simple usage:
+ *  auto& map = rm.getShaders();
+ *  for (auto& [id, shader] : map) {  // inspect shader  }
+ */
+std::unordered_map<ResourceID, ShaderFile>& ResourceManager::getShaders() {
+	return shaderFiles;
 }
 
 /**

@@ -100,7 +100,7 @@ int Application::run() {
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 
-    Renderer renderer("assets/shaders/background.vert", "assets/shaders/background.frag");
+    // Renderer renderer("assets/shaders/background.vert", "assets/shaders/background.frag");
     TextureStore textures;
     GameStateManager gsm;
     gsm.load("assets/prefabs/prefabs.json", "assets/scenes/scenes.json", textures);
@@ -114,11 +114,22 @@ int Application::run() {
 	resourceManager.setAudioSystem(&audioSystem);
 
     resourceManager.loadResources("audio");
+	resourceManager.loadResources("shaders");
 
     Physics    game_physics_obj;
     Game_Loop  game_loop_obj(m_window.handle());
 
-
+    std::string vertexPath;
+    std::string fragmentPath;
+    for (auto const& [id, shaderFile] : resourceManager.getShaders()) {
+        if (shaderFile.getKey() == "background") {
+            std::filesystem::path p{ shaderFile.getFilePath() };
+            auto ext = p.extension().string();
+            if (ext == ".vert") vertexPath = p.string();
+            else if (ext == ".frag") fragmentPath = p.string();
+        }
+    }
+	Renderer   renderer(vertexPath.c_str(), fragmentPath.c_str());
    
 
 ImGuiManager imGuiManager(  m_window, renderer,
