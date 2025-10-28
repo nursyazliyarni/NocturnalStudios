@@ -376,9 +376,10 @@ void ImGuiManager::showEntityListUI(/* Maybe an enum of paramEntityType, Maybe a
 
 	// BGM selector
 	static int bgmIndex = 0;
+	static int sfxIndex = 0;
 	if (!audioNames.empty()) {
 		if (bgmIndex >= (int)audioNames.size()) bgmIndex = 0;
-		ImGui::Text("Looping Audio:");
+		ImGui::Text("Simple Audio Test:");
 		if (ImGui::BeginCombo("Select Audio", audioNames[bgmIndex].c_str())) {
 			for (int i = 0; i < (int)audioNames.size(); ++i) {
 				bool selected = (i == bgmIndex);
@@ -394,17 +395,27 @@ void ImGuiManager::showEntityListUI(/* Maybe an enum of paramEntityType, Maybe a
 		if (ImGui::Button("Play Audio")) {
 			// create persistent instance and store mapping
 			auto it = activeInstances.find(bgmRID);
+			std::optional<AudioInstanceID> opt;
 			if (it != activeInstances.end()) {
 				audioSystem.resumeSound(it->second);
 			}
 			else {
-				AudioData::IndividualAudioData d{};
-				d.resourceID = bgmRID;
-				d.name = audioNames[bgmIndex];
-				d.loop = true;
-				d.group = AudioData::IndividualAudioData::Group::Music;
-				d.volume = audioSystem.getBGMVolume();
-				auto opt = audioSystem.createAudioInstance(d, INVALID_ENTITY_ID);
+				// check if audio type is music or sfx
+				if (audioNames[bgmIndex].find("bgm_") != std::string::npos) {
+					// create bgm instance
+					AudioData::IndividualAudioData d{};
+					d.resourceID = bgmRID;
+					d.name = audioNames[bgmIndex];
+					d.loop = true;
+					d.group = AudioData::IndividualAudioData::Group::Music;
+					d.volume = audioSystem.getBGMVolume();
+					opt = audioSystem.createAudioInstance(d, INVALID_ENTITY_ID);
+				}
+				else if (audioNames[bgmIndex].find("sfx_") != std::string::npos) {
+					// play sfx instance (one-shot)
+					AudioInstanceID inst = audioSystem.playSFX(bgmRID);
+				}
+
 				if (opt) {
 					activeInstances[bgmRID] = *opt;
 					audioSystem.resumeSound(*opt); // createAudioInstance starts paused
@@ -419,32 +430,7 @@ void ImGuiManager::showEntityListUI(/* Maybe an enum of paramEntityType, Maybe a
 		}
 	}
 
-	// SFX selector / one-shot play
-	static int sfxIndex = 0;
-	if (!audioNames.empty()) {
-		if (sfxIndex >= (int)audioNames.size()) sfxIndex = 0;
-		ImGui::Text("One-shot Audio:");
-		if (ImGui::BeginCombo("Select Audio", audioNames[sfxIndex].c_str())) {
-			for (int i = 0; i < (int)audioNames.size(); ++i) {
-				bool selected = (i == sfxIndex);
-				if (ImGui::Selectable(audioNames[i].c_str(), selected)) sfxIndex = i;
-				if (selected) ImGui::SetItemDefaultFocus();
-			}
-			ImGui::EndCombo();
-		}
 
-		ResourceID sfxRID = audioIDs[sfxIndex];
-		if (ImGui::Button("Play Audio")) {
-			// One-shot: just call playSFX every time (no mapping)
-			AudioInstanceID inst = audioSystem.playSFX(sfxRID);
-			if (inst == 0) {
-				logger.log("[ERROR] Failed to play Audio: " + std::to_string(sfxRID));
-			}
-			else {
-				// optional: don't store for one-shots; if you need pause/resume, store and check validity on resume
-			}
-		}
-	}
 
 
 	ImGui::End();
