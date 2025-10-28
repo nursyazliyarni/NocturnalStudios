@@ -15,6 +15,7 @@
 #include <functional>
 #include <memory>
 #include <stdexcept>
+#include <any>
 #include <rapidjson/document.h>
 #include "graphics/Renderer.h"
 
@@ -101,13 +102,13 @@ public:
 };
 
 //Logic Components
-class AnimalBehaviour :public Component {
+class AnimalBehavior :public Component {
 private:
 	std::string sound{ "moo" };
 public:
-	AnimalBehaviour(std::string s="");
-    AnimalBehaviour(const rapidjson::Value& j);
-    AnimalBehaviour(const AnimalBehaviour&);
+    AnimalBehavior(std::string s="");
+    AnimalBehavior(const rapidjson::Value& j);
+    AnimalBehavior(const AnimalBehavior&);
     std::unique_ptr<Component> Clone() const;
 	void Logic() override;
 };
@@ -125,12 +126,15 @@ public:
         map[name] = std::move(creator);
     }
 
+    template<typename T>
+    void RegisterComponentCreator(const std::string& name) {
+        Register(name, [](const Json& j)-> std::any{T comp{};from_json(j, comp);return comp;});
+    }
+
     // Convenience: register a concrete type T that exposes T::T(const Json&)
     template<typename T>
     static void RegisterType(const std::string& name) {
-        Register(name, [](const Json& j) {
-            return std::make_unique<T>(j);
-            });
+        Register(name, [](const Json& j) {return std::make_unique<T>(j);});
     }
 
     // Create or throw

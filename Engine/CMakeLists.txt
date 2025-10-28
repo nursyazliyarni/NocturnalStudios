@@ -57,6 +57,10 @@ if (NS_HAVE_STB)
   target_link_libraries(Engine PUBLIC stb)
 endif()
 
+if (NS_HAVE_FMOD)
+  target_link_libraries(Engine PUBLIC fmod)
+endif()
+
 if (WIN32)
   target_link_libraries(Engine PUBLIC opengl32)
 endif()
