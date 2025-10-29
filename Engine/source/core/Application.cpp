@@ -184,7 +184,7 @@ int Application::run() {
 				gsm.handleClick(nx, ny);
 			}
 		}
-		gsm.render(renderer, wd.width, wd.height);
+
 
 
 		// Quit button in JSON
