@@ -43,24 +43,21 @@ void Gui::updateImGuiManager(double& deltaTime, ImGuiManager& imGuiManager) {
 	imGuiManager.endFrame();
 }
 
-ImGuiManager::ImGuiManager(Window& w, Renderer& r, Texture& tex, Input& i, Physics& p, AudioSystem& audio, ResourceManager& resourceManager) :
-	mainWindow{ w },
-	renderer{ r },
-	texture{ tex },
-	input{ i },
-	physics{ p },
-	audioSystem{ audio },
-	resourceManager{ resourceManager },
-	windowTopLeft{},
-	windowBottomRight{},
-	deltaTime{ 0. },
-	imGuiTime{ 0. },
-	inputTime{ 0. },
-	logicTime{ 0. },
-	renderTime{ 0. },
-	physicsTime{ 0. },
-	selectedEntityType{},
-	activeInstances{}
+ImGuiManager::ImGuiManager(Window& w, Renderer& r, Texture& tex, Input& i, Physics& p) : 
+	mainWindow{ w }, 
+	renderer{ r }, 
+	texture{ tex }, 
+	input{ i }, 
+	physics{ p }, 
+	windowTopLeft {}, 
+	windowBottomRight{}, 
+	deltaTime{ 0. }, 
+	imGuiTime{ 0. }, 
+	inputTime{ 0. }, 
+	logicTime{ 0. }, 
+	renderTime{ 0. }, 
+	physicsTime{ 0. }, 
+	selectedEntityType {} 
 {
 	// Init ImGui context
 	ImGui::CreateContext();
@@ -291,7 +288,7 @@ void ImGuiManager::showPerformanceOverlayUI() {
 void ImGuiManager::showEntityListUI(/* Maybe an enum of paramEntityType, Maybe a Reference to a std::vector of objectList?*/) {
 	// Fixed size for entity list window
 	constexpr float width = 300.0f;
-	constexpr float height = 300.0f;
+	constexpr float height = 100.0f;
 
 	ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDecoration |
 		ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
@@ -335,89 +332,6 @@ void ImGuiManager::showEntityListUI(/* Maybe an enum of paramEntityType, Maybe a
 		logger.log("Deleting entity of Type: " + std::to_string(selectedEntityType));
 	}
 
-	// --- build vectors for combo display (cheap, rebuild each frame) ---
-	std::vector<ResourceID> audioIDs;
-	std::vector<std::string> audioNames;
-	audioIDs.reserve(resourceManager.getAudios().size());
-	audioNames.reserve(resourceManager.getAudios().size());
-	for (auto const& kv : resourceManager.getAudios()) {
-		audioIDs.push_back(kv.first);
-		audioNames.push_back(kv.second.getKey());
-	}
-
-	// BGM selector
-	static int bgmIndex = 0;
-	if (!audioNames.empty()) {
-		if (bgmIndex >= (int)audioNames.size()) bgmIndex = 0;
-		ImGui::Text("Looping Audio:");
-		if (ImGui::BeginCombo("Select Audio", audioNames[bgmIndex].c_str())) {
-			for (int i = 0; i < (int)audioNames.size(); ++i) {
-				bool selected = (i == bgmIndex);
-				if (ImGui::Selectable(audioNames[i].c_str(), selected)) {
-					bgmIndex = i;
-				}
-				if (selected) ImGui::SetItemDefaultFocus();
-			}
-			ImGui::EndCombo();
-		}
-
-		ResourceID bgmRID = audioIDs[bgmIndex];
-		if (ImGui::Button("Play Audio")) {
-			// create persistent instance and store mapping
-			auto it = activeInstances.find(bgmRID);
-			if (it != activeInstances.end()) {
-				audioSystem.resumeSound(it->second);
-			}
-			else {
-				AudioData::IndividualAudioData d{};
-				d.resourceID = bgmRID;
-				d.name = audioNames[bgmIndex];
-				d.loop = true;
-				d.group = AudioData::IndividualAudioData::Group::Music;
-				d.volume = audioSystem.getBGMVolume();
-				auto opt = audioSystem.createAudioInstance(d, INVALID_ENTITY_ID);
-				if (opt) {
-					activeInstances[bgmRID] = *opt;
-					audioSystem.resumeSound(*opt); // createAudioInstance starts paused
-				}
-			}
-		}
-		ImGui::SameLine();
-		if (ImGui::Button("Pause Audio")) {
-			ResourceID rid = bgmRID;
-			auto it = activeInstances.find(rid);
-			if (it != activeInstances.end()) audioSystem.pauseSound(it->second);
-		}
-	}
-
-	// SFX selector / one-shot play
-	static int sfxIndex = 0;
-	if (!audioNames.empty()) {
-		if (sfxIndex >= (int)audioNames.size()) sfxIndex = 0;
-		ImGui::Text("One-shot Audio:");
-		if (ImGui::BeginCombo("Select Audio", audioNames[sfxIndex].c_str())) {
-			for (int i = 0; i < (int)audioNames.size(); ++i) {
-				bool selected = (i == sfxIndex);
-				if (ImGui::Selectable(audioNames[i].c_str(), selected)) sfxIndex = i;
-				if (selected) ImGui::SetItemDefaultFocus();
-			}
-			ImGui::EndCombo();
-		}
-
-		ResourceID sfxRID = audioIDs[sfxIndex];
-		if (ImGui::Button("Play Audio")) {
-			// One-shot: just call playSFX every time (no mapping)
-			AudioInstanceID inst = audioSystem.playSFX(sfxRID);
-			if (inst == 0) {
-				logger.log("[ERROR] Failed to play Audio: " + std::to_string(sfxRID));
-			}
-			else {
-				// optional: don't store for one-shots; if you need pause/resume, store and check validity on resume
-			}
-		}
-	}
-
-
 	ImGui::End();
 }
 
@@ -430,7 +344,7 @@ void ImGuiManager::showTransformUI(/* A reference to a vector of object list obj
 		ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
 
 	// Position the overlay at the top-right corner of the window, below entity list overlay
-	ImVec2 windowTopRightPos = { windowBottomRight.x - width, windowTopLeft.y + 500.0f };
+	ImVec2 windowTopRightPos = { windowBottomRight.x - width, windowTopLeft.y + 300.0f };
 	ImGui::SetNextWindowPos(windowTopRightPos);
 	ImGui::SetNextWindowBgAlpha(0.35f);
 	ImGui::SetNextWindowSize({ width, height });

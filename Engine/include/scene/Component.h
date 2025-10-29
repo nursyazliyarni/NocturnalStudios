@@ -15,7 +15,6 @@
 #include <functional>
 #include <memory>
 #include <stdexcept>
-#include <any>
 #include <rapidjson/document.h>
 #include "graphics/Renderer.h"
 
@@ -120,15 +119,12 @@ public:
         map[name] = std::move(creator);
     }
 
-    template<typename T>
-    void RegisterComponentCreator(const std::string& name) {
-        Register(name, [](const Json& j)-> std::any{T comp{};from_json(j, comp);return comp;});
-    }
-
     // Convenience: register a concrete type T that exposes T::T(const Json&)
     template<typename T>
     static void RegisterType(const std::string& name) {
-        Register(name, [](const Json& j) {return std::make_unique<T>(j);});
+        Register(name, [](const Json& j) {
+            return std::unique_ptr<Component>(new T(j));
+            });
     }
 
     // Create or throw
