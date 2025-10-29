@@ -42,9 +42,7 @@ public:
 
     void Render();
     
-    SceneID ResolveSceneKey(int idx) const; 
 
-    void SetScenesJsonPath(const std::string & path);
 
     static SceneManager& GetSceneManager() {
         static SceneManager dis;
