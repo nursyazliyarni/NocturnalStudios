@@ -40,7 +40,7 @@
 #include "physics/AABB.h"
 #include "ECS/ECS.h"
 #include "resources/ResourceManager.h"
-#include <core/GameStateManager.h>
+#include <core/GameManager.h>
 #include "scene/Prefab.h"
 
 namespace {
@@ -101,7 +101,7 @@ int Application::run() {
 
 	Renderer renderer("assets/shaders/background.vert", "assets/shaders/background.frag");
 	TextureStore textures;
-	GameStateManager gsm;
+	GameManager gsm;
 	gsm.load("assets/prefabs/prefabs.json", "assets/scenes/scenes.json", textures);
 
 

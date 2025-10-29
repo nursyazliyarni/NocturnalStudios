@@ -35,7 +35,7 @@
 
 #include <vector>
 #include <unordered_map>
-#include "GameStateManager.h"
+#include "GameManager.h"
 
 extern Logger logger;
 
@@ -43,7 +43,7 @@ class ImGuiManager {
 public:
 	// Accept lists of resource IDs for quick audio testing.
 	ImGuiManager(Window& window, Renderer& renderer,  Input& input, 
-		Physics& physics, AudioSystem& audio, ResourceManager& resourceManager, GameStateManager& gsm);
+		Physics& physics, AudioSystem& audio, ResourceManager& resourceManager, GameManager& gsm);
 	~ImGuiManager();
 
 	void updateDeltaTime(double& dt);
@@ -82,7 +82,7 @@ private:
 	Physics& physics;
 	AudioSystem& audioSystem;
 	ResourceManager& resourceManager;
-	GameStateManager& gsm;
+	GameManager& gsm;
 
 	ImVec2 windowTopLeft;
 	ImVec2 windowBottomRight;

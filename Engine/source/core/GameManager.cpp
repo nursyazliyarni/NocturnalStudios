@@ -1,4 +1,4 @@
-#include "core/GameStateManager.h"
+#include "core/GameManager.h"
 #include "stb_image.h"
 #include <rapidjson/document.h>
 #include <fstream>
@@ -53,8 +53,8 @@ static std::string toAssetsPath(const std::string& p) {
 
 struct PrefabDef { float w = 0.2f, h = 0.2f, angle = 0.0f; };
 
-//  GameStateManager 
-bool GameStateManager::load(const char* prefabsPath, const char* scenesPath, TextureStore& tex) {
+//  GameManager 
+bool GameManager::load(const char* prefabsPath, const char* scenesPath, TextureStore& tex) {
 
     //  1) read prefab defaults (w,h,angle) 
     std::unordered_map<std::string, PrefabDef> prefabDefaults;
@@ -167,17 +167,17 @@ bool GameStateManager::load(const char* prefabsPath, const char* scenesPath, Tex
     return true;
 }
 
-void GameStateManager::requestScene(const std::string& name) {
+void GameManager::requestScene(const std::string& name) {
     if (scenes.count(name)) currentScene = name;
 }
 
-void GameStateManager::handleKeyPress(int key) {
+void GameManager::handleKeyPress(int key) {
     auto it = keyMap.find(key);
     if (it != keyMap.end()) requestScene(it->second);
     if (key == GLFW_KEY_ESCAPE) requestScene(backKey);
 }
 
-void GameStateManager::render(Renderer& r, int w, int h) const {
+void GameManager::render(Renderer& r, int w, int h) const {
 
     auto it = scenes.find(currentScene);
     if (it == scenes.end()) return;
@@ -193,7 +193,7 @@ void GameStateManager::render(Renderer& r, int w, int h) const {
     }
 }
 
-bool GameStateManager::handleClick(float nx, float ny) {
+bool GameManager::handleClick(float nx, float ny) {
     auto it = scenes.find(currentScene);
     if (it == scenes.end()) return false;
     const Scene& sc = it->second;
@@ -212,7 +212,7 @@ bool GameStateManager::handleClick(float nx, float ny) {
     return false;
 }
 
-bool GameStateManager::popQuitRequested() {
+bool GameManager::popQuitRequested() {
     bool q = requestedQuit;
     requestedQuit = false;
     return q;

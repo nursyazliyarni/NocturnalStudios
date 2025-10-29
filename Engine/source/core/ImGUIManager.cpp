@@ -47,7 +47,7 @@ void Gui::updateImGuiManager(double& deltaTime, ImGuiManager& imGuiManager) {
 ImGuiManager::ImGuiManager(Window& w, Renderer& r,
 	Input& i, Physics& p,
 	AudioSystem& a, ResourceManager& rm,
-	GameStateManager& g)
+	GameManager& g)
 	: mainWindow{ w }, renderer{ r },
 	input{ i }, physics{ p }, audioSystem{ a }, resourceManager{ rm },
 	gsm{ g }, windowTopLeft{}, windowBottomRight{},

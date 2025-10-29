@@ -1,5 +1,5 @@
 /*****************************************************************//**
- * \file   GameStateManager.h
+ * \file   GameManager.h
  * \brief  game
  *
  * \author rahra
