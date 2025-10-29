@@ -6,7 +6,7 @@
  * \date   October 2025
  *********************************************************************/
 
-#include "../include/Scene/StateManager.h"
+#include "../include/core/StateManager.h"
 #include <GLFW/glfw3.h>    
 void StateManager::StateMachine() {
 	switch (currState)
@@ -125,7 +125,7 @@ void StateManager::PlayState() {
 			currLvl = nextLevel;
 			if (currLvl == NONE)
 			{
-				nextState == WIN;
+				nextState = WIN;
 			}
 		}
 
