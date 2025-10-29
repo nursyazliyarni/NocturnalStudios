@@ -1,5 +1,5 @@
 /*****************************************************************//**
- * \file   GameStateManager.h
+ * \file   GameManager.h
  * \brief  game
  *
  * \author rahra
@@ -9,7 +9,7 @@
 #include "../include/Scene/SceneManager.h"
 #include "graphics/Window.h"
 
-class GameStateManager {
+class StateManager {
 private:
 	enum PLAYERSTATE
 	{
@@ -32,7 +32,7 @@ private:
 	PLAYERSTATE currState{ MAIN_MENU }, nextState{ MAIN_MENU };
 	int innerState{ 0 };
 	LEVEL currLvl{ NONE }, nextLevel{ NONE };
-	SceneManager& sceneManager{ SceneManager::GetSceneManager() };
+	SceneManager& sceneManager= SceneManager::GetSceneManager() ;
 	Window& window;
 
 	void MainMenuState();
@@ -40,18 +40,18 @@ private:
 	void PlayState();
 	void QuitGame();
 
-	GameStateManager(Window&);
+	StateManager(Window&);
 
-	GameStateManager(const GameStateManager&) = delete;
-	GameStateManager& operator=(const GameStateManager&) = delete;
+	StateManager(const StateManager&) = delete;
+	StateManager& operator=(const StateManager&) = delete;
 
-	GameStateManager(GameStateManager&&) = delete;
-	GameStateManager& operator=(GameStateManager&&) = delete;
+	StateManager(StateManager&&) = delete;
+	StateManager& operator=(StateManager&&) = delete;
 public:
 	void StateMachine();
 
-	static GameStateManager& getGSM(Window& w) {
-		static GameStateManager instance(w);
+	static StateManager& getGSM(Window& w) {
+		static StateManager instance(w);
 		return instance;
 	}
 

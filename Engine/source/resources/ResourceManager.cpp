@@ -684,7 +684,16 @@ const std::unordered_map<ResourceID, SceneFile>& ResourceManager::getScenes() co
  * Simple usage:
  *  ResourceID newId = rm.getNewAssetID();
  *  // then use newId for newly-created resources
+ * 
  */
+
+
+const Audio& ResourceManager::getDefaultAudio() const {
+	return defaultAudio;
+}
+
+
+
 ResourceID ResourceManager::getNewAssetID() {
 	while (usedIDs.find(totalResourceID) != usedIDs.end()) {
 		++totalResourceID;

@@ -46,11 +46,20 @@ namespace {
 		}
 
 		switch (controlType) {
-		case FMOD_CHANNELCONTROL_CHANNEL: {
+		/*case FMOD_CHANNELCONTROL_CHANNEL: {
 			FMOD::Channel* channel = (FMOD::Channel*)channelControl;
 			audioSystem->handleCompletedAudioInstance(channel);
 			return FMOD_OK;
+		}*/
+
+		case FMOD_CHANNELCONTROL_CHANNEL: {
+			FMOD::Channel* channel = (FMOD::Channel*)channelControl;
+			if (audioSystem) { // guard in case FMOD fires after shutdown
+				audioSystem->handleCompletedAudioInstance(channel);
+			}
+			return FMOD_OK;
 		}
+
 		case FMOD_CHANNELCONTROL_CHANNELGROUP: {
 			return FMOD_OK;
 		}
@@ -122,8 +131,17 @@ AudioSystem::AudioSystem(std::string name, ECS& ecs, ResourceManager& rm) : Syst
 		loadSound(audio);
 	}
 
+	//FMOD::Sound* defaultSound = nullptr;
+	//FMOD_RESULT result = fmodSystem->createSound(resourceManager.defaultAudio.getFilePath().c_str(), false, nullptr, &defaultSound);
+	
 	FMOD::Sound* defaultSound = nullptr;
-	FMOD_RESULT result = fmodSystem->createSound(resourceManager.defaultAudio.getFilePath().c_str(), false, nullptr, &defaultSound);
+	// Use the accessor + a valid FMOD_MODE flag instead of 'false'
+	FMOD_RESULT result = fmodSystem->createSound(
+		resourceManager.getDefaultAudio().getFilePath().c_str(),
+		FMOD_2D, nullptr, &defaultSound
+	);
+
+
 	if (result != FMOD_OK) {
 		logger.error("Failed to load default audio sound" + std::string{ FMOD_ErrorString(result) });
 	}
@@ -185,6 +203,9 @@ AudioSystem::~AudioSystem() {
 		fmodSystem->release();
 		fmodSystem = nullptr;
 	}
+
+	audioSystem = nullptr; // clear file-scoped pointer used by the callback
+
 }
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -83,6 +83,9 @@ public:
 	bool WasMousePressed(int glfwMouseButton) const;   // mouse edge
 	void EndFrame();                                   // clear edges each frame
 
+	// Returns: -1 = none, 0 = ESC, 1..9 = digit pressed (edge-triggered)
+	int ConsumeSceneKey() const;
+
 
 private:
 	//Non-static member functions need an object to call it

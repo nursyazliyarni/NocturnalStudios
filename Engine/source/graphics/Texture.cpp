@@ -77,17 +77,33 @@ size_t Texture::get_totalTexture() const {
 	return texture_info_vector.size();
 }
 
-const GLuint& Texture::get_textureID(size_t input_index) const {
-	if (input_index<texture_info_vector.size())
-	return texture_info_vector[input_index].textureID_storage;
+//const GLuint& Texture::get_textureID(size_t input_index) const {
+//	if (input_index<texture_info_vector.size())
+//	return texture_info_vector[input_index].textureID_storage;
+//}
+//
+//const int& Texture::get_texture_width(size_t input_index) const {
+//	if (input_index < texture_info_vector.size())
+//	return texture_info_vector[input_index].image_dimension.first;
+//}
+//
+//const int& Texture::get_texture_height(size_t input_index) const {
+//	if (input_index < texture_info_vector.size())
+//	return texture_info_vector[input_index].image_dimension.second;
+//}
+
+GLuint Texture::get_textureID(size_t i) const {
+	if (i >= texture_info_vector.size()) return 0;
+	return texture_info_vector[i].textureID_storage;
 }
 
-const int& Texture::get_texture_width(size_t input_index) const {
-	if (input_index < texture_info_vector.size())
-	return texture_info_vector[input_index].image_dimension.first;
+int Texture::get_texture_width(size_t i) const {
+	if (i >= texture_info_vector.size()) return 0;
+	return texture_info_vector[i].image_dimension.first;
 }
 
-const int& Texture::get_texture_height(size_t input_index) const {
-	if (input_index < texture_info_vector.size())
-	return texture_info_vector[input_index].image_dimension.second;
+int Texture::get_texture_height(size_t i) const {
+	if (i >= texture_info_vector.size()) return 0;
+	return texture_info_vector[i].image_dimension.second;
 }
+

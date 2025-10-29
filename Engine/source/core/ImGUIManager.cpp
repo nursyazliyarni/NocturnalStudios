@@ -47,7 +47,7 @@ void Gui::updateImGuiManager(double& deltaTime, ImGuiManager& imGuiManager) {
 ImGuiManager::ImGuiManager(Window& w, Renderer& r,
 	Input& i, Physics& p,
 	AudioSystem& a, ResourceManager& rm,
-	GameStateManager& g)
+	GameManager& g)
 	: mainWindow{ w }, renderer{ r },
 	input{ i }, physics{ p }, audioSystem{ a }, resourceManager{ rm },
 	gsm{ g }, windowTopLeft{}, windowBottomRight{},
@@ -242,7 +242,7 @@ void ImGuiManager::showViewportWindowUI() {
 	renderer.clear(0.06f, 0.06f, 0.07f);
 
 	// Draw current SCENE into the FBO
-	//gsm.render(renderer, vw, vh);
+	gsm.render(renderer, vw, vh);
 
 	renderer.unbindFBO();
 	renderTime = std::chrono::duration<double>(Clock::now() - renderStart).count();

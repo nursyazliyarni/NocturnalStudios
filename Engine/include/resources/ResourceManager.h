@@ -80,6 +80,8 @@ public:
 
 	void setAudioSystem(AudioSystem* audioSystem);
 
+	const Audio& getDefaultAudio() const;
+
 private:
 	ECS& ecs;
 
