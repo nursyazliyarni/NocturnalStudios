@@ -43,6 +43,7 @@
 #include "ECS/ECS.h"
 #include "resources/ResourceManager.h"
 #include <core/GameStateManager.h>
+#include "scene/Prefab.h"
 
 namespace {
     constexpr float TWO_PI = 2.0f * glm::pi<float>();
@@ -117,6 +118,17 @@ int Application::run() {
 
     Physics    game_physics_obj;
     Game_Loop  game_loop_obj(m_window.handle());
+
+    // Initialize
+    ECS ecs;
+    PrefabManager prefabManager(ecs);
+
+    // Load prefabs
+    prefabManager.Load_Prefab("assets/prefabs/testing_prefabs.json");
+
+    EntityID animal = prefabManager.Instantiate("animal");
+    EntityID animal_2 = prefabManager.Instantiate("animal");
+    std::cout << animal << animal_2<< "\n";
 
 
     //ImGuiManager imGuiManager(m_window, bg_render, txt_obj, game_input_obj, game_physics_obj, audioSystem, resourceManager);
