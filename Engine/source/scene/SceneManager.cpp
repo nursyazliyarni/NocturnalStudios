@@ -1,17 +1,4 @@
 #include "./scene/SceneManager.h"
-#include <rapidjson/document.h>
-#include <rapidjson/istreamwrapper.h>
-#include <fstream>
-#include <array>
-#include <vector>
-#include <string>
-#include <unordered_map>
-#include <algorithm>
-
-
-
-
-
 
 void SceneManager::InitScene(SceneID id) {
     for (const auto& s : scenes) {
