@@ -142,6 +142,13 @@ void Input::keyboard_input_callback(GLFWwindow* window, int key, int scancode, i
 		ImGui_ImplGlfw_KeyCallback(window, key, scancode, action, mods); // let ImGui see it
 
 	if (action == GLFW_PRESS) pressedKeysThisFrame.insert(key);          // Input owns it
+
+	//messaging system//
+	auto* self = static_cast<Input*>(glfwGetWindowUserPointer(window));
+	if (self && self->messageBus) {
+		auto msg = std::make_unique<Messaging::KeyMessage>(key, action);
+		self->messageBus->Broadcast(std::move(msg));
+	}
 }
 
 
@@ -152,13 +159,13 @@ void Input::mouse_input_callback(GLFWwindow* window, int button, int action, int
 
 	if (action == GLFW_PRESS) pressedMouseThisFrame.insert(button);       // Input owns it
 
+	//messaging system//
 	auto* self = static_cast<Input*>(glfwGetWindowUserPointer(window));
 	if (self && self->messageBus) {
 		double xpos, ypos;
 		glfwGetCursorPos(window, &xpos, &ypos);
 		bool pressed = (action == GLFW_PRESS);
 		auto msg = std::make_unique<Messaging::ClickedMouseMessage>(button, pressed, (float)xpos, (float)ypos);
-		//std::cout << "[MessageBus] Broadcasting key " << Me << " action " << action << std::endl;
 		self->messageBus->Broadcast(std::move(msg));
 	}
 }
