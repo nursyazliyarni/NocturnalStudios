@@ -105,9 +105,10 @@ int Application::run() {
     GameStateManager gsm;
     gsm.load("assets/prefabs/prefabs.json", "assets/scenes/scenes.json", textures);
 
-
+    Messaging::MessageBus bus;
 
     Input      game_input_obj(m_window.handle());
+    game_input_obj.SetMessageBus(&bus);
 
     ResourceManager resourceManager(ecs);
     AudioSystem audioSystem("AudioSystem", ecs, resourceManager);
@@ -117,6 +118,8 @@ int Application::run() {
 
     Physics    game_physics_obj;
     Game_Loop  game_loop_obj(m_window.handle());
+
+    bus.Register(&game_loop_obj);
 
 
     //ImGuiManager imGuiManager(m_window, bg_render, txt_obj, game_input_obj, game_physics_obj, audioSystem, resourceManager);

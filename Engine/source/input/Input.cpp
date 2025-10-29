@@ -31,6 +31,11 @@
 
 #include <imgui.h>
 #include <backends/imgui_impl_glfw.h>
+//#include "../messaging/MessageBus.h"
+//#include "../messaging/InputMessage.h"
+#include "messaging/Message.h"
+#include "messaging/InputMessage.h"
+
 
 std::vector<std::tuple<int, int, Input_action>> Input::keyboard_action;
 std::vector<std::tuple<int, int, Input_action>> Input::mouse_action;
@@ -146,6 +151,16 @@ void Input::mouse_input_callback(GLFWwindow* window, int button, int action, int
 		ImGui_ImplGlfw_MouseButtonCallback(window, button, action, mods); // let ImGui see it
 
 	if (action == GLFW_PRESS) pressedMouseThisFrame.insert(button);       // Input owns it
+
+	auto* self = static_cast<Input*>(glfwGetWindowUserPointer(window));
+	if (self && self->messageBus) {
+		double xpos, ypos;
+		glfwGetCursorPos(window, &xpos, &ypos);
+		bool pressed = (action == GLFW_PRESS);
+		auto msg = std::make_unique<Messaging::ClickedMouseMessage>(button, pressed, (float)xpos, (float)ypos);
+		//std::cout << "[MessageBus] Broadcasting key " << Me << " action " << action << std::endl;
+		self->messageBus->Broadcast(std::move(msg));
+	}
 }
 
 

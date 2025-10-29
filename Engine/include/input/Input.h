@@ -86,6 +86,7 @@ public:
 	// Returns: -1 = none, 0 = ESC, 1..9 = digit pressed (edge-triggered)
 	int ConsumeSceneKey() const;
 
+	void SetMessageBus(Messaging::MessageBus* bus) { messageBus = bus; }
 
 private:
 	//Non-static member functions need an object to call it
@@ -106,7 +107,7 @@ private:
 	std::vector<bool> spriteRotatingCW;     // clockwise
 	std::vector<bool> spriteRotatingCCW;    // counter-clockwise
 
-
+	Messaging::MessageBus* messageBus = nullptr;
 
 private:
 	//private data member
@@ -116,6 +117,7 @@ private:
 	static std::vector<std::tuple<int,int,Input_action>> mouse_action;
 };
 
+/*
 //Messaging namespace implemented for input system here
 namespace Messaging 
 {
@@ -149,7 +151,7 @@ namespace Messaging
 
 			auto msg = std::make_unique<MovingMouseMessage>((float)xpos, (float)ypos);
 			self->bus.Broadcast(std::move(msg));
-		}*/
+		}
 
 		static void MouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
 			auto* self = static_cast<InputSystemMessaging*>(glfwGetWindowUserPointer(window));
@@ -163,4 +165,4 @@ namespace Messaging
 			self->bus.Broadcast(std::move(msg));
 		}
     };
-}
+} */
