@@ -1,9 +1,6 @@
 #pragma once
 
-#include <functional>
-
 #include "Resource.h"
-#include "graphics/Shader.h"
 
 class ShaderFile : public Resource {
 public:

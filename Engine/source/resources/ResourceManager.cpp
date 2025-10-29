@@ -95,7 +95,7 @@ void ResourceManager::setAudioSystem(AudioSystem* audioSystemPtr) {
  *  rm.loadResources("Audio");    // only scan assets/Audio and load audio files
  */
 void ResourceManager::loadResources(std::string const& resourceFilePath) {
-	logger.log("Beginning resource loading...");
+	logger.log("Beginning resource loading for: " + resourceFilePath + " ...");
 
 	std::string resourcePath{ "assets" };
 	std::string directoryPath{ resourceFilePath };
@@ -117,6 +117,15 @@ void ResourceManager::loadResources(std::string const& resourceFilePath) {
 		}
 		else if (resourceFilePath == "shaders") {
 			loadShader(stem.string(), path.string());
+		}
+		else if (resourceFilePath == "textures") {
+			loadTexture(stem.string(), path.string());
+		}
+		else if (resourceFilePath == "prefabs") {
+			loadPrefab(stem.string(), path.string());
+		}
+		else if (resourceFilePath == "scenes") {
+			loadScene(stem.string(), path.string());
 		}
 	}
 
@@ -294,6 +303,218 @@ ShaderFile& ResourceManager::getShader(ResourceID id) {
 }
 
 /**
+ * loadTexture
+ *
+ * Load or reuse a TextureFile resource record in the ResourceManager.
+ *
+ * Description:
+ *  - Ensures a single in-memory TextureFile record exists per file path. If a
+ *    TextureFile with an identical file path is already present, that
+ *    TextureFile is returned. Otherwise a new TextureFile object is constructed
+ *    and stored.
+ *
+ * Parameters:
+ *  - name: Human-readable key for the texture (e.g. "BrickAlbedo").
+ *  - filePath: Filesystem path to the texture file.
+ *  - id: Optional ResourceID to assign. If set to NEW_RESOURCE a new unique
+ *        ResourceID is allocated via getNewAssetID().
+ *
+ * Returns:
+ *  - Reference to the stored TextureFile instance (existing or newly-inserted).
+ *
+ * Behavior & side-effects:
+ *  - Performs a linear scan of `textureFiles` to detect an existing texture by
+ *    comparing std::filesystem::path values. This comparison is syntactic
+ *    (string-based); it does not resolve symlinks or canonicalize paths.
+ *  - If `id == NEW_RESOURCE`, a new unique ResourceID is generated and
+ *    recorded in the ResourceManager's used ID registry.
+ *  - Inserts a new `TextureFile` into the `textureFiles` map with the chosen ID.
+ *  - Logs the load operation through the global `logger`.
+ *
+ * Thread-safety:
+ *  - Not thread-safe. Concurrent calls that mutate `textureFiles` or ID state
+ *    require external synchronization.
+ *
+ * Example:
+ *  TextureFile& t = rm.loadTexture("Brick", "assets/textures/brick.png");
+ */
+TextureFile& ResourceManager::loadTexture(const std::string& name, const std::string& filePath, ResourceID id) {
+	for (auto& [key, textureFile] : textureFiles) {
+		if (std::filesystem::path{ textureFile.getFilePath() } == std::filesystem::path{ filePath }) {
+			return textureFile;
+		}
+	}
+	if (id == NEW_RESOURCE) id = getNewAssetID();
+
+	textureFiles.emplace(id, TextureFile{ id, name, filePath });
+	logger.log("Loaded Texture: " + name + " from " + filePath);
+	return textureFiles.at(id);
+}
+
+/**
+ * getTexture
+ *
+ * Retrieve a previously loaded TextureFile by its ResourceID.
+ *
+ * Parameters:
+ *  - id: the ResourceID to look up.
+ *
+ * Returns:
+ *  - Reference to the found TextureFile object.
+ *  - If no matching TextureFile exists the function asserts (caller should
+ *    ensure id validity) — consistent with existing usage in this codebase.
+ *
+ * Simple usage:
+ *  ResourceID id = /* previously obtained id * /;
+ *  TextureFile& t = rm.getTexture(id);
+ */
+TextureFile& ResourceManager::getTexture(ResourceID id) {
+	auto found = textureFiles.find(id);
+	assert(found != textureFiles.end());
+	return found->second;
+}
+
+/**
+ * loadPrefab
+ *
+ * Load or reuse a PrefabFile resource record in the ResourceManager.
+ *
+ * Description:
+ *  - Ensures a single in-memory PrefabFile record exists per file path. If a
+ *    PrefabFile with an identical file path is already present, that
+ *    PrefabFile is returned. Otherwise a new PrefabFile object is constructed
+ *    and stored.
+ *
+ * Parameters:
+ *  - name: Human-readable key for the prefab (e.g. "PlayerPrefab").
+ *  - filePath: Filesystem path to the prefab file.
+ *  - id: Optional ResourceID to assign. If set to NEW_RESOURCE a new unique
+ *        ResourceID is allocated via getNewAssetID().
+ *
+ * Returns:
+ *  - Reference to the stored PrefabFile instance (existing or newly-inserted).
+ *
+ * Behavior & side-effects:
+ *  - Performs a linear scan of `prefabFiles` to detect an existing prefab by
+ *    comparing std::filesystem::path values. This comparison is syntactic
+ *    (string-based); it does not resolve symlinks or canonicalize paths.
+ *  - If `id == NEW_RESOURCE`, a new unique ResourceID is generated and
+ *    recorded in the ResourceManager's used ID registry.
+ *  - Inserts the new `PrefabFile` into `prefabFiles` and logs the operation.
+ *
+ * Thread-safety:
+ *  - Not thread-safe. Concurrent calls that mutate `prefabFiles` or ID state
+ *    require external synchronization.
+ */
+PrefabFile& ResourceManager::loadPrefab(const std::string& name, const std::string& filePath, ResourceID id) {
+	for (auto& [key, prefabFile] : prefabFiles) {
+		if (std::filesystem::path{ prefabFile.getFilePath() } == std::filesystem::path{ filePath }) {
+			return prefabFile;
+		}
+	}
+
+	if (id == NEW_RESOURCE) id = getNewAssetID();
+
+	auto [it, success] = prefabFiles.emplace(id, PrefabFile{ id, name, filePath });
+	assert(success);
+	logger.log("Loaded Prefab: " + name + " from " + filePath);
+	return it->second;
+}
+
+/**
+ * getPrefab
+ *
+ * Retrieve a previously loaded PrefabFile by its ResourceID.
+ *
+ * Parameters:
+ *  - id: the ResourceID to look up.
+ *
+ * Returns:
+ *  - Reference to the found PrefabFile object.
+ *  - If no matching PrefabFile exists the function asserts (caller should
+ *    ensure id validity) — consistent with existing usage in this codebase.
+ *
+ * Simple usage:
+ *  ResourceID id = /* previously obtained id * /;
+ *  PrefabFile& p = rm.getPrefab(id);
+ */
+PrefabFile& ResourceManager::getPrefab(ResourceID id) {
+	auto found = prefabFiles.find(id);
+	assert(found != prefabFiles.end());
+	return found->second;
+}
+
+/**
+ * loadScene
+ *
+ * Load or reuse a SceneFile resource record in the ResourceManager.
+ *
+ * Description:
+ *  - Ensures a single in-memory SceneFile record exists per file path. If a
+ *    SceneFile with an identical file path is already present, that
+ *    SceneFile is returned. Otherwise a new SceneFile object is constructed
+ *    and stored.
+ *
+ * Parameters:
+ *  - name: Human-readable key for the scene (e.g. "Level1").
+ *  - filePath: Filesystem path to the scene file.
+ *  - id: Optional ResourceID to assign. If set to NEW_RESOURCE a new unique
+ *        ResourceID is allocated via getNewAssetID().
+ *  - startWithThisScene: If true, marks the SceneFile to indicate the engine
+ *        should start with this scene (stored in SceneFile).
+ *
+ * Returns:
+ *  - Reference to the stored SceneFile instance (existing or newly-inserted).
+ *
+ * Behavior & side-effects:
+ *  - Performs a linear scan of `sceneFiles` to detect an existing scene by
+ *    comparing std::filesystem::path values. This comparison is syntactic
+ *    (string-based); it does not resolve symlinks or canonicalize paths.
+ *  - If `id == NEW_RESOURCE`, a new unique ResourceID is generated and
+ *    recorded in the ResourceManager's used ID registry.
+ *  - Inserts the new `SceneFile` into `sceneFiles` and logs the operation.
+ *
+ * Thread-safety:
+ *  - Not thread-safe. Concurrent calls that mutate `sceneFiles` or ID state
+ *    require external synchronization.
+ */
+SceneFile& ResourceManager::loadScene(const std::string& name, const std::string& filePath, ResourceID id, bool startWithThisScene) {
+	for (auto& [key, sceneFile] : sceneFiles) {
+		if (std::filesystem::path{ sceneFile.getFilePath() } == std::filesystem::path{ filePath }) {
+			return sceneFile;
+		}
+	}
+
+	if (id == NEW_RESOURCE) id = getNewAssetID();
+	sceneFiles.emplace(id, SceneFile{ id, name, filePath, startWithThisScene });
+	logger.log("Loaded Scene: " + name + " from " + filePath);
+	return sceneFiles.at(id);
+}
+
+/**
+ * getScene
+ *
+ * Retrieve a previously loaded SceneFile by its ResourceID.
+ *
+ * Parameters:
+ *  - id: the ResourceID to look up.
+ *
+ * Returns:
+ *  - Reference to the found SceneFile object.
+ *  - If no matching SceneFile exists the function asserts (caller should
+ *    ensure id validity) — consistent with existing usage in this codebase.
+ *
+ * Simple usage:
+ *  ResourceID id = /* previously obtained id * /;
+ *  SceneFile& s = rm.getScene(id);
+ */
+SceneFile& ResourceManager::getScene(ResourceID id) {
+	auto found = sceneFiles.find(id);
+	assert(found != sceneFiles.end());
+	return found->second;
+}
+
+/**
  * insertUsedID
  *
  * Marks a ResourceID as used in the ResourceManager's internal registry.
@@ -352,6 +573,102 @@ std::unordered_map<ResourceID, Audio>& ResourceManager::getAudios() {
  */
 std::unordered_map<ResourceID, ShaderFile>& ResourceManager::getShaders() {
 	return shaderFiles;
+}
+
+/**
+ * getTextures
+ *
+ * Accessor that returns a mutable reference to the internal map of texture files.
+ * Use this to iterate or inspect textures stored in the ResourceManager.
+ *
+ * Notes:
+ *  - The returned reference is mutable; callers must not modify map keys (undefined
+ *    behavior) and should prefer ResourceManager methods for mutation when possible.
+ *  - Not thread-safe: concurrent modifications require external synchronization.
+ *
+ * Returns:
+ *  - Reference to std::unordered_map<ResourceID, TextureFile>
+ *
+ * Simple usage:
+ *  auto& textures = rm.getTextures();
+ *  for (auto& [id, tex] : textures) {
+ *      // inspect tex
+ *  }
+ */
+std::unordered_map<ResourceID, TextureFile>& ResourceManager::getTextures() {
+	return textureFiles;
+}
+
+/**
+ * getPrefabs
+ *
+ * Accessor that returns a mutable reference to the internal map of prefab files.
+ * Use this to iterate or manipulate prefab entries directly (careful: mutating
+ * map keys is undefined behavior; prefer ResourceManager methods for mutation
+ * when possible).
+ *
+ * Notes:
+ *  - The returned reference is mutable; callers must not modify map keys.
+ *  - Not thread-safe: concurrent modifications require external synchronization.
+ *
+ * Returns:
+ *  - Reference to std::unordered_map<ResourceID, PrefabFile>
+ *
+ * Simple usage:
+ *  auto& prefabs = rm.getPrefabs();
+ *  for (auto& [id, prefab] : prefabs) {
+ *      // inspect prefab
+ *  }
+ */
+std::unordered_map<ResourceID, PrefabFile>& ResourceManager::getPrefabs() {
+	return prefabFiles;
+}
+
+/**
+ * getScenes
+ *
+ * Accessor that returns a mutable reference to the internal map of scene files.
+ * Use this to iterate or manipulate scene entries directly (careful: mutating
+ * map keys is undefined behavior; prefer ResourceManager methods for mutation
+ * when possible).
+ *
+ * Notes:
+ *  - The returned reference is mutable; callers must not modify map keys.
+ *  - Not thread-safe: concurrent modifications require external synchronization.
+ *
+ * Returns:
+ *  - Reference to std::unordered_map<ResourceID, SceneFile>
+ *
+ * Simple usage:
+ *  auto& scenes = rm.getScenes();
+ *  for (auto& [id, scene] : scenes) {
+ *      // inspect scene
+ *  }
+ */
+std::unordered_map<ResourceID, SceneFile>& ResourceManager::getScenes() {
+	return sceneFiles;
+}
+
+/**
+ * getScenes (const)
+ *
+ * Const accessor that returns a read-only reference to the internal map of
+ * scene files. Use this when callers need to examine scenes without mutating
+ * the ResourceManager state.
+ *
+ * Notes:
+ *  - Safe for read-only access; still not thread-safe if concurrent writers
+ *    exist. External synchronization is required for concurrent access patterns.
+ *
+ * Returns:
+ *  - Const reference to std::unordered_map<ResourceID, SceneFile>
+ *
+ * Simple usage:
+ *  const auto& scenes = rm.getScenes();
+ *  if (scenes.find(id) != scenes.end()) { // inspect //  }
+ */
+const std::unordered_map<ResourceID, SceneFile>& ResourceManager::getScenes() const {
+	return sceneFiles;
 }
 
 /**

@@ -115,6 +115,9 @@ int Application::run() {
 
     resourceManager.loadResources("audio");
 	resourceManager.loadResources("shaders");
+	resourceManager.loadResources("textures");
+	resourceManager.loadResources("prefabs");
+	resourceManager.loadResources("scenes");
 
     Physics    game_physics_obj;
     Game_Loop  game_loop_obj(m_window.handle());

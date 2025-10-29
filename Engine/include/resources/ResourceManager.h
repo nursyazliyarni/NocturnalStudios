@@ -11,6 +11,9 @@
 #include "Audio.h"
 #include "Font.h"
 #include "ShaderFile.h"
+#include "TextureFile.h"
+#include "PrefabFile.h"
+#include "SceneFile.h"
 
 class AudioSystem;
 class ECS;
@@ -23,6 +26,8 @@ public:
 		SHADER,
 		TEXTURE,
 		FONT,
+		PREFAB,
+		SCENE,
 
 		NONE
 	};
@@ -43,10 +48,23 @@ public:
 	ShaderFile& loadShader(const std::string& name, const std::string& filePath, ResourceID id = NEW_RESOURCE);
 	ShaderFile& getShader(ResourceID id);
 
+	TextureFile& loadTexture(const std::string& name, const std::string& filePath, ResourceID id = NEW_RESOURCE);
+	TextureFile& getTexture(ResourceID id);
+
+	PrefabFile& loadPrefab(const std::string& name, const std::string& filePath, ResourceID id = NEW_RESOURCE);
+	PrefabFile& getPrefab(ResourceID id);
+
+	SceneFile& loadScene(const std::string& name, const std::string& filePath, ResourceID id = NEW_RESOURCE, bool startWithThisScene = false);
+	SceneFile& getScene(ResourceID id);
+
 	void insertUsedID(ResourceID& id);
 
 	std::unordered_map<ResourceID, Audio>& getAudios();
 	std::unordered_map<ResourceID, ShaderFile>& getShaders();
+	std::unordered_map<ResourceID, TextureFile>& getTextures();
+	std::unordered_map<ResourceID, PrefabFile>& getPrefabs();
+	std::unordered_map<ResourceID, SceneFile>& getScenes();
+	const std::unordered_map<ResourceID, SceneFile>& getScenes() const;
 
 	template <typename T>
 	ResourceID findResource(const std::string& ResourceName);
@@ -67,6 +85,9 @@ private:
 
 	std::unordered_map<ResourceID, Audio> audios;
 	std::unordered_map<ResourceID, ShaderFile> shaderFiles;
+	std::unordered_map<ResourceID, TextureFile> textureFiles;
+	std::unordered_map<ResourceID, PrefabFile> prefabFiles;
+	std::unordered_map<ResourceID, SceneFile> sceneFiles;
 
 	AudioSystem* audioSystem{ nullptr };
 
@@ -80,6 +101,9 @@ private:
  * Template specialization currently supports:
  *  - `Audio`
  *  - `ShaderFile`
+ *  - `TextureFile`
+ *  - `PrefabFile`
+ *  - `SceneFile`
  *
  * @tparam T The concrete resource type to search for (e.g. `Audio`).
  * @param ResourceName The resource key/name to find.
@@ -110,6 +134,27 @@ ResourceID ResourceManager::findResource(const std::string& ResourceName) {
 
 		if (it == shaderFiles.end()) return NO_RESOURCE_ID;
 
+		return it->first;
+	}
+	else if constexpr (std::same_as<T, TextureFile>) {
+		auto it = std::find_if(textureFiles.begin(), textureFiles.end(), [&](std::pair<const ResourceID, TextureFile> const& pair) {
+			return pair.second.getKey() == ResourceName;
+			});
+		if (it == textureFiles.end()) return NO_RESOURCE_ID;
+		return it->first;
+	}
+	else if constexpr (std::same_as<T, PrefabFile>) {
+		auto it = std::find_if(prefabFiles.begin(), prefabFiles.end(), [&](std::pair<const ResourceID, PrefabFile> const& pair) {
+			return pair.second.getKey() == ResourceName;
+			});
+		if (it == prefabFiles.end()) return NO_RESOURCE_ID;
+		return it->first;
+	}
+	else if constexpr (std::same_as<T, SceneFile>) {
+		auto it = std::find_if(sceneFiles.begin(), sceneFiles.end(), [&](std::pair<const ResourceID, SceneFile> const& pair) {
+			return pair.second.getKey() == ResourceName;
+			});
+		if (it == sceneFiles.end()) return NO_RESOURCE_ID;
 		return it->first;
 	}
 	else {
@@ -151,6 +196,16 @@ void ResourceManager::getResourceMetaData(ResourceType resourceType, ResourceID 
 		break;
 	case SHADER:
 		callback(getShader(id), getShaders());
+		break;
+	case TEXTURE:
+		callback(getTexture(id), getTextures());
+		break;
+	case PREFAB:
+		callback(getPrefab(id), getPrefabs());
+		break;
+	case SCENE:
+		callback(getScene(id), getScenes());
+		break;
 	default:
 		break;
 	}
@@ -187,6 +242,27 @@ std::pair<std::string, std::string> ResourceManager::getName(ResourceID id) {
 			return { "ShaderFile", "Default" };
 		}
 		return { "ShaderFile",shaderFiles.at(id).getKey() };
+	}
+	else if constexpr (std::same_as<T, TextureFile>) {
+		auto it = textureFiles.find(id);
+		if (it == textureFiles.end()) {
+			return { "TextureFile", "Default" };
+		}
+		return { "TextureFile",textureFiles.at(id).getKey() };
+	}
+	else if constexpr (std::same_as<T, PrefabFile>) {
+		auto it = prefabFiles.find(id);
+		if (it == prefabFiles.end()) {
+			return { "PrefabFile", "Default" };
+		}
+		return { "PrefabFile",prefabFiles.at(id).getKey() };
+	}
+	else if constexpr (std::same_as<T, SceneFile>) {
+		auto it = sceneFiles.find(id);
+		if (it == sceneFiles.end()) {
+			return { "SceneFile", "Default" };
+		}
+		return { "SceneFile",sceneFiles.at(id).getKey() };
 	}
 	else {
 		[]<bool flag = false>() {
