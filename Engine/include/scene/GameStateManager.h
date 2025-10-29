@@ -32,7 +32,7 @@ private:
 	PLAYERSTATE currState{ MAIN_MENU }, nextState{ MAIN_MENU };
 	int innerState{ 0 };
 	LEVEL currLvl{ NONE }, nextLevel{ NONE };
-	SceneManager& sceneManager{ SceneManager::GetSceneManager() };
+	SceneManager& sceneManager= SceneManager::GetSceneManager() ;
 	Window& window;
 
 	void MainMenuState();

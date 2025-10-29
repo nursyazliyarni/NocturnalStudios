@@ -120,7 +120,6 @@ int Application::run() {
     Game_Loop  game_loop_obj(m_window.handle());
 
     // Initialize
-    ECS ecs;
     PrefabManager prefabManager(ecs);
 
     // Load prefabs
