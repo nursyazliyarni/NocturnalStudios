@@ -77,6 +77,16 @@ public:
 	int selectedSprite = -1;
 	bool isDragging = false; //true if we are dragging a sprite with the mouse
 
+
+	//  per-frame edge helpers 
+	bool WasPressed(int glfwKey) const;                // keyboard edge
+	bool WasMousePressed(int glfwMouseButton) const;   // mouse edge
+	void EndFrame();                                   // clear edges each frame
+
+	// Returns: -1 = none, 0 = ESC, 1..9 = digit pressed (edge-triggered)
+	int ConsumeSceneKey() const;
+
+
 private:
 	//Non-static member functions need an object to call it
 	//So declare this function as static to avoid this issue

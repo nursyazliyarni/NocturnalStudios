@@ -43,38 +43,22 @@ void Gui::updateImGuiManager(double& deltaTime, ImGuiManager& imGuiManager) {
 	imGuiManager.endFrame();
 }
 
-ImGuiManager::ImGuiManager(Window& w, Renderer& r, Texture& tex, Input& i, Physics& p) : 
-	mainWindow{ w }, 
-	renderer{ r }, 
-	texture{ tex }, 
-	input{ i }, 
-	physics{ p }, 
-	windowTopLeft {}, 
-	windowBottomRight{}, 
-	deltaTime{ 0. }, 
-	imGuiTime{ 0. }, 
-	inputTime{ 0. }, 
-	logicTime{ 0. }, 
-	renderTime{ 0. }, 
-	physicsTime{ 0. }, 
-	selectedEntityType {} 
+
+ImGuiManager::ImGuiManager(Window& w, Renderer& r,
+	Input& i, Physics& p,
+	AudioSystem& a, ResourceManager& rm,
+	GameStateManager& g)
+	: mainWindow{ w }, renderer{ r },
+	input{ i }, physics{ p }, audioSystem{ a }, resourceManager{ rm },
+	gsm{ g }, windowTopLeft{}, windowBottomRight{},
+	deltaTime{ 0.0 }, imGuiTime{ 0.0 }, inputTime{ 0.0 },
+	logicTime{ 0.0 }, renderTime{ 0.0 }, physicsTime{ 0.0 },
+	selectedEntityType{ 0 }, activeInstances{}
 {
-	// Init ImGui context
 	ImGui::CreateContext();
-
-	// Setup renderer bindings
-	// Set to false->ImGui will not install its own callbacks
-	// My Input class will handle ALL input callbacks
-	ImGui_ImplGlfw_InitForOpenGL(mainWindow.handle(), false);
+	ImGui_ImplGlfw_InitForOpenGL(mainWindow.handle(), /*install_callbacks=*/false);
 	ImGui_ImplOpenGL3_Init("#version 330");
-
-	// Setup style
 	ImGui::StyleColorsClassic();
-	ImGuiIO& io = ImGui::GetIO();
-
-	r.initAllSprites(); //init all the sprite needed for later rendering
-
-	// Logging
 	logger.log("ImGui initialized successfully.");
 }
 
@@ -136,95 +120,143 @@ void ImGuiManager::setInputTime(double time) {
 	inputTime = time;
 }
 
+//void ImGuiManager::showViewportWindowUI() {
+//	constexpr float overlayWidthOffset = 300.0f;
+//	constexpr float overlayHeightOffset = 200.0f;
+//
+//	ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoResize;
+//
+//	// Calculate the size of the viewport window
+//	float viewportWidth = windowBottomRight.x - windowTopLeft.x - overlayWidthOffset;
+//	float viewportHeight = windowBottomRight.y - windowTopLeft.y - overlayHeightOffset;
+//
+//	// Position the viewport window at the top-left corner of the main window
+//	ImGui::SetNextWindowPos(windowTopLeft);
+//	ImGui::SetNextWindowSize(ImVec2(viewportWidth, viewportHeight));
+//	ImGui::Begin("Viewport", nullptr, windowFlags);
+//
+//	// ?? ADD: actual drawable region (excludes title/padding)
+//	const ImVec2 avail = ImGui::GetContentRegionAvail();
+//	const int vw = (int)std::max(1.0f, avail.x);
+//	const int vh = (int)std::max(1.0f, avail.y);
+//
+//	 static int lastW = -1, lastH = -1;
+//    if (vw != lastW || vh != lastH) {        // recreate only when needed
+//        //renderer.initFBO(vw, vh);
+//        lastW = vw; lastH = vh;
+//    }
+//
+//	auto physicsStart = Clock::now();
+//
+//	physics.update_sprite_movement(renderer, input);
+//	physics.update_sprite_scaling(renderer, input);
+//	physics.update_sprite_rotation(renderer, input);
+//
+//	auto physicsEnd = Clock::now();
+//	double physicsTime = std::chrono::duration<double>(physicsEnd - physicsStart).count();
+//	setPhysicTime(physicsTime);
+//
+//	auto render_start = Clock::now();
+//
+//	// Initialize and bind FBO for rendering
+//	// renderer.initFBO(viewportHeight, viewportWidth);            // REMOVE this (args swapped)
+//	renderer.initFBO(vw, vh);                                      // ADD: correct (width, height)
+//	renderer.bindFBO();
+//
+//	// ?? ADD: set viewport + orthographic to pixel-space for the FBO
+//	renderer.resize(vw, vh);
+//
+//	// You can keep your clear (fine for 2D)
+//	renderer.clear(0.1f, 0.1f, 0.12f);
+//
+//	// @Todo (axewhy): Render the actual viewport content here, e.g., using a framebuffer texture
+//	// Render background to FBO
+//	renderer.background_render(texture.get_textureID(0), "bg_texture");
+//
+//	auto input_start = Clock::now();
+//
+//	input.updateRotations();
+//
+//	// behind-sprites pass (scaled)
+//	//renderer.drawAllSprites(texture, { 3,4 }, /*behindPass=*/true,  input.getSpriteScalesPtr());
+//	renderer.drawAllSprites(texture, { 3,4 ,5}, true,
+//		input.getSpriteScalesPtr(),
+//		input.getSpriteRotationsPtr(),
+//		vw, vh);
+//
+//	//draw all SHAPES from Renderer.cpp (keeps ImGui clean of GL) - rishika
+//	renderer.drawViewportShapes(vw, vh);
+//
+//	// front-sprites pass (scaled)
+//	//renderer.drawAllSprites(texture, { 3,4 }, /*behindPass=*/false, input.getSpriteScalesPtr());
+//	renderer.drawAllSprites(texture, { 3,4,5 }, false,
+//		input.getSpriteScalesPtr(),
+//		input.getSpriteRotationsPtr(),
+//		vw, vh);
+//
+//	renderer.unbindFBO();
+//	auto input_end = Clock::now();
+//	double inputTime = std::chrono::duration<double>(input_end - input_start).count();
+//	setInputTime(inputTime);
+//
+//	auto render_end = Clock::now();
+//	double renderTime = std::chrono::duration<double>(render_end - render_start).count();
+//	setRenderTime(renderTime);
+//
+//	// show FBO in the panel (use the content size so it matches exactly)
+//	// ImGui::Image((void*)(intptr_t)renderer.getFBOTexture(), ImVec2(viewportWidth, viewportHeight));
+//	// NEW: flip V when sampling the FBO in ImGui
+//	ImGui::Image((ImTextureID)(intptr_t)renderer.getFBOTexture(),
+//		ImVec2(viewportWidth, viewportHeight),
+//		ImVec2(0, 1), ImVec2(1, 0));
+//
+//	ImGui::End();
+//}
+
+
 void ImGuiManager::showViewportWindowUI() {
-	constexpr float overlayWidthOffset = 300.0f;
-	constexpr float overlayHeightOffset = 200.0f;
+	constexpr float overlayW = 300.f, overlayH = 200.f;
+	ImGuiWindowFlags flags = ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoResize;
 
-	ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoResize;
+	float vpW = windowBottomRight.x - windowTopLeft.x - overlayW;
+	float vpH = windowBottomRight.y - windowTopLeft.y - overlayH;
 
-	// Calculate the size of the viewport window
-	float viewportWidth = windowBottomRight.x - windowTopLeft.x - overlayWidthOffset;
-	float viewportHeight = windowBottomRight.y - windowTopLeft.y - overlayHeightOffset;
-
-	// Position the viewport window at the top-left corner of the main window
 	ImGui::SetNextWindowPos(windowTopLeft);
-	ImGui::SetNextWindowSize(ImVec2(viewportWidth, viewportHeight));
-	ImGui::Begin("Viewport", nullptr, windowFlags);
+	ImGui::SetNextWindowSize(ImVec2(vpW, vpH));
+	ImGui::Begin("Viewport", nullptr, flags);
 
-	// ?? ADD: actual drawable region (excludes title/padding)
 	const ImVec2 avail = ImGui::GetContentRegionAvail();
 	const int vw = (int)std::max(1.0f, avail.x);
 	const int vh = (int)std::max(1.0f, avail.y);
 
-	 static int lastW = -1, lastH = -1;
-    if (vw != lastW || vh != lastH) {        // recreate only when needed
-        //renderer.initFBO(vw, vh);
-        lastW = vw; lastH = vh;
-    }
-
-	auto physicsStart = Clock::now();
-
+	auto physStart = Clock::now();
 	physics.update_sprite_movement(renderer, input);
 	physics.update_sprite_scaling(renderer, input);
 	physics.update_sprite_rotation(renderer, input);
+	physicsTime = std::chrono::duration<double>(Clock::now() - physStart).count();
 
-	auto physicsEnd = Clock::now();
-	double physicsTime = std::chrono::duration<double>(physicsEnd - physicsStart).count();
-	setPhysicTime(physicsTime);
-
-	auto render_start = Clock::now();
-
-	// Initialize and bind FBO for rendering
-	// renderer.initFBO(viewportHeight, viewportWidth);            // REMOVE this (args swapped)
-	renderer.initFBO(vw, vh);                                      // ADD: correct (width, height)
+	auto renderStart = Clock::now();
+	renderer.initFBO(vw, vh);
 	renderer.bindFBO();
-
-	// ?? ADD: set viewport + orthographic to pixel-space for the FBO
 	renderer.resize(vw, vh);
+	renderer.clear(0.06f, 0.06f, 0.07f);
 
-	// You can keep your clear (fine for 2D)
-	renderer.clear(0.1f, 0.1f, 0.12f);
-
-	// @Todo (axewhy): Render the actual viewport content here, e.g., using a framebuffer texture
-	// Render background to FBO
-	renderer.background_render(texture.get_textureID(0), "bg_texture");
-
-	auto input_start = Clock::now();
-
-	input.updateRotations();
-
-	// behind-sprites pass (scaled)
-	//renderer.drawAllSprites(texture, { 3,4 }, /*behindPass=*/true,  input.getSpriteScalesPtr());
-	renderer.drawAllSprites(texture, { 3,4 ,5}, true,
-		input.getSpriteScalesPtr(),
-		input.getSpriteRotationsPtr(),
-		vw, vh);
-
-	//draw all SHAPES from Renderer.cpp (keeps ImGui clean of GL) - rishika
-	renderer.drawViewportShapes(vw, vh);
-
-	// front-sprites pass (scaled)
-	//renderer.drawAllSprites(texture, { 3,4 }, /*behindPass=*/false, input.getSpriteScalesPtr());
-	renderer.drawAllSprites(texture, { 3,4,5 }, false,
-		input.getSpriteScalesPtr(),
-		input.getSpriteRotationsPtr(),
-		vw, vh);
+	// Draw current SCENE into the FBO
+	gsm.render(renderer, vw, vh);
 
 	renderer.unbindFBO();
-	auto input_end = Clock::now();
-	double inputTime = std::chrono::duration<double>(input_end - input_start).count();
-	setInputTime(inputTime);
+	renderTime = std::chrono::duration<double>(Clock::now() - renderStart).count();
 
-	auto render_end = Clock::now();
-	double renderTime = std::chrono::duration<double>(render_end - render_start).count();
-	setRenderTime(renderTime);
-
-	// show FBO in the panel (use the content size so it matches exactly)
-	// ImGui::Image((void*)(intptr_t)renderer.getFBOTexture(), ImVec2(viewportWidth, viewportHeight));
-	// NEW: flip V when sampling the FBO in ImGui
+	// Show the FBO as an ImGui Image (flipped V)
+	ImVec2 imgMin = ImGui::GetCursorScreenPos();
 	ImGui::Image((ImTextureID)(intptr_t)renderer.getFBOTexture(),
-		ImVec2(viewportWidth, viewportHeight),
-		ImVec2(0, 1), ImVec2(1, 0));
+		ImVec2(vw, vh), ImVec2(0, 1), ImVec2(1, 0));
+	ImVec2 imgMax = ImVec2(imgMin.x + vw, imgMin.y + vh);
+
+	// Handle click -> normalized coords -> GSM
+	// (Input handles clicks; store the rect in window client coords)
+	vpMinWin = ImVec2(imgMin.x - windowTopLeft.x, imgMin.y - windowTopLeft.y);
+	vpMaxWin = ImVec2(imgMax.x - windowTopLeft.x, imgMax.y - windowTopLeft.y);
 
 	ImGui::End();
 }
@@ -288,7 +320,7 @@ void ImGuiManager::showPerformanceOverlayUI() {
 void ImGuiManager::showEntityListUI(/* Maybe an enum of paramEntityType, Maybe a Reference to a std::vector of objectList?*/) {
 	// Fixed size for entity list window
 	constexpr float width = 300.0f;
-	constexpr float height = 100.0f;
+	constexpr float height = 300.0f;
 
 	ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDecoration |
 		ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
@@ -332,6 +364,89 @@ void ImGuiManager::showEntityListUI(/* Maybe an enum of paramEntityType, Maybe a
 		logger.log("Deleting entity of Type: " + std::to_string(selectedEntityType));
 	}
 
+	// --- build vectors for combo display (cheap, rebuild each frame) ---
+	std::vector<ResourceID> audioIDs;
+	std::vector<std::string> audioNames;
+	audioIDs.reserve(resourceManager.getAudios().size());
+	audioNames.reserve(resourceManager.getAudios().size());
+	for (auto const& kv : resourceManager.getAudios()) {
+		audioIDs.push_back(kv.first);
+		audioNames.push_back(kv.second.getKey());
+	}
+
+	// BGM selector
+	static int bgmIndex = 0;
+	if (!audioNames.empty()) {
+		if (bgmIndex >= (int)audioNames.size()) bgmIndex = 0;
+		ImGui::Text("Looping Audio:");
+		if (ImGui::BeginCombo("Select Audio", audioNames[bgmIndex].c_str())) {
+			for (int i = 0; i < (int)audioNames.size(); ++i) {
+				bool selected = (i == bgmIndex);
+				if (ImGui::Selectable(audioNames[i].c_str(), selected)) {
+					bgmIndex = i;
+				}
+				if (selected) ImGui::SetItemDefaultFocus();
+			}
+			ImGui::EndCombo();
+		}
+
+		ResourceID bgmRID = audioIDs[bgmIndex];
+		if (ImGui::Button("Play Audio")) {
+			// create persistent instance and store mapping
+			auto it = activeInstances.find(bgmRID);
+			if (it != activeInstances.end()) {
+				audioSystem.resumeSound(it->second);
+			}
+			else {
+				AudioData::IndividualAudioData d{};
+				d.resourceID = bgmRID;
+				d.name = audioNames[bgmIndex];
+				d.loop = true;
+				d.group = AudioData::IndividualAudioData::Group::Music;
+				d.volume = audioSystem.getBGMVolume();
+				auto opt = audioSystem.createAudioInstance(d, INVALID_ENTITY_ID);
+				if (opt) {
+					activeInstances[bgmRID] = *opt;
+					audioSystem.resumeSound(*opt); // createAudioInstance starts paused
+				}
+			}
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("Pause Audio")) {
+			ResourceID rid = bgmRID;
+			auto it = activeInstances.find(rid);
+			if (it != activeInstances.end()) audioSystem.pauseSound(it->second);
+		}
+	}
+
+	// SFX selector / one-shot play
+	static int sfxIndex = 0;
+	if (!audioNames.empty()) {
+		if (sfxIndex >= (int)audioNames.size()) sfxIndex = 0;
+		ImGui::Text("One-shot Audio:");
+		if (ImGui::BeginCombo("Select Audio", audioNames[sfxIndex].c_str())) {
+			for (int i = 0; i < (int)audioNames.size(); ++i) {
+				bool selected = (i == sfxIndex);
+				if (ImGui::Selectable(audioNames[i].c_str(), selected)) sfxIndex = i;
+				if (selected) ImGui::SetItemDefaultFocus();
+			}
+			ImGui::EndCombo();
+		}
+
+		ResourceID sfxRID = audioIDs[sfxIndex];
+		if (ImGui::Button("Play Audio")) {
+			// One-shot: just call playSFX every time (no mapping)
+			AudioInstanceID inst = audioSystem.playSFX(sfxRID);
+			if (inst == 0) {
+				logger.log("[ERROR] Failed to play Audio: " + std::to_string(sfxRID));
+			}
+			else {
+				// optional: don't store for one-shots; if you need pause/resume, store and check validity on resume
+			}
+		}
+	}
+
+
 	ImGui::End();
 }
 
@@ -344,7 +459,7 @@ void ImGuiManager::showTransformUI(/* A reference to a vector of object list obj
 		ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
 
 	// Position the overlay at the top-right corner of the window, below entity list overlay
-	ImVec2 windowTopRightPos = { windowBottomRight.x - width, windowTopLeft.y + 300.0f };
+	ImVec2 windowTopRightPos = { windowBottomRight.x - width, windowTopLeft.y + 500.0f };
 	ImGui::SetNextWindowPos(windowTopRightPos);
 	ImGui::SetNextWindowBgAlpha(0.35f);
 	ImGui::SetNextWindowSize({ width, height });
