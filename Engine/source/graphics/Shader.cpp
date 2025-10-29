@@ -1,17 +1,3 @@
-/* !------------------------------------------------------------------------------------------------
-    File: Shader.cpp
-    Project : NocturnalStudio
-
-    This file contains functions that loads, compiles and links vertex file and fragment file into 
-	a usable shader program to be used by renderer class for background image.
-
-     Ang Yu Xuan (100%)
-		-This file contains functions that loads, compiles and links vertex file.
-
-All content(c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
-* ------------------------------------------------------------------------------------------------ */
-
-
 #include "graphics/Shader.h"
 
 Shader::Shader(const char* vertex_path, const char* fragment_path) :program_obj{ 0 } {

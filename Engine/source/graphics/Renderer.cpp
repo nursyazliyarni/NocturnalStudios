@@ -4,14 +4,9 @@
 
     This file contains ...
 
-     Author:
+    Primary Author:
          Rishika Bimal Attodi
-        -  Implemented sprite init/draw (excluding background), per-sprite rotation & scaling, 
-        and front/behind passes.
-
-        Secondary Author:
-         Lau Xiang Yang
-         - Implemented FBO
+        - Brief
 
     All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
 *------------------------------------------------------------------------------------------------*/
@@ -316,9 +311,6 @@ void Renderer::initAllSprites() {
     sprite_vector.push_back({ 2, 0.15f, 0.10f, 0.15f, 0.25f, 0.0f }); // cupcake
     sprite_vector.push_back({ 3, 0.40f, 0.35f, 0.25f, 0.30f, 0.0f }); // Cat A
     sprite_vector.push_back({ 4, 0.70f, 0.25f, 0.25f, 0.30f, 0.0f }); // Cat B
-    //sprite_vector.push_back({ 5, 0.40f, 0.35f, 0.25f, 0.30f, 0.0f }); //cat A ate
-    //sprite_vector.push_back({ 6, 0.70f, 0.25f, 0.25f, 0.30f, 0.0f }); //cat B ate
-
 }
 
 void Renderer::drawAllSprites(Texture& tex,

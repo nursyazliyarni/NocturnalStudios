@@ -1,20 +1,3 @@
-/*!------------------------------------------------------------------------------------------------
-	File: GameLoop.h
-	Project: NocturnalStudio
-
-	This file contains ...
-
-	Primary Author:
-		 Name (%)
-		-Brief
-
-	Secondary Author:
-		 Name (%)
-		-Brief
-
-	All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
-*------------------------------------------------------------------------------------------------*/
-
 // delta, fixedStep, FPS
 #include <GLFW/glfw3.h>
 #include <iostream>

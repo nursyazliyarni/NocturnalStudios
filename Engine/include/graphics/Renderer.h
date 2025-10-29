@@ -1,24 +1,3 @@
-/*!------------------------------------------------------------------------------------------------
-    File: Renderer.h
-    Project: NocturnalStudio
-
-    This file contains the declaration of the Renderer class for the engine’s 2D pipeline: background 
-    quad setup(GL_TRIANGLES) + shader, FBO/viewport init & resize, immediate-mode debug primitives 
-    (tri, rect, rectOutline, line, circle), and batched sprite rendering (textured quads with rotation, 
-    scaling, and front/behind passes). It also exposes the FBO texture for UI display.
-
-    Primary Author:
-         Rishika Bimal Attodi (%)
-        -Sprite system: batched textured quads, selection/front-vs-behind pass handling,
-      per-sprite rotation & scaling (excluding background).
-
-    Secondary Author:
-         Name (%)
-        -Brief
-
-    All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
-*------------------------------------------------------------------------------------------------*/
-
 // Renderer.h
 #pragma once
 #include "gl/glew.h"

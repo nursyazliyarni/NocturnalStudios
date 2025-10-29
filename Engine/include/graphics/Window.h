@@ -1,20 +1,3 @@
-/*!------------------------------------------------------------------------------------------------
-    File: Window.h
-    Project: NocturnalStudio
-
-   This header declares a minimal OS window wrapper around GLFW:
-    - Creates/destroys an OpenGL-capable window and context
-    - Manages vsync, event polling, buffer swapping, and window title FPS updates
-    - Exposes the raw GLFWwindow* and immutable WindowDesc for other systems
-
-    Primary Author:
-         Rishika Bimal Attodi 
-        -- Implemented GLFW-based window lifecycle and utility helpers
-
-
-    All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
-*------------------------------------------------------------------------------------------------*/
-
 #pragma once
 #include <string>
 
