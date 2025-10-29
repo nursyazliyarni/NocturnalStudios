@@ -55,6 +55,8 @@ public:
 
 	void setAudioSystem(AudioSystem* audioSystem);
 
+	const Audio& getDefaultAudio() const;
+
 private:
 	ECS& ecs;
 	std::unordered_map<ResourceID, Audio> audios;

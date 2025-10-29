@@ -43,6 +43,7 @@
 #include "ECS/ECS.h"
 #include "resources/ResourceManager.h"
 #include <core/GameStateManager.h>
+#include "scene/Prefab.h"
 
 namespace {
     constexpr float TWO_PI = 2.0f * glm::pi<float>();
@@ -118,6 +119,17 @@ int Application::run() {
     Physics    game_physics_obj;
     Game_Loop  game_loop_obj(m_window.handle());
 
+    // Initialize
+    ECS ecs;
+    PrefabManager prefabManager(ecs);
+
+    // Load prefabs
+    prefabManager.Load_Prefab("assets/prefabs/testing_prefabs.json");
+
+    EntityID animal = prefabManager.Instantiate("animal");
+    EntityID animal_2 = prefabManager.Instantiate("animal");
+    std::cout << animal << animal_2<< "\n";
+
 
    
 
@@ -134,11 +146,14 @@ while (!m_window.shouldClose()) {
     game_input_obj.update_mouse_pos(m_window.handle());
 
     // Keyboard scene switching
-    if (game_input_obj.WasPressed(GLFW_KEY_1)) gsm.handleKeyPress(GLFW_KEY_1);
-    if (game_input_obj.WasPressed(GLFW_KEY_2)) gsm.handleKeyPress(GLFW_KEY_2);
-    if (game_input_obj.WasPressed(GLFW_KEY_3)) gsm.handleKeyPress(GLFW_KEY_3);
-    if (game_input_obj.WasPressed(GLFW_KEY_4)) gsm.handleKeyPress(GLFW_KEY_4);
-    if (game_input_obj.WasPressed(GLFW_KEY_ESCAPE)) gsm.handleKeyPress(GLFW_KEY_ESCAPE);
+    // Keyboard scene switching (1..9 + ESC)
+for (int k = GLFW_KEY_1; k <= GLFW_KEY_9; ++k)
+    if (game_input_obj.WasPressed(k))
+        gsm.handleKeyPress(k);
+
+if (game_input_obj.WasPressed(GLFW_KEY_ESCAPE))
+    gsm.handleKeyPress(GLFW_KEY_ESCAPE);
+
 
     // Clear OS window (ImGui draws on top; scene is inside the Viewport FBO)
     int fbw = 0, fbh = 0; glfwGetFramebufferSize(m_window.handle(), &fbw, &fbh);

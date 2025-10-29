@@ -1,0 +1,41 @@
+{
+  "prefabs": {
+    "animal": {
+      "components": [
+        { "type": "Transform", "x": 0, "y": 0, "w": 0.28, "h": 0.42, "angle": 0.0 },
+        { "type": "SpriteRenderer", "sprite_path": "assets/animal.png" },
+        { "type": "AABBCollider", "bounding_box_size": 1.0 },
+        { "type": "AnimalBehavior", "sound": "moo" }
+      ],
+      "defaults": { "w": 0.28, "h": 0.42, "angle": 0.0 }
+    },
+    "food": {
+      "components": [
+        { "type": "Transform", "x": 0, "y": 0, "w": 0.16, "h": 0.18, "angle": 0.0 },
+        { "type": "SpriteRenderer", "sprite_path": "assets/food.png" }
+      ],
+      "defaults": { "w": 0.16, "h": 0.18, "angle": 0.0 }
+    },
+    "drink": {
+      "components": [
+        { "type": "Transform", "x": 0, "y": 0, "w": 0.12, "h": 0.18, "angle": 0.0 },
+        { "type": "SpriteRenderer", "sprite_path": "assets/drink.png" }
+      ],
+      "defaults": { "w": 0.12, "h": 0.18, "angle": 0.0 }
+    },
+    "toy": {
+      "components": [
+        { "type": "Transform", "x": 0, "y": 0, "w": 0.14, "h": 0.14, "angle": 0.0 },
+        { "type": "SpriteRenderer", "sprite_path": "assets/toy.png" }
+      ],
+      "defaults": { "w": 0.14, "h": 0.14, "angle": 0.0 }
+    },
+    "button": {
+      "components": [
+        { "type": "Transform", "x": 0, "y": 0, "w": 0.40, "h": 0.09, "angle": 0.0 },
+        { "type": "SpriteRenderer", "sprite_path": "assets/button.png" }
+      ],
+      "defaults": { "w": 0.40, "h": 0.09, "angle": 0.0 }
+    }
+  }
+}
