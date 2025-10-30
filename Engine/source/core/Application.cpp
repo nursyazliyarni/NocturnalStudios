@@ -101,7 +101,7 @@ int Application::run() {
 
     // Renderer renderer("assets/shaders/background.vert", "assets/shaders/background.frag");
     TextureStore textures;
-    GameStateManager gsm;
+    GameManager gsm;
     gsm.load("assets/prefabs/prefabs.json", "assets/scenes/scenes.json", textures);
 
 
