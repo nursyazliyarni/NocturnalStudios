@@ -1,9 +1,14 @@
+//gsm.cpp
 #include "core/GameStateManager.h"
 #include "stb_image.h"
 #include <rapidjson/document.h>
 #include <fstream>
 #include <sstream>
 #include <GLFW/glfw3.h>
+
+#include "ECS/ECS_Component.h"
+#include "ECS/ECS.h"
+
 
 //  TextureStore 
 static GLuint loadGLTexture(const std::string& path) {
@@ -53,8 +58,12 @@ static std::string toAssetsPath(const std::string& p) {
 
 struct PrefabDef { float w = 0.2f, h = 0.2f, angle = 0.0f; };
 
+
 //  GameStateManager 
 bool GameStateManager::load(const char* prefabsPath, const char* scenesPath, TextureStore& tex) {
+
+    app = AppState::Menu;   // lock number keys until Play is pressed
+    requestedQuit = false;  // (optional) clear quit flag at load
 
     //  1) read prefab defaults (w,h,angle) 
     std::unordered_map<std::string, PrefabDef> prefabDefaults;
@@ -149,6 +158,7 @@ bool GameStateManager::load(const char* prefabsPath, const char* scenesPath, Tex
                     }
                 }
 
+
                 sc.items.push_back(di);
 
                 // clickable?
@@ -171,11 +181,31 @@ void GameStateManager::requestScene(const std::string& name) {
     if (scenes.count(name)) currentScene = name;
 }
 
+
 void GameStateManager::handleKeyPress(int key) {
-    auto it = keyMap.find(key);
-    if (it != keyMap.end()) requestScene(it->second);
-    if (key == GLFW_KEY_ESCAPE) requestScene(backKey);
+    /* auto it = keyMap.find(key);
+     if (it != keyMap.end()) requestScene(it->second);
+     if (key == GLFW_KEY_ESCAPE) requestScene(backKey);*/
+    if (key == GLFW_KEY_ESCAPE) {
+        // If you want ESC to go “back” (Menu) via JSON backKey while in Playing:
+        if (app == AppState::Playing || app == AppState::Paused) {
+            if (!backKey.empty()) requestScene(backKey);
+            // Optional: toggle paused state if you implement pause()/resume()
+            // else just use backKey behavior.
+        }
+        return;
+    }
 }
+
+bool GameStateManager::switchToSceneForKey(int glfwKey) {
+    if (app != AppState::Playing) return false;   // lock numbers unless Playing
+    auto it = keyMap.find(glfwKey);
+    if (it == keyMap.end()) return false;         // not mapped in JSON
+    requestScene(it->second);
+    return true;
+}
+
+
 
 void GameStateManager::render(Renderer& r, int w, int h) const {
 
@@ -186,11 +216,47 @@ void GameStateManager::render(Renderer& r, int w, int h) const {
     // background (fullscreen) — NOTE uniform must be "bg_texture"
     r.background_render(sc.background, "bg_texture");
 
+
+    // Example snippet you can drop right AFTER your existing textured background draw:
+    //auto view = ecs.view<Transform, ImageRenderer>();  // however your ECS exposes views
+    //for (auto [ent, t, img] : view) {
+    //    if (!img.isVisible) continue;
+    //    float px = t.position.x * w;
+    //    float py = t.position.y * h;
+    //    float pw = t.scale.x * w;
+    //    float ph = t.scale.y * h;
+    //    r.texturedTri(img.textureID, px, py, pw, ph); // same call you use for JSON entities
+    //}
+
+    if (ecs_) {
+        constexpr EntityID MAX_SCAN = 5000;
+        for (EntityID e = 0; e < MAX_SCAN; ++e) {
+            if (auto* t = ecs_->getComponent<Transform>(e)) {
+                if (auto* img = ecs_->getComponent<ImageRenderer>(e)) {
+                    if (!img->isVisible) continue;
+                    if (img->textureID <= 0) continue;  // << guard: skip “white box” draws
+
+                    float px = t->position.x() * w;
+                    float py = t->position.y() * h;
+                    float pw = t->scale.x() * w;
+                    float ph = t->scale.y() * h;
+
+                    r.texturedTri(img->textureID, px, py, pw, ph);
+                }
+            }
+        }
+    }
+
+
+
+
     // entities (normalized ? pixels)
     for (const auto& di : sc.items) {
+        if (di.tex == 0) continue;  // skip if background/entity texture didn’t load
         float px = di.x * w, py = di.y * h, pw = di.w * w, ph = di.h * h;
         r.texturedTri(di.tex, px, py, pw, ph);
     }
+
 }
 
 bool GameStateManager::handleClick(float nx, float ny) {
@@ -203,6 +269,9 @@ bool GameStateManager::handleClick(float nx, float ny) {
             if (cr.quit) {
                 requestedQuit = true;
             }
+            if (app == AppState::Menu) {
+                startGame();                 // unlock 1..9 only after Play was clicked
+            }
             else if (!cr.gotoScene.empty()) {
                 requestScene(cr.gotoScene);
             }
@@ -212,8 +281,19 @@ bool GameStateManager::handleClick(float nx, float ny) {
     return false;
 }
 
+
+void GameStateManager::startGame() {
+    app = AppState::Playing;
+}
+
+void GameStateManager::goToMenu() {
+    app = AppState::Menu;
+}
+
+
 bool GameStateManager::popQuitRequested() {
     bool q = requestedQuit;
     requestedQuit = false;
     return q;
 }
+
