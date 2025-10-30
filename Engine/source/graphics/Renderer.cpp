@@ -39,6 +39,9 @@ namespace {
 }
 
 Renderer::Renderer(const char* vertex_path, const char* fragment_path):render_shader(vertex_path,fragment_path) {
+	logger.log("vertex shader path: " + std::string(vertex_path));
+	logger.log("fragment shader path: " + std::string(fragment_path));
+
     //vertex position->where to render on screen(-1.0 to +1.0)
     //texture UV->how to render texture(0.0 to 1.0)
     float vertices[] = {

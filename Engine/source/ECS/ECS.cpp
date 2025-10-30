@@ -330,6 +330,3 @@ std::vector<ComponentData>::iterator ECS::getComponentData(ComponentID component
 void ECS::reUpdateMetadata() {
 	std::sort(componentMetadata.begin(), componentMetadata.end(), [](auto const& lhs, auto const& rhs) { return lhs.size < rhs.size; });
 }
-
-/* Global ECS instance used by the engine and editor. */
-ECS ecs;

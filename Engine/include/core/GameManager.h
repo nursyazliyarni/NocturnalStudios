@@ -34,7 +34,7 @@ private:
     std::unordered_map<std::string, GLuint> cache;
 };
 
-class GameStateManager {
+class GameManager {
 public:
     bool load(const char* prefabsJsonPath, const char* scenesJsonPath, TextureStore& tex);
 
@@ -59,7 +59,7 @@ public:
     // Expose a safe key->scene helper if you don’t want Input.cpp touching keyMap directly:
     bool switchToSceneForKey(int glfwKey);
 
-    void setECS(ECS* e) { ecs_ = e; }
+    GameManager(ECS& ecs) :ecs_{ ecs } {}
 
 
 private:
@@ -73,6 +73,6 @@ private:
     bool requestedQuit{ false };                                  // quit flag
     std::string currentScene;
 
-    ECS* ecs_ = nullptr;
+    ECS& ecs_;
 
 };
