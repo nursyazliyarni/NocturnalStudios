@@ -66,6 +66,11 @@ public:
 	std::unordered_map<ResourceID, SceneFile>& getScenes();
 	const std::unordered_map<ResourceID, SceneFile>& getScenes() const;
 
+	std::vector<std::string> getFilePathsForKey(ResourceType type, const std::string& key) const;
+
+	template <typename T>
+	std::vector<std::string> getFilePathsForKey(const std::string& key) const;
+
 	template <typename T>
 	ResourceID findResource(const std::string& ResourceName);
 
@@ -273,5 +278,69 @@ std::pair<std::string, std::string> ResourceManager::getName(ResourceID id) {
 	}
 }
 
+/**
+ * @brief Return file paths for all loaded resources that match a given key.
+ *
+ * This templated helper walks the internal container for the concrete resource
+ * type `T` and collects `filePath` values for every resource whose `key`
+ * equals the supplied `key` parameter.
+ *
+ * Supported template types:
+ *  - `Audio`
+ *  - `ShaderFile`
+ *  - `TextureFile`
+ *  - `PrefabFile`
+ *  - `SceneFile`
+ *
+ * @tparam T Concrete resource type (see supported types above).
+ * @param key Human-readable resource key to match (compared with `Resource::getKey()`).
+ * @return std::vector<std::string> List of file paths (`Resource::getFilePath()`)
+ *         for all matching resources. Returns an empty vector if none match.
+ *
+ * Complexity: O(n) over the number of loaded resources of type `T`.
+ *
+ * Notes:
+ *  - If an unsupported `T` is provided, a compile-time `static_assert` triggers
+ *    with the message "Template argument is not a Resource!".
+ *  - This does an equality comparison on the key; if you need case-insensitive
+ *    or fuzzy matching perform that externally before calling this function.
+ */
+template <typename T>
+std::vector<std::string> ResourceManager::getFilePathsForKey(const std::string& key) const {
+	std::vector<std::string> filePaths;
+
+	if constexpr (std::same_as<T, Audio>) {
+		for (auto const& [id, file] : audios) {
+			if (file.getKey() == key) filePaths.push_back(file.getFilePath());
+		}
+	}
+	else if constexpr (std::same_as<T, ShaderFile>) {
+		for (auto const& [id, file] : shaderFiles) {
+			if (file.getKey() == key) filePaths.push_back(file.getFilePath());
+		}
+	}
+	else if constexpr (std::same_as<T, TextureFile>) {
+		for (auto const& [id, file] : textureFiles) {
+			if (file.getKey() == key) filePaths.push_back(file.getFilePath());
+		}
+	}
+	else if constexpr (std::same_as<T, PrefabFile>) {
+		for (auto const& [id, file] : prefabFiles) {
+			if (file.getKey() == key) filePaths.push_back(file.getFilePath());
+		}
+	}
+	else if constexpr (std::same_as<T, SceneFile>) {
+		for (auto const& [id, file] : sceneFiles) {
+			if (file.getKey() == key) filePaths.push_back(file.getFilePath());
+		}
+	}
+	else {
+		[]<bool flag = false>() {
+			static_assert(flag, "Template argument is not a Resource!");
+		}();
+	}
+
+	return filePaths;
+}
 
 #endif // RESOURCEMANAGER_H

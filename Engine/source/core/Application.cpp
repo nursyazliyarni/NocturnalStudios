@@ -1,34 +1,33 @@
-//app.cpp
 /*!------------------------------------------------------------------------------------------------
 	File: Application.cpp
 	Project: NocturnalStudio
 
-    This file contains the main application loop that initializes the window creation, OpenGL initialization,
-    sprite rendering, input handling, drag and drop interations, frame updates, ImGui systems.
+	This file contains the main application loop that initializes the window creation, OpenGL initialization,
+	sprite rendering, input handling, drag and drop interations, frame updates, ImGui systems.
 
-    Primary Author:
-        - Brief
+	Primary Author:
 
-    Primary Author:
-        Rishika Bimal Attodi
-        - Implemented main loop scaffolding: window creation, OpenGL setup,
-        sprite batching
+		- Brief
 
-    Secondary Author:
-        Yu Xuan
-        - Background
+	Primary Author:
+		Rishika Bimal Attodi
+		- Implemented main loop scaffolding: window creation, OpenGL setup,
+		sprite batching
 
 	Secondary Author:
 		Yu Xuan
 		-  Background
 
-    Secondary Author:
-        Chang Qi Xuan Celest (35%)
-        - Integrated drag and drop functionality for sprites.
+	Secondary Authod
+		Xiang Yang
+		- FBO
+
+	Secondary Author:
+		Chang Qi Xuan Celest (35%)
+		- Integrated drag and drop functionality for sprites.
 
 	All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
 *------------------------------------------------------------------------------------------------*/
-
 // init(), run(), shutdown()
 #include "core/Application.h"
 #include "core/Config.h"
@@ -38,10 +37,6 @@
 #include <chrono>
 #include "math/Vector.h"
 #include "core/ImGUIManager.h"
-
-// Removed old prefab/gameobject include
-// #include "./scene/Prefab.h"
-
 #include "physics/AABB.h"
 #include "ECS/ECS.h"
 #include "resources/ResourceManager.h"
@@ -49,14 +44,14 @@
 #include "scene/Prefab.h"
 
 namespace {
-    constexpr float TWO_PI = 2.0f * glm::pi<float>();
-    constexpr int CIRCLE_SEGMENTS = 64;
-    using Clock = std::chrono::high_resolution_clock;
+	constexpr float TWO_PI = 2.0f * glm::pi<float>();
+	constexpr int   CIRCLE_SEGMENTS = 64;
+	using Clock = std::chrono::high_resolution_clock;
 }
 
-bool isDragging = false;        //is a sprite being dragged
-int draggedSpriteIndex = -1;    //index into sprite_vector
-int duplicateIndex = -1;        //where clone is in the vector
+bool isDragging = false; //is a sprite being dragged
+int draggedSpriteIndex = -1; //index into sprite_vector
+int duplicateIndex = -1; //where clone is in the vector
 Vector2D dragOffset(0.0f, 0.0f); //mouse offset from top-left of sprite
 
 //Application::Application() = default;
@@ -103,85 +98,131 @@ int Application::run() {
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    Renderer renderer("assets/shaders/background.vert", "assets/shaders/background.frag");
-    TextureStore textures;
-    ECS& ecs = ECS::getECS();
-    GameManager gsm(ecs);
-    gsm.load("assets/prefabs/prefabs.json", "assets/scenes/scenes.json", textures);
 
-    Input game_input_obj(m_window.handle());
-    ResourceManager resourceManager(ecs);
-    AudioSystem audioSystem("AudioSystem", ecs, resourceManager);
-    resourceManager.setAudioSystem(&audioSystem);
+
+	Input      game_input_obj(m_window.handle());
+	ECS& ecs = ECS::getECS();
+	ResourceManager resourceManager(ecs);
+	AudioSystem audioSystem("AudioSystem", ecs, resourceManager);
+	resourceManager.setAudioSystem(&audioSystem);
+
     resourceManager.loadResources("audio");
-    Physics game_physics_obj;
-    Game_Loop game_loop_obj(m_window.handle());
+	resourceManager.loadResources("shaders");
+	resourceManager.loadResources("textures");
+	resourceManager.loadResources("prefabs");
+	resourceManager.loadResources("scenes");
 
-    // Initialize ECS
-    PrefabManager prefabManager(ecs);
+	Physics    game_physics_obj;
+	Game_Loop  game_loop_obj(m_window.handle());
+
+    std::string vertexPath,
+				fragmentPath,
+				prefabPath, prefabTestPath,
+				scenePath;
+
+	auto shaderPath = resourceManager.getFilePathsForKey<ShaderFile>("background");
+	for (auto const& path : shaderPath) {
+		std::filesystem::path p{ path };
+		auto ext = p.extension().string();
+		if (ext == ".vert") vertexPath = p.string();
+		else if (ext == ".frag") fragmentPath = p.string();	
+	}
+
+	auto prefabPaths = resourceManager.getFilePathsForKey<PrefabFile>("prefabs");
+	if (!prefabPaths.empty()) prefabPath = prefabPaths.front();
+
+	auto testingPrefabPaths = resourceManager.getFilePathsForKey<PrefabFile>("testing_prefabs");
+	if (!testingPrefabPaths.empty()) prefabTestPath = testingPrefabPaths.front();
+
+	auto scenePaths = resourceManager.getFilePathsForKey<SceneFile>("scenes");
+	if (!scenePaths.empty()) scenePath = scenePaths.front();
 
 
-    // Load prefabs
-    prefabManager.Load_Prefab("assets/prefabs/prefabs.json");
-
+	TextureStore textures;
+	GameManager gsm;
+	gsm.load(prefabPath.c_str(), scenePath.c_str(), textures);
+	Renderer   renderer(vertexPath.c_str(), fragmentPath.c_str());
    
-    ImGuiManager imGuiManager(m_window, renderer, game_input_obj, game_physics_obj, audioSystem, resourceManager, gsm);
+	// Initialize
+	PrefabManager prefabManager(ecs);
 
-    while (!m_window.shouldClose()) {
-        m_window.poll();
+	// Load prefabs
+	prefabManager.Load_Prefab(prefabTestPath.c_str());
 
-        double dt = game_loop_obj.calculate_DT();
-        game_loop_obj.display_FPS(m_window.handle(), c.window.title, dt);
-
-        game_input_obj.ProcessHotkeys(gsm); // central hotkeys: ESC + 1..9 (gated)
-        game_input_obj.update_mouse_pos(m_window.handle());
-
-        // Keyboard scene switching
-        // Keyboard scene switching (1..9 + ESC)
-        //for (int k = GLFW_KEY_1; k <= GLFW_KEY_9; ++k)
-        //    if (game_input_obj.WasPressed(k))
-        //        gsm.handleKeyPress(k);
-        //
-        //if (game_input_obj.WasPressed(GLFW_KEY_ESCAPE))
-        //    gsm.handleKeyPress(GLFW_KEY_ESCAPE);
-
-        // Clear OS window (ImGui draws on top; scene is inside the Viewport FBO)
-        int fbw = 0, fbh = 0;
-        glfwGetFramebufferSize(m_window.handle(), &fbw, &fbh);
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
-        glViewport(0, 0, fbw, fbh);
-        glDisable(GL_DEPTH_TEST);
-        glClearColor(0.06f, 0.06f, 0.07f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
-
-        // Build and render all ImGui windows (Viewport + overlays)
-        Gui::updateImGuiManager(dt, imGuiManager);
-
-        // Application.cpp
-        if (game_input_obj.WasMousePressed(GLFW_MOUSE_BUTTON_LEFT)) {
-            ImVec2 rmin, rmax;
-            imGuiManager.getViewportRectWindow(rmin, rmax);
-
-            // mouse in GLFW client coords (pixels)
-            Vector2D mp = game_input_obj.GET_mouse_pos(false, 0, 0);
-            if (mp.x() >= rmin.x && mp.x() <= rmax.x && mp.y() >= rmin.y && mp.y() <= rmax.y) {
-                float nx = float((mp.x() - rmin.x) / (rmax.x - rmin.x));
-                float ny = float((mp.y() - rmin.y) / (rmax.y - rmin.y));
-                // because you draw the Image with flipped V (uv (0,1)->(1,0))
-                ny = 1.0f - ny;
-                gsm.handleClick(nx, ny);
-            }
-        }
-
-        // Quit button in JSON
-        if (gsm.popQuitRequested())
-            glfwSetWindowShouldClose(m_window.handle(), 1);
-
-        game_input_obj.EndFrame();
-        m_window.swap();
-    }
+	EntityID animal = prefabManager.Instantiate("animal");
+	EntityID animal_2 = prefabManager.Instantiate("animal");
+	std::cout << animal << animal_2 << "\n";
 
 
-    m_window.destroy();
-    return 0;
+
+
+	ImGuiManager imGuiManager(m_window, renderer,
+		game_input_obj, game_physics_obj,
+		audioSystem, resourceManager,
+		gsm);
+
+	while (!m_window.shouldClose()) {
+		m_window.poll();
+
+		double dt = game_loop_obj.calculate_DT();
+		game_loop_obj.display_FPS(m_window.handle(), c.window.title, dt);
+		game_input_obj.update_mouse_pos(m_window.handle());
+
+		// Keyboard scene switching
+		// Keyboard scene switching (1..9 + ESC)
+		for (int k = GLFW_KEY_1; k <= GLFW_KEY_9; ++k)
+			if (game_input_obj.WasPressed(k))
+				gsm.handleKeyPress(k);
+
+		if (game_input_obj.WasPressed(GLFW_KEY_ESCAPE))
+			gsm.handleKeyPress(GLFW_KEY_ESCAPE);
+
+
+		// Clear OS window (ImGui draws on top; scene is inside the Viewport FBO)
+		int fbw = 0, fbh = 0; glfwGetFramebufferSize(m_window.handle(), &fbw, &fbh);
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glViewport(0, 0, fbw, fbh);
+		glDisable(GL_DEPTH_TEST);
+		glClearColor(0.06f, 0.06f, 0.07f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT);
+
+		// Build and render all ImGui windows (Viewport + overlays)
+		Gui::updateImGuiManager(dt, imGuiManager);
+
+
+		// Application.cpp 
+		if (game_input_obj.WasMousePressed(GLFW_MOUSE_BUTTON_LEFT)) {
+			ImVec2 rmin, rmax;
+			imGuiManager.getViewportRectWindow(rmin, rmax);
+
+			// mouse in GLFW client coords (pixels)
+			Vector2D mp = game_input_obj.GET_mouse_pos(false, 0, 0);
+
+			if (mp.x() >= rmin.x && mp.x() <= rmax.x &&
+				mp.y() >= rmin.y && mp.y() <= rmax.y) {
+
+				float nx = float((mp.x() - rmin.x) / (rmax.x - rmin.x));
+				float ny = float((mp.y() - rmin.y) / (rmax.y - rmin.y));
+
+				// because you draw the Image with flipped V (uv (0,1)->(1,0))
+				ny = 1.0f - ny;
+
+				gsm.handleClick(nx, ny);
+			}
+		}
+
+
+
+		// Quit button in JSON
+		if (gsm.popQuitRequested())
+			glfwSetWindowShouldClose(m_window.handle(), 1);
+
+		game_input_obj.EndFrame();
+		m_window.swap();
+	}
+
+
+
+	m_window.destroy();
+	return 0;
 }
