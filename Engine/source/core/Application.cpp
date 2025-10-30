@@ -99,12 +99,6 @@ int Application::run() {
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 
-    // Renderer renderer("assets/shaders/background.vert", "assets/shaders/background.frag");
-    TextureStore textures;
-    GameStateManager gsm;
-    gsm.load("assets/prefabs/prefabs.json", "assets/scenes/scenes.json", textures);
-
-
 
 	Input      game_input_obj(m_window.handle());
 	ECS& ecs = ECS::getECS();
@@ -121,8 +115,11 @@ int Application::run() {
 	Physics    game_physics_obj;
 	Game_Loop  game_loop_obj(m_window.handle());
 
-    std::string vertexPath;
-    std::string fragmentPath;
+    std::string vertexPath,
+				fragmentPath,
+				prefabPath, prefabTestPath,
+				scenePath;
+
     for (auto const& [id, shaderFile] : resourceManager.getShaders()) {
         if (shaderFile.getKey() == "background") {
             std::filesystem::path p{ shaderFile.getFilePath() };
@@ -131,13 +128,36 @@ int Application::run() {
             else if (ext == ".frag") fragmentPath = p.string();
         }
     }
+
+	for (auto const& [id, prefabFile] : resourceManager.getPrefabs()) {
+		if (prefabFile.getKey() == "prefabs") {
+			std::filesystem::path p{ prefabFile.getFilePath() };
+			prefabPath = p.string();
+		}
+		else if (prefabFile.getKey() == "testing_prefabs") {
+			std::filesystem::path p{ prefabFile.getFilePath() };
+			prefabTestPath = p.string();
+		}
+	}
+
+	for (auto const& [id, sceneFile] : resourceManager.getScenes()) {
+		if (sceneFile.getKey() == "scenes") {
+			std::filesystem::path p{ sceneFile.getFilePath() };
+			scenePath = p.string();
+		}
+	}
+
+
+	TextureStore textures;
+	GameManager gsm;
+	gsm.load(prefabPath.c_str(), scenePath.c_str(), textures);
 	Renderer   renderer(vertexPath.c_str(), fragmentPath.c_str());
    
 	// Initialize
 	PrefabManager prefabManager(ecs);
 
 	// Load prefabs
-	prefabManager.Load_Prefab("assets/prefabs/testing_prefabs.json");
+	prefabManager.Load_Prefab(prefabTestPath.c_str());
 
 	EntityID animal = prefabManager.Instantiate("animal");
 	EntityID animal_2 = prefabManager.Instantiate("animal");
