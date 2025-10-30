@@ -16,12 +16,15 @@ All content(c) 2025 DigiPen Institute of Technology Singapore, all rights reserv
 * ------------------------------------------------------------------------------------------------ */
 
 
-#include "rapidjson/document.h"
+#include "scene/Prefab.h"
 #include <rapidjson/istreamwrapper.h>
 #include <fstream>
-#include "./scene/Prefab.h"
-//#include "./scene/Component.h"
-#include "ECS/ECS.h"
+#include <iostream>
+
+#include "ECS/ECS_Component.h"
+#include "ECS/ECS.h"        // we call createEntity/addComponent here
+#include "ECS/ECS_DEF.h"
+
 
 PrefabManager::PrefabManager(ECS& ecs) : entity_component_based_system(ecs) {}
 
@@ -44,6 +47,30 @@ void PrefabManager::Load_Prefab(const std::string& filename_path) {
     prefab_map[filename_path] = std::move(document);
     std::cout << "Loaded prefab: " << filename_path << "\n";
 }
+
+
+bool PrefabManager::PrefabExists(const std::string& prefab_name) const {
+    for (const auto& current_pair : prefab_map) {
+        const rapidjson::Document& current_document = current_pair.second;
+
+        if (current_document.HasMember("prefabs") && current_document["prefabs"].IsObject()) {
+            const auto& obj = current_document["prefabs"];
+            if (obj.HasMember(prefab_name.c_str())) return true;
+        }
+
+        if (current_document.IsArray()) {
+            const auto& arr = current_document.GetArray();
+            for (const auto& item : arr) {
+                if (item.HasMember("name") && item["name"].IsString() &&
+                    prefab_name == item["name"].GetString()) {
+                    return true;
+                }
+            }
+        }
+    }
+    return false;
+}
+
 
 EntityID PrefabManager::Instantiate(const std::string& prefab_name, const std::string& entity_name) {
     return Instantiate(prefab_name, INVALID_ENTITY_ID);
@@ -121,31 +148,66 @@ void PrefabManager::AddComponentFromJSON(EntityID entity, const rapidjson::Value
 
     std::string component_type = component_json["type"].GetString();
 
+    if (component_type == "SpriteRenderer") component_type = "ImageRenderer";
+    if (component_type == "AABBCollider")  component_type = "BoxCollider";
+
+
     // Transform component
+    //if (component_type == "Transform") {
+    //    Transform transform_component;
+    //    if (component_json.HasMember("position") && component_json["position"].IsArray()) {
+    //        const auto& position_array = component_json["position"].GetArray();
+    //        if (position_array.Size() >= 2) {
+    //            //transform_component.position.x = position_array[0].GetFloat();
+    //            //transform_component.position.y = position_array[1].GetFloat();
+    //        }
+    //    }
+    //    if (component_json.HasMember("scale") && component_json["scale"].IsArray()) {
+    //        const auto& scale_array = component_json["scale"].GetArray();
+    //        if (scale_array.Size() >= 2) {
+    //            //transform_component.scale.x = scale_array[0].GetFloat();
+    //            //transform_component.scale.y = scale_array[1].GetFloat();
+    //        }
+    //    }
+    //    if (component_json.HasMember("rotation") && component_json["rotation"].IsNumber()) {
+    //        transform_component.rotation = component_json["rotation"].GetFloat();
+    //    }
+    //    if (component_json.HasMember("height") && component_json["height"].IsNumber()) {
+    //        transform_component.height = component_json["height"].GetFloat();
+    //    }
+    //    entity_component_based_system.addComponent<Transform>(entity, transform_component);
+    //}
     if (component_type == "Transform") {
-        Transform transform_component;
+        Transform t{};
         if (component_json.HasMember("position") && component_json["position"].IsArray()) {
-            const auto& position_array = component_json["position"].GetArray();
-            if (position_array.Size() >= 2) {
-                //transform_component.position.x = position_array[0].GetFloat();
-                //transform_component.position.y = position_array[1].GetFloat();
-            }
+            const auto& a = component_json["position"].GetArray();
+            if (a.Size() >= 2) { t.position.x() = a[0].GetFloat(); t.position.y() = a[1].GetFloat(); }
         }
         if (component_json.HasMember("scale") && component_json["scale"].IsArray()) {
-            const auto& scale_array = component_json["scale"].GetArray();
-            if (scale_array.Size() >= 2) {
-                //transform_component.scale.x = scale_array[0].GetFloat();
-                //transform_component.scale.y = scale_array[1].GetFloat();
-            }
+            const auto& a = component_json["scale"].GetArray();
+            if (a.Size() >= 2) { t.scale.x() = a[0].GetFloat(); t.scale.y() = a[1].GetFloat(); }
         }
         if (component_json.HasMember("rotation") && component_json["rotation"].IsNumber()) {
-            transform_component.rotation = component_json["rotation"].GetFloat();
+            t.rotation = component_json["rotation"].GetFloat();
         }
         if (component_json.HasMember("height") && component_json["height"].IsNumber()) {
-            transform_component.height = component_json["height"].GetFloat();
+            t.height = component_json["height"].GetFloat();
         }
-        entity_component_based_system.addComponent<Transform>(entity, transform_component);
+        entity_component_based_system.addComponent<Transform>(entity, t);
     }
+    else if (component_type == "PhysicsComponent") {
+        PhysicsComponent pc{};
+        if (component_json.HasMember("velocity") && component_json["velocity"].IsArray()) {
+            const auto& v = component_json["velocity"].GetArray();
+            if (v.Size() >= 2) { pc.velocity.x() = v[0].GetFloat(); pc.velocity.y() = v[1].GetFloat(); }
+        }
+        if (component_json.HasMember("gravityEnabled") && component_json["gravityEnabled"].IsBool()) {
+            pc.gravityEnabled = component_json["gravityEnabled"].GetBool();
+        }
+        entity_component_based_system.addComponent<PhysicsComponent>(entity, pc);
+    }
+
+
     // ImageRenderer component
     else if (component_type == "ImageRenderer") {
         ImageRenderer renderer_component;
@@ -158,8 +220,12 @@ void PrefabManager::AddComponentFromJSON(EntityID entity, const rapidjson::Value
         if (component_json.HasMember("isVisible") && component_json["isVisible"].IsBool()) {
             renderer_component.isVisible = component_json["isVisible"].GetBool();
         }
+
+        if (renderer_component.textureID <= 0) renderer_component.isVisible = false; // << add this
+
         entity_component_based_system.addComponent<ImageRenderer>(entity, renderer_component);
     }
+
     // CircleRenderer component
     else if (component_type == "CircleRenderer") {
         CircleRenderer renderer_component;
@@ -189,20 +255,21 @@ void PrefabManager::AddComponentFromJSON(EntityID entity, const rapidjson::Value
         entity_component_based_system.addComponent<RectRenderer>(entity, renderer_component);
     }
     // PhysicsComponent
-    else if (component_type == "PhysicsComponent") {
-        PhysicsComponent physics_component;
-        if (component_json.HasMember("velocity") && component_json["velocity"].IsArray()) {
-            const auto& velocity_array = component_json["velocity"].GetArray();
-            if (velocity_array.Size() >= 2) {
-                //physics_component.velocity.x = velocity_array[0].GetFloat();
-                //physics_component.velocity.y = velocity_array[1].GetFloat();
-            }
-        }
-        if (component_json.HasMember("gravityEnabled") && component_json["gravityEnabled"].IsBool()) {
-            physics_component.gravityEnabled = component_json["gravityEnabled"].GetBool();
-        }
-        entity_component_based_system.addComponent<PhysicsComponent>(entity, physics_component);
-    }
+    //else if (component_type == "PhysicsComponent") {
+    //    PhysicsComponent physics_component;
+    //    if (component_json.HasMember("velocity") && component_json["velocity"].IsArray()) {
+    //        const auto& velocity_array = component_json["velocity"].GetArray();
+    //        if (velocity_array.Size() >= 2) {
+    //            //physics_component.velocity.x = velocity_array[0].GetFloat();
+    //            //physics_component.velocity.y = velocity_array[1].GetFloat();
+    //        }
+    //    }
+    //    if (component_json.HasMember("gravityEnabled") && component_json["gravityEnabled"].IsBool()) {
+    //        physics_component.gravityEnabled = component_json["gravityEnabled"].GetBool();
+    //    }
+    //    entity_component_based_system.addComponent<PhysicsComponent>(entity, physics_component);
+    //}
+    
     // BoxCollider
     else if (component_type == "BoxCollider") {
         BoxCollider collider_component;
@@ -225,22 +292,56 @@ void PrefabManager::AddComponentFromJSON(EntityID entity, const rapidjson::Value
     // Add more component types as needed...
 }
 
-void PrefabManager::ApplyComponentDefaults(EntityID entity, const rapidjson::Value& defaults) {
-    // This function can be used to apply runtime overrides to components
-    // For example, setting specific positions or properties when instantiating
+//void PrefabManager::ApplyComponentDefaults(EntityID entity, const rapidjson::Value& defaults) {
+//    // This function can be used to apply runtime overrides to components
+//    // For example, setting specific positions or properties when instantiating
+//    if (Transform* t = entity_component_based_system.getComponent<Transform>(entity)) {
+//        if (defaults.HasMember("x") && defaults["x"].IsNumber()) t->position.x() = defaults["x"].GetFloat();
+//        if (defaults.HasMember("y") && defaults["y"].IsNumber()) t->position.y() = defaults["y"].GetFloat();
+//        if (defaults.HasMember("w") && defaults["w"].IsNumber()) t->scale.x() = defaults["w"].GetFloat();
+//        if (defaults.HasMember("h") && defaults["h"].IsNumber()) t->scale.y() = defaults["h"].GetFloat();
+//        if (defaults.HasMember("angle") && defaults["angle"].IsNumber()) t->rotation = defaults["angle"].GetFloat();
+//        if (defaults.HasMember("height") && defaults["height"].IsNumber()) t->height = defaults["height"].GetFloat();
+//    }
+//    // Example: Override transform position if specified in defaults
+//    if (defaults.HasMember("position") && defaults["position"].IsArray()) {
+//        Transform* transform_ptr = entity_component_based_system.getComponent<Transform>(entity);
+//        if (transform_ptr != nullptr) {
+//            const auto& position_array = defaults["position"].GetArray();
+//            if (position_array.Size() >= 2) {
+//                //transform_ptr->position.x = position_array[0].GetFloat();
+//                //transform_ptr->position.y = position_array[1].GetFloat();
+//            }
+//        }
+//    }
+//}
 
-    // Example: Override transform position if specified in defaults
+
+void PrefabManager::ApplyComponentDefaults(EntityID entity, const rapidjson::Value& defaults) {
+    // Ensure a Transform exists
+    Transform* t = entity_component_based_system.getComponent<Transform>(entity);
+    if (!t) {
+        Transform nt{};
+        entity_component_based_system.addComponent<Transform>(entity, nt);
+        t = entity_component_based_system.getComponent<Transform>(entity);
+    }
+    if (!t) return; // fail-safe
+
+    // Apply flat defaults (x,y,w,h,angle,height)
+    if (defaults.HasMember("x") && defaults["x"].IsNumber())      t->position.x() = defaults["x"].GetFloat();
+    if (defaults.HasMember("y") && defaults["y"].IsNumber())      t->position.y() = defaults["y"].GetFloat();
+    if (defaults.HasMember("w") && defaults["w"].IsNumber())      t->scale.x() = defaults["w"].GetFloat();
+    if (defaults.HasMember("h") && defaults["h"].IsNumber())      t->scale.y() = defaults["h"].GetFloat();
+    if (defaults.HasMember("angle") && defaults["angle"].IsNumber())  t->rotation = defaults["angle"].GetFloat();
+    if (defaults.HasMember("height") && defaults["height"].IsNumber()) t->height = defaults["height"].GetFloat();
+
+    // Optional: array-style position override
     if (defaults.HasMember("position") && defaults["position"].IsArray()) {
-        Transform* transform_ptr = entity_component_based_system.getComponent<Transform>(entity);
-        if (transform_ptr != nullptr) {
-            const auto& position_array = defaults["position"].GetArray();
-            if (position_array.Size() >= 2) {
-                //transform_ptr->position.x = position_array[0].GetFloat();
-                //transform_ptr->position.y = position_array[1].GetFloat();
-            }
-        }
+        const auto& a = defaults["position"].GetArray();
+        if (a.Size() >= 2) { t->position.x() = a[0].GetFloat(); t->position.y() = a[1].GetFloat(); }
     }
 }
+
 
 //static void RegisterAllComponentsOnce() {
 //    static bool s_done = false;

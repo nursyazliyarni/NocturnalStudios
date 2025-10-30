@@ -162,4 +162,10 @@ class GameObject;
 //};
 
 
+//struct ImageRenderer {
+//    unsigned int textureID = 0;   // GL texture handle
+//    float        opacity = 1.0f;
+//    bool         isVisible = true;
+//}
+
 #endif

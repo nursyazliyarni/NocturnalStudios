@@ -1,4 +1,5 @@
 #include "System/Audio_System.h"
+#include <filesystem>
 
 namespace {
 	/**
@@ -230,19 +231,18 @@ void AudioSystem::update(double deltaTime) {
 	}
 
 	for (auto it = audioInstances.begin(); it != audioInstances.end(); ) {
-		auto& [instanceID, audioInstance] = *it;
+		auto& inst = it->second;
 
-		if (audioInstance.toDestroy) {
-			it->second.channel->stop();
+		if (inst.toDestroy) {
+			if (inst.channel) inst.channel->stop();
 			it = audioInstances.erase(it);
 			continue;
 		}
-		else {
-			++it;
-		}
 
-		audioInstance.channel->setVolume(audioInstance.volume);
+		if (inst.channel) inst.channel->setVolume(inst.volume);
+		++it;
 	}
+
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -281,7 +281,7 @@ std::optional<AudioInstanceID> AudioSystem::createAudioInstance(AudioData::Indiv
 	FMOD::Sound* sound = soundIt->second;
 	FMOD::Channel* channel = nullptr;
 
-	if (fmodSystem->playSound(sound, nullptr, true, &channel) != FMOD_OK) {
+	if (fmodSystem->playSound(sound, nullptr, false, &channel) != FMOD_OK) {
 		logger.error("Failed to play sound for audio resource ID: " + std::to_string(audioResourceID));
 		return std::nullopt;
 	}
@@ -588,7 +588,9 @@ bool AudioSystem::registerNewAudioResource(AudioData& audioData, EntityID id) {
  */
 void AudioSystem::loadSound(Audio const& audio) {
 	FMOD::Sound* sound = nullptr;
-	FMOD_RESULT result = fmodSystem->createSound(audio.getFilePath().c_str(), FMOD_2D, nullptr, &sound);
+	//FMOD_RESULT result = fmodSystem->createSound(audio.getFilePath().c_str(), FMOD_2D, nullptr, &sound);
+	FMOD_MODE mode = FMOD_DEFAULT | FMOD_2D | FMOD_CREATESTREAM; // stream long files
+	FMOD_RESULT result = fmodSystem->createSound(audio.getFilePath().c_str(), mode, nullptr, &sound);
 	if (result != FMOD_OK) {
 		logger.error("Failed to load audio sound from file: " + audio.getFilePath() + " Error: " + std::string{ FMOD_ErrorString(result) });
 		return;

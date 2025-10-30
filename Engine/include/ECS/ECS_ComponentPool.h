@@ -297,9 +297,33 @@ public:
 		return std::move(newPool);
 	}
 
+	template <typename T>
+	ComponentPool<T>& pool() {
+		const ComponentID cid = Family::getID<T>();
+		auto it = componentPools.find(cid);
+		if (it == componentPools.end()) {
+			// lazily create a pool for this component type
+			componentPools[cid] = std::make_unique<ComponentPool<T>>();
+			it = componentPools.find(cid);
+		}
+		return *static_cast<ComponentPool<T>*>(it->second.get());
+	}
+
+	template <typename T>
+	T* getComponent(EntityID id) {
+		return pool<T>().getComponent(id);
+	}
+
+	template <typename T>
+	bool addComponent(EntityID id, T const& value) {
+		return pool<T>().addComponent(id, value);
+	}
+
 private:
 	/// Packed component storage: components[i] corresponds to denseEntities[i]
 	std::vector<T> components;
+	std::unordered_map<ComponentID, std::unique_ptr<BaseComponentPool>> componentPools;
+
 };
 
 #endif // COMPONENTPOOL_H
