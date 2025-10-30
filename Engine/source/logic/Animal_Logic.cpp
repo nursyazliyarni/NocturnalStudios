@@ -44,6 +44,10 @@ void Animal_Logic::update_animal_hunger() {
 			if (stats.food == Animal_food::flamingo_food) {
 				stats.hunger_bar += 20; //the player feed the flamingo with food
 			}
+
+			else if (stats.food == Animal_food::water) {
+				stats.hunger_bar += 10; //the player feed the flamingo with water
+			}
 		}
 		break;
 
