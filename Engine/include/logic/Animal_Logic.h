@@ -1,7 +1,7 @@
 #pragma once
 
 enum class Animal_food {
-	none,water,flamingo_food,horse_food,seal_food,owl_food
+	none,flamingo_food,horse_food,seal_food,owl_food
 };
 
 enum class Animal_type {
