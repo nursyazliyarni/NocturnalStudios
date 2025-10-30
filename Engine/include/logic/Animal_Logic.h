@@ -4,16 +4,20 @@ enum class Animal_food {
 	none,flamingo_food,horse_food,seal_food,owl_food
 };
 
+enum class Animal_mood {
+	normal,happy,sad
+};
+
 enum class Animal_type {
 	flamingo,horse,seal,owl
 };
 
 enum class Animal_state {
-	alive,died
+	alive,died,escape
 };
 
 enum class Zookeeper_action {
-	none,feeding,
+	none,feeding,staring
 };
 
 class Animal_Logic {
@@ -24,8 +28,9 @@ public:
 
 	void update_animal_health();
 	void update_animal_hunger();
+	void update_animal_sanity();
 
-	Animal_state& check_animal_alive();
+	Animal_state& check_animal_status();
 
 private:
 	struct animal_stats {
@@ -37,6 +42,7 @@ private:
 		Animal_state current_state;
 		double health_bar, hunger_bar, sanity_bar;
 	}stats;
+	int accumulation_timer{ 0 };
 
 	animal_stats& GET_stat();
 };
