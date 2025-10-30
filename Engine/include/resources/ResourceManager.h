@@ -278,6 +278,33 @@ std::pair<std::string, std::string> ResourceManager::getName(ResourceID id) {
 	}
 }
 
+/**
+ * @brief Return file paths for all loaded resources that match a given key.
+ *
+ * This templated helper walks the internal container for the concrete resource
+ * type `T` and collects `filePath` values for every resource whose `key`
+ * equals the supplied `key` parameter.
+ *
+ * Supported template types:
+ *  - `Audio`
+ *  - `ShaderFile`
+ *  - `TextureFile`
+ *  - `PrefabFile`
+ *  - `SceneFile`
+ *
+ * @tparam T Concrete resource type (see supported types above).
+ * @param key Human-readable resource key to match (compared with `Resource::getKey()`).
+ * @return std::vector<std::string> List of file paths (`Resource::getFilePath()`)
+ *         for all matching resources. Returns an empty vector if none match.
+ *
+ * Complexity: O(n) over the number of loaded resources of type `T`.
+ *
+ * Notes:
+ *  - If an unsupported `T` is provided, a compile-time `static_assert` triggers
+ *    with the message "Template argument is not a Resource!".
+ *  - This does an equality comparison on the key; if you need case-insensitive
+ *    or fuzzy matching perform that externally before calling this function.
+ */
 template <typename T>
 std::vector<std::string> ResourceManager::getFilePathsForKey(const std::string& key) const {
 	std::vector<std::string> filePaths;
