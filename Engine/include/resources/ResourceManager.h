@@ -66,6 +66,11 @@ public:
 	std::unordered_map<ResourceID, SceneFile>& getScenes();
 	const std::unordered_map<ResourceID, SceneFile>& getScenes() const;
 
+	std::vector<std::string> getFilePathsForKey(ResourceType type, const std::string& key) const;
+
+	template <typename T>
+	std::vector<std::string> getFilePathsForKey(const std::string& key) const;
+
 	template <typename T>
 	ResourceID findResource(const std::string& ResourceName);
 
@@ -273,5 +278,42 @@ std::pair<std::string, std::string> ResourceManager::getName(ResourceID id) {
 	}
 }
 
+template <typename T>
+std::vector<std::string> ResourceManager::getFilePathsForKey(const std::string& key) const {
+	std::vector<std::string> filePaths;
+
+	if constexpr (std::same_as<T, Audio>) {
+		for (auto const& [id, file] : audios) {
+			if (file.getKey() == key) filePaths.push_back(file.getFilePath());
+		}
+	}
+	else if constexpr (std::same_as<T, ShaderFile>) {
+		for (auto const& [id, file] : shaderFiles) {
+			if (file.getKey() == key) filePaths.push_back(file.getFilePath());
+		}
+	}
+	else if constexpr (std::same_as<T, TextureFile>) {
+		for (auto const& [id, file] : textureFiles) {
+			if (file.getKey() == key) filePaths.push_back(file.getFilePath());
+		}
+	}
+	else if constexpr (std::same_as<T, PrefabFile>) {
+		for (auto const& [id, file] : prefabFiles) {
+			if (file.getKey() == key) filePaths.push_back(file.getFilePath());
+		}
+	}
+	else if constexpr (std::same_as<T, SceneFile>) {
+		for (auto const& [id, file] : sceneFiles) {
+			if (file.getKey() == key) filePaths.push_back(file.getFilePath());
+		}
+	}
+	else {
+		[]<bool flag = false>() {
+			static_assert(flag, "Template argument is not a Resource!");
+		}();
+	}
+
+	return filePaths;
+}
 
 #endif // RESOURCEMANAGER_H

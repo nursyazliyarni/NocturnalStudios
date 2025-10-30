@@ -671,6 +671,44 @@ const std::unordered_map<ResourceID, SceneFile>& ResourceManager::getScenes() co
 	return sceneFiles;
 }
 
+std::vector<std::string> ResourceManager::getFilePathsForKey(ResourceType type, const std::string& key) const {
+	std::vector<std::string> filePaths;
+
+	switch (type) {
+		using enum ResourceType;
+	case AUDIO:
+		for (auto const& [id, file] : audios) {
+			if (file.getKey() == key) filePaths.push_back(file.getFilePath());
+		}
+		break;
+	case SHADER:
+		for (auto const& [id, file] : shaderFiles) {
+			if (file.getKey() == key) filePaths.push_back(file.getFilePath());
+		}
+		break;
+	case TEXTURE:
+		for (auto const& [id, file] : textureFiles) {
+			if (file.getKey() == key) filePaths.push_back(file.getFilePath());
+		}
+		break;
+	case PREFAB:
+		for (auto const& [id, file] : prefabFiles) {
+			if (file.getKey() == key) filePaths.push_back(file.getFilePath());
+		}
+		break;
+	case SCENE:
+		for (auto const& [id, file] : sceneFiles) {
+			if (file.getKey() == key) filePaths.push_back(file.getFilePath());
+		}
+		break;
+	default:
+		break;
+	}
+
+	return filePaths;
+}
+
+
 /**
  * getNewAssetID
  *
@@ -686,14 +724,6 @@ const std::unordered_map<ResourceID, SceneFile>& ResourceManager::getScenes() co
  *  // then use newId for newly-created resources
  * 
  */
-
-
-const Audio& ResourceManager::getDefaultAudio() const {
-	return defaultAudio;
-}
-
-
-
 ResourceID ResourceManager::getNewAssetID() {
 	while (usedIDs.find(totalResourceID) != usedIDs.end()) {
 		++totalResourceID;
@@ -702,3 +732,8 @@ ResourceID ResourceManager::getNewAssetID() {
 	usedIDs.insert(totalResourceID);
 	return totalResourceID;
 }
+
+const Audio& ResourceManager::getDefaultAudio() const {
+	return defaultAudio;
+}
+

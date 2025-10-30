@@ -120,32 +120,22 @@ int Application::run() {
 				prefabPath, prefabTestPath,
 				scenePath;
 
-    for (auto const& [id, shaderFile] : resourceManager.getShaders()) {
-        if (shaderFile.getKey() == "background") {
-            std::filesystem::path p{ shaderFile.getFilePath() };
-            auto ext = p.extension().string();
-            if (ext == ".vert") vertexPath = p.string();
-            else if (ext == ".frag") fragmentPath = p.string();
-        }
-    }
-
-	for (auto const& [id, prefabFile] : resourceManager.getPrefabs()) {
-		if (prefabFile.getKey() == "prefabs") {
-			std::filesystem::path p{ prefabFile.getFilePath() };
-			prefabPath = p.string();
-		}
-		else if (prefabFile.getKey() == "testing_prefabs") {
-			std::filesystem::path p{ prefabFile.getFilePath() };
-			prefabTestPath = p.string();
-		}
+	auto shaderPath = resourceManager.getFilePathsForKey<ShaderFile>("background");
+	for (auto const& path : shaderPath) {
+		std::filesystem::path p{ path };
+		auto ext = p.extension().string();
+		if (ext == ".vert") vertexPath = p.string();
+		else if (ext == ".frag") fragmentPath = p.string();	
 	}
 
-	for (auto const& [id, sceneFile] : resourceManager.getScenes()) {
-		if (sceneFile.getKey() == "scenes") {
-			std::filesystem::path p{ sceneFile.getFilePath() };
-			scenePath = p.string();
-		}
-	}
+	auto prefabPaths = resourceManager.getFilePathsForKey<PrefabFile>("prefabs");
+	if (!prefabPaths.empty()) prefabPath = prefabPaths.front();
+
+	auto testingPrefabPaths = resourceManager.getFilePathsForKey<PrefabFile>("testing_prefabs");
+	if (!testingPrefabPaths.empty()) prefabTestPath = testingPrefabPaths.front();
+
+	auto scenePaths = resourceManager.getFilePathsForKey<SceneFile>("scenes");
+	if (!scenePaths.empty()) scenePath = scenePaths.front();
 
 
 	TextureStore textures;
