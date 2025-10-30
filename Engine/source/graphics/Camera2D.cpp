@@ -1,29 +1,57 @@
 //(view/projection)
+// graphics/Camera2D.cpp
 #include "graphics/Camera2D.h"
-// (intentionally empty – everything is inline/simple for now)
 
-#include "graphics/Camera2D.h"
 #include <unordered_map>
 #include <algorithm>
 #include <cmath>
+#include <string>
 
 namespace {
     struct CamState {
         bool  enabled = false;
-        float cx = 0.5f, cy = 0.5f; // normalized pivot
-        float zoom = 1.0f;          // scale factor
-    };
-    std::unordered_map<std::string, CamState> g_cam; // per-scene state
 
-    inline float clampZoom(float z) {
-        if (z < 0.1f) z = 0.1f;
-        if (z > 5.0f) z = 5.0f;
-        return z;
+        // View center in normalized scene space [0..1]
+        float cx = 0.5f;
+        float cy = 0.5f;
+
+        // Zoom values
+        float zoom = 1.0f;   // current (animated) zoom
+        float targetZoom = 1.0f;   // where we want to go
+
+        // Limits (1.0 = fit; never allow zooming out below fit)
+        float minZoom = 1.0f;
+        float maxZoom = 3.0f;
+
+        // Smoothing factor (0.1–0.25 feels nice)
+        float smooth = 0.18f;
+    };
+
+    // Per-scene camera state
+    std::unordered_map<std::string, CamState> g_cam;
+
+    // Visible width/height in normalized units are 1/zoom.
+    // Keep the camera center so the view window stays inside [0..1].
+    inline void clampCenterToContent(CamState const& s, float& cx, float& cy) {
+        const float halfW = 0.5f / s.targetZoom;   // use target for stability while animating
+        const float halfH = 0.5f / s.targetZoom;
+        const float minCx = halfW;
+        const float maxCx = 1.0f - halfW;
+        const float minCy = halfH;
+        const float maxCy = 1.0f - halfH;
+        cx = std::clamp(cx, minCx, maxCx);
+        cy = std::clamp(cy, minCy, maxCy);
     }
 
+    inline float clampZoom(CamState const& s, float z) {
+        return std::clamp(z, s.minZoom, s.maxZoom);
+    }
+
+    // Apply camera (scale around pivot) to a pixel-rect
     inline void applyOne(CamState const& c,
         float& px, float& py, float& pw, float& ph,
-        int screenW, int screenH) {
+        int screenW, int screenH)
+    {
         if (!c.enabled || c.zoom == 1.0f) return;
 
         const float pivotX = c.cx * screenW;
@@ -37,19 +65,24 @@ namespace {
     }
 } // namespace
 
+// -------- Public API --------
+
 void Cam2D_Enable(const std::string& scene, bool on) {
     g_cam[scene].enabled = on;
 }
 
 void Cam2D_SetCenter(const std::string& scene, float cx, float cy) {
     auto& s = g_cam[scene];
-    s.cx = std::clamp(cx, 0.0f, 1.0f);
-    s.cy = std::clamp(cy, 0.0f, 1.0f);
+    cx = std::clamp(cx, 0.0f, 1.0f);
+    cy = std::clamp(cy, 0.0f, 1.0f);
+    clampCenterToContent(s, cx, cy);
+    s.cx = cx; s.cy = cy;
 }
 
 void Cam2D_SetZoom(const std::string& scene, float z) {
     auto& s = g_cam[scene];
-    s.zoom = clampZoom(z);
+    s.targetZoom = clampZoom(s, z);       // drive the target
+    clampCenterToContent(s, s.cx, s.cy);  // center bounds depend on zoom
 }
 
 void Cam2D_Set(const std::string& scene, float cx, float cy, float zoom) {
@@ -59,19 +92,32 @@ void Cam2D_Set(const std::string& scene, float cx, float cy, float zoom) {
 
 void Cam2D_ZoomBy(const std::string& scene, float dz) {
     auto& s = g_cam[scene];
-    s.zoom = clampZoom(s.zoom + dz);
+    Cam2D_SetZoom(scene, s.targetZoom + dz);
 }
 
 void Cam2D_PanBy(const std::string& scene, float dx, float dy) {
     auto& s = g_cam[scene];
-    s.cx = std::clamp(s.cx + dx, 0.0f, 1.0f);
-    s.cy = std::clamp(s.cy + dy, 0.0f, 1.0f);
+    float nx = std::clamp(s.cx + dx, 0.0f, 1.0f);
+    float ny = std::clamp(s.cy + dy, 0.0f, 1.0f);
+    clampCenterToContent(s, nx, ny);
+    s.cx = nx; s.cy = ny;
 }
 
 void Cam2D_Apply(const std::string& scene,
     float& px, float& py, float& pw, float& ph,
-    int screenW, int screenH) {
+    int screenW, int screenH)
+{
     auto it = g_cam.find(scene);
     if (it == g_cam.end()) return;
-    applyOne(it->second, px, py, pw, ph, screenW, screenH);
+
+    CamState& s = it->second; // animate per frame here
+
+    // Smoothly ease current zoom toward target
+    s.zoom += (s.targetZoom - s.zoom) * s.smooth;
+    if (std::fabs(s.zoom - s.targetZoom) < 1e-3f) s.zoom = s.targetZoom;
+
+    // Make sure center stays valid as zoom changes
+    clampCenterToContent(s, s.cx, s.cy);
+
+    applyOne(s, px, py, pw, ph, screenW, screenH);
 }

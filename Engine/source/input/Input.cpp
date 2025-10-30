@@ -278,17 +278,18 @@ void Input::ProcessHotkeys(GameManager& gsm) {
 	}
 
 	// ------------ 2D Camera controls (Flamingo only) ------------
+	// ------------ 2D Camera controls (Flamingo only) ------------
 	static std::string sLastScene;
+	static bool flamingoPrimed = false;
+
 	const std::string& scene = gsm.current();
 
-	// Toggle ON only for Flamingo; OFF elsewhere
+	// Scene change: neutralize Flamingo, disable others
 	if (scene != sLastScene) {
 		if (scene == "Flamingo") {
 			Cam2D_Enable("Flamingo", true);
-			Cam2D_Set("Flamingo",
-				0.10f + 0.26f * 0.5f,
-				0.44f + 0.50f * 0.5f,
-				1.8f);
+			Cam2D_Set("Flamingo", 0.5f, 0.5f, 1.0f);  // neutral view
+			flamingoPrimed = false;                   // not zoomed yet
 		}
 		else {
 			Cam2D_Enable(scene, false);
@@ -296,25 +297,42 @@ void Input::ProcessHotkeys(GameManager& gsm) {
 		sLastScene = scene;
 	}
 
-	// Only react to camera hotkeys in Flamingo (hold-to-repeat)
 	if (scene == "Flamingo") {
-		if (IsDown(GLFW_KEY_Z)) Cam2D_ZoomBy("Flamingo", +0.10f);
-		if (IsDown(GLFW_KEY_X)) Cam2D_ZoomBy("Flamingo", -0.10f);
+		// Smaller steps + modifiers (Shift faster, Ctrl slower)
+		float zoomStep = 0.04f;
+		float panStepX = 0.006f, panStepY = 0.006f;
+		const bool fast = IsDown(GLFW_KEY_LEFT_SHIFT) || IsDown(GLFW_KEY_RIGHT_SHIFT);
+		const bool slow = IsDown(GLFW_KEY_LEFT_CONTROL) || IsDown(GLFW_KEY_RIGHT_CONTROL);
+		if (fast) { zoomStep *= 2.5f; panStepX *= 3.0f; panStepY *= 3.0f; }
+		if (slow) { zoomStep *= 0.5f; panStepX *= 0.5f; panStepY *= 0.5f; }
 
-		const float panStepX = 0.02f, panStepY = 0.02f;
-		if (IsDown(GLFW_KEY_UP))    Cam2D_PanBy("Flamingo", 0.0f, -panStepY);
-		if (IsDown(GLFW_KEY_DOWN))  Cam2D_PanBy("Flamingo", 0.0f, +panStepY);
-		if (IsDown(GLFW_KEY_LEFT))  Cam2D_PanBy("Flamingo", -panStepX, 0.0f);
-		if (IsDown(GLFW_KEY_RIGHT)) Cam2D_PanBy("Flamingo", +panStepX, 0.0f);
-
-		if (WasPressed(GLFW_KEY_C)) {
+		// First zoom tap can optionally “snap focus” to flamingo; or comment this block out to keep purely neutral
+		if (!flamingoPrimed && WasPressed(GLFW_KEY_Z)) {
 			Cam2D_Set("Flamingo",
 				0.10f + 0.26f * 0.5f,
 				0.44f + 0.50f * 0.5f,
-				1.8f);
+				1.2f);                 // start with gentle zoom
+			flamingoPrimed = true;
+		}
+		else {
+			// Regular hold-to-zoom/pan
+			if (IsDown(GLFW_KEY_Z)) Cam2D_ZoomBy("Flamingo", +zoomStep);
+			if (IsDown(GLFW_KEY_X)) Cam2D_ZoomBy("Flamingo", -zoomStep);
+
+			if (IsDown(GLFW_KEY_UP))    Cam2D_PanBy("Flamingo", 0.0f, -panStepY);
+			if (IsDown(GLFW_KEY_DOWN))  Cam2D_PanBy("Flamingo", 0.0f, +panStepY);
+			if (IsDown(GLFW_KEY_LEFT))  Cam2D_PanBy("Flamingo", -panStepX, 0.0f);
+			if (IsDown(GLFW_KEY_RIGHT)) Cam2D_PanBy("Flamingo", +panStepX, 0.0f);
+		}
+
+		// Quick reset (C) back to exactly neutral
+		if (WasPressed(GLFW_KEY_C)) {
+			Cam2D_Set("Flamingo", 0.5f, 0.5f, 1.0f);
+			flamingoPrimed = false;
 		}
 	}
 }
+
 
 
 
