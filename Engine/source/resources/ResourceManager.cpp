@@ -382,6 +382,48 @@ TextureFile& ResourceManager::getTexture(ResourceID id) {
 	return found->second;
 }
 
+/**
+ * loadFont
+ *
+ * Load or reuse a Font resource record in the ResourceManager.
+ *
+ * Description:
+ *  - Ensures a single in-memory Font record exists per file path + pixel size.
+ *    If a Font with an identical file path and pixelSize is already present,
+ *    that Font is returned. Otherwise a new Font object is constructed and stored.
+ *
+ * Parameters:
+ *  - name: Human-readable key for the font (e.g. "Roboto-Regular").
+ *  - filePath: Filesystem path to the font file.
+ *  - pixelSize: The pixel height to load glyphs for (font size used when
+ *               generating glyphs / GPU resources).
+ *  - id: Optional ResourceID to assign. If set to NEW_RESOURCE a new unique
+ *        ResourceID is allocated via getNewAssetID().
+ *
+ * Returns:
+ *  - Reference to the stored Font instance (existing or newly-inserted).
+ *
+ * Behavior & side-effects:
+ *  - Performs a linear scan of `fonts` to detect an existing font by
+ *    comparing std::filesystem::path values and pixelSize. This comparison is
+ *    syntactic (string-based); it does not resolve symlinks or canonicalize
+ *    paths.
+ *  - If `id == NEW_RESOURCE`, a new unique ResourceID is generated and
+ *    recorded in the ResourceManager's used ID registry.
+ *  - Inserts a new `Font` into the `fonts` map using `try_emplace` and asserts
+ *    that insertion succeeds.
+ *  - Calls `Font::LoadFont(...)` to upload font glyphs / GPU resources for the
+ *    requested pixelSize. If glyph loading fails, an error is logged but the
+ *    font record remains present (caller can decide how to handle).
+ *  - Logs the load operation through the global `logger`.
+ *
+ * Thread-safety:
+ *  - Not thread-safe. Concurrent calls that mutate `fonts` or ID state require
+ *    external synchronization.
+ *
+ * Example:
+ *  Font& f = rm.loadFont("Roboto", "assets/fonts/Roboto-Regular.ttf", 48);
+ */
 Font& ResourceManager::loadFont(const std::string& name, const std::string& filePath, unsigned int pixelSize, ResourceID id) {
 	for (auto& [key, font] : fonts) {
 		if (std::filesystem::path{ font.getFilePath() } == std::filesystem::path{ filePath } &&
@@ -402,6 +444,23 @@ Font& ResourceManager::loadFont(const std::string& name, const std::string& file
 	return it->second;
 }
 
+/**
+ * getFont
+ *
+ * Retrieve a previously loaded Font by its ResourceID.
+ *
+ * Parameters:
+ *  - id: the ResourceID to look up.
+ *
+ * Returns:
+ *  - Reference to the found Font object.
+ *  - If no matching Font exists the function asserts (caller should ensure id
+ *    validity) — consistent with existing usage in this codebase.
+ *
+ * Simple usage:
+ *  ResourceID id = /* previously obtained id * /;
+ *  Font& f = rm.getFont(id); // assert if id not found
+ */
 Font& ResourceManager::getFont(ResourceID id) {
 	auto found = fonts.find(id);
 	assert(found != fonts.end());
@@ -633,6 +692,29 @@ std::unordered_map<ResourceID, TextureFile>& ResourceManager::getTextures() {
 	return textureFiles;
 }
 
+/**
+ * getFonts
+ *
+ * Accessor that returns a mutable reference to the internal map of font resources.
+ * Use this to iterate, inspect, or (carefully) mutate font entries directly.
+ *
+ * Notes:
+ *  - The returned reference is mutable; callers must not modify map keys
+ *    (undefined behavior). Prefer ResourceManager methods for insertion/removal.
+ *  - Font entries are specific to a file path and pixel size; multiple entries
+ *    for the same file at different pixel sizes can exist.
+ *  - Not thread-safe: concurrent access that includes writers must be externally
+ *    synchronized.
+ *
+ * Returns:
+ *  - Reference to std::unordered_map<ResourceID, Font>
+ *
+ * Simple usage:
+ *  auto& fonts = rm.getFonts();
+ *  for (auto& [id, font] : fonts) {
+ *      // inspect font metadata (do not change keys)
+ *  }
+ */
 std::unordered_map<ResourceID, Font>& ResourceManager::getFonts() {
 	return fonts;
 }
@@ -717,7 +799,7 @@ const std::unordered_map<ResourceID, SceneFile>& ResourceManager::getScenes() co
  *
  * Parameters:
  *  - type: The `ResourceType` enum value indicating which internal container
- *          to search (AUDIO, SHADER, TEXTURE, PREFAB, SCENE).
+ *          to search (AUDIO, SHADER, TEXTURE, FONT, PREFAB, SCENE).
  *  - key:  The human-readable resource key to match (compared with
  *          `Resource::getKey()`).
  *
