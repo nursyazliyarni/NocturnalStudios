@@ -44,6 +44,8 @@
 #include "resources/ResourceManager.h"
 #include <core/GameStateManager.h>
 #include "scene/Prefab.h"
+#include <ft2build.h>
+#include FT_FREETYPE_H
 
 namespace {
     constexpr float TWO_PI = 2.0f * glm::pi<float>();

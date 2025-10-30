@@ -61,6 +61,11 @@ if (NS_HAVE_FMOD)
   target_link_libraries(Engine PUBLIC fmod)
 endif()
 
+if (NS_HAVE_FREETYPE)
+  target_link_libraries(Engine PUBLIC freetype)
+  target_compile_definitions(Engine PUBLIC NS_HAVE_FREETYPE=1)
+endif()
+
 if (WIN32)
   target_link_libraries(Engine PUBLIC opengl32)
 endif()
