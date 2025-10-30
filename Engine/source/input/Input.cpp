@@ -300,7 +300,6 @@ void Input::ProcessHotkeys(GameManager& gsm) {
 	}
 
 	// ------------ 2D Camera controls (Flamingo only) ------------
-	// ------------ 2D Camera controls (Flamingo only) ------------
 	static std::string sLastScene;
 	static bool flamingoPrimed = false;
 
@@ -335,6 +334,7 @@ void Input::ProcessHotkeys(GameManager& gsm) {
 				0.44f + 0.50f * 0.5f,
 				1.2f);                 // start with gentle zoom
 			flamingoPrimed = true;
+
 		}
 		else {
 			// Regular hold-to-zoom/pan

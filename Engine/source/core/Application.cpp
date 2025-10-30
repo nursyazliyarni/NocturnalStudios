@@ -170,11 +170,6 @@ int Application::run() {
 
     bus.Register(&game_loop_obj);
 
-	// Focus roughly on the flamingo (center near its JSON x/y+w/2,h/2)
-    //Cam2D_Enable("Flamingo", true);
-    Cam2D_SetCenter("Flamingo", 0.10f + 0.26f * 0.5f, 0.44f + 0.50f * 0.5f); // ~ (0.23, 0.69)
-    Cam2D_SetZoom("Flamingo", 1.8f);
-
 	TextureStore textures;
 	GameManager gsm(ecs);
 	gsm.load(prefabPath.c_str(), scenePath.c_str(), textures);
@@ -190,7 +185,10 @@ int Application::run() {
 	EntityID animal_2 = prefabManager.Instantiate("animal");
 	std::cout << animal << animal_2 << "\n";
 
-
+	// Focus roughly on the flamingo (center near its JSON x/y+w/2,h/2)
+	Cam2D_Enable("Flamingo", true);
+	Cam2D_SetCenter("Flamingo", 0.10f + 0.26f * 0.5f, 0.44f + 0.50f * 0.5f); // ~ (0.23, 0.69)
+	Cam2D_SetZoom("Flamingo", 1.8f);
 
 
 	ImGuiManager imGuiManager(m_window, renderer,
@@ -213,6 +211,9 @@ int Application::run() {
 
 		if (game_input_obj.WasPressed(GLFW_KEY_ESCAPE))
 			gsm.handleKeyPress(GLFW_KEY_ESCAPE);
+
+		// Process per-frame hotkeys (zoom/pan for Flamingo etc.)
+		game_input_obj.ProcessHotkeys(gsm);
 
 
 		// Clear OS window (ImGui draws on top; scene is inside the Viewport FBO)
