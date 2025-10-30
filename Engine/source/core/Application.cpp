@@ -84,21 +84,25 @@ int Application::run() {
 	glClear(GL_COLOR_BUFFER_BIT);
 	m_window.swap();
 
-	//initialise text rendering system
+	//---------initialise text rendering system----------
 	Shader textShader("assets/shaders/text.vert", "assets/shaders/text.frag");
-
-	Font uiFont;
+	Font uiFont; //first font
+	Font uiFont2; //second font
 	if (!uiFont.LoadFont("assets/fonts/NanumBrushScript-Regular.ttf", 48)) {
 		std::cerr << "Failed to initialize font!" << std::endl;
 	}
 	else {
 		std::cout << " Font loaded successfully!\n";
 	}
-
+	if (!uiFont2.LoadFont("assets/fonts/PAPYRUS.TTF", 48)) {
+		std::cerr << "Failed to initialize font!" << std::endl;
+	}
+	else {
+		std::cout << " Font loaded successfully!\n";
+	}
 	// Make sure your text shader uses texture unit 0
 	textShader.user_Shader_program();
 	textShader.SET_uniform_variable("text", 0);
-
 
 	glm::mat4 projection = glm::ortho(
 		0.0f, static_cast<float>(wd.width),
@@ -109,7 +113,7 @@ int Application::run() {
 		glGetUniformLocation(textShader.get_programID(), "projection"),
 		1, GL_FALSE, &projection[0][0]
 	);
-
+	//----------end text rendering system init----------
 
 	// set up a simple 2D projection (pixel coords, origin = top-left) for the OS window
 	int currW = wd.width, currH = wd.height;
@@ -220,7 +224,7 @@ int Application::run() {
 		// Build and render all ImGui windows (Viewport + overlays)
 		Gui::updateImGuiManager(dt, imGuiManager);
 
-		//render text overlay
+		//---------render text overlay----------
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glViewport(0, 0, fbw, fbh);
 		glEnable(GL_BLEND);
@@ -230,11 +234,18 @@ int Application::run() {
 		uiFont.RenderText(
 			textShader,
 			"Nocturnal Studio Engine",
-			25.0f, wd.height - 50.0f, // Move near top
+			25.0f, wd.height - 50.0f, //move near top
 			1.0f,
-			glm::vec3(1.0f, 0.0f, 0.2f)
+			glm::vec3(1.0f, 0.0f, 0.2f) //red text
 		);
-
+		uiFont2.RenderText(
+			textShader,
+			"Luminara Zoo",
+			wd.width/2.f,wd.height/2.f,
+			0.8f,
+			glm::vec3(0.6f, 0.2f, 0.8f) //purple text
+		);
+		//----------end text overlay----------
 
 
 		// Application.cpp 
@@ -269,7 +280,7 @@ int Application::run() {
 	}
 
 
-	uiFont.Cleanup();
+	uiFont.Cleanup(); //cleanup font resources
 	m_window.destroy();
 	return 0;
 }
