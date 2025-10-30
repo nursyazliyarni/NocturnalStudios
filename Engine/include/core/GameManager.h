@@ -34,7 +34,7 @@ private:
     std::unordered_map<std::string, GLuint> cache;
 };
 
-class GameStateManager {
+class GameManager {
 public:
     bool load(const char* prefabsJsonPath, const char* scenesJsonPath, TextureStore& tex);
 

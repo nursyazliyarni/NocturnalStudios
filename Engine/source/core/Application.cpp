@@ -1,7 +1,7 @@
 //app.cpp
 /*!------------------------------------------------------------------------------------------------
-    File: Application.cpp
-    Project: NocturnalStudio
+	File: Application.cpp
+	Project: NocturnalStudio
 
     This file contains the main application loop that initializes the window creation, OpenGL initialization,
     sprite rendering, input handling, drag and drop interations, frame updates, ImGui systems.
@@ -18,15 +18,15 @@
         Yu Xuan
         - Background
 
-    Secondary Authod
-        Xiang Yang
-        - FBO
+	Secondary Author:
+		Yu Xuan
+		-  Background
 
     Secondary Author:
         Chang Qi Xuan Celest (35%)
         - Integrated drag and drop functionality for sprites.
 
-    All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+	All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
 *------------------------------------------------------------------------------------------------*/
 
 // init(), run(), shutdown()
@@ -45,7 +45,7 @@
 #include "physics/AABB.h"
 #include "ECS/ECS.h"
 #include "resources/ResourceManager.h"
-#include <core/GameStateManager.h>
+#include <core/GameManager.h>
 #include "scene/Prefab.h"
 
 namespace {
@@ -61,49 +61,51 @@ Vector2D dragOffset(0.0f, 0.0f); //mouse offset from top-left of sprite
 
 //Application::Application() = default;
 Application::Application() {
-    _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF); //enable memory leak check at program exit
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF); //enable memory leak check at program exit
 }
 
 int Application::run() {
-    // 1) read JSON (with safe defaults)
-    //const WindowConfig c = Config::LoadWindowConfig("assets/config.json");
-    const GameConfig c = loadConfig("assets/config.json");
+	// 1) read JSON (with safe defaults)
+	//const WindowConfig c = Config::LoadWindowConfig("assets/config.json");
+	const GameConfig c = loadConfig("assets/config.json");
 
-    // 2) create the window
-    WindowDesc wd;
-    wd.width = c.window.width;
-    wd.height = c.window.height;
-    wd.title = c.window.title;
-    wd.vsync = c.window.vsync;
-    if (!m_window.create(wd)) return -1;
+	// 2) create the window
+	WindowDesc wd;
+	wd.width = c.window.width;
+	wd.height = c.window.height;
+	wd.title = c.window.title;
+	wd.vsync = c.window.vsync;
 
-    // Prime the window so theres no white flash before the first real frame
-    glViewport(0, 0, wd.width, wd.height);
-    glDisable(GL_DEPTH_TEST);
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glClearColor(0.06f, 0.06f, 0.07f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
-    m_window.swap();
+	if (!m_window.create(wd)) return -1;
 
-    // set up a simple 2D projection (pixel coords, origin = top-left) for the OS window
-    int currW = wd.width, currH = wd.height;
-    glfwGetFramebufferSize(m_window.handle(), &currW, &currH);
-    glViewport(0, 0, currW, currH);
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    glOrtho(0, currW, currH, 0, -1, 1);
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
+	// Prime the window so theres no white flash before the first real frame
+	glViewport(0, 0, wd.width, wd.height);
+	glDisable(GL_DEPTH_TEST);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glClearColor(0.06f, 0.06f, 0.07f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT);
+	m_window.swap();
 
-    // sensible 2D state for the OS window (ImGui draws here later)
-    glDisable(GL_DEPTH_TEST);
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	// set up a simple 2D projection (pixel coords, origin = top-left) for the OS window
+	int currW = wd.width, currH = wd.height;
+	glfwGetFramebufferSize(m_window.handle(), &currW, &currH);
+	glViewport(0, 0, currW, currH);
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	glOrtho(0, currW, currH, 0, -1, 1);
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+
+	// sensible 2D state for the OS window (ImGui draws here later)
+	glDisable(GL_DEPTH_TEST);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     Renderer renderer("assets/shaders/background.vert", "assets/shaders/background.frag");
     TextureStore textures;
-    GameStateManager gsm;
+    GameManager gsm;
     gsm.load("assets/prefabs/prefabs.json", "assets/scenes/scenes.json", textures);
 
     Input game_input_obj(m_window.handle());
@@ -355,6 +357,17 @@ int Application::run() {
         game_input_obj.EndFrame();
         m_window.swap();
     }
+	Renderer   renderer(vertexPath.c_str(), fragmentPath.c_str());
+   
+	// Initialize
+	PrefabManager prefabManager(ecs);
+
+	// Load prefabs
+	prefabManager.Load_Prefab("assets/prefabs/testing_prefabs.json");
+
+	EntityID animal = prefabManager.Instantiate("animal");
+	EntityID animal_2 = prefabManager.Instantiate("animal");
+	std::cout << animal << animal_2 << "\n";
 
     m_window.destroy();
     return 0;

@@ -42,13 +42,22 @@ public:
 
     void Render();
     
-    SceneID ResolveSceneKey(int idx) const; 
-
-    void SetScenesJsonPath(const std::string & path);
 
 
+    static SceneManager& GetSceneManager() {
+        static SceneManager dis;
+        return dis;
+    }
 
 private:
+    SceneManager(); //singleton, constructor is private.
+    
+    SceneManager(const SceneManager&) = delete;
+    SceneManager& operator=(const SceneManager&) = delete;
+
+    SceneManager(SceneManager&&) = delete;
+    SceneManager& operator=(SceneManager&&) = delete;
+
     std::unique_ptr<Scene> curr_scene{ nullptr };
     std::vector<Scene> scenes{};
 };
