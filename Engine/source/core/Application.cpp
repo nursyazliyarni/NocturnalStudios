@@ -86,9 +86,6 @@ int Application::run() {
 	glClear(GL_COLOR_BUFFER_BIT);
 	m_window.swap();
 
-	//initialise text rendering system
-	Shader textShader("assets/shaders/text.vert", "assets/shaders/text.frag");
-
 	Font uiFont;
 	if (!uiFont.LoadFont("assets/fonts/NanumBrushScript-Regular.ttf", 48)) {
 		std::cerr << "Failed to initialize font!" << std::endl;
@@ -96,22 +93,6 @@ int Application::run() {
 	else {
 		std::cout << " Font loaded successfully!\n";
 	}
-
-	// Make sure your text shader uses texture unit 0
-	textShader.user_Shader_program();
-	textShader.SET_uniform_variable("text", 0);
-
-
-	glm::mat4 projection = glm::ortho(
-		0.0f, static_cast<float>(wd.width),
-		0.0f, static_cast<float>(wd.height)
-	);
-	textShader.user_Shader_program();
-	glUniformMatrix4fv(
-		glGetUniformLocation(textShader.get_programID(), "projection"),
-		1, GL_FALSE, &projection[0][0]
-	);
-
 
 	// set up a simple 2D projection (pixel coords, origin = top-left) for the OS window
 	int currW = wd.width, currH = wd.height;
@@ -149,6 +130,7 @@ int Application::run() {
     std::string vertexPath,
 				fragmentPath,
 				prefabPath, prefabTestPath,
+				textShaderVertexPath, textShaderFragmentPath,
 				scenePath;
 
 	auto shaderPath = resourceManager.getFilePathsForKey<ShaderFile>("background");
@@ -157,6 +139,14 @@ int Application::run() {
 		auto ext = p.extension().string();
 		if (ext == ".vert") vertexPath = p.string();
 		else if (ext == ".frag") fragmentPath = p.string();	
+	}
+
+	auto textShaderPaths = resourceManager.getFilePathsForKey<ShaderFile>("text");
+	for (auto const& path : textShaderPaths) {
+		std::filesystem::path p{ path };
+		auto ext = p.extension().string();
+		if (ext == ".vert") textShaderVertexPath = p.string();
+		else if (ext == ".frag") textShaderFragmentPath = p.string();
 	}
 
 	auto prefabPaths = resourceManager.getFilePathsForKey<PrefabFile>("prefabs");
@@ -175,6 +165,25 @@ int Application::run() {
 	gsm.load(prefabPath.c_str(), scenePath.c_str(), textures);
 	Renderer   renderer(vertexPath.c_str(), fragmentPath.c_str());
    
+	//initialise text rendering system
+	Shader textShader(textShaderVertexPath.c_str(), textShaderFragmentPath.c_str());
+
+
+
+	textShader.user_Shader_program();
+	textShader.SET_uniform_variable("text", 0);
+
+
+	glm::mat4 projection = glm::ortho(
+		0.0f, static_cast<float>(wd.width),
+		0.0f, static_cast<float>(wd.height)
+	);
+	textShader.user_Shader_program();
+	glUniformMatrix4fv(
+		glGetUniformLocation(textShader.get_programID(), "projection"),
+		1, GL_FALSE, &projection[0][0]
+	);
+
 	// Initialize
 	PrefabManager prefabManager(ecs);
 
