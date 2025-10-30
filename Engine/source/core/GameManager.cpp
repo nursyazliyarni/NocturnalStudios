@@ -179,6 +179,11 @@ void GameManager::requestScene(const std::string& name) {
     if (scenes.count(name)) currentScene = name;
 }
 
+// Expose a safe key->scene helper if you don’t want Input.cpp touching keyMap directly:
+bool GameManager::switchToSceneForKey(int glfwKey) {
+    return false;
+}
+
 void GameManager::handleKeyPress(int key) {
     auto it = keyMap.find(key);
     if (it != keyMap.end()) requestScene(it->second);
@@ -206,11 +211,11 @@ void GameManager::render(Renderer& r, int w, int h) const {
     //    r.texturedTri(img.textureID, px, py, pw, ph); // same call you use for JSON entities
     //}
 
-    if (ecs_) {
+    if (!ecs_.getAllEntities().empty()) {
         constexpr EntityID MAX_SCAN = 5000;
         for (EntityID e = 0; e < MAX_SCAN; ++e) {
-            if (auto* t = ecs_->getComponent<Transform>(e)) {
-                if (auto* img = ecs_->getComponent<ImageRenderer>(e)) {
+            if (auto* t = ecs_.getComponent<Transform>(e)) {
+                if (auto* img = ecs_.getComponent<ImageRenderer>(e)) {
                     if (!img->isVisible) continue;
                     if (img->textureID <= 0) continue;  // << guard: skip �white box� draws
 
@@ -258,7 +263,12 @@ bool GameManager::handleClick(float nx, float ny) {
     }
     return false;
 }
+void GameManager::startGame() {
 
+}
+void GameManager::goToMenu() {
+
+}
 bool GameManager::popQuitRequested() {
     bool q = requestedQuit;
     requestedQuit = false;

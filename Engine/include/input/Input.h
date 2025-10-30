@@ -40,7 +40,7 @@
 #include "../messaging/MessageBus.h"
 #include "../messaging/InputMessage.h"
 
-class GameStateManager;
+class GameManager;
 
 enum class Input_action {
 	no_action, take_control,
@@ -90,7 +90,7 @@ public:
 	// Returns: -1 = none, 0 = ESC, 1..9 = digit pressed (edge-triggered)
 	int ConsumeSceneKey() const;
 
-	void ProcessHotkeys(GameStateManager& gsm);
+	void ProcessHotkeys(GameManager& gsm);
 
 private:
 	//Non-static member functions need an object to call it

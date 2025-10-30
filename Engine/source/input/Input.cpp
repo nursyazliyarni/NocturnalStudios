@@ -34,7 +34,7 @@
 #include <backends/imgui_impl_glfw.h>
 
 #include "input/Input.h"
-#include "core/GameStateManager.h"
+#include "core/GameManager.h"
 #include <GLFW/glfw3.h>
 
 
@@ -177,7 +177,7 @@ int Input::ConsumeSceneKey() const {
 }
 
 
-void Input::ProcessHotkeys(GameStateManager& gsm) {
+void Input::ProcessHotkeys(GameManager& gsm) {
 	// ESC is always handled by GSM (pause/back/etc.)
 	if (WasPressed(GLFW_KEY_ESCAPE)) {
 		gsm.handleKeyPress(GLFW_KEY_ESCAPE);
