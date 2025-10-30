@@ -27,11 +27,21 @@ public:
 
     bool PrefabExists(const std::string& prefab_name) const;
 
+    void LoadScenes();
+
+    SceneID ResolveSceneKey(int idx) const;
+
+    void SetScenesJsonPath(const std::string& path);
+
 private:
     void ApplyComponentDefaults(EntityID entity, const rapidjson::Value& defaults);
     void AddComponentFromJSON(EntityID entity, const rapidjson::Value& component_json);
 
 private:
+    struct placeholderformove {
+        int id{};
+    };
+    std::vector<placeholderformove> scenes{};
     std::unordered_map<std::string, rapidjson::Document> prefab_map;
     ECS& entity_component_based_system;
 };
