@@ -1,3 +1,4 @@
+//input.cpp
 /*!------------------------------------------------------------------------------------------------
 	File: Input.cpp
 	Project: NocturnalStudio
@@ -31,6 +32,11 @@
 
 #include <imgui.h>
 #include <backends/imgui_impl_glfw.h>
+
+#include "input/Input.h"
+#include "core/GameManager.h"
+#include <GLFW/glfw3.h>
+
 
 std::vector<std::tuple<int, int, Input_action>> Input::keyboard_action;
 std::vector<std::tuple<int, int, Input_action>> Input::mouse_action;
@@ -169,6 +175,25 @@ int Input::ConsumeSceneKey() const {
 	}
 	return -1;
 }
+
+
+void Input::ProcessHotkeys(GameManager& gsm) {
+	// ESC is always handled by GSM (pause/back/etc.)
+	if (WasPressed(GLFW_KEY_ESCAPE)) {
+		gsm.handleKeyPress(GLFW_KEY_ESCAPE);
+	}
+
+	// 1..9 only when Playing
+	if (!gsm.isPlaying()) return;
+
+	for (int k = GLFW_KEY_1; k <= GLFW_KEY_9; ++k) {
+		if (WasPressed(k)) {
+			// Do NOT access gsm.keyMap here
+			gsm.switchToSceneForKey(k);
+		}
+	}
+}
+
 
 
 

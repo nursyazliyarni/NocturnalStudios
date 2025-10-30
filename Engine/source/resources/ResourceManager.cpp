@@ -672,6 +672,73 @@ const std::unordered_map<ResourceID, SceneFile>& ResourceManager::getScenes() co
 }
 
 /**
+ * getFilePathsForKey
+ *
+ * Collects the filesystem paths for all loaded resources of the given
+ * `ResourceType` whose human-readable key equals `key`.
+ *
+ * Parameters:
+ *  - type: The `ResourceType` enum value indicating which internal container
+ *          to search (AUDIO, SHADER, TEXTURE, PREFAB, SCENE).
+ *  - key:  The human-readable resource key to match (compared with
+ *          `Resource::getKey()`).
+ *
+ * Returns:
+ *  - std::vector<std::string> containing the `filePath` for every resource of
+ *    the requested `type` where `resource.getKey() == key`. Returns an empty
+ *    vector if no matches are found or if `type` is unsupported.
+ *
+ * Complexity:
+ *  - O(n) in the number of loaded resources for the requested type (linear
+ *    scan of the container).
+ *
+ * Notes:
+ *  - The comparison is exact (case-sensitive); it does not canonicalize or
+ *    resolve filesystem symlinks.
+ *  - There are no side-effects; the function does not modify ResourceManager
+ *    state.
+ *  - Not thread-safe: concurrent writes to the underlying containers may
+ *    invalidate iteration and must be externally synchronized.
+ */
+std::vector<std::string> ResourceManager::getFilePathsForKey(ResourceType type, const std::string& key) const {
+	std::vector<std::string> filePaths;
+
+	switch (type) {
+		using enum ResourceType;
+	case AUDIO:
+		for (auto const& [id, file] : audios) {
+			if (file.getKey() == key) filePaths.push_back(file.getFilePath());
+		}
+		break;
+	case SHADER:
+		for (auto const& [id, file] : shaderFiles) {
+			if (file.getKey() == key) filePaths.push_back(file.getFilePath());
+		}
+		break;
+	case TEXTURE:
+		for (auto const& [id, file] : textureFiles) {
+			if (file.getKey() == key) filePaths.push_back(file.getFilePath());
+		}
+		break;
+	case PREFAB:
+		for (auto const& [id, file] : prefabFiles) {
+			if (file.getKey() == key) filePaths.push_back(file.getFilePath());
+		}
+		break;
+	case SCENE:
+		for (auto const& [id, file] : sceneFiles) {
+			if (file.getKey() == key) filePaths.push_back(file.getFilePath());
+		}
+		break;
+	default:
+		break;
+	}
+
+	return filePaths;
+}
+
+
+/**
  * getNewAssetID
  *
  * Allocates and returns a new ResourceID that is not present in `usedIDs`.
@@ -686,14 +753,6 @@ const std::unordered_map<ResourceID, SceneFile>& ResourceManager::getScenes() co
  *  // then use newId for newly-created resources
  * 
  */
-
-
-const Audio& ResourceManager::getDefaultAudio() const {
-	return defaultAudio;
-}
-
-
-
 ResourceID ResourceManager::getNewAssetID() {
 	while (usedIDs.find(totalResourceID) != usedIDs.end()) {
 		++totalResourceID;
@@ -702,3 +761,8 @@ ResourceID ResourceManager::getNewAssetID() {
 	usedIDs.insert(totalResourceID);
 	return totalResourceID;
 }
+
+const Audio& ResourceManager::getDefaultAudio() const {
+	return defaultAudio;
+}
+

@@ -40,7 +40,7 @@
 #include "physics/AABB.h"
 #include "ECS/ECS.h"
 #include "resources/ResourceManager.h"
-#include <core/GameManager.h>
+#include "core/GameManager.h"
 #include "scene/Prefab.h"
 #include <ft2build.h>
 #include FT_FREETYPE_H
@@ -101,12 +101,6 @@ int Application::run() {
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 
-    // Renderer renderer("assets/shaders/background.vert", "assets/shaders/background.frag");
-    TextureStore textures;
-    GameManager gsm;
-    gsm.load("assets/prefabs/prefabs.json", "assets/scenes/scenes.json", textures);
-
-
 
 	Input      game_input_obj(m_window.handle());
 	ECS& ecs = ECS::getECS();
@@ -123,23 +117,39 @@ int Application::run() {
 	Physics    game_physics_obj;
 	Game_Loop  game_loop_obj(m_window.handle());
 
-    std::string vertexPath;
-    std::string fragmentPath;
-    for (auto const& [id, shaderFile] : resourceManager.getShaders()) {
-        if (shaderFile.getKey() == "background") {
-            std::filesystem::path p{ shaderFile.getFilePath() };
-            auto ext = p.extension().string();
-            if (ext == ".vert") vertexPath = p.string();
-            else if (ext == ".frag") fragmentPath = p.string();
-        }
-    }
+    std::string vertexPath,
+				fragmentPath,
+				prefabPath, prefabTestPath,
+				scenePath;
+
+	auto shaderPath = resourceManager.getFilePathsForKey<ShaderFile>("background");
+	for (auto const& path : shaderPath) {
+		std::filesystem::path p{ path };
+		auto ext = p.extension().string();
+		if (ext == ".vert") vertexPath = p.string();
+		else if (ext == ".frag") fragmentPath = p.string();	
+	}
+
+	auto prefabPaths = resourceManager.getFilePathsForKey<PrefabFile>("prefabs");
+	if (!prefabPaths.empty()) prefabPath = prefabPaths.front();
+
+	auto testingPrefabPaths = resourceManager.getFilePathsForKey<PrefabFile>("testing_prefabs");
+	if (!testingPrefabPaths.empty()) prefabTestPath = testingPrefabPaths.front();
+
+	auto scenePaths = resourceManager.getFilePathsForKey<SceneFile>("scenes");
+	if (!scenePaths.empty()) scenePath = scenePaths.front();
+
+
+	TextureStore textures;
+	GameManager gsm(ecs);
+	gsm.load(prefabPath.c_str(), scenePath.c_str(), textures);
 	Renderer   renderer(vertexPath.c_str(), fragmentPath.c_str());
    
 	// Initialize
 	PrefabManager prefabManager(ecs);
 
 	// Load prefabs
-	prefabManager.Load_Prefab("assets/prefabs/testing_prefabs.json");
+	prefabManager.Load_Prefab(prefabTestPath.c_str());
 
 	EntityID animal = prefabManager.Instantiate("animal");
 	EntityID animal_2 = prefabManager.Instantiate("animal");
