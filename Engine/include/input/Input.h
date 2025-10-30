@@ -40,6 +40,8 @@
 #include "../messaging/MessageBus.h"
 #include "../messaging/InputMessage.h"
 
+#include <unordered_set>
+
 class GameManager;
 
 enum class Input_action {
@@ -92,6 +94,8 @@ public:
 
 	void ProcessHotkeys(GameManager& gsm);
 
+	bool IsDown(int key) const;
+
 private:
 	//Non-static member functions need an object to call it
 	//So declare this function as static to avoid this issue
@@ -118,6 +122,8 @@ private:
 	static std::vector<std::tuple<int, int, Input_action>> keyboard_action;
 	static std::vector<std::tuple<int, int, Input_action>> mouse_action;
 
+	GLFWwindow* m_window = nullptr;                 
+	std::unordered_set<int> m_keysDown;
 };
 
 //Messaging namespace implemented for input system here

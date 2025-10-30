@@ -48,6 +48,8 @@
 #include <core/GameManager.h>
 #include "scene/Prefab.h"
 
+#include "graphics/Camera2D.h" 
+
 namespace {
     constexpr float TWO_PI = 2.0f * glm::pi<float>();
     constexpr int CIRCLE_SEGMENTS = 64;
@@ -107,6 +109,12 @@ int Application::run() {
     TextureStore textures;
     ECS& ecs = ECS::getECS();
     GameManager gsm(ecs);
+
+    // Focus roughly on the flamingo (center near its JSON x/y+w/2,h/2)
+    Cam2D_Enable("Flamingo", true);
+    Cam2D_SetCenter("Flamingo", 0.10f + 0.26f * 0.5f, 0.44f + 0.50f * 0.5f); // ~ (0.23, 0.69)
+    Cam2D_SetZoom("Flamingo", 1.8f);
+
     gsm.load("assets/prefabs/prefabs.json", "assets/scenes/scenes.json", textures);
 
     Input game_input_obj(m_window.handle());

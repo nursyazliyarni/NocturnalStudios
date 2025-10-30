@@ -37,6 +37,9 @@
 #include "core/GameManager.h"
 #include <GLFW/glfw3.h>
 
+#include "graphics/Camera2D.h"
+
+#include <unordered_set>
 
 std::vector<std::tuple<int, int, Input_action>> Input::keyboard_action;
 std::vector<std::tuple<int, int, Input_action>> Input::mouse_action;
@@ -49,6 +52,7 @@ Input::Input(GLFWwindow* window) {
 	//GLFWkeyfun glfwSetKeyCallback(GLFWwindow * window, GLFWkeyfun callback)
 	//typedef void(* GLFWkeyfun) (GLFWwindow *window, int key, int scancode, int action, int mods)
 	//GLFWkeyfun is a function pointer
+	m_window = window;
 	glfwSetKeyCallback(window, keyboard_input_callback); //setup keyboard input callback before main game loop
 	glfwSetMouseButtonCallback(window, mouse_input_callback); //setup mouse input callback before main game loop
 
@@ -138,11 +142,37 @@ void Input::detect_mouse_event(GLFWwindow* window, int mouse, int event_action) 
 }
 
 
+//void Input::keyboard_input_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
+//	if (ImGui::GetCurrentContext())
+//		ImGui_ImplGlfw_KeyCallback(window, key, scancode, action, mods); // let ImGui see it
+//
+//	if (action == GLFW_PRESS) pressedKeysThisFrame.insert(key);          // Input owns it
+//}
+bool Input::IsDown(int key) const {
+	return m_keysDown.find(key) != m_keysDown.end();
+}
+
+void Input::EndFrame() {
+	pressedKeysThisFrame.clear();
+	pressedMouseThisFrame.clear();
+	// keep m_keysDown as-is; GLFW callbacks update it
+}
+
+
 void Input::keyboard_input_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
 	if (ImGui::GetCurrentContext())
-		ImGui_ImplGlfw_KeyCallback(window, key, scancode, action, mods); // let ImGui see it
+		ImGui_ImplGlfw_KeyCallback(window, key, scancode, action, mods);
 
-	if (action == GLFW_PRESS) pressedKeysThisFrame.insert(key);          // Input owns it
+	if (action == GLFW_PRESS) pressedKeysThisFrame.insert(key);
+
+	if (Input* self = static_cast<Input*>(glfwGetWindowUserPointer(window))) {
+		if (action == GLFW_PRESS || action == GLFW_REPEAT) {
+			self->m_keysDown.insert(key);    // <-- capital D
+		}
+		else if (action == GLFW_RELEASE) {
+			self->m_keysDown.erase(key);     // <-- capital D
+		}
+	}
 }
 
 
@@ -162,10 +192,6 @@ bool Input::WasPressed(int k) const {
 bool Input::WasMousePressed(int b) const {
 	return pressedMouseThisFrame.count(b) > 0;
 }
-void Input::EndFrame() {
-	pressedKeysThisFrame.clear();
-	pressedMouseThisFrame.clear();
-}
 
 
 int Input::ConsumeSceneKey() const {
@@ -177,22 +203,124 @@ int Input::ConsumeSceneKey() const {
 }
 
 
+//void Input::ProcessHotkeys(GameManager& gsm) {
+//	// --- your existing ESC + 1..9 handling ---
+//	if (WasPressed(GLFW_KEY_ESCAPE)) {
+//		gsm.handleKeyPress(GLFW_KEY_ESCAPE);
+//	}
+//	if (!gsm.isPlaying()) return;
+//	for (int k = GLFW_KEY_1; k <= GLFW_KEY_9; ++k) {
+//		if (WasPressed(k)) gsm.switchToSceneForKey(k);
+//	}
+//
+//	// ------------ 2D Camera controls ------------
+//	static std::string sLastScene;
+//	const std::string& scene = gsm.current();
+//
+//	// When scene changes, enable camera and set a default
+//	if (scene != sLastScene) {
+//		Cam2D_Enable(scene, true);
+//
+//		if (scene == "Flamingo") {
+//			// center roughly on flamingo, zoom in
+//			Cam2D_Set(scene,
+//				0.10f + 0.26f * 0.5f,
+//				0.44f + 0.50f * 0.5f,
+//				1.8f);
+//		}
+//		else {
+//			// neutral/default camera
+//			Cam2D_Set(scene, 0.5f, 0.5f, 1.0f);
+//		}
+//		sLastScene = scene;
+//	}
+//
+//	// Zoom (Z in, X out)
+//	if (WasPressed(GLFW_KEY_Z)) Cam2D_ZoomBy(scene, +0.10f);  // +10%
+//	if (WasPressed(GLFW_KEY_X)) Cam2D_ZoomBy(scene, -0.10f);  // -10%
+//
+//	// Pan with arrows (2% of screen per tap)
+//	const float panStepX = 0.02f, panStepY = 0.02f;
+//	if (WasPressed(GLFW_KEY_UP))    Cam2D_PanBy(scene, 0.0f, -panStepY);
+//	if (WasPressed(GLFW_KEY_DOWN))  Cam2D_PanBy(scene, 0.0f, +panStepY);
+//	if (WasPressed(GLFW_KEY_LEFT))  Cam2D_PanBy(scene, -panStepX, 0.0f);
+//	if (WasPressed(GLFW_KEY_RIGHT)) Cam2D_PanBy(scene, +panStepX, 0.0f);
+//
+//	// Quick reset to defaults for the current scene (press 'C')
+//	if (WasPressed(GLFW_KEY_C)) {
+//		if (scene == "Flamingo") {
+//			Cam2D_Set(scene,
+//				0.10f + 0.26f * 0.5f,
+//				0.44f + 0.50f * 0.5f,
+//				1.8f);
+//		}
+//		else {
+//			Cam2D_Set(scene, 0.5f, 0.5f, 1.0f);
+//		}
+//	}
+//}
+
+
+
+
+
+
+
+
 void Input::ProcessHotkeys(GameManager& gsm) {
-	// ESC is always handled by GSM (pause/back/etc.)
+	// --- ESC + 1..9 (edge) ---
 	if (WasPressed(GLFW_KEY_ESCAPE)) {
 		gsm.handleKeyPress(GLFW_KEY_ESCAPE);
 	}
-
-	// 1..9 only when Playing
 	if (!gsm.isPlaying()) return;
-
 	for (int k = GLFW_KEY_1; k <= GLFW_KEY_9; ++k) {
-		if (WasPressed(k)) {
-			// Do NOT access gsm.keyMap here
-			gsm.switchToSceneForKey(k);
+		if (WasPressed(k)) gsm.switchToSceneForKey(k);
+	}
+
+	// ------------ 2D Camera controls (Flamingo only) ------------
+	static std::string sLastScene;
+	const std::string& scene = gsm.current();
+
+	// Toggle ON only for Flamingo; OFF elsewhere
+	if (scene != sLastScene) {
+		if (scene == "Flamingo") {
+			Cam2D_Enable("Flamingo", true);
+			Cam2D_Set("Flamingo",
+				0.10f + 0.26f * 0.5f,
+				0.44f + 0.50f * 0.5f,
+				1.8f);
+		}
+		else {
+			Cam2D_Enable(scene, false);
+		}
+		sLastScene = scene;
+	}
+
+	// Only react to camera hotkeys in Flamingo (hold-to-repeat)
+	if (scene == "Flamingo") {
+		if (IsDown(GLFW_KEY_Z)) Cam2D_ZoomBy("Flamingo", +0.10f);
+		if (IsDown(GLFW_KEY_X)) Cam2D_ZoomBy("Flamingo", -0.10f);
+
+		const float panStepX = 0.02f, panStepY = 0.02f;
+		if (IsDown(GLFW_KEY_UP))    Cam2D_PanBy("Flamingo", 0.0f, -panStepY);
+		if (IsDown(GLFW_KEY_DOWN))  Cam2D_PanBy("Flamingo", 0.0f, +panStepY);
+		if (IsDown(GLFW_KEY_LEFT))  Cam2D_PanBy("Flamingo", -panStepX, 0.0f);
+		if (IsDown(GLFW_KEY_RIGHT)) Cam2D_PanBy("Flamingo", +panStepX, 0.0f);
+
+		if (WasPressed(GLFW_KEY_C)) {
+			Cam2D_Set("Flamingo",
+				0.10f + 0.26f * 0.5f,
+				0.44f + 0.50f * 0.5f,
+				1.8f);
 		}
 	}
 }
+
+
+
+
+
+
 
 
 
