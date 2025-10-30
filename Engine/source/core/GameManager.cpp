@@ -268,10 +268,11 @@ bool GameManager::handleClick(float nx, float ny) {
     return false;
 }
 void GameManager::startGame() {
-
+    app = AppState::Playing;
 }
-void GameManager::goToMenu() {
 
+void GameManager::goToMenu() {
+    app = AppState::Menu;
 }
 bool GameManager::popQuitRequested() {
     bool q = requestedQuit;
