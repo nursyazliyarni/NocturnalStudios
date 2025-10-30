@@ -72,3 +72,7 @@ endif()
 
 source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}/include" PREFIX "Header Files" FILES ${ENGINE_HDR})
 source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}/source"  PREFIX "Source Files" FILES ${ENGINE_SRC})
+
+if (NS_HAVE_FMOD)
+  target_link_libraries(Engine PUBLIC fmod)
+endif()

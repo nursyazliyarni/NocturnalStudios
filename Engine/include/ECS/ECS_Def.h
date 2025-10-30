@@ -58,6 +58,13 @@ constexpr EntityID    INVALID_ENTITY_ID    = std::numeric_limits<std::size_t>::m
 constexpr ComponentID INVALID_COMPONENT_ID = std::numeric_limits<std::size_t>::max();
 constexpr EntityID    NO_ENTITY_SELECTED   = std::numeric_limits<std::size_t>::max();
 
+constexpr LayerID     INVALID_LAYER_ID = std::numeric_limits<std::size_t>::max();
+constexpr SceneID     INVALID_SCENE_ID = std::numeric_limits<std::size_t>::max();
+
+constexpr LayerID     DEFAULT_LAYER = std::numeric_limits<std::size_t>::max();
+constexpr SceneID     NO_SCENE_SELECTED = std::numeric_limits<std::size_t>::max();
+constexpr SceneID     DEFAULT_SCENE = std::numeric_limits<std::size_t>::max();
+
 /**
  * @brief Lightweight wrapper representing an entity handle.
  *

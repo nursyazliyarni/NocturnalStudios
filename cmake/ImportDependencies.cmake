@@ -83,8 +83,7 @@ if(EXISTS "${FMOD_CORE_INC}/fmod.h")
     else()
         message(WARNING "FMOD release import lib not found at ${FMOD_IMPORT_LIB_RELEASE}")
     endif()
-
-    if(EXISTS "${FMOD_IMPORT_LIB_DEBUG}")
+        if(EXISTS "${FMOD_IMPORT_LIB_DEBUG}")
         set_target_properties(fmod PROPERTIES
             IMPORTED_LOCATION_DEBUG "${FMOD_IMPORT_LIB_DEBUG}"
         )
