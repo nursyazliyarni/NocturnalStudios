@@ -722,6 +722,26 @@ float AudioSystem::getReserved2Volume() const {
 	return volume;
 }
 
+/**
+ * @brief Play a background music sound by resource ID.
+ *
+ * Looks up the preloaded `FMOD::Sound*` for `id` in `soundMap` and starts playback
+ * routed to the BGM channel group. The created FMOD channel is stored in an
+ * `AudioInstance` and an `AudioInstanceID` is returned.
+ *
+ * Behavior:
+ * - If the resource is not found the function logs an error and returns 0.
+ * - If FMOD fails to start playback the function logs an error and returns 0.
+ * - The new instance is created with `isPlaying = true` and its volume initialized
+ *   from the current `bgmVolume`.
+ *
+ * Notes:
+ * - This function does not configure looping, persistence, or callbacks; use
+ *   `createAudioInstance` when per-instance configuration is required.
+ *
+ * @param id ResourceID of the audio asset to play as BGM.
+ * @return AudioInstanceID ID of the created audio instance on success, or 0 on failure.
+ */
 AudioInstanceID AudioSystem::playBGM(ResourceID id) {
 	auto it = soundMap.find(id);
 	if (it == soundMap.end()) {
@@ -747,6 +767,26 @@ AudioInstanceID AudioSystem::playBGM(ResourceID id) {
 	return totalInstanceCount;
 }
 
+/**
+ * @brief Play a sound effect (SFX) by resource ID.
+ *
+ * Looks up the preloaded `FMOD::Sound*` for `id` in `soundMap` and starts playback
+ * routed to the SFX channel group. The created FMOD channel is stored in an
+ * `AudioInstance` and an `AudioInstanceID` is returned.
+ *
+ * Behavior:
+ * - If the resource is not found the function logs an error and returns 0.
+ * - If FMOD fails to start playback the function logs an error and returns 0.
+ * - The new instance is created with `isPlaying = true` and its volume initialized
+ *   from the current `sfxVolume`.
+ *
+ * Notes:
+ * - This function is intended for simple, fire-and-forget SFX playback. For more
+ *   controlled playback (looping, persistence, callbacks) prefer `createAudioInstance`.
+ *
+ * @param id ResourceID of the audio asset to play as SFX.
+ * @return AudioInstanceID ID of the created audio instance on success, or 0 on failure.
+ */
 AudioInstanceID AudioSystem::playSFX(ResourceID id) {
 	auto it = soundMap.find(id);
 	if (it == soundMap.end()) {
