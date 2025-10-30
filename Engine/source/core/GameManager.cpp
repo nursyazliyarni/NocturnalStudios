@@ -179,10 +179,14 @@ void GameManager::requestScene(const std::string& name) {
     if (scenes.count(name)) currentScene = name;
 }
 
-// Expose a safe key->scene helper if you don’t want Input.cpp touching keyMap directly:
 bool GameManager::switchToSceneForKey(int glfwKey) {
-    return false;
+    if (app != AppState::Playing) return false;   // lock numbers unless Playing
+    auto it = keyMap.find(glfwKey);
+    if (it == keyMap.end()) return false;         // not mapped in JSON
+    requestScene(it->second);
+    return true;
 }
+
 
 void GameManager::handleKeyPress(int key) {
     auto it = keyMap.find(key);
