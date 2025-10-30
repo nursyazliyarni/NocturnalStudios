@@ -126,9 +126,10 @@ int Application::run() {
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-
+    Messaging::MessageBus bus;
 
 	Input      game_input_obj(m_window.handle());
+	game_input_obj.SetMessageBus(&bus);
 	ECS& ecs = ECS::getECS();
 	ResourceManager resourceManager(ecs);
 	AudioSystem audioSystem("AudioSystem", ecs, resourceManager);
@@ -164,6 +165,8 @@ int Application::run() {
 
 	auto scenePaths = resourceManager.getFilePathsForKey<SceneFile>("scenes");
 	if (!scenePaths.empty()) scenePath = scenePaths.front();
+
+    bus.Register(&game_loop_obj);
 
 
 	TextureStore textures;

@@ -32,6 +32,11 @@
 
 #include <imgui.h>
 #include <backends/imgui_impl_glfw.h>
+//#include "../messaging/MessageBus.h"
+//#include "../messaging/InputMessage.h"
+#include "messaging/Message.h"
+#include "messaging/InputMessage.h"
+
 
 #include "input/Input.h"
 #include "core/GameManager.h"
@@ -143,6 +148,13 @@ void Input::keyboard_input_callback(GLFWwindow* window, int key, int scancode, i
 		ImGui_ImplGlfw_KeyCallback(window, key, scancode, action, mods); // let ImGui see it
 
 	if (action == GLFW_PRESS) pressedKeysThisFrame.insert(key);          // Input owns it
+
+	//messaging system//
+	auto* self = static_cast<Input*>(glfwGetWindowUserPointer(window));
+	if (self && self->messageBus) {
+		auto msg = std::make_unique<Messaging::KeyMessage>(key, action);
+		self->messageBus->Broadcast(std::move(msg));
+	}
 }
 
 
@@ -152,6 +164,16 @@ void Input::mouse_input_callback(GLFWwindow* window, int button, int action, int
 		ImGui_ImplGlfw_MouseButtonCallback(window, button, action, mods); // let ImGui see it
 
 	if (action == GLFW_PRESS) pressedMouseThisFrame.insert(button);       // Input owns it
+
+	//messaging system//
+	auto* self = static_cast<Input*>(glfwGetWindowUserPointer(window));
+	if (self && self->messageBus) {
+		double xpos, ypos;
+		glfwGetCursorPos(window, &xpos, &ypos);
+		bool pressed = (action == GLFW_PRESS);
+		auto msg = std::make_unique<Messaging::ClickedMouseMessage>(button, pressed, (float)xpos, (float)ypos);
+		self->messageBus->Broadcast(std::move(msg));
+	}
 }
 
 
