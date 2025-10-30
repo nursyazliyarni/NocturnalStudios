@@ -86,14 +86,6 @@ int Application::run() {
 	glClear(GL_COLOR_BUFFER_BIT);
 	m_window.swap();
 
-	Font uiFont;
-	if (!uiFont.LoadFont("assets/fonts/NanumBrushScript-Regular.ttf", 48)) {
-		std::cerr << "Failed to initialize font!" << std::endl;
-	}
-	else {
-		std::cout << " Font loaded successfully!\n";
-	}
-
 	// set up a simple 2D projection (pixel coords, origin = top-left) for the OS window
 	int currW = wd.width, currH = wd.height;
 	glfwGetFramebufferSize(m_window.handle(), &currW, &currH);
@@ -121,6 +113,7 @@ int Application::run() {
     resourceManager.loadResources("audio");
 	resourceManager.loadResources("shaders");
 	resourceManager.loadResources("textures");
+	resourceManager.loadResources("fonts");
 	resourceManager.loadResources("prefabs");
 	resourceManager.loadResources("scenes");
 
@@ -168,7 +161,8 @@ int Application::run() {
 	//initialise text rendering system
 	Shader textShader(textShaderVertexPath.c_str(), textShaderFragmentPath.c_str());
 
-
+	ResourceID fontID = resourceManager.findResource<Font>("NanumBrushScript-Regular");
+	Font& uiFont = resourceManager.getFont(fontID);
 
 	textShader.user_Shader_program();
 	textShader.SET_uniform_variable("text", 0);
@@ -284,8 +278,10 @@ int Application::run() {
 		m_window.swap();
 	}
 
-
-	uiFont.Cleanup();
+	for (auto& [id, font] : resourceManager.getFonts()) {
+		font.Cleanup();
+	}
+	
 	m_window.destroy();
 	return 0;
 }

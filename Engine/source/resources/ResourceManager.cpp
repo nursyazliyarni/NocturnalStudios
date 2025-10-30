@@ -121,6 +121,14 @@ void ResourceManager::loadResources(std::string const& resourceFilePath) {
 		else if (resourceFilePath == "textures") {
 			loadTexture(stem.string(), path.string());
 		}
+		else if (resourceFilePath == "fonts") {
+			std::string ext = path.extension().string();
+			std::transform(ext.begin(), ext.end(), ext.begin(), [](unsigned char c) 
+				{ return static_cast<char>(std::tolower(c)); });
+			if (ext == ".ttf" || ext == ".otf") {
+				loadFont(stem.string(), path.string(), 48); // default 48px; adjust per project needs
+			}
+		}
 		else if (resourceFilePath == "prefabs") {
 			loadPrefab(stem.string(), path.string());
 		}
@@ -374,6 +382,32 @@ TextureFile& ResourceManager::getTexture(ResourceID id) {
 	return found->second;
 }
 
+Font& ResourceManager::loadFont(const std::string& name, const std::string& filePath, unsigned int pixelSize, ResourceID id) {
+	for (auto& [key, font] : fonts) {
+		if (std::filesystem::path{ font.getFilePath() } == std::filesystem::path{ filePath } &&
+			font.getPixelSize() == pixelSize) {
+			return font;
+		}
+	}
+	if (id == NEW_RESOURCE) id = getNewAssetID();
+
+	auto [it, success] = fonts.try_emplace(id, id, name, filePath, pixelSize);
+	assert(success);
+
+	if (!it->second.LoadFont(filePath, pixelSize)) {
+		logger.error("Failed to load font glyphs for: " + name + " from " + filePath);
+	}
+
+	logger.log("Loaded Font: " + name + " from " + filePath);
+	return it->second;
+}
+
+Font& ResourceManager::getFont(ResourceID id) {
+	auto found = fonts.find(id);
+	assert(found != fonts.end());
+	return found->second;
+}
+
 /**
  * loadPrefab
  *
@@ -599,6 +633,10 @@ std::unordered_map<ResourceID, TextureFile>& ResourceManager::getTextures() {
 	return textureFiles;
 }
 
+std::unordered_map<ResourceID, Font>& ResourceManager::getFonts() {
+	return fonts;
+}
+
 /**
  * getPrefabs
  *
@@ -717,6 +755,11 @@ std::vector<std::string> ResourceManager::getFilePathsForKey(ResourceType type, 
 		break;
 	case TEXTURE:
 		for (auto const& [id, file] : textureFiles) {
+			if (file.getKey() == key) filePaths.push_back(file.getFilePath());
+		}
+		break;
+	case FONT:
+		for (auto const& [id, file] : fonts) {
 			if (file.getKey() == key) filePaths.push_back(file.getFilePath());
 		}
 		break;

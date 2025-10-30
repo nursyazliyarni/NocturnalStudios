@@ -1,5 +1,10 @@
 #include "resources/Font.h"
 
+Font::Font(ResourceID id, const std::string& key, const std::string& filePath, unsigned int pixelSize)
+    : Resource(id, key, filePath), pixelSize(pixelSize) {
+	logger.log("Font resource created: " + key + " from " + filePath);
+}
+
 bool Font::LoadFont(const std::string& fontPath, unsigned int pixelSize) {
     if (FT_Init_FreeType(&ft)) {
         std::cerr << "ERROR: Could not initialize FreeType Library!" << std::endl;
@@ -10,6 +15,8 @@ bool Font::LoadFont(const std::string& fontPath, unsigned int pixelSize) {
         std::cerr << "ERROR: Failed to load font: " << fontPath << std::endl;
         return false;
     }
+
+    this->pixelSize = pixelSize;
 
     FT_Set_Pixel_Sizes(face, 0, pixelSize);
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
@@ -59,7 +66,8 @@ bool Font::LoadFont(const std::string& fontPath, unsigned int pixelSize) {
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 
-    std::cout << "Font loaded successfully: " << face->family_name << std::endl;
+	logger.log("Font loaded: " + key + " from " + fontPath + " at size " + std::to_string(pixelSize) + "px");
+    //std::cout << "Font loaded successfully: " << face->family_name << " (" << pixelSize << "px)\n";
     return true;
 }
 
@@ -89,7 +97,6 @@ void Font::RenderText(Shader& shader, const std::string& text, float x, float y,
             { xpos + w, ypos + h,   1.0f, 0.0f }
         };
 
-
         glBindTexture(GL_TEXTURE_2D, ch.TextureID);
         glBindBuffer(GL_ARRAY_BUFFER, VBO);
         glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
@@ -110,6 +117,7 @@ void Font::Cleanup() {
         FT_Done_FreeType(ft);
         ft = nullptr;
     }
+    // Note: If needed, delete Character textures here to avoid leaks.
 }
 
 Font::~Font() {
