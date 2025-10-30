@@ -1,3 +1,4 @@
+//gsm.h
 #pragma once
 #include <string>
 #include <unordered_map>
@@ -5,9 +6,12 @@
 #include <optional>
 #include "graphics/Renderer.h"
 
+
+class ECS;
+
 struct DrawItem {
     GLuint tex = 0;         // GL texture id
-    float x=0, y=0, w=0, h=0, angle=0; // normalized
+    float x = 0, y = 0, w = 0, h = 0, angle = 0; // normalized
 };
 
 struct ClickRegion {
@@ -43,15 +47,32 @@ public:
     bool handleClick(float nx, float ny);  // mouse click in normalized coords
     bool popQuitRequested();               // returns & clears quit flag
 
+    enum class AppState { Menu, Playing, Paused };
 
+    bool isPlaying() const { return app == AppState::Playing; }
+    bool isPaused()  const { return app == AppState::Paused; }
+
+    void startGame();
+    void goToMenu();
+    // (optional) void pause(); void resume();
+
+    // Expose a safe key->scene helper if you don’t want Input.cpp touching keyMap directly:
+    bool switchToSceneForKey(int glfwKey);
+
+    void setECS(ECS* e) { ecs_ = e; }
 
 
 private:
     std::unordered_map<std::string, Scene> scenes;
-    std::unordered_map<int, std::string> keyMap; // GLFW_KEY_* -> scene name
-    std::string backKey = "MainMenu";
+    std::unordered_map<int, std::string> keyMap; // GLFW_KEY_* to scene name
+    //std::string backKey = "MainMenu";
+    //std::string currentScene;
+
+    AppState app{ AppState::Menu };                              // current mode
+    std::string backKey;                                         // ESC destination (from JSON)
+    bool requestedQuit{ false };                                  // quit flag
     std::string currentScene;
 
-    bool requestedQuit = false;            // set by a button with "quit": true
+    ECS* ecs_ = nullptr;
 
 };

@@ -5,6 +5,10 @@
 #include <sstream>
 #include <GLFW/glfw3.h>
 
+#include "ECS/ECS_Component.h"
+#include "ECS/ECS.h"
+
+
 //  TextureStore 
 static GLuint loadGLTexture(const std::string& path) {
     int w, h, n;
@@ -55,6 +59,9 @@ struct PrefabDef { float w = 0.2f, h = 0.2f, angle = 0.0f; };
 
 //  GameManager 
 bool GameManager::load(const char* prefabsPath, const char* scenesPath, TextureStore& tex) {
+
+    app = AppState::Menu;   // lock number keys until Play is pressed
+    requestedQuit = false;  // (optional) clear quit flag at load
 
     //  1) read prefab defaults (w,h,angle) 
     std::unordered_map<std::string, PrefabDef> prefabDefaults;
@@ -149,6 +156,7 @@ bool GameManager::load(const char* prefabsPath, const char* scenesPath, TextureS
                     }
                 }
 
+
                 sc.items.push_back(di);
 
                 // clickable?
@@ -183,14 +191,50 @@ void GameManager::render(Renderer& r, int w, int h) const {
     if (it == scenes.end()) return;
     const Scene& sc = it->second;
 
-    // background (fullscreen) — NOTE uniform must be "bg_texture"
+    // background (fullscreen) ï¿½ NOTE uniform must be "bg_texture"
     r.background_render(sc.background, "bg_texture");
+
+
+    // Example snippet you can drop right AFTER your existing textured background draw:
+    //auto view = ecs.view<Transform, ImageRenderer>();  // however your ECS exposes views
+    //for (auto [ent, t, img] : view) {
+    //    if (!img.isVisible) continue;
+    //    float px = t.position.x * w;
+    //    float py = t.position.y * h;
+    //    float pw = t.scale.x * w;
+    //    float ph = t.scale.y * h;
+    //    r.texturedTri(img.textureID, px, py, pw, ph); // same call you use for JSON entities
+    //}
+
+    if (ecs_) {
+        constexpr EntityID MAX_SCAN = 5000;
+        for (EntityID e = 0; e < MAX_SCAN; ++e) {
+            if (auto* t = ecs_->getComponent<Transform>(e)) {
+                if (auto* img = ecs_->getComponent<ImageRenderer>(e)) {
+                    if (!img->isVisible) continue;
+                    if (img->textureID <= 0) continue;  // << guard: skip ï¿½white boxï¿½ draws
+
+                    float px = t->position.x() * w;
+                    float py = t->position.y() * h;
+                    float pw = t->scale.x() * w;
+                    float ph = t->scale.y() * h;
+
+                    r.texturedTri(img->textureID, px, py, pw, ph);
+                }
+            }
+        }
+    }
+
+
+
 
     // entities (normalized ? pixels)
     for (const auto& di : sc.items) {
+        if (di.tex == 0) continue;  // skip if background/entity texture didnï¿½t load
         float px = di.x * w, py = di.y * h, pw = di.w * w, ph = di.h * h;
         r.texturedTri(di.tex, px, py, pw, ph);
     }
+
 }
 
 bool GameManager::handleClick(float nx, float ny) {
@@ -202,6 +246,9 @@ bool GameManager::handleClick(float nx, float ny) {
         if (nx >= cr.x && nx <= cr.x + cr.w && ny >= cr.y && ny <= cr.y + cr.h) {
             if (cr.quit) {
                 requestedQuit = true;
+            }
+            if (app == AppState::Menu) {
+                startGame();                 // unlock 1..9 only after Play was clicked
             }
             else if (!cr.gotoScene.empty()) {
                 requestScene(cr.gotoScene);
@@ -217,3 +264,4 @@ bool GameManager::popQuitRequested() {
     requestedQuit = false;
     return q;
 }
+

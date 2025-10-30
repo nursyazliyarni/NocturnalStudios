@@ -1,87 +1,37 @@
-
-#include "./ECS/ECS.h"
-#include <map>
-
 #pragma once
-#include <map>
-#include <memory>
-#include <string>
-#include <unordered_map>
-#include "rapidjson/document.h"
 
-#pragma once
-#include <map>
-#include <memory>
-#include <string>
 #include <unordered_map>
-#include <iostream>
-#include "rapidjson/document.h"
-#include "ecs/ECS_DEF.h"
-
-#pragma once
-#include <map>
-#include <memory>
 #include <string>
-#include <unordered_map>
-#include <iostream>
+#include <memory>
 #include "rapidjson/document.h"
-#include "ECS/ECS_DEF.h"
+#include "ECS/ECS_DEF.h"   // only POD types + EntityID here. No ECS.h in headers.
 
-// Forward declarations
-class BaseComponentPool;
-class GameObject;
+// Forward declarations only (keep header light)
 class ECS;
 
-
-
 class PrefabManager {
-private:
-    std::unordered_map<std::string, rapidjson::Document> prefab_map;
-    struct placeholderformove {
-        int id{};
-    };
-    std::vector<placeholderformove> scenes{};
-    ECS& entity_component_based_system;
-
 public:
-    PrefabManager(ECS& ecs);
+    explicit PrefabManager(ECS& ecs);
     ~PrefabManager() = default;
 
-    void Load_Prefab(const std::string& filename_path);
+    // Load one JSON file containing either:
+    //  A) { "prefabs": { "<name>": { "components":[...], "defaults":{...} } } }
+    //  or
+    //  B) [ { "name":"...", "components":[...] }, ... ]
+    void     Load_Prefab(const std::string& filename_path);
+
+    // Create entity from prefab by name
     EntityID Instantiate(const std::string& prefab_name, const std::string& entity_name = "");
+    // Create (or reuse) a specific id if your ECS supports it
     EntityID Instantiate(const std::string& prefab_name, EntityID specific_id);
 
-    void LoadScenes();
-
-    SceneID ResolveSceneKey(int idx) const;
-
-    void SetScenesJsonPath(const std::string& path);
-
-    // Helper function to check if a prefab exists
-    bool PrefabExists(const std::string& prefab_name) const {
-        for (const auto& current_pair : prefab_map) {
-            const rapidjson::Document& current_document = current_pair.second;
-            if (current_document.HasMember("prefabs") && current_document["prefabs"].IsObject()) {
-                if (current_document["prefabs"].HasMember(prefab_name.c_str())) {
-                    return true;
-                }
-            }
-            if (current_document.IsArray()) {
-                const auto& document_array = current_document.GetArray();
-                for (const auto& array_item : document_array) {
-                    if (array_item.HasMember("name") && array_item["name"].IsString()) {
-                        std::string item_name = array_item["name"].GetString();
-                        if (item_name == prefab_name) {
-                            return true;
-                        }
-                    }
-                }
-            }
-        }
-        return false;
-    }
+    bool PrefabExists(const std::string& prefab_name) const;
 
 private:
     void ApplyComponentDefaults(EntityID entity, const rapidjson::Value& defaults);
     void AddComponentFromJSON(EntityID entity, const rapidjson::Value& component_json);
+
+private:
+    std::unordered_map<std::string, rapidjson::Document> prefab_map;
+    ECS& entity_component_based_system;
 };
