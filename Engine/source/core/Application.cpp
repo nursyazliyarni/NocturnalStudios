@@ -40,7 +40,7 @@
 #include "physics/AABB.h"
 #include "ECS/ECS.h"
 #include "resources/ResourceManager.h"
-#include <core/GameManager.h>
+#include "core/GameManager.h"
 #include "scene/Prefab.h"
 
 namespace {
@@ -139,7 +139,7 @@ int Application::run() {
 
 
 	TextureStore textures;
-	GameManager gsm;
+	GameManager gsm(ecs);
 	gsm.load(prefabPath.c_str(), scenePath.c_str(), textures);
 	Renderer   renderer(vertexPath.c_str(), fragmentPath.c_str());
    
