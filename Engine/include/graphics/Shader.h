@@ -67,6 +67,8 @@ public:
 	void SET_arr_uniform_variable(const GLchar * uniform_VARNAME, GLsizei num_value,
 		const GLint * uniform_value_arr, arr_num_component num_component);
 
+	void SET_uniform_variable(const GLchar* uniform_VARNAME, GLfloat v1, GLfloat v2, GLfloat v3);
+
 private:
 	//private member functions here
 	void Compile_Shaders(const char* vertex_Code, const char* fragment_Code);

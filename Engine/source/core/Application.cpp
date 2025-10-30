@@ -33,6 +33,7 @@
 #include "core/Config.h"
 #include <GLFW/glfw3.h>            // glViewport/glClearColor/glClear
 #include <cmath>                   // cosf, sinf
+#include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/constants.hpp>   // glm::pi<float>()
 #include <chrono>
 #include "math/Vector.h"
@@ -42,6 +43,7 @@
 #include "resources/ResourceManager.h"
 #include "core/GameManager.h"
 #include "scene/Prefab.h"
+#include "resources/Font.h"
 
 namespace {
 	constexpr float TWO_PI = 2.0f * glm::pi<float>();
@@ -81,6 +83,32 @@ int Application::run() {
 	glClearColor(0.06f, 0.06f, 0.07f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
 	m_window.swap();
+
+	//initialise text rendering system
+	Shader textShader("assets/shaders/text.vert", "assets/shaders/text.frag");
+
+	Font uiFont;
+	if (!uiFont.LoadFont("assets/fonts/NanumBrushScript-Regular.ttf", 48)) {
+		std::cerr << "Failed to initialize font!" << std::endl;
+	}
+	else {
+		std::cout << " Font loaded successfully!\n";
+	}
+
+	// Make sure your text shader uses texture unit 0
+	textShader.user_Shader_program();
+	textShader.SET_uniform_variable("text", 0);
+
+
+	glm::mat4 projection = glm::ortho(
+		0.0f, static_cast<float>(wd.width),
+		0.0f, static_cast<float>(wd.height)
+	);
+	textShader.user_Shader_program();
+	glUniformMatrix4fv(
+		glGetUniformLocation(textShader.get_programID(), "projection"),
+		1, GL_FALSE, &projection[0][0]
+	);
 
 
 	// set up a simple 2D projection (pixel coords, origin = top-left) for the OS window
@@ -189,6 +217,22 @@ int Application::run() {
 		// Build and render all ImGui windows (Viewport + overlays)
 		Gui::updateImGuiManager(dt, imGuiManager);
 
+		//render text overlay
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glViewport(0, 0, fbw, fbh);
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+		// Draw your text last (so it's on top)
+		uiFont.RenderText(
+			textShader,
+			"Nocturnal Studio Engine",
+			25.0f, wd.height - 50.0f, // Move near top
+			1.0f,
+			glm::vec3(1.0f, 0.0f, 0.2f)
+		);
+
+
 
 		// Application.cpp 
 		if (game_input_obj.WasMousePressed(GLFW_MOUSE_BUTTON_LEFT)) {
@@ -222,7 +266,7 @@ int Application::run() {
 	}
 
 
-
+	uiFont.Cleanup();
 	m_window.destroy();
 	return 0;
 }
