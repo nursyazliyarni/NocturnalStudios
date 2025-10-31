@@ -1,66 +1,47 @@
-//prefab.h
-#include "./scene/GameObject.h"
-#include <map>
-#include <unordered_map> 
+#pragma once
 
-//is this ok??????????????????????????????????
-//std::map<std::string, std::unique_ptr<GameObject>> PREFAB_LIST;
+#include <unordered_map>
+#include <string>
+#include <memory>
+#include "rapidjson/document.h"
+#include "ECS/ECS_DEF.h"   // only POD types + EntityID here. No ECS.h in headers.
 
-//prefab parses game objects from a json folder
-//which is then accessed by the Factory when making game scenes
-//shld be made static
-
-struct SpriteArchetype {
-	int texId{ 0 };
-	//float w{ 0.12f }, h{ 0.18f }; // default normalized size
-	float w{ 0.f }, h{ 0.f };   // set by JSON; 0.f means “not specified”
-	bool  draggable{ true };  // from JSON (items true, animals false)
-	bool rotatable = false;	
-	bool scalable = false;
-	bool movable = false;
-};
-
+// Forward declarations only (keep header light)
+class ECS;
 
 class PrefabManager {
-private:
-
-	std::map<std::string, std::unique_ptr<GameObject>> list;
-	std::unordered_map<std::string, SpriteArchetype> sprites;
-
 public:
-	PrefabManager(std::string filename = "assets/prefabs/GameObj.json");
-	~PrefabManager(); // Added destructor
+    explicit PrefabManager(ECS& ecs);
+    ~PrefabManager() = default;
 
-	const GameObject* operator[](const char* key)const;
+    // Load one JSON file containing either:
+    //  A) { "prefabs": { "<name>": { "components":[...], "defaults":{...} } } }
+    //  or
+    //  B) [ { "name":"...", "components":[...] }, ... ]
+    void     Load_Prefab(const std::string& filename_path);
 
+    // Create entity from prefab by name
+    EntityID Instantiate(const std::string& prefab_name, const std::string& entity_name = "");
+    // Create (or reuse) a specific id if your ECS supports it
+    EntityID Instantiate(const std::string& prefab_name, EntityID specific_id);
 
-	void registerSprite(const std::string& name, const SpriteArchetype& a) {
-		sprites[name] = a;
-	}
-	const SpriteArchetype* getSprite(const std::string& name) const {
-		auto it = sprites.find(name);
-		return (it == sprites.end()) ? nullptr : &it->second;
-	}
+    bool PrefabExists(const std::string& prefab_name) const;
 
-	// Load sprite archetypes (Food/Drink/Toy/Flamingo/...) from JSON.
-// Resolves "tag" to texId using the provided tag to  index map.
-	bool loadSpriteArchetypes(
-		const std::string& filename,
-		const std::unordered_map<std::string, size_t>& texTagToIndex);
+    void LoadScenes();
 
-	// Iterate all sprite archetypes (name + data)
-// (header-only helper used by Application.cpp to build a draggable set)
-	template<typename F>
-	void forEachSprite(F&& fn) const {
-		for (const auto& kv : sprites) fn(kv.first, kv.second);
-	}
+    SceneID ResolveSceneKey(int idx) const;
 
-	// Return reference to all sprite archetypes (used for prefab-driven rotation)
-	const std::unordered_map<std::string, SpriteArchetype>& getAllSprites() const {
-		return sprites;
-	}
+    void SetScenesJsonPath(const std::string& path);
 
+private:
+    void ApplyComponentDefaults(EntityID entity, const rapidjson::Value& defaults);
+    void AddComponentFromJSON(EntityID entity, const rapidjson::Value& component_json);
 
+private:
+    struct placeholderformove {
+        int id{};
+    };
+    std::vector<placeholderformove> scenes{};
+    std::unordered_map<std::string, rapidjson::Document> prefab_map;
+    ECS& entity_component_based_system;
 };
-
-void RegisterAllComponents();

@@ -26,8 +26,6 @@
 namespace {
     constexpr float TWO_PI = 2.0f * glm::pi<float>();
 
-    constexpr float DEG2RAD = glm::pi<float>() / 180.0f;
-
     // helper used only inside this file: filled circle via triangle fan
     inline void filledCircle(float cx, float cy, float r, int segments = 64) {
         glBegin(GL_TRIANGLE_FAN);
@@ -41,6 +39,9 @@ namespace {
 }
 
 Renderer::Renderer(const char* vertex_path, const char* fragment_path):render_shader(vertex_path,fragment_path) {
+	logger.log("vertex shader path: " + std::string(vertex_path));
+	logger.log("fragment shader path: " + std::string(fragment_path));
+
     //vertex position->where to render on screen(-1.0 to +1.0)
     //texture UV->how to render texture(0.0 to 1.0)
     float vertices[] = {
@@ -309,8 +310,7 @@ void Renderer::drawAllSprites(Texture& tex,
     bool behindPass,
     int viewportW, int viewportH)
 {
-    drawAllSprites(tex, frontIdxs, behindPass, /*scales*/ nullptr, /*
-        ions*/ nullptr, viewportW, viewportH);
+    drawAllSprites(tex, frontIdxs, behindPass, /*scales*/ nullptr, /*rotations*/ nullptr, viewportW, viewportH);
 }
 
 void Renderer::initAllSprites() {
@@ -336,82 +336,98 @@ void Renderer::drawAllSprites(Texture& tex,
 
     const size_t texCount = tex.get_totalTexture(); // includes bg at index 0
 
-    for (int i = 0; i < sprite_vector.size(); ++i) {
+    for (int i = 0; i<sprite_vector.size(); ++i) {
         bool isFront = std::find(frontIdxs.begin(), frontIdxs.end(), sprite_vector[i].idx) != frontIdxs.end();
 
         // pass filter
         if (behindPass && isFront)   continue; // behind pass: skip all �front� sprites
         if (!behindPass && !isFront) continue; // front pass: draw ONLY �front� sprites
-        //float s = 1.0f;// SCALING
-        //float angle = 0.0f;// ROTATION 
+        float s = 1.0f;// SCALING
+        float angle = 0.0f;// ROTATION 
 
-        // SCALING (default 1.0 if no array)
-       // SCALING (default 1.0 if no array)
-        float s = 1.0f;
-        if (scales) {
-            int tIdx = sprite_vector[i].idx;
-            s = (tIdx >= 0) ? scales[tIdx] : 1.0f;
-            if (s <= 0.0f) s = 1.0f;
-        }
-
-        // ROTATION in degrees (sprite default, can be overridden by per-texture array)
-        float angleDeg = sprite_vector[i].angle;
-        if (rotations) {
-            int tIdx = sprite_vector[i].idx;
-            if (tIdx >= 0) angleDeg = rotations[tIdx];
-        }
-
-        // Convert normalized to pixels (apply scale in pixel space)
+        // Convert normalized to pixels
         float x = sprite_vector[i].x * viewportW;
         float y = sprite_vector[i].y * viewportH;
         float w = sprite_vector[i].w * viewportW * s;
         float h = sprite_vector[i].h * viewportH * s;
 
-        // Center AFTER scaling
+        // Find center
         float cx = x + w * 0.5f;
         float cy = y + h * 0.5f;
 
-        // radians once, from file-scope DEG2RAD
-        float rad = angleDeg * DEG2RAD;
-        float cosA = std::cos(rad);
-        float sinA = std::sin(rad);
+        // Compute rotated corners
+        float cosA = std::cos(sprite_vector[i].angle);
+        float sinA = std::sin(sprite_vector[i].angle);
 
-        // corners (TL, TR, BR, BL) -> rotate around (cx,cy)
+        // Helper to rotate each corner
         float x0, y0, x1, y1, x2, y2, x3, y3;
-        // TL
-        float dx = x - cx;      float dy = y - cy;
-        x0 = cx + dx * cosA - dy * sinA;  y0 = cy + dx * sinA + dy * cosA;
-        // TR
-        dx = (x + w) - cx;      dy = y - cy;
-        x1 = cx + dx * cosA - dy * sinA;  y1 = cy + dx * sinA + dy * cosA;
-        // BR
-        dx = (x + w) - cx;      dy = (y + h) - cy;
-        x2 = cx + dx * cosA - dy * sinA;  y2 = cy + dx * sinA + dy * cosA;
-        // BL
-        dx = x - cx;            dy = (y + h) - cy;
-        x3 = cx + dx * cosA - dy * sinA;  y3 = cy + dx * sinA + dy * cosA;
 
-        // draw (same UVs regardless of rotation)
-        int texIdx = sprite_vector[i].idx;
-        if (texIdx >= 0 && (size_t)texIdx < tex.get_totalTexture()) {
-            GLuint t = tex.get_textureID((size_t)texIdx);
-            glEnable(GL_TEXTURE_2D);
-            glBindTexture(GL_TEXTURE_2D, t);
+        // top-left
+        float dx = x - cx;
+        float dy = y - cy;
+        x0 = cx + dx * cosA - dy * sinA;
+        y0 = cy + dx * sinA + dy * cosA;
 
-            glBegin(GL_TRIANGLES);
-            // tri 1: TL, TR, BR
-            glTexCoord2f(0.f, 0.f); glVertex2f(x0, y0);
-            glTexCoord2f(1.f, 0.f); glVertex2f(x1, y1);
-            glTexCoord2f(1.f, 1.f); glVertex2f(x2, y2);
-            // tri 2: TL, BR, BL
-            glTexCoord2f(0.f, 0.f); glVertex2f(x0, y0);
-            glTexCoord2f(1.f, 1.f); glVertex2f(x2, y2);
-            glTexCoord2f(0.f, 1.f); glVertex2f(x3, y3);
-            glEnd();
+        // top-right
+        dx = (x + w) - cx;
+        dy = y - cy;
+        x1 = cx + dx * cosA - dy * sinA;
+        y1 = cy + dx * sinA + dy * cosA;
 
-            glBindTexture(GL_TEXTURE_2D, 0);
-            glDisable(GL_TEXTURE_2D);
-        }
+        // bottom-right
+        dx = (x + w) - cx;
+        dy = (y + h) - cy;
+        x2 = cx + dx * cosA - dy * sinA;
+        y2 = cy + dx * sinA + dy * cosA;
+
+        // bottom-left
+        dx = x - cx;
+        dy = (y + h) - cy;
+        x3 = cx + dx * cosA - dy * sinA;
+        y3 = cy + dx * sinA + dy * cosA;
+
+        GLuint t = tex.get_textureID((size_t)sprite_vector[i].idx);
+
+        glEnable(GL_TEXTURE_2D);
+        glBindTexture(GL_TEXTURE_2D, t);
+
+        //// two triangles 
+        //glBegin(GL_TRIANGLES);
+        //// tri 1
+        //glTexCoord2f(0.f, 0.f); glVertex2f(x, y);
+        //glTexCoord2f(1.f, 0.f); glVertex2f(x + w, y);
+        //glTexCoord2f(1.f, 1.f); glVertex2f(x + w, y + h);
+        //// tri 2
+        //glTexCoord2f(0.f, 0.f); glVertex2f(x, y);
+        //glTexCoord2f(1.f, 1.f); glVertex2f(x + w, y + h);
+        //glTexCoord2f(0.f, 1.f); glVertex2f(x, y + h);
+        //glEnd();
+
+        // two triangles using rotated corners
+        glBegin(GL_TRIANGLES);
+        //// tri 1
+        //glTexCoord2f(0.f, 0.f); glVertex2f(sprite_vector[i].x, sprite_vector[i].y);
+        //glTexCoord2f(1.f, 0.f); glVertex2f(sprite_vector[i].x + sprite_vector[i].w, sprite_vector[i].y);
+        //glTexCoord2f(1.f, 1.f); glVertex2f(sprite_vector[i].x + sprite_vector[i].w, sprite_vector[i].y + sprite_vector[i].h);
+
+        //// tri 2
+        //glTexCoord2f(0.f, 0.f); glVertex2f(x0, y0);
+        //glTexCoord2f(1.f, 1.f); glVertex2f(x2, y2);
+        //glTexCoord2f(0.f, 1.f); glVertex2f(x3, y3);
+        //glEnd();
+
+        // tri 1
+        glTexCoord2f(0.f, 0.f); glVertex2f(x0, y0);
+        glTexCoord2f(1.f, 0.f); glVertex2f(x1, y1);
+        glTexCoord2f(1.f, 1.f); glVertex2f(x2, y2);
+        // tri 2
+        glTexCoord2f(0.f, 0.f); glVertex2f(x0, y0);
+        glTexCoord2f(1.f, 1.f); glVertex2f(x2, y2);
+        glTexCoord2f(0.f, 1.f); glVertex2f(x3, y3);
+        glEnd();
+
+        glBindTexture(GL_TEXTURE_2D, 0);
+        glDisable(GL_TEXTURE_2D);
     }
 }
 
