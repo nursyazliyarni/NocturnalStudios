@@ -8,6 +8,8 @@
 #include "ECS/ECS_Component.h"
 #include "ECS/ECS.h"
 
+#include "graphics/Camera2D.h"
+    
 
 //  TextureStore 
 static GLuint loadGLTexture(const std::string& path) {
@@ -156,6 +158,9 @@ bool GameManager::load(const char* prefabsPath, const char* scenesPath, TextureS
                     }
                 }
 
+                if (e.HasMember("name") && e["name"].IsString())
+                    di.name = e["name"].GetString();
+
 
                 sc.items.push_back(di);
 
@@ -179,10 +184,14 @@ void GameManager::requestScene(const std::string& name) {
     if (scenes.count(name)) currentScene = name;
 }
 
-// Expose a safe key->scene helper if you don’t want Input.cpp touching keyMap directly:
 bool GameManager::switchToSceneForKey(int glfwKey) {
-    return false;
+    if (app != AppState::Playing) return false;   // lock numbers unless Playing
+    auto it = keyMap.find(glfwKey);
+    if (it == keyMap.end()) return false;         // not mapped in JSON
+    requestScene(it->second);
+    return true;
 }
+
 
 void GameManager::handleKeyPress(int key) {
     auto it = keyMap.find(key);
@@ -197,7 +206,11 @@ void GameManager::render(Renderer& r, int w, int h) const {
     const Scene& sc = it->second;
 
     // background (fullscreen) � NOTE uniform must be "bg_texture"
-    r.background_render(sc.background, "bg_texture");
+    //r.background_render(sc.background, "bg_texture");
+    // Draw background as a regular textured quad and apply camera to it too
+    float bx = 0.0f, by = 0.0f, bw = float(w), bh = float(h);
+    Cam2D_Apply(currentScene, bx, by, bw, bh, w, h);
+    r.texturedTri(sc.background, bx, by, bw, bh);
 
 
     // Example snippet you can drop right AFTER your existing textured background draw:
@@ -219,10 +232,18 @@ void GameManager::render(Renderer& r, int w, int h) const {
                     if (!img->isVisible) continue;
                     if (img->textureID <= 0) continue;  // << guard: skip �white box� draws
 
+                    /*float px = t->position.x() * w;
+                    float py = t->position.y() * h;
+                    float pw = t->scale.x() * w;
+                    float ph = t->scale.y() * h;*/
+
                     float px = t->position.x() * w;
                     float py = t->position.y() * h;
                     float pw = t->scale.x() * w;
                     float ph = t->scale.y() * h;
+
+                    Cam2D_Apply(currentScene, px, py, pw, ph, w, h);
+
 
                     r.texturedTri(img->textureID, px, py, pw, ph);
                 }
@@ -237,7 +258,11 @@ void GameManager::render(Renderer& r, int w, int h) const {
     for (const auto& di : sc.items) {
         if (di.tex == 0) continue;  // skip if background/entity texture didn�t load
         float px = di.x * w, py = di.y * h, pw = di.w * w, ph = di.h * h;
+
+        Cam2D_Apply(currentScene, px, py, pw, ph, w, h);
+
         r.texturedTri(di.tex, px, py, pw, ph);
+
     }
 
 }
@@ -264,10 +289,11 @@ bool GameManager::handleClick(float nx, float ny) {
     return false;
 }
 void GameManager::startGame() {
-
+    app = AppState::Playing;
 }
-void GameManager::goToMenu() {
 
+void GameManager::goToMenu() {
+    app = AppState::Menu;
 }
 bool GameManager::popQuitRequested() {
     bool q = requestedQuit;

@@ -51,6 +51,9 @@ public:
 	TextureFile& loadTexture(const std::string& name, const std::string& filePath, ResourceID id = NEW_RESOURCE);
 	TextureFile& getTexture(ResourceID id);
 
+	Font& loadFont(const std::string& name, const std::string& filePath, unsigned int pixelSize, ResourceID id = NEW_RESOURCE);
+	Font& getFont(ResourceID id);
+
 	PrefabFile& loadPrefab(const std::string& name, const std::string& filePath, ResourceID id = NEW_RESOURCE);
 	PrefabFile& getPrefab(ResourceID id);
 
@@ -62,6 +65,7 @@ public:
 	std::unordered_map<ResourceID, Audio>& getAudios();
 	std::unordered_map<ResourceID, ShaderFile>& getShaders();
 	std::unordered_map<ResourceID, TextureFile>& getTextures();
+	std::unordered_map<ResourceID, Font>& getFonts();
 	std::unordered_map<ResourceID, PrefabFile>& getPrefabs();
 	std::unordered_map<ResourceID, SceneFile>& getScenes();
 	const std::unordered_map<ResourceID, SceneFile>& getScenes() const;
@@ -93,6 +97,7 @@ private:
 	std::unordered_map<ResourceID, Audio> audios;
 	std::unordered_map<ResourceID, ShaderFile> shaderFiles;
 	std::unordered_map<ResourceID, TextureFile> textureFiles;
+	std::unordered_map<ResourceID, Font> fonts;
 	std::unordered_map<ResourceID, PrefabFile> prefabFiles;
 	std::unordered_map<ResourceID, SceneFile> sceneFiles;
 
@@ -109,6 +114,7 @@ private:
  *  - `Audio`
  *  - `ShaderFile`
  *  - `TextureFile`
+ *  - `Font`
  *  - `PrefabFile`
  *  - `SceneFile`
  *
@@ -148,6 +154,13 @@ ResourceID ResourceManager::findResource(const std::string& ResourceName) {
 			return pair.second.getKey() == ResourceName;
 			});
 		if (it == textureFiles.end()) return NO_RESOURCE_ID;
+		return it->first;
+	}
+	else if constexpr (std::same_as<T, Font>) {
+		auto it = std::find_if(fonts.begin(), fonts.end(), [&](std::pair<const ResourceID, Font> const& pair) {
+			return pair.second.getKey() == ResourceName;
+			});
+		if (it == fonts.end()) return NO_RESOURCE_ID;
 		return it->first;
 	}
 	else if constexpr (std::same_as<T, PrefabFile>) {
@@ -207,6 +220,9 @@ void ResourceManager::getResourceMetaData(ResourceType resourceType, ResourceID 
 	case TEXTURE:
 		callback(getTexture(id), getTextures());
 		break;
+	case FONT:
+		callback(getFont(id), getFonts());
+		break;
 	case PREFAB:
 		callback(getPrefab(id), getPrefabs());
 		break;
@@ -257,6 +273,13 @@ std::pair<std::string, std::string> ResourceManager::getName(ResourceID id) {
 		}
 		return { "TextureFile",textureFiles.at(id).getKey() };
 	}
+	else if constexpr (std::same_as<T, Font>) {
+		auto it = fonts.find(id);
+		if (it == fonts.end()) {
+			return { "Font", "Default" };
+		}
+		return { "Font",fonts.at(id).getKey() };
+	}
 	else if constexpr (std::same_as<T, PrefabFile>) {
 		auto it = prefabFiles.find(id);
 		if (it == prefabFiles.end()) {
@@ -289,6 +312,7 @@ std::pair<std::string, std::string> ResourceManager::getName(ResourceID id) {
  *  - `Audio`
  *  - `ShaderFile`
  *  - `TextureFile`
+ *  - `Font`
  *  - `PrefabFile`
  *  - `SceneFile`
  *
@@ -321,6 +345,11 @@ std::vector<std::string> ResourceManager::getFilePathsForKey(const std::string& 
 	}
 	else if constexpr (std::same_as<T, TextureFile>) {
 		for (auto const& [id, file] : textureFiles) {
+			if (file.getKey() == key) filePaths.push_back(file.getFilePath());
+		}
+	}
+	else if constexpr (std::same_as<T, Font>) {
+		for (auto const& [id, file] : fonts) {
 			if (file.getKey() == key) filePaths.push_back(file.getFilePath());
 		}
 	}

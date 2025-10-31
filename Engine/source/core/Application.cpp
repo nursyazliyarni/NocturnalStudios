@@ -28,39 +28,276 @@
 
 	All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
 *------------------------------------------------------------------------------------------------*/
-// init(), run(), shutdown()
+
 #include "core/Application.h"
-#include "core/Config.h"
-#include <GLFW/glfw3.h>            // glViewport/glClearColor/glClear
-#include <cmath>                   // cosf, sinf
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/constants.hpp>   // glm::pi<float>()
-#include <chrono>
-#include "math/Vector.h"
-#include "core/ImGUIManager.h"
-#include "physics/AABB.h"
-#include "ECS/ECS.h"
-#include "resources/ResourceManager.h"
-#include "core/GameManager.h"
-#include "scene/Prefab.h"
-#include "resources/Font.h"
 
 namespace {
 	constexpr float TWO_PI = 2.0f * glm::pi<float>();
 	constexpr int   CIRCLE_SEGMENTS = 64;
 	using Clock = std::chrono::high_resolution_clock;
-}
 
-bool isDragging = false; //is a sprite being dragged
-int draggedSpriteIndex = -1; //index into sprite_vector
-int duplicateIndex = -1; //where clone is in the vector
-Vector2D dragOffset(0.0f, 0.0f); //mouse offset from top-left of sprite
+	bool isDragging = false; //is a sprite being dragged
+	int draggedSpriteIndex = -1; //index into sprite_vector
+	int duplicateIndex = -1; //where clone is in the vector
+	Vector2D dragOffset(0.0f, 0.0f); //mouse offset from top-left of sprite
+}
 
 //Application::Application() = default;
 Application::Application() {
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF); //enable memory leak check at program exit
 }
 
+
+void Application::init() {
+	const GameConfig c = loadConfig("assets/config.json");
+	windowTitle = c.window.title;
+
+	WindowDesc wd;
+	wd.width = c.window.width;
+	wd.height = c.window.height;
+	wd.title = c.window.title;
+	wd.vsync = c.window.vsync;
+
+	if (!m_window.create(wd)) {
+		logger.error("Failed to create window");
+		isInitialized = false;
+		return;
+	}
+
+	glViewport(0, 0, wd.width, wd.height);
+	glDisable(GL_DEPTH_TEST);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glClearColor(0.06f, 0.06f, 0.07f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT);
+	m_window.swap();
+
+	int currW = wd.width, currH = wd.height;
+	glfwGetFramebufferSize(m_window.handle(), &currW, &currH);
+	glViewport(0, 0, currW, currH);
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	glOrtho(0, currW, currH, 0, -1, 1);
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+
+	glDisable(GL_DEPTH_TEST);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	inputSystem = std::make_unique<Input>(m_window.handle());
+	inputSystem->SetMessageBus(&bus);
+
+	ecs = &ECS::getECS();
+	resourceManager = std::make_unique<ResourceManager>(*ecs);
+	audioSystem = std::make_unique<AudioSystem>("AudioSystem", *ecs, *resourceManager);
+	resourceManager->setAudioSystem(audioSystem.get());
+
+	resourceManager->loadResources("audio");
+	resourceManager->loadResources("shaders");
+	resourceManager->loadResources("textures");
+	resourceManager->loadResources("fonts");
+	resourceManager->loadResources("prefabs");
+	resourceManager->loadResources("scenes");
+
+	std::string vertexPath,
+		fragmentPath,
+		prefabPath, prefabTestPath,
+		textShaderVertexPath, textShaderFragmentPath,
+		scenePath;
+
+	auto shaderPath = resourceManager->getFilePathsForKey<ShaderFile>("background");
+	for (auto const& path : shaderPath) {
+		std::filesystem::path p{ path };
+		auto ext = p.extension().string();
+		if (ext == ".vert") vertexPath = p.string();
+		else if (ext == ".frag") fragmentPath = p.string();
+	}
+
+	auto textShaderPaths = resourceManager->getFilePathsForKey<ShaderFile>("text");
+	for (auto const& path : textShaderPaths) {
+		std::filesystem::path p{ path };
+		auto ext = p.extension().string();
+		if (ext == ".vert") textShaderVertexPath = p.string();
+		else if (ext == ".frag") textShaderFragmentPath = p.string();
+	}
+
+	auto prefabPaths = resourceManager->getFilePathsForKey<PrefabFile>("prefabs");
+	if (!prefabPaths.empty()) prefabPath = prefabPaths.front();
+
+	auto testingPrefabPaths = resourceManager->getFilePathsForKey<PrefabFile>("testing_prefabs");
+	if (!testingPrefabPaths.empty()) prefabTestPath = testingPrefabPaths.front();
+
+	auto scenePaths = resourceManager->getFilePathsForKey<SceneFile>("scenes");
+	if (!scenePaths.empty()) scenePath = scenePaths.front();
+
+	gameLoop = std::make_unique<Game_Loop>(m_window.handle());
+	bus.Register(gameLoop.get());
+
+	gsm = std::make_unique<GameManager>(*ecs);
+	gsm->load(prefabPath.c_str(), scenePath.c_str(), textures);
+	renderer = std::make_unique<Renderer>(vertexPath.c_str(), fragmentPath.c_str());
+	textShader = std::make_unique<Shader>(textShaderVertexPath.c_str(), textShaderFragmentPath.c_str());
+
+	{
+		ResourceID fontID = resourceManager->findResource<Font>("NanumBrushScript-Regular");
+		Font& uiFontRef = resourceManager->getFont(fontID);
+		uiFont = &uiFontRef;
+	}
+
+	textShader->user_Shader_program();
+	textShader->SET_uniform_variable("text", 0);
+
+	glm::mat4 projection = glm::ortho(
+		0.0f, static_cast<float>(m_window.desc().width),
+		0.0f, static_cast<float>(m_window.desc().height)
+	);
+	textShader->user_Shader_program();
+	glUniformMatrix4fv(
+		glGetUniformLocation(textShader->get_programID(), "projection"),
+		1, GL_FALSE, &projection[0][0]
+	);
+
+	prefabManager = std::make_unique<PrefabManager>(*ecs);
+	prefabManager->Load_Prefab(prefabTestPath.c_str());
+
+	EntityID animal = prefabManager->Instantiate("animal");
+	EntityID animal_2 = prefabManager->Instantiate("animal");
+	logger.log("Created animal entity with ID: " + std::to_string(animal) + " and " + std::to_string(animal_2));
+
+	Cam2D_Enable("Flamingo", true);
+	Cam2D_SetCenter("Flamingo", 0.10f + 0.26f * 0.5f, 0.44f + 0.50f * 0.5f); // ~ (0.23, 0.69)
+	Cam2D_SetZoom("Flamingo", 1.8f);
+
+	imGuiManager = std::make_unique<ImGuiManager>(
+		m_window, *renderer,
+		*inputSystem, physicsSystem,
+		*audioSystem, *resourceManager,
+		*gsm);
+
+	isInitialized = true;
+}
+
+int Application::run() {
+	if (!isInitialized) {
+		init();
+	}
+
+	if (!isInitialized) {
+		logger.error("Application not initialized. Exiting run().");
+		return -1;
+	}
+
+	while (!m_window.shouldClose()) {
+		m_window.poll();
+
+		double dt = gameLoop->calculate_DT();
+		gameLoop->display_FPS(m_window.handle(), windowTitle, dt);
+		inputSystem->update_mouse_pos(m_window.handle());
+
+		for (int k = GLFW_KEY_1; k <= GLFW_KEY_9; ++k)
+			if (inputSystem->WasPressed(k))
+				gsm->handleKeyPress(k);
+
+		if (inputSystem->WasPressed(GLFW_KEY_ESCAPE))
+			gsm->handleKeyPress(GLFW_KEY_ESCAPE);
+
+		inputSystem->ProcessHotkeys(*gsm);
+
+		int fbw = 0, fbh = 0; glfwGetFramebufferSize(m_window.handle(), &fbw, &fbh);
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glViewport(0, 0, fbw, fbh);
+		glDisable(GL_DEPTH_TEST);
+		glClearColor(0.06f, 0.06f, 0.07f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT);
+
+		Gui::updateImGuiManager(dt, *imGuiManager);
+
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glViewport(0, 0, fbw, fbh);
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+		if (uiFont) {
+			uiFont->RenderText(
+				*textShader,
+				"Nocturnal Studio Engine",
+				25.0f, m_window.desc().height - 50.0f, // Move near top
+				1.0f,
+				glm::vec3(1.0f, 0.0f, 0.2f)
+			);
+		}
+
+		if (inputSystem->WasMousePressed(GLFW_MOUSE_BUTTON_LEFT)) {
+			ImVec2 rmin, rmax;
+
+			imGuiManager->getViewportRectWindow(rmin, rmax);
+
+			Vector2D mp = inputSystem->GET_mouse_pos(false, 0, 0);
+			if (mp.x() >= rmin.x && mp.x() <= rmax.x &&
+				mp.y() >= rmin.y && mp.y() <= rmax.y) {
+				float nx = float((mp.x() - rmin.x) / (rmax.x - rmin.x));
+				float ny = float((mp.y() - rmin.y) / (rmax.y - rmin.y));
+
+				ny = 1.0f - ny;
+				gsm->handleClick(nx, ny);
+			}
+		}
+
+		if (gsm->popQuitRequested()) {
+			glfwSetWindowShouldClose(m_window.handle(), 1);
+		}
+
+		inputSystem->EndFrame();
+		m_window.swap();
+	}
+
+	shutdown();
+	return 0;
+}
+
+void Application::shutdown() {
+	if (resourceManager) {
+		for (auto& [id, font] : resourceManager->getFonts()) {
+			font.Cleanup();
+		}
+	}
+
+	imGuiManager.reset();
+	textShader.reset();
+	renderer.reset();
+	audioSystem.reset();
+	resourceManager.reset();
+	prefabManager.reset();
+	gsm.reset();
+	gameLoop.reset();
+	inputSystem.reset();
+
+	m_window.destroy();
+	isInitialized = false;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#if 0
 int Application::run() {
 	// 1) read JSON (with safe defaults)
 	//const WindowConfig c = Config::LoadWindowConfig("assets/config.json");
@@ -83,37 +320,6 @@ int Application::run() {
 	glClearColor(0.06f, 0.06f, 0.07f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
 	m_window.swap();
-
-	//---------initialise text rendering system----------
-	Shader textShader("assets/shaders/text.vert", "assets/shaders/text.frag");
-	Font uiFont; //first font
-	Font uiFont2; //second font
-	if (!uiFont.LoadFont("assets/fonts/NanumBrushScript-Regular.ttf", 48)) {
-		std::cerr << "Failed to initialize font!" << std::endl;
-	}
-	else {
-		std::cout << " Font loaded successfully!\n";
-	}
-	if (!uiFont2.LoadFont("assets/fonts/PAPYRUS.TTF", 48)) {
-		std::cerr << "Failed to initialize font!" << std::endl;
-	}
-	else {
-		std::cout << " Font loaded successfully!\n";
-	}
-	// Make sure your text shader uses texture unit 0
-	textShader.user_Shader_program();
-	textShader.SET_uniform_variable("text", 0);
-
-	glm::mat4 projection = glm::ortho(
-		0.0f, static_cast<float>(wd.width),
-		0.0f, static_cast<float>(wd.height)
-	);
-	textShader.user_Shader_program();
-	glUniformMatrix4fv(
-		glGetUniformLocation(textShader.get_programID(), "projection"),
-		1, GL_FALSE, &projection[0][0]
-	);
-	//----------end text rendering system init----------
 
 	// set up a simple 2D projection (pixel coords, origin = top-left) for the OS window
 	int currW = wd.width, currH = wd.height;
@@ -142,6 +348,7 @@ int Application::run() {
     resourceManager.loadResources("audio");
 	resourceManager.loadResources("shaders");
 	resourceManager.loadResources("textures");
+	resourceManager.loadResources("fonts");
 	resourceManager.loadResources("prefabs");
 	resourceManager.loadResources("scenes");
 
@@ -151,6 +358,7 @@ int Application::run() {
     std::string vertexPath,
 				fragmentPath,
 				prefabPath, prefabTestPath,
+				textShaderVertexPath, textShaderFragmentPath,
 				scenePath;
 
 	auto shaderPath = resourceManager.getFilePathsForKey<ShaderFile>("background");
@@ -159,6 +367,14 @@ int Application::run() {
 		auto ext = p.extension().string();
 		if (ext == ".vert") vertexPath = p.string();
 		else if (ext == ".frag") fragmentPath = p.string();	
+	}
+
+	auto textShaderPaths = resourceManager.getFilePathsForKey<ShaderFile>("text");
+	for (auto const& path : textShaderPaths) {
+		std::filesystem::path p{ path };
+		auto ext = p.extension().string();
+		if (ext == ".vert") textShaderVertexPath = p.string();
+		else if (ext == ".frag") textShaderFragmentPath = p.string();
 	}
 
 	auto prefabPaths = resourceManager.getFilePathsForKey<PrefabFile>("prefabs");
@@ -172,12 +388,31 @@ int Application::run() {
 
     bus.Register(&game_loop_obj);
 
-
 	TextureStore textures;
 	GameManager gsm(ecs);
 	gsm.load(prefabPath.c_str(), scenePath.c_str(), textures);
 	Renderer   renderer(vertexPath.c_str(), fragmentPath.c_str());
    
+	//initialise text rendering system
+	Shader textShader(textShaderVertexPath.c_str(), textShaderFragmentPath.c_str());
+
+	ResourceID fontID = resourceManager.findResource<Font>("NanumBrushScript-Regular");
+	Font& uiFont = resourceManager.getFont(fontID);
+
+	textShader.user_Shader_program();
+	textShader.SET_uniform_variable("text", 0);
+
+
+	glm::mat4 projection = glm::ortho(
+		0.0f, static_cast<float>(wd.width),
+		0.0f, static_cast<float>(wd.height)
+	);
+	textShader.user_Shader_program();
+	glUniformMatrix4fv(
+		glGetUniformLocation(textShader.get_programID(), "projection"),
+		1, GL_FALSE, &projection[0][0]
+	);
+
 	// Initialize
 	PrefabManager prefabManager(ecs);
 
@@ -188,7 +423,10 @@ int Application::run() {
 	EntityID animal_2 = prefabManager.Instantiate("animal");
 	std::cout << animal << animal_2 << "\n";
 
-
+	// Focus roughly on the flamingo (center near its JSON x/y+w/2,h/2)
+	Cam2D_Enable("Flamingo", true);
+	Cam2D_SetCenter("Flamingo", 0.10f + 0.26f * 0.5f, 0.44f + 0.50f * 0.5f); // ~ (0.23, 0.69)
+	Cam2D_SetZoom("Flamingo", 1.8f);
 
 
 	ImGuiManager imGuiManager(m_window, renderer,
@@ -211,6 +449,9 @@ int Application::run() {
 
 		if (game_input_obj.WasPressed(GLFW_KEY_ESCAPE))
 			gsm.handleKeyPress(GLFW_KEY_ESCAPE);
+
+		// Process per-frame hotkeys (zoom/pan for Flamingo etc.)
+		game_input_obj.ProcessHotkeys(gsm);
 
 
 		// Clear OS window (ImGui draws on top; scene is inside the Viewport FBO)
@@ -279,8 +520,11 @@ int Application::run() {
 		m_window.swap();
 	}
 
-
-	uiFont.Cleanup(); //cleanup font resources
+	for (auto& [id, font] : resourceManager.getFonts()) {
+		font.Cleanup();
+	}
+	
 	m_window.destroy();
 	return 0;
 }
+#endif
