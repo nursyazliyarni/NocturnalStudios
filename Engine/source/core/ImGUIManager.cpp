@@ -15,11 +15,16 @@
 		Rishika Bimal Attodi
 		- Integrated drawAllSprites and drawViewportShapes
 
+	Secondary Author:
+		Nur Syazliyarni 5%
+		- Added the debug drawer that will load under showViewportWindowUI
+
 	All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
 *------------------------------------------------------------------------------------------------*/
 
 #include "../include/core/ImGuiManager.h"
 #include <chrono>
+#include "graphics/DebugDraw.h"
 
 namespace {
 	using Clock = std::chrono::high_resolution_clock;
@@ -243,6 +248,40 @@ void ImGuiManager::showViewportWindowUI() {
 
 	// Draw current SCENE into the FBO
 	gsm.render(renderer, vw, vh);
+
+	// Debugging Drawer //
+	static bool printed = false;
+	if (Debug::Drawer::Instance().IsActive())
+	{
+		//Debug::Drawer::Instance().AddRect(100, 100, 200, 100, 0xFFFF00FF);
+		//Debug::Drawer::Instance().AddCircle(100, 100, 100, 0xFFFF00FF, 32);
+
+
+		if (!printed) {
+			std::cout << "[ImGuiManager] DebugDraw active\n";
+			printed = true;
+		}
+
+		glPushAttrib(GL_ALL_ATTRIB_BITS);               // save all states (color, blend, etc.)
+		glUseProgram(0);
+		glDisable(GL_TEXTURE_2D);
+		glDisable(GL_DEPTH_TEST);
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);      // draw outlines only
+		glMatrixMode(GL_MODELVIEW);
+		glLoadIdentity();
+
+		Debug::Drawer::Instance().Render(Matrix<3>().Identity());
+
+		
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		glPopAttrib();                                  // restore previous OpenGL states
+	}
+	else {
+		printed = false;
+	}
+	// Debugging Drawer //
 
 	renderer.unbindFBO();
 	renderTime = std::chrono::duration<double>(Clock::now() - renderStart).count();
