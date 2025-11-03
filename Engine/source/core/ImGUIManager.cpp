@@ -514,9 +514,44 @@ void ImGuiManager::showTransformUI(/* A reference to a vector of object list obj
 	ImGui::SetNextWindowPos(windowTopRightPos);
 	ImGui::SetNextWindowBgAlpha(0.35f);
 	ImGui::SetNextWindowSize({ width, height });
-	ImGui::Begin("Transform", nullptr, windowFlags);
-	ImGui::Text("Transform Controls");
+	/*ImGui::Begin("Transform", nullptr, windowFlags);
+	ImGui::Text("Transform Controls");*/
 
+	ImGui::Begin("Inspector", nullptr, windowFlags);
+	ImGui::TextColored(ImVec4(0.8f, 0.9f, 1.0f, 1.0f), "In-Game Property Editor");
+	ImGui::Separator();
+
+	Scene* scene = gsm.getCurrentScene();
+	if (!scene || scene->items.empty()) {
+		ImGui::TextDisabled("No scene or objects available.");
+		ImGui::End();
+		return;
+	}
+
+	if (selectedEntityType >= scene->items.size()) {
+		ImGui::TextDisabled("No object selected.");
+		ImGui::End();
+		return;
+	}
+
+	DrawItem& item = scene->items[selectedEntityType];
+
+	ImGui::Text("Editing: %s", item.name.empty() ? "(Unnamed)" : item.name.c_str());
+	ImGui::Separator();
+
+	// Live-edit the transform (these directly modify the data used by GameManager::render)
+	bool changed = false;
+	changed |= ImGui::DragFloat("X", &item.x, 0.01f, 0.0f, 1.0f);
+	changed |= ImGui::DragFloat("Y", &item.y, 0.01f, 0.0f, 1.0f);
+	changed |= ImGui::DragFloat("Width", &item.w, 0.01f, 0.0f, 2.0f);
+	changed |= ImGui::DragFloat("Height", &item.h, 0.01f, 0.0f, 2.0f);
+	changed |= ImGui::DragFloat("Angle", &item.angle, 0.5f, -360.0f, 360.0f);
+
+	/*if (changed)
+	{
+		logger.log("[ImGui] Updated transform of " + item.name);
+	}*/
+	/*
 	// @Todo (axewhy): Change this with the selected entity transform. This is only a placeholder
 	static Vector2D position(0.f, 0.f);
 	static Matrix<3> rotationMatrix = Matrix<3>().Identity();
@@ -534,9 +569,10 @@ void ImGuiManager::showTransformUI(/* A reference to a vector of object list obj
 	// Rotation controls (in degrees)
 	static float rotationDegrees = 0.0f;
 	ImGui::SliderFloat("Rotation", &rotationDegrees, -180.0f, 180.0f);
+	*/
 
 	// Showing current game objects in scene
-	if (ImGui::CollapsingHeader("Scene Object Transform", ImGuiTreeNodeFlags_DefaultOpen))
+	/*if (ImGui::CollapsingHeader("Scene Object Transform", ImGuiTreeNodeFlags_DefaultOpen))
 	{
 		Scene* scene = gsm.getCurrentScene();
 		if (scene && selectedEntityType < scene->items.size())
@@ -555,7 +591,7 @@ void ImGuiManager::showTransformUI(/* A reference to a vector of object list obj
 		{
 			ImGui::TextDisabled("No object selected or invalid index.");
 		}
-	}
+	}*/
 
 	ImGui::End();
 }
