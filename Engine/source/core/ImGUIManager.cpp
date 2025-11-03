@@ -16,8 +16,9 @@
 		- Integrated drawAllSprites and drawViewportShapes
 
 	Secondary Author:
-		Nur Syazliyarni 5%
+		Nur Syazliyarni (15%)
 		- Added the debug drawer that will load under showViewportWindowUI
+		- Editor able to list and edit transform game objects in current scene
 
 	All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
 *------------------------------------------------------------------------------------------------*/
@@ -476,7 +477,7 @@ void ImGuiManager::showEntityListUI(/* Maybe an enum of paramEntityType, Maybe a
 	if (ImGui::CollapsingHeader("Scene Objects", ImGuiTreeNodeFlags_DefaultOpen))
 	{
 		const Scene* scene = gsm.getCurrentScene();
-		if (!scene)
+		if (!scene) // if no scene, show message
 		{
 			ImGui::TextDisabled("No active scene loaded.");
 		}
@@ -485,13 +486,14 @@ void ImGuiManager::showEntityListUI(/* Maybe an enum of paramEntityType, Maybe a
 			for (size_t i = 0; i < scene->items.size(); ++i)
 			{
 				const DrawItem& item = scene->items[i];
-				bool selected = (selectedEntityType == i);
+				bool selected = (selectedEntityType == i); // check if obj is current selected one
 
+				// labels obj as Entity if it has no name
 				std::string label = item.name.empty()
 					? "Entity " + std::to_string(i)
 					: item.name;
 
-				if (ImGui::Selectable(label.c_str(), selected))
+				if (ImGui::Selectable(label.c_str(), selected)) // selectable list
 					selectedEntityType = static_cast<unsigned int>(i);
 			}
 		}
@@ -518,12 +520,12 @@ void ImGuiManager::showTransformUI(/* A reference to a vector of object list obj
 	ImGui::Text("Transform Controls");*/
 
 	ImGui::Begin("Inspector", nullptr, windowFlags);
-	ImGui::TextColored(ImVec4(0.8f, 0.9f, 1.0f, 1.0f), "In-Game Property Editor");
+	ImGui::TextColored(ImVec4(0.8f, 0.9f, 1.0f, 1.0f), "In-Game Property Editor"); // section title
 	ImGui::Separator();
 
 	Scene* scene = gsm.getCurrentScene();
 	if (!scene || scene->items.empty()) {
-		ImGui::TextDisabled("No scene or objects available.");
+		ImGui::TextDisabled("No scene or objects available."); // message shows when theres nothing in current scene
 		ImGui::End();
 		return;
 	}
@@ -539,7 +541,7 @@ void ImGuiManager::showTransformUI(/* A reference to a vector of object list obj
 	ImGui::Text("Editing: %s", item.name.empty() ? "(Unnamed)" : item.name.c_str());
 	ImGui::Separator();
 
-	// Live-edit the transform (these directly modify the data used by GameManager::render)
+	// edits the game objects actual transform
 	bool changed = false;
 	changed |= ImGui::DragFloat("X", &item.x, 0.01f, 0.0f, 1.0f);
 	changed |= ImGui::DragFloat("Y", &item.y, 0.01f, 0.0f, 1.0f);
