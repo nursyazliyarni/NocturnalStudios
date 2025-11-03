@@ -4,14 +4,20 @@
 
     This file contains ...
 
-     Author:
+     Primary Author:
          Rishika Bimal Attodi
         -  Implemented sprite init/draw (excluding background), per-sprite rotation & scaling, 
         and front/behind passes.
-
-        Secondary Author:
+     
+    Secondary Author:
          Lau Xiang Yang
          - Implemented FBO
+
+    Secondary Author
+        Nur Syazliyarni 5%
+        - Added the debugging lines for drawAllSprites
+
+
 
     All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
 *------------------------------------------------------------------------------------------------*/
@@ -22,6 +28,7 @@
 #include <GLFW/glfw3.h>   // brings gl.h on Windows
 #include <cmath>
 #include <glm/gtc/constants.hpp>
+#include "graphics/DebugDraw.h"
 
 namespace {
     constexpr float TWO_PI = 2.0f * glm::pi<float>();
@@ -428,7 +435,23 @@ void Renderer::drawAllSprites(Texture& tex,
 
         glBindTexture(GL_TEXTURE_2D, 0);
         glDisable(GL_TEXTURE_2D);
+
+        // DEBUGDRAW: visualize AABB collider ---
+       // draw collider outline when debug is active
+        if (Debug::Drawer::Instance().IsActive())
+        {
+            // cyan box outline
+            Debug::Drawer::Instance().AddLine(x0, y0, x1, y1, 0xFF00FFFF);
+            Debug::Drawer::Instance().AddLine(x1, y1, x2, y2, 0xFF00FFFF);
+            Debug::Drawer::Instance().AddLine(x2, y2, x3, y3, 0xFF00FFFF);
+            Debug::Drawer::Instance().AddLine(x3, y3, x0, y0, 0xFF00FFFF);
+        }
+        
+        Debug::Drawer::Instance().Render(Matrix<3>().Identity());
     }
+
+            
+     
 }
 
 std::vector<Renderer::sprite>& Renderer::get_sprite_vector() {
