@@ -32,8 +32,11 @@
 
 #include <imgui.h>
 #include <backends/imgui_impl_glfw.h>
+//#include "../messaging/MessageBus.h"
+//#include "../messaging/InputMessage.h"
+#include "messaging/Message.h"
+#include "messaging/InputMessage.h"
 
-#include "input/Input.h"
 #include "core/GameManager.h"
 #include <GLFW/glfw3.h>
 
@@ -163,6 +166,15 @@ void Input::keyboard_input_callback(GLFWwindow* window, int key, int scancode, i
 	if (ImGui::GetCurrentContext())
 		ImGui_ImplGlfw_KeyCallback(window, key, scancode, action, mods);
 
+	if (action == GLFW_PRESS) pressedKeysThisFrame.insert(key);          // Input owns it
+
+	//messaging system//
+	auto* self = static_cast<Input*>(glfwGetWindowUserPointer(window));
+	if (self && self->messageBus) {
+		auto msg = std::make_unique<Messaging::KeyMessage>(key, action);
+		self->messageBus->Broadcast(std::move(msg));
+	}
+	
 	if (action == GLFW_PRESS) pressedKeysThisFrame.insert(key);
 
 	if (Input* self = static_cast<Input*>(glfwGetWindowUserPointer(window))) {
@@ -182,6 +194,16 @@ void Input::mouse_input_callback(GLFWwindow* window, int button, int action, int
 		ImGui_ImplGlfw_MouseButtonCallback(window, button, action, mods); // let ImGui see it
 
 	if (action == GLFW_PRESS) pressedMouseThisFrame.insert(button);       // Input owns it
+
+	//messaging system//
+	auto* self = static_cast<Input*>(glfwGetWindowUserPointer(window));
+	if (self && self->messageBus) {
+		double xpos, ypos;
+		glfwGetCursorPos(window, &xpos, &ypos);
+		bool pressed = (action == GLFW_PRESS);
+		auto msg = std::make_unique<Messaging::ClickedMouseMessage>(button, pressed, (float)xpos, (float)ypos);
+		self->messageBus->Broadcast(std::move(msg));
+	}
 }
 
 
@@ -278,7 +300,6 @@ void Input::ProcessHotkeys(GameManager& gsm) {
 	}
 
 	// ------------ 2D Camera controls (Flamingo only) ------------
-	// ------------ 2D Camera controls (Flamingo only) ------------
 	static std::string sLastScene;
 	static bool flamingoPrimed = false;
 
@@ -306,13 +327,14 @@ void Input::ProcessHotkeys(GameManager& gsm) {
 		if (fast) { zoomStep *= 2.5f; panStepX *= 3.0f; panStepY *= 3.0f; }
 		if (slow) { zoomStep *= 0.5f; panStepX *= 0.5f; panStepY *= 0.5f; }
 
-		// First zoom tap can optionally “snap focus” to flamingo; or comment this block out to keep purely neutral
+		// First zoom tap can optionally ï¿½snap focusï¿½ to flamingo; or comment this block out to keep purely neutral
 		if (!flamingoPrimed && WasPressed(GLFW_KEY_Z)) {
 			Cam2D_Set("Flamingo",
 				0.10f + 0.26f * 0.5f,
 				0.44f + 0.50f * 0.5f,
 				1.2f);                 // start with gentle zoom
 			flamingoPrimed = true;
+
 		}
 		else {
 			// Regular hold-to-zoom/pan

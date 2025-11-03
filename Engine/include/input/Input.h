@@ -4,7 +4,7 @@
 	File: Input.h
 	Project: NocturnalStudio
 
-	This header declares the engine’s input layer. It wraps GLFW (with ImGui forwarding) to:
+	This header declares the engineï¿½s input layer. It wraps GLFW (with ImGui forwarding) to:
 	- Capture keyboard and mouse events
 	- Track mouse position/delta (normalized & unnormalized)
 	- Register and query action states (movement, scaling, rotation, reset, toggle-collision)
@@ -93,6 +93,7 @@ public:
 	int ConsumeSceneKey() const;
 
 	void ProcessHotkeys(GameManager& gsm);
+	void SetMessageBus(Messaging::MessageBus* bus) { messageBus = bus; }
 
 	bool IsDown(int key) const;
 
@@ -115,6 +116,8 @@ private:
 	std::vector<bool> spriteRotatingCW;     // clockwise
 	std::vector<bool> spriteRotatingCCW;    // counter-clockwise
 
+	Messaging::MessageBus* messageBus = nullptr;
+
 private:
 	//private data member
 	//mouse_pos[0] is previous mouse position, mouse_pos[1] is current mouse_position
@@ -126,6 +129,7 @@ private:
 	std::unordered_set<int> m_keysDown;
 };
 
+/*
 //Messaging namespace implemented for input system here
 namespace Messaging
 {
@@ -159,7 +163,7 @@ namespace Messaging
 
 			auto msg = std::make_unique<MovingMouseMessage>((float)xpos, (float)ypos);
 			self->bus.Broadcast(std::move(msg));
-		}*/
+		}
 
 		static void MouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
 			auto* self = static_cast<InputSystemMessaging*>(glfwGetWindowUserPointer(window));
@@ -172,5 +176,5 @@ namespace Messaging
 			auto msg = std::make_unique<ClickedMouseMessage>(button, pressed, (float)xpos, (float)ypos);
 			self->bus.Broadcast(std::move(msg));
 		}
-	};
-}
+    };
+} */

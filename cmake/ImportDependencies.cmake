@@ -107,3 +107,8 @@ if(EXISTS "${FMOD_CORE_INC}/fmod.h")
 else()
     message(STATUS "FMOD not found at ${FMOD_CORE_INC}; FMOD disabled")
 endif()
+
+if (EXISTS ${CMAKE_SOURCE_DIR}/lib/freetype/CMakeLists.txt)
+  add_subdirectory(${CMAKE_SOURCE_DIR}/lib/freetype ${CMAKE_BINARY_DIR}/lib/freetype)
+  set(NS_HAVE_FREETYPE ON)
+endif()

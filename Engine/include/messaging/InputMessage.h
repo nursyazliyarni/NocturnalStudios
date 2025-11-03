@@ -21,7 +21,7 @@ namespace Messaging {
 	class KeyMessage : public Message {
 		public:
         KeyMessage(int key, int action)
-            : Message(Mid::KEY_EVENT), keyCode(key), action(action) {
+            : Message(Mid::CHARACTERKEY), keyCode(key), action(action) {
         }
 
         int keyCode; // 
