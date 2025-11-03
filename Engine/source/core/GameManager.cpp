@@ -312,3 +312,11 @@ bool GameManager::popQuitRequested() {
     return q;
 }
 
+// Function used for the level editor to show current game objects
+Scene* GameManager::getCurrentScene() {
+    auto it = scenes.find(currentScene);
+    if (it != scenes.end())
+        return &it->second;
+    return nullptr;
+}
+

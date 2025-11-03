@@ -469,7 +469,33 @@ void ImGuiManager::showEntityListUI(/* Maybe an enum of paramEntityType, Maybe a
 		}
 	}
 
+	ImGui::Separator();
+	ImGui::Spacing();
 
+	//Show current game objects in scene
+	if (ImGui::CollapsingHeader("Scene Objects", ImGuiTreeNodeFlags_DefaultOpen))
+	{
+		const Scene* scene = gsm.getCurrentScene();
+		if (!scene)
+		{
+			ImGui::TextDisabled("No active scene loaded.");
+		}
+		else
+		{
+			for (size_t i = 0; i < scene->items.size(); ++i)
+			{
+				const DrawItem& item = scene->items[i];
+				bool selected = (selectedEntityType == i);
+
+				std::string label = item.name.empty()
+					? "Entity " + std::to_string(i)
+					: item.name;
+
+				if (ImGui::Selectable(label.c_str(), selected))
+					selectedEntityType = static_cast<unsigned int>(i);
+			}
+		}
+	}
 
 
 	ImGui::End();
@@ -508,6 +534,28 @@ void ImGuiManager::showTransformUI(/* A reference to a vector of object list obj
 	// Rotation controls (in degrees)
 	static float rotationDegrees = 0.0f;
 	ImGui::SliderFloat("Rotation", &rotationDegrees, -180.0f, 180.0f);
+
+	// Showing current game objects in scene
+	if (ImGui::CollapsingHeader("Scene Object Transform", ImGuiTreeNodeFlags_DefaultOpen))
+	{
+		Scene* scene = gsm.getCurrentScene();
+		if (scene && selectedEntityType < scene->items.size())
+		{
+			DrawItem& item = scene->items[selectedEntityType];
+			ImGui::Text("Editing: %s", item.name.empty() ? "(Unnamed)" : item.name.c_str());
+			ImGui::Separator();
+
+			ImGui::DragFloat("X", &item.x, 0.01f, 0.0f, 1.0f);
+			ImGui::DragFloat("Y", &item.y, 0.01f, 0.0f, 1.0f);
+			ImGui::DragFloat("Width", &item.w, 0.01f, 0.0f, 2.0f);
+			ImGui::DragFloat("Height", &item.h, 0.01f, 0.0f, 2.0f);
+			ImGui::DragFloat("Angle", &item.angle, 0.5f, -360.0f, 360.0f);
+		}
+		else
+		{
+			ImGui::TextDisabled("No object selected or invalid index.");
+		}
+	}
 
 	ImGui::End();
 }
