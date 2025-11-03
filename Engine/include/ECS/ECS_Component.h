@@ -78,7 +78,7 @@ struct Transform {
 
 	CoordinateSpace space = CoordinateSpace::World;
 	bool isVisible = true;
-
+	Transform(Vector2D pos, Vector2D scl, float rot) :position{ pos }, scale{ scl }, rotation{ rot } {}
 	/**
 	* Returns the translated vector2d matrix
 	* translates the object to x and y
