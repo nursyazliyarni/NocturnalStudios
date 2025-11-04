@@ -499,6 +499,52 @@ void ImGuiManager::showEntityListUI(/* Maybe an enum of paramEntityType, Maybe a
 		}
 	}
 
+	// Add and remove buttons 
+	Scene* sceneMut = gsm.getCurrentScene();
+
+	if (sceneMut)
+	{
+		ImGui::Separator();
+		//this button will change to load a gameobject,, currently loads just an empty game object
+		if (ImGui::Button("Add New Object")) 
+		{
+			// Create a simple new DrawItem
+			DrawItem newItem;
+			newItem.name = "NewObject_" + std::to_string(sceneMut->items.size());
+			newItem.w = 0.1f;     // default width
+			newItem.h = 0.1f;     // default height
+			newItem.x = 0.5f;     // start centered
+			newItem.y = 0.5f;
+			newItem.angle = 0.0f; // no rotation
+
+			// Add it to the current scene
+			sceneMut->items.push_back(newItem);
+			selectedEntityType = static_cast<unsigned int>(sceneMut->items.size() - 1);
+
+			logger.log("[ImGui] Added new object: " + newItem.name);
+		}
+
+		ImGui::SameLine();
+
+		if (ImGui::Button("Remove Selected"))
+		{
+			if (!sceneMut->items.empty() && selectedEntityType < sceneMut->items.size())
+			{
+				logger.log("[ImGui] Removed object: " + sceneMut->items[selectedEntityType].name);
+				sceneMut->items.erase(sceneMut->items.begin() + selectedEntityType);
+
+				// Adjust selection index to stay valid
+				if (selectedEntityType >= sceneMut->items.size() && !sceneMut->items.empty())
+					selectedEntityType = static_cast<unsigned int>(sceneMut->items.size() - 1);
+				else if (sceneMut->items.empty())
+					selectedEntityType = 0;
+			}
+		}
+	}
+	else
+	{
+		ImGui::TextDisabled("Scene not editable (no active level).");
+	}
 
 	ImGui::End();
 }
