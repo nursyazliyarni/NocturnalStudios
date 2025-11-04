@@ -31,6 +31,9 @@
 
 #include "core/Application.h"
 
+
+extern void Prefab_SetTextureLookup(std::function<int(const std::string&)>);
+
 namespace {
 	constexpr float TWO_PI = 2.0f * glm::pi<float>();
 	constexpr int   CIRCLE_SEGMENTS = 64;
@@ -136,6 +139,16 @@ void Application::init() {
 
 	gsm = std::make_unique<GameManager>(*ecs);
 	gsm->load(prefabPath.c_str(), scenePath.c_str(), textures);
+
+	// After textures is constructed and before any Instantiate()
+	Prefab_SetTextureLookup([this](const std::string& p) -> int {
+		// Make paths robust whether JSON includes "assets/" or not
+		std::string path = p;
+		if (path.rfind("assets/", 0) != 0) path = "assets/" + path;
+		return static_cast<int>(textures.get(path));
+		});
+
+
 	renderer = std::make_unique<Renderer>(vertexPath.c_str(), fragmentPath.c_str());
 	textShader = std::make_unique<Shader>(textShaderVertexPath.c_str(), textShaderFragmentPath.c_str());
 
@@ -176,6 +189,8 @@ void Application::init() {
 		*gsm);
 
 	isInitialized = true;
+
+	
 }
 
 int Application::run() {
@@ -195,9 +210,14 @@ int Application::run() {
 		gameLoop->display_FPS(m_window.handle(), windowTitle, dt);
 		inputSystem->update_mouse_pos(m_window.handle());
 
+		/*for (int k = GLFW_KEY_1; k <= GLFW_KEY_9; ++k)
+			if (inputSystem->WasPressed(k))
+				gsm->handleKeyPress(k);*/
+
 		for (int k = GLFW_KEY_1; k <= GLFW_KEY_9; ++k)
 			if (inputSystem->WasPressed(k))
-				gsm->handleKeyPress(k);
+				gsm->switchToSceneForKey(k); // respects AppState::Playing
+
 
 		if (inputSystem->WasPressed(GLFW_KEY_ESCAPE))
 			gsm->handleKeyPress(GLFW_KEY_ESCAPE);
@@ -209,6 +229,21 @@ int Application::run() {
 		glViewport(0, 0, fbw, fbh);
 		glDisable(GL_DEPTH_TEST);
 		glClearColor(0.06f, 0.06f, 0.07f, 1.0f);
+
+
+
+		// Wire prefab sprite_path -> GL texture id using your TextureStore API.
+		Prefab_SetTextureLookup([this](const std::string& p) -> int {
+			// If your JSON sometimes omits the "assets/" prefix, uncomment the 3 lines below.
+		//  std::string path = p;
+		//  if (path.rfind("assets/", 0) != 0) path = "assets/" + path;
+		//  return static_cast<int>(textures.get(path));
+
+			return static_cast<int>(textures.get(p));   // <matches TextureStore::get
+			});
+
+
+
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		Gui::updateImGuiManager(dt, *imGuiManager);

@@ -187,11 +187,23 @@ bool GameManager::load(const char* prefabsPath, const char* scenesPath, TextureS
                 sc.items.push_back(di);
 
                 // clickable?
+                /*ClickRegion cr;
+                cr.x = di.x; cr.y = di.y; cr.w = di.w; cr.h = di.h;
+                if (e.HasMember("goto") && e["goto"].IsString()) cr.gotoScene = e["goto"].GetString();
+                if (e.HasMember("quit") && e["quit"].IsBool())   cr.quit = e["quit"].GetBool();
+                if (cr.quit || !cr.gotoScene.empty()) sc.clicks.push_back(cr);*/
+
                 ClickRegion cr;
                 cr.x = di.x; cr.y = di.y; cr.w = di.w; cr.h = di.h;
                 if (e.HasMember("goto") && e["goto"].IsString()) cr.gotoScene = e["goto"].GetString();
                 if (e.HasMember("quit") && e["quit"].IsBool())   cr.quit = e["quit"].GetBool();
-                if (cr.quit || !cr.gotoScene.empty()) sc.clicks.push_back(cr);
+                if (e.HasMember("start") && e["start"].IsBool())  cr.start = e["start"].GetBool();
+
+                // store the region if it does ANY action
+                if (cr.quit || cr.start || !cr.gotoScene.empty())
+                    sc.clicks.push_back(cr);
+
+
             }
         }
 
@@ -215,11 +227,35 @@ bool GameManager::switchToSceneForKey(int glfwKey) {
 }
 
 
+//void GameManager::handleKeyPress(int key) {
+//    auto it = keyMap.find(key);
+//    if (it != keyMap.end()) requestScene(it->second);
+//    if (key == GLFW_KEY_ESCAPE) requestScene(backKey);
+//}
+
+
 void GameManager::handleKeyPress(int key) {
+    // ESC always returns to menu
+    if (key == GLFW_KEY_ESCAPE) {
+        requestScene(backKey);
+        goToMenu(); // relock number keys
+        return;
+    }
+
+    // If we're still in Menu, ignore number keys 1..9 entirely
+    if (app == AppState::Menu) {
+        return;
+    }
+
+    // Playing: allow mapped numeric switches
     auto it = keyMap.find(key);
-    if (it != keyMap.end()) requestScene(it->second);
-    if (key == GLFW_KEY_ESCAPE) requestScene(backKey);
+    if (it != keyMap.end()) {
+        requestScene(it->second);
+    }
 }
+
+
+
 
 void GameManager::render(Renderer& r, int w, int h) const {
 
@@ -244,7 +280,7 @@ void GameManager::render(Renderer& r, int w, int h) const {
     //    float py = t.position.y * h;
     //    float pw = t.scale.x * w;
     //    float ph = t.scale.y * h;
-    //    r.texturedTri(img.textureID, px, py, pw, ph); // same call you use for JSON entities
+    //   r.texturedTri(img.textureID, px, py, pw, ph); // same call you use for JSON entities
     //}
 
     if (!ecs_.getAllEntities().empty()) {
@@ -268,7 +304,7 @@ void GameManager::render(Renderer& r, int w, int h) const {
                     Cam2D_Apply(currentScene, px, py, pw, ph, w, h);
 
 
-                   // r.texturedTri(img->textureID, px, py, pw, ph);
+                    r.texturedTri(img->textureID, px, py, pw, ph);
                 }
             }
         }
@@ -305,18 +341,60 @@ bool GameManager::handleClick(float nx, float ny) {
     const Scene& sc = it->second;
 
     for (const auto& cr : sc.clicks) {
+        //if (nx >= cr.x && nx <= cr.x + cr.w && ny >= cr.y && ny <= cr.y + cr.h) {
+        //    if (cr.quit) {
+        //        requestedQuit = true;
+        //    }
+        //    if (app == AppState::Menu) {
+        //        startGame();                 // unlock 1..9 only after Play was clicked
+        //    }
+        //    else if (!cr.gotoScene.empty()) {
+        //        requestScene(cr.gotoScene);
+        //    }
+        //    return true;
+        //}
+
         if (nx >= cr.x && nx <= cr.x + cr.w && ny >= cr.y && ny <= cr.y + cr.h) {
+
+            logger.log("Click hit: start=" + std::to_string(cr.start) +
+                " quit=" + std::to_string(cr.quit) +
+                " goto='" + cr.gotoScene + "'");
+
+
+            // ESC-like quit buttons always work
             if (cr.quit) {
                 requestedQuit = true;
+                return true;
             }
+
+            // While in Menu: ONLY a region marked start:true can unlock gameplay,
+            // and it may also jump to a first scene via goto (optional).
             if (app == AppState::Menu) {
-                startGame();                 // unlock 1..9 only after Play was clicked
+                if (cr.start) {
+                    startGame();  // unlock number keys
+
+                    if (!cr.gotoScene.empty()) {
+                        requestScene(cr.gotoScene);// explicit target from JSON
+                    }
+                    else {
+                        // Fallback: jump to key "1" mapping if present
+                        auto it1 = keyMap.find(GLFW_KEY_1);
+                        if (it1 != keyMap.end())
+                            requestScene(it1->second);
+                    }
+                }
+                // ignore other clickable regions in Menu (buttons without start:true)
+                return true;
             }
-            else if (!cr.gotoScene.empty()) {
+
+            // Already Playing: allow normal scene transitions via goto regions
+            if (!cr.gotoScene.empty()) {
                 requestScene(cr.gotoScene);
             }
             return true;
         }
+
+
     }
     return false;
 }

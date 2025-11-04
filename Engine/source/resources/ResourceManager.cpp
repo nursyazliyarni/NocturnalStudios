@@ -104,6 +104,12 @@ void ResourceManager::loadResources(std::string const& resourceFilePath) {
 		resourcePath += "/" + directoryPath;
 	}
 
+	// Case-insensitive type compare (keep original path casing for disk paths)
+	std::string typeKey = directoryPath;
+	std::transform(typeKey.begin(), typeKey.end(), typeKey.begin(),
+		[](unsigned char c) { return static_cast<char>(std::tolower(c)); });
+
+
 	for (auto const& entry : std::filesystem::recursive_directory_iterator(resourcePath)) {
 		auto const& path = entry.path();
 		auto const& stem = path.stem();
@@ -112,29 +118,54 @@ void ResourceManager::loadResources(std::string const& resourceFilePath) {
 		if (!filename.has_extension()) continue;
 
 		// Check Resource type here
-		if (resourceFilePath == "audio") {
+		//if (resourceFilePath == "audio") {
+		//	loadAudio(stem.string(), path.string());
+		//}
+		//else if (resourceFilePath == "shaders") {
+		//	loadShader(stem.string(), path.string());
+		//}
+		//else if (resourceFilePath == "textures") {
+		//	loadTexture(stem.string(), path.string());
+		//}
+		//else if (resourceFilePath == "fonts") {
+		//	std::string ext = path.extension().string();
+		//	std::transform(ext.begin(), ext.end(), ext.begin(), [](unsigned char c) 
+		//		{ return static_cast<char>(std::tolower(c)); });
+		//	if (ext == ".ttf" || ext == ".otf") {
+		//		loadFont(stem.string(), path.string(), 48); // default 48px; adjust per project needs
+		//	}
+		//}
+		//else if (resourceFilePath == "prefabs") {
+		//	loadPrefab(stem.string(), path.string());
+		//}
+		//else if (resourceFilePath == "scenes") {
+		//	loadScene(stem.string(), path.string());
+		//}
+
+		if (typeKey == "audio") {
 			loadAudio(stem.string(), path.string());
 		}
-		else if (resourceFilePath == "shaders") {
+		else if (typeKey == "shaders") {
 			loadShader(stem.string(), path.string());
 		}
-		else if (resourceFilePath == "textures") {
+		else if (typeKey == "textures") {
 			loadTexture(stem.string(), path.string());
 		}
-		else if (resourceFilePath == "fonts") {
+		else if (typeKey == "fonts") {
 			std::string ext = path.extension().string();
-			std::transform(ext.begin(), ext.end(), ext.begin(), [](unsigned char c) 
+			std::transform(ext.begin(), ext.end(), ext.begin(), [](unsigned char c)
 				{ return static_cast<char>(std::tolower(c)); });
 			if (ext == ".ttf" || ext == ".otf") {
-				loadFont(stem.string(), path.string(), 48); // default 48px; adjust per project needs
+				loadFont(stem.string(), path.string(), 48);
 			}
 		}
-		else if (resourceFilePath == "prefabs") {
+		else if (typeKey == "prefabs") {
 			loadPrefab(stem.string(), path.string());
 		}
-		else if (resourceFilePath == "scenes") {
+		else if (typeKey == "scenes") {
 			loadScene(stem.string(), path.string());
 		}
+
 	}
 
 	logger.log("Resource loading complete.");

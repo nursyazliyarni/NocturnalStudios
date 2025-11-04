@@ -9,7 +9,10 @@
       "background": "textures/menu_bg.png",
       "entities": [
         { "prefab":"button","name":"btn_play",
-          "overrides": { "x":0.38,"y":0.45, "w":0.26, "h":0.09, "sprite_path":"textures/menuPLAY_btn.png" }, "goto":"Flamingo" },
+          "overrides": { "x":0.38,"y":0.45, "w":0.26, "h":0.09, "sprite_path":"textures/menuPLAY_btn.png" },
+          "start": true,
+          "goto": "Flamingo"
+        },
         { "prefab":"button","name":"btn_load",
           "overrides": { "x":0.38,"y":0.60, "w":0.26, "h":0.09, "sprite_path":"textures/menuLOAD.png" }, "goto":"Flamingo" },
         { "prefab":"button","name":"btn_settings",

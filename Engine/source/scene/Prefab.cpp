@@ -33,7 +33,30 @@ static bool sKeymapInit = false;
 static std::unordered_map<std::string, SceneID> sNameToId;
 
 // configurable JSON path (fallback stays this)
+
 static std::string sScenesJsonPath = "assets/scenes/scenes.json";
+
+
+
+
+//  Texture lookup hook for sprite_path, GL texture id 
+static std::function<int(const std::string&)> sTextureLookup;
+
+// Safe fallback that compiles even if nobody sets sTextureLookup.
+static int ResolveTextureID(const char* p) {
+    if (!p || !*p) return 0;
+    if (sTextureLookup) return sTextureLookup(std::string{ p });
+    return 0; // not wired yet -> invisible sprite (isVisible=false)
+}
+
+// a simple setter to call once from  init code (e.g., Application.cpp)
+void Prefab_SetTextureLookup(std::function<int(const std::string&)> fn) {
+    sTextureLookup = std::move(fn);
+}
+
+
+
+
 
 static bool LoadScenesJson(rapidjson::Document& d) {
     std::ifstream f(sScenesJsonPath);
@@ -231,22 +254,50 @@ void PrefabManager::AddComponentFromJSON(EntityID entity, const rapidjson::Value
 
 
     // ImageRenderer component
+    //else if (component_type == "ImageRenderer") {
+    //    ImageRenderer renderer_component;
+    //    if (component_json.HasMember("textureID") && component_json["textureID"].IsInt()) {
+    //        renderer_component.textureID = component_json["textureID"].GetInt();
+    //    }
+    //    if (component_json.HasMember("opacity") && component_json["opacity"].IsNumber()) {
+    //        renderer_component.opacity = component_json["opacity"].GetFloat();
+    //    }
+    //    if (component_json.HasMember("isVisible") && component_json["isVisible"].IsBool()) {
+    //        renderer_component.isVisible = component_json["isVisible"].GetBool();
+    //    }
+
+    //    if (renderer_component.textureID <= 0) renderer_component.isVisible = false; // << add this
+
+    //    entity_component_based_system.addComponent<ImageRenderer>(entity, renderer_component);
+    //}
+
+
     else if (component_type == "ImageRenderer") {
-        ImageRenderer renderer_component;
+        ImageRenderer r{};
+
+        // Accept either a direct textureID 
         if (component_json.HasMember("textureID") && component_json["textureID"].IsInt()) {
-            renderer_component.textureID = component_json["textureID"].GetInt();
+            r.textureID = component_json["textureID"].GetInt();
         }
+
+        // ... or the preferred JSON field "sprite_path" (resolve to GL texture id)
+        if (r.textureID <= 0 && component_json.HasMember("sprite_path") && component_json["sprite_path"].IsString()) {
+            r.textureID = ResolveTextureID(component_json["sprite_path"].GetString());
+        }
+
         if (component_json.HasMember("opacity") && component_json["opacity"].IsNumber()) {
-            renderer_component.opacity = component_json["opacity"].GetFloat();
+            r.opacity = component_json["opacity"].GetFloat();
         }
         if (component_json.HasMember("isVisible") && component_json["isVisible"].IsBool()) {
-            renderer_component.isVisible = component_json["isVisible"].GetBool();
+            r.isVisible = component_json["isVisible"].GetBool();
         }
 
-        if (renderer_component.textureID <= 0) renderer_component.isVisible = false; // << add this
+        // If we still don't have a valid texture, hide it (keeps current renderer behavior)
+        if (r.textureID <= 0) r.isVisible = false;
 
-        entity_component_based_system.addComponent<ImageRenderer>(entity, renderer_component);
+        entity_component_based_system.addComponent<ImageRenderer>(entity, r);
     }
+
 
     // CircleRenderer component
     else if (component_type == "CircleRenderer") {
@@ -291,26 +342,51 @@ void PrefabManager::AddComponentFromJSON(EntityID entity, const rapidjson::Value
     //    }
     //    entity_component_based_system.addComponent<PhysicsComponent>(entity, physics_component);
     //}
+
     
     // BoxCollider
+
+    //else if (component_type == "BoxCollider") {
+    //    BoxCollider collider_component;
+    //    if (component_json.HasMember("width") && component_json["width"].IsNumber()) {
+    //        collider_component.width = component_json["width"].GetFloat();
+    //    }
+    //    if (component_json.HasMember("height") && component_json["height"].IsNumber()) {
+    //        collider_component.height = component_json["height"].GetFloat();
+    //    }
+    //    entity_component_based_system.addComponent<BoxCollider>(entity, collider_component);
+    //}
+    //// AnimalBehavior
+    //else if (component_type == "AnimalBehavior") {
+    //    AnimalBehavior behavior_component;
+    //    if (component_json.HasMember("sound") && component_json["sound"].IsString()) {
+    //        behavior_component.sound = component_json["sound"].GetString();
+    //    }
+    //    entity_component_based_system.addComponent<AnimalBehavior>(entity, behavior_component);
+    //}
+
     else if (component_type == "BoxCollider") {
-        BoxCollider collider_component;
+        BoxCollider c{};
+
+        // Single size -> square
+        if (component_json.HasMember("bounding_box_size") && component_json["bounding_box_size"].IsNumber()) {
+            float s = component_json["bounding_box_size"].GetFloat();
+            c.width = s;
+            c.height = s;
+        }
+
+        // Optional explicit overrides
         if (component_json.HasMember("width") && component_json["width"].IsNumber()) {
-            collider_component.width = component_json["width"].GetFloat();
+            c.width = component_json["width"].GetFloat();
         }
         if (component_json.HasMember("height") && component_json["height"].IsNumber()) {
-            collider_component.height = component_json["height"].GetFloat();
+            c.height = component_json["height"].GetFloat();
         }
-        entity_component_based_system.addComponent<BoxCollider>(entity, collider_component);
-    }
-    // AnimalBehavior
-    else if (component_type == "AnimalBehavior") {
-        AnimalBehavior behavior_component;
-        if (component_json.HasMember("sound") && component_json["sound"].IsString()) {
-            behavior_component.sound = component_json["sound"].GetString();
+
+        entity_component_based_system.addComponent<BoxCollider>(entity, c);
         }
-        entity_component_based_system.addComponent<AnimalBehavior>(entity, behavior_component);
-    }
+
+
     // Add more component types as needed...
 }
 
