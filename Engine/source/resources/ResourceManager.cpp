@@ -9,6 +9,7 @@ constexpr char DEFAULT_AUDIO_FILEPATH[] = "DefaultAudio/filepath";
 #include "resources/ResourceManager.h"
 #include "core/Logger.h"
 #include "System/Audio_System.h"
+#include "graphics/Texture.h"
 
 extern Logger logger;
 
@@ -891,3 +892,28 @@ const Audio& ResourceManager::getDefaultAudio() const {
 	return defaultAudio;
 }
 
+// for imgui assets browser to get textures
+GLuint ResourceManager::getGLTextureFromFile(const std::string& filePath)
+{
+	static std::unordered_map<std::string, GLuint> textureCache;
+
+	// Check if texture already loaded
+	auto it = textureCache.find(filePath);
+	if (it != textureCache.end())
+		return it->second;
+
+	// Load it using your graphics::Texture loader
+	std::vector<char const*> paths = { filePath.c_str() };
+	Texture tex(paths);
+
+	if (tex.get_totalTexture() > 0)
+	{
+		GLuint texID = tex.get_textureID(0);
+		textureCache[filePath] = texID;
+		logger.log("[ResourceManager] Cached GL texture: " + filePath);
+		return texID;
+	}
+
+	logger.error("[ResourceManager] Failed to load texture: " + filePath);
+	return 0;
+}

@@ -16,9 +16,10 @@
 		- Integrated drawAllSprites and drawViewportShapes
 
 	Secondary Author:
-		Nur Syazliyarni (15%)
+		Nur Syazliyarni (25%)
 		- Added the debug drawer that will load under showViewportWindowUI
 		- Editor able to list and edit transform game objects in current scene
+		- Added assets browser and layout of bottom editor dock
 
 	All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
 *------------------------------------------------------------------------------------------------*/
@@ -26,7 +27,7 @@
 #include "../include/core/ImGuiManager.h"
 #include <chrono>
 #include "graphics/DebugDraw.h"
-
+#include "core/GameManager.h"
 namespace {
 	using Clock = std::chrono::high_resolution_clock;
 }
@@ -41,11 +42,13 @@ void Gui::updateImGuiManager(double& deltaTime, ImGuiManager& imGuiManager) {
 
 	imGuiManager.startFrame();
 	imGuiManager.showViewportWindowUI();
+	//imGuiManager.showAssetsBrowserUI();
 	imGuiManager.showMousePosOverlayUI();
 	imGuiManager.showPerformanceOverlayUI();
-	imGuiManager.showEntityListUI();
 	imGuiManager.showTransformUI();
-	imGuiManager.showLogsOverlayUI();
+	imGuiManager.showEntityListUI();
+	//imGuiManager.showLogsOverlayUI();
+	imGuiManager.showBottomDockUI();
 	imGuiManager.endFrame();
 }
 
@@ -679,4 +682,141 @@ void ImGuiManager::showLogsOverlayUI() {
 
 	ImGui::EndChild();
     ImGui::End();
+}
+
+void ImGuiManager::showAssetsBrowserUI() {
+	constexpr float width = 400.0f;
+	constexpr float height = 350.0f;
+	ImGuiWindowFlags flags = ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing;
+
+	ImVec2 pos = { windowBottomRight.x - width - 340.0f, windowTopLeft.y + 520.0f }; // near Transform window
+	ImGui::SetNextWindowPos(pos);
+	ImGui::SetNextWindowSize({ width, height });
+
+	ImGui::TextColored(ImVec4(0.8f, 0.9f, 1.0f, 1.0f), "Assets Browser");
+	ImGui::Separator();
+	
+	// importing new texture
+	static char newPath[256] = "assets/textures/";
+	ImGui::InputText("New Texture Path", newPath, IM_ARRAYSIZE(newPath));
+	if (ImGui::Button("Import Texture"))
+	{
+		std::string fullPath = newPath;
+		std::filesystem::path p(fullPath);
+		std::string name = p.stem().string();
+
+		try
+		{
+			TextureFile& newTex = resourceManager.loadTexture(name, fullPath);
+			logger.log("[ImGui] Imported new texture: " + name + " (" + fullPath + ")");
+		}
+		catch (...)
+		{
+			logger.error("[ImGui] Failed to import texture from path: " + fullPath);
+		}
+	}
+	
+	ImGui::Text("Loaded Textures:");
+	ImGui::Separator();
+
+	// thumbnail size
+	static float thumbnailSize = 60.0f;
+	
+	// thumbnail grid
+	float panelWidth = ImGui::GetContentRegionAvail().x; // total space in tab
+
+
+	float padding = 10.0f;
+	float cellSize = thumbnailSize + padding;
+	int columnCount = (int)(panelWidth / cellSize);
+	if (columnCount < 1) columnCount = 1;
+	
+	// texture grid table 
+	if (ImGui::BeginTable("TextureTable", columnCount, ImGuiTableFlags_SizingStretchSame))
+	{
+		auto& textures = resourceManager.getTextures();
+		int index = 0;
+
+		for (auto& [id, texFile] : textures)
+		{
+			const std::string& texName = texFile.getKey();
+			const std::string& texPath = texFile.getFilePath();
+
+			GLuint texID = resourceManager.getGLTextureFromFile(texPath);
+			if (texID == 0) continue;
+
+			ImGui::TableNextColumn();
+			ImGui::PushID(index++);
+
+			if (ImGui::ImageButton((ImTextureID)(intptr_t)texID, ImVec2(thumbnailSize, thumbnailSize)))
+			{
+				Scene* scene = gsm.getCurrentScene();
+				if (scene && selectedEntityType < scene->items.size())
+				{
+					scene->items[selectedEntityType].tex = texID;
+					logger.log("[ImGui] Applied texture: " + texName);
+				}
+			}
+
+			ImGui::TextWrapped(texName.c_str());
+			ImGui::PopID();
+		}
+
+		ImGui::EndTable();
+	}
+}
+
+void ImGuiManager::showBottomDockUI()
+{
+
+	//float dockPadding = 8.0f;   // gap between viewport and dock
+	float dockHeight = 200.0f; // desired dock height
+	float rightPanelWidth = 300.0f; // width of right sidebar
+
+	// dock should begin directly below the viewport
+	float dockYPos = vpMaxWin.y ;
+
+	// dock should stop before the right sidebar begins
+	float dockXPos = windowTopLeft.x + 8.0f;
+	float dockWidth = (windowBottomRight.x - rightPanelWidth) - dockXPos;
+
+	// doesnt exceed the window bottom
+	if (dockYPos + dockHeight > windowBottomRight.y)
+		dockYPos = windowBottomRight.y - dockHeight - 4.0f;
+
+	ImVec2 dockPos = { dockXPos, dockYPos };
+	ImVec2 dockSize = { dockWidth, dockHeight };
+
+	ImGui::SetNextWindowPos(dockPos);
+	ImGui::SetNextWindowSize(dockSize);
+
+	ImGuiWindowFlags flags =
+		ImGuiWindowFlags_NoSavedSettings |
+		ImGuiWindowFlags_NoCollapse |
+		ImGuiWindowFlags_NoResize;
+
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(8, 8));
+	ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(4, 4));
+
+	ImGui::Begin("Editor Dock", nullptr, flags);
+
+	if (ImGui::BeginTabBar("DockTabs"))
+	{
+		if (ImGui::BeginTabItem("Assets Browser"))
+		{
+			showAssetsBrowserUI();  // no Begin/End inside
+			ImGui::EndTabItem();
+		}
+
+		if (ImGui::BeginTabItem("Logs"))
+		{
+			showLogsOverlayUI();    // no Begin/End inside
+			ImGui::EndTabItem();
+		}
+
+		ImGui::EndTabBar();
+	}
+
+	ImGui::End();
+	ImGui::PopStyleVar(2);
 }
