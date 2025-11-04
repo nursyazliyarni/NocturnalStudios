@@ -68,7 +68,7 @@ public:
     //void setCameraZoom(const std::string& scene, float z);
     //void focusOnEntity(const std::string& scene, const std::string& entityName);
 
-
+    Scene* getCurrentScene();
 
 private:
     std::unordered_map<std::string, Scene> scenes;
