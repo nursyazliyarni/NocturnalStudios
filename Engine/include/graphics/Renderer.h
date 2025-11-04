@@ -22,6 +22,9 @@
 // Renderer.h
 #pragma once
 #include "gl/glew.h"
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #include "graphics/Shader.h"
 #include "graphics/Texture.h" 
 #include "core/Logger.h"
@@ -31,7 +34,7 @@ extern Logger logger;
 class Renderer {
 public:
     //constructor for image rendering, need to provide vertex file AND fragment file
-    Renderer(const char* vertex_path, const char* fragment_path);
+    Renderer(std::vector<std::pair<std::string, std::string>> shader_filePATH_list);
 
     void init2D(int w, int h);
     void resize(int w, int h);
@@ -65,7 +68,8 @@ public:
 
 
 
-    void background_render(GLuint texture_ID, const GLchar* uniform_VARNAME);
+    void background_render(GLuint texture_ID, const GLchar* uniform_VARNAME, unsigned int vector_index);
+    void special_background_render(GLuint texture_ID, const GLchar* uniform_VARNAME, unsigned int vector_index);
 
     // FBO setup and usage
     void initFBO(int width, int height);

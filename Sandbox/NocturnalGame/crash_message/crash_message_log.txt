@@ -1,0 +1,153 @@
+[04-11-2025] [16:24:49] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[04-11-2025] [16:25:19] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[04-11-2025] [16:26:48] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[04-11-2025] [16:31:58] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[04-11-2025] [16:36:17] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[04-11-2025] [16:43:50] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[04-11-2025] [16:45:12] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[04-11-2025] [16:49:06] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[04-11-2025] [16:50:04] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[04-11-2025] [16:50:15] [CRASH_MESSAGE] Program crash due to abort signal - std::abort() or failed assert()
+[04-11-2025] [16:53:22] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[04-11-2025] [16:53:27] [CRASH_MESSAGE] Compilation fails here: ERROR: 0:17: 'backgroundTexture' : undeclared identifier 
+ERROR: 0:18: 'texture' : no matching overloaded function found (using implicit conversion) 
+ERROR: 0:18: 'texture' : function is not known 
+ERROR: 0:17: '=' :  cannot convert from 'const highp float' to '4-component vector of highp float'
+
+
+[04-11-2025] [16:53:31] [CRASH_MESSAGE] Program crash due to abort signal - std::abort() or failed assert()
+[04-11-2025] [16:55:27] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[04-11-2025] [16:55:32] [CRASH_MESSAGE] Compilation fails here: ERROR: 0:17: 'backgroundTexture' : undeclared identifier 
+ERROR: 0:18: 'texture' : no matching overloaded function found (using implicit conversion) 
+ERROR: 0:18: 'texture' : function is not known 
+ERROR: 0:17: '=' :  cannot convert from 'const highp float' to '4-component vector of highp float'
+
+
+[04-11-2025] [16:55:35] [CRASH_MESSAGE] Program crash due to abort signal - std::abort() or failed assert()
+[04-11-2025] [16:57:33] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[04-11-2025] [16:57:37] [CRASH_MESSAGE] Compilation fails here: ERROR: 0:17: 'backgroundTexture' : undeclared identifier 
+ERROR: 0:18: 'texture' : no matching overloaded function found (using implicit conversion) 
+ERROR: 0:18: 'texture' : function is not known 
+ERROR: 0:17: '=' :  cannot convert from 'const highp float' to '4-component vector of highp float'
+
+
+[04-11-2025] [16:58:17] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[04-11-2025] [16:58:23] [CRASH_MESSAGE] Compilation fails here: ERROR: 0:17: 'backgroundTexture' : undeclared identifier 
+ERROR: 0:18: 'texture' : no matching overloaded function found (using implicit conversion) 
+ERROR: 0:18: 'texture' : function is not known 
+ERROR: 0:17: '=' :  cannot convert from 'const highp float' to '4-component vector of highp float'
+
+
+[04-11-2025] [16:58:25] [CRASH_MESSAGE] Program crash due to abort signal - std::abort() or failed assert()
+[04-11-2025] [16:59:22] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[04-11-2025] [16:59:27] [CRASH_MESSAGE] Compilation fails here: ERROR: 0:17: 'backgroundTexture' : undeclared identifier 
+ERROR: 0:18: 'texture' : no matching overloaded function found (using implicit conversion) 
+ERROR: 0:18: 'texture' : function is not known 
+ERROR: 0:17: '=' :  cannot convert from 'const highp float' to '4-component vector of highp float'
+
+
+[04-11-2025] [16:59:30] [CRASH_MESSAGE] Program crash due to abort signal - std::abort() or failed assert()
+[04-11-2025] [17:00:20] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[04-11-2025] [17:07:27] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[04-11-2025] [17:12:17] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[04-11-2025] [17:15:00] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[04-11-2025] [17:15:43] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[04-11-2025] [17:17:41] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[04-11-2025] [17:18:27] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[04-11-2025] [17:19:59] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[04-11-2025] [17:22:02] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[04-11-2025] [17:24:33] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[04-11-2025] [17:25:41] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[04-11-2025] [17:26:05] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[04-11-2025] [17:26:50] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[04-11-2025] [17:27:59] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[04-11-2025] [17:28:38] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[04-11-2025] [17:29:02] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[04-11-2025] [17:30:01] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[04-11-2025] [17:30:32] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[04-11-2025] [17:31:04] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[04-11-2025] [17:31:58] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[04-11-2025] [17:32:55] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[04-11-2025] [17:36:58] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[04-11-2025] [17:39:33] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[04-11-2025] [17:39:38] [CRASH_MESSAGE] Compilation fails here: ERROR: 0:20: 'gl_Coord' : undeclared identifier 
+ERROR: 0:20: 'z' : field selection requires structure, vector, or matrix on left hand side 
+
+
+[04-11-2025] [17:39:40] [CRASH_MESSAGE] Program crash due to abort signal - std::abort() or failed assert()
+[04-11-2025] [17:44:18] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[04-11-2025] [17:44:39] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[04-11-2025] [17:45:01] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[04-11-2025] [17:45:25] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[04-11-2025] [17:46:49] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[04-11-2025] [17:47:38] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[04-11-2025] [17:49:57] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[04-11-2025] [17:53:21] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[04-11-2025] [17:53:40] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[04-11-2025] [17:54:43] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[04-11-2025] [18:02:48] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[04-11-2025] [18:05:29] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[04-11-2025] [18:05:34] [CRASH_MESSAGE] Compilation fails here: ERROR: 0:18: 'texture' : no matching overloaded function found (using implicit conversion) 
+ERROR: 0:18: 'texture' : function is not known 
+ERROR: 0:17: '=' :  cannot convert from 'const highp float' to '4-component vector of highp float'
+
+
+[04-11-2025] [18:05:37] [CRASH_MESSAGE] Program crash due to abort signal - std::abort() or failed assert()
+[04-11-2025] [18:06:27] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[04-11-2025] [18:07:10] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[04-11-2025] [18:07:55] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[04-11-2025] [18:15:18] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[04-11-2025] [18:15:23] [CRASH_MESSAGE] Compilation fails here: ERROR: 0:15: 'FragColor' : undeclared identifier 
+ERROR: 0:15: 'assign' :  cannot convert from '4-component vector of highp float' to 'highp float'
+
+
+[04-11-2025] [18:15:40] [CRASH_MESSAGE] Program crash due to abort signal - std::abort() or failed assert()
+[04-11-2025] [18:16:03] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[04-11-2025] [18:16:08] [CRASH_MESSAGE] Link operation fails here: The  shader uses varying texture_coordinates, but previous shader does not write to it.
+Out of resource error.
+
+[04-11-2025] [18:16:32] [CRASH_MESSAGE] Program crash due to abort signal - std::abort() or failed assert()
+[04-11-2025] [18:17:23] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[04-11-2025] [18:20:58] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[04-11-2025] [18:21:02] [CRASH_MESSAGE] Compilation fails here: ERROR: 0:16: 'pos' : undeclared identifier 
+ERROR: 0:16: 'xz' : field selection requires structure, vector, or matrix on left hand side 
+
+
+[04-11-2025] [18:21:05] [CRASH_MESSAGE] Program crash due to abort signal - std::abort() or failed assert()
+[04-11-2025] [18:22:29] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[04-11-2025] [18:22:34] [CRASH_MESSAGE] Compilation fails here: ERROR: 0:16: 'assign' : l-value required "inputPos" (cannot modify an attribute)
+ERROR: 0:19: 'aTexCoord' : undeclared identifier 
+ERROR: 0:19: 'assign' :  cannot convert from 'highp float' to 'varying 2-component vector of highp float'
+
+
+[04-11-2025] [18:22:38] [CRASH_MESSAGE] Program crash due to abort signal - std::abort() or failed assert()
+[04-11-2025] [18:24:34] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[04-11-2025] [18:24:39] [CRASH_MESSAGE] Compilation fails here: ERROR: 0:16: 'newPos' : undeclared identifier 
+ERROR: 0:16: 'xz' : field selection requires structure, vector, or matrix on left hand side 
+ERROR: 0:19: 'constructor' : not enough data provided for construction 
+
+
+[04-11-2025] [18:25:16] [CRASH_MESSAGE] Program crash due to abort signal - std::abort() or failed assert()
+[04-11-2025] [18:26:03] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[04-11-2025] [18:30:06] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[04-11-2025] [18:31:06] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[04-11-2025] [18:32:57] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[04-11-2025] [18:34:11] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[04-11-2025] [18:34:52] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[04-11-2025] [18:35:43] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[04-11-2025] [18:36:21] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[04-11-2025] [18:41:32] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[04-11-2025] [18:49:41] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[04-11-2025] [18:54:32] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[04-11-2025] [18:54:52] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[04-11-2025] [18:55:22] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[04-11-2025] [18:55:45] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[04-11-2025] [18:56:10] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[04-11-2025] [18:57:40] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[04-11-2025] [18:58:16] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[04-11-2025] [18:58:40] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[04-11-2025] [18:59:04] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[04-11-2025] [19:04:20] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[04-11-2025] [19:04:42] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[04-11-2025] [19:05:05] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[04-11-2025] [19:06:00] [CRASH_MESSAGE] Failed to load default audio soundFile not found.

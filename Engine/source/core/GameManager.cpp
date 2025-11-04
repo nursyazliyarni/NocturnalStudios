@@ -197,7 +197,13 @@ void GameManager::render(Renderer& r, int w, int h) const {
     const Scene& sc = it->second;
 
     // background (fullscreen) � NOTE uniform must be "bg_texture"
-    r.background_render(sc.background, "bg_texture");
+    if (it->first == "MainMenu") {
+        r.special_background_render(sc.background, "bgTexture", 1);
+    }
+
+    else {
+        r.background_render(sc.background, "bg_texture", 0);
+    }
 
 
     // Example snippet you can drop right AFTER your existing textured background draw:

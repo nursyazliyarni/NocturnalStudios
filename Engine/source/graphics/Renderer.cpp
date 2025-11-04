@@ -38,10 +38,7 @@ namespace {
     }
 }
 
-Renderer::Renderer(const char* vertex_path, const char* fragment_path):render_shader(vertex_path,fragment_path) {
-	logger.log("vertex shader path: " + std::string(vertex_path));
-	logger.log("fragment shader path: " + std::string(fragment_path));
-
+Renderer::Renderer(std::vector<std::pair<std::string, std::string>> shader_filePATH_list):render_shader(shader_filePATH_list) {
     //vertex position->where to render on screen(-1.0 to +1.0)
     //texture UV->how to render texture(0.0 to 1.0)
     float vertices[] = {
@@ -77,16 +74,35 @@ Renderer::Renderer(const char* vertex_path, const char* fragment_path):render_sh
     glBindVertexArray(0); //unbinds the currently bound VAO
 }
 
-void Renderer::background_render(GLuint texture_ID, const GLchar* uniform_VARNAME)
+void Renderer::background_render(GLuint texture_ID, const GLchar* uniform_VARNAME, unsigned int vector_index)
 {
-    render_shader.user_Shader_program(); //use this shader program for rendering background image
+    render_shader.user_Shader_program(vector_index); //use this shader program for rendering background image
     glActiveTexture(GL_TEXTURE0); //specifies which texture unit to make active
     glBindTexture(GL_TEXTURE_2D, texture_ID); //bind this current texture to texturing target
     //glGetUniformLocation takes in ID of shader program object AND uniform_VARNAME
     //to return the location of a uniform variable
     //glUniform1i takes in location of a uniform variable and 0(this means texture unit is GL_TEXTURE0)
-    glUniform1i(glGetUniformLocation(render_shader.get_programID(), uniform_VARNAME), 0);
+    render_shader.SET_uniform_variable(uniform_VARNAME, 0, vector_index);
 
+    glBindVertexArray(VAO_arr); //Bind Vertex Array Object to background mesh
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4); //Render rectangle(4 vertices = 2 triangles)
+    glBindVertexArray(0); //unbinds the currently bound VAO
+    glUseProgram(0); //unbind the currently active shader program and go back to fixed-function pipeline mode
+}
+
+void Renderer::special_background_render(GLuint texture_ID, const GLchar* uniform_VARNAME, unsigned int vector_index)
+{
+    render_shader.user_Shader_program(vector_index); //use this shader program for rendering background image
+    glActiveTexture(GL_TEXTURE0); //specifies which texture unit to make active
+    glBindTexture(GL_TEXTURE_2D, texture_ID); //bind this current texture to texturing target
+    //glGetUniformLocation takes in ID of shader program object AND uniform_VARNAME
+    //to return the location of a uniform variable
+    //glUniform1i takes in location of a uniform variable and 0(this means texture unit is GL_TEXTURE0)
+    render_shader.SET_uniform_variable(uniform_VARNAME, 0, vector_index);
+
+    float time = (float)glfwGetTime();
+    glUniform1f(glGetUniformLocation(render_shader.get_programID(vector_index), "time"), time);
+    glUniform1f(glGetUniformLocation(render_shader.get_programID(vector_index), "parallaxFactor"), 1.0f);
 
     glBindVertexArray(VAO_arr); //Bind Vertex Array Object to background mesh
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4); //Render rectangle(4 vertices = 2 triangles)

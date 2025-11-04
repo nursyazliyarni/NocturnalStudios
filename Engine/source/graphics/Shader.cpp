@@ -14,36 +14,42 @@ All content(c) 2025 DigiPen Institute of Technology Singapore, all rights reserv
 
 #include "graphics/Shader.h"
 
-Shader::Shader(const char* vertex_path, const char* fragment_path) :program_obj{ 0 } {
-	//Read vertex AND fragment shader source code from files
-    const char* vertex_Code, *fragment_Code;
-    std::ifstream vertex_ShaderFile{ vertex_path };
-    std::ifstream fragment_ShaderFile{ fragment_path };
-    if (!vertex_ShaderFile || !fragment_ShaderFile) { //if file fails to open
-        logger.error("Shader File cannot be opened!");
-        return;
+Shader::Shader(const std::vector<std::pair<std::string, std::string>>& shader_filePATH_list) {
+    for (const auto& [vertex_path, fragment_path] : shader_filePATH_list) {
+        //Read vertex AND fragment shader source code from files
+        const char* vertex_Code, * fragment_Code;
+        std::ifstream vertex_ShaderFile{ vertex_path };
+        std::ifstream fragment_ShaderFile{ fragment_path };
+        if (!vertex_ShaderFile || !fragment_ShaderFile) { //if file fails to open
+            logger.error("Shader File cannot be opened!");
+            return;
+            //throw std::runtime_error("Failed to open shader file: " + vertex_path + " or " + fragment_path);
+        }
+
+        std::stringstream vertex_Shader_ss, fragment_Shader_ss;
+        //rdbuf() copies the entire buffer contents at once into stringstream
+        vertex_Shader_ss << vertex_ShaderFile.rdbuf();
+        fragment_Shader_ss << fragment_ShaderFile.rdbuf();
+        //close file stream
+        vertex_ShaderFile.close(); fragment_ShaderFile.close();
+        Compile_Shaders(vertex_Shader_ss.str().c_str(), fragment_Shader_ss.str().c_str());
     }
-
-    std::stringstream vertex_Shader_ss, fragment_Shader_ss;
-    //rdbuf() copies the entire buffer contents at once into stringstream
-    vertex_Shader_ss << vertex_ShaderFile.rdbuf();
-    fragment_Shader_ss << fragment_ShaderFile.rdbuf();
-    //close file stream
-    vertex_ShaderFile.close(); fragment_ShaderFile.close();
-    Compile_Shaders(vertex_Shader_ss.str().c_str(), fragment_Shader_ss.str().c_str());
 }
 
-Shader::~Shader() { glDeleteProgram(program_obj); }
-
-Shader::Shader(Shader&& rhs_shader) noexcept :program_obj{ rhs_shader.program_obj } {
-    rhs_shader.program_obj = 0; //release ownership of rhs_shader
+Shader::~Shader() { 
+    for (const auto& program_ID : program_obj) {
+        glDeleteProgram(program_ID);
+    }
 }
+
+Shader::Shader(Shader&& rhs_shader) noexcept :program_obj{ std::move(rhs_shader.program_obj) } { }//release ownership of rhs_shader
 
 Shader& Shader::operator=(Shader&& rhs_shader) noexcept {
     if (this != &rhs_shader) { //prevent self assignment here
-        glDeleteProgram(program_obj); //delete this->program_obj
-        program_obj = rhs_shader.program_obj; //this->program_obj steal resources
-        rhs_shader.program_obj = 0; //release ownership of rhs_shader
+        for (const auto& program_ID : program_obj) {
+            glDeleteProgram(program_ID);
+        }
+        program_obj = std::move(rhs_shader.program_obj); //this->program_obj steal resources
     }
     return *this;
 }
@@ -75,14 +81,14 @@ void Shader::Compile_Shaders(const char* vertex_Code, const char* fragment_Code)
 }
 
 void Shader::Link_Program(GLuint &vertex_shader, GLuint &fragment_shader) {
-    GLint check_status;
-    program_obj = glCreateProgram();//creates an empty program object
+    GLint check_status; GLuint program_ID;
+    program_ID = glCreateProgram();//creates an empty program object
     //glAttachShader attaches shader object to the program object
-    glAttachShader(program_obj, vertex_shader);
-    glAttachShader(program_obj, fragment_shader);
-    glLinkProgram(program_obj); //glLinkProgram links the program object
+    glAttachShader(program_ID, vertex_shader);
+    glAttachShader(program_ID, fragment_shader);
+    glLinkProgram(program_ID); //glLinkProgram links the program object
     //if return is true, it means occur has occured during linking
-    if (Check_Shaders_Errors(Shader_check_state::link, program_obj, check_status)) {
+    if (Check_Shaders_Errors(Shader_check_state::link, program_ID, check_status)) {
         glDeleteShader(vertex_shader);
         glDeleteShader(fragment_shader);
         return; //exit from this function immediately, 
@@ -90,6 +96,7 @@ void Shader::Link_Program(GLuint &vertex_shader, GLuint &fragment_shader) {
   
     //If we reach here, it means the process of loading->compilation->linking are all successful
     //the program is created successfully at this stage, deallocate all shader object now
+    program_obj.push_back(program_ID);
     glDeleteShader(vertex_shader);
     glDeleteShader(fragment_shader);
 }
@@ -124,59 +131,59 @@ bool Shader::Check_Shaders_Errors(Shader_check_state check_input, GLuint &shader
     return false; //reach here means no error has occured
 }
 
-void Shader::user_Shader_program() {
-    glUseProgram(program_obj); //The function tells OpenGL to use my shader program for all rendering
+void Shader::user_Shader_program(unsigned int vector_index) {
+    glUseProgram(program_obj[vector_index]); //The function tells OpenGL to use my shader program for all rendering
 }
 
-GLuint& Shader::get_programID() {
-    return program_obj;
+GLuint& Shader::get_programID(unsigned int vector_index) {
+    return program_obj[vector_index];
 }
 
 //A single float uniform
-void Shader::SET_uniform_variable(const GLchar* uniform_VARNAME, GLfloat uniform_value) {
-    glUniform1f(glGetUniformLocation(program_obj, uniform_VARNAME), uniform_value);
+void Shader::SET_uniform_variable(const GLchar* uniform_VARNAME, GLfloat uniform_value, unsigned int vector_index) {
+    glUniform1f(glGetUniformLocation(program_obj[vector_index], uniform_VARNAME), uniform_value);
 }
 
 //A 2-component float vector(vec2)
-void Shader::SET_uniform_variable(const GLchar* uniform_VARNAME, GLfloat uniform_value_v1, GLfloat uniform_value_v2) {
-    glUniform2f(glGetUniformLocation(program_obj, uniform_VARNAME), uniform_value_v1, uniform_value_v2);
+void Shader::SET_uniform_variable(const GLchar* uniform_VARNAME, GLfloat uniform_value_v1, GLfloat uniform_value_v2, unsigned int vector_index) {
+    glUniform2f(glGetUniformLocation(program_obj[vector_index], uniform_VARNAME), uniform_value_v1, uniform_value_v2);
 }
 
 //A single integer uniform
-void Shader::SET_uniform_variable(const GLchar* uniform_VARNAME, GLint uniform_value) {
-    glUniform1i(glGetUniformLocation(program_obj, uniform_VARNAME),uniform_value);
+void Shader::SET_uniform_variable(const GLchar* uniform_VARNAME, GLint uniform_value, unsigned int vector_index) {
+    glUniform1i(glGetUniformLocation(program_obj[vector_index], uniform_VARNAME), uniform_value);
 }
 
 //A 2-component int vector(vec2)
-void Shader::SET_uniform_variable(const GLchar* uniform_VARNAME, GLint uniform_value_v1, GLint uniform_value_v2) {
-    glUniform2i(glGetUniformLocation(program_obj, uniform_VARNAME), uniform_value_v1, uniform_value_v2);
+void Shader::SET_uniform_variable(const GLchar* uniform_VARNAME, GLint uniform_value_v1, GLint uniform_value_v2, unsigned int vector_index) {
+    glUniform2i(glGetUniformLocation(program_obj[vector_index], uniform_VARNAME), uniform_value_v1, uniform_value_v2);
 }
 
 //A 1d-array of 1 OR 2-float component
 void Shader::SET_arr_uniform_variable(const GLchar* uniform_VARNAME, GLsizei num_value, 
-    const GLfloat* uniform_value_arr, arr_num_component num_component) 
+    const GLfloat* uniform_value_arr, arr_num_component num_component, unsigned int vector_index)
 {
     //the user decides whether they want 1d-array of 1-float component OR 2-float component
     //size of array == value for each component * num of component
     if (num_component == arr_num_component::one_component) {
-        glUniform1fv(glGetUniformLocation(program_obj, uniform_VARNAME), num_value, uniform_value_arr);
+        glUniform1fv(glGetUniformLocation(program_obj[vector_index], uniform_VARNAME), num_value, uniform_value_arr);
     }
 
     else { //two-component
-        glUniform2fv(glGetUniformLocation(program_obj, uniform_VARNAME), num_value, uniform_value_arr);
+        glUniform2fv(glGetUniformLocation(program_obj[vector_index], uniform_VARNAME), num_value, uniform_value_arr);
     }
 }
 
 //A 1d-array of 1 OR 2-integer component
 void Shader::SET_arr_uniform_variable(const GLchar* uniform_VARNAME, GLsizei num_value,
-    const GLint* uniform_value_arr, arr_num_component num_component)
+    const GLint* uniform_value_arr, arr_num_component num_component, unsigned int vector_index)
 {
     //the user decides whether they want 1d-array of 1-integer component OR 2-integer component 
     if (num_component == arr_num_component::one_component) {
-        glUniform1iv(glGetUniformLocation(program_obj, uniform_VARNAME), num_value, uniform_value_arr);
+        glUniform1iv(glGetUniformLocation(program_obj[vector_index], uniform_VARNAME), num_value, uniform_value_arr);
     }
 
     else { //two-component
-        glUniform2iv(glGetUniformLocation(program_obj, uniform_VARNAME), num_value, uniform_value_arr);
+        glUniform2iv(glGetUniformLocation(program_obj[vector_index], uniform_VARNAME), num_value, uniform_value_arr);
     }
 }

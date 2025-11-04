@@ -60,6 +60,8 @@ Application::Application() {
 }
 
 int Application::run() {
+	logger.setup_crash_handler();
+
 	// 1) read JSON (with safe defaults)
 	//const WindowConfig c = Config::LoadWindowConfig("assets/config.json");
 	const GameConfig c = loadConfig("assets/config.json");
@@ -114,19 +116,31 @@ int Application::run() {
 
 	Physics    game_physics_obj;
 	Game_Loop  game_loop_obj(m_window.handle());
+	std::vector<std::pair<std::string, std::string>> shader_filePATH_list;
+
 
     std::string vertexPath,
 				fragmentPath,
 				prefabPath, prefabTestPath,
 				scenePath;
 
-	auto shaderPath = resourceManager.getFilePathsForKey<ShaderFile>("background");
-	for (auto const& path : shaderPath) {
+	auto shaderPath_1 = resourceManager.getFilePathsForKey<ShaderFile>("background");
+	for (auto const& path : shaderPath_1) {
 		std::filesystem::path p{ path };
 		auto ext = p.extension().string();
 		if (ext == ".vert") vertexPath = p.string();
-		else if (ext == ".frag") fragmentPath = p.string();	
+		else if (ext == ".frag") fragmentPath = p.string();
 	}
+	shader_filePATH_list.push_back({ vertexPath, fragmentPath });
+
+	auto shaderPath_2 = resourceManager.getFilePathsForKey<ShaderFile>("special_background");
+	for (auto const& path : shaderPath_2) {
+		std::filesystem::path p{ path };
+		auto ext = p.extension().string();
+		if (ext == ".vert") vertexPath = p.string();
+		else if (ext == ".frag") fragmentPath = p.string();
+	}
+	shader_filePATH_list.push_back({ vertexPath, fragmentPath });
 
 	auto prefabPaths = resourceManager.getFilePathsForKey<PrefabFile>("prefabs");
 	if (!prefabPaths.empty()) prefabPath = prefabPaths.front();
@@ -141,7 +155,7 @@ int Application::run() {
 	TextureStore textures;
 	GameManager gsm(ecs);
 	gsm.load(prefabPath.c_str(), scenePath.c_str(), textures);
-	Renderer   renderer(vertexPath.c_str(), fragmentPath.c_str());
+	Renderer   renderer(shader_filePATH_list);
    
 	// Initialize
 	PrefabManager prefabManager(ecs);
