@@ -78,6 +78,41 @@ struct Transform {
 
 	CoordinateSpace space = CoordinateSpace::World;
 	bool isVisible = true;
+	Transform():position {}, scale{  }, rotation{  }, height{}{}
+	Transform(Vector2D pos, Vector2D scl, float rot) :position{ pos }, scale{ scl }, rotation{ rot }, height{} {}
+	/**
+	* Returns the translated vector2d matrix
+	* translates the object to x and y
+	*/
+	Vector2D Translate(float x, float y);
+
+	/**
+	 *  Returns the translated vector2d matrix
+	 *	translates by x and y along the y axis
+	 */
+	Vector2D TranslateBy(float x, float y);
+
+	/**
+	 * Returns the rotated angle (in radians)
+	 */
+	float Rotate(float a);
+
+
+	/**
+	 * .
+	 */
+	float RotateDeg(float a);
+
+
+	/**
+	 * .
+	 */
+	Vector2D ScaleUniform(float s);
+
+	/**
+	 * .
+	 */
+	Vector2D Scale(float x, float y);
 };
 
 

@@ -9,8 +9,8 @@
         -Brief
 
     Secondary Author:
-         Name (%)
-        -Brief
+         Nur Syazliyarni 20%
+        - Added the messaging system
 
     All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
 *------------------------------------------------------------------------------------------------*/
@@ -20,6 +20,9 @@
 #include "messaging/Message.h"
 #include "messaging/InputMessage.h"
 #include "messaging/MessageHandler.h"
+#include "graphics/DebugDraw.h"
+
+static bool debugToggled = false;
 
 Game_Loop::Game_Loop(GLFWwindow* window) : accum_game_time{ 0.0 }, curr_frame_time{ glfwGetTime() }, 
 display_interval{ 0.0 } {}
@@ -55,11 +58,26 @@ void Game_Loop::HandleMessage(Messaging::Message* msg) {
         auto* keyMsg = static_cast<Messaging::KeyMessage*>(msg);
         if (keyMsg->action == GLFW_PRESS) {
             std::cout << "[GameLoop] Key pressed: " << keyMsg->keyCode << "\n";
+
+            // Only toggle when the key is B AND not already toggled in this press
+            if (keyMsg->keyCode == GLFW_KEY_B && !debugToggled) {
+                auto& drawer = Debug::Drawer::Instance();
+                drawer.Toggle(!drawer.IsActive());
+                std::cout << "[DebugDraw] Debug mode: " << (drawer.IsActive() ? "ON" : "OFF") << "\n";
+
+                debugToggled = true; // prevent double toggle on hold
+            }
         }
+        
         else if (keyMsg->action == GLFW_RELEASE) {
-            std::cout << "[GameLoop] Key released: " << keyMsg->keyCode << "\n";
-        }
-        break;
+           // std::cout << "[GameLoop] Key released: " << keyMsg->keyCode << "\n";
+
+            // Only reset debounce when releasing the same key
+            if (keyMsg->keyCode == GLFW_KEY_B) {
+                debugToggled = false;
+            }
+        } 
+        break; 
     }
     /*case Messaging::Mid::MOUSEMOVE: {
         auto* mouseMove = static_cast<Messaging::MovingMouseMessage*>(msg);

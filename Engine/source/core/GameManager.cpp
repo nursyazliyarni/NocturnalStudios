@@ -1,3 +1,24 @@
+/*!------------------------------------------------------------------------------------------------
+    File: ImGUIManager.cpp
+    Project: NocturnalStudio
+
+    This file contains the implementation of the ImGuiManager class, which manages the integration
+    of the ImGui library into the customize game engine. It handles the initialization,
+    frame updates, and rendering of ImGui components, as well as providing various UI elements
+    for debugging and interaction within the engine.
+
+    Primary Author:
+        Name %
+        -
+
+    Secondary Author:
+        Nur Syazliyarni (5%)
+        - Added function to get current scene for level editor
+
+    All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
+
+
 #include "core/GameManager.h"
 #include "stb_image.h"
 #include <rapidjson/document.h>
@@ -9,7 +30,8 @@
 #include "ECS/ECS.h"
 
 #include "graphics/Camera2D.h"
-    
+#include "graphics/DebugDraw.h"
+#include "physics/AABB.h"
 
 //  TextureStore 
 static GLuint loadGLTexture(const std::string& path) {
@@ -212,6 +234,7 @@ void GameManager::render(Renderer& r, int w, int h) const {
     Cam2D_Apply(currentScene, bx, by, bw, bh, w, h);
     r.texturedTri(sc.background, bx, by, bw, bh);
 
+    
 
     // Example snippet you can drop right AFTER your existing textured background draw:
     //auto view = ecs.view<Transform, ImageRenderer>();  // however your ECS exposes views
@@ -245,14 +268,11 @@ void GameManager::render(Renderer& r, int w, int h) const {
                     Cam2D_Apply(currentScene, px, py, pw, ph, w, h);
 
 
-                    r.texturedTri(img->textureID, px, py, pw, ph);
+                   // r.texturedTri(img->textureID, px, py, pw, ph);
                 }
             }
         }
     }
-
-
-
 
     // entities (normalized ? pixels)
     for (const auto& di : sc.items) {
@@ -263,6 +283,18 @@ void GameManager::render(Renderer& r, int w, int h) const {
 
         r.texturedTri(di.tex, px, py, pw, ph);
 
+        // Debugging drawer
+        if (Debug::Drawer::Instance().IsActive())
+        {
+            AABB collider(Vector2D(px, py), Vector2D(pw, ph));
+
+            // Queue the collider’s outline for debug
+            Debug::Drawer::Instance().AddRect(
+                collider.pos.x(), collider.pos.y(),
+                collider.size.x(), collider.size.y(),
+                0xFFFF00FF // yellow box
+            );
+        }
     }
 
 }
@@ -299,5 +331,13 @@ bool GameManager::popQuitRequested() {
     bool q = requestedQuit;
     requestedQuit = false;
     return q;
+}
+
+// Function used for the level editor to show current game objects
+Scene* GameManager::getCurrentScene() {
+    auto it = scenes.find(currentScene);
+    if (it != scenes.end())
+        return &it->second;
+    return nullptr;
 }
 
