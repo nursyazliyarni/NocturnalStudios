@@ -74,6 +74,9 @@ public:
 
 	void getViewportRectWindow(ImVec2& outMin, ImVec2& outMax) const { outMin = vpMinWin; outMax = vpMaxWin; }
 
+	void showAssetsBrowserUI();
+	void showBottomDockUI();
+
 private:
 	Window& mainWindow;
 	Renderer& renderer;

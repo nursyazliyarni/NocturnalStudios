@@ -16,9 +16,10 @@
 		- Integrated drawAllSprites and drawViewportShapes
 
 	Secondary Author:
-		Nur Syazliyarni (15%)
+		Nur Syazliyarni (25%)
 		- Added the debug drawer that will load under showViewportWindowUI
 		- Editor able to list and edit transform game objects in current scene
+		- Added assets browser and layout of bottom editor dock
 
 	All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
 *------------------------------------------------------------------------------------------------*/
@@ -26,12 +27,13 @@
 #include "../include/core/ImGuiManager.h"
 #include <chrono>
 #include "graphics/DebugDraw.h"
-
+#include "core/GameManager.h"
 namespace {
 	using Clock = std::chrono::high_resolution_clock;
 }
 
 void Gui::updateImGuiManager(double& deltaTime, ImGuiManager& imGuiManager) {
+	auto start = Clock::now();
 	imGuiManager.updateDeltaTime(deltaTime);
 
 	// Get main viewport position and size
@@ -41,12 +43,17 @@ void Gui::updateImGuiManager(double& deltaTime, ImGuiManager& imGuiManager) {
 
 	imGuiManager.startFrame();
 	imGuiManager.showViewportWindowUI();
+	//imGuiManager.showAssetsBrowserUI();
 	imGuiManager.showMousePosOverlayUI();
 	imGuiManager.showPerformanceOverlayUI();
-	imGuiManager.showEntityListUI();
 	imGuiManager.showTransformUI();
-	imGuiManager.showLogsOverlayUI();
+	imGuiManager.showEntityListUI();
+	//imGuiManager.showLogsOverlayUI();
+	imGuiManager.showBottomDockUI();
 	imGuiManager.endFrame();
+	auto end = Clock::now();
+	double imGuiTime = std::chrono::duration<double>(end - start).count();
+	imGuiManager.setSystemTimings(imGuiTime, 0.0);
 }
 
 
@@ -332,9 +339,9 @@ void ImGuiManager::showMousePosOverlayUI() {
 }
 
 void ImGuiManager::showPerformanceOverlayUI() {
-	constexpr double secondsToMs = 1000.0;
+	constexpr double secondsToMs =1000.0;
 	constexpr float width = 300.0f;
-	constexpr float height = 100.0f;
+	constexpr float height = 150.0f;
 
 	ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDecoration |
 		ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
@@ -346,13 +353,34 @@ void ImGuiManager::showPerformanceOverlayUI() {
 	ImGui::SetNextWindowSize({ width, height });
 
 	ImGui::Begin("Performance", nullptr, windowFlags);
-	ImGui::Text("Current FPS: %.2f %.2lfms", 1 / deltaTime, deltaTime * secondsToMs);
 
-	// @Todo (axewhy): Add more performance metrics like the percentage of usage between different systems in the game engine
-	ImGui::Text("ImGui: %.2f ms (%.2f%%)", imGuiTime * secondsToMs, (imGuiTime / deltaTime) * 100.0);
-	ImGui::Text("Renderer: %.2f ms (%.2f%%)", renderTime * secondsToMs, (renderTime / deltaTime) * 100.0);
-	ImGui::Text("Physics: %.2f ms (%.2f%%)", physicsTime * secondsToMs, (physicsTime / deltaTime) * 100.0);
-	ImGui::Text("Input: %.2f ms (%.2f%%)", inputTime * secondsToMs, (inputTime / deltaTime) * 100.0);
+	// Clamp dt to avoid div-by-zero and negative values
+	double dt = deltaTime;
+	if (dt <=0.0) dt =1e-6; // tiny epsilon when paused or first frame
+	ImGui::Text("Current FPS: %.2f (%.2f ms)",1.0 / dt, dt * secondsToMs);
+
+	// Compute percentages against the frame time (dt)
+	auto pct = [dt](double t) -> double { return (t <=0.0) ?0.0 : (t / dt) *100.0; };
+
+	// Known subsystem times
+	double imguiMs = imGuiTime * secondsToMs;
+	double renderMs = renderTime * secondsToMs;
+	double physicsMs = physicsTime * secondsToMs;
+	double inputMs = inputTime * secondsToMs;
+	double logicMs = logicTime * secondsToMs;
+
+	// Compute an "Other" bucket for time not attributed to known systems
+	double knownSec = imGuiTime + renderTime + physicsTime + inputTime + logicTime;
+	double otherSec = std::max(0.0, dt - knownSec);
+	double otherMs = otherSec * secondsToMs;
+
+	ImGui::Separator();
+	ImGui::Text("ImGui: %.2f ms (%.2f%%)", imguiMs, pct(imGuiTime));
+	ImGui::Text("Renderer: %.2f ms (%.2f%%)", renderMs, pct(renderTime));
+	ImGui::Text("Physics: %.2f ms (%.2f%%)", physicsMs, pct(physicsTime));		
+	ImGui::Text("Input: %.2f ms (%.2f%%)", inputMs, pct(inputTime));
+	ImGui::Text("Logic: %.2f ms (%.2f%%)", logicMs, pct(logicTime));
+	ImGui::Text("Other: %.2f ms (%.2f%%)", otherMs, pct(otherSec));
 
 	ImGui::End();
 }
@@ -366,7 +394,7 @@ void ImGuiManager::showEntityListUI(/* Maybe an enum of paramEntityType, Maybe a
 		ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
 
 	// Position the overlay at the top-right corner of the window, below performance overlay
-	ImVec2 windowTopRightPos = { windowBottomRight.x - width, windowTopLeft.y + 200.0f };
+	ImVec2 windowTopRightPos = { windowBottomRight.x - width, windowTopLeft.y + 250.0f };
 	ImGui::SetNextWindowPos(windowTopRightPos);
 	ImGui::SetNextWindowBgAlpha(0.35f);
 	ImGui::SetNextWindowSize({ width, height });
@@ -499,6 +527,52 @@ void ImGuiManager::showEntityListUI(/* Maybe an enum of paramEntityType, Maybe a
 		}
 	}
 
+	// Add and remove buttons 
+	Scene* sceneMut = gsm.getCurrentScene();
+
+	if (sceneMut)
+	{
+		ImGui::Separator();
+		//this button will change to load a gameobject,, currently loads just an empty game object
+		if (ImGui::Button("Add New Object")) 
+		{
+			// Create a simple new DrawItem
+			DrawItem newItem;
+			newItem.name = "NewObject_" + std::to_string(sceneMut->items.size());
+			newItem.w = 0.1f;     // default width
+			newItem.h = 0.1f;     // default height
+			newItem.x = 0.5f;     // start centered
+			newItem.y = 0.5f;
+			newItem.angle = 0.0f; // no rotation
+
+			// Add it to the current scene
+			sceneMut->items.push_back(newItem);
+			selectedEntityType = static_cast<unsigned int>(sceneMut->items.size() - 1);
+
+			logger.log("[ImGui] Added new object: " + newItem.name);
+		}
+
+		ImGui::SameLine();
+
+		if (ImGui::Button("Remove Selected"))
+		{
+			if (!sceneMut->items.empty() && selectedEntityType < sceneMut->items.size())
+			{
+				logger.log("[ImGui] Removed object: " + sceneMut->items[selectedEntityType].name);
+				sceneMut->items.erase(sceneMut->items.begin() + selectedEntityType);
+
+				// Adjust selection index to stay valid
+				if (selectedEntityType >= sceneMut->items.size() && !sceneMut->items.empty())
+					selectedEntityType = static_cast<unsigned int>(sceneMut->items.size() - 1);
+				else if (sceneMut->items.empty())
+					selectedEntityType = 0;
+			}
+		}
+	}
+	else
+	{
+		ImGui::TextDisabled("Scene not editable (no active level).");
+	}
 
 	ImGui::End();
 }
@@ -512,7 +586,7 @@ void ImGuiManager::showTransformUI(/* A reference to a vector of object list obj
 		ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
 
 	// Position the overlay at the top-right corner of the window, below entity list overlay
-	ImVec2 windowTopRightPos = { windowBottomRight.x - width, windowTopLeft.y + 500.0f };
+	ImVec2 windowTopRightPos = { windowBottomRight.x - width, windowTopLeft.y + 550.0f };
 	ImGui::SetNextWindowPos(windowTopRightPos);
 	ImGui::SetNextWindowBgAlpha(0.35f);
 	ImGui::SetNextWindowSize({ width, height });
@@ -633,4 +707,141 @@ void ImGuiManager::showLogsOverlayUI() {
 
 	ImGui::EndChild();
     ImGui::End();
+}
+
+void ImGuiManager::showAssetsBrowserUI() {
+	constexpr float width = 400.0f;
+	constexpr float height = 350.0f;
+	ImGuiWindowFlags flags = ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing;
+
+	ImVec2 pos = { windowBottomRight.x - width - 340.0f, windowTopLeft.y + 520.0f }; // near Transform window
+	ImGui::SetNextWindowPos(pos);
+	ImGui::SetNextWindowSize({ width, height });
+
+	ImGui::TextColored(ImVec4(0.8f, 0.9f, 1.0f, 1.0f), "Assets Browser");
+	ImGui::Separator();
+	
+	// importing new texture
+	static char newPath[256] = "assets/textures/";
+	ImGui::InputText("New Texture Path", newPath, IM_ARRAYSIZE(newPath));
+	if (ImGui::Button("Import Texture"))
+	{
+		std::string fullPath = newPath;
+		std::filesystem::path p(fullPath);
+		std::string name = p.stem().string();
+
+		try
+		{
+			TextureFile& newTex = resourceManager.loadTexture(name, fullPath);
+			logger.log("[ImGui] Imported new texture: " + name + " (" + fullPath + ")");
+		}
+		catch (...)
+		{
+			logger.error("[ImGui] Failed to import texture from path: " + fullPath);
+		}
+	}
+	
+	ImGui::Text("Loaded Textures:");
+	ImGui::Separator();
+
+	// thumbnail size
+	static float thumbnailSize = 60.0f;
+	
+	// thumbnail grid
+	float panelWidth = ImGui::GetContentRegionAvail().x; // total space in tab
+
+
+	float padding = 10.0f;
+	float cellSize = thumbnailSize + padding;
+	int columnCount = (int)(panelWidth / cellSize);
+	if (columnCount < 1) columnCount = 1;
+	
+	// texture grid table 
+	if (ImGui::BeginTable("TextureTable", columnCount, ImGuiTableFlags_SizingStretchSame))
+	{
+		auto& textures = resourceManager.getTextures();
+		int index = 0;
+
+		for (auto& [id, texFile] : textures)
+		{
+			const std::string& texName = texFile.getKey();
+			const std::string& texPath = texFile.getFilePath();
+
+			GLuint texID = resourceManager.getGLTextureFromFile(texPath);
+			if (texID == 0) continue;
+
+			ImGui::TableNextColumn();
+			ImGui::PushID(index++);
+
+			if (ImGui::ImageButton((ImTextureID)(intptr_t)texID, ImVec2(thumbnailSize, thumbnailSize)))
+			{
+				Scene* scene = gsm.getCurrentScene();
+				if (scene && selectedEntityType < scene->items.size())
+				{
+					scene->items[selectedEntityType].tex = texID;
+					logger.log("[ImGui] Applied texture: " + texName);
+				}
+			}
+
+			ImGui::TextWrapped(texName.c_str());
+			ImGui::PopID();
+		}
+
+		ImGui::EndTable();
+	}
+}
+
+void ImGuiManager::showBottomDockUI()
+{
+
+	//float dockPadding = 8.0f;   // gap between viewport and dock
+	float dockHeight = 200.0f; // desired dock height
+	float rightPanelWidth = 300.0f; // width of right sidebar
+
+	// dock should begin directly below the viewport
+	float dockYPos = vpMaxWin.y ;
+
+	// dock should stop before the right sidebar begins
+	float dockXPos = windowTopLeft.x + 8.0f;
+	float dockWidth = (windowBottomRight.x - rightPanelWidth) - dockXPos;
+
+	// doesnt exceed the window bottom
+	if (dockYPos + dockHeight > windowBottomRight.y)
+		dockYPos = windowBottomRight.y - dockHeight - 4.0f;
+
+	ImVec2 dockPos = { dockXPos, dockYPos };
+	ImVec2 dockSize = { dockWidth, dockHeight };
+
+	ImGui::SetNextWindowPos(dockPos);
+	ImGui::SetNextWindowSize(dockSize);
+
+	ImGuiWindowFlags flags =
+		ImGuiWindowFlags_NoSavedSettings |
+		ImGuiWindowFlags_NoCollapse |
+		ImGuiWindowFlags_NoResize;
+
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(8, 8));
+	ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(4, 4));
+
+	ImGui::Begin("Editor Dock", nullptr, flags);
+
+	if (ImGui::BeginTabBar("DockTabs"))
+	{
+		if (ImGui::BeginTabItem("Assets Browser"))
+		{
+			showAssetsBrowserUI();  // no Begin/End inside
+			ImGui::EndTabItem();
+		}
+
+		if (ImGui::BeginTabItem("Logs"))
+		{
+			showLogsOverlayUI();    // no Begin/End inside
+			ImGui::EndTabItem();
+		}
+
+		ImGui::EndTabBar();
+	}
+
+	ImGui::End();
+	ImGui::PopStyleVar(2);
 }
