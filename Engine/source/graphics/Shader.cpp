@@ -187,3 +187,7 @@ void Shader::SET_arr_uniform_variable(const GLchar* uniform_VARNAME, GLsizei num
         glUniform2iv(glGetUniformLocation(program_obj[vector_index], uniform_VARNAME), num_value, uniform_value_arr);
     }
 }
+
+void Shader::SET_uniform_variable(const GLchar* uniform_VARNAME, GLfloat v1, GLfloat v2, GLfloat v3) {
+    glUniform3f(glGetUniformLocation(program_obj, uniform_VARNAME), v1, v2, v3);
+}

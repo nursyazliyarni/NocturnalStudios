@@ -15,11 +15,17 @@
 		Rishika Bimal Attodi
 		- Integrated drawAllSprites and drawViewportShapes
 
+	Secondary Author:
+		Nur Syazliyarni (15%)
+		- Added the debug drawer that will load under showViewportWindowUI
+		- Editor able to list and edit transform game objects in current scene
+
 	All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
 *------------------------------------------------------------------------------------------------*/
 
 #include "../include/core/ImGuiManager.h"
 #include <chrono>
+#include "graphics/DebugDraw.h"
 
 namespace {
 	using Clock = std::chrono::high_resolution_clock;
@@ -244,13 +250,47 @@ void ImGuiManager::showViewportWindowUI() {
 	// Draw current SCENE into the FBO
 	gsm.render(renderer, vw, vh);
 
+	// Debugging Drawer //
+	static bool printed = false;
+	if (Debug::Drawer::Instance().IsActive())
+	{
+		//Debug::Drawer::Instance().AddRect(100, 100, 200, 100, 0xFFFF00FF);
+		//Debug::Drawer::Instance().AddCircle(100, 100, 100, 0xFFFF00FF, 32);
+
+
+		if (!printed) {
+			std::cout << "[ImGuiManager] DebugDraw active\n";
+			printed = true;
+		}
+
+		glPushAttrib(GL_ALL_ATTRIB_BITS);               // save all states (color, blend, etc.)
+		glUseProgram(0);
+		glDisable(GL_TEXTURE_2D);
+		glDisable(GL_DEPTH_TEST);
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);      // draw outlines only
+		glMatrixMode(GL_MODELVIEW);
+		glLoadIdentity();
+
+		Debug::Drawer::Instance().Render(Matrix<3>().Identity());
+
+		
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		glPopAttrib();                                  // restore previous OpenGL states
+	}
+	else {
+		printed = false;
+	}
+	// Debugging Drawer //
+
 	renderer.unbindFBO();
 	renderTime = std::chrono::duration<double>(Clock::now() - renderStart).count();
 
 	// Show the FBO as an ImGui Image (flipped V)
 	ImVec2 imgMin = ImGui::GetCursorScreenPos();
 	ImGui::Image((ImTextureID)(intptr_t)renderer.getFBOTexture(),
-		ImVec2(vw, vh), ImVec2(0, 1), ImVec2(1, 0));
+		ImVec2(static_cast<float>(vw), static_cast<float>(vh)), ImVec2(0, 1), ImVec2(1, 0));
 	ImVec2 imgMax = ImVec2(imgMin.x + vw, imgMin.y + vh);
 
 	// Handle click -> normalized coords -> GSM
@@ -413,7 +453,7 @@ void ImGuiManager::showEntityListUI(/* Maybe an enum of paramEntityType, Maybe a
 				}
 				else if (audioNames[bgmIndex].find("sfx_") != std::string::npos) {
 					// play sfx instance (one-shot)
-					AudioInstanceID inst = audioSystem.playSFX(bgmRID);
+					audioSystem.playSFX(bgmRID);
 				}
 
 				if (opt) {
@@ -430,7 +470,34 @@ void ImGuiManager::showEntityListUI(/* Maybe an enum of paramEntityType, Maybe a
 		}
 	}
 
+	ImGui::Separator();
+	ImGui::Spacing();
 
+	//Show current game objects in scene
+	if (ImGui::CollapsingHeader("Scene Objects", ImGuiTreeNodeFlags_DefaultOpen))
+	{
+		const Scene* scene = gsm.getCurrentScene();
+		if (!scene) // if no scene, show message
+		{
+			ImGui::TextDisabled("No active scene loaded.");
+		}
+		else
+		{
+			for (size_t i = 0; i < scene->items.size(); ++i)
+			{
+				const DrawItem& item = scene->items[i];
+				bool selected = (selectedEntityType == i); // check if obj is current selected one
+
+				// labels obj as Entity if it has no name
+				std::string label = item.name.empty()
+					? "Entity " + std::to_string(i)
+					: item.name;
+
+				if (ImGui::Selectable(label.c_str(), selected)) // selectable list
+					selectedEntityType = static_cast<unsigned int>(i);
+			}
+		}
+	}
 
 
 	ImGui::End();
@@ -449,9 +516,44 @@ void ImGuiManager::showTransformUI(/* A reference to a vector of object list obj
 	ImGui::SetNextWindowPos(windowTopRightPos);
 	ImGui::SetNextWindowBgAlpha(0.35f);
 	ImGui::SetNextWindowSize({ width, height });
-	ImGui::Begin("Transform", nullptr, windowFlags);
-	ImGui::Text("Transform Controls");
+	/*ImGui::Begin("Transform", nullptr, windowFlags);
+	ImGui::Text("Transform Controls");*/
 
+	ImGui::Begin("Inspector", nullptr, windowFlags);
+	ImGui::TextColored(ImVec4(0.8f, 0.9f, 1.0f, 1.0f), "In-Game Property Editor"); // section title
+	ImGui::Separator();
+
+	Scene* scene = gsm.getCurrentScene();
+	if (!scene || scene->items.empty()) {
+		ImGui::TextDisabled("No scene or objects available."); // message shows when theres nothing in current scene
+		ImGui::End();
+		return;
+	}
+
+	if (selectedEntityType >= scene->items.size()) {
+		ImGui::TextDisabled("No object selected.");
+		ImGui::End();
+		return;
+	}
+
+	DrawItem& item = scene->items[selectedEntityType];
+
+	ImGui::Text("Editing: %s", item.name.empty() ? "(Unnamed)" : item.name.c_str());
+	ImGui::Separator();
+
+	// edits the game objects actual transform
+	bool changed = false;
+	changed |= ImGui::DragFloat("X", &item.x, 0.01f, 0.0f, 1.0f);
+	changed |= ImGui::DragFloat("Y", &item.y, 0.01f, 0.0f, 1.0f);
+	changed |= ImGui::DragFloat("Width", &item.w, 0.01f, 0.0f, 2.0f);
+	changed |= ImGui::DragFloat("Height", &item.h, 0.01f, 0.0f, 2.0f);
+	changed |= ImGui::DragFloat("Angle", &item.angle, 0.5f, -360.0f, 360.0f);
+
+	/*if (changed)
+	{
+		logger.log("[ImGui] Updated transform of " + item.name);
+	}*/
+	/*
 	// @Todo (axewhy): Change this with the selected entity transform. This is only a placeholder
 	static Vector2D position(0.f, 0.f);
 	static Matrix<3> rotationMatrix = Matrix<3>().Identity();
@@ -469,6 +571,29 @@ void ImGuiManager::showTransformUI(/* A reference to a vector of object list obj
 	// Rotation controls (in degrees)
 	static float rotationDegrees = 0.0f;
 	ImGui::SliderFloat("Rotation", &rotationDegrees, -180.0f, 180.0f);
+	*/
+
+	// Showing current game objects in scene
+	/*if (ImGui::CollapsingHeader("Scene Object Transform", ImGuiTreeNodeFlags_DefaultOpen))
+	{
+		Scene* scene = gsm.getCurrentScene();
+		if (scene && selectedEntityType < scene->items.size())
+		{
+			DrawItem& item = scene->items[selectedEntityType];
+			ImGui::Text("Editing: %s", item.name.empty() ? "(Unnamed)" : item.name.c_str());
+			ImGui::Separator();
+
+			ImGui::DragFloat("X", &item.x, 0.01f, 0.0f, 1.0f);
+			ImGui::DragFloat("Y", &item.y, 0.01f, 0.0f, 1.0f);
+			ImGui::DragFloat("Width", &item.w, 0.01f, 0.0f, 2.0f);
+			ImGui::DragFloat("Height", &item.h, 0.01f, 0.0f, 2.0f);
+			ImGui::DragFloat("Angle", &item.angle, 0.5f, -360.0f, 360.0f);
+		}
+		else
+		{
+			ImGui::TextDisabled("No object selected or invalid index.");
+		}
+	}*/
 
 	ImGui::End();
 }

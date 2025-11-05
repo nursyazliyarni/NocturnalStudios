@@ -10,7 +10,8 @@
 class ECS;
 
 struct DrawItem {
-    GLuint tex = 0;         // GL texture id
+    std::string name;  
+    GLuint tex = 0;
     float x = 0, y = 0, w = 0, h = 0, angle = 0; // normalized
 };
 
@@ -61,6 +62,13 @@ public:
 
     GameManager(ECS& ecs) :ecs_{ ecs } {}
 
+    // Camera controls (per scene)
+    //void setCameraEnabled(const std::string& scene, bool on);
+    //void setCameraCenter(const std::string& scene, float cx, float cy);
+    //void setCameraZoom(const std::string& scene, float z);
+    //void focusOnEntity(const std::string& scene, const std::string& entityName);
+
+    Scene* getCurrentScene();
 
 private:
     std::unordered_map<std::string, Scene> scenes;
@@ -74,5 +82,7 @@ private:
     std::string currentScene;
 
     ECS& ecs_;
+    //std::unordered_map<std::string, Camera2D> cameras_; // one camera per scene
+
 
 };
