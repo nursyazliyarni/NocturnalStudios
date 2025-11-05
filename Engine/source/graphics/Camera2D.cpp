@@ -25,10 +25,22 @@ namespace {
 
         // Smoothing factor (0.1–0.25 feels nice)
         float smooth = 0.18f;
+
+        // added for preset/active plumbing
+        float savedZoom = 1.0f;      // optional scratch
+
     };
 
     // Per-scene camera state
     std::unordered_map<std::string, CamState> g_cam;
+
+    // which preset is currently active
+    static std::string g_activeKey;
+
+    // grab a ref to the live/active camera slot; we store it under "__active__"
+    static CamState& activeCam() {
+        return g_cam["__active__"];
+    }
 
     // Visible width/height in normalized units are 1/zoom.
     // Keep the camera center so the view window stays inside [0..1].
@@ -102,6 +114,80 @@ void Cam2D_PanBy(const std::string& scene, float dx, float dy) {
     clampCenterToContent(s, nx, ny);
     s.cx = nx; s.cy = ny;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+// --- Preset registration & activation (added) ---
+void Cam2D_RegisterPreset(const std::string& scene, const Cam2D_Params& p) {
+    CamState& s = g_cam[scene];
+    s.cx = std::clamp(p.cx, 0.0f, 1.0f);
+    s.cy = std::clamp(p.cy, 0.0f, 1.0f);
+    s.minZoom = p.minZoom;
+    s.maxZoom = p.maxZoom;
+    s.zoom = std::clamp(p.zoom, s.minZoom, s.maxZoom);
+    s.targetZoom = s.zoom;
+    clampCenterToContent(s, s.cx, s.cy);
+}
+
+void Cam2D_ActivatePreset(const std::string& scene) {
+    auto it = g_cam.find(scene);
+    if (it == g_cam.end()) return;
+    g_activeKey = scene;
+    activeCam() = it->second;                   // copy preset into live slot
+}
+
+Cam2D_Params Cam2D_GetActiveParams() {
+    const CamState& s = activeCam();
+    Cam2D_Params p;
+    p.cx = s.cx; p.cy = s.cy; p.zoom = s.targetZoom; // expose target (authoring feels nicer)
+    p.minZoom = s.minZoom; p.maxZoom = s.maxZoom;
+    return p;
+}
+
+void Cam2D_SetActiveParams(const Cam2D_Params& p) {
+    CamState& s = activeCam();
+    float cx = std::clamp(p.cx, 0.0f, 1.0f);
+    float cy = std::clamp(p.cy, 0.0f, 1.0f);
+    s.minZoom = p.minZoom;
+    s.maxZoom = p.maxZoom;
+    s.targetZoom = std::clamp(p.zoom, s.minZoom, s.maxZoom);
+    clampCenterToContent(s, cx, cy);
+    s.cx = cx; s.cy = cy;
+
+    // also write back to the preset (so switching scenes doesn’t blow away live edits)
+    if (!g_activeKey.empty()) {
+        CamState& preset = g_cam[g_activeKey];
+        preset = s;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 void Cam2D_Apply(const std::string& scene,
     float& px, float& py, float& pw, float& ph,

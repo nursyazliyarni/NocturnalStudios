@@ -178,9 +178,9 @@ void Application::init() {
 	EntityID animal_2 = prefabManager->Instantiate("animal");
 	logger.log("Created animal entity with ID: " + std::to_string(animal) + " and " + std::to_string(animal_2));
 
-	Cam2D_Enable("Flamingo", true);
-	Cam2D_SetCenter("Flamingo", 0.10f + 0.26f * 0.5f, 0.44f + 0.50f * 0.5f); // ~ (0.23, 0.69)
-	Cam2D_SetZoom("Flamingo", 1.8f);
+	//Cam2D_Enable("Flamingo", true);
+	//Cam2D_SetCenter("Flamingo", 0.10f + 0.26f * 0.5f, 0.44f + 0.50f * 0.5f); // ~ (0.23, 0.69)
+	//Cam2D_SetZoom("Flamingo", 1.8f);
 
 	imGuiManager = std::make_unique<ImGuiManager>(
 		m_window, *renderer,
@@ -458,10 +458,10 @@ int Application::run() {
 	EntityID animal_2 = prefabManager.Instantiate("animal");
 	std::cout << animal << animal_2 << "\n";
 
-	// Focus roughly on the flamingo (center near its JSON x/y+w/2,h/2)
-	Cam2D_Enable("Flamingo", true);
-	Cam2D_SetCenter("Flamingo", 0.10f + 0.26f * 0.5f, 0.44f + 0.50f * 0.5f); // ~ (0.23, 0.69)
-	Cam2D_SetZoom("Flamingo", 1.8f);
+	//// Focus roughly on the flamingo (center near its JSON x/y+w/2,h/2)
+	//Cam2D_Enable("Flamingo", true);
+	//Cam2D_SetCenter("Flamingo", 0.10f + 0.26f * 0.5f, 0.44f + 0.50f * 0.5f); // ~ (0.23, 0.69)
+	//Cam2D_SetZoom("Flamingo", 1.8f);
 
 
 	ImGuiManager imGuiManager(m_window, renderer,

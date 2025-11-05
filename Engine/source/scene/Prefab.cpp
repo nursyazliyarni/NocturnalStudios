@@ -25,12 +25,19 @@ All content(c) 2025 DigiPen Institute of Technology Singapore, all rights reserv
 #include "ECS/ECS.h"        // we call createEntity/addComponent here
 #include "ECS/ECS_DEF.h"
 
+#include "graphics/Camera2D.h"   // added (for Cam2D_RegisterPreset / ActivatePreset)
+
+
+
 // [0]=ESC, [1..9]=digits
 static std::array<SceneID, 10> sKey2Scene{};
 static bool sKeymapInit = false;
 
 // sceneName -> SceneID (built from JSON "scenes" key order aligned to in-memory scenes vector)
 static std::unordered_map<std::string, SceneID> sNameToId;
+
+
+static std::unordered_map<SceneID, std::string> sIdToName;
 
 // configurable JSON path (fallback stays this)
 
@@ -429,6 +436,23 @@ void PrefabManager::LoadScenes() {
                     if (idx < scenes.size()) {
                         // scenes[idx] is your member vector; just read its id
                         sNameToId[it->name.GetString()] = scenes[idx].id;
+
+
+                        sIdToName[scenes[idx].id] = it->name.GetString(); 
+
+                        //  register per-scene camera if present
+                        if (it->value.IsObject() && it->value.HasMember("camera") && it->value["camera"].IsObject()) {
+                            const auto& cam = it->value["camera"];
+                            Cam2D_Params p;
+                            if (cam.HasMember("cx") && cam["cx"].IsNumber())           p.cx = cam["cx"].GetFloat();
+                            if (cam.HasMember("cy") && cam["cy"].IsNumber())           p.cy = cam["cy"].GetFloat();
+                            if (cam.HasMember("zoom") && cam["zoom"].IsNumber())       p.zoom = cam["zoom"].GetFloat();
+                            if (cam.HasMember("minZoom") && cam["minZoom"].IsNumber()) p.minZoom = cam["minZoom"].GetFloat();
+                            if (cam.HasMember("maxZoom") && cam["maxZoom"].IsNumber()) p.maxZoom = cam["maxZoom"].GetFloat();
+
+                            Cam2D_RegisterPreset(it->name.GetString(), p);
+                        }
+
                     }
                 }
             }
@@ -460,6 +484,12 @@ void PrefabManager::LoadScenes() {
                     // no keymap ? still map ESC to initial
                     sKey2Scene[0] = NameToId(initialName);
                 }
+
+                // activate initial scene camera 
+                if (initialName) {
+                    Cam2D_ActivatePreset(initialName);
+                }
+
             }
         }
 
@@ -515,6 +545,13 @@ void PrefabManager::ApplyComponentDefaults(EntityID entity, const rapidjson::Val
         const auto& a = defaults["position"].GetArray();
         if (a.Size() >= 2) { t->position.x() = a[0].GetFloat(); t->position.y() = a[1].GetFloat(); }
     }
+}
+
+
+const std::string& Prefab_GetSceneName(SceneID id) {
+    static std::string empty;
+    auto it = sIdToName.find(id);
+    return (it == sIdToName.end()) ? empty : it->second;
 }
 
 

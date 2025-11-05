@@ -1,10 +1,25 @@
 #include "./scene/SceneManager.h"
 
+#include "graphics/Camera2D.h" 
+#include "scene/Prefab.h"       // Prefab_GetSceneName 
+
+
 void SceneManager::InitScene(SceneID id) {
     for (const auto& s : scenes) {
         if (s.id == id) {
+            /*curr_scene = std::make_unique<Scene>(s);
+            return;*/
+
             curr_scene = std::make_unique<Scene>(s);
+
+            //  camera preset activation 
+            {
+                const std::string& nm = Prefab_GetSceneName(id);
+                if (!nm.empty()) Cam2D_ActivatePreset(nm);
+            }
+
             return;
+
         }
     }
 }

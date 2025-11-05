@@ -28,6 +28,9 @@
 #include <chrono>
 #include "graphics/DebugDraw.h"
 #include "core/GameManager.h"
+
+#include "graphics/Camera2D.h" 
+
 namespace {
 	using Clock = std::chrono::high_resolution_clock;
 }
@@ -838,6 +841,27 @@ void ImGuiManager::showBottomDockUI()
 			showLogsOverlayUI();    // no Begin/End inside
 			ImGui::EndTabItem();
 		}
+
+
+		if (ImGui::BeginTabItem("Camera")) {     
+			Cam2D_Params p = Cam2D_GetActiveParams();
+			bool changed = false;
+
+			changed |= ImGui::SliderFloat("Center X", &p.cx, 0.0f, 1.0f);
+			changed |= ImGui::SliderFloat("Center Y", &p.cy, 0.0f, 1.0f);
+			changed |= ImGui::SliderFloat("Zoom", &p.zoom, 0.25f, 6.0f);
+			changed |= ImGui::SliderFloat("MinZoom", &p.minZoom, 0.25f, 6.0f);
+			changed |= ImGui::SliderFloat("MaxZoom", &p.maxZoom, 0.25f, 6.0f);
+
+			if (p.minZoom > p.maxZoom) std::swap(p.minZoom, p.maxZoom);
+
+			if (changed) {
+				Cam2D_SetActiveParams(p);
+			}
+
+			ImGui::EndTabItem();
+		}
+
 
 		ImGui::EndTabBar();
 	}

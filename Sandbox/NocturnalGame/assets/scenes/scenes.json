@@ -32,7 +32,8 @@
         { "prefab":"medicine","name":"flamingo_medicine",
           "overrides": { "x":0.66,"y":0.50, "sprite_path":"textures/flamingo_medicine.png" } },
         { "prefab":"toy","name":"flamingo_toy",
-          "overrides": { "x":0.40,"y":0.50, "w":0.14, "h":0.14, "sprite_path":"textures/flamingo_toy.png", "rotatable": false, "scalable": false } }
+          "overrides": { "x":0.40,"y":0.50, "w":0.14, "h":0.14, "sprite_path":"textures/flamingo_toy.png", "rotatable": false, "scalable": false } },
+        { "camera": { "cx": 0.5, "cy": 0.5, "zoom": 1.0, "margin": 0.0, "minZoom": 1.0, "maxZoom": 3.0 }}
       ]
     },
 

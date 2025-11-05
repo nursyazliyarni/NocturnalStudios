@@ -47,3 +47,6 @@ private:
     std::unordered_map<std::string, rapidjson::Document> prefab_map;
     ECS& entity_component_based_system;
 };
+
+// SceneID -> scene name (used by SceneManager to activate camera)
+const std::string& Prefab_GetSceneName(SceneID id);

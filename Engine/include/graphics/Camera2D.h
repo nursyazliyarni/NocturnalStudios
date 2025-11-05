@@ -26,3 +26,23 @@ void Cam2D_PanBy(const std::string& scene, float dx, float dy);
 void Cam2D_Apply(const std::string& scene,
     float& px, float& py, float& pw, float& ph,
     int screenW, int screenH);
+
+// --- Camera presets & active-edit API (added) ---
+
+struct Cam2D_Params {
+    float cx = 0.5f;
+    float cy = 0.5f;
+    float zoom = 1.0f;
+    float minZoom = 1.0f;
+    float maxZoom = 3.0f;
+};
+
+// Register/overwrite a preset by scene key (scene name)
+void Cam2D_RegisterPreset(const std::string& scene, const Cam2D_Params& p);
+
+// Make a preset the active camera (copies preset -> live)
+void Cam2D_ActivatePreset(const std::string& scene);
+
+// Read/Write the currently active camera params (ImGui authoring)
+Cam2D_Params Cam2D_GetActiveParams();
+void Cam2D_SetActiveParams(const Cam2D_Params& p);
