@@ -290,7 +290,7 @@ void ImGuiManager::showViewportWindowUI() {
 	// Show the FBO as an ImGui Image (flipped V)
 	ImVec2 imgMin = ImGui::GetCursorScreenPos();
 	ImGui::Image((ImTextureID)(intptr_t)renderer.getFBOTexture(),
-		ImVec2(vw, vh), ImVec2(0, 1), ImVec2(1, 0));
+		ImVec2(static_cast<float>(vw), static_cast<float>(vh)), ImVec2(0, 1), ImVec2(1, 0));
 	ImVec2 imgMax = ImVec2(imgMin.x + vw, imgMin.y + vh);
 
 	// Handle click -> normalized coords -> GSM
@@ -453,7 +453,7 @@ void ImGuiManager::showEntityListUI(/* Maybe an enum of paramEntityType, Maybe a
 				}
 				else if (audioNames[bgmIndex].find("sfx_") != std::string::npos) {
 					// play sfx instance (one-shot)
-					AudioInstanceID inst = audioSystem.playSFX(bgmRID);
+					audioSystem.playSFX(bgmRID);
 				}
 
 				if (opt) {

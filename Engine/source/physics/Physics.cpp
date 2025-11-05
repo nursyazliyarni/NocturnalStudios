@@ -29,6 +29,9 @@
 static bool showCollision = false;
 
 int Physics::take_control(Renderer& render_obj, Input& input_obj) {
+	UNREFERENCED_PARAMETER(render_obj);
+	UNREFERENCED_PARAMETER(input_obj);
+
     //int sel = -1; // NONE by default
     //auto& kb = input_obj.GET_keyboard();
 
@@ -52,6 +55,9 @@ int Physics::take_control(Renderer& render_obj, Input& input_obj) {
 
 
 void Physics::update_sprite_movement(Renderer& render_obj, Input& input_obj){
+	UNREFERENCED_PARAMETER(render_obj);
+	UNREFERENCED_PARAMETER(input_obj);
+
  //   for (auto& [tuple_key, event_action, key_action] : input_obj.GET_keyboard()) {
  //       if (key_action == Input_action::toggle_collision) {
  //           static bool pressed = false;
@@ -133,7 +139,7 @@ void Physics::update_sprite_movement(Renderer& render_obj, Input& input_obj){
  //   }
 }
 
-static void reset_selection_transforms(
+inline void reset_selection_transforms(
     Renderer& render_obj, int sel,
     std::vector<bool>& cw, std::vector<bool>& ccw,
     std::vector<float>& ox, std::vector<float>& oy,
@@ -164,6 +170,9 @@ static void reset_selection_transforms(
 
 void Physics::update_sprite_scaling(Renderer& render_obj, Input& input_obj)
 {
+	UNREFERENCED_PARAMETER(render_obj);
+	UNREFERENCED_PARAMETER(input_obj);
+
     //// -1 = none, -2 = ALL (key 0), 0..N-1 = specific sprite
     //int index = take_control(render_obj, input_obj);
     //if (index == -1) { // only bail for "none"
@@ -322,6 +331,9 @@ void Physics::update_sprite_scaling(Renderer& render_obj, Input& input_obj)
 
 void Physics::update_sprite_rotation(Renderer& render_obj, Input& input_obj)
 {
+	UNREFERENCED_PARAMETER(render_obj);
+	UNREFERENCED_PARAMETER(input_obj);
+
     //int sel = take_control(render_obj, input_obj); // -1 NONE, -2 ALL, 0..N-1
     //auto& sprites = render_obj.get_sprite_vector();
     //size_t n = sprites.size();

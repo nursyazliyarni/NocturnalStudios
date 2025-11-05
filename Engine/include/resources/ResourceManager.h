@@ -7,6 +7,8 @@
 #include <unordered_set>
 #include <concepts>
 
+#define UNREFERENCED_PARAMETER(x) (void)(x)
+
 #include "Resource.h"
 #include "Audio.h"
 #include "Font.h"

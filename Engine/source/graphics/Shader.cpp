@@ -16,7 +16,7 @@ All content(c) 2025 DigiPen Institute of Technology Singapore, all rights reserv
 
 Shader::Shader(const char* vertex_path, const char* fragment_path) :program_obj{ 0 } {
 	//Read vertex AND fragment shader source code from files
-    const char* vertex_Code, *fragment_Code;
+    // const char* vertex_Code, *fragment_Code;
     std::ifstream vertex_ShaderFile{ vertex_path };
     std::ifstream fragment_ShaderFile{ fragment_path };
     if (!vertex_ShaderFile || !fragment_ShaderFile) { //if file fails to open

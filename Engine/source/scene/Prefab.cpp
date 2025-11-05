@@ -118,6 +118,8 @@ bool PrefabManager::PrefabExists(const std::string& prefab_name) const {
 
 
 EntityID PrefabManager::Instantiate(const std::string& prefab_name, const std::string& entity_name) {
+	UNREFERENCED_PARAMETER(entity_name);
+
     return Instantiate(prefab_name, INVALID_ENTITY_ID);
 }
 
