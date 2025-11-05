@@ -139,7 +139,7 @@ void Physics::update_sprite_movement(Renderer& render_obj, Input& input_obj){
  //   }
 }
 
-static void reset_selection_transforms(
+inline void reset_selection_transforms(
     Renderer& render_obj, int sel,
     std::vector<bool>& cw, std::vector<bool>& ccw,
     std::vector<float>& ox, std::vector<float>& oy,

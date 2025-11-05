@@ -94,7 +94,7 @@ void Input::update_mouse_pos(GLFWwindow* window) {
 	mouse_pos[0].x() = mouse_pos[1].x(), mouse_pos[0].y() = mouse_pos[1].y(); //update previous mouse position
 	double mouse_Xpos, mouse_Ypos;
 	glfwGetCursorPos(window, &mouse_Xpos, &mouse_Ypos);
-	mouse_pos[1].x() = mouse_Xpos, mouse_pos[1].y() = mouse_Ypos; //update current mouse position
+	mouse_pos[1].x() = (float)mouse_Xpos, mouse_pos[1].y() = (float)mouse_Ypos; //update current mouse position
 }
 
 Vector2D Input::GET_mouse_pos(bool want_normalize, int window_width, int window_height) {
@@ -181,12 +181,12 @@ void Input::keyboard_input_callback(GLFWwindow* window, int key, int scancode, i
 	
 	if (action == GLFW_PRESS) pressedKeysThisFrame.insert(key);
 
-	if (Input* self = static_cast<Input*>(glfwGetWindowUserPointer(window))) {
+	if (Input* self_ = static_cast<Input*>(glfwGetWindowUserPointer(window))) {
 		if (action == GLFW_PRESS || action == GLFW_REPEAT) {
-			self->m_keysDown.insert(key);    // <-- capital D
+			self_->m_keysDown.insert(key);    // <-- capital D
 		}
 		else if (action == GLFW_RELEASE) {
-			self->m_keysDown.erase(key);     // <-- capital D
+			self_->m_keysDown.erase(key);     // <-- capital D
 		}
 	}
 }

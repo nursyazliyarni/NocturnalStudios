@@ -66,10 +66,10 @@ public:
 	void detect_mouse_event(GLFWwindow* window, int mouse, int event_action);
 
 	// initialize per-sprite scales to 1.0f for all textures
-	void initSpriteScales(size_t textureCount);
+	// void initSpriteScales(size_t textureCount);
 	// pointer for renderer (nullptr if no sprites)
 
-	void initSpriteRotations(size_t count);
+	// void initSpriteRotations(size_t count);
 
 	// expose raw pointers for Renderer
 	const float* getSpriteScalesPtr() const {
