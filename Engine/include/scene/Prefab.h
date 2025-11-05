@@ -6,6 +6,8 @@
 #include "rapidjson/document.h"
 #include "ECS/ECS_DEF.h"   // only POD types + EntityID here. No ECS.h in headers.
 
+#define UNREFERENCED_PARAMETER(P) (void)(P)
+
 // Forward declarations only (keep header light)
 class ECS;
 

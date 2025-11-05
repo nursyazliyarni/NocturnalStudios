@@ -22,6 +22,8 @@
 #include "messaging/Message.h"
 #include "messaging/MessageHandler.h"
 
+#define UNREFERENCED_PARAMETER(P) (void)(P)
+
 class Game_Loop : public Messaging::IMessageHandler {
 public:
 	Game_Loop(GLFWwindow* window);

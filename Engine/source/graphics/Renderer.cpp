@@ -263,12 +263,12 @@ void Renderer::drawViewportShapes(int w, int h) {
     {
         float r = h * 0.10f;
         float margin = w * 0.05f;
-        float cx = w - (r + margin);
-        if (cx < r) cx = r;
-        float cy = h * 0.20f;
+        float cx_ = w - (r + margin);
+        if (cx_ < r) cx_ = r;
+        float cy_ = h * 0.20f;
 
         glColor3f(0.f, 0.5f, 1.f);
-        filledCircle(cx, cy, r, 64);
+        filledCircle(cx_, cy_, r, 64);
     }
 
     // white outline box (bottom-left)
@@ -338,10 +338,13 @@ void Renderer::drawAllSprites(Texture& tex,
     const float* rotations,
     int viewportW, int viewportH)
 {
+    UNREFERENCE_PARAMETER(scales);
+    UNREFERENCE_PARAMETER(rotations);
+
     glUseProgram(0);
     glDisable(GL_DEPTH_TEST);
 
-    const size_t texCount = tex.get_totalTexture(); // includes bg at index 0
+    // const size_t texCount = tex.get_totalTexture(); // includes bg at index 0
 
     for (int i = 0; i<sprite_vector.size(); ++i) {
         bool isFront = std::find(frontIdxs.begin(), frontIdxs.end(), sprite_vector[i].idx) != frontIdxs.end();
@@ -350,7 +353,7 @@ void Renderer::drawAllSprites(Texture& tex,
         if (behindPass && isFront)   continue; // behind pass: skip all �front� sprites
         if (!behindPass && !isFront) continue; // front pass: draw ONLY �front� sprites
         float s = 1.0f;// SCALING
-        float angle = 0.0f;// ROTATION 
+        // float angle = 0.0f;// ROTATION 
 
         // Convert normalized to pixels
         float x = sprite_vector[i].x * viewportW;

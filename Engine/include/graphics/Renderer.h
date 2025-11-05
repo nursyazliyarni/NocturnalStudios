@@ -26,6 +26,8 @@
 #include "graphics/Texture.h" 
 #include "core/Logger.h"
 
+#define UNREFERENCE_PARAMETER(P) (void)(P)
+
 extern Logger logger;
 
 class Renderer {
@@ -100,7 +102,7 @@ public:
 
 
 // Simple helper to draw a sprite by texture index
-static void drawSprite(Renderer& renderer, Texture& tex, int index,
+inline void drawSprite(Renderer& renderer, Texture& tex, int index,
     float x, float y, float w, float h)
 {
     renderer.texturedTri(tex.get_textureID(static_cast<size_t>(index)), x, y, w, h);

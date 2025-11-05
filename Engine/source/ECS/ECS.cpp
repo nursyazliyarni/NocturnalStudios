@@ -278,7 +278,28 @@ std::vector<EntityID> const& ECS::getAllEntities() const {
 bool ECS::removeComponent(EntityID entityID, ComponentID componentID) {
 	auto it = getComponentData(componentID);
 	assert(it != componentMetadata.end());
-	return removeComponent(entityID, it->componentID);
+
+	// Find the component pool for the given componentID
+	auto poolIt = componentPools.find(componentID);
+	if (poolIt == componentPools.end() || !poolIt->second) {
+		logger.error("ECS::removeComponent - Component pool not found for given componentID\n");
+		return false;
+	}
+
+	// Remove the component from the pool
+	if (!poolIt->second->removeComponent(entityID)) {
+		logger.error(std::string{ "ECS::removeComponent - Failed to remove component from entity\nEntityID: " } + std::to_string(entityID) + "\n");
+		return false;
+	}
+
+	// Update metadata
+	it->size -= 1;
+	auto metaIt = entityMetadataMap.find(entityID);
+	if (metaIt != entityMetadataMap.end()) {
+		metaIt->second.componentIDs.erase(componentID);
+	}
+	reUpdateMetadata();
+	return true;
 }
 
 /**

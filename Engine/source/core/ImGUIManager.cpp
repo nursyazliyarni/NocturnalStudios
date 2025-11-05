@@ -33,6 +33,7 @@ namespace {
 }
 
 void Gui::updateImGuiManager(double& deltaTime, ImGuiManager& imGuiManager) {
+	auto start = Clock::now();
 	imGuiManager.updateDeltaTime(deltaTime);
 
 	// Get main viewport position and size
@@ -50,6 +51,9 @@ void Gui::updateImGuiManager(double& deltaTime, ImGuiManager& imGuiManager) {
 	//imGuiManager.showLogsOverlayUI();
 	imGuiManager.showBottomDockUI();
 	imGuiManager.endFrame();
+	auto end = Clock::now();
+	double imGuiTime = std::chrono::duration<double>(end - start).count();
+	imGuiManager.setSystemTimings(imGuiTime, 0.0);
 }
 
 
@@ -293,7 +297,7 @@ void ImGuiManager::showViewportWindowUI() {
 	// Show the FBO as an ImGui Image (flipped V)
 	ImVec2 imgMin = ImGui::GetCursorScreenPos();
 	ImGui::Image((ImTextureID)(intptr_t)renderer.getFBOTexture(),
-		ImVec2(vw, vh), ImVec2(0, 1), ImVec2(1, 0));
+		ImVec2(static_cast<float>(vw), static_cast<float>(vh)), ImVec2(0, 1), ImVec2(1, 0));
 	ImVec2 imgMax = ImVec2(imgMin.x + vw, imgMin.y + vh);
 
 	// Handle click -> normalized coords -> GSM
@@ -335,9 +339,9 @@ void ImGuiManager::showMousePosOverlayUI() {
 }
 
 void ImGuiManager::showPerformanceOverlayUI() {
-	constexpr double secondsToMs = 1000.0;
+	constexpr double secondsToMs =1000.0;
 	constexpr float width = 300.0f;
-	constexpr float height = 100.0f;
+	constexpr float height = 150.0f;
 
 	ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDecoration |
 		ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
@@ -349,13 +353,34 @@ void ImGuiManager::showPerformanceOverlayUI() {
 	ImGui::SetNextWindowSize({ width, height });
 
 	ImGui::Begin("Performance", nullptr, windowFlags);
-	ImGui::Text("Current FPS: %.2f %.2lfms", 1 / deltaTime, deltaTime * secondsToMs);
 
-	// @Todo (axewhy): Add more performance metrics like the percentage of usage between different systems in the game engine
-	ImGui::Text("ImGui: %.2f ms (%.2f%%)", imGuiTime * secondsToMs, (imGuiTime / deltaTime) * 100.0);
-	ImGui::Text("Renderer: %.2f ms (%.2f%%)", renderTime * secondsToMs, (renderTime / deltaTime) * 100.0);
-	ImGui::Text("Physics: %.2f ms (%.2f%%)", physicsTime * secondsToMs, (physicsTime / deltaTime) * 100.0);
-	ImGui::Text("Input: %.2f ms (%.2f%%)", inputTime * secondsToMs, (inputTime / deltaTime) * 100.0);
+	// Clamp dt to avoid div-by-zero and negative values
+	double dt = deltaTime;
+	if (dt <=0.0) dt =1e-6; // tiny epsilon when paused or first frame
+	ImGui::Text("Current FPS: %.2f (%.2f ms)",1.0 / dt, dt * secondsToMs);
+
+	// Compute percentages against the frame time (dt)
+	auto pct = [dt](double t) -> double { return (t <=0.0) ?0.0 : (t / dt) *100.0; };
+
+	// Known subsystem times
+	double imguiMs = imGuiTime * secondsToMs;
+	double renderMs = renderTime * secondsToMs;
+	double physicsMs = physicsTime * secondsToMs;
+	double inputMs = inputTime * secondsToMs;
+	double logicMs = logicTime * secondsToMs;
+
+	// Compute an "Other" bucket for time not attributed to known systems
+	double knownSec = imGuiTime + renderTime + physicsTime + inputTime + logicTime;
+	double otherSec = std::max(0.0, dt - knownSec);
+	double otherMs = otherSec * secondsToMs;
+
+	ImGui::Separator();
+	ImGui::Text("ImGui: %.2f ms (%.2f%%)", imguiMs, pct(imGuiTime));
+	ImGui::Text("Renderer: %.2f ms (%.2f%%)", renderMs, pct(renderTime));
+	ImGui::Text("Physics: %.2f ms (%.2f%%)", physicsMs, pct(physicsTime));		
+	ImGui::Text("Input: %.2f ms (%.2f%%)", inputMs, pct(inputTime));
+	ImGui::Text("Logic: %.2f ms (%.2f%%)", logicMs, pct(logicTime));
+	ImGui::Text("Other: %.2f ms (%.2f%%)", otherMs, pct(otherSec));
 
 	ImGui::End();
 }
@@ -369,7 +394,7 @@ void ImGuiManager::showEntityListUI(/* Maybe an enum of paramEntityType, Maybe a
 		ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
 
 	// Position the overlay at the top-right corner of the window, below performance overlay
-	ImVec2 windowTopRightPos = { windowBottomRight.x - width, windowTopLeft.y + 200.0f };
+	ImVec2 windowTopRightPos = { windowBottomRight.x - width, windowTopLeft.y + 250.0f };
 	ImGui::SetNextWindowPos(windowTopRightPos);
 	ImGui::SetNextWindowBgAlpha(0.35f);
 	ImGui::SetNextWindowSize({ width, height });
@@ -456,7 +481,7 @@ void ImGuiManager::showEntityListUI(/* Maybe an enum of paramEntityType, Maybe a
 				}
 				else if (audioNames[bgmIndex].find("sfx_") != std::string::npos) {
 					// play sfx instance (one-shot)
-					AudioInstanceID inst = audioSystem.playSFX(bgmRID);
+					audioSystem.playSFX(bgmRID);
 				}
 
 				if (opt) {
@@ -561,7 +586,7 @@ void ImGuiManager::showTransformUI(/* A reference to a vector of object list obj
 		ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
 
 	// Position the overlay at the top-right corner of the window, below entity list overlay
-	ImVec2 windowTopRightPos = { windowBottomRight.x - width, windowTopLeft.y + 500.0f };
+	ImVec2 windowTopRightPos = { windowBottomRight.x - width, windowTopLeft.y + 550.0f };
 	ImGui::SetNextWindowPos(windowTopRightPos);
 	ImGui::SetNextWindowBgAlpha(0.35f);
 	ImGui::SetNextWindowSize({ width, height });
