@@ -234,13 +234,11 @@ void GameManager::render(Renderer& r, int w, int h) const {
 
     else {
         r.background_render(sc.background, "bg_texture", 0);
+        // Draw background as a regular textured quad and apply camera to it too
+        float bx = 0.0f, by = 0.0f, bw = float(w), bh = float(h);
+        Cam2D_Apply(currentScene, bx, by, bw, bh, w, h);
+        r.texturedTri(sc.background, bx, by, bw, bh);
     }
-    
-    //r.background_render(sc.background, "bg_texture");
-    // Draw background as a regular textured quad and apply camera to it too
-    float bx = 0.0f, by = 0.0f, bw = float(w), bh = float(h);
-    Cam2D_Apply(currentScene, bx, by, bw, bh, w, h);
-    r.texturedTri(sc.background, bx, by, bw, bh);
 
     
 

@@ -151,3 +151,26 @@ ERROR: 0:19: 'constructor' : not enough data provided for construction
 [04-11-2025] [19:04:42] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
 [04-11-2025] [19:05:05] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
 [04-11-2025] [19:06:00] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[05-11-2025] [11:13:03] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[05-11-2025] [11:13:17] [CRASH_MESSAGE] Program crash due to abort signal - std::abort() or failed assert()
+[05-11-2025] [11:43:08] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[05-11-2025] [11:43:17] [CRASH_MESSAGE] Program crash due to abort signal - std::abort() or failed assert()
+[05-11-2025] [11:43:40] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[05-11-2025] [11:43:48] [CRASH_MESSAGE] Program crash due to abort signal - std::abort() or failed assert()
+[05-11-2025] [11:44:13] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[05-11-2025] [11:44:22] [CRASH_MESSAGE] Program crash due to abort signal - std::abort() or failed assert()
+[05-11-2025] [11:45:48] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[05-11-2025] [12:52:15] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[05-11-2025] [12:53:17] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[05-11-2025] [12:58:03] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[05-11-2025] [12:58:45] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[05-11-2025] [12:59:14] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[05-11-2025] [12:59:59] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[05-11-2025] [13:00:58] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[05-11-2025] [13:02:23] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[05-11-2025] [13:02:48] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[05-11-2025] [13:03:43] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[05-11-2025] [13:04:05] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[05-11-2025] [13:05:57] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[05-11-2025] [13:07:16] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[05-11-2025] [13:10:30] [CRASH_MESSAGE] Failed to load default audio soundFile not found.

@@ -37,9 +37,13 @@ enum class arr_num_component {
 
 class Shader {
 public:
-	//constructor reads and builds the shader (vertex path follow by fragment path)
+	
+	//constructor reads and builds the shader for text
+	Shader(const char* vertex_path, const char* fragment_path);
+	//constructor reads and builds the shader for background (vertex path follow by fragment path)
 	Shader(const std::vector<std::pair<std::string,std::string>>& shader_filePATH_list);
 	~Shader(); //destructor for glDeleteProgram(program_obj);
+
 	//I don't want 2 shader object sharing the same program_obj, IT IS DANGEROUS
 	//when doing glDeleteProgram(program_obj)
 	Shader(const Shader&) = delete;
@@ -68,7 +72,7 @@ public:
 	void SET_arr_uniform_variable(const GLchar * uniform_VARNAME, GLsizei num_value,
 		const GLint * uniform_value_arr, arr_num_component num_component, unsigned int vector_index);
 
-	void SET_uniform_variable(const GLchar* uniform_VARNAME, GLfloat v1, GLfloat v2, GLfloat v3);
+	void SET_uniform_variable(const GLchar* uniform_VARNAME, GLfloat v1, GLfloat v2, GLfloat v3, unsigned int vector_index);
 
 private:
 	//private member functions here

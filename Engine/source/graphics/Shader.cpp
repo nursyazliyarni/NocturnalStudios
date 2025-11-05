@@ -14,6 +14,25 @@ All content(c) 2025 DigiPen Institute of Technology Singapore, all rights reserv
 
 #include "graphics/Shader.h"
 
+Shader::Shader(const char* vertex_path, const char* fragment_path) {
+    //Read vertex AND fragment shader source code from files
+    const char* vertex_Code, * fragment_Code;
+    std::ifstream vertex_ShaderFile{ vertex_path };
+    std::ifstream fragment_ShaderFile{ fragment_path };
+    if (!vertex_ShaderFile || !fragment_ShaderFile) { //if file fails to open
+        logger.error("Shader File cannot be opened!");
+        return;
+    }
+
+    std::stringstream vertex_Shader_ss, fragment_Shader_ss;
+    //rdbuf() copies the entire buffer contents at once into stringstream
+    vertex_Shader_ss << vertex_ShaderFile.rdbuf();
+    fragment_Shader_ss << fragment_ShaderFile.rdbuf();
+    //close file stream
+    vertex_ShaderFile.close(); fragment_ShaderFile.close();
+    Compile_Shaders(vertex_Shader_ss.str().c_str(), fragment_Shader_ss.str().c_str());
+}
+
 Shader::Shader(const std::vector<std::pair<std::string, std::string>>& shader_filePATH_list) {
     for (const auto& [vertex_path, fragment_path] : shader_filePATH_list) {
         //Read vertex AND fragment shader source code from files
@@ -188,6 +207,6 @@ void Shader::SET_arr_uniform_variable(const GLchar* uniform_VARNAME, GLsizei num
     }
 }
 
-void Shader::SET_uniform_variable(const GLchar* uniform_VARNAME, GLfloat v1, GLfloat v2, GLfloat v3) {
-    glUniform3f(glGetUniformLocation(program_obj, uniform_VARNAME), v1, v2, v3);
+void Shader::SET_uniform_variable(const GLchar* uniform_VARNAME, GLfloat v1, GLfloat v2, GLfloat v3, unsigned int vector_index) {
+    glUniform3f(glGetUniformLocation(program_obj[vector_index], uniform_VARNAME), v1, v2, v3);
 }
