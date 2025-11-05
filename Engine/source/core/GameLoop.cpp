@@ -25,7 +25,9 @@
 static bool debugToggled = false;
 
 Game_Loop::Game_Loop(GLFWwindow* window) : accum_game_time{ 0.0 }, curr_frame_time{ glfwGetTime() }, 
-display_interval{ 0.0 } {}
+display_interval{ 0.0 } {
+	UNREFERENCED_PARAMETER(window);
+}
 
 double Game_Loop::calculate_DT() {
 	double new_frame_time = glfwGetTime();

@@ -1,11 +1,11 @@
 #include "resources/Font.h"
 
-Font::Font(ResourceID id, const std::string& key, const std::string& filePath, unsigned int pixelSize)
-    : Resource(id, key, filePath), pixelSize(pixelSize) {
+Font::Font(ResourceID id, const std::string& key, const std::string& filePath, unsigned int pixelVal)
+    : Resource(id, key, filePath), pixelSize(pixelVal) {
 	logger.log("Font resource created: " + key + " from " + filePath);
 }
 
-bool Font::LoadFont(const std::string& fontPath, unsigned int pixelSize) {
+bool Font::LoadFont(const std::string& fontPath, unsigned int pixelVal) {
     if (FT_Init_FreeType(&ft)) {
         std::cerr << "ERROR: Could not initialize FreeType Library!" << std::endl;
         return false;
@@ -16,9 +16,9 @@ bool Font::LoadFont(const std::string& fontPath, unsigned int pixelSize) {
         return false;
     }
 
-    this->pixelSize = pixelSize;
+    this->pixelSize = pixelVal;
 
-    FT_Set_Pixel_Sizes(face, 0, pixelSize);
+    FT_Set_Pixel_Sizes(face, 0, pixelVal);
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
     for (GLubyte c = 0; c < 128; c++) {

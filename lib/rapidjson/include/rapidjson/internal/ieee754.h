@@ -18,6 +18,8 @@
 #include "../rapidjson.h"
 
 RAPIDJSON_NAMESPACE_BEGIN
+
+#pragma warning(disable : 26495)
 namespace internal {
 
 class Double {
