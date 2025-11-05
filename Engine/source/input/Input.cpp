@@ -115,6 +115,8 @@ std::vector<std::tuple<int, int, Input_action>>& Input::GET_keyboard() {
 }
 
 void Input::detect_keyboard_event(GLFWwindow* window, int key, int event_action) {
+	UNREFERENCED_PARAMETER(window);
+
 	bool key_event_exist{ false };
 	for (auto& [tuple_key, tuple_action, tuple_state] : keyboard_action) {
 		//we use this loop to check if key AND event_action already exist inside the vector
@@ -130,6 +132,8 @@ void Input::detect_keyboard_event(GLFWwindow* window, int key, int event_action)
 }
 
 void Input::detect_mouse_event(GLFWwindow* window, int mouse, int event_action) {
+	UNREFERENCED_PARAMETER(window);
+
 	bool mouse_event_exist{ false };
 	for (auto& [tuple_mouse, tuple_action, tuple_state] : mouse_action) {
 		//we use this loop to check if mouse AND event_action already exist inside the vector

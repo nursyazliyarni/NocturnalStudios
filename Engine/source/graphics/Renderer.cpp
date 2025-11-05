@@ -338,6 +338,9 @@ void Renderer::drawAllSprites(Texture& tex,
     const float* rotations,
     int viewportW, int viewportH)
 {
+    UNREFERENCE_PARAMETER(scales);
+    UNREFERENCE_PARAMETER(rotations);
+
     glUseProgram(0);
     glDisable(GL_DEPTH_TEST);
 

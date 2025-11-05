@@ -26,6 +26,8 @@
 #include "graphics/Texture.h" 
 #include "core/Logger.h"
 
+#define UNREFERENCE_PARAMETER(P) (void)(P)
+
 extern Logger logger;
 
 class Renderer {

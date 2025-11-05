@@ -42,6 +42,8 @@
 
 #include <unordered_set>
 
+#define UNREFERENCED_PARAMETER(P) (void)(P)
+
 class GameManager;
 
 enum class Input_action {
@@ -125,7 +127,7 @@ private:
 	static std::vector<std::tuple<int, int, Input_action>> keyboard_action;
 	static std::vector<std::tuple<int, int, Input_action>> mouse_action;
 
-	GLFWwindow* m_window = nullptr;                 
+	GLFWwindow* m_window = nullptr;
 	std::unordered_set<int> m_keysDown;
 };
 
