@@ -53,10 +53,10 @@ void Gui::updateImGuiManager(double& deltaTime, ImGuiManager& imGuiManager) {
 ImGuiManager::ImGuiManager(Window& w, Renderer& r,
 	Input& i, Physics& p,
 	AudioSystem& a, ResourceManager& rm,
-	GameManager& g)
+	GameManager& g, Animal_Logic& l)
 	: mainWindow{ w }, renderer{ r },
 	input{ i }, physics{ p }, audioSystem{ a }, resourceManager{ rm },
-	gsm{ g }, windowTopLeft{}, windowBottomRight{},
+	gsm{ g }, logic{l}, windowTopLeft {}, windowBottomRight{},
 	deltaTime{ 0.0 }, imGuiTime{ 0.0 }, inputTime{ 0.0 },
 	logicTime{ 0.0 }, renderTime{ 0.0 }, physicsTime{ 0.0 },
 	selectedEntityType{ 0 }, activeInstances{}
@@ -298,6 +298,7 @@ void ImGuiManager::showViewportWindowUI() {
 	vpMinWin = ImVec2(imgMin.x - windowTopLeft.x, imgMin.y - windowTopLeft.y);
 	vpMaxWin = ImVec2(imgMax.x - windowTopLeft.x, imgMax.y - windowTopLeft.y);
 
+	logic.update_animal_ALLstate(gsm);
 	ImGui::End();
 }
 

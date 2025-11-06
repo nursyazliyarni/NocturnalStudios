@@ -118,6 +118,7 @@ struct Transform {
 
 struct ImageRenderer: public RenderComponent {
 	int textureID = -1; // Default to -1 (no texture)
+	std::string image_path;
 };
 struct CircleRenderer : public RenderComponent {
 	float radius{ 1.f };
@@ -128,8 +129,9 @@ struct RectRenderer : public RenderComponent {
 
 
 struct AnimalBehavior {
-	std::string sound{ "moo" };
+	double health_bar, hunger_bar, sanity_bar;
 };
+
 struct AudioData {
 	struct IndividualAudioData {
 		unsigned resourceID;

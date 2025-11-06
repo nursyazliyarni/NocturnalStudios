@@ -150,6 +150,7 @@ void Application::init() {
 	gsm->load(prefabPath.c_str(), scenePath.c_str(), textures);
 	renderer = std::make_unique<Renderer>(shader_filePATH_list);
 	textShader = std::make_unique<Shader>(textShaderVertexPath.c_str(), textShaderFragmentPath.c_str());
+	logic = std::make_unique<Animal_Logic>();
 
 	{
 		ResourceID fontID = resourceManager->findResource<Font>("NanumBrushScript-Regular");
@@ -172,10 +173,16 @@ void Application::init() {
 
 	prefabManager = std::make_unique<PrefabManager>(*ecs);
 	prefabManager->Load_Prefab(prefabTestPath.c_str());
+	prefabManager->CreateEntityFromPrefab(prefabTestPath, "main_menu_button", "play_button");
+	prefabManager->CreateEntityFromPrefab(prefabTestPath, "main_menu_button", "load_button");
+	prefabManager->CreateEntityFromPrefab(prefabTestPath, "main_menu_button", "setting_button");
+	prefabManager->CreateEntityFromPrefab(prefabTestPath, "main_menu_button", "quit_button");
+	prefabManager->CreateEntityFromPrefab(prefabTestPath, "food", "owl_food");
+	prefabManager->CreateEntityFromPrefab(prefabTestPath, "animal", "flamingo");
 
-	EntityID animal = prefabManager->Instantiate("animal");
-	EntityID animal_2 = prefabManager->Instantiate("animal");
-	logger.log("Created animal entity with ID: " + std::to_string(animal) + " and " + std::to_string(animal_2));
+	
+	//logger.log("Created animal entity with ID: " + std::to_string(animal) + " and " + std::to_string(animal_2));
+	std::cout << "abcssss:" << ecs->getAllEntities().size() << "\n";
 
 	Cam2D_Enable("Flamingo", true);
 	Cam2D_SetCenter("Flamingo", 0.10f + 0.26f * 0.5f, 0.44f + 0.50f * 0.5f); // ~ (0.23, 0.69)
@@ -185,7 +192,7 @@ void Application::init() {
 		m_window, *renderer,
 		*inputSystem, physicsSystem,
 		*audioSystem, *resourceManager,
-		*gsm);
+		*gsm, *logic);
 
 	isInitialized = true;
 }

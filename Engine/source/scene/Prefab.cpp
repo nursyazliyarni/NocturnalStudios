@@ -53,27 +53,103 @@ PrefabManager::PrefabManager(ECS& ecs) : entity_component_based_system(ecs) {}
 void PrefabManager::Load_Prefab(const std::string& filename_path) {
     std::ifstream objFile(filename_path);
     if (!objFile) {
-        std::cout << "Failed to open prefab file: " << filename_path << "\n";
+        logger.error("Failed to open prefab file: " + filename_path);
         return;
     }
 
     rapidjson::IStreamWrapper obj(objFile);
-    rapidjson::Document document;
-    document.ParseStream(obj);
+    auto document = std::make_shared<rapidjson::Document>();
+    document->ParseStream(obj);
 
-    if (document.HasParseError() || !document.IsObject()) {
-        std::cout << "Failed to parse prefab file: " << filename_path << "\n";
+    if (document->HasParseError() || !document->IsObject()) {
+        logger.error("Failed to parse prefab file: " + filename_path);
         return;
     }
+    prefab_map[filename_path] = document;
+}
 
-    prefab_map[filename_path] = std::move(document);
-    std::cout << "Loaded prefab: " << filename_path << "\n";
+EntityID PrefabManager::CreateEntityFromPrefab(const std::string& json_path, const std::string& entity_type,
+    const std::string& object_name)
+{
+    //1. Verify prefab file loaded
+    auto it = prefab_map.find(json_path);
+    if (it == prefab_map.end()) {
+        logger.error("Prefab file not loaded: " + json_path);
+        return INVALID_ENTITY_ID;
+    }
+
+    // Get reference to the loaded document
+    rapidjson::Document& doc = *(it->second);
+
+    //2. Check if the category (e.g., "animal", "food") exists
+    if (!doc.HasMember(entity_type.c_str()) || !doc[entity_type.c_str()].IsObject()) {
+        logger.error("Prefab category '" + entity_type + "' not found.");
+        return INVALID_ENTITY_ID;
+    }
+
+    const auto& categoryObj = doc[entity_type.c_str()];
+
+    //3. Check if the object (e.g., "flamingo", "seal_food") exists
+    if (!categoryObj.HasMember(object_name.c_str()) || !categoryObj[object_name.c_str()].IsObject()) {
+        logger.error("Prefab name '" + object_name + "' not found in category '" + entity_type + "'.");
+        return INVALID_ENTITY_ID;
+    }
+
+    const auto& prefabData = categoryObj[object_name.c_str()];
+
+    //4. Verify that components array exists
+    if (!prefabData.HasMember("components") || !prefabData["components"].IsArray()) {
+        logger.error("Prefab '" + object_name + "' missing components array.");
+        return INVALID_ENTITY_ID;
+    }
+
+    // Create entity first
+    EntityID entity = entity_component_based_system.createEntity();
+    Prefab_data prefab_data;
+
+    // Loop over components
+    for (const auto& comp : prefabData["components"].GetArray()) {
+        if (!comp.HasMember("type")) continue;
+        std::string type = comp["type"].GetString();
+
+        if (type == "Transform") {
+            prefab_data.transform_struct.position[0] = comp.HasMember("x") ? comp["x"].GetDouble() : 0.0;
+            prefab_data.transform_struct.position[1] = comp.HasMember("y") ? comp["y"].GetDouble() : 0.0;
+            prefab_data.transform_struct.scale[0] = comp.HasMember("w") ? comp["w"].GetDouble() : 1.0; // safe default
+            prefab_data.transform_struct.scale[1] = comp.HasMember("h") ? comp["h"].GetDouble() : 1.0;
+            prefab_data.transform_struct.rotation = comp.HasMember("angle") ? comp["angle"].GetDouble() : 0.0;
+            entity_component_based_system.addComponent<Transform>(entity, prefab_data.transform_struct);
+        }
+
+        else if (type == "SpriteRenderer") {
+            prefab_data.image_render_struct.image_path = comp["sprite_path"].GetString();
+            entity_component_based_system.addComponent<ImageRenderer>(entity, prefab_data.image_render_struct);
+        }
+
+        else if (type == "AABBCollider") {
+            prefab_data.collider_struct.width = comp["bounding_box_size"].GetDouble();
+            prefab_data.collider_struct.height = comp["bounding_box_size"].GetDouble();
+            entity_component_based_system.addComponent<BoxCollider>(entity, prefab_data.collider_struct);
+        }
+
+        else if (type == "AnimalProperties") {
+            prefab_data.animal_behaviour_struct.health_bar = comp["health_bar"].GetDouble();
+            prefab_data.animal_behaviour_struct.hunger_bar = comp["hunger_bar"].GetDouble();
+            prefab_data.animal_behaviour_struct.sanity_bar = comp["sanity_bar"].GetDouble();
+            entity_component_based_system.addComponent<AnimalBehavior>(entity, prefab_data.animal_behaviour_struct);
+        }
+
+        else {
+            logger.warning("Unknown component type: " + type);
+        }
+    }
+    return entity;
 }
 
 
 bool PrefabManager::PrefabExists(const std::string& prefab_name) const {
     for (const auto& current_pair : prefab_map) {
-        const rapidjson::Document& current_document = current_pair.second;
+        const rapidjson::Document& current_document = *current_pair.second;
 
         if (current_document.HasMember("prefabs") && current_document["prefabs"].IsObject()) {
             const auto& obj = current_document["prefabs"];
@@ -100,8 +176,9 @@ EntityID PrefabManager::Instantiate(const std::string& prefab_name, const std::s
 
 EntityID PrefabManager::Instantiate(const std::string& prefab_name, EntityID specific_id) {
     // Find the prefab document
+    std::cout << "ABCQWE:" << prefab_name << "\n";
     for (auto& pair : prefab_map) {
-        const rapidjson::Document& current_doc = pair.second;
+        const rapidjson::Document& current_doc = *pair.second;
 
         // Handle new schema: { "prefabs": { "<name>": { "components":[...], "defaults":{...} }, ... } }
         if (current_doc.HasMember("prefabs") && current_doc["prefabs"].IsObject()) {
@@ -307,7 +384,7 @@ void PrefabManager::AddComponentFromJSON(EntityID entity, const rapidjson::Value
     else if (component_type == "AnimalBehavior") {
         AnimalBehavior behavior_component;
         if (component_json.HasMember("sound") && component_json["sound"].IsString()) {
-            behavior_component.sound = component_json["sound"].GetString();
+            //behavior_component.sound = component_json["sound"].GetString();
         }
         entity_component_based_system.addComponent<AnimalBehavior>(entity, behavior_component);
     }

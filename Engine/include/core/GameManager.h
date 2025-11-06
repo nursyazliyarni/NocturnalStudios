@@ -13,6 +13,7 @@ struct DrawItem {
     std::string name;  
     GLuint tex = 0;
     float x = 0, y = 0, w = 0, h = 0, angle = 0; // normalized
+    float health_bar, hunger_bar, sanity_bar;
 };
 
 struct ClickRegion {

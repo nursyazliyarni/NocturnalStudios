@@ -32,6 +32,7 @@
 #include "../include/physics/Physics.h"
 #include "../System/Audio_System.h"
 #include "../resources/ResourceManager.h"
+#include "logic/Animal_Logic.h"
 
 #include <vector>
 #include <unordered_map>
@@ -43,7 +44,7 @@ class ImGuiManager {
 public:
 	// Accept lists of resource IDs for quick audio testing.
 	ImGuiManager(Window& window, Renderer& renderer,  Input& input, 
-		Physics& physics, AudioSystem& audio, ResourceManager& resourceManager, GameManager& gsm);
+		Physics& physics, AudioSystem& audio, ResourceManager& resourceManager, GameManager& gsm, Animal_Logic& logic);
 	~ImGuiManager();
 
 	void updateDeltaTime(double& dt);
@@ -83,6 +84,7 @@ private:
 	AudioSystem& audioSystem;
 	ResourceManager& resourceManager;
 	GameManager& gsm;
+	Animal_Logic& logic;
 
 	ImVec2 windowTopLeft;
 	ImVec2 windowBottomRight;
