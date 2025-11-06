@@ -30,43 +30,45 @@
 #include "core/GameManager.h"
 
 #include "graphics/Camera2D.h" 
+#include "core/TimeUtils.h"
 
 namespace {
 	using Clock = std::chrono::high_resolution_clock;
 }
 
 void Gui::updateImGuiManager(double& deltaTime, ImGuiManager& imGuiManager) {
-	auto start = Clock::now();
-	imGuiManager.updateDeltaTime(deltaTime);
+	// Measure the entire ImGui update using a utility and avoid manual start/end pairs
+	double imGuiSec = TimeUtils::MeasureSeconds([&]() {
+		imGuiManager.updateDeltaTime(deltaTime);
 
-	// Get main viewport position and size
-	ImGuiViewport* mainViewport = ImGui::GetMainViewport();
-	imGuiManager.updateWindowTopLeft(mainViewport->Pos);
-	imGuiManager.updateWindowBottomRight({ mainViewport->Pos.x + mainViewport->Size.x, mainViewport->Pos.y + mainViewport->Size.y });
+		// Get main viewport position and size
+		ImGuiViewport* mainViewport = ImGui::GetMainViewport();
+		imGuiManager.updateWindowTopLeft(mainViewport->Pos);
+		imGuiManager.updateWindowBottomRight({ mainViewport->Pos.x + mainViewport->Size.x, mainViewport->Pos.y + mainViewport->Size.y });
 
-	imGuiManager.startFrame();
-	imGuiManager.showViewportWindowUI();
-	//imGuiManager.showAssetsBrowserUI();
-	imGuiManager.showMousePosOverlayUI();
-	imGuiManager.showPerformanceOverlayUI();
-	imGuiManager.showTransformUI();
-	imGuiManager.showEntityListUI();
-	//imGuiManager.showLogsOverlayUI();
-	imGuiManager.showBottomDockUI();
-	imGuiManager.endFrame();
-	auto end = Clock::now();
-	double imGuiTime = std::chrono::duration<double>(end - start).count();
-	imGuiManager.setSystemTimings(imGuiTime, 0.0);
+		imGuiManager.startFrame();
+		imGuiManager.showViewportWindowUI();
+		//imGuiManager.showAssetsBrowserUI();
+		imGuiManager.showMousePosOverlayUI();
+		imGuiManager.showPerformanceOverlayUI();
+		imGuiManager.showTransformUI();
+		imGuiManager.showEntityListUI();
+		//imGuiManager.showLogsOverlayUI();
+		imGuiManager.showBottomDockUI();
+		imGuiManager.endFrame();
+	});
+
+	// Preserve logic time measured within UI instead of resetting to
+	imGuiManager.setSystemTimings(imGuiSec);
 }
-
 
 ImGuiManager::ImGuiManager(Window& w, Renderer& r,
 	Input& i, Physics& p,
 	AudioSystem& a, ResourceManager& rm,
-	GameManager& g)
+	GameManager& g, Animal_Logic& l)
 	: mainWindow{ w }, renderer{ r },
 	input{ i }, physics{ p }, audioSystem{ a }, resourceManager{ rm },
-	gsm{ g }, windowTopLeft{}, windowBottomRight{},
+	gsm{ g }, logic{l}, windowTopLeft {}, windowBottomRight{},
 	deltaTime{ 0.0 }, imGuiTime{ 0.0 }, inputTime{ 0.0 },
 	logicTime{ 0.0 }, renderTime{ 0.0 }, physicsTime{ 0.0 },
 	selectedEntityType{ 0 }, activeInstances{}
@@ -119,9 +121,8 @@ Vector2D ImGuiManager::getWindowBottomRight() const {
 	return Vector2D(windowBottomRight.x, windowBottomRight.y);
 }
 
-void ImGuiManager::setSystemTimings(double imGuITime, double logic) {
+void ImGuiManager::setSystemTimings(double imGuITime) {
 	imGuiTime = imGuITime;
-	logicTime = logic;
 }
 
 void ImGuiManager::setRenderTime(double time) {
@@ -231,101 +232,109 @@ void ImGuiManager::setInputTime(double time) {
 
 
 void ImGuiManager::showViewportWindowUI() {
-    constexpr float overlayW = 300.f, overlayH = 200.f;
-    ImGuiWindowFlags flags = ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoResize;
+	constexpr float overlayW = 300.f, overlayH = 200.f;
+	ImGuiWindowFlags flags = ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoResize;
 
-    float vpW = windowBottomRight.x - windowTopLeft.x - overlayW;
-    float vpH = windowBottomRight.y - windowTopLeft.y - overlayH;
+	float vpW = windowBottomRight.x - windowTopLeft.x - overlayW;
+	float vpH = windowBottomRight.y - windowTopLeft.y - overlayH;
 
-    ImGui::SetNextWindowPos(windowTopLeft);
-    ImGui::SetNextWindowSize(ImVec2(vpW, vpH));
-    ImGui::Begin("Viewport", nullptr, flags);
+	ImGui::SetNextWindowPos(windowTopLeft);
+	ImGui::SetNextWindowSize(ImVec2(vpW, vpH));
+	ImGui::Begin("Viewport", nullptr, flags);
 
-    const ImVec2 avail = ImGui::GetContentRegionAvail();
-    const int vw = (int)std::max(1.0f, avail.x);
-    const int vh = (int)std::max(1.0f, avail.y);
+	const ImVec2 avail = ImGui::GetContentRegionAvail();
+	const int vw = (int)std::max(1.0f, avail.x);
+	const int vh = (int)std::max(1.0f, avail.y);
 
-    auto physStart = Clock::now();
-    physics.update_sprite_movement(renderer, input);
-    physics.update_sprite_scaling(renderer, input);
-    physics.update_sprite_rotation(renderer, input);
-    physicsTime = std::chrono::duration<double>(Clock::now() - physStart).count();
+	// Physics timing scope
+	{
+		TimeUtils::ScopedTimer t{ physicsTime };
+		physics.update_sprite_movement(renderer, input);
+		physics.update_sprite_scaling(renderer, input);
+		physics.update_sprite_rotation(renderer, input);
+	}
 
-    auto renderStart = Clock::now();
-    renderer.initFBO(vw, vh);
-    renderer.bindFBO();
-    renderer.resize(vw, vh);
-    renderer.clear(0.06f, 0.06f, 0.07f);
+	// Render timing scope (includes scene render + debug draw + unbind)
+	{
+		TimeUtils::ScopedTimer t{ renderTime };
+		renderer.initFBO(vw, vh);
+		renderer.bindFBO();
+		renderer.resize(vw, vh);
+		renderer.clear(0.06f, 0.06f, 0.07f);
 
-    // Draw current SCENE into the FBO
-    gsm.render(renderer, vw, vh);
+		// Draw current SCENE into the FBO
+		gsm.render(renderer, vw, vh);
 
-    // Text overlay (rendered into the viewport FBO)
-    renderer.setTextProjection(vw, vh); // bottom-left origin for the text shader
+		// Text overlay (rendered into the viewport FBO)
+		renderer.setTextProjection(vw, vh); // bottom-left origin for the text shader
 
-    // Resolve fonts from ResourceManager (cache IDs across frames)
-    static std::optional<ResourceID> s_fontA;
-    static std::optional<ResourceID> s_fontB;
-    if (!s_fontA) s_fontA = resourceManager.findResource<Font>("NanumBrushScript-Regular");
-    if (!s_fontB) s_fontB = resourceManager.findResource<Font>("PAPYRUS");
+		// Resolve fonts from ResourceManager (cache IDs across frames)
+		static std::optional<ResourceID> s_fontA;
+		static std::optional<ResourceID> s_fontB;
+		if (!s_fontA) s_fontA = resourceManager.findResource<Font>("NanumBrushScript-Regular");
+		if (!s_fontB) s_fontB = resourceManager.findResource<Font>("PAPYRUS");
 
-    if (s_fontA) {
-        const Font& f = resourceManager.getFont(*s_fontA);
-        renderer.drawText(f, "Nocturnal Studio Engine",
-                          25.0f, vh - 50.0f, // near top (BL origin)
-                          1.0f, glm::vec3(1.0f, 0.0f, 0.2f));
-    }
-    if (s_fontB) {
-        const Font& f2 = resourceManager.getFont(*s_fontB);
-        renderer.drawText(f2, "Sample Font: Papyrus",
-                          25.0f, vh - 100.0f, // near top (BL origin)
-                          1.0f, glm::vec3(0.2f, 0.8f, 1.0f));
-    }
+		if (s_fontA) {
+			const Font& f = resourceManager.getFont(*s_fontA);
+			renderer.drawText(f, "Nocturnal Studio Engine",
+							 25.0f, vh - 50.0f, // near top (BL origin)
+							 1.0f, glm::vec3(1.0f, 0.0f, 0.2f));
+		}
+		if (s_fontB) {
+			const Font& f2 = resourceManager.getFont(*s_fontB);
+			renderer.drawText(f2, "Sample Font: Papyrus",
+							 25.0f, vh - 100.0f, // near top (BL origin)
+							 1.0f, glm::vec3(0.2f, 0.8f, 1.0f));
+		}
 
-    // Debugging Drawer //
-    static bool printed = false;
-    if (Debug::Drawer::Instance().IsActive())
-    {
-        if (!printed) {
-            std::cout << "[ImGuiManager] DebugDraw active\n";
-            printed = true;
-        }
+		// Debugging Drawer //
+		static bool printed = false;
+		if (Debug::Drawer::Instance().IsActive()) {
+			if (!printed) {
+				std::cout << "[ImGuiManager] DebugDraw active\n";
+				printed = true;
+			}
 
-        glPushAttrib(GL_ALL_ATTRIB_BITS);
-        glUseProgram(0);
-        glDisable(GL_TEXTURE_2D);
-        glDisable(GL_DEPTH_TEST);
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-        glMatrixMode(GL_MODELVIEW);
-        glLoadIdentity();
+			glPushAttrib(GL_ALL_ATTRIB_BITS);
+			glUseProgram(0);
+			glDisable(GL_TEXTURE_2D);
+			glDisable(GL_DEPTH_TEST);
+			glEnable(GL_BLEND);
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+			glMatrixMode(GL_MODELVIEW);
+			glLoadIdentity();
 
-        Debug::Drawer::Instance().Render(Matrix<3>().Identity());
+			Debug::Drawer::Instance().Render(Matrix<3>().Identity());
 
-        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-        glPopAttrib();
-    }
-    else {
-        printed = false;
-    }
-    // Debugging Drawer //
+			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+			glPopAttrib();
+		}
+		else {
+			printed = false;
+		}
+		// Debugging Drawer //
 
-    renderer.unbindFBO();
-    renderTime = std::chrono::duration<double>(Clock::now() - renderStart).count();
+		renderer.unbindFBO();
+	}
 
-    // Show the FBO as an ImGui Image (flipped V)
-    ImVec2 imgMin = ImGui::GetCursorScreenPos();
-    ImGui::Image((ImTextureID)(intptr_t)renderer.getFBOTexture(),
-        ImVec2(static_cast<float>(vw), static_cast<float>(vh)), ImVec2(0, 1), ImVec2(1, 0));
-    ImVec2 imgMax = ImVec2(imgMin.x + vw, imgMin.y + vh);
+	// Show the FBO as an ImGui Image (flipped V)
+	ImVec2 imgMin = ImGui::GetCursorScreenPos();
+	ImGui::Image((ImTextureID)(intptr_t)renderer.getFBOTexture(),
+	ImVec2(static_cast<float>(vw), static_cast<float>(vh)), ImVec2(0, 1), ImVec2(1, 0));
+	ImVec2 imgMax = ImVec2(imgMin.x + vw, imgMin.y + vh);
 
-    // Handle click -> normalized coords -> GSM
-    // (Input handles clicks; store the rect in window client coords)
-    vpMinWin = ImVec2(imgMin.x - windowTopLeft.x, imgMin.y - windowTopLeft.y);
-    vpMaxWin = ImVec2(imgMax.x - windowTopLeft.x, imgMax.y - windowTopLeft.y);
+	// Logic timing (animal state update)
+	logicTime = TimeUtils::MeasureSeconds([&]() {
+		logic.update_animal_ALLstate(gsm);
+	});
 
-    ImGui::End();
+	// Handle click -> normalized coords -> GSM
+	// (Input handles clicks; store the rect in window client coords)
+	vpMinWin = ImVec2(imgMin.x - windowTopLeft.x, imgMin.y - windowTopLeft.y);
+	vpMaxWin = ImVec2(imgMax.x - windowTopLeft.x, imgMax.y - windowTopLeft.y);
+
+	ImGui::End();
 }
 
 
@@ -697,36 +706,36 @@ void ImGuiManager::showLogsOverlayUI() {
 	constexpr float width = 600.0f;
 	constexpr float height = 200.0f;
 
-    ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoResize;
+	ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoResize;
 
 	// Position the overlay at the bottom-center of the window
     ImVec2 initialPos = { (windowTopLeft.x + windowBottomRight.x) / 2, windowBottomRight.y };
     ImGui::SetNextWindowPos(initialPos, ImGuiCond_Always, ImVec2(0.5f, 1.0f));
-    ImGui::SetNextWindowBgAlpha(0.35f);
+	ImGui::SetNextWindowBgAlpha(0.35f);
 	ImGui::SetNextWindowSize({ width, height });
 
-    ImGui::Begin("Logs", nullptr, windowFlags);
+	ImGui::Begin("Logs", nullptr, windowFlags);
 
 	// Add a Child window to enable vertical and horizontal scrolling
 	ImGui::BeginChild("LogRegionHorizontal", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar);
 
-    for (auto const& log : logger.getLogs()) {
-        if (log.find("[ERROR]") != std::string::npos)
+	for (auto const& log : logger.getLogs()) {
+		if (log.find("[ERROR]") != std::string::npos)
             ImGui::TextColored(ImVec4(255 / 255.f, 130 / 255.f, 130 / 255.f, 1.f), log.c_str());
-        else if (log.find("[WARNING]") != std::string::npos)
+		else if (log.find("[WARNING]") != std::string::npos)
             ImGui::TextColored(ImVec4(255 / 255.f, 255 / 255.f, 130 / 255.f, 1.f), log.c_str());
-        else if (log.find("[LOG]") != std::string::npos)
+		else if (log.find("[LOG]") != std::string::npos)
             ImGui::TextColored(ImVec4(33 / 255.f, 165 / 255.f, 57 / 255.f, 1.f), log.c_str());
-        else
-            ImGui::TextUnformatted(log.c_str());
-    }
+		else
+			ImGui::TextUnformatted(log.c_str());
+	}
 
 	// Auto scroll to bottom
 	if (ImGui::GetScrollY() >= ImGui::GetScrollMaxY())
 		ImGui::SetScrollHereY(1.0f);
 
 	ImGui::EndChild();
-    ImGui::End();
+	ImGui::End();
 }
 
 void ImGuiManager::showAssetsBrowserUI() {
@@ -860,7 +869,7 @@ void ImGuiManager::showBottomDockUI()
 		}
 
 
-		if (ImGui::BeginTabItem("Camera")) {     
+		if (ImGui::BeginTabItem("Camera")) { 
 			Cam2D_Params p = Cam2D_GetActiveParams();
 			bool changed = false;
 

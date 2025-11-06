@@ -34,6 +34,7 @@
 #include "scene/Prefab.h"
 #include "resources/Font.h"
 #include "graphics/Camera2D.h"
+#include "logic/Animal_Logic.h"
 
 #include <GLFW/glfw3.h>            // glViewport/glClearColor/glClear
 #include <cmath>                   // cosf, sinf
@@ -68,6 +69,7 @@ private: // core subsystem and resources kept alive across run()
 	std::unique_ptr<ResourceManager> resourceManager;
 	std::unique_ptr<AudioSystem> audioSystem;
 	std::unique_ptr<GameManager> gsm;
+    std::unique_ptr<Animal_Logic> logic;
 	std::unique_ptr<Renderer> renderer;
     std::unique_ptr<Shader> textShader;
 	std::unique_ptr<ImGuiManager> imGuiManager;

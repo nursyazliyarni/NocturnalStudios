@@ -132,6 +132,7 @@ struct Transform : public BaseComponent {
 
 struct ImageRenderer: public RenderComponent {
 	int textureID = -1; // Default to -1 (no texture)
+	std::string image_path;
 	void FromJSON(const rapidjson::Value& json);
 };
 struct SpriteRenderer : public RenderComponent {
@@ -148,10 +149,11 @@ struct RectRenderer : public RenderComponent {
 };
 
 
-struct AnimalBehavior : public BaseComponent {
-	std::string sound{ "moo" };
+struct AnimalBehavior {
+	double health_bar, hunger_bar, sanity_bar;
 	void FromJSON(const rapidjson::Value& json);
 };
+
 struct AudioData : public BaseComponent {
 	struct IndividualAudioData {
 		unsigned resourceID;

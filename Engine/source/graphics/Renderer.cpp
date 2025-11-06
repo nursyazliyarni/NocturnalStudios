@@ -47,10 +47,9 @@ namespace {
     }
 }
 
-Renderer::Renderer(const char* vertex_path, const char* fragment_path):render_shader(vertex_path,fragment_path) {
-    logger.log("vertex shader path: " + std::string(vertex_path));
-    logger.log("fragment shader path: " + std::string(fragment_path));
-
+Renderer::Renderer(std::vector<std::pair<std::string, std::string>> shader_filePATH_list):render_shader(shader_filePATH_list) {
+    //vertex position->where to render on screen(-1.0 to +1.0)
+    //texture UV->how to render texture(0.0 to 1.0)
     float vertices[] = {
         -1.0f,  1.0f,            0.0f, 0.0f,
         -1.0f, -1.0f,            0.0f, 1.0f,
@@ -72,17 +71,40 @@ Renderer::Renderer(const char* vertex_path, const char* fragment_path):render_sh
     glBindVertexArray(0);
 }
 
-void Renderer::background_render(GLuint texture_ID, const GLchar* uniform_VARNAME)
+void Renderer::background_render(GLuint texture_ID, const GLchar* uniform_VARNAME, unsigned int vector_index)
 {
-    render_shader.user_Shader_program();
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, texture_ID);
-    glUniform1i(glGetUniformLocation(render_shader.get_programID(), uniform_VARNAME), 0);
+    render_shader.user_Shader_program(vector_index); //use this shader program for rendering background image
+    glActiveTexture(GL_TEXTURE0); //specifies which texture unit to make active
+    glBindTexture(GL_TEXTURE_2D, texture_ID); //bind this current texture to texturing target
+    //glGetUniformLocation takes in ID of shader program object AND uniform_VARNAME
+    //to return the location of a uniform variable
+    //glUniform1i takes in location of a uniform variable and 0(this means texture unit is GL_TEXTURE0)
+    render_shader.SET_uniform_variable(uniform_VARNAME, 0, vector_index);
 
-    glBindVertexArray(VAO_arr);
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-    glBindVertexArray(0);
-    glUseProgram(0);
+    glBindVertexArray(VAO_arr); //Bind Vertex Array Object to background mesh
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4); //Render rectangle(4 vertices = 2 triangles)
+    glBindVertexArray(0); //unbinds the currently bound VAO
+    glUseProgram(0); //unbind the currently active shader program and go back to fixed-function pipeline mode
+}
+
+void Renderer::special_background_render(GLuint texture_ID, const GLchar* uniform_VARNAME, unsigned int vector_index)
+{
+    render_shader.user_Shader_program(vector_index); //use this shader program for rendering background image
+    glActiveTexture(GL_TEXTURE0); //specifies which texture unit to make active
+    glBindTexture(GL_TEXTURE_2D, texture_ID); //bind this current texture to texturing target
+    //glGetUniformLocation takes in ID of shader program object AND uniform_VARNAME
+    //to return the location of a uniform variable
+    //glUniform1i takes in location of a uniform variable and 0(this means texture unit is GL_TEXTURE0)
+    render_shader.SET_uniform_variable(uniform_VARNAME, 0, vector_index);
+
+    float time = (float)glfwGetTime();
+    glUniform1f(glGetUniformLocation(render_shader.get_programID(vector_index), "time"), time);
+    glUniform1f(glGetUniformLocation(render_shader.get_programID(vector_index), "parallaxFactor"), 1.0f);
+
+    glBindVertexArray(VAO_arr); //Bind Vertex Array Object to background mesh
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4); //Render rectangle(4 vertices = 2 triangles)
+    glBindVertexArray(0); //unbinds the currently bound VAO
+    glUseProgram(0); //unbind the currently active shader program and go back to fixed-function pipeline mode
 }
 
 void Renderer::init2D(int w, int h) {
@@ -344,8 +366,8 @@ std::vector<Renderer::sprite>& Renderer::get_sprite_vector() {
 // ---- Text rendering controlled by Renderer ----
 void Renderer::setTextShader(Shader& shader) {
     text_shader = &shader;
-    text_shader->user_Shader_program();
-    text_shader->SET_uniform_variable("text", 0); // sampler binding
+    text_shader->user_Shader_program(0);
+    text_shader->SET_uniform_variable("text", 0, 0); // sampler binding
     glUseProgram(0);
 }
 
@@ -353,9 +375,9 @@ void Renderer::setTextProjection(int w, int h) {
     if (!text_shader) return;
     glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(w),
                                       0.0f, static_cast<float>(h));
-    text_shader->user_Shader_program();
+    text_shader->user_Shader_program(0);
     glUniformMatrix4fv(
-        glGetUniformLocation(text_shader->get_programID(), "projection"),
+        glGetUniformLocation(text_shader->get_programID(0), "projection"),
         1, GL_FALSE, &projection[0][0]
     );
     glUseProgram(0);
@@ -365,8 +387,8 @@ void Renderer::drawText(const Font& font, const std::string& text, float x, floa
     if (!text_shader) return;
 
     // text shader uses its own projection (bottom-left origin)
-    text_shader->user_Shader_program();
-    text_shader->SET_uniform_variable("textColor", color.x, color.y, color.z);
+    text_shader->user_Shader_program(0);
+    text_shader->SET_uniform_variable("textColor", color.x, color.y, color.z, 0);
 
     glActiveTexture(GL_TEXTURE0);
     glBindVertexArray(font.GetVAO());

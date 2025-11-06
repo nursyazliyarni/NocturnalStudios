@@ -2,7 +2,7 @@
     File: Renderer.h
     Project: NocturnalStudio
 
-    This file contains the declaration of the Renderer class for the engine’s 2D pipeline: background 
+    This file contains the declaration of the Renderer class for the engineï¿½s 2D pipeline: background 
     quad setup(GL_TRIANGLES) + shader, FBO/viewport init & resize, immediate-mode debug primitives 
     (tri, rect, rectOutline, line, circle), and batched sprite rendering (textured quads with rotation, 
     scaling, and front/behind passes). It also exposes the FBO texture for UI display.
@@ -22,6 +22,9 @@
 // Renderer.h
 #pragma once
 #include "gl/glew.h"
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #include "graphics/Shader.h"
 #include "graphics/Texture.h" 
 #include "core/Logger.h"
@@ -37,7 +40,7 @@ class Font;
 class Renderer {
 public:
     //constructor for image rendering, need to provide vertex file AND fragment file
-    Renderer(const char* vertex_path, const char* fragment_path);
+    Renderer(std::vector<std::pair<std::string, std::string>> shader_filePATH_list);
 
     void init2D(int w, int h);
     void resize(int w, int h);
@@ -68,7 +71,11 @@ public:
         const float* rotations,
         int viewportW, int viewportH); // actual impl
 
-    void background_render(GLuint texture_ID, const GLchar* uniform_VARNAME);
+
+
+
+    void background_render(GLuint texture_ID, const GLchar* uniform_VARNAME, unsigned int vector_index);
+    void special_background_render(GLuint texture_ID, const GLchar* uniform_VARNAME, unsigned int vector_index);
 
     // FBO setup and usage
     void initFBO(int width, int height);

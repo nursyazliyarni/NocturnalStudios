@@ -174,6 +174,11 @@ bool GameManager::load(const char* prefabsPath, const char* scenesPath, TextureS
                     if (ov.HasMember("w") && ov["w"].IsNumber())      di.w = ov["w"].GetFloat();
                     if (ov.HasMember("h") && ov["h"].IsNumber())      di.h = ov["h"].GetFloat();
                     if (ov.HasMember("angle") && ov["angle"].IsNumber()) di.angle = ov["angle"].GetFloat();
+
+                    if (ov.HasMember("health_bar") && ov["health_bar"].IsNumber()) di.health_bar = ov["health_bar"].GetFloat();
+                    if (ov.HasMember("hunger_bar") && ov["hunger_bar"].IsNumber()) di.hunger_bar = ov["hunger_bar"].GetFloat();
+                    if (ov.HasMember("sanity_bar") && ov["sanity_bar"].IsNumber()) di.sanity_bar = ov["sanity_bar"].GetFloat();
+
                     if (ov.HasMember("sprite_path") && ov["sprite_path"].IsString()) {
                         std::string sp = toAssetsPath(ov["sprite_path"].GetString());
                         di.tex = tex.get(sp);
@@ -264,11 +269,17 @@ void GameManager::render(Renderer& r, int w, int h) const {
     const Scene& sc = it->second;
 
     // background (fullscreen) � NOTE uniform must be "bg_texture"
-    //r.background_render(sc.background, "bg_texture");
-    // Draw background as a regular textured quad and apply camera to it too
-    float bx = 0.0f, by = 0.0f, bw = float(w), bh = float(h);
-    Cam2D_Apply(currentScene, bx, by, bw, bh, w, h);
-    r.texturedTri(sc.background, bx, by, bw, bh);
+    if (it->first == "MainMenu") {
+        r.special_background_render(sc.background, "bgTexture", 1);
+    }
+
+    else {
+        r.background_render(sc.background, "bg_texture", 0);
+        // Draw background as a regular textured quad and apply camera to it too
+        float bx = 0.0f, by = 0.0f, bw = float(w), bh = float(h);
+        Cam2D_Apply(currentScene, bx, by, bw, bh, w, h);
+        r.texturedTri(sc.background, bx, by, bw, bh);
+    }
 
     
 
