@@ -62,11 +62,9 @@
           "overrides": { "x":0.66,"y":0.50, "sprite_path":"textures/owl_medicine.png" } },
         { "prefab":"toy","name":"owl_toy",
           "overrides": { "x":0.40,"y":0.50, "w":0.14, "h":0.14, "sprite_path":"textures/owl_toy.png", "rotatable": false, "scalable": false } },
-          
-        { "prefab":"firefly","name":"firefly_1",
-          "overrides": { "x":0.66, "y":0.42, "w":0.05, "h":0.05, "sprite_path":"assets/textures/firefly.png" }
-        }
-
+      { "prefab":"firefly","name":"firefly_1",
+        "overrides": { "x":0.66, "y":0.42, "w":0.05, "h":0.05, "sprite_path":"textures/firefly.png" }
+      }
       ]
     },
 

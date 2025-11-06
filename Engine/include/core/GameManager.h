@@ -6,6 +6,7 @@
 #include <optional>
 #include "graphics/Renderer.h"
 
+#include <functional>
 
 class ECS;
 
@@ -71,6 +72,9 @@ public:
 
     Scene* getCurrentScene();
 
+    void setSceneChangedCallback(std::function<void(const std::string&)> cb) { onSceneChanged = std::move(cb); }
+
+
 private:
     std::unordered_map<std::string, Scene> scenes;
     std::unordered_map<int, std::string> keyMap; // GLFW_KEY_* to scene name
@@ -85,5 +89,6 @@ private:
     ECS& ecs_;
     //std::unordered_map<std::string, Camera2D> cameras_; // one camera per scene
 
+    std::function<void(const std::string&)> onSceneChanged;
 
 };

@@ -33,6 +33,8 @@
 #include "graphics/DebugDraw.h"
 #include "physics/AABB.h"
 
+#include "scene/Prefab.h" // for Prefab_GetSceneName
+
 //  TextureStore 
 static GLuint loadGLTexture(const std::string& path) {
     int w, h, n;
@@ -215,8 +217,11 @@ bool GameManager::load(const char* prefabsPath, const char* scenesPath, TextureS
 }
 
 void GameManager::requestScene(const std::string& name) {
-    if (scenes.count(name)) currentScene = name;
+    if (!scenes.count(name)) return;
+    currentScene = name;
+    if (onSceneChanged) onSceneChanged(currentScene);
 }
+
 
 bool GameManager::switchToSceneForKey(int glfwKey) {
     if (app != AppState::Playing) return false;   // lock numbers unless Playing
@@ -305,33 +310,50 @@ void GameManager::render(Renderer& r, int w, int h) const {
 
 
                     r.texturedTri(img->textureID, px, py, pw, ph);
+
+                    // Debug AABB for ECS entities (so B toggle still shows boxes)
+                    if (Debug::Drawer::Instance().IsActive())
+                    {
+                        AABB collider(Vector2D(px, py), Vector2D(pw, ph));
+                        Debug::Drawer::Instance().AddRect(
+                            collider.pos.x(), collider.pos.y(),
+                            collider.size.x(), collider.size.y(),
+                            0xFFFF00FF // yellow
+                        );
+                    }
+
                 }
             }
         }
     }
 
     // entities (normalized ? pixels)
+   // entities (normalized → pixels) — draw JSON **only** if there is NO ECS entity by the same name
     for (const auto& di : sc.items) {
-        if (di.tex == 0) continue;  // skip if background/entity texture didn�t load
+        // If an ECS entity with this name exists, we skip the JSON-drawn duplicate
+        if (!di.name.empty()) {
+            EntityID eid = ecs_.findEntityByName(di.name);
+            if (eid != INVALID_ENTITY_ID) {
+                continue; // ECS is the source of truth for this sprite
+            }
+        }
+
+        if (di.tex == 0) continue;
         float px = di.x * w, py = di.y * h, pw = di.w * w, ph = di.h * h;
 
         Cam2D_Apply(currentScene, px, py, pw, ph, w, h);
-
         r.texturedTri(di.tex, px, py, pw, ph);
 
-        // Debugging drawer
-        if (Debug::Drawer::Instance().IsActive())
-        {
+        if (Debug::Drawer::Instance().IsActive()) {
             AABB collider(Vector2D(px, py), Vector2D(pw, ph));
-
-            // Queue the collider’s outline for debug
             Debug::Drawer::Instance().AddRect(
                 collider.pos.x(), collider.pos.y(),
                 collider.size.x(), collider.size.y(),
-                0xFFFF00FF // yellow box
+                0xFFFF00FF
             );
         }
     }
+
 
 }
 
