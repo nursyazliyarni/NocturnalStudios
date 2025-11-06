@@ -162,19 +162,6 @@ void Application::init() {
         return static_cast<int>(textures.get(path));
     });
 
-	textShader->user_Shader_program(0);
-	textShader->SET_uniform_variable("text", 0, 0);
-
-	glm::mat4 projection = glm::ortho(
-		0.0f, static_cast<float>(m_window.desc().width),
-		0.0f, static_cast<float>(m_window.desc().height)
-	);
-	textShader->user_Shader_program(0);
-	glUniformMatrix4fv(
-		glGetUniformLocation(textShader->get_programID(0), "projection"),
-		1, GL_FALSE, &projection[0][0]
-	);
-
 	prefabManager = std::make_unique<PrefabManager>(*ecs);
 	prefabManager->Load_Prefab(prefabTestPath.c_str());
 	prefabManager->CreateEntityFromPrefab(prefabTestPath, "main_menu_button", "play_button");
@@ -188,16 +175,6 @@ void Application::init() {
 	//logger.log("Created animal entity with ID: " + std::to_string(animal) + " and " + std::to_string(animal_2));
 	std::cout << "abcssss:" << ecs->getAllEntities().size() << "\n";
     textShader = std::make_unique<Shader>(textShaderVertexPath.c_str(), textShaderFragmentPath.c_str());
-
-    {
-        ResourceID fontID = resourceManager->findResource<Font>("NanumBrushScript-Regular");
-        ResourceID fontID2 = resourceManager->findResource<Font>("PAPYRUS");
-        
-        Font& uiFont2Ref = resourceManager->getFont(fontID2);
-        Font& uiFontRef = resourceManager->getFont(fontID);
-        uiFont = &uiFontRef;
-        uiFont2 = &uiFont2Ref;
-    }
 
     // Wire text shader into the renderer (renderer controls projection per-viewport)
     renderer->setTextShader(*textShader);
