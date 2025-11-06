@@ -1,4 +1,9 @@
 #include "ECS/ECS_Component.h"
+#include "ECS/ECS.h"
+#include "../include/core/Logger.h"
+#include "../include/System/Transformation_System.h"
+
+extern Logger logger;
 /**
 	* Returns the translated vector2d matrix
 	* translates the object to x and y
@@ -50,4 +55,24 @@ Vector2D Transform::ScaleUniform(float s) {
 Vector2D Transform::Scale(float x, float y) {
 	scale ={ scale.x()*x,scale.y()*y };
 	return scale;
+}
+
+
+void TransformSystem::TransformUpdate() {
+	ECS& ecs = ECS::getECS();
+	std::vector<EntityID> ectities = ecs.getAllEntities();
+	for (EntityID e:ectities)
+	{
+		Transform* t = ecs.getComponent<Transform>(e);
+		if (t)
+		{
+			t->lastPosition = t->position;
+			t->lastHeight = t->height;
+			t->lastScale = t->scale;
+			t->lastRotation = t->rotation;
+			std::string poob{ "Transform updated for entity " };
+			poob.append(std::to_string(e));
+			logger.log(poob);
+		}
+	}
 }

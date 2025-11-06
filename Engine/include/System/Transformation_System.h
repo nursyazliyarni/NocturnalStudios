@@ -3,6 +3,7 @@
 #include "../include/math/Vector.h"
 
 class TransformSystem {
-	
+public:
+	static void TransformUpdate();
 };
 

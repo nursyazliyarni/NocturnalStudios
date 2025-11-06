@@ -241,7 +241,7 @@ int Application::run() {
                 gsm->handleClick(nx, ny);
             }
         }
-
+		TransformSystem::TransformUpdate();
         if (gsm->popQuitRequested()) {
             glfwSetWindowShouldClose(m_window.handle(), 1);
         }

@@ -234,6 +234,8 @@ public:
 	 */
 	template <typename T>
 	T* getComponent(EntityID entityID);
+
+
 	void emptyAllEntities();
 
 private:
