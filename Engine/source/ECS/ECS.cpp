@@ -36,12 +36,14 @@ ECS::ECS() {
 	// Register all components here
 	registerComponent<Transform>();
 	registerComponent<ImageRenderer>();
+	registerComponent<SpriteRenderer>();
 	registerComponent<CircleRenderer>();
 	registerComponent<RectRenderer>();
 	registerComponent<AnimalBehavior>();
 	registerComponent<AudioData>();
 	registerComponent<PhysicsComponent>();
 	registerComponent<BoxCollider>();
+	registerComponent<AABBCollider>();
 }
 
 /**
