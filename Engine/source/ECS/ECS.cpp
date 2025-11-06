@@ -14,6 +14,9 @@
 
 #include "../include/ECS/ECS.h"
 #include "../include/core/Logger.h"
+#include "Animation/SpriteAnimationComponent.h"
+#include <fstream>
+#include <sstream>
 
 extern Logger logger;
 
@@ -37,6 +40,7 @@ ECS::ECS() {
 	registerComponent<Transform>();
 	registerComponent<ImageRenderer>();
 	registerComponent<SpriteRenderer>();
+	registerComponent<SpriteAnimationComponent>();
 	registerComponent<CircleRenderer>();
 	registerComponent<RectRenderer>();
 	registerComponent<AnimalBehavior>();
@@ -56,6 +60,46 @@ ECS::ECS() {
 	ComponentFactory::Register<AABBCollider>("AABBCollider");
 
 
+
+	// --------------------------------------------------------
+	// Register JSON creation logic for SpriteAnimationComponent
+	// --------------------------------------------------------
+	ComponentFactory::Register("SpriteAnimationComponent", [](const rapidjson::Value& j) -> std::any {
+		SpriteAnimationComponent comp;
+
+		if (j.HasMember("anim_path")) {
+			std::ifstream file(j["anim_path"].GetString());
+			if (file) {
+				std::stringstream buffer;
+				buffer << file.rdbuf();
+				rapidjson::Document animDoc;
+				animDoc.Parse(buffer.str().c_str());
+
+				for (auto& m : animDoc.GetObject()) {
+					SpriteAnimationComponent::Animation anim;
+					auto& obj = m.value;
+					if (obj.HasMember("frames")) {
+						for (auto& f : obj["frames"].GetArray())
+							anim.frames.push_back(f.GetInt());
+					}
+					if (obj.HasMember("frameTime"))
+						anim.frameTime = obj["frameTime"].GetFloat();
+					if (obj.HasMember("loop"))
+						anim.loop = obj["loop"].GetBool();
+					comp.animations[m.name.GetString()] = anim;
+				}
+			}
+		}
+
+		if (j.HasMember("currentAnim")) comp.currentAnim = j["currentAnim"].GetString();
+		if (j.HasMember("sheetColumns")) comp.sheetColumns = j["sheetColumns"].GetInt();
+		if (j.HasMember("sheetRows")) comp.sheetRows = j["sheetRows"].GetInt();
+
+		comp.playing = true;
+		comp.timer = 0.0f;
+		comp.currentFrame = 0;
+		return comp;
+		});
 }
 
 /**

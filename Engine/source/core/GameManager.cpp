@@ -32,6 +32,7 @@
 #include "graphics/Camera2D.h"
 #include "graphics/DebugDraw.h"
 #include "physics/AABB.h"
+#include "Animation/SpriteAnimationComponent.h"
 
 //  TextureStore 
 static GLuint loadGLTexture(const std::string& path) {
@@ -214,6 +215,38 @@ bool GameManager::load(const char* prefabsPath, const char* scenesPath, TextureS
 
         scenes[sceneName] = std::move(sc);
     }
+	//temp: add a flamingo entity with sprite animation to ECS
+    {
+        EntityID flamingo = ecs_.createEntity();
+
+        ecs_.addComponent<Transform>(flamingo, Transform{});
+        ecs_.addComponent<ImageRenderer>(flamingo, ImageRenderer{});
+        ecs_.addComponent<SpriteAnimationComponent>(flamingo, SpriteAnimationComponent{});
+
+        auto* t = ecs_.getComponent<Transform>(flamingo);
+        auto* img = ecs_.getComponent<ImageRenderer>(flamingo);
+        auto* anim = ecs_.getComponent<SpriteAnimationComponent>(flamingo);
+
+        t->position = { 0.5f, 0.5f };
+        t->scale = { 0.25f, 0.25f };
+
+        img->isVisible = true;
+        img->textureID = tex.get("assets/textures/flamingo_spritesheet.png");
+
+        //Define an animation sequence
+        SpriteAnimationComponent::Animation idle;
+        idle.frames = { 0,1,2,3,4,5,6,7 };
+        idle.frameTime = 0.12f;
+        idle.loop = true;
+
+        anim->animations["idle"] = idle;
+        anim->currentAnim = "idle";
+        anim->playing = true;
+        anim->currentFrame = 0;
+        anim->sheetColumns = 5;
+        anim->sheetRows = 1;
+    }
+
 
     if (currentScene.empty() && !scenes.empty()) currentScene = scenes.begin()->first;
     return true;
@@ -259,15 +292,12 @@ void GameManager::handleKeyPress(int key) {
     }
 }
 
-
-
-
-void GameManager::render(Renderer& r, int w, int h) const {
+void GameManager::render(Renderer& r, int w, int h) {
 
     auto it = scenes.find(currentScene);
     if (it == scenes.end()) return;
     const Scene& sc = it->second;
-
+    
     // background (fullscreen) � NOTE uniform must be "bg_texture"
     if (it->first == "MainMenu") {
         r.special_background_render(sc.background, "bgTexture", 1);
@@ -314,8 +344,38 @@ void GameManager::render(Renderer& r, int w, int h) const {
 
                     Cam2D_Apply(currentScene, px, py, pw, ph, w, h);
 
+                    if (auto* anim = ecs_.getComponent<SpriteAnimationComponent>(e)) {
+                        auto it = anim->animations.find(anim->currentAnim);
+                        if (it != anim->animations.end() && !it->second.frames.empty()) {
+                            const auto& def = it->second;
+                            int frameIndex = def.frames[anim->currentFrame];
 
-                    r.texturedTri(img->textureID, px, py, pw, ph);
+                            int sheetColumns = anim->sheetColumns;
+                            int sheetRows = anim->sheetRows;
+
+                            float uPerFrame = 1.0f / float(sheetColumns);
+                            float vPerFrame = 1.0f / float(sheetRows);
+
+                            int col = frameIndex % sheetColumns;
+                            int row = frameIndex / sheetColumns;
+
+                            float u0 = col * uPerFrame;
+                            float v0 = row * vPerFrame;
+                            float u1 = u0 + uPerFrame;
+                            float v1 = v0 + vPerFrame;
+
+                            float px = t->position.x() * w;
+                            float py = t->position.y() * h;
+                            float pw = t->scale.x() * w;
+                            float ph = t->scale.y() * h;
+
+                            Cam2D_Apply(currentScene, px, py, pw, ph, w, h);
+
+                            r.drawSpriteUV(img->textureID, px, py, pw, ph, img->uvMin.x, img->uvMin.y, img->uvMax.x, img->uvMax.y);
+
+                        }
+                    }
+                   // r.texturedTri(img->textureID, px, py, pw, ph);
                 }
             }
         }
@@ -430,3 +490,7 @@ Scene* GameManager::getCurrentScene() {
     return nullptr;
 }
 
+void GameManager::update(float dt,Renderer& renderer,TextureStore& tex) {
+    //update ECS animations
+    animationSystem_.Update(dt, ecs_, renderer, tex);
+}

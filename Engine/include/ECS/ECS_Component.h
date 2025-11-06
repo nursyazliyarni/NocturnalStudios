@@ -134,6 +134,9 @@ struct ImageRenderer: public RenderComponent {
 	int textureID = -1; // Default to -1 (no texture)
 	std::string image_path;
 	void FromJSON(const rapidjson::Value& json);
+
+	glm::vec2 uvMin = glm::vec2(0.0f, 0.0f);
+	glm::vec2 uvMax = glm::vec2(1.0f, 1.0f);
 };
 struct SpriteRenderer : public RenderComponent {
 	std::string spritePath{};

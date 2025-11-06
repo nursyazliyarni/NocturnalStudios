@@ -1,3 +1,15 @@
+/*!------------------------------------------------------------------------------------------------
+    File: Font.cpp
+    Project: NocturnalStudio
+
+	This file contains Font functions definitions for font loading, rendering and cleanup.
+
+    Primary Author:
+         Chang Qi Xuan Celest
+        - Created Font function definitions.
+
+    All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
 #include "resources/Font.h"
 
 Font::Font(ResourceID id, const std::string& key, const std::string& filePath, unsigned int pixelVal)

@@ -96,6 +96,10 @@ public:
             float angle;
         };
 
+	//draw a sprite using sub-UVs from a spritesheet
+    void drawSpriteUV(GLuint tex, float x, float y, float w, float h,
+        float u0, float v0, float u1, float v1);
+
 private:
     GLuint VAO_arr = 0, VBO_arr = 0;
     GLuint viewportFBO = 0, viewportTexture = 0;
