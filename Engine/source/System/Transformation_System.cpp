@@ -4,6 +4,11 @@
 #include "../include/System/Transformation_System.h"
 
 extern Logger logger;
+
+
+namespace {
+	EntityID selectedID = NO_ENTITY_SELECTED;
+}
 /**
 	* Returns the translated vector2d matrix
 	* translates the object to x and y
@@ -75,4 +80,79 @@ void TransformSystem::TransformUpdate() {
 			logger.log(poob);
 		}
 	}
+}
+
+void TransformSystem::TransformInput(Input& in,double dt) {
+	ECS& ecs = ECS::getECS();
+
+	if (selectedID == NO_ENTITY_SELECTED)
+	{
+		if (in.WasPressed(GLFW_KEY_SPACE)) //up
+		{
+			selectedID = ecs.getAllEntities().front();
+		}
+	}
+
+	Transform* t = ecs.getComponent<Transform>(selectedID);
+
+	
+
+	if (t)
+	{
+		Vector2D movedir{};
+		if (in.WasPressed(GLFW_KEY_W)) //up
+		{
+			movedir.y() += static_cast<float>(dt * 6.0);
+		}
+		else if (in.WasPressed(GLFW_KEY_S))
+		{
+			movedir.y() -= static_cast<float>(dt * 6.0);
+		}
+		if (in.WasPressed(GLFW_KEY_A)) //up
+		{
+			movedir.x() -= static_cast<float>(dt * 6.0);
+		}
+		else if (in.WasPressed(GLFW_KEY_D))
+		{
+			movedir.x() += static_cast<float>(dt * 6.0);
+		}
+
+		float rot{};
+		if (GLFW_KEY_K)
+		{
+			rot -= static_cast<float>(dt * 2.0);
+		}
+		else if (GLFW_KEY_J) {
+			rot += static_cast<float>(dt * 2.0);
+		}
+
+		float scaling{1.f};
+		if (GLFW_KEY_U)
+		{
+			scaling -= static_cast<float>(dt * 2.0);
+		}
+		else if (GLFW_KEY_I) {
+			scaling += static_cast<float>(dt * 2.0);
+		}
+
+
+		t->ScaleUniform(scaling);
+		t->rotation += rot;
+		t->TranslateBy(movedir.x(),movedir.y());
+	}
+	
+	
+	
+}
+
+void CollisionSystem::CollisionUpdate(){
+
+}
+
+void PhysicsSystem::PhysicsUpdate() {
+
+}
+
+void PhysicsSystem::PhysicsInput(Input& in,double dt) {
+
 }

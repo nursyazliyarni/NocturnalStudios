@@ -215,7 +215,7 @@ int Application::run() {
             gsm->handleKeyPress(GLFW_KEY_ESCAPE);
 
         inputSystem->ProcessHotkeys(*gsm);
-
+        TransformSystem::TransformInput(*inputSystem, dt);
         int fbw = 0, fbh = 0; glfwGetFramebufferSize(m_window.handle(), &fbw, &fbh);
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         glViewport(0, 0, fbw, fbh);
@@ -252,7 +252,7 @@ int Application::run() {
                 gsm->handleClick(nx, ny);
             }
         }
-		//TransformSystem::TransformUpdate();
+		TransformSystem::TransformUpdate();
         if (gsm->popQuitRequested()) {
             glfwSetWindowShouldClose(m_window.handle(), 1);
         }
