@@ -22,6 +22,29 @@
     "button": {
       "components": [ { "type": "SpriteRenderer", "sprite_path": "" } ],
       "defaults": { "w": 0.40, "h": 0.09, "angle": 0.0, "rotatable": false, "scalable": false }
+    },
+
+
+
+    "firefly": {
+  "components": [
+    { "type": "SpriteRenderer", "sprite_path": "assets/textures/firefly.png", "opacity": 1.0, "isVisible": true },
+    { "type": "Transform" },
+    { "type": "PhysicsComponent", "velocity": [0.0, 0.0], "gravityEnabled": false },
+    { "type": "AI",
+      "state": "Wander",
+      "maxSpeed": 0.28,
+      "accel": 4.0,
+      "wanderJitter": 3.2,
+      "chaseStrength": 1.0,
+      "fleeStrength": 1.2,
+      "avoidRadius": 0.08
     }
+  ],
+  "defaults": { "w": 0.05, "h": 0.05, "angle": 0.0, "rotatable": false, "scalable": false }
+}
+
+
+
   }
 }
