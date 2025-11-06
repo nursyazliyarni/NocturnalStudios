@@ -50,7 +50,7 @@ bool ComponentFactory::CreateFromName(EntityID entity, const std::string& name, 
 	if (name == "AABBCollider")
 	{
 		ecs.addComponent<AABBCollider>(entity, std::any_cast<AABBCollider>(Create(name,j)));
-		return true;
+		return false;
 	}
 }
 void Collider::FromJSON(const rapidjson::Value& json){}

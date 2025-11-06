@@ -1,3 +1,16 @@
+/*!------------------------------------------------------------------------------------------------
+    File: Font.h
+    Project: NocturnalStudio
+
+    This file contains Font Character structure and related function declarations.
+
+    Primary Author:
+         Chang Qi Xuan Celest
+        - Created Character struct and font related class function declarations.
+
+    All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
+
 #ifndef FONT_H
 #define FONT_H
 
