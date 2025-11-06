@@ -1,5 +1,58 @@
 #include "ECS/ECS_Component.h"
-
+#include "ECS/ECS.h"
+bool ComponentFactory::CreateFromName(EntityID entity, const std::string& name, const Json& j) {
+	ECS& ecs = ECS::getECS();
+	if (name=="Transform")
+	{
+		ecs.addComponent(entity, std::any_cast<Transform>(Create(name,j)));
+		return true;
+	}
+	if (name == "ImageRenderer")
+	{
+		ecs.addComponent(entity, std::any_cast<ImageRenderer>(Create(name,j)));
+		return true;
+	}
+	if (name == "SpriteRenderer")
+	{
+		ecs.addComponent(entity, std::any_cast<SpriteRenderer>(Create(name,j)));
+		return true;
+	}
+	if (name == "CircleRenderer")
+	{
+		ecs.addComponent(entity, std::any_cast<CircleRenderer>(Create(name,j)));
+		return true;
+	}
+	if (name == "RectRenderer")
+	{
+		ecs.addComponent(entity, std::any_cast<RectRenderer>(Create(name,j)));
+		return true;
+	}
+	if (name == "AnimalBehavior")
+	{
+		ecs.addComponent(entity, std::any_cast<AnimalBehavior>(Create(name,j)));
+		return true;
+	}
+	if (name == "AudioData")
+	{
+		ecs.addComponent(entity, std::any_cast<AudioData>(Create(name,j)));
+		return true;
+	}
+	if (name == "PhysicsComponent")
+	{
+		ecs.addComponent(entity, std::any_cast<PhysicsComponent>(Create(name,j)));
+		return true;
+	}
+	if (name == "BoxCollider")
+	{
+		ecs.addComponent(entity, std::any_cast<BoxCollider>(Create(name,j)));
+		return true;
+	}
+	if (name == "AABBCollider")
+	{
+		ecs.addComponent<AABBCollider>(entity, std::any_cast<AABBCollider>(Create(name,j)));
+		return true;
+	}
+}
 void Collider::FromJSON(const rapidjson::Value& json){}
 
 void RenderComponent::FromJSON(const rapidjson::Value& json) {

@@ -396,6 +396,9 @@ public:
 		GetMap()[name] = std::move(creator);
 	}
 
+	static bool CreateFromName(EntityID entity, const std::string& name, const Json& j);
+
+
 	static std::any Create(const std::string& name, const Json& j) {
 		auto& map = GetMap();
 		auto it = map.find(name);

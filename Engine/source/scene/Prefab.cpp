@@ -202,7 +202,7 @@ void PrefabManager::AddComponentFromJSON(EntityID entity, const rapidjson::Value
 
     std::string component_type = component_json["type"].GetString();
     std::cout << "Adding Component "<< component_type<<" to Entity "<<entity<<"\n";
-    if (entity_component_based_system.addComponent(entity, ComponentFactory::Create(component_type, component_json)))
+    if (ComponentFactory::CreateFromName(entity,component_type, component_json))
     {
         std::cout << component_type << " succsessfully added to Entity " << entity << "\n";
     }
