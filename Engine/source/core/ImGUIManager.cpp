@@ -320,7 +320,11 @@ void ImGuiManager::showViewportWindowUI() {
         ImVec2(static_cast<float>(vw), static_cast<float>(vh)), ImVec2(0, 1), ImVec2(1, 0));
     ImVec2 imgMax = ImVec2(imgMin.x + vw, imgMin.y + vh);
 
+	auto logicStart = Clock::now();
 	logic.update_animal_ALLstate(gsm);
+	auto logicEnd = Clock::now();
+	logicTime = std::chrono::duration<double>(logicEnd - logicStart).count();
+
     // Handle click -> normalized coords -> GSM
     // (Input handles clicks; store the rect in window client coords)
     vpMinWin = ImVec2(imgMin.x - windowTopLeft.x, imgMin.y - windowTopLeft.y);
