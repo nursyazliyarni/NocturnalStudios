@@ -231,84 +231,101 @@ void ImGuiManager::setInputTime(double time) {
 
 
 void ImGuiManager::showViewportWindowUI() {
-	constexpr float overlayW = 300.f, overlayH = 200.f;
-	ImGuiWindowFlags flags = ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoResize;
+    constexpr float overlayW = 300.f, overlayH = 200.f;
+    ImGuiWindowFlags flags = ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoResize;
 
-	float vpW = windowBottomRight.x - windowTopLeft.x - overlayW;
-	float vpH = windowBottomRight.y - windowTopLeft.y - overlayH;
+    float vpW = windowBottomRight.x - windowTopLeft.x - overlayW;
+    float vpH = windowBottomRight.y - windowTopLeft.y - overlayH;
 
-	ImGui::SetNextWindowPos(windowTopLeft);
-	ImGui::SetNextWindowSize(ImVec2(vpW, vpH));
-	ImGui::Begin("Viewport", nullptr, flags);
+    ImGui::SetNextWindowPos(windowTopLeft);
+    ImGui::SetNextWindowSize(ImVec2(vpW, vpH));
+    ImGui::Begin("Viewport", nullptr, flags);
 
-	const ImVec2 avail = ImGui::GetContentRegionAvail();
-	const int vw = (int)std::max(1.0f, avail.x);
-	const int vh = (int)std::max(1.0f, avail.y);
+    const ImVec2 avail = ImGui::GetContentRegionAvail();
+    const int vw = (int)std::max(1.0f, avail.x);
+    const int vh = (int)std::max(1.0f, avail.y);
 
-	auto physStart = Clock::now();
-	physics.update_sprite_movement(renderer, input);
-	physics.update_sprite_scaling(renderer, input);
-	physics.update_sprite_rotation(renderer, input);
-	physicsTime = std::chrono::duration<double>(Clock::now() - physStart).count();
+    auto physStart = Clock::now();
+    physics.update_sprite_movement(renderer, input);
+    physics.update_sprite_scaling(renderer, input);
+    physics.update_sprite_rotation(renderer, input);
+    physicsTime = std::chrono::duration<double>(Clock::now() - physStart).count();
 
-	auto renderStart = Clock::now();
-	renderer.initFBO(vw, vh);
-	renderer.bindFBO();
-	renderer.resize(vw, vh);
-	renderer.clear(0.06f, 0.06f, 0.07f);
+    auto renderStart = Clock::now();
+    renderer.initFBO(vw, vh);
+    renderer.bindFBO();
+    renderer.resize(vw, vh);
+    renderer.clear(0.06f, 0.06f, 0.07f);
 
-	// Draw current SCENE into the FBO
-	gsm.render(renderer, vw, vh);
+    // Draw current SCENE into the FBO
+    gsm.render(renderer, vw, vh);
 
-	// Debugging Drawer //
-	static bool printed = false;
-	if (Debug::Drawer::Instance().IsActive())
-	{
-		//Debug::Drawer::Instance().AddRect(100, 100, 200, 100, 0xFFFF00FF);
-		//Debug::Drawer::Instance().AddCircle(100, 100, 100, 0xFFFF00FF, 32);
+    // Text overlay (rendered into the viewport FBO)
+    renderer.setTextProjection(vw, vh); // bottom-left origin for the text shader
 
+    // Resolve fonts from ResourceManager (cache IDs across frames)
+    static std::optional<ResourceID> s_fontA;
+    static std::optional<ResourceID> s_fontB;
+    if (!s_fontA) s_fontA = resourceManager.findResource<Font>("NanumBrushScript-Regular");
+    if (!s_fontB) s_fontB = resourceManager.findResource<Font>("PAPYRUS");
 
-		if (!printed) {
-			std::cout << "[ImGuiManager] DebugDraw active\n";
-			printed = true;
-		}
+    if (s_fontA) {
+        const Font& f = resourceManager.getFont(*s_fontA);
+        renderer.drawText(f, "Nocturnal Studio Engine",
+                          25.0f, vh - 50.0f, // near top (BL origin)
+                          1.0f, glm::vec3(1.0f, 0.0f, 0.2f));
+    }
+    if (s_fontB) {
+        const Font& f2 = resourceManager.getFont(*s_fontB);
+        renderer.drawText(f2, "Sample Font: Papyrus",
+                          25.0f, vh - 100.0f, // near top (BL origin)
+                          1.0f, glm::vec3(0.2f, 0.8f, 1.0f));
+    }
 
-		glPushAttrib(GL_ALL_ATTRIB_BITS);               // save all states (color, blend, etc.)
-		glUseProgram(0);
-		glDisable(GL_TEXTURE_2D);
-		glDisable(GL_DEPTH_TEST);
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);      // draw outlines only
-		glMatrixMode(GL_MODELVIEW);
-		glLoadIdentity();
+    // Debugging Drawer //
+    static bool printed = false;
+    if (Debug::Drawer::Instance().IsActive())
+    {
+        if (!printed) {
+            std::cout << "[ImGuiManager] DebugDraw active\n";
+            printed = true;
+        }
 
-		Debug::Drawer::Instance().Render(Matrix<3>().Identity());
+        glPushAttrib(GL_ALL_ATTRIB_BITS);
+        glUseProgram(0);
+        glDisable(GL_TEXTURE_2D);
+        glDisable(GL_DEPTH_TEST);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        glMatrixMode(GL_MODELVIEW);
+        glLoadIdentity();
 
-		
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-		glPopAttrib();                                  // restore previous OpenGL states
-	}
-	else {
-		printed = false;
-	}
-	// Debugging Drawer //
+        Debug::Drawer::Instance().Render(Matrix<3>().Identity());
 
-	renderer.unbindFBO();
-	renderTime = std::chrono::duration<double>(Clock::now() - renderStart).count();
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        glPopAttrib();
+    }
+    else {
+        printed = false;
+    }
+    // Debugging Drawer //
 
-	// Show the FBO as an ImGui Image (flipped V)
-	ImVec2 imgMin = ImGui::GetCursorScreenPos();
-	ImGui::Image((ImTextureID)(intptr_t)renderer.getFBOTexture(),
-		ImVec2(static_cast<float>(vw), static_cast<float>(vh)), ImVec2(0, 1), ImVec2(1, 0));
-	ImVec2 imgMax = ImVec2(imgMin.x + vw, imgMin.y + vh);
+    renderer.unbindFBO();
+    renderTime = std::chrono::duration<double>(Clock::now() - renderStart).count();
 
-	// Handle click -> normalized coords -> GSM
-	// (Input handles clicks; store the rect in window client coords)
-	vpMinWin = ImVec2(imgMin.x - windowTopLeft.x, imgMin.y - windowTopLeft.y);
-	vpMaxWin = ImVec2(imgMax.x - windowTopLeft.x, imgMax.y - windowTopLeft.y);
+    // Show the FBO as an ImGui Image (flipped V)
+    ImVec2 imgMin = ImGui::GetCursorScreenPos();
+    ImGui::Image((ImTextureID)(intptr_t)renderer.getFBOTexture(),
+        ImVec2(static_cast<float>(vw), static_cast<float>(vh)), ImVec2(0, 1), ImVec2(1, 0));
+    ImVec2 imgMax = ImVec2(imgMin.x + vw, imgMin.y + vh);
 
-	ImGui::End();
+    // Handle click -> normalized coords -> GSM
+    // (Input handles clicks; store the rect in window client coords)
+    vpMinWin = ImVec2(imgMin.x - windowTopLeft.x, imgMin.y - windowTopLeft.y);
+    vpMaxWin = ImVec2(imgMax.x - windowTopLeft.x, imgMax.y - windowTopLeft.y);
+
+    ImGui::End();
 }
 
 
