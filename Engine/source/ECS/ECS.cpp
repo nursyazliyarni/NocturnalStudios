@@ -44,6 +44,18 @@ ECS::ECS() {
 	registerComponent<PhysicsComponent>();
 	registerComponent<BoxCollider>();
 	registerComponent<AABBCollider>();
+
+	ComponentFactory::Register<Transform>("Transform");
+	ComponentFactory::Register<ImageRenderer>("ImageRenderer");
+	ComponentFactory::Register<SpriteRenderer>("SpriteRenderer");
+	ComponentFactory::Register<CircleRenderer>("CircleRenderer");
+	ComponentFactory::Register<RectRenderer>("RectRenderer");
+	ComponentFactory::Register<AnimalBehavior>("AnimalBehavior");
+	ComponentFactory::Register<PhysicsComponent>("PhysicsComponent");
+	ComponentFactory::Register<BoxCollider>("BoxCollider");
+	ComponentFactory::Register<AABBCollider>("AABBCollider");
+
+
 }
 
 /**

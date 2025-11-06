@@ -61,12 +61,14 @@ void Transform::FromJSON(const rapidjson::Value& json) {
 		"rotation",		//2
 		"height",		//3
 		"space",		//4
-		"is_visible"	//5
+		"is_visible",	//5
+		"rotatable",	//6
+		"scalable"
 	};
 
 	//if any of these values is missing, its fine. checks for specific values first (HasMember())
 	//then it will also check for each param type
-	for (int i{}; i < 6; i++)
+	for (int i{}; i < 7; i++)
 	{
 		if (json.HasMember(members[i]))
 		{
@@ -134,6 +136,17 @@ void Transform::FromJSON(const rapidjson::Value& json) {
 					isVisible = json[members[i]].GetBool();
 				}
 				break;
+			case 6://isrotatable
+				if (json[members[i]].IsBool())
+				{
+					isRotatable = json[members[i]].GetBool();
+				}
+				break;
+			case 7://isScalable
+				if (json[members[i]].IsBool())
+				{
+					isScalable = json[members[i]].GetBool();
+				}
 			}
 		}
 	}

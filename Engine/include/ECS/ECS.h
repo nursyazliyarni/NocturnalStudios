@@ -381,6 +381,17 @@ public:
 	using Json = rapidjson::Value;
 	using Creator = std::function<std::any(const Json&)>;
 
+	template<typename T>
+	static void Register(const std::string& name) {
+		Register(name, [](const Json& j) -> std::any {T comp{};
+			if (j.IsObject()) {
+				comp.FromJSON(j);  
+			}
+			return comp;
+			});
+	}
+
+
 	static void Register(const std::string& name, Creator creator) {
 		GetMap()[name] = std::move(creator);
 	}
