@@ -88,7 +88,7 @@ struct Transform : public BaseComponent {
 	};
 
 	CoordinateSpace space = CoordinateSpace::World;
-	bool isVisible = true;
+	bool isVisible{ true }, isRotatable{ false }, isScalable{ false };
 
 	Transform():position {}, scale{  }, rotation{  }, height{}{}
 	Transform(Vector2D pos, Vector2D scl, float rot) :position{ pos }, scale{ scl }, rotation{ rot }, height{} {}
