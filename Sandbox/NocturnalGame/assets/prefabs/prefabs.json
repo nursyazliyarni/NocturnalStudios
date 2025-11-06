@@ -3,25 +3,30 @@
     "animal": {
       "components": [
         { "type": "SpriteRenderer", "sprite_path": "" },
-        { "type": "AABBCollider",  "bounding_box_size": 1.0 }
+        { "type": "AABBCollider",  "bounding_box_size": 1.0 },
+        { "type": "Transform",  "rotation": 0.0, "rotatable": false, "scalable": false}
       ],
-      "defaults": { "w": 0.50, "h": 0.42, "angle": 0.0 }
+      "defaults": { "w": 0.50, "h": 0.42, "angle": 0.0, "rotatable": false, "scalable": false }
     },
     "food": {
-      "components": [ { "type": "SpriteRenderer", "sprite_path": "" } ],
-      "defaults": { "w": 0.16, "h": 0.18, "angle": 0.0 }
+      "components": [ { "type": "SpriteRenderer", "sprite_path": "" },
+        { "type": "Transform",  "rotation": 0.0, "rotatable": false, "scalable": false} ],
+      "defaults": { "w": 0.16, "h": 0.18, "angle": 0.0, "rotatable": false, "scalable": false }
     },
-    "drink": {
-      "components": [ { "type": "SpriteRenderer", "sprite_path": "" } ],
-      "defaults": { "w": 0.12, "h": 0.18, "angle": 0.0 }
+    "medicine": {
+      "components": [ { "type": "SpriteRenderer", "sprite_path": "" },
+        { "type": "Transform",  "rotation": 0.0, "rotatable": false, "scalable": false} ],
+      "defaults": { "w": 0.12, "h": 0.18, "angle": 0.0, "rotatable": false, "scalable": false }
     },
     "toy": {
-      "components": [ { "type": "SpriteRenderer", "sprite_path": "" } ],
-      "defaults": { "w": 0.14, "h": 0.14, "angle": 0.0 }
+      "components": [ { "type": "SpriteRenderer", "sprite_path": "" },
+        { "type": "Transform",  "rotation": 0.0, "rotatable": true, "scalable": true} ],
+      "defaults": { "w": 0.14, "h": 0.14,  "angle": 0.0, "rotatable": true, "scalable": true, "rotationSpeedDeg": 90.0, "scaleSpeed": 0.75 }
     },
     "button": {
-      "components": [ { "type": "SpriteRenderer", "sprite_path": "" } ],
-      "defaults": { "w": 0.40, "h": 0.09, "angle": 0.0 }
+      "components": [ { "type": "SpriteRenderer", "sprite_path": "" },
+        { "type": "Transform",  "rotation": 0.0, "rotatable": false, "scalable": false} ],
+      "defaults": { "w": 0.40, "h": 0.09, "angle": 0.0, "rotatable": false, "scalable": false }
     }
   }
 }

@@ -5,6 +5,15 @@
 #include <memory>
 #include "rapidjson/document.h"
 #include "ECS/ECS_DEF.h"   // only POD types + EntityID here. No ECS.h in headers.
+#include "ECS/ECS_Component.h"
+
+//
+struct Prefab_data {
+    Transform transform_struct;
+    ImageRenderer image_render_struct;
+    BoxCollider collider_struct;
+    AnimalBehavior animal_behaviour_struct;
+};
 
 #define UNREFERENCED_PARAMETER(P) (void)(P)
 
@@ -20,7 +29,9 @@ public:
     //  A) { "prefabs": { "<name>": { "components":[...], "defaults":{...} } } }
     //  or
     //  B) [ { "name":"...", "components":[...] }, ... ]
-    void     Load_Prefab(const std::string& filename_path);
+    void Load_Prefab(const std::string& filename_path);
+    EntityID CreateEntityFromPrefab(const std::string& json_path, const std::string& entity_type, 
+        const std::string& object_name);
 
     // Create entity from prefab by name
     EntityID Instantiate(const std::string& prefab_name, const std::string& entity_name = "");
@@ -44,6 +55,9 @@ private:
         int id{};
     };
     std::vector<placeholderformove> scenes{};
-    std::unordered_map<std::string, rapidjson::Document> prefab_map;
+    std::unordered_map<std::string, std::shared_ptr<rapidjson::Document>> prefab_map;
     ECS& entity_component_based_system;
 };
+
+// SceneID -> scene name (used by SceneManager to activate camera)
+const std::string& Prefab_GetSceneName(SceneID id);
