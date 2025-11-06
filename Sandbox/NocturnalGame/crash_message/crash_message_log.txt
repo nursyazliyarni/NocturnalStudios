@@ -301,3 +301,28 @@ ERROR: 0:19: 'constructor' : not enough data provided for construction
 [06-11-2025] [16:37:50] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
 [06-11-2025] [16:41:26] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
 [06-11-2025] [16:42:20] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[06-11-2025] [17:20:33] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[06-11-2025] [17:20:42] [CRASH_MESSAGE] Program crash due to abort signal - std::abort() or failed assert()
+[06-11-2025] [17:22:13] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[06-11-2025] [17:22:20] [CRASH_MESSAGE] Program crash due to abort signal - std::abort() or failed assert()
+[06-11-2025] [17:22:52] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[06-11-2025] [17:23:32] [CRASH_MESSAGE] Program crash due to abort signal - std::abort() or failed assert()
+[06-11-2025] [17:27:02] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[06-11-2025] [17:28:57] [CRASH_MESSAGE] Program crash due to abort signal - std::abort() or failed assert()
+[06-11-2025] [17:29:16] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[06-11-2025] [17:29:24] [CRASH_MESSAGE] Program crash due to abort signal - std::abort() or failed assert()
+[06-11-2025] [17:30:20] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[06-11-2025] [17:30:48] [CRASH_MESSAGE] Program crash due to abort signal - std::abort() or failed assert()
+[06-11-2025] [17:31:16] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[06-11-2025] [17:31:27] [CRASH_MESSAGE] Program crash due to abort signal - std::abort() or failed assert()
+[06-11-2025] [17:32:05] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[06-11-2025] [17:32:34] [CRASH_MESSAGE] Program crash due to abort signal - std::abort() or failed assert()
+[06-11-2025] [17:33:10] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[06-11-2025] [17:33:32] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[06-11-2025] [17:33:44] [CRASH_MESSAGE] Program crash due to abort signal - std::abort() or failed assert()
+[06-11-2025] [17:35:16] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[06-11-2025] [17:35:50] [CRASH_MESSAGE] Program crash due to abort signal - std::abort() or failed assert()
+[06-11-2025] [17:36:15] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[06-11-2025] [17:36:28] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[06-11-2025] [17:44:44] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[06-11-2025] [17:47:04] [CRASH_MESSAGE] Failed to load default audio soundFile not found.

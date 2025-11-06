@@ -208,7 +208,6 @@ EntityID PrefabManager::Instantiate(const std::string& prefab_name, const std::s
 
 EntityID PrefabManager::Instantiate(const std::string& prefab_name, EntityID specific_id) {
     // Find the prefab document
-    std::cout << "ABCQWE:" << prefab_name << "\n";
     for (auto& pair : prefab_map) {
         const rapidjson::Document& current_doc = *pair.second;
 
@@ -468,7 +467,7 @@ void PrefabManager::AddComponentFromJSON(EntityID entity, const rapidjson::Value
         if (component_json.HasMember("height") && component_json["height"].IsNumber()) {
             c.height = component_json["height"].GetFloat();
         }
-        entity_component_based_system.addComponent<BoxCollider>(entity, collider_component);
+        //entity_component_based_system.addComponent<BoxCollider>(entity, collider_component);
     }
     // AnimalBehavior
     else if (component_type == "AnimalBehavior") {
@@ -476,8 +475,9 @@ void PrefabManager::AddComponentFromJSON(EntityID entity, const rapidjson::Value
         if (component_json.HasMember("sound") && component_json["sound"].IsString()) {
             //behavior_component.sound = component_json["sound"].GetString();
 
-        entity_component_based_system.addComponent<BoxCollider>(entity, c);
+        //entity_component_based_system.addComponent<BoxCollider>(entity, c);
         }
+    }
 
 
     // Add more component types as needed...

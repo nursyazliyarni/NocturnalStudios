@@ -151,6 +151,7 @@ struct RectRenderer : public RenderComponent {
 
 struct AnimalBehavior {
 	double health_bar, hunger_bar, sanity_bar;
+	void FromJSON(const rapidjson::Value& json);
 };
 
 struct AudioData : public BaseComponent {

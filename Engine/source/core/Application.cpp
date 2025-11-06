@@ -187,7 +187,6 @@ void Application::init() {
 	
 	//logger.log("Created animal entity with ID: " + std::to_string(animal) + " and " + std::to_string(animal_2));
 	std::cout << "abcssss:" << ecs->getAllEntities().size() << "\n";
-    renderer = std::make_unique<Renderer>(vertexPath.c_str(), fragmentPath.c_str());
     textShader = std::make_unique<Shader>(textShaderVertexPath.c_str(), textShaderFragmentPath.c_str());
 
     {
@@ -202,13 +201,6 @@ void Application::init() {
 
     // Wire text shader into the renderer (renderer controls projection per-viewport)
     renderer->setTextShader(*textShader);
-
-    prefabManager = std::make_unique<PrefabManager>(*ecs);
-    prefabManager->Load_Prefab(prefabTestPath.c_str());
-
-    EntityID animal = prefabManager->Instantiate("animal");
-    EntityID animal_2 = prefabManager->Instantiate("animal");
-    logger.log("Created animal entity with ID: " + std::to_string(animal) + " and " + std::to_string(animal_2));
 
 	imGuiManager = std::make_unique<ImGuiManager>(
 		m_window, *renderer,

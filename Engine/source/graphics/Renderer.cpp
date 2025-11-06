@@ -366,8 +366,8 @@ std::vector<Renderer::sprite>& Renderer::get_sprite_vector() {
 // ---- Text rendering controlled by Renderer ----
 void Renderer::setTextShader(Shader& shader) {
     text_shader = &shader;
-    text_shader->user_Shader_program();
-    text_shader->SET_uniform_variable("text", 0); // sampler binding
+    text_shader->user_Shader_program(0);
+    text_shader->SET_uniform_variable("text", 0, 0); // sampler binding
     glUseProgram(0);
 }
 
@@ -375,9 +375,9 @@ void Renderer::setTextProjection(int w, int h) {
     if (!text_shader) return;
     glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(w),
                                       0.0f, static_cast<float>(h));
-    text_shader->user_Shader_program();
+    text_shader->user_Shader_program(0);
     glUniformMatrix4fv(
-        glGetUniformLocation(text_shader->get_programID(), "projection"),
+        glGetUniformLocation(text_shader->get_programID(0), "projection"),
         1, GL_FALSE, &projection[0][0]
     );
     glUseProgram(0);
@@ -387,8 +387,8 @@ void Renderer::drawText(const Font& font, const std::string& text, float x, floa
     if (!text_shader) return;
 
     // text shader uses its own projection (bottom-left origin)
-    text_shader->user_Shader_program();
-    text_shader->SET_uniform_variable("textColor", color.x, color.y, color.z);
+    text_shader->user_Shader_program(0);
+    text_shader->SET_uniform_variable("textColor", color.x, color.y, color.z, 0);
 
     glActiveTexture(GL_TEXTURE0);
     glBindVertexArray(font.GetVAO());
