@@ -2,7 +2,7 @@
 
 Font::Font(ResourceID id, const std::string& key, const std::string& filePath, unsigned int pixelVal)
     : Resource(id, key, filePath), pixelSize(pixelVal) {
-	logger.log("Font resource created: " + key + " from " + filePath);
+    logger.log("Font resource created: " + key + " from " + filePath);
 }
 
 bool Font::LoadFont(const std::string& fontPath, unsigned int pixelVal) {
@@ -23,7 +23,7 @@ bool Font::LoadFont(const std::string& fontPath, unsigned int pixelVal) {
 
     for (GLubyte c = 0; c < 128; c++) {
         if (FT_Load_Char(face, c, FT_LOAD_RENDER)) {
-            std::cerr << "ERROR: Failed to load Glyph: " << c << std::endl;
+            std::cerr << "ERROR: Failed to load Glyph: " << (int)c << std::endl;
             continue;
         }
 
@@ -66,8 +66,7 @@ bool Font::LoadFont(const std::string& fontPath, unsigned int pixelVal) {
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 
-	logger.log("Font loaded: " + key + " from " + fontPath + " at size " + std::to_string(pixelSize) + "px");
-    //std::cout << "Font loaded successfully: " << face->family_name << " (" << pixelSize << "px)\n";
+    logger.log("Font loaded: " + key + " from " + fontPath + " at size " + std::to_string(pixelSize) + "px");
     return true;
 }
 
@@ -79,7 +78,7 @@ void Font::RenderText(Shader& shader, const std::string& text, float x, float y,
     glBindVertexArray(VAO);
 
     for (auto c : text) {
-        Character ch = Characters[c];
+        Character ch = Characters.at(c);
 
         float xpos = x + ch.Bearing.x * scale;
         float ypos = y - (ch.Size.y - ch.Bearing.y) * scale;

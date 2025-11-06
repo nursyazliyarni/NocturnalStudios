@@ -25,10 +25,14 @@
 #include "graphics/Shader.h"
 #include "graphics/Texture.h" 
 #include "core/Logger.h"
+#include <glm/glm.hpp>  // for glm::vec3
 
 #define UNREFERENCE_PARAMETER(P) (void)(P)
 
 extern Logger logger;
+
+// forward declaration to avoid header coupling
+class Font;
 
 class Renderer {
 public:
@@ -64,9 +68,6 @@ public:
         const float* rotations,
         int viewportW, int viewportH); // actual impl
 
-
-
-
     void background_render(GLuint texture_ID, const GLchar* uniform_VARNAME);
 
     // FBO setup and usage
@@ -75,12 +76,13 @@ public:
     void unbindFBO() const;
     GLuint getFBOTexture() const;   
 
-
-    //// NEW: one function to draw bg + all shapes into the currently bound framebuffer
-    //void drawViewportContent(int w, int h, Texture& tex);                    // overload 1
-    //void drawViewportContent(int w, int h, GLuint texId, const char* name);  // overload 2
-
     void drawViewportShapes(int w, int h);
+
+    // Text rendering (Renderer-controlled)
+    void setTextShader(Shader& shader);
+    void setTextProjection(int w, int h); // bottom-left origin for text
+    void drawText(const Font& font, const std::string& text, float x, float y, float scale, const glm::vec3& color);
+
     struct sprite {
             int idx; 
             float x, y, w, h;
@@ -93,7 +95,10 @@ private:
     int    fboWidth = 0, fboHeight = 0;
 
     Shader render_shader;
-    
+
+    // text state
+    Shader* text_shader = nullptr;
+
     std::vector<sprite> sprite_vector;
 
 public:
