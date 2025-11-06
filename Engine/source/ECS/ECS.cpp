@@ -59,8 +59,6 @@ ECS::ECS() {
 	ComponentFactory::Register<BoxCollider>("BoxCollider");
 	ComponentFactory::Register<AABBCollider>("AABBCollider");
 
-
-
 	// --------------------------------------------------------
 	// Register JSON creation logic for SpriteAnimationComponent
 	// --------------------------------------------------------

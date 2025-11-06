@@ -6,7 +6,7 @@
 struct SpriteAnimationComponent {
     struct Animation {
         std::vector<int> frames;
-        float frameTime = 0.4f;
+        float frameTime = 0.8f;
         bool loop = true;
     };
 

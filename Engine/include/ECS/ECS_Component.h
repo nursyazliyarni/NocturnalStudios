@@ -141,6 +141,9 @@ struct ImageRenderer: public RenderComponent {
 struct SpriteRenderer : public RenderComponent {
 	std::string spritePath{};
 	void FromJSON(const rapidjson::Value& json);
+
+	glm::vec2 uvMin = glm::vec2(0.0f, 0.0f);
+	glm::vec2 uvMax = glm::vec2(1.0f, 1.0f);
 };
 struct CircleRenderer : public RenderComponent {
 	float radius{ 1.f };

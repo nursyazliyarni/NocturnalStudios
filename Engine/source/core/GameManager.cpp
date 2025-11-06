@@ -235,7 +235,7 @@ bool GameManager::load(const char* prefabsPath, const char* scenesPath, TextureS
 
         //Define an animation sequence
         SpriteAnimationComponent::Animation idle;
-        idle.frames = { 0,1,2,3,4,5,6,7 };
+        idle.frames = { 0,1,2,3 };
         idle.frameTime = 0.12f;
         idle.loop = true;
 
