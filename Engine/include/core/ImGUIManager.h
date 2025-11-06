@@ -52,7 +52,7 @@ public:
 	void getDeltaTime(double& dt) const;
 	void updateWindowTopLeft(const ImVec2& topLeft);
 	void updateWindowBottomRight(const ImVec2& bottomRight);
-	void setSystemTimings(double imGuiTime, double input);
+	void setSystemTimings(double imGuiTime);
 	
 	// temp setter for render time since renderer is called in showViewportWindowUI
 	void setRenderTime(double time);
@@ -78,6 +78,9 @@ public:
 
 	void showAssetsBrowserUI();
 	void showBottomDockUI();
+
+	// Expose last measured logic time (seconds)
+	double getLogicTime() const { return logicTime; }
 
 private:
 	Window& mainWindow;
