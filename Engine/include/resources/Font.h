@@ -37,6 +37,11 @@ public:
 
     unsigned int getPixelSize() const { return pixelSize; }
 
+    // Expose read-only glyph data and GL handles so Renderer can draw text
+    const std::map<GLchar, Character>& GetCharacters() const { return Characters; }
+    GLuint GetVAO() const { return VAO; }
+    GLuint GetVBO() const { return VBO; }
+
 private:
     std::map<GLchar, Character> Characters{};
     GLuint VAO{0}, VBO{0};

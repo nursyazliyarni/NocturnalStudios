@@ -59,6 +59,7 @@ private: // window and context
 private: // core subsystem and resources kept alive across run()
     ECS* ecs{ nullptr };
     Font* uiFont{ nullptr };
+	Font* uiFont2{ nullptr };
 
     Messaging::MessageBus bus;
     TextureStore textures;

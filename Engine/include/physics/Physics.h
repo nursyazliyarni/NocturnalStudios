@@ -36,6 +36,8 @@
 #include "graphics/Renderer.h"
 #include "input/Input.h"
 
+#define UNREFERENCED_PARAMETER(P) (void)(P)
+
 class Physics {
 public:
 	Physics() = default;

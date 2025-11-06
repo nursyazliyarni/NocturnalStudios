@@ -2,7 +2,7 @@
     File: Renderer.h
     Project: NocturnalStudio
 
-    This file contains the declaration of the Renderer class for the engine’s 2D pipeline: background 
+    This file contains the declaration of the Renderer class for the engineï¿½s 2D pipeline: background 
     quad setup(GL_TRIANGLES) + shader, FBO/viewport init & resize, immediate-mode debug primitives 
     (tri, rect, rectOutline, line, circle), and batched sprite rendering (textured quads with rotation, 
     scaling, and front/behind passes). It also exposes the FBO texture for UI display.
@@ -28,8 +28,14 @@
 #include "graphics/Shader.h"
 #include "graphics/Texture.h" 
 #include "core/Logger.h"
+#include <glm/glm.hpp>  // for glm::vec3
+
+#define UNREFERENCE_PARAMETER(P) (void)(P)
 
 extern Logger logger;
+
+// forward declaration to avoid header coupling
+class Font;
 
 class Renderer {
 public:
@@ -77,12 +83,13 @@ public:
     void unbindFBO() const;
     GLuint getFBOTexture() const;   
 
-
-    //// NEW: one function to draw bg + all shapes into the currently bound framebuffer
-    //void drawViewportContent(int w, int h, Texture& tex);                    // overload 1
-    //void drawViewportContent(int w, int h, GLuint texId, const char* name);  // overload 2
-
     void drawViewportShapes(int w, int h);
+
+    // Text rendering (Renderer-controlled)
+    void setTextShader(Shader& shader);
+    void setTextProjection(int w, int h); // bottom-left origin for text
+    void drawText(const Font& font, const std::string& text, float x, float y, float scale, const glm::vec3& color);
+
     struct sprite {
             int idx; 
             float x, y, w, h;
@@ -95,7 +102,10 @@ private:
     int    fboWidth = 0, fboHeight = 0;
 
     Shader render_shader;
-    
+
+    // text state
+    Shader* text_shader = nullptr;
+
     std::vector<sprite> sprite_vector;
 
 public:
@@ -104,7 +114,7 @@ public:
 
 
 // Simple helper to draw a sprite by texture index
-static void drawSprite(Renderer& renderer, Texture& tex, int index,
+inline void drawSprite(Renderer& renderer, Texture& tex, int index,
     float x, float y, float w, float h)
 {
     renderer.texturedTri(tex.get_textureID(static_cast<size_t>(index)), x, y, w, h);

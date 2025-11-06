@@ -15,6 +15,8 @@ struct Prefab_data {
     AnimalBehavior animal_behaviour_struct;
 };
 
+#define UNREFERENCED_PARAMETER(P) (void)(P)
+
 // Forward declarations only (keep header light)
 class ECS;
 
@@ -56,3 +58,6 @@ private:
     std::unordered_map<std::string, std::shared_ptr<rapidjson::Document>> prefab_map;
     ECS& entity_component_based_system;
 };
+
+// SceneID -> scene name (used by SceneManager to activate camera)
+const std::string& Prefab_GetSceneName(SceneID id);

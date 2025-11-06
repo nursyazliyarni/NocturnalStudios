@@ -93,6 +93,8 @@ public:
 
 	const Audio& getDefaultAudio() const;
 
+	GLuint getGLTextureFromFile(const std::string& filePath);
+
 private:
 	ECS& ecs;
 

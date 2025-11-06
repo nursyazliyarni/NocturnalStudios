@@ -25,6 +25,10 @@ All content(c) 2025 DigiPen Institute of Technology Singapore, all rights reserv
 #include "ECS/ECS.h"        // we call createEntity/addComponent here
 #include "ECS/ECS_DEF.h"
 
+#include "graphics/Camera2D.h"   // added (for Cam2D_RegisterPreset / ActivatePreset)
+
+
+
 // [0]=ESC, [1..9]=digits
 static std::array<SceneID, 10> sKey2Scene{};
 static bool sKeymapInit = false;
@@ -32,8 +36,34 @@ static bool sKeymapInit = false;
 // sceneName -> SceneID (built from JSON "scenes" key order aligned to in-memory scenes vector)
 static std::unordered_map<std::string, SceneID> sNameToId;
 
+
+static std::unordered_map<SceneID, std::string> sIdToName;
+
 // configurable JSON path (fallback stays this)
+
 static std::string sScenesJsonPath = "assets/scenes/scenes.json";
+
+
+
+
+//  Texture lookup hook for sprite_path, GL texture id 
+static std::function<int(const std::string&)> sTextureLookup;
+
+// Safe fallback that compiles even if nobody sets sTextureLookup.
+static int ResolveTextureID(const char* p) {
+    if (!p || !*p) return 0;
+    if (sTextureLookup) return sTextureLookup(std::string{ p });
+    return 0; // not wired yet -> invisible sprite (isVisible=false)
+}
+
+// a simple setter to call once from  init code (e.g., Application.cpp)
+void Prefab_SetTextureLookup(std::function<int(const std::string&)> fn) {
+    sTextureLookup = std::move(fn);
+}
+
+
+
+
 
 static bool LoadScenesJson(rapidjson::Document& d) {
     std::ifstream f(sScenesJsonPath);
@@ -171,6 +201,8 @@ bool PrefabManager::PrefabExists(const std::string& prefab_name) const {
 
 
 EntityID PrefabManager::Instantiate(const std::string& prefab_name, const std::string& entity_name) {
+	UNREFERENCED_PARAMETER(entity_name);
+
     return Instantiate(prefab_name, INVALID_ENTITY_ID);
 }
 
@@ -308,22 +340,50 @@ void PrefabManager::AddComponentFromJSON(EntityID entity, const rapidjson::Value
 
 
     // ImageRenderer component
+    //else if (component_type == "ImageRenderer") {
+    //    ImageRenderer renderer_component;
+    //    if (component_json.HasMember("textureID") && component_json["textureID"].IsInt()) {
+    //        renderer_component.textureID = component_json["textureID"].GetInt();
+    //    }
+    //    if (component_json.HasMember("opacity") && component_json["opacity"].IsNumber()) {
+    //        renderer_component.opacity = component_json["opacity"].GetFloat();
+    //    }
+    //    if (component_json.HasMember("isVisible") && component_json["isVisible"].IsBool()) {
+    //        renderer_component.isVisible = component_json["isVisible"].GetBool();
+    //    }
+
+    //    if (renderer_component.textureID <= 0) renderer_component.isVisible = false; // << add this
+
+    //    entity_component_based_system.addComponent<ImageRenderer>(entity, renderer_component);
+    //}
+
+
     else if (component_type == "ImageRenderer") {
-        ImageRenderer renderer_component;
+        ImageRenderer r{};
+
+        // Accept either a direct textureID 
         if (component_json.HasMember("textureID") && component_json["textureID"].IsInt()) {
-            renderer_component.textureID = component_json["textureID"].GetInt();
+            r.textureID = component_json["textureID"].GetInt();
         }
+
+        // ... or the preferred JSON field "sprite_path" (resolve to GL texture id)
+        if (r.textureID <= 0 && component_json.HasMember("sprite_path") && component_json["sprite_path"].IsString()) {
+            r.textureID = ResolveTextureID(component_json["sprite_path"].GetString());
+        }
+
         if (component_json.HasMember("opacity") && component_json["opacity"].IsNumber()) {
-            renderer_component.opacity = component_json["opacity"].GetFloat();
+            r.opacity = component_json["opacity"].GetFloat();
         }
         if (component_json.HasMember("isVisible") && component_json["isVisible"].IsBool()) {
-            renderer_component.isVisible = component_json["isVisible"].GetBool();
+            r.isVisible = component_json["isVisible"].GetBool();
         }
 
-        if (renderer_component.textureID <= 0) renderer_component.isVisible = false; // << add this
+        // If we still don't have a valid texture, hide it (keeps current renderer behavior)
+        if (r.textureID <= 0) r.isVisible = false;
 
-        entity_component_based_system.addComponent<ImageRenderer>(entity, renderer_component);
+        entity_component_based_system.addComponent<ImageRenderer>(entity, r);
     }
+
 
     // CircleRenderer component
     else if (component_type == "CircleRenderer") {
@@ -368,15 +428,45 @@ void PrefabManager::AddComponentFromJSON(EntityID entity, const rapidjson::Value
     //    }
     //    entity_component_based_system.addComponent<PhysicsComponent>(entity, physics_component);
     //}
+
     
     // BoxCollider
+
+    //else if (component_type == "BoxCollider") {
+    //    BoxCollider collider_component;
+    //    if (component_json.HasMember("width") && component_json["width"].IsNumber()) {
+    //        collider_component.width = component_json["width"].GetFloat();
+    //    }
+    //    if (component_json.HasMember("height") && component_json["height"].IsNumber()) {
+    //        collider_component.height = component_json["height"].GetFloat();
+    //    }
+    //    entity_component_based_system.addComponent<BoxCollider>(entity, collider_component);
+    //}
+    //// AnimalBehavior
+    //else if (component_type == "AnimalBehavior") {
+    //    AnimalBehavior behavior_component;
+    //    if (component_json.HasMember("sound") && component_json["sound"].IsString()) {
+    //        behavior_component.sound = component_json["sound"].GetString();
+    //    }
+    //    entity_component_based_system.addComponent<AnimalBehavior>(entity, behavior_component);
+    //}
+
     else if (component_type == "BoxCollider") {
-        BoxCollider collider_component;
+        BoxCollider c{};
+
+        // Single size -> square
+        if (component_json.HasMember("bounding_box_size") && component_json["bounding_box_size"].IsNumber()) {
+            float s = component_json["bounding_box_size"].GetFloat();
+            c.width = s;
+            c.height = s;
+        }
+
+        // Optional explicit overrides
         if (component_json.HasMember("width") && component_json["width"].IsNumber()) {
-            collider_component.width = component_json["width"].GetFloat();
+            c.width = component_json["width"].GetFloat();
         }
         if (component_json.HasMember("height") && component_json["height"].IsNumber()) {
-            collider_component.height = component_json["height"].GetFloat();
+            c.height = component_json["height"].GetFloat();
         }
         entity_component_based_system.addComponent<BoxCollider>(entity, collider_component);
     }
@@ -385,9 +475,11 @@ void PrefabManager::AddComponentFromJSON(EntityID entity, const rapidjson::Value
         AnimalBehavior behavior_component;
         if (component_json.HasMember("sound") && component_json["sound"].IsString()) {
             //behavior_component.sound = component_json["sound"].GetString();
+
+        entity_component_based_system.addComponent<BoxCollider>(entity, c);
         }
-        entity_component_based_system.addComponent<AnimalBehavior>(entity, behavior_component);
-    }
+
+
     // Add more component types as needed...
 }
 
@@ -428,6 +520,23 @@ void PrefabManager::LoadScenes() {
                     if (idx < scenes.size()) {
                         // scenes[idx] is your member vector; just read its id
                         sNameToId[it->name.GetString()] = scenes[idx].id;
+
+
+                        sIdToName[scenes[idx].id] = it->name.GetString(); 
+
+                        //  register per-scene camera if present
+                        if (it->value.IsObject() && it->value.HasMember("camera") && it->value["camera"].IsObject()) {
+                            const auto& cam = it->value["camera"];
+                            Cam2D_Params p;
+                            if (cam.HasMember("cx") && cam["cx"].IsNumber())           p.cx = cam["cx"].GetFloat();
+                            if (cam.HasMember("cy") && cam["cy"].IsNumber())           p.cy = cam["cy"].GetFloat();
+                            if (cam.HasMember("zoom") && cam["zoom"].IsNumber())       p.zoom = cam["zoom"].GetFloat();
+                            if (cam.HasMember("minZoom") && cam["minZoom"].IsNumber()) p.minZoom = cam["minZoom"].GetFloat();
+                            if (cam.HasMember("maxZoom") && cam["maxZoom"].IsNumber()) p.maxZoom = cam["maxZoom"].GetFloat();
+
+                            Cam2D_RegisterPreset(it->name.GetString(), p);
+                        }
+
                     }
                 }
             }
@@ -459,6 +568,12 @@ void PrefabManager::LoadScenes() {
                     // no keymap ? still map ESC to initial
                     sKey2Scene[0] = NameToId(initialName);
                 }
+
+                // activate initial scene camera 
+                if (initialName) {
+                    Cam2D_ActivatePreset(initialName);
+                }
+
             }
         }
 
@@ -514,6 +629,13 @@ void PrefabManager::ApplyComponentDefaults(EntityID entity, const rapidjson::Val
         const auto& a = defaults["position"].GetArray();
         if (a.Size() >= 2) { t->position.x() = a[0].GetFloat(); t->position.y() = a[1].GetFloat(); }
     }
+}
+
+
+const std::string& Prefab_GetSceneName(SceneID id) {
+    static std::string empty;
+    auto it = sIdToName.find(id);
+    return (it == sIdToName.end()) ? empty : it->second;
 }
 
 
@@ -589,7 +711,7 @@ void PrefabManager::ApplyComponentDefaults(EntityID entity, const rapidjson::Val
 ////                }
 ////
 ////                // NOTE: def["defaults"] exists in your JSON; we keep it for future
-////                // (transform system to apply w/h/angle later) — intentionally not wired now.
+////                // (transform system to apply w/h/angle later) ï¿½ intentionally not wired now.
 ////            }
 ////            return; // done with new schema
 ////        }

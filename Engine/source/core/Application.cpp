@@ -31,6 +31,9 @@
 
 #include "core/Application.h"
 
+
+extern void Prefab_SetTextureLookup(std::function<int(const std::string&)>);
+
 namespace {
 	constexpr float TWO_PI = 2.0f * glm::pi<float>();
 	constexpr int   CIRCLE_SEGMENTS = 64;
@@ -53,53 +56,53 @@ void Application::init() {
 	const GameConfig c = loadConfig("assets/config.json");
 	windowTitle = c.window.title;
 
-	WindowDesc wd;
-	wd.width = c.window.width;
-	wd.height = c.window.height;
-	wd.title = c.window.title;
-	wd.vsync = c.window.vsync;
+    WindowDesc wd;
+    wd.width = c.window.width;
+    wd.height = c.window.height;
+    wd.title = c.window.title;
+    wd.vsync = c.window.vsync;
 
-	if (!m_window.create(wd)) {
-		logger.error("Failed to create window");
-		isInitialized = false;
-		return;
-	}
+    if (!m_window.create(wd)) {
+        logger.error("Failed to create window");
+        isInitialized = false;
+        return;
+    }
 
-	glViewport(0, 0, wd.width, wd.height);
-	glDisable(GL_DEPTH_TEST);
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glClearColor(0.06f, 0.06f, 0.07f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT);
-	m_window.swap();
+    glViewport(0, 0, wd.width, wd.height);
+    glDisable(GL_DEPTH_TEST);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glClearColor(0.06f, 0.06f, 0.07f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
+    m_window.swap();
 
-	int currW = wd.width, currH = wd.height;
-	glfwGetFramebufferSize(m_window.handle(), &currW, &currH);
-	glViewport(0, 0, currW, currH);
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	glOrtho(0, currW, currH, 0, -1, 1);
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
+    int currW = wd.width, currH = wd.height;
+    glfwGetFramebufferSize(m_window.handle(), &currW, &currH);
+    glViewport(0, 0, currW, currH);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glOrtho(0, currW, currH, 0, -1, 1);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
 
-	glDisable(GL_DEPTH_TEST);
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glDisable(GL_DEPTH_TEST);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	inputSystem = std::make_unique<Input>(m_window.handle());
-	inputSystem->SetMessageBus(&bus);
+    inputSystem = std::make_unique<Input>(m_window.handle());
+    inputSystem->SetMessageBus(&bus);
 
-	ecs = &ECS::getECS();
-	resourceManager = std::make_unique<ResourceManager>(*ecs);
-	audioSystem = std::make_unique<AudioSystem>("AudioSystem", *ecs, *resourceManager);
-	resourceManager->setAudioSystem(audioSystem.get());
+    ecs = &ECS::getECS();
+    resourceManager = std::make_unique<ResourceManager>(*ecs);
+    audioSystem = std::make_unique<AudioSystem>("AudioSystem", *ecs, *resourceManager);
+    resourceManager->setAudioSystem(audioSystem.get());
 
-	resourceManager->loadResources("audio");
-	resourceManager->loadResources("shaders");
-	resourceManager->loadResources("textures");
-	resourceManager->loadResources("fonts");
-	resourceManager->loadResources("prefabs");
-	resourceManager->loadResources("scenes");
+    resourceManager->loadResources("audio");
+    resourceManager->loadResources("shaders");
+    resourceManager->loadResources("textures");
+    resourceManager->loadResources("fonts");
+    resourceManager->loadResources("prefabs");
+    resourceManager->loadResources("scenes");
 
 	std::vector<std::pair<std::string, std::string>> shader_filePATH_list;
 	std::string vertexPath,
@@ -126,25 +129,25 @@ void Application::init() {
 	}
 	shader_filePATH_list.push_back({ vertexPath, fragmentPath });
 
-	auto textShaderPaths = resourceManager->getFilePathsForKey<ShaderFile>("text");
-	for (auto const& path : textShaderPaths) {
-		std::filesystem::path p{ path };
-		auto ext = p.extension().string();
-		if (ext == ".vert") textShaderVertexPath = p.string();
-		else if (ext == ".frag") textShaderFragmentPath = p.string();
-	}
+    auto textShaderPaths = resourceManager->getFilePathsForKey<ShaderFile>("text");
+    for (auto const& path : textShaderPaths) {
+        std::filesystem::path p{ path };
+        auto ext = p.extension().string();
+        if (ext == ".vert") textShaderVertexPath = p.string();
+        else if (ext == ".frag") textShaderFragmentPath = p.string();
+    }
 
-	auto prefabPaths = resourceManager->getFilePathsForKey<PrefabFile>("prefabs");
-	if (!prefabPaths.empty()) prefabPath = prefabPaths.front();
+    auto prefabPaths = resourceManager->getFilePathsForKey<PrefabFile>("prefabs");
+    if (!prefabPaths.empty()) prefabPath = prefabPaths.front();
 
-	auto testingPrefabPaths = resourceManager->getFilePathsForKey<PrefabFile>("testing_prefabs");
-	if (!testingPrefabPaths.empty()) prefabTestPath = testingPrefabPaths.front();
+    auto testingPrefabPaths = resourceManager->getFilePathsForKey<PrefabFile>("testing_prefabs");
+    if (!testingPrefabPaths.empty()) prefabTestPath = testingPrefabPaths.front();
 
-	auto scenePaths = resourceManager->getFilePathsForKey<SceneFile>("scenes");
-	if (!scenePaths.empty()) scenePath = scenePaths.front();
+    auto scenePaths = resourceManager->getFilePathsForKey<SceneFile>("scenes");
+    if (!scenePaths.empty()) scenePath = scenePaths.front();
 
-	gameLoop = std::make_unique<Game_Loop>(m_window.handle());
-	bus.Register(gameLoop.get());
+    gameLoop = std::make_unique<Game_Loop>(m_window.handle());
+    bus.Register(gameLoop.get());
 
 	gsm = std::make_unique<GameManager>(*ecs);
 	gsm->load(prefabPath.c_str(), scenePath.c_str(), textures);
@@ -152,11 +155,12 @@ void Application::init() {
 	textShader = std::make_unique<Shader>(textShaderVertexPath.c_str(), textShaderFragmentPath.c_str());
 	logic = std::make_unique<Animal_Logic>();
 
-	{
-		ResourceID fontID = resourceManager->findResource<Font>("NanumBrushScript-Regular");
-		Font& uiFontRef = resourceManager->getFont(fontID);
-		uiFont = &uiFontRef;
-	}
+    // After textures is constructed and before any Instantiate()
+    Prefab_SetTextureLookup([this](const std::string& p) -> int {
+        std::string path = p;
+        if (path.rfind("assets/", 0) != 0) path = "assets/" + path;
+        return static_cast<int>(textures.get(path));
+    });
 
 	textShader->user_Shader_program(0);
 	textShader->SET_uniform_variable("text", 0, 0);
@@ -183,10 +187,28 @@ void Application::init() {
 	
 	//logger.log("Created animal entity with ID: " + std::to_string(animal) + " and " + std::to_string(animal_2));
 	std::cout << "abcssss:" << ecs->getAllEntities().size() << "\n";
+    renderer = std::make_unique<Renderer>(vertexPath.c_str(), fragmentPath.c_str());
+    textShader = std::make_unique<Shader>(textShaderVertexPath.c_str(), textShaderFragmentPath.c_str());
 
-	Cam2D_Enable("Flamingo", true);
-	Cam2D_SetCenter("Flamingo", 0.10f + 0.26f * 0.5f, 0.44f + 0.50f * 0.5f); // ~ (0.23, 0.69)
-	Cam2D_SetZoom("Flamingo", 1.8f);
+    {
+        ResourceID fontID = resourceManager->findResource<Font>("NanumBrushScript-Regular");
+        ResourceID fontID2 = resourceManager->findResource<Font>("PAPYRUS");
+        
+        Font& uiFont2Ref = resourceManager->getFont(fontID2);
+        Font& uiFontRef = resourceManager->getFont(fontID);
+        uiFont = &uiFontRef;
+        uiFont2 = &uiFont2Ref;
+    }
+
+    // Wire text shader into the renderer (renderer controls projection per-viewport)
+    renderer->setTextShader(*textShader);
+
+    prefabManager = std::make_unique<PrefabManager>(*ecs);
+    prefabManager->Load_Prefab(prefabTestPath.c_str());
+
+    EntityID animal = prefabManager->Instantiate("animal");
+    EntityID animal_2 = prefabManager->Instantiate("animal");
+    logger.log("Created animal entity with ID: " + std::to_string(animal) + " and " + std::to_string(animal_2));
 
 	imGuiManager = std::make_unique<ImGuiManager>(
 		m_window, *renderer,
@@ -194,85 +216,82 @@ void Application::init() {
 		*audioSystem, *resourceManager,
 		*gsm, *logic);
 
-	isInitialized = true;
+    isInitialized = true;
 }
 
 int Application::run() {
-	if (!isInitialized) {
-		init();
-	}
+    if (!isInitialized) {
+        init();
+    }
 
-	if (!isInitialized) {
-		logger.error("Application not initialized. Exiting run().");
-		return -1;
-	}
+    if (!isInitialized) {
+        logger.error("Application not initialized. Exiting run().");
+        return -1;
+    }
 
-	while (!m_window.shouldClose()) {
-		m_window.poll();
+    while (!m_window.shouldClose()) {
+        m_window.poll();
 
-		double dt = gameLoop->calculate_DT();
-		gameLoop->display_FPS(m_window.handle(), windowTitle, dt);
-		inputSystem->update_mouse_pos(m_window.handle());
+        double dt = gameLoop->calculate_DT();
+        gameLoop->display_FPS(m_window.handle(), windowTitle, dt);
+        inputSystem->update_mouse_pos(m_window.handle());
 
-		for (int k = GLFW_KEY_1; k <= GLFW_KEY_9; ++k)
-			if (inputSystem->WasPressed(k))
-				gsm->handleKeyPress(k);
+        for (int k = GLFW_KEY_1; k <= GLFW_KEY_9; ++k)
+            if (inputSystem->WasPressed(k))
+                gsm->switchToSceneForKey(k); // respects AppState::Playing
 
-		if (inputSystem->WasPressed(GLFW_KEY_ESCAPE))
-			gsm->handleKeyPress(GLFW_KEY_ESCAPE);
+        if (inputSystem->WasPressed(GLFW_KEY_ESCAPE))
+            gsm->handleKeyPress(GLFW_KEY_ESCAPE);
 
-		inputSystem->ProcessHotkeys(*gsm);
+        inputSystem->ProcessHotkeys(*gsm);
 
-		int fbw = 0, fbh = 0; glfwGetFramebufferSize(m_window.handle(), &fbw, &fbh);
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		glViewport(0, 0, fbw, fbh);
-		glDisable(GL_DEPTH_TEST);
-		glClearColor(0.06f, 0.06f, 0.07f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
+        int fbw = 0, fbh = 0; glfwGetFramebufferSize(m_window.handle(), &fbw, &fbh);
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        glViewport(0, 0, fbw, fbh);
+        glDisable(GL_DEPTH_TEST);
+        glClearColor(0.06f, 0.06f, 0.07f, 1.0f);
 
-		Gui::updateImGuiManager(dt, *imGuiManager);
+        Prefab_SetTextureLookup([this](const std::string& p) -> int {
+            return static_cast<int>(textures.get(p));
+        });
 
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		glViewport(0, 0, fbw, fbh);
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glClear(GL_COLOR_BUFFER_BIT);
 
-		if (uiFont) {
-			uiFont->RenderText(
-				*textShader,
-				"Nocturnal Studio Engine",
-				25.0f, m_window.desc().height - 50.0f, // Move near top
-				1.0f,
-				glm::vec3(1.0f, 0.0f, 0.2f)
-			);
-		}
+        Gui::updateImGuiManager(dt, *imGuiManager);
 
-		if (inputSystem->WasMousePressed(GLFW_MOUSE_BUTTON_LEFT)) {
-			ImVec2 rmin, rmax;
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        glViewport(0, 0, fbw, fbh);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-			imGuiManager->getViewportRectWindow(rmin, rmax);
+        // Text overlay is now rendered by Renderer inside the viewport FBO (see ImGuiManager)
 
-			Vector2D mp = inputSystem->GET_mouse_pos(false, 0, 0);
-			if (mp.x() >= rmin.x && mp.x() <= rmax.x &&
-				mp.y() >= rmin.y && mp.y() <= rmax.y) {
-				float nx = float((mp.x() - rmin.x) / (rmax.x - rmin.x));
-				float ny = float((mp.y() - rmin.y) / (rmax.y - rmin.y));
+        if (inputSystem->WasMousePressed(GLFW_MOUSE_BUTTON_LEFT)) {
+            ImVec2 rmin, rmax;
 
-				ny = 1.0f - ny;
-				gsm->handleClick(nx, ny);
-			}
-		}
+            imGuiManager->getViewportRectWindow(rmin, rmax);
 
-		if (gsm->popQuitRequested()) {
-			glfwSetWindowShouldClose(m_window.handle(), 1);
-		}
+            Vector2D mp = inputSystem->GET_mouse_pos(false, 0, 0);
+            if (mp.x() >= rmin.x && mp.x() <= rmax.x &&
+                mp.y() >= rmin.y && mp.y() <= rmax.y) {
+                float nx = float((mp.x() - rmin.x) / (rmax.x - rmin.x));
+                float ny = float((mp.y() - rmin.y) / (rmax.y - rmin.y));
 
-		inputSystem->EndFrame();
-		m_window.swap();
-	}
+                ny = 1.0f - ny;
+                gsm->handleClick(nx, ny);
+            }
+        }
 
-	shutdown();
-	return 0;
+        if (gsm->popQuitRequested()) {
+            glfwSetWindowShouldClose(m_window.handle(), 1);
+        }
+
+        inputSystem->EndFrame();
+        m_window.swap();
+    }
+
+    shutdown();
+    return 0;
 }
 
 void Application::shutdown() {

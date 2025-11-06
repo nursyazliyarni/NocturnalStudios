@@ -42,6 +42,8 @@
 
 #include <unordered_set>
 
+#define UNREFERENCED_PARAMETER(P) (void)(P)
+
 class GameManager;
 
 enum class Input_action {
@@ -64,10 +66,10 @@ public:
 	void detect_mouse_event(GLFWwindow* window, int mouse, int event_action);
 
 	// initialize per-sprite scales to 1.0f for all textures
-	void initSpriteScales(size_t textureCount);
+	// void initSpriteScales(size_t textureCount);
 	// pointer for renderer (nullptr if no sprites)
 
-	void initSpriteRotations(size_t count);
+	// void initSpriteRotations(size_t count);
 
 	// expose raw pointers for Renderer
 	const float* getSpriteScalesPtr() const {
@@ -125,7 +127,7 @@ private:
 	static std::vector<std::tuple<int, int, Input_action>> keyboard_action;
 	static std::vector<std::tuple<int, int, Input_action>> mouse_action;
 
-	GLFWwindow* m_window = nullptr;                 
+	GLFWwindow* m_window = nullptr;
 	std::unordered_set<int> m_keysDown;
 };
 

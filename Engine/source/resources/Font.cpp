@@ -1,11 +1,11 @@
 #include "resources/Font.h"
 
-Font::Font(ResourceID id, const std::string& key, const std::string& filePath, unsigned int pixelSize)
-    : Resource(id, key, filePath), pixelSize(pixelSize) {
-	logger.log("Font resource created: " + key + " from " + filePath);
+Font::Font(ResourceID id, const std::string& key, const std::string& filePath, unsigned int pixelVal)
+    : Resource(id, key, filePath), pixelSize(pixelVal) {
+    logger.log("Font resource created: " + key + " from " + filePath);
 }
 
-bool Font::LoadFont(const std::string& fontPath, unsigned int pixelSize) {
+bool Font::LoadFont(const std::string& fontPath, unsigned int pixelVal) {
     if (FT_Init_FreeType(&ft)) {
         std::cerr << "ERROR: Could not initialize FreeType Library!" << std::endl;
         return false;
@@ -16,14 +16,14 @@ bool Font::LoadFont(const std::string& fontPath, unsigned int pixelSize) {
         return false;
     }
 
-    this->pixelSize = pixelSize;
+    this->pixelSize = pixelVal;
 
-    FT_Set_Pixel_Sizes(face, 0, pixelSize);
+    FT_Set_Pixel_Sizes(face, 0, pixelVal);
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
     for (GLubyte c = 0; c < 128; c++) {
         if (FT_Load_Char(face, c, FT_LOAD_RENDER)) {
-            std::cerr << "ERROR: Failed to load Glyph: " << c << std::endl;
+            std::cerr << "ERROR: Failed to load Glyph: " << (int)c << std::endl;
             continue;
         }
 
@@ -66,8 +66,7 @@ bool Font::LoadFont(const std::string& fontPath, unsigned int pixelSize) {
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 
-	logger.log("Font loaded: " + key + " from " + fontPath + " at size " + std::to_string(pixelSize) + "px");
-    //std::cout << "Font loaded successfully: " << face->family_name << " (" << pixelSize << "px)\n";
+    logger.log("Font loaded: " + key + " from " + fontPath + " at size " + std::to_string(pixelSize) + "px");
     return true;
 }
 
@@ -79,7 +78,7 @@ void Font::RenderText(Shader& shader, const std::string& text, float x, float y,
     glBindVertexArray(VAO);
 
     for (auto c : text) {
-        Character ch = Characters[c];
+        Character ch = Characters.at(c);
 
         float xpos = x + ch.Bearing.x * scale;
         float ypos = y - (ch.Size.y - ch.Bearing.y) * scale;

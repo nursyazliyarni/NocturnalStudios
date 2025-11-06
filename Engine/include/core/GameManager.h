@@ -20,6 +20,7 @@ struct ClickRegion {
     float x, y, w, h;          // normalized rect
     std::string gotoScene;     // empty if not a goto
     bool quit = false;         // quit app?
+    bool  start{ false };
 };
 
 struct Scene {

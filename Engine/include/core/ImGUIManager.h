@@ -38,6 +38,7 @@
 #include <unordered_map>
 #include "GameManager.h"
 
+
 extern Logger logger;
 
 class ImGuiManager {
@@ -74,6 +75,9 @@ public:
 	void showTransformUI(/* A reference to a vector of objects objectList */);
 
 	void getViewportRectWindow(ImVec2& outMin, ImVec2& outMax) const { outMin = vpMinWin; outMax = vpMaxWin; }
+
+	void showAssetsBrowserUI();
+	void showBottomDockUI();
 
 private:
 	Window& mainWindow;

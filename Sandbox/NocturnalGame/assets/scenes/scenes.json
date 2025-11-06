@@ -9,7 +9,10 @@
       "background": "textures/menu_bg.png",
       "entities": [
         { "prefab":"button","name":"btn_play",
-          "overrides": { "x":0.38,"y":0.45, "w":0.26, "h":0.09, "sprite_path":"textures/menuPLAY_btn.png" }, "goto":"Flamingo" },
+          "overrides": { "x":0.38,"y":0.45, "w":0.26, "h":0.09, "sprite_path":"textures/menuPLAY_btn.png" },
+          "start": true,
+          "goto": "Flamingo"
+        },
         { "prefab":"button","name":"btn_load",
           "overrides": { "x":0.38,"y":0.60, "w":0.26, "h":0.09, "sprite_path":"textures/menuLOAD.png" }, "goto":"Flamingo" },
         { "prefab":"button","name":"btn_settings",
@@ -25,9 +28,12 @@
         { "prefab":"animal","name":"flamingo",
           "overrides": { "x":0.10,"y":0.44, "w":0.26, "h":0.50,"health_bar":100,"hunger_bar":100, "sanity_bar":100, "sprite_path":"textures/flamingo.png" } },
         { "prefab":"food","name":"flamingo_food",
-          "overrides": { "x":0.72,"y":0.60, "sprite_path":"textures/flamingo_food.png" } },
-        { "prefab":"drink","name":"flamingo_drink",
-          "overrides": { "x":0.86,"y":0.60, "sprite_path":"textures/flamingo_drink.png" } }
+          "overrides": { "x":0.52,"y":0.40, "sprite_path":"textures/flamingo_food.png" } },
+        { "prefab":"medicine","name":"flamingo_medicine",
+          "overrides": { "x":0.66,"y":0.50, "sprite_path":"textures/flamingo_medicine.png" } },
+        { "prefab":"toy","name":"flamingo_toy",
+          "overrides": { "x":0.40,"y":0.50, "w":0.14, "h":0.14, "sprite_path":"textures/flamingo_toy.png", "rotatable": false, "scalable": false } },
+        { "camera": { "cx": 0.5, "cy": 0.5, "zoom": 1.0, "margin": 0.0, "minZoom": 1.0, "maxZoom": 3.0 }}
       ]
     },
 
@@ -37,9 +43,11 @@
         { "prefab":"animal","name":"seal",
           "overrides": { "x":0.10,"y":0.46, "w":0.34, "h":0.30,"health_bar":100,"hunger_bar":100, "sanity_bar":100,"sprite_path":"textures/seal.png" } },
         { "prefab":"food","name":"seal_food",
-          "overrides": { "x":0.72,"y":0.60, "sprite_path":"textures/seal_food.png" } },
-        { "prefab":"drink","name":"seal_drink",
-          "overrides": { "x":0.86,"y":0.60, "sprite_path":"textures/seal_drink.png" } }
+          "overrides": { "x":0.52,"y":0.40, "sprite_path":"textures/seal_food.png" } },
+        { "prefab":"medicine","name":"seal_medicine",
+          "overrides": { "x":0.66,"y":0.50, "sprite_path":"textures/seal_medicine.png" } },
+        { "prefab":"toy","name":"seal_toy",
+          "overrides": { "x":0.40,"y":0.50, "w":0.14, "h":0.14, "sprite_path":"textures/seal_toy.png", "rotatable": false, "scalable": false } }
       ]
     },
 
@@ -49,9 +57,11 @@
         { "prefab":"animal","name":"owl",
           "overrides": { "x":0.12,"y":0.40, "w":0.24, "h":0.34,"health_bar":100,"hunger_bar":100, "sanity_bar":100,"sprite_path":"textures/owl.png" } },
         { "prefab":"food","name":"owl_food",
-          "overrides": { "x":0.72,"y":0.60, "sprite_path":"textures/owl_food.png" } },
-        { "prefab":"drink","name":"owl_drink",
-          "overrides": { "x":0.86,"y":0.60, "sprite_path":"textures/owl_drink.png" } }
+          "overrides": { "x":0.52,"y":0.40, "sprite_path":"textures/owl_food.png" } },
+        { "prefab":"medicine","name":"owl_medicine",
+          "overrides": { "x":0.66,"y":0.50, "sprite_path":"textures/owl_medicine.png" } },
+        { "prefab":"toy","name":"owl_toy",
+          "overrides": { "x":0.40,"y":0.50, "w":0.14, "h":0.14, "sprite_path":"textures/owl_toy.png", "rotatable": false, "scalable": false } }
       ]
     },
 
@@ -61,9 +71,11 @@
         { "prefab":"animal","name":"horse",
           "overrides": { "x":0.10,"y":0.40, "w":0.50, "h":0.66,"health_bar":100,"hunger_bar":100, "sanity_bar":100,"sprite_path":"textures/horse.png" } },
         { "prefab":"food","name":"horse_food",
-          "overrides": { "x":0.72,"y":0.60, "sprite_path":"textures/horse_food.png" } },
-        { "prefab":"drink","name":"horse_drink",
-          "overrides": { "x":0.86,"y":0.60, "sprite_path":"textures/horse_drink.png" } }
+          "overrides": { "x":0.52,"y":0.50, "sprite_path":"textures/horse_food.png", "rotatable": false, "scalable": false } },
+        { "prefab":"medicine","name":"horse_medicine",
+          "overrides": { "x":0.66,"y":0.50, "sprite_path":"textures/horse_medicine.png", "rotatable": false, "scalable": false } },
+        { "prefab":"toy","name":"horse_toy",
+          "overrides": { "x":0.40,"y":0.50, "w":0.14, "h":0.14, "sprite_path":"textures/horse_toy.png", "rotatable": true, "scalable": true } }
       ]
     }
   }

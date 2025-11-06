@@ -16,9 +16,10 @@
 		- Integrated drawAllSprites and drawViewportShapes
 
 	Secondary Author:
-		Nur Syazliyarni (15%)
+		Nur Syazliyarni (25%)
 		- Added the debug drawer that will load under showViewportWindowUI
 		- Editor able to list and edit transform game objects in current scene
+		- Added assets browser and layout of bottom editor dock
 
 	All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
 *------------------------------------------------------------------------------------------------*/
@@ -26,12 +27,16 @@
 #include "../include/core/ImGuiManager.h"
 #include <chrono>
 #include "graphics/DebugDraw.h"
+#include "core/GameManager.h"
+
+#include "graphics/Camera2D.h" 
 
 namespace {
 	using Clock = std::chrono::high_resolution_clock;
 }
 
 void Gui::updateImGuiManager(double& deltaTime, ImGuiManager& imGuiManager) {
+	auto start = Clock::now();
 	imGuiManager.updateDeltaTime(deltaTime);
 
 	// Get main viewport position and size
@@ -41,12 +46,17 @@ void Gui::updateImGuiManager(double& deltaTime, ImGuiManager& imGuiManager) {
 
 	imGuiManager.startFrame();
 	imGuiManager.showViewportWindowUI();
+	//imGuiManager.showAssetsBrowserUI();
 	imGuiManager.showMousePosOverlayUI();
 	imGuiManager.showPerformanceOverlayUI();
-	imGuiManager.showEntityListUI();
 	imGuiManager.showTransformUI();
-	imGuiManager.showLogsOverlayUI();
+	imGuiManager.showEntityListUI();
+	//imGuiManager.showLogsOverlayUI();
+	imGuiManager.showBottomDockUI();
 	imGuiManager.endFrame();
+	auto end = Clock::now();
+	double imGuiTime = std::chrono::duration<double>(end - start).count();
+	imGuiManager.setSystemTimings(imGuiTime, 0.0);
 }
 
 
@@ -221,85 +231,102 @@ void ImGuiManager::setInputTime(double time) {
 
 
 void ImGuiManager::showViewportWindowUI() {
-	constexpr float overlayW = 300.f, overlayH = 200.f;
-	ImGuiWindowFlags flags = ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoResize;
+    constexpr float overlayW = 300.f, overlayH = 200.f;
+    ImGuiWindowFlags flags = ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoResize;
 
-	float vpW = windowBottomRight.x - windowTopLeft.x - overlayW;
-	float vpH = windowBottomRight.y - windowTopLeft.y - overlayH;
+    float vpW = windowBottomRight.x - windowTopLeft.x - overlayW;
+    float vpH = windowBottomRight.y - windowTopLeft.y - overlayH;
 
-	ImGui::SetNextWindowPos(windowTopLeft);
-	ImGui::SetNextWindowSize(ImVec2(vpW, vpH));
-	ImGui::Begin("Viewport", nullptr, flags);
+    ImGui::SetNextWindowPos(windowTopLeft);
+    ImGui::SetNextWindowSize(ImVec2(vpW, vpH));
+    ImGui::Begin("Viewport", nullptr, flags);
 
-	const ImVec2 avail = ImGui::GetContentRegionAvail();
-	const int vw = (int)std::max(1.0f, avail.x);
-	const int vh = (int)std::max(1.0f, avail.y);
+    const ImVec2 avail = ImGui::GetContentRegionAvail();
+    const int vw = (int)std::max(1.0f, avail.x);
+    const int vh = (int)std::max(1.0f, avail.y);
 
-	auto physStart = Clock::now();
-	physics.update_sprite_movement(renderer, input);
-	physics.update_sprite_scaling(renderer, input);
-	physics.update_sprite_rotation(renderer, input);
-	physicsTime = std::chrono::duration<double>(Clock::now() - physStart).count();
+    auto physStart = Clock::now();
+    physics.update_sprite_movement(renderer, input);
+    physics.update_sprite_scaling(renderer, input);
+    physics.update_sprite_rotation(renderer, input);
+    physicsTime = std::chrono::duration<double>(Clock::now() - physStart).count();
 
-	auto renderStart = Clock::now();
-	renderer.initFBO(vw, vh);
-	renderer.bindFBO();
-	renderer.resize(vw, vh);
-	renderer.clear(0.06f, 0.06f, 0.07f);
+    auto renderStart = Clock::now();
+    renderer.initFBO(vw, vh);
+    renderer.bindFBO();
+    renderer.resize(vw, vh);
+    renderer.clear(0.06f, 0.06f, 0.07f);
 
-	// Draw current SCENE into the FBO
-	gsm.render(renderer, vw, vh);
+    // Draw current SCENE into the FBO
+    gsm.render(renderer, vw, vh);
 
-	// Debugging Drawer //
-	static bool printed = false;
-	if (Debug::Drawer::Instance().IsActive())
-	{
-		//Debug::Drawer::Instance().AddRect(100, 100, 200, 100, 0xFFFF00FF);
-		//Debug::Drawer::Instance().AddCircle(100, 100, 100, 0xFFFF00FF, 32);
+    // Text overlay (rendered into the viewport FBO)
+    renderer.setTextProjection(vw, vh); // bottom-left origin for the text shader
 
+    // Resolve fonts from ResourceManager (cache IDs across frames)
+    static std::optional<ResourceID> s_fontA;
+    static std::optional<ResourceID> s_fontB;
+    if (!s_fontA) s_fontA = resourceManager.findResource<Font>("NanumBrushScript-Regular");
+    if (!s_fontB) s_fontB = resourceManager.findResource<Font>("PAPYRUS");
 
-		if (!printed) {
-			std::cout << "[ImGuiManager] DebugDraw active\n";
-			printed = true;
-		}
+    if (s_fontA) {
+        const Font& f = resourceManager.getFont(*s_fontA);
+        renderer.drawText(f, "Nocturnal Studio Engine",
+                          25.0f, vh - 50.0f, // near top (BL origin)
+                          1.0f, glm::vec3(1.0f, 0.0f, 0.2f));
+    }
+    if (s_fontB) {
+        const Font& f2 = resourceManager.getFont(*s_fontB);
+        renderer.drawText(f2, "Sample Font: Papyrus",
+                          25.0f, vh - 100.0f, // near top (BL origin)
+                          1.0f, glm::vec3(0.2f, 0.8f, 1.0f));
+    }
 
-		glPushAttrib(GL_ALL_ATTRIB_BITS);               // save all states (color, blend, etc.)
-		glUseProgram(0);
-		glDisable(GL_TEXTURE_2D);
-		glDisable(GL_DEPTH_TEST);
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);      // draw outlines only
-		glMatrixMode(GL_MODELVIEW);
-		glLoadIdentity();
+    // Debugging Drawer //
+    static bool printed = false;
+    if (Debug::Drawer::Instance().IsActive())
+    {
+        if (!printed) {
+            std::cout << "[ImGuiManager] DebugDraw active\n";
+            printed = true;
+        }
 
-		Debug::Drawer::Instance().Render(Matrix<3>().Identity());
+        glPushAttrib(GL_ALL_ATTRIB_BITS);
+        glUseProgram(0);
+        glDisable(GL_TEXTURE_2D);
+        glDisable(GL_DEPTH_TEST);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        glMatrixMode(GL_MODELVIEW);
+        glLoadIdentity();
 
-		
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-		glPopAttrib();                                  // restore previous OpenGL states
-	}
-	else {
-		printed = false;
-	}
-	// Debugging Drawer //
+        Debug::Drawer::Instance().Render(Matrix<3>().Identity());
 
-	renderer.unbindFBO();
-	renderTime = std::chrono::duration<double>(Clock::now() - renderStart).count();
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        glPopAttrib();
+    }
+    else {
+        printed = false;
+    }
+    // Debugging Drawer //
 
-	// Show the FBO as an ImGui Image (flipped V)
-	ImVec2 imgMin = ImGui::GetCursorScreenPos();
-	ImGui::Image((ImTextureID)(intptr_t)renderer.getFBOTexture(),
-		ImVec2(static_cast<float>(vw), static_cast<float>(vh)), ImVec2(0, 1), ImVec2(1, 0));
-	ImVec2 imgMax = ImVec2(imgMin.x + vw, imgMin.y + vh);
+    renderer.unbindFBO();
+    renderTime = std::chrono::duration<double>(Clock::now() - renderStart).count();
 
-	// Handle click -> normalized coords -> GSM
-	// (Input handles clicks; store the rect in window client coords)
-	vpMinWin = ImVec2(imgMin.x - windowTopLeft.x, imgMin.y - windowTopLeft.y);
-	vpMaxWin = ImVec2(imgMax.x - windowTopLeft.x, imgMax.y - windowTopLeft.y);
+    // Show the FBO as an ImGui Image (flipped V)
+    ImVec2 imgMin = ImGui::GetCursorScreenPos();
+    ImGui::Image((ImTextureID)(intptr_t)renderer.getFBOTexture(),
+        ImVec2(static_cast<float>(vw), static_cast<float>(vh)), ImVec2(0, 1), ImVec2(1, 0));
+    ImVec2 imgMax = ImVec2(imgMin.x + vw, imgMin.y + vh);
 
 	logic.update_animal_ALLstate(gsm);
-	ImGui::End();
+    // Handle click -> normalized coords -> GSM
+    // (Input handles clicks; store the rect in window client coords)
+    vpMinWin = ImVec2(imgMin.x - windowTopLeft.x, imgMin.y - windowTopLeft.y);
+    vpMaxWin = ImVec2(imgMax.x - windowTopLeft.x, imgMax.y - windowTopLeft.y);
+
+    ImGui::End();
 }
 
 
@@ -333,9 +360,9 @@ void ImGuiManager::showMousePosOverlayUI() {
 }
 
 void ImGuiManager::showPerformanceOverlayUI() {
-	constexpr double secondsToMs = 1000.0;
+	constexpr double secondsToMs =1000.0;
 	constexpr float width = 300.0f;
-	constexpr float height = 100.0f;
+	constexpr float height = 150.0f;
 
 	ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDecoration |
 		ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
@@ -347,13 +374,34 @@ void ImGuiManager::showPerformanceOverlayUI() {
 	ImGui::SetNextWindowSize({ width, height });
 
 	ImGui::Begin("Performance", nullptr, windowFlags);
-	ImGui::Text("Current FPS: %.2f %.2lfms", 1 / deltaTime, deltaTime * secondsToMs);
 
-	// @Todo (axewhy): Add more performance metrics like the percentage of usage between different systems in the game engine
-	ImGui::Text("ImGui: %.2f ms (%.2f%%)", imGuiTime * secondsToMs, (imGuiTime / deltaTime) * 100.0);
-	ImGui::Text("Renderer: %.2f ms (%.2f%%)", renderTime * secondsToMs, (renderTime / deltaTime) * 100.0);
-	ImGui::Text("Physics: %.2f ms (%.2f%%)", physicsTime * secondsToMs, (physicsTime / deltaTime) * 100.0);
-	ImGui::Text("Input: %.2f ms (%.2f%%)", inputTime * secondsToMs, (inputTime / deltaTime) * 100.0);
+	// Clamp dt to avoid div-by-zero and negative values
+	double dt = deltaTime;
+	if (dt <=0.0) dt =1e-6; // tiny epsilon when paused or first frame
+	ImGui::Text("Current FPS: %.2f (%.2f ms)",1.0 / dt, dt * secondsToMs);
+
+	// Compute percentages against the frame time (dt)
+	auto pct = [dt](double t) -> double { return (t <=0.0) ?0.0 : (t / dt) *100.0; };
+
+	// Known subsystem times
+	double imguiMs = imGuiTime * secondsToMs;
+	double renderMs = renderTime * secondsToMs;
+	double physicsMs = physicsTime * secondsToMs;
+	double inputMs = inputTime * secondsToMs;
+	double logicMs = logicTime * secondsToMs;
+
+	// Compute an "Other" bucket for time not attributed to known systems
+	double knownSec = imGuiTime + renderTime + physicsTime + inputTime + logicTime;
+	double otherSec = std::max(0.0, dt - knownSec);
+	double otherMs = otherSec * secondsToMs;
+
+	ImGui::Separator();
+	ImGui::Text("ImGui: %.2f ms (%.2f%%)", imguiMs, pct(imGuiTime));
+	ImGui::Text("Renderer: %.2f ms (%.2f%%)", renderMs, pct(renderTime));
+	ImGui::Text("Physics: %.2f ms (%.2f%%)", physicsMs, pct(physicsTime));		
+	ImGui::Text("Input: %.2f ms (%.2f%%)", inputMs, pct(inputTime));
+	ImGui::Text("Logic: %.2f ms (%.2f%%)", logicMs, pct(logicTime));
+	ImGui::Text("Other: %.2f ms (%.2f%%)", otherMs, pct(otherSec));
 
 	ImGui::End();
 }
@@ -367,7 +415,7 @@ void ImGuiManager::showEntityListUI(/* Maybe an enum of paramEntityType, Maybe a
 		ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
 
 	// Position the overlay at the top-right corner of the window, below performance overlay
-	ImVec2 windowTopRightPos = { windowBottomRight.x - width, windowTopLeft.y + 200.0f };
+	ImVec2 windowTopRightPos = { windowBottomRight.x - width, windowTopLeft.y + 250.0f };
 	ImGui::SetNextWindowPos(windowTopRightPos);
 	ImGui::SetNextWindowBgAlpha(0.35f);
 	ImGui::SetNextWindowSize({ width, height });
@@ -500,6 +548,52 @@ void ImGuiManager::showEntityListUI(/* Maybe an enum of paramEntityType, Maybe a
 		}
 	}
 
+	// Add and remove buttons 
+	Scene* sceneMut = gsm.getCurrentScene();
+
+	if (sceneMut)
+	{
+		ImGui::Separator();
+		//this button will change to load a gameobject,, currently loads just an empty game object
+		if (ImGui::Button("Add New Object")) 
+		{
+			// Create a simple new DrawItem
+			DrawItem newItem;
+			newItem.name = "NewObject_" + std::to_string(sceneMut->items.size());
+			newItem.w = 0.1f;     // default width
+			newItem.h = 0.1f;     // default height
+			newItem.x = 0.5f;     // start centered
+			newItem.y = 0.5f;
+			newItem.angle = 0.0f; // no rotation
+
+			// Add it to the current scene
+			sceneMut->items.push_back(newItem);
+			selectedEntityType = static_cast<unsigned int>(sceneMut->items.size() - 1);
+
+			logger.log("[ImGui] Added new object: " + newItem.name);
+		}
+
+		ImGui::SameLine();
+
+		if (ImGui::Button("Remove Selected"))
+		{
+			if (!sceneMut->items.empty() && selectedEntityType < sceneMut->items.size())
+			{
+				logger.log("[ImGui] Removed object: " + sceneMut->items[selectedEntityType].name);
+				sceneMut->items.erase(sceneMut->items.begin() + selectedEntityType);
+
+				// Adjust selection index to stay valid
+				if (selectedEntityType >= sceneMut->items.size() && !sceneMut->items.empty())
+					selectedEntityType = static_cast<unsigned int>(sceneMut->items.size() - 1);
+				else if (sceneMut->items.empty())
+					selectedEntityType = 0;
+			}
+		}
+	}
+	else
+	{
+		ImGui::TextDisabled("Scene not editable (no active level).");
+	}
 
 	ImGui::End();
 }
@@ -513,7 +607,7 @@ void ImGuiManager::showTransformUI(/* A reference to a vector of object list obj
 		ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
 
 	// Position the overlay at the top-right corner of the window, below entity list overlay
-	ImVec2 windowTopRightPos = { windowBottomRight.x - width, windowTopLeft.y + 500.0f };
+	ImVec2 windowTopRightPos = { windowBottomRight.x - width, windowTopLeft.y + 550.0f };
 	ImGui::SetNextWindowPos(windowTopRightPos);
 	ImGui::SetNextWindowBgAlpha(0.35f);
 	ImGui::SetNextWindowSize({ width, height });
@@ -634,4 +728,162 @@ void ImGuiManager::showLogsOverlayUI() {
 
 	ImGui::EndChild();
     ImGui::End();
+}
+
+void ImGuiManager::showAssetsBrowserUI() {
+	constexpr float width = 400.0f;
+	constexpr float height = 350.0f;
+	ImGuiWindowFlags flags = ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing;
+
+	ImVec2 pos = { windowBottomRight.x - width - 340.0f, windowTopLeft.y + 520.0f }; // near Transform window
+	ImGui::SetNextWindowPos(pos);
+	ImGui::SetNextWindowSize({ width, height });
+
+	ImGui::TextColored(ImVec4(0.8f, 0.9f, 1.0f, 1.0f), "Assets Browser");
+	ImGui::Separator();
+	
+	// importing new texture
+	static char newPath[256] = "assets/textures/";
+	ImGui::InputText("New Texture Path", newPath, IM_ARRAYSIZE(newPath));
+	if (ImGui::Button("Import Texture"))
+	{
+		std::string fullPath = newPath;
+		std::filesystem::path p(fullPath);
+		std::string name = p.stem().string();
+
+		try
+		{
+			TextureFile& newTex = resourceManager.loadTexture(name, fullPath);
+			logger.log("[ImGui] Imported new texture: " + name + " (" + fullPath + ")");
+		}
+		catch (...)
+		{
+			logger.error("[ImGui] Failed to import texture from path: " + fullPath);
+		}
+	}
+	
+	ImGui::Text("Loaded Textures:");
+	ImGui::Separator();
+
+	// thumbnail size
+	static float thumbnailSize = 60.0f;
+	
+	// thumbnail grid
+	float panelWidth = ImGui::GetContentRegionAvail().x; // total space in tab
+
+
+	float padding = 10.0f;
+	float cellSize = thumbnailSize + padding;
+	int columnCount = (int)(panelWidth / cellSize);
+	if (columnCount < 1) columnCount = 1;
+	
+	// texture grid table 
+	if (ImGui::BeginTable("TextureTable", columnCount, ImGuiTableFlags_SizingStretchSame))
+	{
+		auto& textures = resourceManager.getTextures();
+		int index = 0;
+
+		for (auto& [id, texFile] : textures)
+		{
+			const std::string& texName = texFile.getKey();
+			const std::string& texPath = texFile.getFilePath();
+
+			GLuint texID = resourceManager.getGLTextureFromFile(texPath);
+			if (texID == 0) continue;
+
+			ImGui::TableNextColumn();
+			ImGui::PushID(index++);
+
+			if (ImGui::ImageButton((ImTextureID)(intptr_t)texID, ImVec2(thumbnailSize, thumbnailSize)))
+			{
+				Scene* scene = gsm.getCurrentScene();
+				if (scene && selectedEntityType < scene->items.size())
+				{
+					scene->items[selectedEntityType].tex = texID;
+					logger.log("[ImGui] Applied texture: " + texName);
+				}
+			}
+
+			ImGui::TextWrapped(texName.c_str());
+			ImGui::PopID();
+		}
+
+		ImGui::EndTable();
+	}
+}
+
+void ImGuiManager::showBottomDockUI()
+{
+
+	//float dockPadding = 8.0f;   // gap between viewport and dock
+	float dockHeight = 200.0f; // desired dock height
+	float rightPanelWidth = 300.0f; // width of right sidebar
+
+	// dock should begin directly below the viewport
+	float dockYPos = vpMaxWin.y ;
+
+	// dock should stop before the right sidebar begins
+	float dockXPos = windowTopLeft.x + 8.0f;
+	float dockWidth = (windowBottomRight.x - rightPanelWidth) - dockXPos;
+
+	// doesnt exceed the window bottom
+	if (dockYPos + dockHeight > windowBottomRight.y)
+		dockYPos = windowBottomRight.y - dockHeight - 4.0f;
+
+	ImVec2 dockPos = { dockXPos, dockYPos };
+	ImVec2 dockSize = { dockWidth, dockHeight };
+
+	ImGui::SetNextWindowPos(dockPos);
+	ImGui::SetNextWindowSize(dockSize);
+
+	ImGuiWindowFlags flags =
+		ImGuiWindowFlags_NoSavedSettings |
+		ImGuiWindowFlags_NoCollapse |
+		ImGuiWindowFlags_NoResize;
+
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(8, 8));
+	ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(4, 4));
+
+	ImGui::Begin("Editor Dock", nullptr, flags);
+
+	if (ImGui::BeginTabBar("DockTabs"))
+	{
+		if (ImGui::BeginTabItem("Assets Browser"))
+		{
+			showAssetsBrowserUI();  // no Begin/End inside
+			ImGui::EndTabItem();
+		}
+
+		if (ImGui::BeginTabItem("Logs"))
+		{
+			showLogsOverlayUI();    // no Begin/End inside
+			ImGui::EndTabItem();
+		}
+
+
+		if (ImGui::BeginTabItem("Camera")) {     
+			Cam2D_Params p = Cam2D_GetActiveParams();
+			bool changed = false;
+
+			changed |= ImGui::SliderFloat("Center X", &p.cx, 0.0f, 1.0f);
+			changed |= ImGui::SliderFloat("Center Y", &p.cy, 0.0f, 1.0f);
+			changed |= ImGui::SliderFloat("Zoom", &p.zoom, 0.25f, 6.0f);
+			changed |= ImGui::SliderFloat("MinZoom", &p.minZoom, 0.25f, 6.0f);
+			changed |= ImGui::SliderFloat("MaxZoom", &p.maxZoom, 0.25f, 6.0f);
+
+			if (p.minZoom > p.maxZoom) std::swap(p.minZoom, p.maxZoom);
+
+			if (changed) {
+				Cam2D_SetActiveParams(p);
+			}
+
+			ImGui::EndTabItem();
+		}
+
+
+		ImGui::EndTabBar();
+	}
+
+	ImGui::End();
+	ImGui::PopStyleVar(2);
 }
