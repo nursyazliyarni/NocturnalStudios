@@ -30,7 +30,7 @@
 #include "core/GameManager.h"
 
 #include "graphics/Camera2D.h" 
-#include "TimeUtils.h"
+#include "core/TimeUtils.h"
 
 namespace {
 	using Clock = std::chrono::high_resolution_clock;
