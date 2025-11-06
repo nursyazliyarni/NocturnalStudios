@@ -16,19 +16,18 @@ void AnimationSystem::Update(float dt, ECS& ecs, Renderer& renderer, TextureStor
             continue;
 
         auto& current = it->second;
-        if (current.frames.empty())
-            continue;
+        anim->timer += dt;
 
         anim->timer += dt;
         if (anim->timer >= current.frameTime) {
             anim->timer -= current.frameTime;
             anim->currentFrame++;
 
-            if (anim->currentFrame >= static_cast<int>(current.frames.size())) {
+            if (anim->currentFrame >= current.frames) {
                 if (current.loop)
                     anim->currentFrame = 0;
                 else {
-                    anim->currentFrame = static_cast<int>(current.frames.size()) - 1;
+                    anim->currentFrame = current.frames - 1;
                     anim->playing = false;
                 }
             }
@@ -38,7 +37,7 @@ void AnimationSystem::Update(float dt, ECS& ecs, Renderer& renderer, TextureStor
         if (!img)
             continue;
 
-        int frameIndex = current.frames[anim->currentFrame];
+        int frameIndex = anim->currentFrame;
         float uPerFrame = 1.0f / anim->sheetColumns;
         float vPerFrame = 1.0f / anim->sheetRows;
 

@@ -5,16 +5,16 @@
 
 struct SpriteAnimationComponent {
     struct Animation {
-        std::vector<int> frames;
-        float frameTime = 0.8f;
-        bool loop = true;
+        int frames;
+        float frameTime;
+        bool loop;
     };
 
     std::unordered_map<std::string, Animation> animations;
     std::string currentAnim;
     int currentFrame = 0;
     float timer = 0.0f;
-    bool playing = false;
+    bool playing = true;
     int sheetColumns = 1;
     int sheetRows = 1;
 };

@@ -235,7 +235,7 @@ bool GameManager::load(const char* prefabsPath, const char* scenesPath, TextureS
 
         //Define an animation sequence
         SpriteAnimationComponent::Animation idle;
-        idle.frames = { 0,1,2,3 };
+        idle.frames = 5;
         idle.frameTime = 0.12f;
         idle.loop = true;
 
@@ -346,10 +346,10 @@ void GameManager::render(Renderer& r, int w, int h) {
 
                     if (auto* anim = ecs_.getComponent<SpriteAnimationComponent>(e)) {
                         auto it = anim->animations.find(anim->currentAnim);
-                        if (it != anim->animations.end() && !it->second.frames.empty()) {
+                        if (it != anim->animations.end()) {
                             const auto& def = it->second;
-                            int frameIndex = def.frames[anim->currentFrame];
 
+                            int frameIndex = anim->currentFrame;
                             int sheetColumns = anim->sheetColumns;
                             int sheetRows = anim->sheetRows;
 
@@ -371,10 +371,10 @@ void GameManager::render(Renderer& r, int w, int h) {
 
                             Cam2D_Apply(currentScene, px, py, pw, ph, w, h);
 
-                            r.drawSpriteUV(img->textureID, px, py, pw, ph, img->uvMin.x, img->uvMin.y, img->uvMax.x, img->uvMax.y);
-
+                            r.drawSpriteUV(img->textureID, px, py, pw, ph, u0, v0, u1, v1);
                         }
                     }
+
                    // r.texturedTri(img->textureID, px, py, pw, ph);
                 }
             }
@@ -492,5 +492,6 @@ Scene* GameManager::getCurrentScene() {
 
 void GameManager::update(float dt,Renderer& renderer,TextureStore& tex) {
     //update ECS animations
-    animationSystem_.Update(dt, ecs_, renderer, tex);
+	const float fixedDt = 1.0f / 60.0f;
+    animationSystem_.Update(fixedDt, ecs_, renderer, tex);
 }
