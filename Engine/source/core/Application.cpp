@@ -154,8 +154,12 @@ void Application::init() {
 
 	{
 		ResourceID fontID = resourceManager->findResource<Font>("NanumBrushScript-Regular");
+		ResourceID fontID2 = resourceManager->findResource<Font>("PAPYRUS");
+		
+		Font& uiFont2Ref = resourceManager->getFont(fontID2);
 		Font& uiFontRef = resourceManager->getFont(fontID);
 		uiFont = &uiFontRef;
+		uiFont2 = &uiFont2Ref;
 	}
 
 	textShader->user_Shader_program();
@@ -260,6 +264,16 @@ int Application::run() {
 				25.0f, m_window.desc().height - 50.0f, // Move near top
 				1.0f,
 				glm::vec3(1.0f, 0.0f, 0.2f)
+			);
+		}
+
+		if (uiFont2) {
+			uiFont2->RenderText(
+				*textShader,
+				"Sample Font: Papyrus",
+				25.0f, m_window.desc().height - 100.0f, // Move near top
+				1.0f,
+				glm::vec3(0.2f, 0.8f, 1.0f)
 			);
 		}
 
@@ -500,7 +514,7 @@ int Application::run() {
 		// Build and render all ImGui windows (Viewport + overlays)
 		Gui::updateImGuiManager(dt, imGuiManager);
 
-		//render text overlay
+		//---------render text overlay----------
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glViewport(0, 0, fbw, fbh);
 		glEnable(GL_BLEND);
@@ -510,11 +524,18 @@ int Application::run() {
 		uiFont.RenderText(
 			textShader,
 			"Nocturnal Studio Engine",
-			25.0f, wd.height - 50.0f, // Move near top
+			25.0f, wd.height - 50.0f, //move near top
 			1.0f,
-			glm::vec3(1.0f, 0.0f, 0.2f)
+			glm::vec3(1.0f, 0.0f, 0.2f) //red text
 		);
-
+		uiFont2.RenderText(
+			textShader,
+			"Luminara Zoo",
+			wd.width/2.f,wd.height/2.f,
+			0.8f,
+			glm::vec3(0.6f, 0.2f, 0.8f) //purple text
+		);
+		//----------end text overlay----------
 
 
 		// Application.cpp 
