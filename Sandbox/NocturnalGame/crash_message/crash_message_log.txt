@@ -12,3 +12,7 @@
 [07-11-2025] [01:21:07] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
 [07-11-2025] [14:53:02] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
 [07-11-2025] [14:53:05] [CRASH_MESSAGE] Failed to parse prefab file: assets/prefabs\GameObj.json
+[07-11-2025] [15:05:29] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[07-11-2025] [15:09:01] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[07-11-2025] [15:11:08] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[07-11-2025] [15:12:13] [CRASH_MESSAGE] Failed to load default audio soundFile not found.

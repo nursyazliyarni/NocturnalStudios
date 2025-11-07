@@ -76,9 +76,9 @@ void TransformSystem::TransformUpdate() {
 			t->lastHeight = t->height;
 			t->lastScale = t->scale;
 			t->lastRotation = t->rotation;
-			std::string poob{ "Transform updated for entity " };
-			poob.append(std::to_string(e));
-			logger.log(poob);
+			//std::string poob{ "Transform updated for entity " };
+			//poob.append(std::to_string(e));
+			//logger.log(poob);
 		}
 	}
 }

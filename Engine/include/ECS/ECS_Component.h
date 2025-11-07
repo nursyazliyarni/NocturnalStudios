@@ -199,7 +199,7 @@ struct PhysicsComponent : public BaseComponent
 };
 
 
-struct AIComponent {
+struct AIComponent : public BaseComponent {
 	enum class State { Wander = 0, Chase = 1, Flee = 2 };
 
 	State  state = State::Wander;
@@ -215,6 +215,7 @@ struct AIComponent {
 
 	std::string targetName;   // optional: entity name to chase/flee
 	float targetWeight = 1.0f; // how strong target influence is
+	void FromJSON(const rapidjson::Value& json);
 
 };
 

@@ -49,6 +49,7 @@ ECS::ECS() {
 	registerComponent<AIComponent>();
 	registerComponent<BoxCollider>();
 	registerComponent<AABBCollider>();
+	registerComponent<AIComponent>();
 
 	ComponentFactory::Register<Transform>("Transform");
 	ComponentFactory::Register<ImageRenderer>("ImageRenderer");
@@ -59,6 +60,7 @@ ECS::ECS() {
 	ComponentFactory::Register<PhysicsComponent>("PhysicsComponent");
 	ComponentFactory::Register<BoxCollider>("BoxCollider");
 	ComponentFactory::Register<AABBCollider>("AABBCollider");
+	ComponentFactory::Register<AIComponent>("AIComponent");
 
 	// --------------------------------------------------------
 	// Register JSON creation logic for SpriteAnimationComponent
