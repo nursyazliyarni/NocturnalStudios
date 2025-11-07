@@ -1,3 +1,16 @@
+/*!------------------------------------------------------------------------------------------------
+    File: simpleaisystem.h
+    Project: NocturnalStudio
+
+    This file contains ...
+
+    Rishika Bimal Attodi:
+         -In progress
+
+    All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
+
+
 //#include "AI/SimpleAISystem.h"
 //#include <cmath>
 //#include <algorithm>

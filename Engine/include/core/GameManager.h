@@ -1,3 +1,20 @@
+/*!------------------------------------------------------------------------------------------------
+    File: LevelManager.h
+    Project: NocturnalStudio
+
+    This file contains ...
+
+    Primary Author:
+         Name (%)
+        -Brief
+
+    Secondary Author:
+         Rishika Bimal Attodi (%)
+        -State integration for the play and exit button and scene switching via keys
+
+    All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
+
 //gsm.h
 #pragma once
 #include <string>
