@@ -16,6 +16,7 @@
 #include "TextureFile.h"
 #include "PrefabFile.h"
 #include "SceneFile.h"
+#include "graphics/Texture.h"
 
 class AudioSystem;
 class ECS;
@@ -71,6 +72,7 @@ public:
 	std::unordered_map<ResourceID, PrefabFile>& getPrefabs();
 	std::unordered_map<ResourceID, SceneFile>& getScenes();
 	const std::unordered_map<ResourceID, SceneFile>& getScenes() const;
+	std::unordered_map<std::string, std::unique_ptr<Texture>> loadedGLTextures;
 
 	std::vector<std::string> getFilePathsForKey(ResourceType type, const std::string& key) const;
 

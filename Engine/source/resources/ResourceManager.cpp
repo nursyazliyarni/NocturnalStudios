@@ -926,22 +926,21 @@ const Audio& ResourceManager::getDefaultAudio() const {
 // for imgui assets browser to get textures
 GLuint ResourceManager::getGLTextureFromFile(const std::string& filePath)
 {
-	static std::unordered_map<std::string, GLuint> textureCache;
+	// If we've already loaded this texture, reuse it
+	auto it = loadedGLTextures.find(filePath);
+	if (it != loadedGLTextures.end())
+		return it->second->get_textureID(0);
 
-	// Check if texture already loaded
-	auto it = textureCache.find(filePath);
-	if (it != textureCache.end())
-		return it->second;
-
-	// Load it using your graphics::Texture loader
+	// Load and store the Texture object persistently
 	std::vector<char const*> paths = { filePath.c_str() };
-	Texture tex(paths);
+	auto tex = std::make_unique<Texture>(paths);
 
-	if (tex.get_totalTexture() > 0)
+	if (tex->get_totalTexture() > 0)
 	{
-		GLuint texID = tex.get_textureID(0);
-		textureCache[filePath] = texID;
-		logger.log("[ResourceManager] Cached GL texture: " + filePath);
+		GLuint texID = tex->get_textureID(0);
+		loadedGLTextures[filePath] = std::move(tex); // store in manager
+		logger.log("[ResourceManager] Cached persistent GL texture: " + filePath +
+			" (ID " + std::to_string(texID) + ")");
 		return texID;
 	}
 
