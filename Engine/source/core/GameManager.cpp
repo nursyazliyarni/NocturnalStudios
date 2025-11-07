@@ -34,6 +34,8 @@
 #include "physics/AABB.h"
 #include "Animation/SpriteAnimationComponent.h"
 
+#include "scene/Prefab.h" // for Prefab_GetSceneName
+
 //  TextureStore 
 static GLuint loadGLTexture(const std::string& path) {
     int w, h, n;
@@ -253,8 +255,11 @@ bool GameManager::load(const char* prefabsPath, const char* scenesPath, TextureS
 }
 
 void GameManager::requestScene(const std::string& name) {
-    if (scenes.count(name)) currentScene = name;
+    if (!scenes.count(name)) return;
+    currentScene = name;
+    if (onSceneChanged) onSceneChanged(currentScene);
 }
+
 
 bool GameManager::switchToSceneForKey(int glfwKey) {
     if (app != AppState::Playing) return false;   // lock numbers unless Playing
@@ -349,60 +354,81 @@ void GameManager::render(Renderer& r, int w, int h) {
                         if (it != anim->animations.end()) {
                             const auto& def = it->second;
 
-                            int frameIndex = anim->currentFrame;
-                            int sheetColumns = anim->sheetColumns;
-                            int sheetRows = anim->sheetRows;
+if (auto* anim = ecs_.getComponent<SpriteAnimationComponent>(e)) {
+    auto ait = anim->animations.find(anim->currentAnim);
+    if (ait != anim->animations.end()) {
+        const auto& def = ait->second;
 
-                            float uPerFrame = 1.0f / float(sheetColumns);
-                            float vPerFrame = 1.0f / float(sheetRows);
+        // Safe guards in case JSON forgot to set these
+        int sheetColumns = (anim->sheetColumns > 0) ? anim->sheetColumns : 1;
+        int sheetRows    = (anim->sheetRows    > 0) ? anim->sheetRows    : 1;
+        int frameIndex   = (anim->currentFrame >= 0) ? anim->currentFrame : 0;
 
-                            int col = frameIndex % sheetColumns;
-                            int row = frameIndex / sheetColumns;
+        // UVs for current frame
+        float uPerFrame = 1.0f / static_cast<float>(sheetColumns);
+        float vPerFrame = 1.0f / static_cast<float>(sheetRows);
+        int   col = frameIndex % sheetColumns;
+        int   row = frameIndex / sheetColumns;
 
-                            float u0 = col * uPerFrame;
-                            float v0 = row * vPerFrame;
-                            float u1 = u0 + uPerFrame;
-                            float v1 = v0 + vPerFrame;
+        float u0 = col * uPerFrame;
+        float v0 = row * vPerFrame;
+        float u1 = u0 + uPerFrame;
+        float v1 = v0 + vPerFrame;
 
-                            float px = t->position.x() * w;
-                            float py = t->position.y() * h;
-                            float pw = t->scale.x() * w;
-                            float ph = t->scale.y() * h;
+        // Draw this sprite frame
+        r.drawSpriteUV(img->textureID, px, py, pw, ph, u0, v0, u1, v1);
+    } else {
+        // No definition for currentAnim -> fall back to full texture
+        r.texturedTri(img->textureID, px, py, pw, ph);
+    }
+} else {
+    // No SpriteAnimationComponent -> draw full texture
+    r.texturedTri(img->textureID, px, py, pw, ph);
+}
 
-                            Cam2D_Apply(currentScene, px, py, pw, ph, w, h);
+// Debug AABB for ECS entities (so B toggle still shows boxes)
+if (Debug::Drawer::Instance().IsActive())
+{
+    AABB collider(Vector2D(px, py), Vector2D(pw, ph));
+    Debug::Drawer::Instance().AddRect(
+        collider.pos.x(), collider.pos.y(),
+        collider.size.x(), collider.size.y(),
+        0xFFFF00FF // yellow
+    );
+}
 
-                            r.drawSpriteUV(img->textureID, px, py, pw, ph, u0, v0, u1, v1);
-                        }
-                    }
-
-                   // r.texturedTri(img->textureID, px, py, pw, ph);
                 }
             }
         }
     }
 
     // entities (normalized ? pixels)
+   // entities (normalized → pixels) — draw JSON **only** if there is NO ECS entity by the same name
     for (const auto& di : sc.items) {
-        if (di.tex == 0) continue;  // skip if background/entity texture didn�t load
+        // If an ECS entity with this name exists, we skip the JSON-drawn duplicate
+        if (!di.name.empty()) {
+            EntityID eid = ecs_.findEntityByName(di.name);
+            if (eid != INVALID_ENTITY_ID) {
+                continue; // ECS is the source of truth for this sprite
+            }
+        }
+
+        if (di.tex == 0) continue;
         float px = di.x * w, py = di.y * h, pw = di.w * w, ph = di.h * h;
 
         Cam2D_Apply(currentScene, px, py, pw, ph, w, h);
-
         r.texturedTri(di.tex, px, py, pw, ph);
 
-        // Debugging drawer
-        if (Debug::Drawer::Instance().IsActive())
-        {
+        if (Debug::Drawer::Instance().IsActive()) {
             AABB collider(Vector2D(px, py), Vector2D(pw, ph));
-
-            // Queue the collider’s outline for debug
             Debug::Drawer::Instance().AddRect(
                 collider.pos.x(), collider.pos.y(),
                 collider.size.x(), collider.size.y(),
-                0xFFFF00FF // yellow box
+                0xFFFF00FF
             );
         }
     }
+
 
 }
 

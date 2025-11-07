@@ -24,6 +24,7 @@
 
     "Flamingo": {
       "background":"textures/flamingo_bg.png",
+      "camera": { "cx": 0.5, "cy": 0.5, "zoom": 1.0, "minZoom": 1.0, "maxZoom": 3.0 },
       "entities":[
         { "prefab":"animal","name":"flamingo",
           "overrides": { "x":0.10,"y":0.44, "w":0.26, "h":0.50,"health_bar":100,"hunger_bar":100, "sanity_bar":100, "sprite_path":"textures/flamingo.png" } },
@@ -32,8 +33,7 @@
         { "prefab":"medicine","name":"flamingo_medicine",
           "overrides": { "x":0.66,"y":0.50, "sprite_path":"textures/flamingo_medicine.png" } },
         { "prefab":"toy","name":"flamingo_toy",
-          "overrides": { "x":0.40,"y":0.50, "w":0.14, "h":0.14, "sprite_path":"textures/flamingo_toy.png", "rotatable": false, "scalable": false } },
-        { "camera": { "cx": 0.5, "cy": 0.5, "zoom": 1.0, "margin": 0.0, "minZoom": 1.0, "maxZoom": 3.0 }}
+          "overrides": { "x":0.40,"y":0.50, "w":0.14, "h":0.14, "sprite_path":"textures/flamingo_toy.png", "rotatable": false, "scalable": false } }
       ]
     },
 
@@ -61,7 +61,10 @@
         { "prefab":"medicine","name":"owl_medicine",
           "overrides": { "x":0.66,"y":0.50, "sprite_path":"textures/owl_medicine.png" } },
         { "prefab":"toy","name":"owl_toy",
-          "overrides": { "x":0.40,"y":0.50, "w":0.14, "h":0.14, "sprite_path":"textures/owl_toy.png", "rotatable": false, "scalable": false } }
+          "overrides": { "x":0.40,"y":0.50, "w":0.14, "h":0.14, "sprite_path":"textures/owl_toy.png", "rotatable": false, "scalable": false } },
+      { "prefab":"firefly","name":"firefly_1",
+        "overrides": { "x":0.66, "y":0.42, "w":0.05, "h":0.05, "sprite_path":"textures/firefly.png" }
+      }
       ]
     },
 

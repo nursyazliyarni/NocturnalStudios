@@ -7,7 +7,8 @@
 #include "graphics/Renderer.h"
 #include "Animation/AnimationSystem.h"
 
-class TextureStore;
+#include <functional>
+
 class ECS;
 
 struct DrawItem {
@@ -60,7 +61,7 @@ public:
     void goToMenu();
     // (optional) void pause(); void resume();
 
-    // Expose a safe key->scene helper if you don’t want Input.cpp touching keyMap directly:
+    // Expose a safe key->scene helper if you donï¿½t want Input.cpp touching keyMap directly:
     bool switchToSceneForKey(int glfwKey);
 
     GameManager(ECS& ecs) :ecs_{ ecs } {}
@@ -73,6 +74,9 @@ public:
     //void focusOnEntity(const std::string& scene, const std::string& entityName);
 
     Scene* getCurrentScene();
+
+    void setSceneChangedCallback(std::function<void(const std::string&)> cb) { onSceneChanged = std::move(cb); }
+
 
 private:
     std::unordered_map<std::string, Scene> scenes;
@@ -88,5 +92,6 @@ private:
     ECS& ecs_;
     //std::unordered_map<std::string, Camera2D> cameras_; // one camera per scene
 
-    AnimationSystem animationSystem_;
+    AnimationSystem animationSystem_;                 // <-- from main branch
+    std::function<void(const std::string&)> onSceneChanged; // <-- from HEAD
 };

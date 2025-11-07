@@ -179,7 +179,7 @@ void Input::keyboard_input_callback(GLFWwindow* window, int key, int scancode, i
 		self->messageBus->Broadcast(std::move(msg));
 	}
 	
-	if (action == GLFW_PRESS) pressedKeysThisFrame.insert(key);
+	//if (action == GLFW_PRESS) pressedKeysThisFrame.insert(key);
 
 	if (Input* self_ = static_cast<Input*>(glfwGetWindowUserPointer(window))) {
 		if (action == GLFW_PRESS || action == GLFW_REPEAT) {
@@ -303,7 +303,7 @@ void Input::ProcessHotkeys(GameManager& gsm) {
 		if (WasPressed(k)) gsm.switchToSceneForKey(k);
 	}
 
-	// ------------ 2D Camera controls (Flamingo only) ------------
+	//  2D Camera controls (Flamingo only) 
 	static std::string sLastScene;
 	static bool flamingoPrimed = false;
 
