@@ -248,8 +248,13 @@ int Application::run() {
                 float nx = float((mp.x() - rmin.x) / (rmax.x - rmin.x));
                 float ny = float((mp.y() - rmin.y) / (rmax.y - rmin.y));
 
-                ny = 1.0f - ny;
+                //ny = 1.0f - ny;
                 gsm->handleClick(nx, ny);
+
+                if (gsm->popQuitRequested()) {
+                    glfwSetWindowShouldClose(m_window.handle(), GLFW_TRUE);
+                    break;
+                }
             }
         }
 		TransformSystem::TransformUpdate();
