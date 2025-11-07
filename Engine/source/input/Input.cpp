@@ -15,7 +15,8 @@
 
 	Secondary Author:
 		 Nur Syazliyarni (15%)
-		-Created the messaging system for input
+		- Created the messaging system for input
+		- Added simple input connection for imgui
 
 	Secondary Author:
 		 Rishika Bimal Attodi  (35%)

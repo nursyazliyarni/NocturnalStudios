@@ -8,15 +8,15 @@
 	for debugging and interaction within the engine.
 
 	Primary Author:
-		Lau Xiang Yang (100%)
+		Lau Xiang Yang (40%)
 		- Created the ImGuiManager class and its specializations.
 
 	Secondary Author:
-		Rishika Bimal Attodi
+		Rishika Bimal Attodi (30%)
 		- Integrated drawAllSprites and drawViewportShapes
 
 	Secondary Author:
-		Nur Syazliyarni (25%)
+		Nur Syazliyarni (30%)
 		- Added the debug drawer that will load under showViewportWindowUI
 		- Editor able to list and edit transform game objects in current scene
 		- Added assets browser and layout of bottom editor dock
@@ -751,7 +751,7 @@ void ImGuiManager::showAssetsBrowserUI() {
 	ImGui::TextColored(ImVec4(0.8f, 0.9f, 1.0f, 1.0f), "Assets Browser");
 	ImGui::Separator();
 	
-	// --- Import new texture section ---
+	// import new texture
 	ImGui::Text("Import New Texture:");
 
 	// input buffer (remembered each frame)
