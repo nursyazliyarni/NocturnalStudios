@@ -5,8 +5,13 @@
     This file contains functions that loads, compiles and links vertex file and fragment file into 
 	a usable shader program to be used by renderer class for background image.
 
-     Ang Yu Xuan (100%)
+    Primary Author:
+        Ang Yu Xuan (100%)
 		-This file contains functions that loads, compiles and links vertex file.
+
+    Secondary Author:
+         Chang Qi Xuan Celest
+        -Function to set uniform variable for vec3.
 
 All content(c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
 * ------------------------------------------------------------------------------------------------ */
@@ -207,6 +212,21 @@ void Shader::SET_arr_uniform_variable(const GLchar* uniform_VARNAME, GLsizei num
     }
 }
 
+/**
+* @brief Sets a vec3 uniform variable in the currently active shader program.
+* This function uploads a 3-component floating-point vector (vec3) to a uniform
+* variable in the GLSL shader. It retrieves the uniform location from the
+* specified shader program index in `program_obj`.
+* @param uniform_VARNAME Name of the uniform variable in the shader.
+* @param v1 First (x) component of the vector.
+* @param v2 Second (y) component of the vector.
+* @param v3 Third (z) component of the vector.
+* @param vector_index Index of the shader program in `program_obj` to which the uniform belongs.
+* @note The shader program must be bound with `glUseProgram()` or
+*       `user_Shader_program()` before calling this function.
+* @see Shader::user_Shader_program()
+* @see Shader::get_programID()
+*/
 void Shader::SET_uniform_variable(const GLchar* uniform_VARNAME, GLfloat v1, GLfloat v2, GLfloat v3, unsigned int vector_index) {
     glUniform3f(glGetUniformLocation(program_obj[vector_index], uniform_VARNAME), v1, v2, v3);
 }

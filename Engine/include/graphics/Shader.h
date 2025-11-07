@@ -9,8 +9,8 @@
 		-Brief
 
 	Secondary Author:
-		 Name (%)
-		-Brief
+		 Chang Qi Xuan Celest
+		-Function to set uniform variable for vec3.
 
 	All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
 *------------------------------------------------------------------------------------------------*/
@@ -72,6 +72,22 @@ public:
 	void SET_arr_uniform_variable(const GLchar * uniform_VARNAME, GLsizei num_value,
 		const GLint * uniform_value_arr, arr_num_component num_component, unsigned int vector_index);
 
+	/**
+	* @brief Sets a vec3 uniform variable for the specified shader program.
+	* Uploads three floating-point values (x, y, z) to a vec3 uniform in the
+	* currently active shader program. The uniform is identified by name and
+	* associated with a shader program index.
+	* @param uniform_VARNAME Name of the uniform variable in the shader.
+	* @param v1 First (x) component of the uniform value.
+	* @param v2 Second (y) component of the uniform value.
+	* @param v3 Third (z) component of the uniform value.
+	* @param vector_index Index of the shader program to which this uniform belongs.
+	* @note The target shader program must be active before calling this function.
+	*       Typically used for setting per-draw or per-frame uniform values such as
+	*       colors, light positions, or other vec3 data.
+	* @see Shader::SET_uniform_variable()
+	* @see Shader::user_Shader_program()
+	*/
 	void SET_uniform_variable(const GLchar* uniform_VARNAME, GLfloat v1, GLfloat v2, GLfloat v3, unsigned int vector_index);
 
 private:
