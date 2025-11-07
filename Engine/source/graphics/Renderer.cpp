@@ -467,7 +467,25 @@ void Renderer::drawText(const Font& font, const std::string& text, float x, floa
     glUseProgram(0);
 }
 
-//draw a sprite using sub-UVs from a spritesheet
+/**
+* @brief Draws a textured rectangle (sprite) with custom UV coordinates.
+* This function renders a 2D sprite at the specified position and size,
+* using a portion of the texture defined by UV coordinates. It uses
+* immediate-mode OpenGL (`glBegin/glEnd`) for simple sprite rendering.
+* @param tex OpenGL texture ID to render.
+* @param x X position of the sprite's bottom-left corner (screen space).
+* @param y Y position of the sprite's bottom-left corner (screen space).
+* @param w Width of the sprite in pixels.
+* @param h Height of the sprite in pixels.
+* @param u0 Left (minimum) U coordinate in texture space (0.0–1.0).
+* @param v0 Bottom (minimum) V coordinate in texture space (0.0–1.0).
+* @param u1 Right (maximum) U coordinate in texture space (0.0–1.0).
+* @param v1 Top (maximum) V coordinate in texture space (0.0–1.0).
+* @note Depth testing is disabled for this draw call.
+*       Immediate-mode OpenGL is used, which is suitable for simple or debug rendering
+*       but not recommended for performance-critical production code.
+* @see Renderer::drawText() for text rendering using sprites/glyphs.
+*/
 void Renderer::drawSpriteUV(GLuint tex, float x, float y, float w, float h, float u0, float v0, float u1, float v1)
 {
     glUseProgram(0);
