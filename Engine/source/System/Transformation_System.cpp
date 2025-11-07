@@ -29,14 +29,6 @@ float Transform::Rotate(float a) {
 /**
  * .
  */
-
-
-//float Transform::RotateDeg(float a) {
-//	rotation += a * ((float)PI / 180.f);
-//	return a;
-//}
-
-
 float Transform::RotateDeg(float a) {
 	rotation += a * (static_cast<float>(PI) / 180.f);
 	return rotation;

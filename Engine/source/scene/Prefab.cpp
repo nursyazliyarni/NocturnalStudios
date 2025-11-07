@@ -83,27 +83,103 @@ PrefabManager::PrefabManager(ECS& ecs) : entity_component_based_system(ecs) {}
 void PrefabManager::Load_Prefab(const std::string& filename_path) {
     std::ifstream objFile(filename_path);
     if (!objFile) {
-        std::cout << "Failed to open prefab file: " << filename_path << "\n";
+        logger.error("Failed to open prefab file: " + filename_path);
         return;
     }
 
     rapidjson::IStreamWrapper obj(objFile);
-    rapidjson::Document document;
-    document.ParseStream(obj);
+    auto document = std::make_shared<rapidjson::Document>();
+    document->ParseStream(obj);
 
-    if (document.HasParseError() || !document.IsObject()) {
-        std::cout << "Failed to parse prefab file: " << filename_path << "\n";
+    if (document->HasParseError() || !document->IsObject()) {
+        logger.error("Failed to parse prefab file: " + filename_path);
         return;
     }
+    prefab_map[filename_path] = document;
+}
 
-    prefab_map[filename_path] = std::move(document);
-    std::cout << "Loaded prefab: " << filename_path << "\n";
+EntityID PrefabManager::CreateEntityFromPrefab(const std::string& json_path, const std::string& entity_type,
+    const std::string& object_name)
+{
+    //1. Verify prefab file loaded
+    auto it = prefab_map.find(json_path);
+    if (it == prefab_map.end()) {
+        logger.error("Prefab file not loaded: " + json_path);
+        return INVALID_ENTITY_ID;
+    }
+
+    // Get reference to the loaded document
+    rapidjson::Document& doc = *(it->second);
+
+    //2. Check if the category (e.g., "animal", "food") exists
+    if (!doc.HasMember(entity_type.c_str()) || !doc[entity_type.c_str()].IsObject()) {
+        logger.error("Prefab category '" + entity_type + "' not found.");
+        return INVALID_ENTITY_ID;
+    }
+
+    const auto& categoryObj = doc[entity_type.c_str()];
+
+    //3. Check if the object (e.g., "flamingo", "seal_food") exists
+    if (!categoryObj.HasMember(object_name.c_str()) || !categoryObj[object_name.c_str()].IsObject()) {
+        logger.error("Prefab name '" + object_name + "' not found in category '" + entity_type + "'.");
+        return INVALID_ENTITY_ID;
+    }
+
+    const auto& prefabData = categoryObj[object_name.c_str()];
+
+    //4. Verify that components array exists
+    if (!prefabData.HasMember("components") || !prefabData["components"].IsArray()) {
+        logger.error("Prefab '" + object_name + "' missing components array.");
+        return INVALID_ENTITY_ID;
+    }
+
+    // Create entity first
+    EntityID entity = entity_component_based_system.createEntity();
+    Prefab_data prefab_data;
+
+    // Loop over components
+    for (const auto& comp : prefabData["components"].GetArray()) {
+        if (!comp.HasMember("type")) continue;
+        std::string type = comp["type"].GetString();
+
+        if (type == "Transform") {
+            prefab_data.transform_struct.position[0] = comp.HasMember("x") ? comp["x"].GetDouble() : 0.0;
+            prefab_data.transform_struct.position[1] = comp.HasMember("y") ? comp["y"].GetDouble() : 0.0;
+            prefab_data.transform_struct.scale[0] = comp.HasMember("w") ? comp["w"].GetDouble() : 1.0; // safe default
+            prefab_data.transform_struct.scale[1] = comp.HasMember("h") ? comp["h"].GetDouble() : 1.0;
+            prefab_data.transform_struct.rotation = comp.HasMember("angle") ? comp["angle"].GetDouble() : 0.0;
+            entity_component_based_system.addComponent<Transform>(entity, prefab_data.transform_struct);
+        }
+
+        else if (type == "SpriteRenderer") {
+            prefab_data.image_render_struct.image_path = comp["sprite_path"].GetString();
+            entity_component_based_system.addComponent<ImageRenderer>(entity, prefab_data.image_render_struct);
+        }
+
+        else if (type == "AABBCollider") {
+            prefab_data.collider_struct.width = comp["bounding_box_size"].GetDouble();
+            prefab_data.collider_struct.height = comp["bounding_box_size"].GetDouble();
+            entity_component_based_system.addComponent<BoxCollider>(entity, prefab_data.collider_struct);
+        }
+
+        else if (type == "AnimalProperties") {
+            prefab_data.animal_behaviour_struct.health_bar = comp["health_bar"].GetDouble();
+            prefab_data.animal_behaviour_struct.hunger_bar = comp["hunger_bar"].GetDouble();
+            prefab_data.animal_behaviour_struct.sanity_bar = comp["sanity_bar"].GetDouble();
+            entity_component_based_system.addComponent<AnimalBehavior>(entity, prefab_data.animal_behaviour_struct);
+        }
+
+        else {
+            logger.warning("Unknown component type: " + type);
+        }
+    }
+    return entity;
 }
 
 
 bool PrefabManager::PrefabExists(const std::string& prefab_name) const {
     for (const auto& current_pair : prefab_map) {
-        const rapidjson::Document& current_document = current_pair.second;
+        const rapidjson::Document& current_document = *current_pair.second;
 
         if (current_document.HasMember("prefabs") && current_document["prefabs"].IsObject()) {
             const auto& obj = current_document["prefabs"];
@@ -144,7 +220,7 @@ EntityID PrefabManager::Instantiate(const std::string& prefab_name, const std::s
 EntityID PrefabManager::Instantiate(const std::string& prefab_name, EntityID specific_id) {
     // Find the prefab document
     for (auto& pair : prefab_map) {
-        const rapidjson::Document& current_doc = pair.second;
+        const rapidjson::Document& current_doc = *pair.second;
 
         // Handle new schema: { "prefabs": { "<name>": { "components":[...], "defaults":{...} }, ... } }
         if (current_doc.HasMember("prefabs") && current_doc["prefabs"].IsObject()) {
@@ -209,160 +285,14 @@ void PrefabManager::AddComponentFromJSON(EntityID entity, const rapidjson::Value
     if (!component_json.HasMember("type") || !component_json["type"].IsString()) {
         return;
     }
-    std::cout << "ADDING SOMETHING\n";
+    
 
     std::string component_type = component_json["type"].GetString();
-
-    if (component_type == "SpriteRenderer") component_type = "ImageRenderer";
-    if (component_type == "AABBCollider")  component_type = "BoxCollider";
-
-
-    // Transform component
-    //if (component_type == "Transform") {
-    //    Transform transform_component;
-    //    if (component_json.HasMember("position") && component_json["position"].IsArray()) {
-    //        const auto& position_array = component_json["position"].GetArray();
-    //        if (position_array.Size() >= 2) {
-    //            //transform_component.position.x = position_array[0].GetFloat();
-    //            //transform_component.position.y = position_array[1].GetFloat();
-    //        }
-    //    }
-    //    if (component_json.HasMember("scale") && component_json["scale"].IsArray()) {
-    //        const auto& scale_array = component_json["scale"].GetArray();
-    //        if (scale_array.Size() >= 2) {
-    //            //transform_component.scale.x = scale_array[0].GetFloat();
-    //            //transform_component.scale.y = scale_array[1].GetFloat();
-    //        }
-    //    }
-    //    if (component_json.HasMember("rotation") && component_json["rotation"].IsNumber()) {
-    //        transform_component.rotation = component_json["rotation"].GetFloat();
-    //    }
-    //    if (component_json.HasMember("height") && component_json["height"].IsNumber()) {
-    //        transform_component.height = component_json["height"].GetFloat();
-    //    }
-    //    entity_component_based_system.addComponent<Transform>(entity, transform_component);
-    //}
-    if (component_type == "Transform") {
-        Transform t{};
-        if (component_json.HasMember("position") && component_json["position"].IsArray()) {
-            const auto& a = component_json["position"].GetArray();
-            if (a.Size() >= 2) { t.position.x() = a[0].GetFloat(); t.position.y() = a[1].GetFloat(); }
-        }
-        if (component_json.HasMember("scale") && component_json["scale"].IsArray()) {
-            const auto& a = component_json["scale"].GetArray();
-            if (a.Size() >= 2) { t.scale.x() = a[0].GetFloat(); t.scale.y() = a[1].GetFloat(); }
-        }
-        if (component_json.HasMember("rotation") && component_json["rotation"].IsNumber()) {
-            t.rotation = component_json["rotation"].GetFloat();
-        }
-        if (component_json.HasMember("height") && component_json["height"].IsNumber()) {
-            t.height = component_json["height"].GetFloat();
-        }
-        entity_component_based_system.addComponent<Transform>(entity, t);
+    std::cout << "Adding Component "<< component_type<<" to Entity "<<entity<<"\n";
+    if (ComponentFactory::CreateFromName(entity,component_type, component_json))
+    {
+        std::cout << component_type << " succsessfully added to Entity " << entity << "\n";
     }
-    else if (component_type == "PhysicsComponent") {
-        PhysicsComponent pc{};
-        if (component_json.HasMember("velocity") && component_json["velocity"].IsArray()) {
-            const auto& v = component_json["velocity"].GetArray();
-            if (v.Size() >= 2) { pc.velocity.x() = v[0].GetFloat(); pc.velocity.y() = v[1].GetFloat(); }
-        }
-        if (component_json.HasMember("gravityEnabled") && component_json["gravityEnabled"].IsBool()) {
-            pc.gravityEnabled = component_json["gravityEnabled"].GetBool();
-        }
-        entity_component_based_system.addComponent<PhysicsComponent>(entity, pc);
-    }
-
-
-    // ImageRenderer component
-    //else if (component_type == "ImageRenderer") {
-    //    ImageRenderer renderer_component;
-    //    if (component_json.HasMember("textureID") && component_json["textureID"].IsInt()) {
-    //        renderer_component.textureID = component_json["textureID"].GetInt();
-    //    }
-    //    if (component_json.HasMember("opacity") && component_json["opacity"].IsNumber()) {
-    //        renderer_component.opacity = component_json["opacity"].GetFloat();
-    //    }
-    //    if (component_json.HasMember("isVisible") && component_json["isVisible"].IsBool()) {
-    //        renderer_component.isVisible = component_json["isVisible"].GetBool();
-    //    }
-
-    //    if (renderer_component.textureID <= 0) renderer_component.isVisible = false; // << add this
-
-    //    entity_component_based_system.addComponent<ImageRenderer>(entity, renderer_component);
-    //}
-
-
-    else if (component_type == "ImageRenderer") {
-        ImageRenderer r{};
-
-        // Accept either a direct textureID 
-        if (component_json.HasMember("textureID") && component_json["textureID"].IsInt()) {
-            r.textureID = component_json["textureID"].GetInt();
-        }
-
-        // ... or the preferred JSON field "sprite_path" (resolve to GL texture id)
-        if (r.textureID <= 0 && component_json.HasMember("sprite_path") && component_json["sprite_path"].IsString()) {
-            r.textureID = ResolveTextureID(component_json["sprite_path"].GetString());
-        }
-
-        if (component_json.HasMember("opacity") && component_json["opacity"].IsNumber()) {
-            r.opacity = component_json["opacity"].GetFloat();
-        }
-        if (component_json.HasMember("isVisible") && component_json["isVisible"].IsBool()) {
-            r.isVisible = component_json["isVisible"].GetBool();
-        }
-
-        // If we still don't have a valid texture, hide it (keeps current renderer behavior)
-        if (r.textureID <= 0) r.isVisible = false;
-
-        entity_component_based_system.addComponent<ImageRenderer>(entity, r);
-    }
-
-
-    // CircleRenderer component
-    else if (component_type == "CircleRenderer") {
-        CircleRenderer renderer_component;
-        if (component_json.HasMember("radius") && component_json["radius"].IsNumber()) {
-            renderer_component.radius = component_json["radius"].GetFloat();
-        }
-        if (component_json.HasMember("colorTint") && component_json["colorTint"].IsArray()) {
-            const auto& color_array = component_json["colorTint"].GetArray();
-            if (color_array.Size() >= 4) {
-                /*renderer_component.colorTint.x = color_array[0].GetFloat();
-                renderer_component.colorTint.y = color_array[1].GetFloat();
-                renderer_component.colorTint.z = color_array[2].GetFloat();
-                renderer_component.colorTint.w = color_array[3].GetFloat();*/
-            }
-        }
-        entity_component_based_system.addComponent<CircleRenderer>(entity, renderer_component);
-    }
-    // RectRenderer component
-    else if (component_type == "RectRenderer") {
-        RectRenderer renderer_component;
-        if (component_json.HasMember("width") && component_json["width"].IsNumber()) {
-            renderer_component.width = component_json["width"].GetFloat();
-        }
-        if (component_json.HasMember("height") && component_json["height"].IsNumber()) {
-            renderer_component.height = component_json["height"].GetFloat();
-        }
-        entity_component_based_system.addComponent<RectRenderer>(entity, renderer_component);
-    }
-    // PhysicsComponent
-    //else if (component_type == "PhysicsComponent") {
-    //    PhysicsComponent physics_component;
-    //    if (component_json.HasMember("velocity") && component_json["velocity"].IsArray()) {
-    //        const auto& velocity_array = component_json["velocity"].GetArray();
-    //        if (velocity_array.Size() >= 2) {
-    //            //physics_component.velocity.x = velocity_array[0].GetFloat();
-    //            //physics_component.velocity.y = velocity_array[1].GetFloat();
-    //        }
-    //    }
-    //    if (component_json.HasMember("gravityEnabled") && component_json["gravityEnabled"].IsBool()) {
-    //        physics_component.gravityEnabled = component_json["gravityEnabled"].GetBool();
-    //    }
-    //    entity_component_based_system.addComponent<PhysicsComponent>(entity, physics_component);
-    //}
-
     
     // BoxCollider
 
@@ -656,121 +586,3 @@ const std::string& Prefab_GetSceneName(SceneID id) {
     auto it = sIdToName.find(id);
     return (it == sIdToName.end()) ? empty : it->second;
 }
-
-
-//static void RegisterAllComponentsOnce() {
-//    static bool s_done = false;
-//    if (s_done) return;
-//    ComponentFactory::RegisterType<CircleRenderer>("CircleRenderer");
-//    ComponentFactory::RegisterType<RectRenderer>("RectRenderer");
-//    ComponentFactory::RegisterType<SpriteRenderer>("SpriteRenderer");
-//    ComponentFactory::RegisterType<AABBCollider>("AABBCollider");
-//    ComponentFactory::RegisterType<AnimalBehavior>("AnimalBehavior");
-//    s_done = true;
-//}
-
-//PrefabManager::PrefabManager(ECS& ecs) : entity_component_based_system(ecs) {}
-//
-//
-////prefab wil load the gameobjects from a file, 
-////and have a copy of one of the object in here?
-//
-//void PrefabManager::Load_Prefab(const std::string& filename_path) {
-//    std::ifstream objFile(filename_path);
-//    if (!objFile) {
-//        return;
-//    }
-//
-//    rapidjson::IStreamWrapper obj(objFile);
-//    rapidjson::Document doc;
-//    doc.ParseStream(obj);
-//
-//    if (doc.HasParseError() || !doc.IsObject()) return;
-//
-//    prefab_map[filename_path] = std::move(doc);
-//    std::cout << filename_path << "\n";
-//}
-//
-////PrefabManager::PrefabManager(std::string filename) :list{} {
-////    {
-////        // ensure factory has types
-////        //RegisterAllComponents();
-////        RegisterAllComponentsOnce();
-////
-////        std::ifstream objFile(filename);
-////        if (!objFile) {
-////            return;
-////        }
-////
-////        rapidjson::IStreamWrapper obj(objFile);
-////        rapidjson::Document doc;
-////        doc.ParseStream(obj);
-////
-////        // ----- NEW SCHEMA: { "prefabs": { "<name>": { "components":[...], "defaults":{...} }, ... } }
-////        if (doc.HasMember("prefabs") && doc["prefabs"].IsObject()) {
-////            const auto& prefabs = doc["prefabs"];
-////            for (auto it = prefabs.MemberBegin(); it != prefabs.MemberEnd(); ++it) {
-////                const std::string name = it->name.GetString();
-////                const rapidjson::Value& def = it->value;
-////
-////                // create the prefab prototype GameObject
-////                list.emplace(name, std::make_unique<GameObject>(name));
-////                GameObject* objGO = list[name].get();
-////
-////                // components
-////                if (def.HasMember("components") && def["components"].IsArray()) {
-////                    for (const auto& comp : def["components"].GetArray()) {
-////                        if (comp.HasMember("type") && comp["type"].IsString()) {
-////                            std::unique_ptr<Component> c = ComponentFactory::TryCreate(comp["type"].GetString(), comp);
-////                            if (c) {
-////                                objGO->Attach(std::move(c));
-////                            }
-////                        }
-////                    }
-////                }
-////
-////                // NOTE: def["defaults"] exists in your JSON; we keep it for future
-////                // (transform system to apply w/h/angle later) — intentionally not wired now.
-////            }
-////            return; // done with new schema
-////        }
-////        if (doc.IsArray()) {
-////            for (const auto& item : doc.GetArray()) {
-////                if (!item.HasMember("name") || !item["name"].IsString()) continue;
-////                const std::string name{ item["name"].GetString() };
-////
-////                list.emplace(name, std::make_unique<GameObject>(name));
-////                GameObject* objGO = list[name].get();
-////
-////                if (item.HasMember("components") && item["components"].IsArray()) {
-////                    for (const auto& comp : item["components"].GetArray()) {
-////                        if (comp.HasMember("type") && comp["type"].IsString()) {
-////                            std::unique_ptr<Component> c = ComponentFactory::TryCreate(comp["type"].GetString(), comp);
-////                            if (c) {
-////                                objGO->Attach(std::move(c));
-////                            }
-////                        }
-////                    }
-////                }
-////            }
-////        }
-////    }	
-////}
-//
-//PrefabManager::~PrefabManager() {
-//    list.clear(); // unique_ptr will delete all GameObjects
-//}
-//
-//const GameObject* PrefabManager::operator[](const char* key)const {
-//	auto it = list.find(key);
-//	if (it!=list.end())
-//	{
-//		//return it->second.get();
-//	}
-//	else {
-//		return nullptr;
-//	}
-//}
-
-
-
