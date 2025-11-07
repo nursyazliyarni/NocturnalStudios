@@ -1,10 +1,15 @@
-/*****************************************************************//**
- * \file   GameStateManager.h
- * \brief  game
- *
- * \author rahra
- * \date   October 2025
- *********************************************************************/
+/* !------------------------------------------------------------------------------------------------
+	File: statemanager.cpp
+	Project : NocturnalStudio
+
+	This file contains ...
+
+	 Author :
+		Name(%)
+		- Brief
+
+All content(c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+* ------------------------------------------------------------------------------------------------ */
 
 #include "../include/core/StateManager.h"
 #include <GLFW/glfw3.h>    

@@ -1,5 +1,5 @@
 /*!------------------------------------------------------------------------------------------------
-    File: ImGUIManager.cpp
+    File: GameManager.cpp
     Project: NocturnalStudio
 
     This file contains the implementation of the ImGuiManager class, which manages the integration
@@ -7,9 +7,10 @@
     frame updates, and rendering of ImGui components, as well as providing various UI elements
     for debugging and interaction within the engine.
 
+
     Primary Author:
-        Name %
-        -
+        Rishika Bimal Attodi %
+        -State integration for the play and exit button and scene switching via keys
 
     Secondary Author:
         Nur Syazliyarni (5%)

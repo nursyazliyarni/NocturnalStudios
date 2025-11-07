@@ -1,5 +1,18 @@
 //(view/projection)
 // graphics/Camera2D.cpp
+/*!------------------------------------------------------------------------------------------------
+    File: LevelManager.h
+    Project: NocturnalStudio
+
+    This file contains ...
+
+     Author:
+         Rishika Bimal Attodi (%)
+        - panning/zoom, bug fix for zoom on scene change
+
+    All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
+
 #include "graphics/Camera2D.h"
 
 #include <unordered_map>
