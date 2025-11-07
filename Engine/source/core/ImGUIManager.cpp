@@ -98,8 +98,8 @@ void ImGuiManager::updateDeltaTime(double& dt) {
 	deltaTime = dt;
 }
 
-void ImGuiManager::getDeltaTime(double& dt) const {
-	dt = deltaTime;
+double ImGuiManager::getDeltaTime(double& dt) const {
+	dt = deltaTime; return dt;
 }
 
 void ImGuiManager::startFrame() {
@@ -246,6 +246,12 @@ void ImGuiManager::showViewportWindowUI() {
 	const int vw = (int)std::max(1.0f, avail.x);
 	const int vh = (int)std::max(1.0f, avail.y);
 
+	// Logic timing (animal state update)
+	logicTime = TimeUtils::MeasureSeconds([&]() {
+		logic.check_animal_status(gsm);
+		logic.update_animal_ALLstate(gsm,getDeltaTime(deltaTime));
+	});
+
 	// Physics timing scope
 	{
 		TimeUtils::ScopedTimer t{ physicsTime };
@@ -323,11 +329,6 @@ void ImGuiManager::showViewportWindowUI() {
 	ImGui::Image((ImTextureID)(intptr_t)renderer.getFBOTexture(),
 	ImVec2(static_cast<float>(vw), static_cast<float>(vh)), ImVec2(0, 1), ImVec2(1, 0));
 	ImVec2 imgMax = ImVec2(imgMin.x + vw, imgMin.y + vh);
-
-	// Logic timing (animal state update)
-	logicTime = TimeUtils::MeasureSeconds([&]() {
-		logic.update_animal_ALLstate(gsm);
-	});
 
 	// Handle click -> normalized coords -> GSM
 	// (Input handles clicks; store the rect in window client coords)

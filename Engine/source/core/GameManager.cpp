@@ -176,14 +176,25 @@ bool GameManager::load(const char* prefabsPath, const char* scenesPath, TextureS
                     if (ov.HasMember("h") && ov["h"].IsNumber())      di.h = ov["h"].GetFloat();
                     if (ov.HasMember("angle") && ov["angle"].IsNumber()) di.angle = ov["angle"].GetFloat();
 
-                    if (ov.HasMember("health_bar") && ov["health_bar"].IsNumber()) di.health_bar = ov["health_bar"].GetFloat();
-                    if (ov.HasMember("hunger_bar") && ov["hunger_bar"].IsNumber()) di.hunger_bar = ov["hunger_bar"].GetFloat();
-                    if (ov.HasMember("sanity_bar") && ov["sanity_bar"].IsNumber()) di.sanity_bar = ov["sanity_bar"].GetFloat();
+         
 
                     if (ov.HasMember("sprite_path") && ov["sprite_path"].IsString()) {
                         std::string sp = toAssetsPath(ov["sprite_path"].GetString());
                         di.tex = tex.get(sp);
                     }
+                }
+
+                if (e.HasMember("animal_properties") && e["animal_properties"].IsObject()) {
+                    const auto& animal = e["animal_properties"];
+                    if (animal.HasMember("health_bar") && animal["health_bar"].IsNumber()) di.health_bar = animal["health_bar"].GetFloat();
+                    if (animal.HasMember("hunger_bar") && animal["hunger_bar"].IsNumber()) di.hunger_bar = animal["hunger_bar"].GetFloat();
+                    if (animal.HasMember("sanity_bar") && animal["sanity_bar"].IsNumber()) di.sanity_bar = animal["sanity_bar"].GetFloat();
+
+                    if (animal.HasMember("slower_decreasing_rate") && animal["slower_decreasing_rate"].IsNumber()) di.slower_decreasing_rate = animal["slower_decreasing_rate"].GetFloat();
+                    if (animal.HasMember("normal_decreasing_rate") && animal["normal_decreasing_rate"].IsNumber()) di.normal_decreasing_rate = animal["normal_decreasing_rate"].GetFloat();
+                    if (animal.HasMember("faster_decreasing_rate") && animal["faster_decreasing_rate"].IsNumber()) di.faster_decreasing_rate = animal["faster_decreasing_rate"].GetFloat();
+                    if (animal.HasMember("penalty_decreasing_rate") && animal["penalty_decreasing_rate"].IsNumber()) di.penalty_decreasing_rate = animal["penalty_decreasing_rate"].GetFloat();
+                    di.still_alive = true;
                 }
 
                 if (e.HasMember("name") && e["name"].IsString())
@@ -309,6 +320,14 @@ void GameManager::render(Renderer& r, int w, int h) {
         float bx = 0.0f, by = 0.0f, bw = float(w), bh = float(h);
         Cam2D_Apply(currentScene, bx, by, bw, bh, w, h);
         r.texturedTri(sc.background, bx, by, bw, bh);
+        for (auto& items : getCurrentScene()->items) {
+            if (items.still_alive) {
+                r.rect(w / 2, h / 2 - 200, items.health_bar * 4, 25, 1, 0, 0);
+                r.rect(w / 2, h / 2 - 150, items.hunger_bar * 4, 25, 0, 1, 0);
+                r.rect(w / 2, h / 2 - 100, items.sanity_bar * 4, 25, 0, 0, 1);
+            }
+
+        }
     }
 
     
@@ -388,7 +407,15 @@ void GameManager::render(Renderer& r, int w, int h) {
 
         Cam2D_Apply(currentScene, px, py, pw, ph, w, h);
 
-        r.texturedTri(di.tex, px, py, pw, ph);
+        if (di.name == "flamingo" || di.name == "horse" || di.name == "owl" || di.name == "seal") {
+            if (di.still_alive) {
+                r.texturedTri(di.tex, px, py, pw, ph);
+            }
+        }
+
+        else {
+            r.texturedTri(di.tex, px, py, pw, ph);
+        }
 
         // Debugging drawer
         if (Debug::Drawer::Instance().IsActive())
@@ -488,6 +515,11 @@ Scene* GameManager::getCurrentScene() {
     if (it != scenes.end())
         return &it->second;
     return nullptr;
+}
+
+//function to get the unordered map for scenes
+std::unordered_map<std::string, Scene>& GameManager::get_scenes_map() {
+    return scenes;
 }
 
 void GameManager::update(float dt,Renderer& renderer,TextureStore& tex) {

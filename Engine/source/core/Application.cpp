@@ -173,7 +173,6 @@ void Application::init() {
 
 	
 	//logger.log("Created animal entity with ID: " + std::to_string(animal) + " and " + std::to_string(animal_2));
-	std::cout << "abcssss:" << ecs->getAllEntities().size() << "\n";
     textShader = std::make_unique<Shader>(textShaderVertexPath.c_str(), textShaderFragmentPath.c_str());
 
     // Wire text shader into the renderer (renderer controls projection per-viewport)

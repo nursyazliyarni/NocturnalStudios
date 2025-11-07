@@ -15,6 +15,8 @@ struct DrawItem {
     GLuint tex = 0;
     float x = 0, y = 0, w = 0, h = 0, angle = 0; // normalized
     float health_bar, hunger_bar, sanity_bar;
+    float slower_decreasing_rate, normal_decreasing_rate, faster_decreasing_rate, penalty_decreasing_rate;
+    bool still_alive;
 };
 
 struct ClickRegion {
@@ -73,6 +75,7 @@ public:
     //void focusOnEntity(const std::string& scene, const std::string& entityName);
 
     Scene* getCurrentScene();
+    std::unordered_map<std::string, Scene>& get_scenes_map();
 
 private:
     std::unordered_map<std::string, Scene> scenes;
