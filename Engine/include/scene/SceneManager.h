@@ -22,6 +22,7 @@
 
 #include <string> 
 
+void SceneManagerTest();
 
 class SceneManager{
 public:

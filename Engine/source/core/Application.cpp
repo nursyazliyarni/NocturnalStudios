@@ -151,15 +151,6 @@ void Application::init() {
 
 	gsm = std::make_unique<GameManager>(*ecs);
 	gsm->load(prefabPath.c_str(), scenePath.c_str(), textures);
-    gsm->quitCallback = [this]() {
-        logger.log("[Quit] quitCallback ? glfwSetWindowShouldClose(TRUE)");
-        glfwSetWindowShouldClose(m_window.handle(), GLFW_TRUE);
-        };
-
-    gsm->quitCallback = [this]() {
-        logger.log("[Quit] quitCallback ? glfwSetWindowShouldClose(TRUE)");
-        glfwSetWindowShouldClose(m_window.handle(), GLFW_TRUE);
-        };
 	renderer = std::make_unique<Renderer>(shader_filePATH_list);
 	textShader = std::make_unique<Shader>(textShaderVertexPath.c_str(), textShaderFragmentPath.c_str());
 	logic = std::make_unique<Animal_Logic>();
@@ -212,7 +203,7 @@ int Application::run() {
 
 		double dt = gameLoop->calculate_DT();
 		gsm->update(static_cast<float>(dt),*renderer,textures);
-		//Gui::updateImGuiManager(dt, *imGuiManager);
+		Gui::updateImGuiManager(dt, *imGuiManager);
 		gameLoop->display_FPS(m_window.handle(), windowTitle, dt);
 		inputSystem->update_mouse_pos(m_window.handle());
 
@@ -224,7 +215,7 @@ int Application::run() {
             gsm->handleKeyPress(GLFW_KEY_ESCAPE);
 
         inputSystem->ProcessHotkeys(*gsm);
-
+        TransformSystem::TransformInput(*inputSystem, dt);
         int fbw = 0, fbh = 0; glfwGetFramebufferSize(m_window.handle(), &fbw, &fbh);
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         glViewport(0, 0, fbw, fbh);
@@ -247,59 +238,24 @@ int Application::run() {
         // Text overlay is now rendered by Renderer inside the viewport FBO (see ImGuiManager)
 
         if (inputSystem->WasMousePressed(GLFW_MOUSE_BUTTON_LEFT)) {
-            Vector2D mp = inputSystem->GET_mouse_pos(false, 0, 0);
-
             ImVec2 rmin, rmax;
+
             imGuiManager->getViewportRectWindow(rmin, rmax);
 
-            float nx = 0.0f, ny = 0.0f;
-            bool insideViewport = (rmax.x > rmin.x) && (rmax.y > rmin.y) &&
-                (mp.x() >= rmin.x && mp.x() <= rmax.x &&
-                    mp.y() >= rmin.y && mp.y() <= rmax.y);
+            Vector2D mp = inputSystem->GET_mouse_pos(false, 0, 0);
+            if (mp.x() >= rmin.x && mp.x() <= rmax.x &&
+                mp.y() >= rmin.y && mp.y() <= rmax.y) {
+                float nx = float((mp.x() - rmin.x) / (rmax.x - rmin.x));
+                float ny = float((mp.y() - rmin.y) / (rmax.y - rmin.y));
 
-            if (insideViewport) {
-                nx = float((mp.x() - rmin.x) / (rmax.x - rmin.x));
-                ny = float((mp.y() - rmin.y) / (rmax.y - rmin.y));
+                ny = 1.0f - ny;
+                gsm->handleClick(nx, ny);
             }
-            else {
-                int fbw = 0, fbh = 0;
-                glfwGetFramebufferSize(m_window.handle(), &fbw, &fbh);
-                if (fbw <= 0) fbw = 1; if (fbh <= 0) fbh = 1;
-                nx = float(mp.x()) / float(fbw);
-                ny = float(mp.y()) / float(fbh);
-            }
-
-            logger.log("[Click] raw=(" + std::to_string((int)mp.x()) + "," + std::to_string((int)mp.y()) +
-                ") nx=" + std::to_string(nx) + " ny=" + std::to_string(ny) +
-                (insideViewport ? " (viewport)" : " (fb)"));
-            gsm->handleClick(nx, ny);
-
-            if (gsm->popQuitRequested()) {
-                glfwSetWindowShouldClose(m_window.handle(), GLFW_TRUE);
-                break; // leave the main loop now
-            }
-
         }
-
-
-
-        //        if (gsm->popQuitRequested()) {
-        //            logger.log("[Quit] btn_quit clicked ? closing window now (click block)");
-        //            glfwSetWindowShouldClose(m_window.handle(), GLFW_TRUE);
-        //            shutdown();
-        //            return 0;
-        //        }
-
-        //    }
-        //}
-
-        //if (gsm->popQuitRequested()) {
-        //    /*logger.log("[Quit] btn_quit clicked ? closing window now");
-        //    glfwSetWindowShouldClose(m_window.handle(), 1);*/
-        //    logger.log("[Quit] btn_quit clicked ? closing window now");
-        //    glfwSetWindowShouldClose(m_window.handle(), GLFW_TRUE);
-        //    break;  
-        //}
+		TransformSystem::TransformUpdate();
+        if (gsm->popQuitRequested()) {
+            glfwSetWindowShouldClose(m_window.handle(), 1);
+        }
 
         inputSystem->EndFrame();
         m_window.swap();
