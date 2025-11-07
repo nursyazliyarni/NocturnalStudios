@@ -13,8 +13,8 @@
       per-sprite rotation & scaling (excluding background).
 
     Secondary Author:
-         Name (%)
-        -Brief
+		 Chang Qi Xuan Celest
+		-Function to draw text controlled by Renderer class.
 
     All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
 *------------------------------------------------------------------------------------------------*/
@@ -85,9 +85,45 @@ public:
 
     void drawViewportShapes(int w, int h);
 
-    // Text rendering (Renderer-controlled)
+    //------------Text rendering (Renderer-controlled)--------------
+    /**
+    * @brief Sets the shader used for text rendering.
+    * This function assigns a dedicated shader to handle all text rendering
+    * operations. It also binds the shader once to initialize the sampler uniform
+    * used by glyph textures.
+    * @param shader Reference to the shader that will be used for text rendering.
+    * @see Renderer::setTextProjection()
+    * @see Renderer::drawText()
+    */
     void setTextShader(Shader& shader);
+
+    /**
+    * @brief Sets up an orthographic projection for text rendering.
+    * Configures the projection matrix for text drawing in screen space with a
+    * bottom-left origin. This ensures that text coordinates match the viewport
+    * dimensions used for 2D UI or overlay rendering.
+    * @param w Width of the viewport or target surface in pixels.
+    * @param h Height of the viewport or target surface in pixels.
+    * @note Must be called whenever the window or framebuffer is resized.
+    * @see Renderer::setTextShader()
+    */
     void setTextProjection(int w, int h); // bottom-left origin for text
+
+    /**
+    * @brief Draws text on screen using a loaded Font resource.
+    * Renders the given text string at the specified screen-space position,
+    * scaling, and color. This function iterates through glyph data stored
+    * in the Font object and issues OpenGL draw calls for each character.
+    * @param font The Font resource containing glyph textures and metrics.
+    * @param text The string to render (ASCII supported by default).
+    * @param x Horizontal position of the text (in pixels, bottom-left origin).
+    * @param y Vertical position of the text (in pixels, bottom-left origin).
+    * @param scale Scaling factor applied to the rendered text.
+    * @param color RGB color of the text as a glm::vec3.
+    * @note Requires a text shader set via `setTextShader()`.
+    * @see Renderer::setTextShader()
+    * @see Font::GetCharacters()
+    */
     void drawText(const Font& font, const std::string& text, float x, float y, float scale, const glm::vec3& color);
 
     struct sprite {

@@ -12,11 +12,24 @@
 *------------------------------------------------------------------------------------------------*/
 #include "resources/Font.h"
 
+/**
+* @brief Font constructor.
+* Logs font resource creation and stores metadata.
+*/
 Font::Font(ResourceID id, const std::string& key, const std::string& filePath, unsigned int pixelVal)
     : Resource(id, key, filePath), pixelSize(pixelVal) {
     logger.log("Font resource created: " + key + " from " + filePath);
 }
 
+/**
+* @brief Loads font data from disk and prepares glyph textures.
+* Initializes FreeType, loads the specified font face, and uploads
+* ASCII glyphs (0–127) as individual textures. Also sets up OpenGL buffers
+* for dynamic text rendering.
+* @param fontPath Path to the font file (.ttf or .otf).
+* @param pixelVal Target pixel height for glyphs.
+* @return True on success, false on failure.
+*/
 bool Font::LoadFont(const std::string& fontPath, unsigned int pixelVal) {
     if (FT_Init_FreeType(&ft)) {
         std::cerr << "ERROR: Could not initialize FreeType Library!" << std::endl;
@@ -82,6 +95,17 @@ bool Font::LoadFont(const std::string& fontPath, unsigned int pixelVal) {
     return true;
 }
 
+/**
+* @brief Renders a text string using the loaded glyph textures.
+* Iterates through each character, updates vertex positions,
+* and draws textured quads using OpenGL.
+* @param shader The shader used for text rendering.
+* @param text The UTF-8 string to render (ASCII supported by default).
+* @param x Horizontal starting position in screen space.
+* @param y Vertical starting position in screen space.
+* @param scale Scaling factor applied to text size.
+* @param color Text color (RGB).
+*/
 void Font::RenderText(Shader& shader, const std::string& text, float x, float y, float scale, glm::vec3 color) {
     shader.user_Shader_program(0);
     shader.SET_uniform_variable("textColor", color.x, color.y, color.z);
@@ -119,6 +143,9 @@ void Font::RenderText(Shader& shader, const std::string& text, float x, float y,
     glBindTexture(GL_TEXTURE_2D, 0);
 }
 
+/**
+* @brief Releases FreeType and OpenGL resources used by the font.
+*/
 void Font::Cleanup() {
     if (face) {
         FT_Done_Face(face);
@@ -128,9 +155,11 @@ void Font::Cleanup() {
         FT_Done_FreeType(ft);
         ft = nullptr;
     }
-    // Note: If needed, delete Character textures here to avoid leaks.
 }
 
+/**
+* @brief Destructor that calls Cleanup() to release all resources.
+*/
 Font::~Font() {
     Cleanup();
 }
