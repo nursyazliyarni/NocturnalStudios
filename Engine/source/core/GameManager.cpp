@@ -432,6 +432,9 @@ void GameManager::render(Renderer& r, int w, int h) {
             }
         }
 
+        if (di.tex == 0) continue;
+        float px = di.x * w, py = di.y * h, pw = di.w * w, ph = di.h * h;
+
         if (di.name == "flamingo" || di.name == "horse" || di.name == "owl" || di.name == "seal") {
             if (di.still_alive) {
                 r.texturedTri(di.tex, px, py, pw, ph);
@@ -441,8 +444,6 @@ void GameManager::render(Renderer& r, int w, int h) {
         else {
             r.texturedTri(di.tex, px, py, pw, ph);
         }
-        if (di.tex == 0) continue;
-        float px = di.x * w, py = di.y * h, pw = di.w * w, ph = di.h * h;
 
         Cam2D_Apply(currentScene, px, py, pw, ph, w, h);
         r.texturedTri(di.tex, px, py, pw, ph);
