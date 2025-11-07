@@ -100,44 +100,49 @@ void TransformSystem::TransformInput(Input& in,double dt) {
 	if (t)
 	{
 		Vector2D movedir{};
-		if (in.WasPressed(GLFW_KEY_W)) //up
+		if (in.IsDown(GLFW_KEY_W)) //up
 		{
-			movedir.y() += static_cast<float>(dt * 6.0);
+			movedir.y() -= static_cast<float>(dt * 1.0);
 		}
-		else if (in.WasPressed(GLFW_KEY_S))
+		else if (in.IsDown(GLFW_KEY_S))
 		{
-			movedir.y() -= static_cast<float>(dt * 6.0);
+			movedir.y() += static_cast<float>(dt * 1.0);
 		}
-		if (in.WasPressed(GLFW_KEY_A)) //up
+		if (in.IsDown(GLFW_KEY_A)) //up
 		{
-			movedir.x() -= static_cast<float>(dt * 6.0);
+			movedir.x() -= static_cast<float>(dt * 1.0);
 		}
-		else if (in.WasPressed(GLFW_KEY_D))
+		else if (in.IsDown(GLFW_KEY_D))
 		{
-			movedir.x() += static_cast<float>(dt * 6.0);
+			movedir.x() += static_cast<float>(dt * 1.0);
 		}
 
-		float rot{};
-		if (GLFW_KEY_K)
+		float rot{t->rotation};
+		if (in.IsDown(GLFW_KEY_K))
 		{
-			rot -= static_cast<float>(dt * 2.0);
+			rot -= static_cast<float>(dt * 100.0);
 		}
-		else if (GLFW_KEY_J) {
-			rot += static_cast<float>(dt * 2.0);
+		else if (in.IsDown(GLFW_KEY_J)) {
+			rot += static_cast<float>(dt * 100.0);
 		}
 
 		float scaling{1.f};
-		if (GLFW_KEY_U)
+		if (in.IsDown(GLFW_KEY_U))
 		{
 			scaling -= static_cast<float>(dt * 2.0);
 		}
-		else if (GLFW_KEY_I) {
+		else if (in.IsDown(GLFW_KEY_I)) {
 			scaling += static_cast<float>(dt * 2.0);
 		}
 
 
 		t->ScaleUniform(scaling);
-		t->rotation += rot;
+		if (AABBCollider *collider= ecs.getComponent<AABBCollider>(selectedID))
+		{
+			collider->height *= scaling;
+			collider->width *= scaling;
+		}
+		t->rotation = rot;
 		t->TranslateBy(movedir.x(),movedir.y());
 	}
 	
@@ -154,5 +159,11 @@ void PhysicsSystem::PhysicsUpdate() {
 }
 
 void PhysicsSystem::PhysicsInput(Input& in,double dt) {
-
+	if (selectedID == NO_ENTITY_SELECTED)
+	{
+		if (in.WasPressed(GLFW_KEY_SPACE)) //up
+		{
+			selectedID = ecs.getAllEntities().front();
+		}
+	}
 }
