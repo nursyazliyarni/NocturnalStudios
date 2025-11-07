@@ -15,8 +15,8 @@ SceneID const& SceneFile::getSceneID() const {
 	return sceneID;
 }
 
-void SceneFile::setSceneId(const SceneID& id) {
-	sceneID = id;
+void SceneFile::setSceneId(const SceneID& id_) {
+	sceneID = id_;
 }
 
 bool SceneFile::getStartWithThisScene() const {

@@ -5,19 +5,23 @@
 #include <vector>
 #include <optional>
 #include "graphics/Renderer.h"
+#include "Animation/AnimationSystem.h"
 
-
+class TextureStore;
 class ECS;
 
 struct DrawItem {
-    GLuint tex = 0;         // GL texture id
+    std::string name;  
+    GLuint tex = 0;
     float x = 0, y = 0, w = 0, h = 0, angle = 0; // normalized
+    float health_bar, hunger_bar, sanity_bar;
 };
 
 struct ClickRegion {
     float x, y, w, h;          // normalized rect
     std::string gotoScene;     // empty if not a goto
     bool quit = false;         // quit app?
+    bool  start{ false };
 };
 
 struct Scene {
@@ -42,7 +46,7 @@ public:
     const std::string& current() const { return currentScene; }
 
     void handleKeyPress(int key); // map numeric keys/ESC to scenes
-    void render(Renderer& r, int w, int h) const;
+    void render(Renderer& r, int w, int h) ;
 
     bool handleClick(float nx, float ny);  // mouse click in normalized coords
     bool popQuitRequested();               // returns & clears quit flag
@@ -59,8 +63,16 @@ public:
     // Expose a safe key->scene helper if you don’t want Input.cpp touching keyMap directly:
     bool switchToSceneForKey(int glfwKey);
 
-    void setECS(ECS* e) { ecs_ = e; }
+    GameManager(ECS& ecs) :ecs_{ ecs } {}
+    void update(float dt,Renderer& renderer,TextureStore& tex);
 
+    // Camera controls (per scene)
+    //void setCameraEnabled(const std::string& scene, bool on);
+    //void setCameraCenter(const std::string& scene, float cx, float cy);
+    //void setCameraZoom(const std::string& scene, float z);
+    //void focusOnEntity(const std::string& scene, const std::string& entityName);
+
+    Scene* getCurrentScene();
 
 private:
     std::unordered_map<std::string, Scene> scenes;
@@ -73,6 +85,8 @@ private:
     bool requestedQuit{ false };                                  // quit flag
     std::string currentScene;
 
-    ECS* ecs_ = nullptr;
+    ECS& ecs_;
+    //std::unordered_map<std::string, Camera2D> cameras_; // one camera per scene
 
+    AnimationSystem animationSystem_;
 };

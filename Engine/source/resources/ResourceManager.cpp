@@ -9,6 +9,7 @@ constexpr char DEFAULT_AUDIO_FILEPATH[] = "DefaultAudio/filepath";
 #include "resources/ResourceManager.h"
 #include "core/Logger.h"
 #include "System/Audio_System.h"
+#include "graphics/Texture.h"
 
 extern Logger logger;
 
@@ -104,6 +105,12 @@ void ResourceManager::loadResources(std::string const& resourceFilePath) {
 		resourcePath += "/" + directoryPath;
 	}
 
+	// Case-insensitive type compare (keep original path casing for disk paths)
+	std::string typeKey = directoryPath;
+	std::transform(typeKey.begin(), typeKey.end(), typeKey.begin(),
+		[](unsigned char c) { return static_cast<char>(std::tolower(c)); });
+
+
 	for (auto const& entry : std::filesystem::recursive_directory_iterator(resourcePath)) {
 		auto const& path = entry.path();
 		auto const& stem = path.stem();
@@ -112,21 +119,54 @@ void ResourceManager::loadResources(std::string const& resourceFilePath) {
 		if (!filename.has_extension()) continue;
 
 		// Check Resource type here
-		if (resourceFilePath == "audio") {
+		//if (resourceFilePath == "audio") {
+		//	loadAudio(stem.string(), path.string());
+		//}
+		//else if (resourceFilePath == "shaders") {
+		//	loadShader(stem.string(), path.string());
+		//}
+		//else if (resourceFilePath == "textures") {
+		//	loadTexture(stem.string(), path.string());
+		//}
+		//else if (resourceFilePath == "fonts") {
+		//	std::string ext = path.extension().string();
+		//	std::transform(ext.begin(), ext.end(), ext.begin(), [](unsigned char c) 
+		//		{ return static_cast<char>(std::tolower(c)); });
+		//	if (ext == ".ttf" || ext == ".otf") {
+		//		loadFont(stem.string(), path.string(), 48); // default 48px; adjust per project needs
+		//	}
+		//}
+		//else if (resourceFilePath == "prefabs") {
+		//	loadPrefab(stem.string(), path.string());
+		//}
+		//else if (resourceFilePath == "scenes") {
+		//	loadScene(stem.string(), path.string());
+		//}
+
+		if (typeKey == "audio") {
 			loadAudio(stem.string(), path.string());
 		}
-		else if (resourceFilePath == "shaders") {
+		else if (typeKey == "shaders") {
 			loadShader(stem.string(), path.string());
 		}
-		else if (resourceFilePath == "textures") {
+		else if (typeKey == "textures") {
 			loadTexture(stem.string(), path.string());
 		}
-		else if (resourceFilePath == "prefabs") {
+		else if (typeKey == "fonts") {
+			std::string ext = path.extension().string();
+			std::transform(ext.begin(), ext.end(), ext.begin(), [](unsigned char c)
+				{ return static_cast<char>(std::tolower(c)); });
+			if (ext == ".ttf" || ext == ".otf") {
+				loadFont(stem.string(), path.string(), 48);
+			}
+		}
+		else if (typeKey == "prefabs") {
 			loadPrefab(stem.string(), path.string());
 		}
-		else if (resourceFilePath == "scenes") {
+		else if (typeKey == "scenes") {
 			loadScene(stem.string(), path.string());
 		}
+
 	}
 
 	logger.log("Resource loading complete.");
@@ -375,6 +415,91 @@ TextureFile& ResourceManager::getTexture(ResourceID id) {
 }
 
 /**
+ * loadFont
+ *
+ * Load or reuse a Font resource record in the ResourceManager.
+ *
+ * Description:
+ *  - Ensures a single in-memory Font record exists per file path + pixel size.
+ *    If a Font with an identical file path and pixelSize is already present,
+ *    that Font is returned. Otherwise a new Font object is constructed and stored.
+ *
+ * Parameters:
+ *  - name: Human-readable key for the font (e.g. "Roboto-Regular").
+ *  - filePath: Filesystem path to the font file.
+ *  - pixelSize: The pixel height to load glyphs for (font size used when
+ *               generating glyphs / GPU resources).
+ *  - id: Optional ResourceID to assign. If set to NEW_RESOURCE a new unique
+ *        ResourceID is allocated via getNewAssetID().
+ *
+ * Returns:
+ *  - Reference to the stored Font instance (existing or newly-inserted).
+ *
+ * Behavior & side-effects:
+ *  - Performs a linear scan of `fonts` to detect an existing font by
+ *    comparing std::filesystem::path values and pixelSize. This comparison is
+ *    syntactic (string-based); it does not resolve symlinks or canonicalize
+ *    paths.
+ *  - If `id == NEW_RESOURCE`, a new unique ResourceID is generated and
+ *    recorded in the ResourceManager's used ID registry.
+ *  - Inserts a new `Font` into the `fonts` map using `try_emplace` and asserts
+ *    that insertion succeeds.
+ *  - Calls `Font::LoadFont(...)` to upload font glyphs / GPU resources for the
+ *    requested pixelSize. If glyph loading fails, an error is logged but the
+ *    font record remains present (caller can decide how to handle).
+ *  - Logs the load operation through the global `logger`.
+ *
+ * Thread-safety:
+ *  - Not thread-safe. Concurrent calls that mutate `fonts` or ID state require
+ *    external synchronization.
+ *
+ * Example:
+ *  Font& f = rm.loadFont("Roboto", "assets/fonts/Roboto-Regular.ttf", 48);
+ */
+Font& ResourceManager::loadFont(const std::string& name, const std::string& filePath, unsigned int pixelSize, ResourceID id) {
+	for (auto& [key, font] : fonts) {
+		if (std::filesystem::path{ font.getFilePath() } == std::filesystem::path{ filePath } &&
+			font.getPixelSize() == pixelSize) {
+			return font;
+		}
+	}
+	if (id == NEW_RESOURCE) id = getNewAssetID();
+
+	auto [it, success] = fonts.try_emplace(id, id, name, filePath, pixelSize);
+	assert(success);
+
+	if (!it->second.LoadFont(filePath, pixelSize)) {
+		logger.error("Failed to load font glyphs for: " + name + " from " + filePath);
+	}
+
+	logger.log("Loaded Font: " + name + " from " + filePath);
+	return it->second;
+}
+
+/**
+ * getFont
+ *
+ * Retrieve a previously loaded Font by its ResourceID.
+ *
+ * Parameters:
+ *  - id: the ResourceID to look up.
+ *
+ * Returns:
+ *  - Reference to the found Font object.
+ *  - If no matching Font exists the function asserts (caller should ensure id
+ *    validity) — consistent with existing usage in this codebase.
+ *
+ * Simple usage:
+ *  ResourceID id = /* previously obtained id * /;
+ *  Font& f = rm.getFont(id); // assert if id not found
+ */
+Font& ResourceManager::getFont(ResourceID id) {
+	auto found = fonts.find(id);
+	assert(found != fonts.end());
+	return found->second;
+}
+
+/**
  * loadPrefab
  *
  * Load or reuse a PrefabFile resource record in the ResourceManager.
@@ -600,6 +725,33 @@ std::unordered_map<ResourceID, TextureFile>& ResourceManager::getTextures() {
 }
 
 /**
+ * getFonts
+ *
+ * Accessor that returns a mutable reference to the internal map of font resources.
+ * Use this to iterate, inspect, or (carefully) mutate font entries directly.
+ *
+ * Notes:
+ *  - The returned reference is mutable; callers must not modify map keys
+ *    (undefined behavior). Prefer ResourceManager methods for insertion/removal.
+ *  - Font entries are specific to a file path and pixel size; multiple entries
+ *    for the same file at different pixel sizes can exist.
+ *  - Not thread-safe: concurrent access that includes writers must be externally
+ *    synchronized.
+ *
+ * Returns:
+ *  - Reference to std::unordered_map<ResourceID, Font>
+ *
+ * Simple usage:
+ *  auto& fonts = rm.getFonts();
+ *  for (auto& [id, font] : fonts) {
+ *      // inspect font metadata (do not change keys)
+ *  }
+ */
+std::unordered_map<ResourceID, Font>& ResourceManager::getFonts() {
+	return fonts;
+}
+
+/**
  * getPrefabs
  *
  * Accessor that returns a mutable reference to the internal map of prefab files.
@@ -672,6 +824,78 @@ const std::unordered_map<ResourceID, SceneFile>& ResourceManager::getScenes() co
 }
 
 /**
+ * getFilePathsForKey
+ *
+ * Collects the filesystem paths for all loaded resources of the given
+ * `ResourceType` whose human-readable key equals `key`.
+ *
+ * Parameters:
+ *  - type: The `ResourceType` enum value indicating which internal container
+ *          to search (AUDIO, SHADER, TEXTURE, FONT, PREFAB, SCENE).
+ *  - key:  The human-readable resource key to match (compared with
+ *          `Resource::getKey()`).
+ *
+ * Returns:
+ *  - std::vector<std::string> containing the `filePath` for every resource of
+ *    the requested `type` where `resource.getKey() == key`. Returns an empty
+ *    vector if no matches are found or if `type` is unsupported.
+ *
+ * Complexity:
+ *  - O(n) in the number of loaded resources for the requested type (linear
+ *    scan of the container).
+ *
+ * Notes:
+ *  - The comparison is exact (case-sensitive); it does not canonicalize or
+ *    resolve filesystem symlinks.
+ *  - There are no side-effects; the function does not modify ResourceManager
+ *    state.
+ *  - Not thread-safe: concurrent writes to the underlying containers may
+ *    invalidate iteration and must be externally synchronized.
+ */
+std::vector<std::string> ResourceManager::getFilePathsForKey(ResourceType type, const std::string& key) const {
+	std::vector<std::string> filePaths;
+
+	switch (type) {
+		using enum ResourceType;
+	case AUDIO:
+		for (auto const& [id, file] : audios) {
+			if (file.getKey() == key) filePaths.push_back(file.getFilePath());
+		}
+		break;
+	case SHADER:
+		for (auto const& [id, file] : shaderFiles) {
+			if (file.getKey() == key) filePaths.push_back(file.getFilePath());
+		}
+		break;
+	case TEXTURE:
+		for (auto const& [id, file] : textureFiles) {
+			if (file.getKey() == key) filePaths.push_back(file.getFilePath());
+		}
+		break;
+	case FONT:
+		for (auto const& [id, file] : fonts) {
+			if (file.getKey() == key) filePaths.push_back(file.getFilePath());
+		}
+		break;
+	case PREFAB:
+		for (auto const& [id, file] : prefabFiles) {
+			if (file.getKey() == key) filePaths.push_back(file.getFilePath());
+		}
+		break;
+	case SCENE:
+		for (auto const& [id, file] : sceneFiles) {
+			if (file.getKey() == key) filePaths.push_back(file.getFilePath());
+		}
+		break;
+	default:
+		break;
+	}
+
+	return filePaths;
+}
+
+
+/**
  * getNewAssetID
  *
  * Allocates and returns a new ResourceID that is not present in `usedIDs`.
@@ -686,14 +910,6 @@ const std::unordered_map<ResourceID, SceneFile>& ResourceManager::getScenes() co
  *  // then use newId for newly-created resources
  * 
  */
-
-
-const Audio& ResourceManager::getDefaultAudio() const {
-	return defaultAudio;
-}
-
-
-
 ResourceID ResourceManager::getNewAssetID() {
 	while (usedIDs.find(totalResourceID) != usedIDs.end()) {
 		++totalResourceID;
@@ -701,4 +917,34 @@ ResourceID ResourceManager::getNewAssetID() {
 
 	usedIDs.insert(totalResourceID);
 	return totalResourceID;
+}
+
+const Audio& ResourceManager::getDefaultAudio() const {
+	return defaultAudio;
+}
+
+// for imgui assets browser to get textures
+GLuint ResourceManager::getGLTextureFromFile(const std::string& filePath)
+{
+	static std::unordered_map<std::string, GLuint> textureCache;
+
+	// Check if texture already loaded
+	auto it = textureCache.find(filePath);
+	if (it != textureCache.end())
+		return it->second;
+
+	// Load it using your graphics::Texture loader
+	std::vector<char const*> paths = { filePath.c_str() };
+	Texture tex(paths);
+
+	if (tex.get_totalTexture() > 0)
+	{
+		GLuint texID = tex.get_textureID(0);
+		textureCache[filePath] = texID;
+		logger.log("[ResourceManager] Cached GL texture: " + filePath);
+		return texID;
+	}
+
+	logger.error("[ResourceManager] Failed to load texture: " + filePath);
+	return 0;
 }

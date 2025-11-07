@@ -14,6 +14,9 @@
 
 #include "../include/ECS/ECS.h"
 #include "../include/core/Logger.h"
+#include "Animation/SpriteAnimationComponent.h"
+#include <fstream>
+#include <sstream>
 
 extern Logger logger;
 
@@ -36,12 +39,65 @@ ECS::ECS() {
 	// Register all components here
 	registerComponent<Transform>();
 	registerComponent<ImageRenderer>();
+	registerComponent<SpriteRenderer>();
+	registerComponent<SpriteAnimationComponent>();
 	registerComponent<CircleRenderer>();
 	registerComponent<RectRenderer>();
 	registerComponent<AnimalBehavior>();
 	registerComponent<AudioData>();
 	registerComponent<PhysicsComponent>();
 	registerComponent<BoxCollider>();
+	registerComponent<AABBCollider>();
+
+	ComponentFactory::Register<Transform>("Transform");
+	ComponentFactory::Register<ImageRenderer>("ImageRenderer");
+	ComponentFactory::Register<SpriteRenderer>("SpriteRenderer");
+	ComponentFactory::Register<CircleRenderer>("CircleRenderer");
+	ComponentFactory::Register<RectRenderer>("RectRenderer");
+	ComponentFactory::Register<AnimalBehavior>("AnimalBehavior");
+	ComponentFactory::Register<PhysicsComponent>("PhysicsComponent");
+	ComponentFactory::Register<BoxCollider>("BoxCollider");
+	ComponentFactory::Register<AABBCollider>("AABBCollider");
+
+	// --------------------------------------------------------
+	// Register JSON creation logic for SpriteAnimationComponent
+	// --------------------------------------------------------
+	ComponentFactory::Register("SpriteAnimationComponent", [](const rapidjson::Value& j) -> std::any {
+		SpriteAnimationComponent comp;
+
+		if (j.HasMember("anim_path")) {
+			std::ifstream file(j["anim_path"].GetString());
+			if (file) {
+				std::stringstream buffer;
+				buffer << file.rdbuf();
+				rapidjson::Document animDoc;
+				animDoc.Parse(buffer.str().c_str());
+
+				for (auto& m : animDoc.GetObject()) {
+					SpriteAnimationComponent::Animation anim;
+					auto& obj = m.value;
+
+					// New: read "frameCount" instead of "frames"
+					if (obj.HasMember("frameCount"))
+						anim.frames = obj["frameCount"].GetInt();
+					if (obj.HasMember("frameTime"))
+						anim.frameTime = obj["frameTime"].GetFloat();
+					if (obj.HasMember("loop"))
+						anim.loop = obj["loop"].GetBool();
+					comp.animations[m.name.GetString()] = anim;
+				}
+			}
+		}
+
+		if (j.HasMember("currentAnim")) comp.currentAnim = j["currentAnim"].GetString();
+		if (j.HasMember("sheetColumns")) comp.sheetColumns = j["sheetColumns"].GetInt();
+		if (j.HasMember("sheetRows")) comp.sheetRows = j["sheetRows"].GetInt();
+
+		comp.playing = true;
+		comp.timer = 0.0f;
+		comp.currentFrame = 0;
+		return comp;
+		});
 }
 
 /**
@@ -278,7 +334,28 @@ std::vector<EntityID> const& ECS::getAllEntities() const {
 bool ECS::removeComponent(EntityID entityID, ComponentID componentID) {
 	auto it = getComponentData(componentID);
 	assert(it != componentMetadata.end());
-	return removeComponent(entityID, it->componentID);
+
+	// Find the component pool for the given componentID
+	auto poolIt = componentPools.find(componentID);
+	if (poolIt == componentPools.end() || !poolIt->second) {
+		logger.error("ECS::removeComponent - Component pool not found for given componentID\n");
+		return false;
+	}
+
+	// Remove the component from the pool
+	if (!poolIt->second->removeComponent(entityID)) {
+		logger.error(std::string{ "ECS::removeComponent - Failed to remove component from entity\nEntityID: " } + std::to_string(entityID) + "\n");
+		return false;
+	}
+
+	// Update metadata
+	it->size -= 1;
+	auto metaIt = entityMetadataMap.find(entityID);
+	if (metaIt != entityMetadataMap.end()) {
+		metaIt->second.componentIDs.erase(componentID);
+	}
+	reUpdateMetadata();
+	return true;
 }
 
 /**

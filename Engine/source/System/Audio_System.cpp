@@ -226,6 +226,8 @@ AudioSystem::~AudioSystem() {
  * - Called from the engine's main loop once per frame.
  */
 void AudioSystem::update(double deltaTime) {
+	UNREFERENCED_PARAMETER(deltaTime);
+
 	if (fmodSystem) {
 		fmodSystem->update();
 	}

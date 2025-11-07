@@ -1,3 +1,24 @@
+/*!------------------------------------------------------------------------------------------------
+    File: ImGUIManager.cpp
+    Project: NocturnalStudio
+
+    This file contains the implementation of the ImGuiManager class, which manages the integration
+    of the ImGui library into the customize game engine. It handles the initialization,
+    frame updates, and rendering of ImGui components, as well as providing various UI elements
+    for debugging and interaction within the engine.
+
+    Primary Author:
+        Name %
+        -
+
+    Secondary Author:
+        Nur Syazliyarni (5%)
+        - Added function to get current scene for level editor
+
+    All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
+
+
 #include "core/GameManager.h"
 #include "stb_image.h"
 #include <rapidjson/document.h>
@@ -8,6 +29,10 @@
 #include "ECS/ECS_Component.h"
 #include "ECS/ECS.h"
 
+#include "graphics/Camera2D.h"
+#include "graphics/DebugDraw.h"
+#include "physics/AABB.h"
+#include "Animation/SpriteAnimationComponent.h"
 
 //  TextureStore 
 static GLuint loadGLTexture(const std::string& path) {
@@ -150,26 +175,78 @@ bool GameManager::load(const char* prefabsPath, const char* scenesPath, TextureS
                     if (ov.HasMember("w") && ov["w"].IsNumber())      di.w = ov["w"].GetFloat();
                     if (ov.HasMember("h") && ov["h"].IsNumber())      di.h = ov["h"].GetFloat();
                     if (ov.HasMember("angle") && ov["angle"].IsNumber()) di.angle = ov["angle"].GetFloat();
+
+                    if (ov.HasMember("health_bar") && ov["health_bar"].IsNumber()) di.health_bar = ov["health_bar"].GetFloat();
+                    if (ov.HasMember("hunger_bar") && ov["hunger_bar"].IsNumber()) di.hunger_bar = ov["hunger_bar"].GetFloat();
+                    if (ov.HasMember("sanity_bar") && ov["sanity_bar"].IsNumber()) di.sanity_bar = ov["sanity_bar"].GetFloat();
+
                     if (ov.HasMember("sprite_path") && ov["sprite_path"].IsString()) {
                         std::string sp = toAssetsPath(ov["sprite_path"].GetString());
                         di.tex = tex.get(sp);
                     }
                 }
 
+                if (e.HasMember("name") && e["name"].IsString())
+                    di.name = e["name"].GetString();
+
 
                 sc.items.push_back(di);
 
                 // clickable?
+                /*ClickRegion cr;
+                cr.x = di.x; cr.y = di.y; cr.w = di.w; cr.h = di.h;
+                if (e.HasMember("goto") && e["goto"].IsString()) cr.gotoScene = e["goto"].GetString();
+                if (e.HasMember("quit") && e["quit"].IsBool())   cr.quit = e["quit"].GetBool();
+                if (cr.quit || !cr.gotoScene.empty()) sc.clicks.push_back(cr);*/
+
                 ClickRegion cr;
                 cr.x = di.x; cr.y = di.y; cr.w = di.w; cr.h = di.h;
                 if (e.HasMember("goto") && e["goto"].IsString()) cr.gotoScene = e["goto"].GetString();
                 if (e.HasMember("quit") && e["quit"].IsBool())   cr.quit = e["quit"].GetBool();
-                if (cr.quit || !cr.gotoScene.empty()) sc.clicks.push_back(cr);
+                if (e.HasMember("start") && e["start"].IsBool())  cr.start = e["start"].GetBool();
+
+                // store the region if it does ANY action
+                if (cr.quit || cr.start || !cr.gotoScene.empty())
+                    sc.clicks.push_back(cr);
+
+
             }
         }
 
         scenes[sceneName] = std::move(sc);
     }
+	//temp: add a flamingo entity with sprite animation to ECS
+    {
+        EntityID flamingo = ecs_.createEntity();
+
+        ecs_.addComponent<Transform>(flamingo, Transform{});
+        ecs_.addComponent<ImageRenderer>(flamingo, ImageRenderer{});
+        ecs_.addComponent<SpriteAnimationComponent>(flamingo, SpriteAnimationComponent{});
+
+        auto* t = ecs_.getComponent<Transform>(flamingo);
+        auto* img = ecs_.getComponent<ImageRenderer>(flamingo);
+        auto* anim = ecs_.getComponent<SpriteAnimationComponent>(flamingo);
+
+        t->position = { 0.5f, 0.5f };
+        t->scale = { 0.25f, 0.25f };
+
+        img->isVisible = true;
+        img->textureID = tex.get("assets/textures/flamingo_spritesheet.png");
+
+        //Define an animation sequence
+        SpriteAnimationComponent::Animation idle;
+        idle.frames = 5;
+        idle.frameTime = 0.12f;
+        idle.loop = true;
+
+        anim->animations["idle"] = idle;
+        anim->currentAnim = "idle";
+        anim->playing = true;
+        anim->currentFrame = 0;
+        anim->sheetColumns = 5;
+        anim->sheetRows = 1;
+    }
+
 
     if (currentScene.empty() && !scenes.empty()) currentScene = scenes.begin()->first;
     return true;
@@ -179,21 +256,62 @@ void GameManager::requestScene(const std::string& name) {
     if (scenes.count(name)) currentScene = name;
 }
 
-void GameManager::handleKeyPress(int key) {
-    auto it = keyMap.find(key);
-    if (it != keyMap.end()) requestScene(it->second);
-    if (key == GLFW_KEY_ESCAPE) requestScene(backKey);
+bool GameManager::switchToSceneForKey(int glfwKey) {
+    if (app != AppState::Playing) return false;   // lock numbers unless Playing
+    auto it = keyMap.find(glfwKey);
+    if (it == keyMap.end()) return false;         // not mapped in JSON
+    requestScene(it->second);
+    return true;
 }
 
-void GameManager::render(Renderer& r, int w, int h) const {
+
+//void GameManager::handleKeyPress(int key) {
+//    auto it = keyMap.find(key);
+//    if (it != keyMap.end()) requestScene(it->second);
+//    if (key == GLFW_KEY_ESCAPE) requestScene(backKey);
+//}
+
+
+void GameManager::handleKeyPress(int key) {
+    // ESC always returns to menu
+    if (key == GLFW_KEY_ESCAPE) {
+        requestScene(backKey);
+        goToMenu(); // relock number keys
+        return;
+    }
+
+    // If we're still in Menu, ignore number keys 1..9 entirely
+    if (app == AppState::Menu) {
+        return;
+    }
+
+    // Playing: allow mapped numeric switches
+    auto it = keyMap.find(key);
+    if (it != keyMap.end()) {
+        requestScene(it->second);
+    }
+}
+
+void GameManager::render(Renderer& r, int w, int h) {
 
     auto it = scenes.find(currentScene);
     if (it == scenes.end()) return;
     const Scene& sc = it->second;
-
+    
     // background (fullscreen) � NOTE uniform must be "bg_texture"
-    r.background_render(sc.background, "bg_texture");
+    if (it->first == "MainMenu") {
+        r.special_background_render(sc.background, "bgTexture", 1);
+    }
 
+    else {
+        r.background_render(sc.background, "bg_texture", 0);
+        // Draw background as a regular textured quad and apply camera to it too
+        float bx = 0.0f, by = 0.0f, bw = float(w), bh = float(h);
+        Cam2D_Apply(currentScene, bx, by, bw, bh, w, h);
+        r.texturedTri(sc.background, bx, by, bw, bh);
+    }
+
+    
 
     // Example snippet you can drop right AFTER your existing textured background draw:
     //auto view = ecs.view<Transform, ImageRenderer>();  // however your ECS exposes views
@@ -203,36 +321,87 @@ void GameManager::render(Renderer& r, int w, int h) const {
     //    float py = t.position.y * h;
     //    float pw = t.scale.x * w;
     //    float ph = t.scale.y * h;
-    //    r.texturedTri(img.textureID, px, py, pw, ph); // same call you use for JSON entities
+    //   r.texturedTri(img.textureID, px, py, pw, ph); // same call you use for JSON entities
     //}
 
-    if (ecs_) {
+    if (!ecs_.getAllEntities().empty()) {
         constexpr EntityID MAX_SCAN = 5000;
         for (EntityID e = 0; e < MAX_SCAN; ++e) {
-            if (auto* t = ecs_->getComponent<Transform>(e)) {
-                if (auto* img = ecs_->getComponent<ImageRenderer>(e)) {
+            if (auto* t = ecs_.getComponent<Transform>(e)) {
+                if (auto* img = ecs_.getComponent<ImageRenderer>(e)) {
                     if (!img->isVisible) continue;
                     if (img->textureID <= 0) continue;  // << guard: skip �white box� draws
+
+                    /*float px = t->position.x() * w;
+                    float py = t->position.y() * h;
+                    float pw = t->scale.x() * w;
+                    float ph = t->scale.y() * h;*/
 
                     float px = t->position.x() * w;
                     float py = t->position.y() * h;
                     float pw = t->scale.x() * w;
                     float ph = t->scale.y() * h;
 
-                    r.texturedTri(img->textureID, px, py, pw, ph);
+                    Cam2D_Apply(currentScene, px, py, pw, ph, w, h);
+
+                    if (auto* anim = ecs_.getComponent<SpriteAnimationComponent>(e)) {
+                        auto it = anim->animations.find(anim->currentAnim);
+                        if (it != anim->animations.end()) {
+                            const auto& def = it->second;
+
+                            int frameIndex = anim->currentFrame;
+                            int sheetColumns = anim->sheetColumns;
+                            int sheetRows = anim->sheetRows;
+
+                            float uPerFrame = 1.0f / float(sheetColumns);
+                            float vPerFrame = 1.0f / float(sheetRows);
+
+                            int col = frameIndex % sheetColumns;
+                            int row = frameIndex / sheetColumns;
+
+                            float u0 = col * uPerFrame;
+                            float v0 = row * vPerFrame;
+                            float u1 = u0 + uPerFrame;
+                            float v1 = v0 + vPerFrame;
+
+                            float px = t->position.x() * w;
+                            float py = t->position.y() * h;
+                            float pw = t->scale.x() * w;
+                            float ph = t->scale.y() * h;
+
+                            Cam2D_Apply(currentScene, px, py, pw, ph, w, h);
+
+                            r.drawSpriteUV(img->textureID, px, py, pw, ph, u0, v0, u1, v1);
+                        }
+                    }
+
+                   // r.texturedTri(img->textureID, px, py, pw, ph);
                 }
             }
         }
     }
 
-
-
-
     // entities (normalized ? pixels)
     for (const auto& di : sc.items) {
         if (di.tex == 0) continue;  // skip if background/entity texture didn�t load
         float px = di.x * w, py = di.y * h, pw = di.w * w, ph = di.h * h;
+
+        Cam2D_Apply(currentScene, px, py, pw, ph, w, h);
+
         r.texturedTri(di.tex, px, py, pw, ph);
+
+        // Debugging drawer
+        if (Debug::Drawer::Instance().IsActive())
+        {
+            AABB collider(Vector2D(px, py), Vector2D(pw, ph));
+
+            // Queue the collider’s outline for debug
+            Debug::Drawer::Instance().AddRect(
+                collider.pos.x(), collider.pos.y(),
+                collider.size.x(), collider.size.y(),
+                0xFFFF00FF // yellow box
+            );
+        }
     }
 
 }
@@ -243,25 +412,86 @@ bool GameManager::handleClick(float nx, float ny) {
     const Scene& sc = it->second;
 
     for (const auto& cr : sc.clicks) {
+        //if (nx >= cr.x && nx <= cr.x + cr.w && ny >= cr.y && ny <= cr.y + cr.h) {
+        //    if (cr.quit) {
+        //        requestedQuit = true;
+        //    }
+        //    if (app == AppState::Menu) {
+        //        startGame();                 // unlock 1..9 only after Play was clicked
+        //    }
+        //    else if (!cr.gotoScene.empty()) {
+        //        requestScene(cr.gotoScene);
+        //    }
+        //    return true;
+        //}
+
         if (nx >= cr.x && nx <= cr.x + cr.w && ny >= cr.y && ny <= cr.y + cr.h) {
+
+            logger.log("Click hit: start=" + std::to_string(cr.start) +
+                " quit=" + std::to_string(cr.quit) +
+                " goto='" + cr.gotoScene + "'");
+
+
+            // ESC-like quit buttons always work
             if (cr.quit) {
                 requestedQuit = true;
+                return true;
             }
+
+            // While in Menu: ONLY a region marked start:true can unlock gameplay,
+            // and it may also jump to a first scene via goto (optional).
             if (app == AppState::Menu) {
-                startGame();                 // unlock 1..9 only after Play was clicked
+                if (cr.start) {
+                    startGame();  // unlock number keys
+
+                    if (!cr.gotoScene.empty()) {
+                        requestScene(cr.gotoScene);// explicit target from JSON
+                    }
+                    else {
+                        // Fallback: jump to key "1" mapping if present
+                        auto it1 = keyMap.find(GLFW_KEY_1);
+                        if (it1 != keyMap.end())
+                            requestScene(it1->second);
+                    }
+                }
+                // ignore other clickable regions in Menu (buttons without start:true)
+                return true;
             }
-            else if (!cr.gotoScene.empty()) {
+
+            // Already Playing: allow normal scene transitions via goto regions
+            if (!cr.gotoScene.empty()) {
                 requestScene(cr.gotoScene);
             }
             return true;
         }
+
+
     }
     return false;
 }
+void GameManager::startGame() {
+    app = AppState::Playing;
+}
 
+void GameManager::goToMenu() {
+    app = AppState::Menu;
+}
 bool GameManager::popQuitRequested() {
     bool q = requestedQuit;
     requestedQuit = false;
     return q;
 }
 
+// Function used for the level editor to show current game objects
+Scene* GameManager::getCurrentScene() {
+    auto it = scenes.find(currentScene);
+    if (it != scenes.end())
+        return &it->second;
+    return nullptr;
+}
+
+void GameManager::update(float dt,Renderer& renderer,TextureStore& tex) {
+    //update ECS animations
+	const float fixedDt = 1.0f / 60.0f;
+    animationSystem_.Update(fixedDt, ecs_, renderer, tex);
+}

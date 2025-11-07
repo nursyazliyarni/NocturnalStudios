@@ -4,7 +4,7 @@
 	File: Input.h
 	Project: NocturnalStudio
 
-	This header declares the engine’s input layer. It wraps GLFW (with ImGui forwarding) to:
+	This header declares the engineï¿½s input layer. It wraps GLFW (with ImGui forwarding) to:
 	- Capture keyboard and mouse events
 	- Track mouse position/delta (normalized & unnormalized)
 	- Register and query action states (movement, scaling, rotation, reset, toggle-collision)
@@ -40,7 +40,11 @@
 #include "../messaging/MessageBus.h"
 #include "../messaging/InputMessage.h"
 
-class GameStateManager;
+#include <unordered_set>
+
+#define UNREFERENCED_PARAMETER(P) (void)(P)
+
+class GameManager;
 
 enum class Input_action {
 	no_action, take_control,
@@ -62,10 +66,10 @@ public:
 	void detect_mouse_event(GLFWwindow* window, int mouse, int event_action);
 
 	// initialize per-sprite scales to 1.0f for all textures
-	void initSpriteScales(size_t textureCount);
+	// void initSpriteScales(size_t textureCount);
 	// pointer for renderer (nullptr if no sprites)
 
-	void initSpriteRotations(size_t count);
+	// void initSpriteRotations(size_t count);
 
 	// expose raw pointers for Renderer
 	const float* getSpriteScalesPtr() const {
@@ -90,7 +94,10 @@ public:
 	// Returns: -1 = none, 0 = ESC, 1..9 = digit pressed (edge-triggered)
 	int ConsumeSceneKey() const;
 
-	void ProcessHotkeys(GameStateManager& gsm);
+	void ProcessHotkeys(GameManager& gsm);
+	void SetMessageBus(Messaging::MessageBus* bus) { messageBus = bus; }
+
+	bool IsDown(int key) const;
 
 private:
 	//Non-static member functions need an object to call it
@@ -111,6 +118,8 @@ private:
 	std::vector<bool> spriteRotatingCW;     // clockwise
 	std::vector<bool> spriteRotatingCCW;    // counter-clockwise
 
+	Messaging::MessageBus* messageBus = nullptr;
+
 private:
 	//private data member
 	//mouse_pos[0] is previous mouse position, mouse_pos[1] is current mouse_position
@@ -118,8 +127,11 @@ private:
 	static std::vector<std::tuple<int, int, Input_action>> keyboard_action;
 	static std::vector<std::tuple<int, int, Input_action>> mouse_action;
 
+	GLFWwindow* m_window = nullptr;
+	std::unordered_set<int> m_keysDown;
 };
 
+/*
 //Messaging namespace implemented for input system here
 namespace Messaging
 {
@@ -153,7 +165,7 @@ namespace Messaging
 
 			auto msg = std::make_unique<MovingMouseMessage>((float)xpos, (float)ypos);
 			self->bus.Broadcast(std::move(msg));
-		}*/
+		}
 
 		static void MouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
 			auto* self = static_cast<InputSystemMessaging*>(glfwGetWindowUserPointer(window));
@@ -166,5 +178,5 @@ namespace Messaging
 			auto msg = std::make_unique<ClickedMouseMessage>(button, pressed, (float)xpos, (float)ypos);
 			self->bus.Broadcast(std::move(msg));
 		}
-	};
-}
+    };
+} */
