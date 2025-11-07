@@ -7,6 +7,7 @@ extern Logger logger;
 
 
 namespace {
+	ECS& ecs = ECS::getECS();
 	EntityID selectedID = NO_ENTITY_SELECTED;
 }
 /**

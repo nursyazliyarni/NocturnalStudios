@@ -3,6 +3,13 @@
 #include "graphics/Camera2D.h" 
 #include "scene/Prefab.h"       // Prefab_GetSceneName 
 
+/**
+ * A he;per function for M2 that a
+ * 
+ */
+void SceneManagerTest() {
+
+}
 
 void SceneManager::InitScene(SceneID id) {
     for (const auto& s : scenes) {
