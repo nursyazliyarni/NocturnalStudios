@@ -32,6 +32,7 @@
 #include "../include/physics/Physics.h"
 #include "../System/Audio_System.h"
 #include "../resources/ResourceManager.h"
+#include "logic/Animal_Logic.h"
 
 #include <vector>
 #include <unordered_map>
@@ -44,14 +45,14 @@ class ImGuiManager {
 public:
 	// Accept lists of resource IDs for quick audio testing.
 	ImGuiManager(Window& window, Renderer& renderer,  Input& input, 
-		Physics& physics, AudioSystem& audio, ResourceManager& resourceManager, GameManager& gsm);
+		Physics& physics, AudioSystem& audio, ResourceManager& resourceManager, GameManager& gsm, Animal_Logic& logic);
 	~ImGuiManager();
 
 	void updateDeltaTime(double& dt);
 	void getDeltaTime(double& dt) const;
 	void updateWindowTopLeft(const ImVec2& topLeft);
 	void updateWindowBottomRight(const ImVec2& bottomRight);
-	void setSystemTimings(double imGuiTime, double input);
+	void setSystemTimings(double imGuiTime);
 	
 	// temp setter for render time since renderer is called in showViewportWindowUI
 	void setRenderTime(double time);
@@ -78,6 +79,9 @@ public:
 	void showAssetsBrowserUI();
 	void showBottomDockUI();
 
+	// Expose last measured logic time (seconds)
+	double getLogicTime() const { return logicTime; }
+
 private:
 	Window& mainWindow;
 	Renderer& renderer;
@@ -87,6 +91,7 @@ private:
 	AudioSystem& audioSystem;
 	ResourceManager& resourceManager;
 	GameManager& gsm;
+	Animal_Logic& logic;
 
 	ImVec2 windowTopLeft;
 	ImVec2 windowBottomRight;

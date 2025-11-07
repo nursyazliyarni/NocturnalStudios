@@ -234,6 +234,8 @@ public:
 	 */
 	template <typename T>
 	T* getComponent(EntityID entityID);
+
+
 	void emptyAllEntities();
 
 private:
@@ -381,9 +383,23 @@ public:
 	using Json = rapidjson::Value;
 	using Creator = std::function<std::any(const Json&)>;
 
+	template<typename T>
+	static void Register(const std::string& name) {
+		Register(name, [](const Json& j) -> std::any {T comp{};
+			if (j.IsObject()) {
+				comp.FromJSON(j);  
+			}
+			return comp;
+			});
+	}
+
+
 	static void Register(const std::string& name, Creator creator) {
 		GetMap()[name] = std::move(creator);
 	}
+
+	static bool CreateFromName(EntityID entity, const std::string& name, const Json& j);
+
 
 	static std::any Create(const std::string& name, const Json& j) {
 		auto& map = GetMap();
