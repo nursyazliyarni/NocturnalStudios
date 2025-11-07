@@ -14,3 +14,11 @@
 [07-11-2025] [14:28:57] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
 [07-11-2025] [14:29:16] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
 [07-11-2025] [14:49:42] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[07-11-2025] [14:51:47] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[07-11-2025] [14:59:44] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[07-11-2025] [15:05:21] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[07-11-2025] [15:05:39] [CRASH_MESSAGE] [ImGui] No source path specified!
+[07-11-2025] [15:30:26] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[07-11-2025] [15:38:54] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[07-11-2025] [15:41:24] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[07-11-2025] [15:42:49] [CRASH_MESSAGE] Failed to load default audio soundFile not found.

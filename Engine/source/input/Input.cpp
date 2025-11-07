@@ -58,7 +58,7 @@ Input::Input(GLFWwindow* window) {
 	m_window = window;
 	glfwSetKeyCallback(window, keyboard_input_callback); //setup keyboard input callback before main game loop
 	glfwSetMouseButtonCallback(window, mouse_input_callback); //setup mouse input callback before main game loop
-
+	glfwSetCharCallback(window, Input::char_input_callback); //for imgui input
 	glfwSetWindowUserPointer(window, this);
 
 
@@ -170,6 +170,9 @@ void Input::keyboard_input_callback(GLFWwindow* window, int key, int scancode, i
 	if (ImGui::GetCurrentContext())
 		ImGui_ImplGlfw_KeyCallback(window, key, scancode, action, mods);
 
+	// stop engine input if ImGui wants to use keyboard
+	if (ImGui::GetIO().WantCaptureKeyboard) { return; }
+
 	if (action == GLFW_PRESS) pressedKeysThisFrame.insert(key);          // Input owns it
 
 	//messaging system//
@@ -210,6 +213,12 @@ void Input::mouse_input_callback(GLFWwindow* window, int button, int action, int
 	}
 }
 
+//keyboard input for imgui
+void Input::char_input_callback(GLFWwindow* window, unsigned int c)
+{
+	if (ImGui::GetCurrentContext())
+		ImGui_ImplGlfw_CharCallback(window, c);
+}
 
 
 bool Input::WasPressed(int k) const {
