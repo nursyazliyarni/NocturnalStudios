@@ -46,9 +46,14 @@ public:
 
     void SetScenesJsonPath(const std::string& path);
 
-private:
     void ApplyComponentDefaults(EntityID entity, const rapidjson::Value& defaults);
     void AddComponentFromJSON(EntityID entity, const rapidjson::Value& component_json);
+
+    ECS& entity_component_based_system;
+
+//private:
+//    void ApplyComponentDefaults(EntityID entity, const rapidjson::Value& defaults);
+//    void AddComponentFromJSON(EntityID entity, const rapidjson::Value& component_json);
 
 private:
     struct placeholderformove {
@@ -56,8 +61,11 @@ private:
     };
     std::vector<placeholderformove> scenes{};
     std::unordered_map<std::string, std::shared_ptr<rapidjson::Document>> prefab_map;
-    ECS& entity_component_based_system;
 };
 
 // SceneID -> scene name (used by SceneManager to activate camera)
 const std::string& Prefab_GetSceneName(SceneID id);
+
+//  scene bootstrap helpers (spawn by scene name) 
+bool Prefab_SpawnEntitiesForScene(const std::string& sceneName, PrefabManager& pm);
+std::string Scenes_GetInitialName();
