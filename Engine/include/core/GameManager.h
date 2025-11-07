@@ -7,6 +7,8 @@
 #include "graphics/Renderer.h"
 #include "Animation/AnimationSystem.h"
 
+#include <functional>
+
 class TextureStore;
 class ECS;
 
@@ -63,7 +65,7 @@ public:
     void goToMenu();
     // (optional) void pause(); void resume();
 
-    // Expose a safe key->scene helper if you don’t want Input.cpp touching keyMap directly:
+    // Expose a safe key->scene helper if you donï¿½t want Input.cpp touching keyMap directly:
     bool switchToSceneForKey(int glfwKey);
 
     GameManager(ECS& ecs) :ecs_{ ecs } {}
@@ -77,6 +79,8 @@ public:
 
     Scene* getCurrentScene();
     std::unordered_map<std::string, Scene>& get_scenes_map();
+
+    void setSceneChangedCallback(std::function<void(const std::string&)> cb) { onSceneChanged = std::move(cb); }
 
     std::function<void()> quitCallback;
 
@@ -93,6 +97,8 @@ private:
 
     ECS& ecs_;
     //std::unordered_map<std::string, Camera2D> cameras_; // one camera per scene
+
+    std::function<void(const std::string&)> onSceneChanged;
 
     AnimationSystem animationSystem_;
 };

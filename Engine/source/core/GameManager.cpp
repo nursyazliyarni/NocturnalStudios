@@ -269,8 +269,11 @@ bool GameManager::load(const char* prefabsPath, const char* scenesPath, TextureS
 }
 
 void GameManager::requestScene(const std::string& name) {
-    if (scenes.count(name)) currentScene = name;
+    if (!scenes.count(name)) return;
+    currentScene = name;
+    if (onSceneChanged) onSceneChanged(currentScene);
 }
+
 
 bool GameManager::switchToSceneForKey(int glfwKey) {
     if (app != AppState::Playing) return false;   // lock numbers unless Playing
@@ -373,6 +376,19 @@ void GameManager::render(Renderer& r, int w, int h) {
                         if (it != anim->animations.end()) {
                             const auto& def = it->second;
 
+                    r.texturedTri(img->textureID, px, py, pw, ph);
+
+                    // Debug AABB for ECS entities (so B toggle still shows boxes)
+                    if (Debug::Drawer::Instance().IsActive())
+                    {
+                        AABB collider(Vector2D(px, py), Vector2D(pw, ph));
+                        Debug::Drawer::Instance().AddRect(
+                            collider.pos.x(), collider.pos.y(),
+                            collider.size.x(), collider.size.y(),
+                            0xFFFF00FF // yellow
+                        );
+                    }
+
                             int frameIndex = anim->currentFrame;
                             int sheetColumns = anim->sheetColumns;
                             int sheetRows = anim->sheetRows;
@@ -406,12 +422,14 @@ void GameManager::render(Renderer& r, int w, int h) {
     }
 
     // entities (normalized ? pixels)
+   // entities (normalized → pixels) — draw JSON **only** if there is NO ECS entity by the same name
     for (const auto& di : sc.items) {
-        if (di.tex == 0) continue;  // skip if background/entity texture didn�t load
-        float px = di.x * w, py = di.y * h, pw = di.w * w, ph = di.h * h;
-
-        if (currentScene != "MainMenu") {
-            Cam2D_Apply(currentScene, px, py, pw, ph, w, h);
+        // If an ECS entity with this name exists, we skip the JSON-drawn duplicate
+        if (!di.name.empty()) {
+            EntityID eid = ecs_.findEntityByName(di.name);
+            if (eid != INVALID_ENTITY_ID) {
+                continue; // ECS is the source of truth for this sprite
+            }
         }
 
         if (di.name == "flamingo" || di.name == "horse" || di.name == "owl" || di.name == "seal") {
@@ -423,20 +441,22 @@ void GameManager::render(Renderer& r, int w, int h) {
         else {
             r.texturedTri(di.tex, px, py, pw, ph);
         }
+        if (di.tex == 0) continue;
+        float px = di.x * w, py = di.y * h, pw = di.w * w, ph = di.h * h;
 
-        // Debugging drawer
-        if (Debug::Drawer::Instance().IsActive())
-        {
+        Cam2D_Apply(currentScene, px, py, pw, ph, w, h);
+        r.texturedTri(di.tex, px, py, pw, ph);
+
+        if (Debug::Drawer::Instance().IsActive()) {
             AABB collider(Vector2D(px, py), Vector2D(pw, ph));
-
-            // Queue the collider’s outline for debug
             Debug::Drawer::Instance().AddRect(
                 collider.pos.x(), collider.pos.y(),
                 collider.size.x(), collider.size.y(),
-                0xFFFF00FF // yellow box
+                0xFFFF00FF
             );
         }
     }
+
 
 }
 
