@@ -4,9 +4,10 @@
 
     This file contains the implementation of the GameManager class
 
+
     Primary Author:
-        Name %
-        -
+        Rishika Bimal Attodi %
+        -State integration for the play and exit button and scene switching via keys
 
     Secondary Author:
         Nur Syazliyarni (5%)

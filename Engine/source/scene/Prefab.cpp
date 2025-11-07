@@ -4,13 +4,14 @@
 
 	This file contains ...
 
-	Primary Author :
-		Name(%)
+	 Author :
+		Sarah(%)
 		- Brief
 
-	Secondary Author :
-		Name(%)
-		- Brief
+	 Author :
+		Name(%) Rishika Bimal Attodi
+		- stabilized init & main loop, wired systems, 
+        fixed menu menu to scene transitions, and cleaned up redundant code paths.
 
 All content(c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
 * ------------------------------------------------------------------------------------------------ */

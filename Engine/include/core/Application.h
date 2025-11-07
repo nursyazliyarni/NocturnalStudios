@@ -6,6 +6,8 @@
 
     Rishika Bimal Attodi
         - Declared Application interface and main run entrypoint.
+        - stabilized init & main loop, wired systems, 
+        fixed menu menu to scene transitions, and cleaned up redundant code paths.
 
     Secondary Author:
          Name (%)
