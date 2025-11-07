@@ -16,4 +16,11 @@
 [07-11-2025] [15:09:01] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
 [07-11-2025] [15:11:08] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
 [07-11-2025] [15:12:13] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+<<<<<<< Updated upstream
 [07-11-2025] [15:18:15] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+=======
+[07-11-2025] [15:15:52] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[07-11-2025] [15:16:20] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[07-11-2025] [15:21:03] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[07-11-2025] [15:21:05] [CRASH_MESSAGE] Prefab category 'firefly' not found.
+>>>>>>> Stashed changes

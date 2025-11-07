@@ -37,7 +37,7 @@
     { "type": "Transform" },
     { "type": "ImageRenderer", "sprite_path": "textures/firefly.png" },
     { "type": "PhysicsComponent", "velocity": [0.0, 0.0], "gravityEnabled": false },
-    { "type": "AI",
+    { "type": "AIComponent",
       "state": "Wander",
       "maxSpeed": 0.30,
       "accel": 3.5,

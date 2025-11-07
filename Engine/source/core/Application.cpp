@@ -305,6 +305,7 @@ void Application::init() {
 	prefabManager->CreateEntityFromPrefab(prefabTestPath, "main_menu_button", "quit_button");
 	prefabManager->CreateEntityFromPrefab(prefabTestPath, "food", "owl_food");
 	prefabManager->CreateEntityFromPrefab(prefabTestPath, "animal", "flamingo");
+	prefabManager->CreateEntityFromPrefab(prefabTestPath, "firefly", "firefly");
 
 	
 	//logger.log("Created animal entity with ID: " + std::to_string(animal) + " and " + std::to_string(animal_2));
