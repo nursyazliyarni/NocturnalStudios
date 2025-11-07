@@ -37,29 +37,32 @@ namespace {
 }
 
 void Gui::updateImGuiManager(double& deltaTime, ImGuiManager& imGuiManager) {
-	// Measure the entire ImGui update using a utility and avoid manual start/end pairs
-	double imGuiSec = TimeUtils::MeasureSeconds([&]() {
-		imGuiManager.updateDeltaTime(deltaTime);
+    // update delta/window info
+    imGuiManager.updateDeltaTime(deltaTime);
 
-		// Get main viewport position and size
-		ImGuiViewport* mainViewport = ImGui::GetMainViewport();
-		imGuiManager.updateWindowTopLeft(mainViewport->Pos);
-		imGuiManager.updateWindowBottomRight({ mainViewport->Pos.x + mainViewport->Size.x, mainViewport->Pos.y + mainViewport->Size.y });
+    ImGuiViewport* mainViewport = ImGui::GetMainViewport();
+    imGuiManager.updateWindowTopLeft(mainViewport->Pos);
+    imGuiManager.updateWindowBottomRight({ mainViewport->Pos.x + mainViewport->Size.x, mainViewport->Pos.y + mainViewport->Size.y });
 
-		imGuiManager.startFrame();
-		imGuiManager.showViewportWindowUI();
-		//imGuiManager.showAssetsBrowserUI();
-		imGuiManager.showMousePosOverlayUI();
-		imGuiManager.showPerformanceOverlayUI();
-		imGuiManager.showTransformUI();
-		imGuiManager.showEntityListUI();
-		//imGuiManager.showLogsOverlayUI();
-		imGuiManager.showBottomDockUI();
-		imGuiManager.endFrame();
-	});
+    // start ImGui frame (needed before creating windows)
+    imGuiManager.startFrame();
 
-	// Preserve logic time measured within UI instead of resetting to
-	imGuiManager.setSystemTimings(imGuiSec);
+    // Render the viewport first — this contains renderer/physics/logic and measures those times itself.
+    imGuiManager.showViewportWindowUI();
+
+    // Measure only the remaining ImGui overhead (exclusive UI time)
+    double imGuiSec = TimeUtils::MeasureSeconds([&]() {
+        imGuiManager.showMousePosOverlayUI();
+        imGuiManager.showPerformanceOverlayUI();
+        imGuiManager.showTransformUI();
+        imGuiManager.showEntityListUI();
+        //imGuiManager.showLogsOverlayUI();
+        imGuiManager.showBottomDockUI();
+    });
+
+    // finish frame and record the exclusive ImGui time
+    imGuiManager.endFrame();
+    imGuiManager.setSystemTimings(imGuiSec);
 }
 
 ImGuiManager::ImGuiManager(Window& w, Renderer& r,
