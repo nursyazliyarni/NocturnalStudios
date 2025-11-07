@@ -24,6 +24,7 @@ struct ClickRegion {
     std::string gotoScene;     // empty if not a goto
     bool quit = false;         // quit app?
     bool  start{ false };
+    std::string name;
 };
 
 struct Scene {
@@ -76,6 +77,8 @@ public:
 
     Scene* getCurrentScene();
     std::unordered_map<std::string, Scene>& get_scenes_map();
+
+    std::function<void()> quitCallback;
 
 private:
     std::unordered_map<std::string, Scene> scenes;

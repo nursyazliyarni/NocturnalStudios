@@ -76,10 +76,10 @@ ECS::ECS() {
 				for (auto& m : animDoc.GetObject()) {
 					SpriteAnimationComponent::Animation anim;
 					auto& obj = m.value;
-					if (obj.HasMember("frames")) {
-						for (auto& f : obj["frames"].GetArray())
-							anim.frames.push_back(f.GetInt());
-					}
+
+					// New: read "frameCount" instead of "frames"
+					if (obj.HasMember("frameCount"))
+						anim.frames = obj["frameCount"].GetInt();
 					if (obj.HasMember("frameTime"))
 						anim.frameTime = obj["frameTime"].GetFloat();
 					if (obj.HasMember("loop"))
