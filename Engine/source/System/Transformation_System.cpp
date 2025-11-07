@@ -1,3 +1,16 @@
+/*!------------------------------------------------------------------------------------------------
+	File: Transformation_System.cpp
+	Project: NocturnalStudio
+
+
+
+	Primary Author:
+		Laycock Enhui Sarah (100%)
+		- Created the TransformationSyatem
+
+	All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
+
 #include "ECS/ECS_Component.h"
 #include "ECS/ECS.h"
 #include "../include/core/Logger.h"
