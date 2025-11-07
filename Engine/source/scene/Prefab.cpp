@@ -288,28 +288,7 @@ void PrefabManager::AddComponentFromJSON(EntityID entity, const rapidjson::Value
         return;
     }
     std::string component_type = component_json["type"].GetString();
-    if (component_type == "AI") {
-        AIComponent ai{};
-
-        if (component_json.HasMember("state") && component_json["state"].IsString()) {
-            std::string s = component_json["state"].GetString();
-            if (s == "Chase") ai.state = AIComponent::State::Chase;
-            else if (s == "Flee")  ai.state = AIComponent::State::Flee;
-            else                   ai.state = AIComponent::State::Wander;
-        }
-        if (component_json.HasMember("maxSpeed") && component_json["maxSpeed"].IsNumber())      ai.maxSpeed = component_json["maxSpeed"].GetFloat();
-        if (component_json.HasMember("accel") && component_json["accel"].IsNumber())         ai.accel = component_json["accel"].GetFloat();
-        if (component_json.HasMember("wanderJitter") && component_json["wanderJitter"].IsNumber())  ai.wanderJitter = component_json["wanderJitter"].GetFloat();
-        if (component_json.HasMember("chaseStrength") && component_json["chaseStrength"].IsNumber()) ai.chaseStrength = component_json["chaseStrength"].GetFloat();
-        if (component_json.HasMember("fleeStrength") && component_json["fleeStrength"].IsNumber())  ai.fleeStrength = component_json["fleeStrength"].GetFloat();
-        if (component_json.HasMember("avoidRadius") && component_json["avoidRadius"].IsNumber())   ai.avoidRadius = component_json["avoidRadius"].GetFloat();
-        if (component_json.HasMember("targetName") && component_json["targetName"].IsString())
-            ai.targetName = component_json["targetName"].GetString();
-        if (component_json.HasMember("targetWeight") && component_json["targetWeight"].IsNumber())
-            ai.targetWeight = component_json["targetWeight"].GetFloat();
-
-        entity_component_based_system.addComponent<AIComponent>(entity, ai);
-    }
+    
     std::stringstream msg;
     msg<<"Adding Component " << component_type << " to Entity " << entity;
     logger.log(msg.str());

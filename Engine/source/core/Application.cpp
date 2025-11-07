@@ -297,17 +297,14 @@ void Application::init() {
         return static_cast<int>(textures.get(path));
     });
 
-	/*prefabManager = std::make_unique<PrefabManager>(*ecs);
-	prefabManager->Load_Prefab(prefabTestPath.c_str());*/
-
 	prefabManager = std::make_unique<PrefabManager>(*ecs);
-
-	// Load every prefab file that ResourceManager found (so 'medicine' and 'firefly' exist)
-	for (auto& [pid, pf] : resourceManager->getPrefabs()) {
-		prefabManager->Load_Prefab(pf.getFilePath());
-	}
-
-	logger.log("[Prefabs] Loaded " + std::to_string(resourceManager->getPrefabs().size()) + " prefab file(s).");
+	prefabManager->Load_Prefab(prefabTestPath.c_str());
+	prefabManager->CreateEntityFromPrefab(prefabTestPath, "main_menu_button", "play_button");
+	prefabManager->CreateEntityFromPrefab(prefabTestPath, "main_menu_button", "load_button");
+	prefabManager->CreateEntityFromPrefab(prefabTestPath, "main_menu_button", "setting_button");
+	prefabManager->CreateEntityFromPrefab(prefabTestPath, "main_menu_button", "quit_button");
+	prefabManager->CreateEntityFromPrefab(prefabTestPath, "food", "owl_food");
+	prefabManager->CreateEntityFromPrefab(prefabTestPath, "animal", "flamingo");
 
 	
 	//logger.log("Created animal entity with ID: " + std::to_string(animal) + " and " + std::to_string(animal_2));
@@ -458,17 +455,6 @@ int Application::run() {
 
         // Text overlay is now rendered by Renderer inside the viewport FBO (see ImGuiManager)
 
-		// Wire prefab sprite_path -> GL texture id using your TextureStore API.
-		
-		//Prefab_SetTextureLookup([this](const std::string& p) -> int {
-			
-		// If your JSON sometimes omits the "assets/" prefix, uncomment the 3 lines below.
-		//  std::string path = p;
-		//  if (path.rfind("assets/", 0) != 0) path = "assets/" + path;
-		//  return static_cast<int>(textures.get(path));
-
-			//return static_cast<int>(textures.get(p));   // <matches TextureStore::get
-			//});
         if (inputSystem->WasMousePressed(GLFW_MOUSE_BUTTON_LEFT)) {
             ImVec2 rmin, rmax;
 
@@ -480,8 +466,13 @@ int Application::run() {
                 float nx = float((mp.x() - rmin.x) / (rmax.x - rmin.x));
                 float ny = float((mp.y() - rmin.y) / (rmax.y - rmin.y));
 
-                ny = 1.0f - ny;
+                //ny = 1.0f - ny;
                 gsm->handleClick(nx, ny);
+
+                if (gsm->popQuitRequested()) {
+                    glfwSetWindowShouldClose(m_window.handle(), GLFW_TRUE);
+                    break;
+                }
             }
         }
 		TransformSystem::TransformUpdate();
