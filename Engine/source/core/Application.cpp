@@ -201,9 +201,11 @@ int Application::run() {
     while (!m_window.shouldClose()) {
         m_window.poll();
 
-        double dt = gameLoop->calculate_DT();
-        gameLoop->display_FPS(m_window.handle(), windowTitle, dt);
-        inputSystem->update_mouse_pos(m_window.handle());
+		double dt = gameLoop->calculate_DT();
+		gsm->update(static_cast<float>(dt),*renderer,textures);
+		Gui::updateImGuiManager(dt, *imGuiManager);
+		gameLoop->display_FPS(m_window.handle(), windowTitle, dt);
+		inputSystem->update_mouse_pos(m_window.handle());
 
         for (int k = GLFW_KEY_1; k <= GLFW_KEY_9; ++k)
             if (inputSystem->WasPressed(k))
@@ -213,7 +215,7 @@ int Application::run() {
             gsm->handleKeyPress(GLFW_KEY_ESCAPE);
 
         inputSystem->ProcessHotkeys(*gsm);
-
+        TransformSystem::TransformInput(*inputSystem, dt);
         int fbw = 0, fbh = 0; glfwGetFramebufferSize(m_window.handle(), &fbw, &fbh);
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         glViewport(0, 0, fbw, fbh);
@@ -246,11 +248,16 @@ int Application::run() {
                 float nx = float((mp.x() - rmin.x) / (rmax.x - rmin.x));
                 float ny = float((mp.y() - rmin.y) / (rmax.y - rmin.y));
 
-                ny = 1.0f - ny;
+                //ny = 1.0f - ny;
                 gsm->handleClick(nx, ny);
+
+                if (gsm->popQuitRequested()) {
+                    glfwSetWindowShouldClose(m_window.handle(), GLFW_TRUE);
+                    break;
+                }
             }
         }
-
+		TransformSystem::TransformUpdate();
         if (gsm->popQuitRequested()) {
             glfwSetWindowShouldClose(m_window.handle(), 1);
         }

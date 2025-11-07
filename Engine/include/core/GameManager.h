@@ -5,8 +5,9 @@
 #include <vector>
 #include <optional>
 #include "graphics/Renderer.h"
+#include "Animation/AnimationSystem.h"
 
-
+class TextureStore;
 class ECS;
 
 struct DrawItem {
@@ -21,6 +22,7 @@ struct ClickRegion {
     std::string gotoScene;     // empty if not a goto
     bool quit = false;         // quit app?
     bool  start{ false };
+    std::string name;
 };
 
 struct Scene {
@@ -45,7 +47,7 @@ public:
     const std::string& current() const { return currentScene; }
 
     void handleKeyPress(int key); // map numeric keys/ESC to scenes
-    void render(Renderer& r, int w, int h) const;
+    void render(Renderer& r, int w, int h) ;
 
     bool handleClick(float nx, float ny);  // mouse click in normalized coords
     bool popQuitRequested();               // returns & clears quit flag
@@ -63,6 +65,7 @@ public:
     bool switchToSceneForKey(int glfwKey);
 
     GameManager(ECS& ecs) :ecs_{ ecs } {}
+    void update(float dt,Renderer& renderer,TextureStore& tex);
 
     // Camera controls (per scene)
     //void setCameraEnabled(const std::string& scene, bool on);
@@ -71,6 +74,8 @@ public:
     //void focusOnEntity(const std::string& scene, const std::string& entityName);
 
     Scene* getCurrentScene();
+
+    std::function<void()> quitCallback;
 
 private:
     std::unordered_map<std::string, Scene> scenes;
@@ -86,5 +91,5 @@ private:
     ECS& ecs_;
     //std::unordered_map<std::string, Camera2D> cameras_; // one camera per scene
 
-
+    AnimationSystem animationSystem_;
 };

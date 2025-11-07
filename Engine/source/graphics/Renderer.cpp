@@ -429,4 +429,26 @@ void Renderer::drawText(const Font& font, const std::string& text, float x, floa
     glUseProgram(0);
 }
 
+//draw a sprite using sub-UVs from a spritesheet
+void Renderer::drawSpriteUV(GLuint tex, float x, float y, float w, float h, float u0, float v0, float u1, float v1)
+{
+    glUseProgram(0);
+    glDisable(GL_DEPTH_TEST);
+
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, tex);
+
+    glBegin(GL_TRIANGLES);
+    glTexCoord2f(u0, v0); glVertex2f(x, y);
+    glTexCoord2f(u1, v0); glVertex2f(x + w, y);
+    glTexCoord2f(u1, v1); glVertex2f(x + w, y + h);
+
+    glTexCoord2f(u0, v0); glVertex2f(x, y);
+    glTexCoord2f(u1, v1); glVertex2f(x + w, y + h);
+    glTexCoord2f(u0, v1); glVertex2f(x, y + h);
+    glEnd();
+
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glDisable(GL_TEXTURE_2D);
+}
 

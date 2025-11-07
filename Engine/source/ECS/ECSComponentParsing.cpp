@@ -50,7 +50,7 @@ bool ComponentFactory::CreateFromName(EntityID entity, const std::string& name, 
 	if (name == "AABBCollider")
 	{
 		ecs.addComponent<AABBCollider>(entity, std::any_cast<AABBCollider>(Create(name,j)));
-		return true;
+		return false;
 	}
 }
 void Collider::FromJSON(const rapidjson::Value& json){}
@@ -205,20 +205,189 @@ void Transform::FromJSON(const rapidjson::Value& json) {
 	}
 }
 
-void ImageRenderer::FromJSON(const rapidjson::Value& json) {}
+void ImageRenderer::FromJSON(const rapidjson::Value& json) {
+	RenderComponent::FromJSON(json);
+	const char* members[]{
+		"texture_id",//0
+		"image_path"//1
+	};
+	for (int i{}; i < 2; i++)
+	{
+		if (json.HasMember(members[i]))
+		{
+			switch (i)
+			{
+			case 0://tex id
+				if (json[members[i]].IsInt())
+				{
+					textureID = json[members[i]].GetInt();
+				}
+				break;
+			case 1://isVisible
+				if (json[members[i]].IsString())
+				{
+					image_path = json[members[i]].GetString();
+				}
+				break;
+			}
+		}
+	}
+}
 
-void SpriteRenderer::FromJSON(const rapidjson::Value& json) {}
+void SpriteRenderer::FromJSON(const rapidjson::Value& json) {
+	RenderComponent::FromJSON(json);
+	if (json.HasMember("sprite_path")&& json["sprite_path"].IsString())
+	{
+		
+			spritePath = json["sprite_path"].GetString();
+		
+	}
+}
 
-void CircleRenderer::FromJSON(const rapidjson::Value& json) {}
+void CircleRenderer::FromJSON(const rapidjson::Value& json) {
+	RenderComponent::FromJSON(json);
+	if (json.HasMember("radius") && json["radius"].IsFloat())
+	{
 
-void RectRenderer::FromJSON(const rapidjson::Value& json) {}
+		radius = json["radius"].GetFloat();
 
-void AnimalBehavior::FromJSON(const rapidjson::Value& json) {}
+	}
+}
 
-void AudioData::FromJSON(const rapidjson::Value& json) {}
+void RectRenderer::FromJSON(const rapidjson::Value& json) {
+	RenderComponent::FromJSON(json);
+	const char* members[]{
+		"width",//0
+		"height"//1
+	};
+	for (int i{}; i < 2; i++)
+	{
+		if (json.HasMember(members[i])&& json[members[i]].IsFloat())
+		{
+			switch (i)
+			{
+			case 0://width
+				width = json[members[i]].GetFloat();
+				break;
+			case 1://height
+				height = json[members[i]].GetFloat();
+				break;
+			}
+		}
+	}
+}
 
-void PhysicsComponent::FromJSON(const rapidjson::Value& json) {}
+void AnimalBehavior::FromJSON(const rapidjson::Value& json) {
+	const char* members[]{
+		"health_bar",//0
+		"hunger_bar",//1
+		"sanity_bar"//2
+	};
+	for (int i{}; i < 3; i++)
+	{
+		if (json.HasMember(members[i])&& json[members[i]].IsDouble())
+		{
+			switch (i)
+			{
+			case 0://health bar
+				health_bar = json[members[i]].GetDouble();
+				break;
+			case 1://hunger
+				hunger_bar = json[members[i]].GetDouble();
+				break;
+			case 2://sanity
+				sanity_bar = json[members[i]].GetDouble();
+				break;
+			}
+		}
+	}
+}
 
-void BoxCollider::FromJSON(const rapidjson::Value& json) {}
+void AudioData::FromJSON(const rapidjson::Value& json) {
+	//bro
 
-void AABBCollider::FromJSON(const rapidjson::Value& json) {}
+}
+
+void PhysicsComponent::FromJSON(const rapidjson::Value& json) {
+	const char* members[]{
+		"position",//0
+		"velocity",//1
+		"acceleration",//2
+		"gravity_enabled"//3
+	};
+	size_t limit{};
+	for (int i{}; i < 3; i++)
+	{
+		if (json.HasMember(members[i]) && json[members[i]].IsDouble())
+		{
+			switch (i)
+			{
+			case 0://position
+				limit = json[members[i]].Size() <= 2 ? json[members[i]].Size() : 2;
+				for (size_t j = 0; j < limit; j++)
+				{
+					if (json[members[i]][j].IsFloat())
+					{
+						position[j] = json[members[i]][j].GetFloat();
+					}
+				}
+				break;
+			case 1://velocity
+				limit = json[members[i]].Size() <= 2 ? json[members[i]].Size() : 2;
+				for (size_t j = 0; j < limit; j++)
+				{
+					if (json[members[i]][j].IsFloat())
+					{
+						velocity[j] = json[members[i]][j].GetFloat();
+					}
+				}
+				break;
+			case 2://acceleration
+				limit = json[members[i]].Size() <= 2 ? json[members[i]].Size() : 2;
+				for (size_t j = 0; j < limit; j++)
+				{
+					if (json[members[i]][j].IsFloat())
+					{
+						acceleration[j] = json[members[i]][j].GetFloat();
+					}
+				}
+				break;
+			case 3:
+				if (json[members[i]].IsBool())
+				{
+					gravityEnabled = json[members[i]].GetBool();
+				}
+				break;
+			}
+		}
+	}
+}
+
+void BoxCollider::FromJSON(const rapidjson::Value& json) {
+	const char* members[]{
+		"width",//0
+		"height"//1
+	};
+	for (int i{}; i < 2; i++)
+	{
+		if (json.HasMember(members[i]) && json[members[i]].IsFloat())
+		{
+			switch (i)
+			{
+			case 0://width
+				width = json[members[i]].GetFloat();
+				break;
+			case 1://height
+				height = json[members[i]].GetFloat();
+				break;
+			}
+		}
+	}
+}
+
+void AABBCollider::FromJSON(const rapidjson::Value& json) {
+	if (json.HasMember("bounding_box_size") && json["bounding_box_size"].IsFloat())
+	{
+		width = height = json["bounding_box_size"].GetFloat();
+	}
+}

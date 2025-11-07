@@ -20,6 +20,7 @@ All content(c) 2025 DigiPen Institute of Technology Singapore, all rights reserv
 #include <rapidjson/istreamwrapper.h>
 #include <fstream>
 #include <iostream>
+#include <sstream>
 
 #include "ECS/ECS_Component.h"
 #include "ECS/ECS.h"        // we call createEntity/addComponent here
@@ -142,7 +143,8 @@ EntityID PrefabManager::CreateEntityFromPrefab(const std::string& json_path, con
         if (!comp.HasMember("type")) continue;
         std::string type = comp["type"].GetString();
 
-        if (type == "Transform") {
+        AddComponentFromJSON(entity, comp);
+        /*if (type == "Transform") {
             prefab_data.transform_struct.position[0] = comp.HasMember("x") ? comp["x"].GetDouble() : 0.0;
             prefab_data.transform_struct.position[1] = comp.HasMember("y") ? comp["y"].GetDouble() : 0.0;
             prefab_data.transform_struct.scale[0] = comp.HasMember("w") ? comp["w"].GetDouble() : 1.0; // safe default
@@ -171,7 +173,7 @@ EntityID PrefabManager::CreateEntityFromPrefab(const std::string& json_path, con
 
         else {
             logger.warning("Unknown component type: " + type);
-        }
+        }*/
     }
     return entity;
 }
@@ -274,40 +276,20 @@ void PrefabManager::AddComponentFromJSON(EntityID entity, const rapidjson::Value
     if (!component_json.HasMember("type") || !component_json["type"].IsString()) {
         return;
     }
-    
-
     std::string component_type = component_json["type"].GetString();
-    std::cout << "Adding Component "<< component_type<<" to Entity "<<entity<<"\n";
+    
+    std::stringstream msg;
+    msg<<"Adding Component " << component_type << " to Entity " << entity;
+    logger.log(msg.str());
     if (ComponentFactory::CreateFromName(entity,component_type, component_json))
     {
-        std::cout << component_type << " succsessfully added to Entity " << entity << "\n";
+        msg.str("");
+        msg.clear();
+        msg << component_type << " succsessfully added to Entity " << entity;
+        logger.log(msg.str());
     }
     
 }
-
-//void PrefabManager::ApplyComponentDefaults(EntityID entity, const rapidjson::Value& defaults) {
-//    // This function can be used to apply runtime overrides to components
-//    // For example, setting specific positions or properties when instantiating
-//    if (Transform* t = entity_component_based_system.getComponent<Transform>(entity)) {
-//        if (defaults.HasMember("x") && defaults["x"].IsNumber()) t->position.x() = defaults["x"].GetFloat();
-//        if (defaults.HasMember("y") && defaults["y"].IsNumber()) t->position.y() = defaults["y"].GetFloat();
-//        if (defaults.HasMember("w") && defaults["w"].IsNumber()) t->scale.x() = defaults["w"].GetFloat();
-//        if (defaults.HasMember("h") && defaults["h"].IsNumber()) t->scale.y() = defaults["h"].GetFloat();
-//        if (defaults.HasMember("angle") && defaults["angle"].IsNumber()) t->rotation = defaults["angle"].GetFloat();
-//        if (defaults.HasMember("height") && defaults["height"].IsNumber()) t->height = defaults["height"].GetFloat();
-//    }
-//    // Example: Override transform position if specified in defaults
-//    if (defaults.HasMember("position") && defaults["position"].IsArray()) {
-//        Transform* transform_ptr = entity_component_based_system.getComponent<Transform>(entity);
-//        if (transform_ptr != nullptr) {
-//            const auto& position_array = defaults["position"].GetArray();
-//            if (position_array.Size() >= 2) {
-//                //transform_ptr->position.x = position_array[0].GetFloat();
-//                //transform_ptr->position.y = position_array[1].GetFloat();
-//            }
-//        }
-//    }
-//}
 
 void PrefabManager::LoadScenes() {
     // Build key?scene map once (rebuilt if SetScenesJsonPath is called)

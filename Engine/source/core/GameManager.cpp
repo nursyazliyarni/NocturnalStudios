@@ -32,6 +32,11 @@
 #include "graphics/Camera2D.h"
 #include "graphics/DebugDraw.h"
 #include "physics/AABB.h"
+#include "Animation/SpriteAnimationComponent.h"
+
+#include "core/Application.h"
+
+#include <functional>
 
 //  TextureStore 
 static GLuint loadGLTexture(const std::string& path) {
@@ -200,6 +205,7 @@ bool GameManager::load(const char* prefabsPath, const char* scenesPath, TextureS
 
                 ClickRegion cr;
                 cr.x = di.x; cr.y = di.y; cr.w = di.w; cr.h = di.h;
+                cr.name = di.name;
                 if (e.HasMember("goto") && e["goto"].IsString()) cr.gotoScene = e["goto"].GetString();
                 if (e.HasMember("quit") && e["quit"].IsBool())   cr.quit = e["quit"].GetBool();
                 if (e.HasMember("start") && e["start"].IsBool())  cr.start = e["start"].GetBool();
@@ -214,6 +220,38 @@ bool GameManager::load(const char* prefabsPath, const char* scenesPath, TextureS
 
         scenes[sceneName] = std::move(sc);
     }
+	//temp: add a flamingo entity with sprite animation to ECS
+    {
+        EntityID flamingo = ecs_.createEntity();
+
+        ecs_.addComponent<Transform>(flamingo, Transform{});
+        ecs_.addComponent<ImageRenderer>(flamingo, ImageRenderer{});
+        ecs_.addComponent<SpriteAnimationComponent>(flamingo, SpriteAnimationComponent{});
+
+        auto* t = ecs_.getComponent<Transform>(flamingo);
+        auto* img = ecs_.getComponent<ImageRenderer>(flamingo);
+        auto* anim = ecs_.getComponent<SpriteAnimationComponent>(flamingo);
+
+        t->position = { 0.5f, 0.5f };
+        t->scale = { 0.25f, 0.25f };
+
+        img->isVisible = true;
+        img->textureID = tex.get("assets/textures/flamingo_spritesheet.png");
+
+        //Define an animation sequence
+        SpriteAnimationComponent::Animation idle;
+        idle.frames = 5;
+        idle.frameTime = 0.12f;
+        idle.loop = true;
+
+        anim->animations["idle"] = idle;
+        anim->currentAnim = "idle";
+        anim->playing = true;
+        anim->currentFrame = 0;
+        anim->sheetColumns = 5;
+        anim->sheetRows = 1;
+    }
+
 
     if (currentScene.empty() && !scenes.empty()) currentScene = scenes.begin()->first;
     return true;
@@ -259,15 +297,12 @@ void GameManager::handleKeyPress(int key) {
     }
 }
 
-
-
-
-void GameManager::render(Renderer& r, int w, int h) const {
+void GameManager::render(Renderer& r, int w, int h) {
 
     auto it = scenes.find(currentScene);
     if (it == scenes.end()) return;
     const Scene& sc = it->second;
-
+    
     // background (fullscreen) � NOTE uniform must be "bg_texture"
     if (it->first == "MainMenu") {
         r.special_background_render(sc.background, "bgTexture", 1);
@@ -314,8 +349,38 @@ void GameManager::render(Renderer& r, int w, int h) const {
 
                     Cam2D_Apply(currentScene, px, py, pw, ph, w, h);
 
+                    if (auto* anim = ecs_.getComponent<SpriteAnimationComponent>(e)) {
+                        auto it = anim->animations.find(anim->currentAnim);
+                        if (it != anim->animations.end()) {
+                            const auto& def = it->second;
 
-                    r.texturedTri(img->textureID, px, py, pw, ph);
+                            int frameIndex = anim->currentFrame;
+                            int sheetColumns = anim->sheetColumns;
+                            int sheetRows = anim->sheetRows;
+
+                            float uPerFrame = 1.0f / float(sheetColumns);
+                            float vPerFrame = 1.0f / float(sheetRows);
+
+                            int col = frameIndex % sheetColumns;
+                            int row = frameIndex / sheetColumns;
+
+                            float u0 = col * uPerFrame;
+                            float v0 = row * vPerFrame;
+                            float u1 = u0 + uPerFrame;
+                            float v1 = v0 + vPerFrame;
+
+                            float px = t->position.x() * w;
+                            float py = t->position.y() * h;
+                            float pw = t->scale.x() * w;
+                            float ph = t->scale.y() * h;
+
+                            Cam2D_Apply(currentScene, px, py, pw, ph, w, h);
+
+                            r.drawSpriteUV(img->textureID, px, py, pw, ph, u0, v0, u1, v1);
+                        }
+                    }
+
+                   // r.texturedTri(img->textureID, px, py, pw, ph);
                 }
             }
         }
@@ -326,7 +391,9 @@ void GameManager::render(Renderer& r, int w, int h) const {
         if (di.tex == 0) continue;  // skip if background/entity texture didn�t load
         float px = di.x * w, py = di.y * h, pw = di.w * w, ph = di.h * h;
 
-        Cam2D_Apply(currentScene, px, py, pw, ph, w, h);
+        if (currentScene != "MainMenu") {
+            Cam2D_Apply(currentScene, px, py, pw, ph, w, h);
+        }
 
         r.texturedTri(di.tex, px, py, pw, ph);
 
@@ -352,62 +419,43 @@ bool GameManager::handleClick(float nx, float ny) {
     const Scene& sc = it->second;
 
     for (const auto& cr : sc.clicks) {
-        //if (nx >= cr.x && nx <= cr.x + cr.w && ny >= cr.y && ny <= cr.y + cr.h) {
-        //    if (cr.quit) {
-        //        requestedQuit = true;
-        //    }
-        //    if (app == AppState::Menu) {
-        //        startGame();                 // unlock 1..9 only after Play was clicked
-        //    }
-        //    else if (!cr.gotoScene.empty()) {
-        //        requestScene(cr.gotoScene);
-        //    }
-        //    return true;
-        //}
+        bool hit = (nx >= cr.x && nx <= cr.x + cr.w && ny >= cr.y && ny <= cr.y + cr.h);
+        logger.log(std::string("hit-test ") + (cr.name.empty() ? "<noname>" : cr.name) +
+            (hit ? " 1" : " 0"));
 
-        if (nx >= cr.x && nx <= cr.x + cr.w && ny >= cr.y && ny <= cr.y + cr.h) {
+        if (!hit) continue;
 
-            logger.log("Click hit: start=" + std::to_string(cr.start) +
-                " quit=" + std::to_string(cr.quit) +
-                " goto='" + cr.gotoScene + "'");
+        logger.log("Click hit: start=" + std::to_string(cr.start) +
+            " quit=" + std::to_string(cr.quit) +
+            " goto='" + cr.gotoScene + "'");
 
+        // Quit first (works in Menu and Play)
+        if (cr.quit) {
+            logger.log("[Quit] click region flagged quit=true");
+            if (quitCallback) quitCallback();
+            else requestedQuit = true;
+            return true;
+        }
 
-            // ESC-like quit buttons always work
-            if (cr.quit) {
-                requestedQuit = true;
-                return true;
-            }
-
-            // While in Menu: ONLY a region marked start:true can unlock gameplay,
-            // and it may also jump to a first scene via goto (optional).
-            if (app == AppState::Menu) {
-                if (cr.start) {
-                    startGame();  // unlock number keys
-
-                    if (!cr.gotoScene.empty()) {
-                        requestScene(cr.gotoScene);// explicit target from JSON
-                    }
-                    else {
-                        // Fallback: jump to key "1" mapping if present
-                        auto it1 = keyMap.find(GLFW_KEY_1);
-                        if (it1 != keyMap.end())
-                            requestScene(it1->second);
-                    }
+        // In Menu: only start:true does anything (exactly how 'start' works)
+        if (app == AppState::Menu) {
+            if (cr.start) {
+                startGame();
+                if (!cr.gotoScene.empty()) requestScene(cr.gotoScene);
+                else {
+                    auto it1 = keyMap.find(GLFW_KEY_1);
+                    if (it1 != keyMap.end()) requestScene(it1->second);
                 }
-                // ignore other clickable regions in Menu (buttons without start:true)
-                return true;
-            }
-
-            // Already Playing: allow normal scene transitions via goto regions
-            if (!cr.gotoScene.empty()) {
-                requestScene(cr.gotoScene);
             }
             return true;
         }
 
-
+        // Playing: allow goto
+        if (!cr.gotoScene.empty()) {
+            requestScene(cr.gotoScene);
+        }
+        return true;
     }
-    return false;
 }
 void GameManager::startGame() {
     app = AppState::Playing;
@@ -430,3 +478,8 @@ Scene* GameManager::getCurrentScene() {
     return nullptr;
 }
 
+void GameManager::update(float dt,Renderer& renderer,TextureStore& tex) {
+    //update ECS animations
+	const float fixedDt = 1.0f / 60.0f;
+    animationSystem_.Update(fixedDt, ecs_, renderer, tex);
+}
