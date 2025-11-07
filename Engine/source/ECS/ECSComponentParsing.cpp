@@ -1,3 +1,19 @@
+/*!------------------------------------------------------------------------------------------------
+	File: ECSComponentParsing.cpp
+	Project: NocturnalStudio
+
+		This file contains the declarations oif functions FromJson for various ECS Components, which
+		allows ECS components to be parsed from a JSON file
+
+	Primary Author:
+		Laycock Enhui Sarah (95%)
+		- Created and implemented 
+
+	Rishika added AIComponent
+
+	All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
+
 #include "ECS/ECS_Component.h"
 #include "ECS/ECS.h"
 bool ComponentFactory::CreateFromName(EntityID entity, const std::string& name, const Json& j) {

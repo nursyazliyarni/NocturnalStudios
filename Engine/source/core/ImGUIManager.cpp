@@ -8,15 +8,15 @@
 	for debugging and interaction within the engine.
 
 	Primary Author:
-		Lau Xiang Yang (100%)
+		Lau Xiang Yang (40%)
 		- Created the ImGuiManager class and its specializations.
 
 	Secondary Author:
-		Rishika Bimal Attodi
+		Rishika Bimal Attodi (30%)
 		- Integrated drawAllSprites and drawViewportShapes
 
 	Secondary Author:
-		Nur Syazliyarni (25%)
+		Nur Syazliyarni (30%)
 		- Added the debug drawer that will load under showViewportWindowUI
 		- Editor able to list and edit transform game objects in current scene
 		- Added assets browser and layout of bottom editor dock
@@ -31,6 +31,7 @@
 
 #include "graphics/Camera2D.h" 
 #include "core/TimeUtils.h"
+
 
 namespace {
 	using Clock = std::chrono::high_resolution_clock;
@@ -754,24 +755,59 @@ void ImGuiManager::showAssetsBrowserUI() {
 	ImGui::TextColored(ImVec4(0.8f, 0.9f, 1.0f, 1.0f), "Assets Browser");
 	ImGui::Separator();
 	
-	// importing new texture
+	// import new texture
+	ImGui::Text("Import New Texture:");
+
+	// input buffer (remembered each frame)
 	static char newPath[256] = "assets/textures/";
+
+	// text box for typing file path
 	ImGui::InputText("New Texture Path", newPath, IM_ARRAYSIZE(newPath));
+
+	// add a small vertical space
+	ImGui::Spacing();
+
+	// import button
 	if (ImGui::Button("Import Texture"))
 	{
-		std::string fullPath = newPath;
-		std::filesystem::path p(fullPath);
-		std::string name = p.stem().string();
+		std::string sourcePath = newPath;
 
-		try
+		if (sourcePath.empty())
 		{
-			TextureFile& newTex = resourceManager.loadTexture(name, fullPath);
-			logger.log("[ImGui] Imported new texture: " + name + " (" + fullPath + ")");
+			logger.error("[ImGui] No source path specified!");
 		}
-		catch (...)
+		else
 		{
-			logger.error("[ImGui] Failed to import texture from path: " + fullPath);
+			try
+			{
+				// ensure textures folder exists
+				std::filesystem::path destFolder = "assets/textures/";
+				std::filesystem::create_directories(destFolder);
+
+				// get filename and destination path
+				std::filesystem::path src(sourcePath);
+				std::string filename = src.filename().string();
+				std::filesystem::path destPath = destFolder / filename;
+
+				// copy file into your project assets folder
+				std::filesystem::copy_file(src, destPath,
+					std::filesystem::copy_options::overwrite_existing);
+
+				// register and load the new texture
+				std::string texKey = destPath.stem().string();
+				resourceManager.loadTexture(texKey, destPath.string());
+				resourceManager.getGLTextureFromFile(destPath.string());
+
+				logger.log("[ImGui] Imported new texture: " + destPath.string());
+			}
+			catch (const std::exception& e)
+			{
+				logger.error(std::string("[ImGui] Failed to import texture: ") + e.what());
+			}
 		}
+
+		// clear the text field after importing
+		newPath[0] = '\0';
 	}
 	
 	ImGui::Text("Loaded Textures:");

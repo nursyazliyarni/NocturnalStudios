@@ -17,6 +17,9 @@
         Nur Syazliyarni 5%
         - Added the debugging lines for drawAllSprites
 
+    Secondary Author:
+         Chang Qi Xuan Celest
+        -Function to draw text controlled by Renderer class.
 
 
     All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
@@ -364,7 +367,16 @@ std::vector<Renderer::sprite>& Renderer::get_sprite_vector() {
     return sprite_vector;
 }
 
-// ---- Text rendering controlled by Renderer ----
+// --------- Text rendering controlled by Renderer ---------
+/**
+* @brief Assigns the active shader used for text rendering.
+* Initializes the text shader by binding it once and setting its texture sampler
+* uniform (`text`) to texture unit 0. The shader is then unbound to avoid
+* affecting other rendering stages.
+* @param shader Reference to the Shader object used for text rendering.
+* @see Renderer::setTextProjection()
+* @see Renderer::drawText()
+*/
 void Renderer::setTextShader(Shader& shader) {
     text_shader = &shader;
     text_shader->user_Shader_program(0);
@@ -372,6 +384,16 @@ void Renderer::setTextShader(Shader& shader) {
     glUseProgram(0);
 }
 
+/**
+* @brief Configures the orthographic projection matrix for text rendering.
+* This projection uses the bottom-left corner as the origin (0,0) and matches
+* the window or framebuffer dimensions. It ensures consistent text positioning
+* when rendering 2D overlay text.
+* @param w The width of the rendering viewport in pixels.
+* @param h The height of the rendering viewport in pixels.
+* @note The text shader must be set using `setTextShader()` before calling this function.
+* @see Renderer::setTextShader()
+*/
 void Renderer::setTextProjection(int w, int h) {
     if (!text_shader) return;
     glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(w),
@@ -384,6 +406,21 @@ void Renderer::setTextProjection(int w, int h) {
     glUseProgram(0);
 }
 
+/**
+* @brief Renders text strings using the assigned text shader and specified font.
+* Iterates through each character in the input string and draws textured quads
+* representing glyphs. Uses per-character metrics from the Font resource
+* (size, bearing, and advance) to calculate screen positions.
+* @param font Font resource containing glyph textures and layout metrics.
+* @param text The text string to render.
+* @param x X position (in pixels, bottom-left origin).
+* @param y Y position (in pixels, bottom-left origin).
+* @param scale Scale factor applied to glyph size.
+* @param color Text color (RGB).
+* @note Requires that `setTextShader()` and `setTextProjection()` have been called.
+* @see Font::GetCharacters()
+* @see Shader::SET_uniform_variable()
+*/
 void Renderer::drawText(const Font& font, const std::string& text, float x, float y, float scale, const glm::vec3& color) {
     if (!text_shader) return;
 

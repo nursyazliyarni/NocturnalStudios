@@ -1,15 +1,15 @@
-/* !------------------------------------------------------------------------------------------------
-	File: statemanager.cpp
-	Project : NocturnalStudio
+/*!------------------------------------------------------------------------------------------------
+	File: StateManager.cpp
+	Project: NocturnalStudio
 
-	This file contains ...
+	
 
-	 Author :
-		Name(%)
-		- Brief
+	Primary Author:
+		Laycock Enhui Sarah (100%)
+		- Created the skeleton of StateManager
 
-All content(c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
-* ------------------------------------------------------------------------------------------------ */
+	All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
 
 #include "../include/core/StateManager.h"
 #include <GLFW/glfw3.h>    
