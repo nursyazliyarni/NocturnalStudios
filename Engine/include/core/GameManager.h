@@ -22,6 +22,7 @@ struct ClickRegion {
     std::string gotoScene;     // empty if not a goto
     bool quit = false;         // quit app?
     bool  start{ false };
+    std::string name;
 };
 
 struct Scene {
@@ -73,6 +74,8 @@ public:
     //void focusOnEntity(const std::string& scene, const std::string& entityName);
 
     Scene* getCurrentScene();
+
+    std::function<void()> quitCallback;
 
 private:
     std::unordered_map<std::string, Scene> scenes;
