@@ -22,6 +22,8 @@
 #include <string>
 #include <type_traits>
 
+
+#include <rapidjson/document.h>
 #include "../include/math/Matrix.h"
 #include "../include/math/Vector.h"
 
@@ -46,23 +48,32 @@ struct BoxCollider;
 
 //-------------------------- ECS Component Definitions --------------------------//
 
+struct BaseComponent {
+	virtual ~BaseComponent() = default;
+
+	// Each derived component should implement this
+	virtual void FromJSON(const rapidjson::Value& json) = 0;
+};
 
 //collider base struct
-struct Collider {
+struct Collider : public BaseComponent {
 	bool isColliding{ false };
+	void FromJSON(const rapidjson::Value& json);
 };
 
 //renderer base struct (renamed to avoid collision with graphics::Renderer)
-struct RenderComponent {
+struct RenderComponent : public BaseComponent {
 	float opacity = 1.0f; // Default to fully opaque
 	bool isVisible = true;
 
 	Vector4D colorTint = { 1.0f, 1.0f, 1.0f, 1.0f };
 	Vector4D colorToAdd = {};
+
+	void FromJSON(const rapidjson::Value& json);
 };
 
 
-struct Transform {
+struct Transform : public BaseComponent {
 	Vector2D position;
 	Vector2D scale;
 	Vector2D lastPosition = {};
@@ -79,7 +90,8 @@ struct Transform {
 	};
 
 	CoordinateSpace space = CoordinateSpace::World;
-	bool isVisible = true;
+	bool isVisible{ true }, isRotatable{ false }, isScalable{ false };
+
 	Transform():position {}, scale{  }, rotation{  }, height{}{}
 	Transform(Vector2D pos, Vector2D scl, float rot) :position{ pos }, scale{ scl }, rotation{ rot }, height{} {}
 	/**
@@ -115,24 +127,42 @@ struct Transform {
 	 * .
 	 */
 	Vector2D Scale(float x, float y);
+
+	void FromJSON(const rapidjson::Value& json);
 };
 
 
 struct ImageRenderer: public RenderComponent {
 	int textureID = -1; // Default to -1 (no texture)
+	std::string image_path;
+	void FromJSON(const rapidjson::Value& json);
+
+	glm::vec2 uvMin = glm::vec2(0.0f, 0.0f);
+	glm::vec2 uvMax = glm::vec2(1.0f, 1.0f);
+};
+struct SpriteRenderer : public RenderComponent {
+	std::string spritePath{};
+	void FromJSON(const rapidjson::Value& json);
+
+	glm::vec2 uvMin = glm::vec2(0.0f, 0.0f);
+	glm::vec2 uvMax = glm::vec2(1.0f, 1.0f);
 };
 struct CircleRenderer : public RenderComponent {
 	float radius{ 1.f };
+	void FromJSON(const rapidjson::Value& json);
 };
 struct RectRenderer : public RenderComponent {
 	float width{ 1.f }, height{ 1.f };
+	void FromJSON(const rapidjson::Value& json);
 };
 
 
 struct AnimalBehavior {
-	std::string sound{ "moo" };
+	double health_bar, hunger_bar, sanity_bar;
+	void FromJSON(const rapidjson::Value& json);
 };
-struct AudioData {
+
+struct AudioData : public BaseComponent {
 	struct IndividualAudioData {
 		unsigned resourceID;
 		std::string name;
@@ -157,13 +187,15 @@ struct AudioData {
 
 	std::vector<IndividualAudioData> audios;
 	bool listener = false;
+
+	void FromJSON(const rapidjson::Value& json);
 };
 
-struct PhysicsComponent
+struct PhysicsComponent : public BaseComponent
 {
 	Vector2D position, velocity{ 0.f,0.f }, acceleration{ 0.f,0.f };
 	bool gravityEnabled{ true };
-
+	void FromJSON(const rapidjson::Value& json);
 };
 
 
@@ -190,5 +222,10 @@ struct AIComponent {
 
 struct BoxCollider :public Collider {
 	float width{ 0.f }, height{ 0.f };
+	void FromJSON(const rapidjson::Value& json);
+};
+
+struct AABBCollider :public BoxCollider {
+	void FromJSON(const rapidjson::Value& json);
 };
 #endif // ECS_COMPONENT_H

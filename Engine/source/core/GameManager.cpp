@@ -32,6 +32,7 @@
 #include "graphics/Camera2D.h"
 #include "graphics/DebugDraw.h"
 #include "physics/AABB.h"
+#include "Animation/SpriteAnimationComponent.h"
 
 #include "scene/Prefab.h" // for Prefab_GetSceneName
 
@@ -176,6 +177,11 @@ bool GameManager::load(const char* prefabsPath, const char* scenesPath, TextureS
                     if (ov.HasMember("w") && ov["w"].IsNumber())      di.w = ov["w"].GetFloat();
                     if (ov.HasMember("h") && ov["h"].IsNumber())      di.h = ov["h"].GetFloat();
                     if (ov.HasMember("angle") && ov["angle"].IsNumber()) di.angle = ov["angle"].GetFloat();
+
+                    if (ov.HasMember("health_bar") && ov["health_bar"].IsNumber()) di.health_bar = ov["health_bar"].GetFloat();
+                    if (ov.HasMember("hunger_bar") && ov["hunger_bar"].IsNumber()) di.hunger_bar = ov["hunger_bar"].GetFloat();
+                    if (ov.HasMember("sanity_bar") && ov["sanity_bar"].IsNumber()) di.sanity_bar = ov["sanity_bar"].GetFloat();
+
                     if (ov.HasMember("sprite_path") && ov["sprite_path"].IsString()) {
                         std::string sp = toAssetsPath(ov["sprite_path"].GetString());
                         di.tex = tex.get(sp);
@@ -211,6 +217,38 @@ bool GameManager::load(const char* prefabsPath, const char* scenesPath, TextureS
 
         scenes[sceneName] = std::move(sc);
     }
+	//temp: add a flamingo entity with sprite animation to ECS
+    {
+        EntityID flamingo = ecs_.createEntity();
+
+        ecs_.addComponent<Transform>(flamingo, Transform{});
+        ecs_.addComponent<ImageRenderer>(flamingo, ImageRenderer{});
+        ecs_.addComponent<SpriteAnimationComponent>(flamingo, SpriteAnimationComponent{});
+
+        auto* t = ecs_.getComponent<Transform>(flamingo);
+        auto* img = ecs_.getComponent<ImageRenderer>(flamingo);
+        auto* anim = ecs_.getComponent<SpriteAnimationComponent>(flamingo);
+
+        t->position = { 0.5f, 0.5f };
+        t->scale = { 0.25f, 0.25f };
+
+        img->isVisible = true;
+        img->textureID = tex.get("assets/textures/flamingo_spritesheet.png");
+
+        //Define an animation sequence
+        SpriteAnimationComponent::Animation idle;
+        idle.frames = 5;
+        idle.frameTime = 0.12f;
+        idle.loop = true;
+
+        anim->animations["idle"] = idle;
+        anim->currentAnim = "idle";
+        anim->playing = true;
+        anim->currentFrame = 0;
+        anim->sheetColumns = 5;
+        anim->sheetRows = 1;
+    }
+
 
     if (currentScene.empty() && !scenes.empty()) currentScene = scenes.begin()->first;
     return true;
@@ -259,21 +297,24 @@ void GameManager::handleKeyPress(int key) {
     }
 }
 
-
-
-
-void GameManager::render(Renderer& r, int w, int h) const {
+void GameManager::render(Renderer& r, int w, int h) {
 
     auto it = scenes.find(currentScene);
     if (it == scenes.end()) return;
     const Scene& sc = it->second;
-
+    
     // background (fullscreen) � NOTE uniform must be "bg_texture"
-    //r.background_render(sc.background, "bg_texture");
-    // Draw background as a regular textured quad and apply camera to it too
-    float bx = 0.0f, by = 0.0f, bw = float(w), bh = float(h);
-    Cam2D_Apply(currentScene, bx, by, bw, bh, w, h);
-    r.texturedTri(sc.background, bx, by, bw, bh);
+    if (it->first == "MainMenu") {
+        r.special_background_render(sc.background, "bgTexture", 1);
+    }
+
+    else {
+        r.background_render(sc.background, "bg_texture", 0);
+        // Draw background as a regular textured quad and apply camera to it too
+        float bx = 0.0f, by = 0.0f, bw = float(w), bh = float(h);
+        Cam2D_Apply(currentScene, bx, by, bw, bh, w, h);
+        r.texturedTri(sc.background, bx, by, bw, bh);
+    }
 
     
 
@@ -308,6 +349,10 @@ void GameManager::render(Renderer& r, int w, int h) const {
 
                     Cam2D_Apply(currentScene, px, py, pw, ph, w, h);
 
+                    if (auto* anim = ecs_.getComponent<SpriteAnimationComponent>(e)) {
+                        auto it = anim->animations.find(anim->currentAnim);
+                        if (it != anim->animations.end()) {
+                            const auto& def = it->second;
 
                     r.texturedTri(img->textureID, px, py, pw, ph);
 
@@ -322,6 +367,33 @@ void GameManager::render(Renderer& r, int w, int h) const {
                         );
                     }
 
+                            int frameIndex = anim->currentFrame;
+                            int sheetColumns = anim->sheetColumns;
+                            int sheetRows = anim->sheetRows;
+
+                            float uPerFrame = 1.0f / float(sheetColumns);
+                            float vPerFrame = 1.0f / float(sheetRows);
+
+                            int col = frameIndex % sheetColumns;
+                            int row = frameIndex / sheetColumns;
+
+                            float u0 = col * uPerFrame;
+                            float v0 = row * vPerFrame;
+                            float u1 = u0 + uPerFrame;
+                            float v1 = v0 + vPerFrame;
+
+                            float px = t->position.x() * w;
+                            float py = t->position.y() * h;
+                            float pw = t->scale.x() * w;
+                            float ph = t->scale.y() * h;
+
+                            Cam2D_Apply(currentScene, px, py, pw, ph, w, h);
+
+                            r.drawSpriteUV(img->textureID, px, py, pw, ph, u0, v0, u1, v1);
+                        }
+                    }
+
+                   // r.texturedTri(img->textureID, px, py, pw, ph);
                 }
             }
         }
@@ -441,3 +513,8 @@ Scene* GameManager::getCurrentScene() {
     return nullptr;
 }
 
+void GameManager::update(float dt,Renderer& renderer,TextureStore& tex) {
+    //update ECS animations
+	const float fixedDt = 1.0f / 60.0f;
+    animationSystem_.Update(fixedDt, ecs_, renderer, tex);
+}

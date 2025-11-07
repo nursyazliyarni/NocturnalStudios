@@ -5,15 +5,18 @@
 #include <vector>
 #include <optional>
 #include "graphics/Renderer.h"
+#include "Animation/AnimationSystem.h"
 
 #include <functional>
 
+class TextureStore;
 class ECS;
 
 struct DrawItem {
     std::string name;  
     GLuint tex = 0;
     float x = 0, y = 0, w = 0, h = 0, angle = 0; // normalized
+    float health_bar, hunger_bar, sanity_bar;
 };
 
 struct ClickRegion {
@@ -45,7 +48,7 @@ public:
     const std::string& current() const { return currentScene; }
 
     void handleKeyPress(int key); // map numeric keys/ESC to scenes
-    void render(Renderer& r, int w, int h) const;
+    void render(Renderer& r, int w, int h) ;
 
     bool handleClick(float nx, float ny);  // mouse click in normalized coords
     bool popQuitRequested();               // returns & clears quit flag
@@ -59,10 +62,11 @@ public:
     void goToMenu();
     // (optional) void pause(); void resume();
 
-    // Expose a safe key->scene helper if you don’t want Input.cpp touching keyMap directly:
+    // Expose a safe key->scene helper if you donï¿½t want Input.cpp touching keyMap directly:
     bool switchToSceneForKey(int glfwKey);
 
     GameManager(ECS& ecs) :ecs_{ ecs } {}
+    void update(float dt,Renderer& renderer,TextureStore& tex);
 
     // Camera controls (per scene)
     //void setCameraEnabled(const std::string& scene, bool on);
@@ -91,4 +95,5 @@ private:
 
     std::function<void(const std::string&)> onSceneChanged;
 
+    AnimationSystem animationSystem_;
 };

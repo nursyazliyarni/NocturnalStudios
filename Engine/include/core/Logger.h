@@ -22,6 +22,7 @@
 #include <filesystem>
 #include <sstream>
 #include <fstream>
+#include <csignal>
 
 class Logger {
 public:
@@ -29,6 +30,7 @@ public:
 	void log(std::string_view message);
 	void warning(std::string_view message);
 
+	static void setup_crash_handler();
 	std::deque<std::string> getLogs() const&;
 
 	static std::string getCurrentTime();
@@ -40,6 +42,9 @@ public:
 
 private:
 	std::deque<std::string> consoleLogs;
+
+	static void log_crash_to_file(std::string_view message);
+	static void handle_crash_error(int signal);
 };
 
 #endif // LOGGER_H
