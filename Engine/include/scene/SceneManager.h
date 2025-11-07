@@ -20,20 +20,21 @@
 #include <memory>
 #include "../include/ECS/ECS.h"
 
+#include "scene/Prefab.h"  
 #include <string> 
 
-void SceneManagerTest();
+
 
 class SceneManager{
 public:
     struct Layer {
         std::vector<EntityID> entities{};
-        LayerID id{ 0 }; //by default 0
-        std::string name{};
+        LayerID l_id{ 0 }; //by default 0
+        std::string l_name{};
     };
     struct Scene {
         std::vector<Layer> layers{};
-        SceneID id{ 0 };//by default 0
+        SceneID s_id{ 0 };//by default 0
         std::string name{};
     };
 
@@ -43,7 +44,7 @@ public:
 
     void Render();
     
-
+    void SceneManagerTest(PrefabManager& p);
 
     static SceneManager& GetSceneManager() {
         static SceneManager dis;

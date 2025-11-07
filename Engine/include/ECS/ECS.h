@@ -414,4 +414,41 @@ private:
 		return map;
 	}
 };
+template<>
+inline bool ECS::addComponent<Transform>(EntityID entityID, Transform const& component) {
+	ComponentID type = Family::getID<Transform>();
+	if (componentPools.find(type) == componentPools.end()) registerComponent<Transform>();
+
+	BaseComponentPool* pool = componentPools.at(type).get();
+	ComponentPool<Transform>* specificPool = dynamic_cast<ComponentPool<Transform>*>(pool);
+	if (!specificPool) {
+		logger.error(std::string{ "ECS::addComponent - Failed to derive correct component pool\nComponentID: " } + std::to_string(type) + "\n");
+		return false;
+	}
+	if (!specificPool->addComponent(entityID, component)) {
+		logger.error(std::string{ "ECS::addComponent - Failed to add component to entity\nEntityID: " } + std::to_string(entityID) + "\n");
+		return false;
+	}
+
+	Transform* comp = getComponent<Transform>(entityID);
+	if (comp->randomPos)
+	{
+		comp->position = { Random_Range(-100.f,100.f),Random_Range(-50.f,50.f) };
+	}
+	if (comp->randomRot)
+	{
+		comp->rotation = Random_Range(0.f, 6.28319f);
+	}
+
+	auto componentData = getComponentData(type);
+	if (componentData == componentMetadata.end()) {
+		logger.error(std::string{ "ECS::addComponent - Failed to find component metadata\nComponentID: " } + std::to_string(type) + "\n");
+		return false;
+	}
+
+	componentData->size += 1;
+	entityMetadataMap[entityID].componentIDs.insert(type);
+	reUpdateMetadata();
+	return true;
+}
 #endif // ECS_H

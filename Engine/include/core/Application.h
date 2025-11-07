@@ -32,6 +32,7 @@
 #include "resources/ResourceManager.h"
 #include "core/GameManager.h"
 #include "scene/Prefab.h"
+#include "./scene/SceneManager.h"
 #include "resources/Font.h"
 #include "graphics/Camera2D.h"
 #include "logic/Animal_Logic.h"

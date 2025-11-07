@@ -50,8 +50,9 @@ bool ComponentFactory::CreateFromName(EntityID entity, const std::string& name, 
 	if (name == "AABBCollider")
 	{
 		ecs.addComponent<AABBCollider>(entity, std::any_cast<AABBCollider>(Create(name,j)));
-		return false;
+		return true;
 	}
+	return false;
 }
 void Collider::FromJSON(const rapidjson::Value& json){}
 
@@ -139,6 +140,10 @@ void Transform::FromJSON(const rapidjson::Value& json) {
 						}
 					}
 				}
+				else if (json[members[i]].IsString() && json[members[i]].GetString() == "random")
+				{
+					randomPos = true; 
+				}
 				break;
 			case 1://scale
 				if (json[members[i]].IsArray())
@@ -161,6 +166,10 @@ void Transform::FromJSON(const rapidjson::Value& json) {
 				if (json[members[i]].IsFloat())
 				{
 					rotation = json[members[i]].GetFloat();
+				}
+				else if (json[members[i]].IsString()&& json[members[i]].GetString()=="random")
+				{
+					randomRot = true;
 				}
 				break;
 			case 3://height

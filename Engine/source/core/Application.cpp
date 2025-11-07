@@ -111,6 +111,7 @@ void Application::init() {
 		textShaderVertexPath, textShaderFragmentPath,
 		scenePath;
 
+
 	auto shaderPath_1 = resourceManager->getFilePathsForKey<ShaderFile>("background");
 	for (auto const& path : shaderPath_1) {
 		std::filesystem::path p{ path };
@@ -189,6 +190,8 @@ void Application::init() {
 }
 
 int Application::run() {
+
+    SceneManager& scm = SceneManager::GetSceneManager();
     if (!isInitialized) {
         init();
     }
@@ -216,6 +219,7 @@ int Application::run() {
 
         inputSystem->ProcessHotkeys(*gsm);
         TransformSystem::TransformInput(*inputSystem, dt);
+        scm.SceneManagerTest(*prefabManager);
         int fbw = 0, fbh = 0; glfwGetFramebufferSize(m_window.handle(), &fbw, &fbh);
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         glViewport(0, 0, fbw, fbh);

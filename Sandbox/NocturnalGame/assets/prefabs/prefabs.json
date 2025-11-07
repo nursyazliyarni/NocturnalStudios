@@ -3,7 +3,7 @@
     "animal": {
       "components": [
         { "type": "SpriteRenderer", "sprite_path": "assets/textures/flamingo_spritesheet.png" },
-	{ "type": "SpriteAnimationComponent", "anim_path": "assets/sprite.json", "currentAnim": "idle", "sheetColumns": 5, "sheetRows": 1},
+	      { "type": "SpriteAnimationComponent", "anim_path": "assets/sprite.json", "currentAnim": "idle", "sheetColumns": 5, "sheetRows": 1},
         { "type": "AABBCollider",  "bounding_box_size": 1.0 }
       ],
       "defaults": { "w": 0.50, "h": 0.42, "angle": 0.0, "rotatable": false, "scalable": false }
@@ -27,6 +27,15 @@
       "components": [ { "type": "SpriteRenderer", "sprite_path": "" },
         { "type": "Transform",  "rotation": 0.0, "rotatable": false, "scalable": false} ],
       "defaults": { "w": 0.40, "h": 0.09, "angle": 0.0, "rotatable": false, "scalable": false }
+    }, 
+    "box": {
+      "components": [
+        { "type": "SpriteRenderer", "sprite_path": "assets/textures/flamingo_spritesheet.png" },
+        { "type": "Transform",  "position":"random", "rotation": "random", "rotatable": false, "scalable": false},
+        { "type": "AABBCollider",  "bounding_box_size": 1.0 }
+      ],
+      "defaults": { "w": 0.20, "h": 0.2, "angle": 0.0, "rotatable": false, "scalable": false }
     }
+
   }
 }

@@ -144,36 +144,6 @@ EntityID PrefabManager::CreateEntityFromPrefab(const std::string& json_path, con
         std::string type = comp["type"].GetString();
 
         AddComponentFromJSON(entity, comp);
-        /*if (type == "Transform") {
-            prefab_data.transform_struct.position[0] = comp.HasMember("x") ? comp["x"].GetDouble() : 0.0;
-            prefab_data.transform_struct.position[1] = comp.HasMember("y") ? comp["y"].GetDouble() : 0.0;
-            prefab_data.transform_struct.scale[0] = comp.HasMember("w") ? comp["w"].GetDouble() : 1.0; // safe default
-            prefab_data.transform_struct.scale[1] = comp.HasMember("h") ? comp["h"].GetDouble() : 1.0;
-            prefab_data.transform_struct.rotation = comp.HasMember("angle") ? comp["angle"].GetDouble() : 0.0;
-            entity_component_based_system.addComponent<Transform>(entity, prefab_data.transform_struct);
-        }
-
-        else if (type == "SpriteRenderer") {
-            prefab_data.image_render_struct.image_path = comp["sprite_path"].GetString();
-            entity_component_based_system.addComponent<ImageRenderer>(entity, prefab_data.image_render_struct);
-        }
-
-        else if (type == "AABBCollider") {
-            prefab_data.collider_struct.width = comp["bounding_box_size"].GetDouble();
-            prefab_data.collider_struct.height = comp["bounding_box_size"].GetDouble();
-            entity_component_based_system.addComponent<BoxCollider>(entity, prefab_data.collider_struct);
-        }
-
-        else if (type == "AnimalProperties") {
-            prefab_data.animal_behaviour_struct.health_bar = comp["health_bar"].GetDouble();
-            prefab_data.animal_behaviour_struct.hunger_bar = comp["hunger_bar"].GetDouble();
-            prefab_data.animal_behaviour_struct.sanity_bar = comp["sanity_bar"].GetDouble();
-            entity_component_based_system.addComponent<AnimalBehavior>(entity, prefab_data.animal_behaviour_struct);
-        }
-
-        else {
-            logger.warning("Unknown component type: " + type);
-        }*/
     }
     return entity;
 }
