@@ -49,7 +49,7 @@ public:
 	~ImGuiManager();
 
 	void updateDeltaTime(double& dt);
-	void getDeltaTime(double& dt) const;
+	double getDeltaTime(double& dt) const;
 	void updateWindowTopLeft(const ImVec2& topLeft);
 	void updateWindowBottomRight(const ImVec2& bottomRight);
 	void setSystemTimings(double imGuiTime);

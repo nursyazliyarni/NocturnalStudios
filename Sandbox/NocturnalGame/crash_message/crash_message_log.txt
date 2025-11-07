@@ -10,15 +10,17 @@
 [07-11-2025] [01:15:12] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
 [07-11-2025] [01:20:41] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
 [07-11-2025] [01:21:07] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
-[07-11-2025] [14:09:11] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
-[07-11-2025] [14:28:57] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
-[07-11-2025] [14:29:16] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
-[07-11-2025] [14:49:42] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
-[07-11-2025] [14:51:47] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
-[07-11-2025] [14:59:44] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
-[07-11-2025] [15:05:21] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
-[07-11-2025] [15:05:39] [CRASH_MESSAGE] [ImGui] No source path specified!
-[07-11-2025] [15:30:26] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
-[07-11-2025] [15:38:54] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
-[07-11-2025] [15:41:24] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
-[07-11-2025] [15:42:49] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[07-11-2025] [14:53:02] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[07-11-2025] [14:53:05] [CRASH_MESSAGE] Failed to parse prefab file: assets/prefabs\GameObj.json
+[07-11-2025] [15:05:29] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[07-11-2025] [15:09:01] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[07-11-2025] [15:11:08] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[07-11-2025] [15:12:13] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+<<<<<<< Updated upstream
+[07-11-2025] [15:18:15] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+=======
+[07-11-2025] [15:15:52] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[07-11-2025] [15:16:20] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[07-11-2025] [15:21:03] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[07-11-2025] [15:21:05] [CRASH_MESSAGE] Prefab category 'firefly' not found.
+>>>>>>> Stashed changes

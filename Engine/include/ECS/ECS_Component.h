@@ -42,6 +42,8 @@ struct AnimalBehavior;
 struct AudioData;
 struct PhysicsComponent;
 
+struct AIComponent;
+
 struct BoxCollider;
 
 //-------------------------- ECS Component Definitions --------------------------//
@@ -195,6 +197,29 @@ struct PhysicsComponent : public BaseComponent
 	bool gravityEnabled{ true };
 	void FromJSON(const rapidjson::Value& json);
 };
+
+
+struct AIComponent : public BaseComponent {
+	enum class State { Wander = 0, Chase = 1, Flee = 2 };
+
+	State  state = State::Wander;
+	float  maxSpeed = 0.28f;  // normalized units per second (0..1 space)
+	float  accel = 4.0f;   // max change in speed per second
+	float  wanderJitter = 3.2f;   // angular noise strength (rad/s)
+	float  chaseStrength = 1.0f;   // weight toward attractor
+	float  fleeStrength = 1.2f;   // weight away from repulsor
+	float  avoidRadius = 0.08f;  // separation radius vs neighbors
+
+	// internal memory for wander heading (radians)
+	float  wanderAngle = 0.0f;
+
+	std::string targetName;   // optional: entity name to chase/flee
+	float targetWeight = 1.0f; // how strong target influence is
+	void FromJSON(const rapidjson::Value& json);
+
+};
+
+
 
 struct BoxCollider :public Collider {
 	float width{ 0.f }, height{ 0.f };

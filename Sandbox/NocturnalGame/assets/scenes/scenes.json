@@ -24,16 +24,20 @@
 
     "Flamingo": {
       "background":"textures/flamingo_bg.png",
+      "camera": { "cx": 0.5, "cy": 0.5, "zoom": 1.0, "minZoom": 1.0, "maxZoom": 3.0 },
       "entities":[
         { "prefab":"animal","name":"flamingo",
-          "overrides": { "x":0.10,"y":0.44, "w":0.26, "h":0.50,"health_bar":100,"hunger_bar":100, "sanity_bar":100, "sprite_path":"textures/flamingo.png" } },
+          "overrides": { "x":0.10,"y":0.44, "w":0.26, "h":0.50,"sprite_path":"textures/flamingo.png" },
+          "animal_properties": {"health_bar":100,"hunger_bar":100, "sanity_bar":100,
+          "slower_decreasing_rate":0.3,"normal_decreasing_rate":0.5,"faster_decreasing_rate":0.7,"penalty_decreasing_rate":1}
+        },
+
         { "prefab":"food","name":"flamingo_food",
           "overrides": { "x":0.52,"y":0.40, "sprite_path":"textures/flamingo_food.png" } },
         { "prefab":"medicine","name":"flamingo_medicine",
           "overrides": { "x":0.66,"y":0.50, "sprite_path":"textures/flamingo_medicine.png" } },
         { "prefab":"toy","name":"flamingo_toy",
-          "overrides": { "x":0.40,"y":0.50, "w":0.14, "h":0.14, "sprite_path":"textures/flamingo_toy.png", "rotatable": false, "scalable": false } },
-        { "camera": { "cx": 0.5, "cy": 0.5, "zoom": 1.0, "margin": 0.0, "minZoom": 1.0, "maxZoom": 3.0 }}
+          "overrides": { "x":0.40,"y":0.50, "w":0.14, "h":0.14, "sprite_path":"textures/flamingo_toy.png", "rotatable": false, "scalable": false } }
       ]
     },
 
@@ -41,7 +45,11 @@
       "background":"textures/seal_bg.png",
       "entities":[
         { "prefab":"animal","name":"seal",
-          "overrides": { "x":0.10,"y":0.46, "w":0.34, "h":0.30,"health_bar":100,"hunger_bar":100, "sanity_bar":100,"sprite_path":"textures/seal.png" } },
+          "overrides": { "x":0.10,"y":0.46, "w":0.34, "h":0.30,"sprite_path":"textures/seal.png" },
+          "animal_properties": {"health_bar":100,"hunger_bar":100, "sanity_bar":100,
+          "slower_decreasing_rate":0.3,"normal_decreasing_rate":0.5,"faster_decreasing_rate":0.7,"penalty_decreasing_rate":1}
+        },
+
         { "prefab":"food","name":"seal_food",
           "overrides": { "x":0.52,"y":0.40, "sprite_path":"textures/seal_food.png" } },
         { "prefab":"medicine","name":"seal_medicine",
@@ -55,13 +63,20 @@
       "background":"textures/owl_bg.png",
       "entities":[
         { "prefab":"animal","name":"owl",
-          "overrides": { "x":0.12,"y":0.40, "w":0.24, "h":0.34,"health_bar":100,"hunger_bar":100, "sanity_bar":100,"sprite_path":"textures/owl.png" } },
+          "overrides": { "x":0.12,"y":0.40, "w":0.24, "h":0.34,"sprite_path":"textures/owl.png" },
+          "animal_properties": {"health_bar":100,"hunger_bar":100, "sanity_bar":100,
+          "slower_decreasing_rate":0.3,"normal_decreasing_rate":0.5,"faster_decreasing_rate":0.7,"penalty_decreasing_rate":1}
+        },
+
         { "prefab":"food","name":"owl_food",
           "overrides": { "x":0.52,"y":0.40, "sprite_path":"textures/owl_food.png" } },
         { "prefab":"medicine","name":"owl_medicine",
           "overrides": { "x":0.66,"y":0.50, "sprite_path":"textures/owl_medicine.png" } },
         { "prefab":"toy","name":"owl_toy",
-          "overrides": { "x":0.40,"y":0.50, "w":0.14, "h":0.14, "sprite_path":"textures/owl_toy.png", "rotatable": false, "scalable": false } }
+          "overrides": { "x":0.40,"y":0.50, "w":0.14, "h":0.14, "sprite_path":"textures/owl_toy.png", "rotatable": false, "scalable": false } },
+      { "prefab":"firefly","name":"firefly_1",
+        "overrides": { "x":0.66, "y":0.42, "w":0.05, "h":0.05, "sprite_path":"textures/firefly.png" }
+      }
       ]
     },
 
@@ -69,7 +84,11 @@
       "background":"textures/horse_bg.png",
       "entities":[
         { "prefab":"animal","name":"horse",
-          "overrides": { "x":0.10,"y":0.40, "w":0.50, "h":0.66,"health_bar":100,"hunger_bar":100, "sanity_bar":100,"sprite_path":"textures/horse.png" } },
+          "overrides": { "x":0.10,"y":0.40, "w":0.50, "h":0.66,"sprite_path":"textures/horse.png" },
+          "animal_properties": {"health_bar":100,"hunger_bar":100, "sanity_bar":100,
+          "slower_decreasing_rate":0.3,"normal_decreasing_rate":0.5,"faster_decreasing_rate":0.7,"penalty_decreasing_rate":1}
+        },
+
         { "prefab":"food","name":"horse_food",
           "overrides": { "x":0.52,"y":0.50, "sprite_path":"textures/horse_food.png", "rotatable": false, "scalable": false } },
         { "prefab":"medicine","name":"horse_medicine",

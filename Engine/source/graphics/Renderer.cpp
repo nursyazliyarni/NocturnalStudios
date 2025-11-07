@@ -138,13 +138,14 @@ void Renderer::tri(float x1, float y1, float x2, float y2, float x3, float y3) {
     glEnd();
 }
 
-void Renderer::rect(float x, float y, float w, float h) {
+void Renderer::rect(float x, float y, float w, float h, float r, float g, float b) {
     glLoadIdentity();
     glBegin(GL_TRIANGLES);
-    glColor3f(0.9f, 0.8f, 0.2f);
+    glColor4f(r, g, b, 1.0f);
     glVertex2f(x, y); glVertex2f(x + w, y); glVertex2f(x + w, y + h);
     glVertex2f(x, y); glVertex2f(x + w, y + h); glVertex2f(x, y + h);
     glEnd();
+    glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 }
 
 void Renderer::line(float x1, float y1, float x2, float y2) {

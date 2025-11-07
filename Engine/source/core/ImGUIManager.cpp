@@ -38,29 +38,32 @@ namespace {
 }
 
 void Gui::updateImGuiManager(double& deltaTime, ImGuiManager& imGuiManager) {
-	// Measure the entire ImGui update using a utility and avoid manual start/end pairs
-	double imGuiSec = TimeUtils::MeasureSeconds([&]() {
-		imGuiManager.updateDeltaTime(deltaTime);
+    // update delta/window info
+    imGuiManager.updateDeltaTime(deltaTime);
 
-		// Get main viewport position and size
-		ImGuiViewport* mainViewport = ImGui::GetMainViewport();
-		imGuiManager.updateWindowTopLeft(mainViewport->Pos);
-		imGuiManager.updateWindowBottomRight({ mainViewport->Pos.x + mainViewport->Size.x, mainViewport->Pos.y + mainViewport->Size.y });
+    ImGuiViewport* mainViewport = ImGui::GetMainViewport();
+    imGuiManager.updateWindowTopLeft(mainViewport->Pos);
+    imGuiManager.updateWindowBottomRight({ mainViewport->Pos.x + mainViewport->Size.x, mainViewport->Pos.y + mainViewport->Size.y });
 
-		imGuiManager.startFrame();
-		imGuiManager.showViewportWindowUI();
-		//imGuiManager.showAssetsBrowserUI();
-		imGuiManager.showMousePosOverlayUI();
-		imGuiManager.showPerformanceOverlayUI();
-		imGuiManager.showTransformUI();
-		imGuiManager.showEntityListUI();
-		//imGuiManager.showLogsOverlayUI();
-		imGuiManager.showBottomDockUI();
-		imGuiManager.endFrame();
-	});
+    // start ImGui frame (needed before creating windows)
+    imGuiManager.startFrame();
 
-	// Preserve logic time measured within UI instead of resetting to
-	imGuiManager.setSystemTimings(imGuiSec);
+    // Render the viewport first — this contains renderer/physics/logic and measures those times itself.
+    imGuiManager.showViewportWindowUI();
+
+    // Measure only the remaining ImGui overhead (exclusive UI time)
+    double imGuiSec = TimeUtils::MeasureSeconds([&]() {
+        imGuiManager.showMousePosOverlayUI();
+        imGuiManager.showPerformanceOverlayUI();
+        imGuiManager.showTransformUI();
+        imGuiManager.showEntityListUI();
+        //imGuiManager.showLogsOverlayUI();
+        imGuiManager.showBottomDockUI();
+    });
+
+    // finish frame and record the exclusive ImGui time
+    imGuiManager.endFrame();
+    imGuiManager.setSystemTimings(imGuiSec);
 }
 
 ImGuiManager::ImGuiManager(Window& w, Renderer& r,
@@ -99,8 +102,8 @@ void ImGuiManager::updateDeltaTime(double& dt) {
 	deltaTime = dt;
 }
 
-void ImGuiManager::getDeltaTime(double& dt) const {
-	dt = deltaTime;
+double ImGuiManager::getDeltaTime(double& dt) const {
+	dt = deltaTime; return dt;
 }
 
 void ImGuiManager::startFrame() {
@@ -247,6 +250,12 @@ void ImGuiManager::showViewportWindowUI() {
 	const int vw = (int)std::max(1.0f, avail.x);
 	const int vh = (int)std::max(1.0f, avail.y);
 
+	// Logic timing (animal state update)
+	logicTime = TimeUtils::MeasureSeconds([&]() {
+		logic.check_animal_status(gsm);
+		logic.update_animal_ALLstate(gsm,getDeltaTime(deltaTime));
+	});
+
 	// Physics timing scope
 	{
 		TimeUtils::ScopedTimer t{ physicsTime };
@@ -324,11 +333,6 @@ void ImGuiManager::showViewportWindowUI() {
 	ImGui::Image((ImTextureID)(intptr_t)renderer.getFBOTexture(),
 	ImVec2(static_cast<float>(vw), static_cast<float>(vh)), ImVec2(0, 1), ImVec2(1, 0));
 	ImVec2 imgMax = ImVec2(imgMin.x + vw, imgMin.y + vh);
-
-	// Logic timing (animal state update)
-	logicTime = TimeUtils::MeasureSeconds([&]() {
-		logic.update_animal_ALLstate(gsm);
-	});
 
 	// Handle click -> normalized coords -> GSM
 	// (Input handles clicks; store the rect in window client coords)

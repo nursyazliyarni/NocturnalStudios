@@ -7,6 +7,8 @@
 #include "graphics/Renderer.h"
 #include "Animation/AnimationSystem.h"
 
+#include <functional>
+
 class TextureStore;
 class ECS;
 
@@ -15,6 +17,8 @@ struct DrawItem {
     GLuint tex = 0;
     float x = 0, y = 0, w = 0, h = 0, angle = 0; // normalized
     float health_bar, hunger_bar, sanity_bar;
+    float slower_decreasing_rate, normal_decreasing_rate, faster_decreasing_rate, penalty_decreasing_rate;
+    bool still_alive;
 };
 
 struct ClickRegion {
@@ -22,6 +26,7 @@ struct ClickRegion {
     std::string gotoScene;     // empty if not a goto
     bool quit = false;         // quit app?
     bool  start{ false };
+    std::string name;
 };
 
 struct Scene {
@@ -60,7 +65,7 @@ public:
     void goToMenu();
     // (optional) void pause(); void resume();
 
-    // Expose a safe key->scene helper if you don’t want Input.cpp touching keyMap directly:
+    // Expose a safe key->scene helper if you donï¿½t want Input.cpp touching keyMap directly:
     bool switchToSceneForKey(int glfwKey);
 
     GameManager(ECS& ecs) :ecs_{ ecs } {}
@@ -73,6 +78,11 @@ public:
     //void focusOnEntity(const std::string& scene, const std::string& entityName);
 
     Scene* getCurrentScene();
+    std::unordered_map<std::string, Scene>& get_scenes_map();
+
+    void setSceneChangedCallback(std::function<void(const std::string&)> cb) { onSceneChanged = std::move(cb); }
+
+    std::function<void()> quitCallback;
 
 private:
     std::unordered_map<std::string, Scene> scenes;
@@ -87,6 +97,8 @@ private:
 
     ECS& ecs_;
     //std::unordered_map<std::string, Camera2D> cameras_; // one camera per scene
+
+    std::function<void(const std::string&)> onSceneChanged;
 
     AnimationSystem animationSystem_;
 };
