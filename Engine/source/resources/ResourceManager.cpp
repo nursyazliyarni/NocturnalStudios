@@ -1,3 +1,21 @@
+/*!------------------------------------------------------------------------------------------------
+	File: ResourceManager.cpp
+	Project: NocturnalStudio
+
+	This file contains the implementation of the ResourceManager class
+
+	Primary Author:
+		Name (%)
+		-
+
+	Secondary Author:
+		Nur Syazliyarni (5%)
+		- Added a function for the asset browser to be able to add new 
+		textures from the file path
+
+	All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
+
 // Add filepath here
 constexpr char DEFAULT_AUDIO_FILEPATH[] = "DefaultAudio/filepath";
 
@@ -926,12 +944,12 @@ const Audio& ResourceManager::getDefaultAudio() const {
 // for imgui assets browser to get textures
 GLuint ResourceManager::getGLTextureFromFile(const std::string& filePath)
 {
-	// If we've already loaded this texture, reuse it
+	// reuse texture
 	auto it = loadedGLTextures.find(filePath);
 	if (it != loadedGLTextures.end())
 		return it->second->get_textureID(0);
 
-	// Load and store the Texture object persistently
+	// load and store texture object
 	std::vector<char const*> paths = { filePath.c_str() };
 	auto tex = std::make_unique<Texture>(paths);
 

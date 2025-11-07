@@ -1,11 +1,8 @@
 /*!------------------------------------------------------------------------------------------------
-    File: ImGUIManager.cpp
+    File: GameManager.cpp
     Project: NocturnalStudio
 
-    This file contains the implementation of the ImGuiManager class, which manages the integration
-    of the ImGui library into the customize game engine. It handles the initialization,
-    frame updates, and rendering of ImGui components, as well as providing various UI elements
-    for debugging and interaction within the engine.
+    This file contains the implementation of the GameManager class
 
     Primary Author:
         Name %

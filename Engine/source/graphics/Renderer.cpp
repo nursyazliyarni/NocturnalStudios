@@ -14,7 +14,7 @@
          - Implemented FBO
 
     Secondary Author
-        Nur Syazliyarni 5%
+        Nur Syazliyarni (5%)
         - Added the debugging lines for drawAllSprites
 
     Secondary Author:
