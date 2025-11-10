@@ -455,6 +455,32 @@ void AudioSystem::resumeAllSFX() {
 }
 
 /**
+ * @brief Pause all audio routed through the BGM channel group.
+ *
+ * Useful for temporarily muting sound effects while leaving music playing.
+ *
+ * Example:
+ * audioSystem.pauseAllBGM();
+ */
+void AudioSystem::pauseAllBGM() {
+	if (bgmChannelGroup) {
+		bgmChannelGroup->setPaused(true);
+	}
+}
+
+/**
+ * @brief Resume playback of the BGM channel group.
+ *
+ * Example:
+ * audioSystem.resumeAllBGM();
+ */
+void AudioSystem::resumeAllBGM() {
+	if (bgmChannelGroup) {
+		bgmChannelGroup->setPaused(false);
+	}
+}
+
+/**
  * @brief Get the raw FMOD system pointer.
  *
  * Use with care; prefer AudioSystem methods for common operations.

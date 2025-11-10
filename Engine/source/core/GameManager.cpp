@@ -534,3 +534,15 @@ void GameManager::update(float dt,Renderer& renderer,TextureStore& tex) {
 	const float fixedDt = 1.0f / 60.0f;
     animationSystem_.Update(fixedDt, ecs_, renderer, tex);
 }
+
+void GameManager::pauseGame() {
+    if (app == AppState::Playing) {
+        app = AppState::Paused;
+    }
+}
+
+void GameManager::resumeGame() {
+    if (app == AppState::Paused) {
+        app = AppState::Playing;
+    }
+}

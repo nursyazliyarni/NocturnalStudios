@@ -88,6 +88,9 @@ public:
     GameManager(ECS& ecs) :ecs_{ ecs } {}
     void update(float dt,Renderer& renderer,TextureStore& tex);
 
+    void pauseGame();
+    void resumeGame();
+
     // Camera controls (per scene)
     //void setCameraEnabled(const std::string& scene, bool on);
     //void setCameraCenter(const std::string& scene, float cx, float cy);
