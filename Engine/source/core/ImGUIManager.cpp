@@ -479,6 +479,24 @@ void ImGuiManager::showEntityListUI(/* Maybe an enum of paramEntityType, Maybe a
 	// BGM selector
 	static int bgmIndex = 0;
 	static int sfxIndex = 0;
+
+	if (ImGui::Button("Reload audio assets")) {
+		auto added = resourceManager.reloadAudiosFromDirectory("assets/audio");
+		if (added > 0) {
+			audioIDs.clear();
+			audioNames.clear();
+			audioIDs.reserve(resourceManager.getAudios().size());
+			audioNames.reserve(resourceManager.getAudios().size());
+
+			for (auto const& kv : resourceManager.getAudios()) {
+				audioIDs.push_back(kv.first);
+				audioNames.push_back(kv.second.getKey());
+			}
+			if (bgmIndex >= (int)audioNames.size()) bgmIndex = 0;
+			if (sfxIndex >= (int)audioNames.size()) sfxIndex = 0;
+		}
+	}
+
 	if (!audioNames.empty()) {
 		if (bgmIndex >= (int)audioNames.size()) bgmIndex = 0;
 		ImGui::Text("Simple Audio Test:");

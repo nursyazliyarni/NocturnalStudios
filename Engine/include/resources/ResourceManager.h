@@ -45,6 +45,7 @@ public:
 
 	void loadResources(std::string const& resourceFilePath = "");
 
+	std::size_t reloadAudiosFromDirectory(const std::string& directoryPath);
 	Audio& loadAudio(const std::string& name, const std::string& filePath, ResourceID id = NEW_RESOURCE);
 	Audio& getAudio(ResourceID id);
 

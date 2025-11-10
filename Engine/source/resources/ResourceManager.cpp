@@ -21,6 +21,7 @@ constexpr char DEFAULT_AUDIO_FILEPATH[] = "DefaultAudio/filepath";
 
 #include <iostream>
 #include <filesystem>
+#include <algorithm>
 #include "fmod_errors.h"
 
 #include "ECS/ECS.h"
@@ -190,6 +191,39 @@ void ResourceManager::loadResources(std::string const& resourceFilePath) {
 	logger.log("Resource loading complete.");
 }
 
+std::size_t ResourceManager::reloadAudiosFromDirectory(const std::string& directoryPath) {
+	namespace fs = std::filesystem;
+	std::size_t added = 0;
+	static const char* extensions[] = { ".wav", ".ogg", ".mp3", ".flac", ".aiff", ".fsb" };
+
+	if (!fs::exists(directoryPath)) {
+		logger.error("Audio directory not found: " + directoryPath);
+		return 0;
+	}
+
+	for (const auto& entry : fs::recursive_directory_iterator(directoryPath)) {
+		if (!entry.is_regular_file()) continue;
+
+		std::string ext = entry.path().extension().string();
+		std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
+
+		bool supported = std::any_of(std::begin(extensions), std::end(extensions),
+			[&](const char* e) { return ext == e; });
+		if (!supported) continue;
+
+		const std::string key = entry.path().stem().string();
+		const std::string path = entry.path().string();
+
+		if (this->findResource<Audio>(key) != NO_RESOURCE_ID) continue;
+
+		Audio& audio = this->loadAudio(key, path);
+		UNREFERENCED_PARAMETER(audio);
+		++added;
+	}
+
+	return added;
+}
+
 /**
  * loadAudio
  *
@@ -348,7 +382,7 @@ ShaderFile& ResourceManager::loadShader(const std::string& name, const std::stri
  * Returns:
  *  - Reference to the found ShaderFile object.
  *  - If no matching ShaderFile exists the function asserts (caller should
- *    ensure id validity) — consistent with existing usage in this codebase.
+ *    ensure id validity) ï¿½ consistent with existing usage in this codebase.
  *
  * Simple usage:
  *  ResourceID id = /* previously obtained id * /;
@@ -420,7 +454,7 @@ TextureFile& ResourceManager::loadTexture(const std::string& name, const std::st
  * Returns:
  *  - Reference to the found TextureFile object.
  *  - If no matching TextureFile exists the function asserts (caller should
- *    ensure id validity) — consistent with existing usage in this codebase.
+ *    ensure id validity) ï¿½ consistent with existing usage in this codebase.
  *
  * Simple usage:
  *  ResourceID id = /* previously obtained id * /;
@@ -505,7 +539,7 @@ Font& ResourceManager::loadFont(const std::string& name, const std::string& file
  * Returns:
  *  - Reference to the found Font object.
  *  - If no matching Font exists the function asserts (caller should ensure id
- *    validity) — consistent with existing usage in this codebase.
+ *    validity) ï¿½ consistent with existing usage in this codebase.
  *
  * Simple usage:
  *  ResourceID id = /* previously obtained id * /;
@@ -575,7 +609,7 @@ PrefabFile& ResourceManager::loadPrefab(const std::string& name, const std::stri
  * Returns:
  *  - Reference to the found PrefabFile object.
  *  - If no matching PrefabFile exists the function asserts (caller should
- *    ensure id validity) — consistent with existing usage in this codebase.
+ *    ensure id validity) ï¿½ consistent with existing usage in this codebase.
  *
  * Simple usage:
  *  ResourceID id = /* previously obtained id * /;
@@ -645,7 +679,7 @@ SceneFile& ResourceManager::loadScene(const std::string& name, const std::string
  * Returns:
  *  - Reference to the found SceneFile object.
  *  - If no matching SceneFile exists the function asserts (caller should
- *    ensure id validity) — consistent with existing usage in this codebase.
+ *    ensure id validity) ï¿½ consistent with existing usage in this codebase.
  *
  * Simple usage:
  *  ResourceID id = /* previously obtained id * /;
