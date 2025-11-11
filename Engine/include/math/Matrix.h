@@ -190,14 +190,14 @@ Matrix<N> Matrix<N>::operator*(const Matrix<N>& other) const noexcept {
 // Matrix-Vector multiplication
 template <size_t N>
 Vector<N> Matrix<N>::operator*(const Vector<N>& vec) const noexcept {
-	Vector<N> result;
-	for (size_t i{}; i < N; ++i) {
-		result[i] = 0.0f;
-		for (size_t j{}; j < N; ++j) {
-			result[i] += data[i * N + j] * vec[j];
-		}
-	}
-	return result;
+    Vector<N> result;
+    for (size_t r = 0; r < N; ++r) {
+        float acc = 0.f;
+        for (size_t c = 0; c < N; ++c)
+            acc = std::fma(data[r * N + c], vec[c], acc);
+        result[r] = acc;
+    }
+    return result;
 }
 
 // Addition assignment operator
@@ -305,12 +305,10 @@ float Matrix<N>::getElement(size_t row, size_t col) const {
 // Identity matrix
 template <size_t N>
 Matrix<N>& Matrix<N>::Identity() noexcept {
-	data.fill(0.f);
-	for (size_t i = 0; i < N; ++i) {
-		if (i % (N + 1) == 0)
-			data[i] = 1.f;
-	}
-	return *this;
+    data.fill(0.f);
+    for (size_t i = 0; i < N; ++i)
+        data[i * N + i] = 1.f;
+    return *this;
 }
 
 // Transpose matrix
@@ -325,82 +323,91 @@ Matrix<N>& Matrix<N>::Transpose() noexcept {
 	return *this;
 }
 
-// Inverse matrix for 3x3
-template <>
-inline Matrix<3>& Matrix<3>::Inverse() noexcept {
-	float determinant = 0.f;
-	Matrix<3> adjugate{};
+// Inverse (generic): Gauss–Jordan with partial pivoting.
+// Has an affine fast path for 4x4 matrices with last row [0 0 0 1].
+template <size_t N>
+inline Matrix<N>& Matrix<N>::Inverse() noexcept {
+    constexpr float eps = 1e-6f;
 
-	// Calculate adjugate matrix
-	adjugate.data[0] = data[4] * data[8] - data[5] * data[7];
-	adjugate.data[1] = data[2] * data[7] - data[1] * data[8];
-	adjugate.data[2] = data[1] * data[5] - data[2] * data[4];
+    if constexpr (N == 4) {
+        // Fast path for affine transforms (last row ~ [0,0,0,1])
+        if (std::fabs((*this)[3][0]) < eps && std::fabs((*this)[3][1]) < eps &&
+            std::fabs((*this)[3][2]) < eps && std::fabs((*this)[3][3] - 1.f) < eps) {
 
-	adjugate.data[3] = data[5] * data[6] - data[3] * data[8];
-	adjugate.data[4] = data[0] * data[8] - data[2] * data[6];
-	adjugate.data[5] = data[2] * data[3] - data[0] * data[5];
+            // Extract R (upper-left 3x3) and t (translation)
+            const float r00 = (*this)[0][0], r01 = (*this)[0][1], r02 = (*this)[0][2];
+            const float r10 = (*this)[1][0], r11 = (*this)[1][1], r12 = (*this)[1][2];
+            const float r20 = (*this)[2][0], r21 = (*this)[2][1], r22 = (*this)[2][2];
+            const float tx  = (*this)[0][3], ty  = (*this)[1][3], tz  = (*this)[2][3];
 
-	adjugate.data[6] = data[3] * data[7] - data[4] * data[6];
-	adjugate.data[7] = data[1] * data[6] - data[0] * data[7];
-	adjugate.data[8] = data[0] * data[4] - data[1] * data[3];
+            // If R is (near) orthonormal, inverse is [R^T | -R^T t; 0 0 0 1]
+            const float c0 = r00*r00 + r10*r10 + r20*r20;
+            const float c1 = r01*r01 + r11*r11 + r21*r21;
+            const float c2 = r02*r02 + r12*r12 + r22*r22;
+            if (std::fabs(c0 - 1.f) < 1e-3f && std::fabs(c1 - 1.f) < 1e-3f && std::fabs(c2 - 1.f) < 1e-3f) {
+                // R^T
+                (*this)[0][0] = r00; (*this)[0][1] = r10; (*this)[0][2] = r20;
+                (*this)[1][0] = r01; (*this)[1][1] = r11; (*this)[1][2] = r21;
+                (*this)[2][0] = r02; (*this)[2][1] = r12; (*this)[2][2] = r22;
+                // -R^T * t
+                (*this)[0][3] = -(r00*tx + r10*ty + r20*tz);
+                (*this)[1][3] = -(r01*tx + r11*ty + r21*tz);
+                (*this)[2][3] = -(r02*tx + r12*ty + r22*tz);
+                // last row
+                (*this)[3][0] = 0.f; (*this)[3][1] = 0.f; (*this)[3][2] = 0.f; (*this)[3][3] = 1.f;
+                return *this;
+            }
+            // Fall through to generic if not orthonormal (e.g., scaling/shear present)
+        }
+    }
 
-	// Calculate determinant
-	determinant = data[0] * adjugate.data[0] + data[1] * adjugate.data[3] + data[2] * adjugate.data[6];
+    Matrix<N> a = *this;
+    Matrix<N> inv; inv.Identity();
 
-	if (determinant == 0.f) {
-		logger.error("Matrix is singular and cannot be inverted.");
-		return *this;
-	}
+    for (size_t i = 0; i < N; ++i) {
+        // Find pivot row
+        size_t pivot = i;
+        float maxAbs = std::fabs(a[pivot][i]);
+        for (size_t r = i + 1; r < N; ++r) {
+            float v = std::fabs(a[r][i]);
+            if (v > maxAbs) { maxAbs = v; pivot = r; }
+        }
 
-	// Calculate inverse
-	float invDeterminant = 1.f / determinant;
-	for (size_t i = 0; i < 9; ++i)
-		data[i] = adjugate.data[i] * invDeterminant;
+        if (maxAbs <= eps) {
+            logger.error("Matrix is singular or ill-conditioned and cannot be inverted.");
+            return *this;
+        }
 
-	return *this;
-}
+        // Swap to put pivot on diagonal
+        if (pivot != i) {
+            for (size_t c = 0; c < N; ++c) {
+                std::swap(a[i][c],   a[pivot][c]);
+                std::swap(inv[i][c], inv[pivot][c]);
+            }
+        }
 
-// Inverse matrix for 4x4
-template <>
-inline Matrix<4>& Matrix<4>::Inverse() noexcept {
-	float determinant = 0.f;
-	Matrix<4> adjugate{};
+        // Normalize pivot row
+        const float piv = a[i][i];
+        const float invPiv = 1.0f / piv;
+        for (size_t c = 0; c < N; ++c) {
+            a[i][c]   *= invPiv;
+            inv[i][c] *= invPiv;
+        }
 
-	// Calculate adjugate matrix
-    adjugate.data[0] = data[5] * (data[10] * data[15] - data[11] * data[14]) - data[6] * (data[9] * data[15] - data[11] * data[13]) + data[7] * (data[9] * data[14] - data[10] * data[13]);
-    adjugate.data[1] = -data[1] * (data[10] * data[15] - data[11] * data[14]) + data[2] * (data[9] * data[15] - data[11] * data[13]) - data[3] * (data[9] * data[14] - data[10] * data[13]);
-    adjugate.data[2] = data[1] * (data[6] * data[15] - data[7] * data[14]) - data[2] * (data[5] * data[15] - data[7] * data[13]) + data[3] * (data[5] * data[14] - data[6] * data[13]);
-    adjugate.data[3] = -data[1] * (data[6] * data[11] - data[7] * data[10]) + data[2] * (data[5] * data[11] - data[7] * data[9]) - data[3] * (data[5] * data[10] - data[6] * data[9]);
+        // Eliminate column i in all other rows
+        for (size_t r = 0; r < N; ++r) {
+            if (r == i) continue;
+            const float f = a[r][i];
+            if (f == 0.f) continue;
+            for (size_t c = 0; c < N; ++c) {
+                a[r][c]   -= f * a[i][c];
+                inv[r][c] -= f * inv[i][c];
+            }
+        }
+    }
 
-    adjugate.data[4] = -data[4] * (data[10] * data[15] - data[11] * data[14]) + data[6] * (data[8] * data[15] - data[11] * data[12]) - data[7] * (data[8] * data[14] - data[10] * data[12]);
-    adjugate.data[5] = data[0] * (data[10] * data[15] - data[11] * data[14]) - data[2] * (data[8] * data[15] - data[11] * data[12]) + data[3] * (data[8] * data[14] - data[10] * data[12]);
-    adjugate.data[6] = -data[0] * (data[6] * data[15] - data[7] * data[14]) + data[2] * (data[4] * data[15] - data[7] * data[12]) - data[3] * (data[4] * data[14] - data[6] * data[12]);
-    adjugate.data[7] = data[0] * (data[6] * data[11] - data[7] * data[10]) - data[2] * (data[4] * data[11] - data[7] * data[8]) + data[3] * (data[4] * data[10] - data[6] * data[8]);
-
-    adjugate.data[8] = data[4] * (data[9] * data[15] - data[11] * data[13]) - data[5] * (data[8] * data[15] - data[11] * data[12]) + data[7] * (data[8] * data[13] - data[9] * data[12]);
-    adjugate.data[9] = -data[0] * (data[9] * data[15] - data[11] * data[13]) + data[1] * (data[8] * data[15] - data[11] * data[12]) - data[3] * (data[8] * data[13] - data[9] * data[12]);
-    adjugate.data[10] = data[0] * (data[5] * data[15] - data[7] * data[13]) - data[1] * (data[4] * data[15] - data[7] * data[12]) + data[3] * (data[4] * data[13] - data[5] * data[12]);
-    adjugate.data[11] = -data[0] * (data[5] * data[11] - data[7] * data[9]) + data[1] * (data[4] * data[11] - data[7] * data[8]) - data[3] * (data[4] * data[9] - data[5] * data[8]);
-
-    adjugate.data[12] = -data[4] * (data[9] * data[14] - data[10] * data[13]) + data[5] * (data[8] * data[14] - data[10] * data[12]) - data[6] * (data[8] * data[13] - data[9] * data[12]);
-    adjugate.data[13] = data[0] * (data[9] * data[14] - data[10] * data[13]) - data[1] * (data[8] * data[14] - data[10] * data[12]) + data[2] * (data[8] * data[13] - data[9] * data[12]);
-    adjugate.data[14] = -data[0] * (data[5] * data[14] - data[6] * data[13]) + data[1] * (data[4] * data[14] - data[6] * data[12]) - data[2] * (data[4] * data[13] - data[5] * data[12]);
-    adjugate.data[15] = data[0] * (data[5] * data[10] - data[6] * data[9]) - data[1] * (data[4] * data[10] - data[6] * data[8]) + data[2] * (data[4] * data[9] - data[5] * data[8]);
-
-	// Calculate determinant
-	determinant = data[0] * adjugate.data[0] + data[1] * adjugate.data[4] + data[2] * adjugate.data[8] + data[3] * adjugate.data[12];
-
-	if (determinant == 0.f) {
-		logger.error("Matrix is singular and cannot be inverted.");
-		return *this;
-	}
-
-	// Calculate inverse
-	float invDeterminant = 1.f / determinant;
-	for (size_t i = 0; i < 16; ++i)
-		data[i] = adjugate.data[i] * invDeterminant;
-
-	return *this;
+    *this = inv;
+    return *this;
 }
 
 #endif // MATRIX_H
