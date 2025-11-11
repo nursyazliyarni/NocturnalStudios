@@ -828,6 +828,21 @@ void ImGuiManager::showAssetsBrowserUI() {
 		newPath[0] = '\0';
 	}
 	
+    ImGui::Spacing();
+    ImGui::Separator();
+    ImGui::Spacing();
+
+    // New: rescan textures folder
+    if (ImGui::Button("Rescan assets/textures")) {
+        std::size_t added = resourceManager.reloadTexturesFromDirectory("assets/textures");
+        logger.log("[ImGui] Rescan complete. New textures added: " + std::to_string(added));
+    }
+    ImGui::SameLine();
+    // New: clear GL texture cache so modified files are picked up
+    if (ImGui::Button("Clear GL texture cache")) {
+        resourceManager.clearAllGLTexturesCache();
+    }
+
 	ImGui::Text("Loaded Textures:");
 	ImGui::Separator();
 

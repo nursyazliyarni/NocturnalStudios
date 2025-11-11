@@ -46,6 +46,8 @@ public:
 	void loadResources(std::string const& resourceFilePath = "");
 
 	std::size_t reloadAudiosFromDirectory(const std::string& directoryPath);
+	std::size_t reloadTexturesFromDirectory(const std::string& directoryPath);
+
 	Audio& loadAudio(const std::string& name, const std::string& filePath, ResourceID id = NEW_RESOURCE);
 	Audio& getAudio(ResourceID id);
 
@@ -97,7 +99,8 @@ public:
 	const Audio& getDefaultAudio() const;
 
 	GLuint getGLTextureFromFile(const std::string& filePath);
-
+	void clearAllGLTexturesCache();
+	
 private:
 	ECS& ecs;
 

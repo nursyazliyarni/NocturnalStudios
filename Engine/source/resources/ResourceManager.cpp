@@ -191,6 +191,28 @@ void ResourceManager::loadResources(std::string const& resourceFilePath) {
 	logger.log("Resource loading complete.");
 }
 
+/**
+ * getFilePathsForKey
+ *
+ * Retrieves the file paths for all loaded resources of type `T` that match
+ * the provided key.
+ *
+ * Supported resource types `T`:
+ *  - See ResourceManager.h for the full list:
+ *   Audio, ShaderFile, TextureFile, Font, PrefabFile, SceneFile
+ * 
+ * Parameters:
+ *  - key: the resource key to search for.
+ * 
+ * Returns:
+ *  - std::vector<std::string> containing the file paths of all matching
+ *   resources. If no resources match, returns an empty vector.
+ * 
+ * Behavior:
+ * - Iterates over the internal storage for resources of type `T`.
+ * - Compares each resource's key with the provided `key`.
+ * - Collects and returns the file paths of all matching resources.
+ */
 std::size_t ResourceManager::reloadAudiosFromDirectory(const std::string& directoryPath) {
 	namespace fs = std::filesystem;
 	std::size_t added = 0;
@@ -222,6 +244,59 @@ std::size_t ResourceManager::reloadAudiosFromDirectory(const std::string& direct
 	}
 
 	return added;
+}
+
+/**
+ * reloadTexturesFromDirectory
+ * 
+ * Scans the specified directory for texture files and loads any new textures
+ * that are not already present in the ResourceManager.
+ * 
+ * Parameters:
+ * - directoryPath: The filesystem path to the directory to scan for texture files.
+ * 
+ * Returns:
+ * - The number of new textures that were loaded.
+ * 
+ * Behavior:
+ * - Recursively iterates through the specified directory.
+ * - For each file, checks if its extension matches a supported texture format.
+ * - If a texture with the same key (filename without extension) is not already
+ * present, it loads the texture using loadTexture.
+ * - Supported texture formats include: .png, .jpg, .jpeg, .bmp, .tga, .gif, .hdr, .psd.
+ * - Logs an error if the specified directory does not exist.
+ */
+std::size_t ResourceManager::reloadTexturesFromDirectory(const std::string& directoryPath) {
+    namespace fs = std::filesystem;
+    std::size_t added = 0;
+    static const char* extensions[] = { ".png", ".jpg", ".jpeg", ".bmp", ".tga", ".gif", ".hdr", ".psd" };
+
+    if (!fs::exists(directoryPath)) {
+        logger.error("Textures directory not found: " + directoryPath);
+        return 0;
+    }
+
+    for (const auto& entry : fs::recursive_directory_iterator(directoryPath)) {
+        if (!entry.is_regular_file()) continue;
+
+        std::string ext = entry.path().extension().string();
+        std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
+
+        bool supported = std::any_of(std::begin(extensions), std::end(extensions),
+            [&](const char* e) { return ext == e; });
+        if (!supported) continue;
+
+        const std::string key = entry.path().stem().string();
+        const std::string path = entry.path().string();
+
+        if (this->findResource<TextureFile>(key) != NO_RESOURCE_ID) continue;
+
+        TextureFile& tex = this->loadTexture(key, path);
+        UNREFERENCED_PARAMETER(tex);
+        ++added;
+    }
+
+    return added;
 }
 
 /**
@@ -998,4 +1073,9 @@ GLuint ResourceManager::getGLTextureFromFile(const std::string& filePath)
 
 	logger.error("[ResourceManager] Failed to load texture: " + filePath);
 	return 0;
+}
+
+void ResourceManager::clearAllGLTexturesCache() {
+	loadedGLTextures.clear();
+	logger.log("[ResourceManager] Cleared all cached GL textures.");
 }
