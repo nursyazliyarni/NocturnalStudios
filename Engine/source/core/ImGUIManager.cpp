@@ -737,10 +737,7 @@ void ImGuiManager::showLogsOverlayUI() {
 	ImGui::SetNextWindowBgAlpha(0.35f);
 	ImGui::SetNextWindowSize({ width, height });
 
-	ImGui::Begin("Logs", nullptr, windowFlags);
-
-	// Add a Child window to enable vertical and horizontal scrolling
-	ImGui::BeginChild("LogRegionHorizontal", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar);
+	ImGui::Text("Logs");
 
 	for (auto const& log : logger.getLogs()) {
 		if (log.find("[ERROR]") != std::string::npos)
@@ -757,8 +754,6 @@ void ImGuiManager::showLogsOverlayUI() {
 	if (ImGui::GetScrollY() >= ImGui::GetScrollMaxY())
 		ImGui::SetScrollHereY(1.0f);
 
-	ImGui::EndChild();
-	ImGui::End();
 }
 
 void ImGuiManager::showAssetsBrowserUI() {
@@ -941,6 +936,11 @@ void ImGuiManager::showBottomDockUI()
 			ImGui::EndTabItem();
 		}
 
+		if (ImGui::BeginTabItem("Animation Editor"))
+		{
+			showAnimationEditorUI(); 
+			ImGui::EndTabItem();
+		}
 
 		if (ImGui::BeginTabItem("Camera")) { 
 			Cam2D_Params p = Cam2D_GetActiveParams();
@@ -967,4 +967,147 @@ void ImGuiManager::showBottomDockUI()
 
 	ImGui::End();
 	ImGui::PopStyleVar(2);
+}
+
+void ImGuiManager::showAnimationEditorUI() {
+    ImGuiWindowFlags flags = ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing;
+    constexpr float width = 400.0f, height = 330.0f;
+    ImVec2 pos{ windowBottomRight.x - width - 780.0f, windowTopLeft.y + 520.0f };
+    ImGui::SetNextWindowPos(pos);
+    ImGui::SetNextWindowSize({ width, height });
+    ImGui::Text("Sprite Animation Editor");
+
+    ECS& ecs = gsm.getECS();
+
+    // Build list of anim-capable entities
+    static int selected = -1;
+    std::vector<EntityID> animEntities;
+    for (EntityID e : ecs.getAllEntities()) {
+        if (ecs.getComponent<SpriteAnimationComponent>(e) && ecs.getComponent<ImageRenderer>(e))
+            animEntities.push_back(e);
+    }
+
+    if (animEntities.empty()) {
+        ImGui::TextDisabled("No entities with SpriteAnimationComponent.");
+        return;
+    }
+
+    // Entity selector
+    if (selected < 0 || selected >= (int)animEntities.size()) selected = 0;
+    if (ImGui::BeginCombo("Entity", std::to_string(animEntities[selected]).c_str())) {
+        for (int i = 0; i < (int)animEntities.size(); ++i) {
+            bool sel = (i == selected);
+            if (ImGui::Selectable(std::to_string(animEntities[i]).c_str(), sel))
+                selected = i;
+            if (sel) ImGui::SetItemDefaultFocus();
+        }
+        ImGui::EndCombo();
+    }
+
+    EntityID eid = animEntities[selected];
+    auto* anim = ecs.getComponent<SpriteAnimationComponent>(eid);
+    auto* img  = ecs.getComponent<ImageRenderer>(eid);
+
+    // Spritesheet path input (for replacement)
+    static char sheetPath[256] = "assets/textures/";
+    ImGui::InputText("Spritesheet Path", sheetPath, IM_ARRAYSIZE(sheetPath));
+    if (ImGui::Button("Load / Apply Spritesheet")) {
+        if (sheetPath[0]) {
+            // Ensure path normalization similar to Prefab texture lookup
+            std::string p = sheetPath;
+            if (p.rfind("assets/", 0) != 0) p = "assets/" + p;
+            auto texID = resourceManager.getGLTextureFromFile(p);
+            if (texID) {
+                img->textureID = texID;
+                img->isVisible = true;
+            }
+        }
+    }
+    ImGui::Separator();
+
+    // Sheet layout
+    ImGui::DragInt("Columns", &anim->sheetColumns, 0.1f, 1, 256);
+    ImGui::DragInt("Rows",    &anim->sheetRows,    0.1f, 1, 256);
+
+    // Current animation
+    if (anim->currentAnim.empty() && !anim->animations.empty())
+        anim->currentAnim = anim->animations.begin()->first;
+
+    // Animation list
+    ImGui::Text("Animations:");
+    if (ImGui::BeginListBox("##animlist", ImVec2(-FLT_MIN, 100))) {
+        for (auto& kv : anim->animations) {
+            bool sel = (kv.first == anim->currentAnim);
+            if (ImGui::Selectable(kv.first.c_str(), sel))
+                anim->currentAnim = kv.first;
+            if (sel) ImGui::SetItemDefaultFocus();
+        }
+        ImGui::EndListBox();
+    }
+
+    // Edit selected animation
+    if (!anim->currentAnim.empty()) {
+        auto& def = anim->animations[anim->currentAnim];
+        int frames = def.frames;
+        float frameTime = def.frameTime;
+        bool loop = def.loop;
+
+        ImGui::DragInt("Frames", &frames, 0.2f, 1, 1024);
+        ImGui::DragFloat("Frame Time", &frameTime, 0.001f, 0.001f, 5.0f, "%.3f");
+        ImGui::Checkbox("Loop", &loop);
+
+        if (ImGui::Button("Apply Changes")) {
+            def.frames = frames;
+            def.frameTime = frameTime;
+            def.loop = loop;
+            anim->currentFrame = 0;
+            anim->timer = 0.0f;
+            anim->playing = true;
+        }
+        ImGui::SameLine();
+        if (ImGui::Button("Delete Animation") && anim->animations.size() > 1) {
+            anim->animations.erase(anim->currentAnim);
+            if (anim->animations.empty()) anim->currentAnim.clear();
+            else anim->currentAnim = anim->animations.begin()->first;
+            anim->currentFrame = 0;
+            anim->timer = 0.0f;
+        }
+    }
+
+    ImGui::Separator();
+    // Add new animation
+    static char newName[64] = "";
+    static int newFrames = 1;
+    static float newFrameTime = 0.1f;
+    static bool newLoop = true;
+
+    ImGui::InputText("New Name", newName, IM_ARRAYSIZE(newName));
+    ImGui::DragInt("New Frames", &newFrames, 0.2f, 1, 1024);
+    ImGui::DragFloat("New Frame Time", &newFrameTime, 0.001f, 0.001f, 5.0f, "%.3f");
+    ImGui::Checkbox("New Loop", &newLoop);
+    if (ImGui::Button("Add Animation") && newName[0]) {
+        SpriteAnimationComponent::Animation a;
+        a.frames = newFrames;
+        a.frameTime = newFrameTime;
+        a.loop = newLoop;
+        anim->animations[newName] = a;
+        anim->currentAnim = newName;
+        anim->currentFrame = 0;
+        anim->timer = 0.0f;
+        anim->playing = true;
+        newName[0] = '\0';
+    }
+
+    // Playback controls
+    ImGui::Separator();
+    ImGui::Text("Playback:");
+    if (ImGui::Button(anim->playing ? "Pause" : "Play"))
+        anim->playing = !anim->playing;
+    ImGui::SameLine();
+    if (ImGui::Button("Restart")) {
+        anim->currentFrame = 0;
+        anim->timer = 0.0f;
+        anim->playing = true;
+    }
+
 }

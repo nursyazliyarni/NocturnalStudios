@@ -78,6 +78,7 @@ public:
 
 	void showAssetsBrowserUI();
 	void showBottomDockUI();
+	void showAnimationEditorUI();   
 
 	// Expose last measured logic time (seconds)
 	double getLogicTime() const { return logicTime; }

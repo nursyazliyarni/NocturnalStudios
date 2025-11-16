@@ -88,6 +88,8 @@ public:
     GameManager(ECS& ecs) :ecs_{ ecs } {}
     void update(float dt,Renderer& renderer,TextureStore& tex);
 
+	ECS& getECS() { return ecs_; }
+
     void pauseGame();
     void resumeGame();
 
