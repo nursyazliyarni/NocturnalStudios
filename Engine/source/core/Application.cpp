@@ -240,6 +240,7 @@ void Application::init() {
     wd.height = c.window.height;
     wd.title = c.window.title;
     wd.vsync = c.window.vsync;
+	wd.fullscreen = true;
 
     if (!m_window.create(wd)) {
         logger.error("Failed to create window");
@@ -495,6 +496,9 @@ int Application::run() {
 
         	if (inputSystem->WasPressed(GLFW_KEY_ESCAPE))
             	gsm->handleKeyPress(GLFW_KEY_ESCAPE);
+
+			if (inputSystem->WasPressed(GLFW_KEY_F11)) 
+				m_window.toggleFullscreen();
 
         	inputSystem->ProcessHotkeys(*gsm);
         	TransformSystem::TransformInput(*inputSystem, dt);
