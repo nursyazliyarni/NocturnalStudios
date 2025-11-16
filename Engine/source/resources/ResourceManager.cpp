@@ -19,6 +19,8 @@
 // Add filepath here
 constexpr char DEFAULT_AUDIO_FILEPATH[] = "DefaultAudio/filepath";
 
+#define _HAS_STD_BYTE 0
+
 #include <iostream>
 #include <filesystem>
 #include <algorithm>
@@ -30,7 +32,37 @@ constexpr char DEFAULT_AUDIO_FILEPATH[] = "DefaultAudio/filepath";
 #include "System/Audio_System.h"
 #include "graphics/Texture.h"
 
+#ifdef _WIN32
+#define GLFW_EXPOSE_NATIVE_WIN32
+#include <GLFW/glfw3.h>
+#include <GLFW/glfw3native.h>
+#include <windows.h>
+#endif
+
 extern Logger logger;
+
+namespace {
+    static const std::array<const char*, 6> kSupportedAudioExt = { ".wav", ".ogg", ".mp3", ".flac", ".aiff", ".fsb" };
+
+    static bool IsSupportedAudioExtension(const std::string& extLower)
+    {
+        for (auto* e : kSupportedAudioExt)
+            if (extLower == e) return true;
+        return false;
+    }
+
+    static void ShowAudioErrorPopup(const std::string& msg)
+    {
+    #ifdef _WIN32
+        GLFWwindow* gw = glfwGetCurrentContext();
+        HWND parent = gw ? glfwGetWin32Window(gw) : nullptr;
+        MessageBoxA(parent, msg.c_str(), "Audio Format Error", MB_OK | MB_ICONERROR | MB_TOPMOST);
+    #else
+        // Fallback: could integrate an ImGui modal if needed for other platforms.
+        logger.error(msg);
+    #endif
+    }
+}
 
 /**
  * ResourceManager
@@ -229,9 +261,11 @@ std::size_t ResourceManager::reloadAudiosFromDirectory(const std::string& direct
 		std::string ext = entry.path().extension().string();
 		std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
 
-		bool supported = std::any_of(std::begin(extensions), std::end(extensions),
-			[&](const char* e) { return ext == e; });
-		if (!supported) continue;
+		if (!IsSupportedAudioExtension(ext)) {
+			ShowAudioErrorPopup("Unsupported audio file format:\n" + entry.path().string() + "\nAllowed: .wav .ogg .mp3 .flac .aiff .fsb");
+			logger.error("Blocked loading unsupported audio format: " + entry.path().string());
+			continue;
+		}
 
 		const std::string key = entry.path().stem().string();
 		const std::string path = entry.path().string();
@@ -345,6 +379,17 @@ std::size_t ResourceManager::reloadTexturesFromDirectory(const std::string& dire
  *  // if (rm.getAudioSystem()) rm.getAudioSystem()->loadSound(a);
  */
 Audio& ResourceManager::loadAudio(const std::string& name, const std::string& filePath, ResourceID id) {
+    // Extension validation before creating the resource
+    std::filesystem::path fp{ filePath };
+    std::string ext = fp.extension().string();
+    std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
+
+    if (!IsSupportedAudioExtension(ext)) {
+        ShowAudioErrorPopup("Unsupported audio file format:\n" + filePath + "\nAllowed: .wav .ogg .mp3 .flac .aiff .fsb");
+        logger.error("Blocked loading unsupported audio format: " + filePath);
+		return defaultAudio;
+    }
+
 	for (auto& [key, audio] : audios) {
 		if (std::filesystem::path{ audio.getFilePath() } == std::filesystem::path{ filePath }) {
 			return audio;

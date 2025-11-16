@@ -1,5 +1,14 @@
+#define _HAS_STD_BYTE 0
+
 #include "System/Audio_System.h"
 #include <filesystem>
+
+#ifdef _WIN32
+#define GLFW_EXPOSE_NATIVE_WIN32
+#include <GLFW/glfw3.h>
+#include <GLFW/glfw3native.h>
+#include <windows.h>
+#endif
 
 namespace {
 	/**
@@ -68,6 +77,19 @@ namespace {
 			return FMOD_OK;
 		}
 	}
+
+    static void ShowAudioLoadFailurePopup(const std::string& filepath, FMOD_RESULT result) {
+    #ifdef _WIN32
+        GLFWwindow* gw = glfwGetCurrentContext();
+        HWND parent = gw ? glfwGetWin32Window(gw) : nullptr;
+        std::string msg =
+            "Failed to load audio:\n" + filepath +
+            "\nFMOD error: " + std::string(FMOD_ErrorString(result));
+        MessageBoxA(parent, msg.c_str(), "Audio Load Error", MB_OK | MB_ICONERROR | MB_TOPMOST);
+    #else
+        logger.error("Failed to load audio (popup not available): " + filepath + " : " + FMOD_ErrorString(result));
+    #endif
+    }	
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -635,16 +657,17 @@ bool AudioSystem::registerNewAudioResource(AudioData& audioData, EntityID id) {
  * // Called by the ResourceManager during initialization; not typically called by gameplay code.
  */
 void AudioSystem::loadSound(Audio const& audio) {
-	FMOD::Sound* sound = nullptr;
-	//FMOD_RESULT result = fmodSystem->createSound(audio.getFilePath().c_str(), FMOD_2D, nullptr, &sound);
-	FMOD_MODE mode = FMOD_DEFAULT | FMOD_2D | FMOD_CREATESTREAM; // stream long files
-	FMOD_RESULT result = fmodSystem->createSound(audio.getFilePath().c_str(), mode, nullptr, &sound);
-	if (result != FMOD_OK) {
-		logger.error("Failed to load audio sound from file: " + audio.getFilePath() + " Error: " + std::string{ FMOD_ErrorString(result) });
-		return;
-	}
-
-	soundMap.insert({ audio.getID(), sound });
+    FMOD::Sound* sound = nullptr;
+    FMOD_MODE mode = FMOD_DEFAULT | FMOD_2D | FMOD_CREATESTREAM;
+    FMOD_RESULT result = fmodSystem->createSound(audio.getFilePath().c_str(), mode, nullptr, &sound);
+    if (result != FMOD_OK) {
+        if (result == FMOD_ERR_FORMAT || result == FMOD_ERR_FILE_BAD || result == FMOD_ERR_FILE_NOTFOUND) {
+            ShowAudioLoadFailurePopup(audio.getFilePath(), result);
+        }
+        logger.error("Failed to load audio sound from file: " + audio.getFilePath() + " Error: " + std::string{ FMOD_ErrorString(result) });
+        return;
+    }
+    soundMap.insert({ audio.getID(), sound });
 }
 
 /**
