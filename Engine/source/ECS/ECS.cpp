@@ -77,18 +77,26 @@ ECS::ECS() {
 				animDoc.Parse(buffer.str().c_str());
 
 				for (auto& m : animDoc.GetObject()) {
-					SpriteAnimationComponent::Animation anim;
-					auto& obj = m.value;
+                    SpriteAnimationComponent::Animation anim;
+                    auto& obj = m.value;
 
-					// New: read "frameCount" instead of "frames"
-					if (obj.HasMember("frameCount"))
-						anim.frames = obj["frameCount"].GetInt();
-					if (obj.HasMember("frameTime"))
-						anim.frameTime = obj["frameTime"].GetFloat();
-					if (obj.HasMember("loop"))
-						anim.loop = obj["loop"].GetBool();
-					comp.animations[m.name.GetString()] = anim;
-				}
+                    if (obj.HasMember("frameCount"))
+                        anim.frames = obj["frameCount"].GetInt();
+                    if (obj.HasMember("frameTime"))
+                        anim.frameTime = obj["frameTime"].GetFloat();
+                    if (obj.HasMember("loop"))
+                        anim.loop = obj["loop"].GetBool();
+
+                    // NEW: per-animation data
+                    if (obj.HasMember("sprite_path") && obj["sprite_path"].IsString())
+                        anim.spritePath = obj["sprite_path"].GetString();
+                    if (obj.HasMember("sheetColumns") && obj["sheetColumns"].IsInt())
+                        anim.sheetColumns = obj["sheetColumns"].GetInt();
+                    if (obj.HasMember("sheetRows") && obj["sheetRows"].IsInt())
+                        anim.sheetRows = obj["sheetRows"].GetInt();
+
+                    comp.animations[m.name.GetString()] = anim;
+                }
 			}
 		}
 

@@ -1080,16 +1080,30 @@ void ImGuiManager::showAnimationEditorUI() {
     static int newFrames = 1;
     static float newFrameTime = 0.1f;
     static bool newLoop = true;
+    static char newSpritePath[256] = "assets/textures/";
+    static int newCols = 1;
+    static int newRows = 1;
 
     ImGui::InputText("New Name", newName, IM_ARRAYSIZE(newName));
+    ImGui::InputText("New Sprite Path", newSpritePath, IM_ARRAYSIZE(newSpritePath));
     ImGui::DragInt("New Frames", &newFrames, 0.2f, 1, 1024);
     ImGui::DragFloat("New Frame Time", &newFrameTime, 0.001f, 0.001f, 5.0f, "%.3f");
     ImGui::Checkbox("New Loop", &newLoop);
+    ImGui::DragInt("New Columns", &newCols, 0.2f, 1, 256);
+    ImGui::DragInt("New Rows", &newRows, 0.2f, 1, 256);
+
     if (ImGui::Button("Add Animation") && newName[0]) {
-        SpriteAnimationComponent::Animation a;
+        SpriteAnimationComponent::Animation a{};
         a.frames = newFrames;
         a.frameTime = newFrameTime;
         a.loop = newLoop;
+        a.sheetColumns = newCols;
+        a.sheetRows = newRows;
+        if (newSpritePath[0]) {
+            std::string p = newSpritePath;
+            if (p.rfind("assets/", 0) != 0) p = "assets/" + p;
+            a.spritePath = p;
+        }
         anim->animations[newName] = a;
         anim->currentAnim = newName;
         anim->currentFrame = 0;
