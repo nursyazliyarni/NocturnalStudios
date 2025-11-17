@@ -521,7 +521,7 @@ void ImGuiManager::showEntityListUI(/* Maybe an enum of paramEntityType, Maybe a
 			}
 			else {
 				// check if audio type is music or sfx
-				if (audioNames[bgmIndex].find("bgm_") != std::string::npos) {
+				if (audioNames[bgmIndex].find("BGM_") != std::string::npos) {
 					// create bgm instance
 					AudioData::IndividualAudioData d{};
 					d.resourceID = bgmRID;
@@ -531,7 +531,7 @@ void ImGuiManager::showEntityListUI(/* Maybe an enum of paramEntityType, Maybe a
 					d.volume = audioSystem.getBGMVolume();
 					opt = audioSystem.createAudioInstance(d, INVALID_ENTITY_ID);
 				}
-				else if (audioNames[bgmIndex].find("sfx_") != std::string::npos) {
+				else if (audioNames[bgmIndex].find("SFX_") != std::string::npos) {
 					// play sfx instance (one-shot)
 					audioSystem.playSFX(bgmRID);
 				}
