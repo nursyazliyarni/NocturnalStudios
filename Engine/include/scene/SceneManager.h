@@ -4,13 +4,10 @@
 
     This file contains ...
 
-    Primary Author:
-         Name (%)
+     Author:
+         Sarah (%)
         -Brief
 
-    Secondary Author:
-         Name (%)
-        -Brief
 
     All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
 *------------------------------------------------------------------------------------------------*/

@@ -1,3 +1,19 @@
+/*!------------------------------------------------------------------------------------------------
+	File: ECSComponentParsing.cpp
+	Project: NocturnalStudio
+
+		This file contains the declarations oif functions FromJson for various ECS Components, which
+		allows ECS components to be parsed from a JSON file
+
+	Primary Author:
+		Laycock Enhui Sarah (95%)
+		- Created and implemented 
+
+	Rishika added AIComponent
+
+	All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
+
 #include "ECS/ECS_Component.h"
 #include "ECS/ECS.h"
 bool ComponentFactory::CreateFromName(EntityID entity, const std::string& name, const Json& j) {
@@ -50,6 +66,11 @@ bool ComponentFactory::CreateFromName(EntityID entity, const std::string& name, 
 	if (name == "AABBCollider")
 	{
 		ecs.addComponent<AABBCollider>(entity, std::any_cast<AABBCollider>(Create(name,j)));
+		return true;
+	}
+	if (name=="AIComponent")
+	{
+		ecs.addComponent<AIComponent>(entity, std::any_cast<AIComponent>(Create(name, j)));
 		return true;
 	}
 	return false;
@@ -393,7 +414,26 @@ void BoxCollider::FromJSON(const rapidjson::Value& json) {
 		}
 	}
 }
+void AIComponent::FromJSON(const rapidjson::Value& component_json) {
+	
 
+		if (component_json.HasMember("state") && component_json["state"].IsString()) {
+			std::string s = component_json["state"].GetString();
+			if (s == "Chase") state = AIComponent::State::Chase;
+			else if (s == "Flee")  state = AIComponent::State::Flee;
+			else                   state = AIComponent::State::Wander;
+		}
+		if (component_json.HasMember("maxSpeed") && component_json["maxSpeed"].IsNumber())      maxSpeed = component_json["maxSpeed"].GetFloat();
+		if (component_json.HasMember("accel") && component_json["accel"].IsNumber())         accel = component_json["accel"].GetFloat();
+		if (component_json.HasMember("wanderJitter") && component_json["wanderJitter"].IsNumber())  wanderJitter = component_json["wanderJitter"].GetFloat();
+		if (component_json.HasMember("chaseStrength") && component_json["chaseStrength"].IsNumber()) chaseStrength = component_json["chaseStrength"].GetFloat();
+		if (component_json.HasMember("fleeStrength") && component_json["fleeStrength"].IsNumber())  fleeStrength = component_json["fleeStrength"].GetFloat();
+		if (component_json.HasMember("avoidRadius") && component_json["avoidRadius"].IsNumber())   avoidRadius = component_json["avoidRadius"].GetFloat();
+		if (component_json.HasMember("targetName") && component_json["targetName"].IsString())
+			targetName = component_json["targetName"].GetString();
+		if (component_json.HasMember("targetWeight") && component_json["targetWeight"].IsNumber())
+			targetWeight = component_json["targetWeight"].GetFloat();
+}
 void AABBCollider::FromJSON(const rapidjson::Value& json) {
 	if (json.HasMember("bounding_box_size") && json["bounding_box_size"].IsFloat())
 	{

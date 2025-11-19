@@ -1,3 +1,16 @@
+
+/*!------------------------------------------------------------------------------------------------
+    File: SceneManager.cpp
+    Project: NocturnalStudio
+
+    scene manager but niot un use yert
+
+    Primary Author:
+        Laycock Enhui Sarah (100%)
+        - Created the skeleton of SceneManager
+
+    All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
 #include "./scene/SceneManager.h"
 
 #include "graphics/Camera2D.h" 

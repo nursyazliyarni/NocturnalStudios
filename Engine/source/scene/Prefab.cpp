@@ -4,13 +4,14 @@
 
 	This file contains ...
 
-	Primary Author :
-		Name(%)
+	 Author :
+		Sarah(%)
 		- Brief
 
-	Secondary Author :
-		Name(%)
-		- Brief
+	 Author :
+		Name(%) Rishika Bimal Attodi
+		- stabilized init & main loop, wired systems, 
+        fixed menu menu to scene transitions, and cleaned up redundant code paths.
 
 All content(c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
 * ------------------------------------------------------------------------------------------------ */
@@ -28,7 +29,7 @@ All content(c) 2025 DigiPen Institute of Technology Singapore, all rights reserv
 
 #include "graphics/Camera2D.h"   // added (for Cam2D_RegisterPreset / ActivatePreset)
 
-
+#include "ECS/ECS_Component.h"
 
 // [0]=ESC, [1..9]=digits
 static std::array<SceneID, 10> sKey2Scene{};
@@ -172,11 +173,22 @@ bool PrefabManager::PrefabExists(const std::string& prefab_name) const {
 }
 
 
-EntityID PrefabManager::Instantiate(const std::string& prefab_name, const std::string& entity_name) {
-	UNREFERENCED_PARAMETER(entity_name);
+//EntityID PrefabManager::Instantiate(const std::string& prefab_name, const std::string& entity_name) {
+//	UNREFERENCED_PARAMETER(entity_name);
+//
+//    return Instantiate(prefab_name, INVALID_ENTITY_ID);
+//}
 
-    return Instantiate(prefab_name, INVALID_ENTITY_ID);
+EntityID PrefabManager::Instantiate(const std::string& prefab_name, const std::string& entity_name) {
+    // Reuse the existing instantiate path
+    EntityID id = Instantiate(prefab_name, INVALID_ENTITY_ID);
+    if (id != INVALID_ENTITY_ID && !entity_name.empty()) {
+        // Rename the freshly created entity so findEntityByName works
+        entity_component_based_system.getEntityName(id) = entity_name;
+    }
+    return id;
 }
+
 
 EntityID PrefabManager::Instantiate(const std::string& prefab_name, EntityID specific_id) {
     // Find the prefab document
@@ -350,6 +362,24 @@ void PrefabManager::LoadScenes() {
     }
 }
 
+
+std::string Scenes_GetInitialName() {
+    rapidjson::Document d;
+    if (!LoadScenesJson(d)) return {};
+    if (d.HasMember("states") && d["states"].IsObject()) {
+        const auto& st = d["states"];
+        if (st.HasMember("initial") && st["initial"].IsString())
+            return st["initial"].GetString();
+    }
+    if (d.HasMember("scenes") && d["scenes"].IsObject()) {
+        for (auto it = d["scenes"].MemberBegin(); it != d["scenes"].MemberEnd(); ++it)
+            return it->name.GetString();
+    }
+    return {};
+}
+
+
+
 SceneID PrefabManager::ResolveSceneKey(int idx) const {
     if (idx < 0 || idx > 9) return SceneID{};
     return sKey2Scene[static_cast<size_t>(idx)];
@@ -390,4 +420,48 @@ const std::string& Prefab_GetSceneName(SceneID id) {
     static std::string empty;
     auto it = sIdToName.find(id);
     return (it == sIdToName.end()) ? empty : it->second;
+}
+bool Prefab_SpawnEntitiesForScene(const std::string& sceneName, PrefabManager& pm) {
+    rapidjson::Document d;
+    if (!LoadScenesJson(d)) return false;
+    if (!d.HasMember("scenes") || !d["scenes"].IsObject()) return false;
+
+    const auto& scenes = d["scenes"];
+    if (!scenes.HasMember(sceneName.c_str())) return false;
+
+    const auto& sc = scenes[sceneName.c_str()];
+    if (!sc.HasMember("entities") || !sc["entities"].IsArray()) return true;
+
+    ECS& ecs = pm.entity_component_based_system;
+
+    for (const auto& e : sc["entities"].GetArray()) {
+        std::string name = (e.HasMember("name") && e["name"].IsString()) ? e["name"].GetString() : "";
+        std::string prefab = (e.HasMember("prefab") && e["prefab"].IsString()) ? e["prefab"].GetString() : "";
+        if (prefab.empty()) continue;
+
+        EntityID id = pm.Instantiate(prefab, name);
+        if (id == INVALID_ENTITY_ID) continue;
+
+        // Prefer 'overrides' but accept 'defaults'
+        const rapidjson::Value* ov = nullptr;
+        if (e.HasMember("overrides") && e["overrides"].IsObject()) ov = &e["overrides"];
+        else if (e.HasMember("defaults") && e["defaults"].IsObject()) ov = &e["defaults"];
+
+        if (ov) pm.ApplyComponentDefaults(id, *ov);
+
+        // If overrides has sprite_path, resolve and apply to ImageRenderer now
+        if (ov && ov->HasMember("sprite_path") && (*ov)["sprite_path"].IsString()) {
+            if (auto* r = ecs.getComponent<ImageRenderer>(id)) {
+                r->textureID = ResolveTextureID((*ov)["sprite_path"].GetString());
+                r->isVisible = (r->textureID > 0);
+            }
+        }
+
+        // Optional: allow per-entity extra components inline
+        if (e.HasMember("components") && e["components"].IsArray()) {
+            for (const auto& comp : e["components"].GetArray())
+                pm.AddComponentFromJSON(id, comp);
+        }
+    }
+    return true;
 }

@@ -1,15 +1,13 @@
 /*!------------------------------------------------------------------------------------------------
-    File: ImGUIManager.cpp
+    File: GameManager.cpp
     Project: NocturnalStudio
 
-    This file contains the implementation of the ImGuiManager class, which manages the integration
-    of the ImGui library into the customize game engine. It handles the initialization,
-    frame updates, and rendering of ImGui components, as well as providing various UI elements
-    for debugging and interaction within the engine.
+    This file contains the implementation of the GameManager class
+
 
     Primary Author:
-        Name %
-        -
+        Rishika Bimal Attodi %
+        -State integration for the play and exit button and scene switching via keys
 
     Secondary Author:
         Nur Syazliyarni (5%)
@@ -33,6 +31,10 @@
 #include "graphics/DebugDraw.h"
 #include "physics/AABB.h"
 #include "Animation/SpriteAnimationComponent.h"
+
+#include "core/Application.h"
+
+#include <functional>
 
 //  TextureStore 
 static GLuint loadGLTexture(const std::string& path) {
@@ -176,14 +178,25 @@ bool GameManager::load(const char* prefabsPath, const char* scenesPath, TextureS
                     if (ov.HasMember("h") && ov["h"].IsNumber())      di.h = ov["h"].GetFloat();
                     if (ov.HasMember("angle") && ov["angle"].IsNumber()) di.angle = ov["angle"].GetFloat();
 
-                    if (ov.HasMember("health_bar") && ov["health_bar"].IsNumber()) di.health_bar = ov["health_bar"].GetFloat();
-                    if (ov.HasMember("hunger_bar") && ov["hunger_bar"].IsNumber()) di.hunger_bar = ov["hunger_bar"].GetFloat();
-                    if (ov.HasMember("sanity_bar") && ov["sanity_bar"].IsNumber()) di.sanity_bar = ov["sanity_bar"].GetFloat();
+         
 
                     if (ov.HasMember("sprite_path") && ov["sprite_path"].IsString()) {
                         std::string sp = toAssetsPath(ov["sprite_path"].GetString());
                         di.tex = tex.get(sp);
                     }
+                }
+
+                if (e.HasMember("animal_properties") && e["animal_properties"].IsObject()) {
+                    const auto& animal = e["animal_properties"];
+                    if (animal.HasMember("health_bar") && animal["health_bar"].IsNumber()) di.health_bar = animal["health_bar"].GetFloat();
+                    if (animal.HasMember("hunger_bar") && animal["hunger_bar"].IsNumber()) di.hunger_bar = animal["hunger_bar"].GetFloat();
+                    if (animal.HasMember("sanity_bar") && animal["sanity_bar"].IsNumber()) di.sanity_bar = animal["sanity_bar"].GetFloat();
+
+                    if (animal.HasMember("slower_decreasing_rate") && animal["slower_decreasing_rate"].IsNumber()) di.slower_decreasing_rate = animal["slower_decreasing_rate"].GetFloat();
+                    if (animal.HasMember("normal_decreasing_rate") && animal["normal_decreasing_rate"].IsNumber()) di.normal_decreasing_rate = animal["normal_decreasing_rate"].GetFloat();
+                    if (animal.HasMember("faster_decreasing_rate") && animal["faster_decreasing_rate"].IsNumber()) di.faster_decreasing_rate = animal["faster_decreasing_rate"].GetFloat();
+                    if (animal.HasMember("penalty_decreasing_rate") && animal["penalty_decreasing_rate"].IsNumber()) di.penalty_decreasing_rate = animal["penalty_decreasing_rate"].GetFloat();
+                    di.still_alive = true;
                 }
 
                 if (e.HasMember("name") && e["name"].IsString())
@@ -201,6 +214,7 @@ bool GameManager::load(const char* prefabsPath, const char* scenesPath, TextureS
 
                 ClickRegion cr;
                 cr.x = di.x; cr.y = di.y; cr.w = di.w; cr.h = di.h;
+                cr.name = di.name;
                 if (e.HasMember("goto") && e["goto"].IsString()) cr.gotoScene = e["goto"].GetString();
                 if (e.HasMember("quit") && e["quit"].IsBool())   cr.quit = e["quit"].GetBool();
                 if (e.HasMember("start") && e["start"].IsBool())  cr.start = e["start"].GetBool();
@@ -253,8 +267,11 @@ bool GameManager::load(const char* prefabsPath, const char* scenesPath, TextureS
 }
 
 void GameManager::requestScene(const std::string& name) {
-    if (scenes.count(name)) currentScene = name;
+    if (!scenes.count(name)) return;
+    currentScene = name;
+    if (onSceneChanged) onSceneChanged(currentScene);
 }
+
 
 bool GameManager::switchToSceneForKey(int glfwKey) {
     if (app != AppState::Playing) return false;   // lock numbers unless Playing
@@ -309,6 +326,14 @@ void GameManager::render(Renderer& r, int w, int h) {
         float bx = 0.0f, by = 0.0f, bw = float(w), bh = float(h);
         Cam2D_Apply(currentScene, bx, by, bw, bh, w, h);
         r.texturedTri(sc.background, bx, by, bw, bh);
+        for (auto& items : getCurrentScene()->items) {
+            if (items.still_alive) {
+                r.rect(w / 2, h / 2 - 200, items.health_bar * 4, 25, 1, 0, 0);
+                r.rect(w / 2, h / 2 - 150, items.hunger_bar * 4, 25, 0, 1, 0);
+                r.rect(w / 2, h / 2 - 100, items.sanity_bar * 4, 25, 0, 0, 1);
+            }
+
+        }
     }
 
     
@@ -349,6 +374,19 @@ void GameManager::render(Renderer& r, int w, int h) {
                         if (it != anim->animations.end()) {
                             const auto& def = it->second;
 
+                    r.texturedTri(img->textureID, px, py, pw, ph);
+
+                    // Debug AABB for ECS entities (so B toggle still shows boxes)
+                    if (Debug::Drawer::Instance().IsActive())
+                    {
+                        AABB collider(Vector2D(px, py), Vector2D(pw, ph));
+                        Debug::Drawer::Instance().AddRect(
+                            collider.pos.x(), collider.pos.y(),
+                            collider.size.x(), collider.size.y(),
+                            0xFFFF00FF // yellow
+                        );
+                    }
+
                             int frameIndex = anim->currentFrame;
                             int sheetColumns = anim->sheetColumns;
                             int sheetRows = anim->sheetRows;
@@ -382,27 +420,42 @@ void GameManager::render(Renderer& r, int w, int h) {
     }
 
     // entities (normalized ? pixels)
+   // entities (normalized → pixels) — draw JSON **only** if there is NO ECS entity by the same name
     for (const auto& di : sc.items) {
-        if (di.tex == 0) continue;  // skip if background/entity texture didn�t load
+        // If an ECS entity with this name exists, we skip the JSON-drawn duplicate
+        if (!di.name.empty()) {
+            EntityID eid = ecs_.findEntityByName(di.name);
+            if (eid != INVALID_ENTITY_ID) {
+                continue; // ECS is the source of truth for this sprite
+            }
+        }
+
+        if (di.tex == 0) continue;
         float px = di.x * w, py = di.y * h, pw = di.w * w, ph = di.h * h;
 
-        Cam2D_Apply(currentScene, px, py, pw, ph, w, h);
+        if (di.name == "flamingo" || di.name == "horse" || di.name == "owl" || di.name == "seal") {
+            if (di.still_alive) {
+                r.texturedTri(di.tex, px, py, pw, ph);
+            }
+        }
 
+        else {
+            r.texturedTri(di.tex, px, py, pw, ph);
+        }
+
+        Cam2D_Apply(currentScene, px, py, pw, ph, w, h);
         r.texturedTri(di.tex, px, py, pw, ph);
 
-        // Debugging drawer
-        if (Debug::Drawer::Instance().IsActive())
-        {
+        if (Debug::Drawer::Instance().IsActive()) {
             AABB collider(Vector2D(px, py), Vector2D(pw, ph));
-
-            // Queue the collider’s outline for debug
             Debug::Drawer::Instance().AddRect(
                 collider.pos.x(), collider.pos.y(),
                 collider.size.x(), collider.size.y(),
-                0xFFFF00FF // yellow box
+                0xFFFF00FF
             );
         }
     }
+
 
 }
 
@@ -412,62 +465,43 @@ bool GameManager::handleClick(float nx, float ny) {
     const Scene& sc = it->second;
 
     for (const auto& cr : sc.clicks) {
-        //if (nx >= cr.x && nx <= cr.x + cr.w && ny >= cr.y && ny <= cr.y + cr.h) {
-        //    if (cr.quit) {
-        //        requestedQuit = true;
-        //    }
-        //    if (app == AppState::Menu) {
-        //        startGame();                 // unlock 1..9 only after Play was clicked
-        //    }
-        //    else if (!cr.gotoScene.empty()) {
-        //        requestScene(cr.gotoScene);
-        //    }
-        //    return true;
-        //}
+        bool hit = (nx >= cr.x && nx <= cr.x + cr.w && ny >= cr.y && ny <= cr.y + cr.h);
+        logger.log(std::string("hit-test ") + (cr.name.empty() ? "<noname>" : cr.name) +
+            (hit ? " 1" : " 0"));
 
-        if (nx >= cr.x && nx <= cr.x + cr.w && ny >= cr.y && ny <= cr.y + cr.h) {
+        if (!hit) continue;
 
-            logger.log("Click hit: start=" + std::to_string(cr.start) +
-                " quit=" + std::to_string(cr.quit) +
-                " goto='" + cr.gotoScene + "'");
+        logger.log("Click hit: start=" + std::to_string(cr.start) +
+            " quit=" + std::to_string(cr.quit) +
+            " goto='" + cr.gotoScene + "'");
 
+        // Quit first (works in Menu and Play)
+        if (cr.quit) {
+            logger.log("[Quit] click region flagged quit=true");
+            if (quitCallback) quitCallback();
+            else requestedQuit = true;
+            return true;
+        }
 
-            // ESC-like quit buttons always work
-            if (cr.quit) {
-                requestedQuit = true;
-                return true;
-            }
-
-            // While in Menu: ONLY a region marked start:true can unlock gameplay,
-            // and it may also jump to a first scene via goto (optional).
-            if (app == AppState::Menu) {
-                if (cr.start) {
-                    startGame();  // unlock number keys
-
-                    if (!cr.gotoScene.empty()) {
-                        requestScene(cr.gotoScene);// explicit target from JSON
-                    }
-                    else {
-                        // Fallback: jump to key "1" mapping if present
-                        auto it1 = keyMap.find(GLFW_KEY_1);
-                        if (it1 != keyMap.end())
-                            requestScene(it1->second);
-                    }
+        // In Menu: only start:true does anything (exactly how 'start' works)
+        if (app == AppState::Menu) {
+            if (cr.start) {
+                startGame();
+                if (!cr.gotoScene.empty()) requestScene(cr.gotoScene);
+                else {
+                    auto it1 = keyMap.find(GLFW_KEY_1);
+                    if (it1 != keyMap.end()) requestScene(it1->second);
                 }
-                // ignore other clickable regions in Menu (buttons without start:true)
-                return true;
-            }
-
-            // Already Playing: allow normal scene transitions via goto regions
-            if (!cr.gotoScene.empty()) {
-                requestScene(cr.gotoScene);
             }
             return true;
         }
 
-
+        // Playing: allow goto
+        if (!cr.gotoScene.empty()) {
+            requestScene(cr.gotoScene);
+        }
+        return true;
     }
-    return false;
 }
 void GameManager::startGame() {
     app = AppState::Playing;
@@ -488,6 +522,11 @@ Scene* GameManager::getCurrentScene() {
     if (it != scenes.end())
         return &it->second;
     return nullptr;
+}
+
+//function to get the unordered map for scenes
+std::unordered_map<std::string, Scene>& GameManager::get_scenes_map() {
+    return scenes;
 }
 
 void GameManager::update(float dt,Renderer& renderer,TextureStore& tex) {

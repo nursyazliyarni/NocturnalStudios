@@ -31,8 +31,127 @@
 
 #include "core/Application.h"
 
+#include <vector>
+
+#include <algorithm>
+#include <cmath>
+
+#include "scene/Prefab.h"
+
+#include <cmath>
+#include <algorithm>
+#include "ECS/ECS.h"
+#include "ECS/ECS_Component.h"
+#include "ECS/ECS_DEF.h"
+#include "resources/ResourceManager.h"
+#include "scene/Prefab.h" // Prefab_SetTextureLookup, Scenes_GetInitialName, Prefab_SpawnEntitiesForScene
+
+#include <unordered_map>
+#include <cstdlib>
+#include <ctime>
+
 
 extern void Prefab_SetTextureLookup(std::function<int(const std::string&)>);
+
+
+
+
+
+
+// --- Very simple random drift for any entity with AI + Physics (no fancy RNG) ---
+static void UpdateRandomDrift(ECS& ecs, double dt) {
+	if (dt <= 0.0) return;
+
+	// Seed std::rand once
+	static bool seeded = false;
+	if (!seeded) { std::srand(static_cast<unsigned>(std::time(nullptr))); seeded = true; }
+
+	// Per-entity drift state (heading + timer for next small turn)
+	struct DriftState { float heading = 0.0f; float nextTurn = 0.0f; };
+	static std::unordered_map<EntityID, DriftState> s_state;
+
+	auto frand = [](float a, float b) -> float {
+		return a + (b - a) * (static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX));
+		};
+
+	constexpr EntityID MAX_SCAN = 5000;
+
+	for (EntityID e = 0; e < MAX_SCAN; ++e) {
+		auto* ai = ecs.getComponent<AIComponent>(e);
+		auto* pc = ecs.getComponent<PhysicsComponent>(e);
+		if (!ai || !pc) continue;
+
+		auto* t = ecs.getComponent<Transform>(e);
+		if (!t) { Transform nt{}; ecs.addComponent<Transform>(e, nt); t = ecs.getComponent<Transform>(e); if (!t) continue; }
+
+		// Init per-entity state if needed
+		DriftState& st = s_state[e];
+		if (st.nextTurn <= 0.0f && st.heading == 0.0f) {
+			st.heading = frand(0.0f, 6.2831853f);   // random angle in [0, 2?)
+			st.nextTurn = frand(0.6f, 1.8f);        // seconds until next turn
+		}
+
+		// Count down & occasionally change heading slightly
+		st.nextTurn -= static_cast<float>(dt);
+		if (st.nextTurn <= 0.0f) {
+			st.heading += frand(-0.9f, 0.9f);       // small random turn
+			if (st.heading > 6.2831853f) st.heading -= 6.2831853f;
+			if (st.heading < 0.0f)       st.heading += 6.2831853f;
+			st.nextTurn = frand(0.6f, 1.8f);
+		}
+
+		// Desired velocity points along the heading at maxSpeed
+		float desiredVx = std::cos(st.heading) * ai->maxSpeed;
+		float desiredVy = std::sin(st.heading) * ai->maxSpeed;
+
+		// Accel toward desired vel, limited by ai->accel * dt
+		float ax = desiredVx - pc->velocity.x();
+		float ay = desiredVy - pc->velocity.y();
+		float aLen2 = ax * ax + ay * ay;
+		float maxA = ai->accel * static_cast<float>(dt);
+		if (aLen2 > maxA * maxA && aLen2 > 0.0f) {
+			float s = maxA / std::sqrt(aLen2);
+			ax *= s; ay *= s;
+		}
+		pc->velocity.x() += ax;
+		pc->velocity.y() += ay;
+
+		// Clamp speed to maxSpeed
+		float v2 = pc->velocity.x() * pc->velocity.x() + pc->velocity.y() * pc->velocity.y();
+		float ms = ai->maxSpeed;
+		if (v2 > ms * ms && v2 > 0.0f) {
+			float k = ms / std::sqrt(v2);
+			pc->velocity.x() *= k; pc->velocity.y() *= k;
+		}
+
+		// Integrate position in normalized [0..1] space, bounce at edges
+		float nx = t->position.x() + pc->velocity.x() * static_cast<float>(dt);
+		float ny = t->position.y() + pc->velocity.y() * static_cast<float>(dt);
+		bool bounceX = false, bounceY = false;
+
+		if (nx < 0.0f) { nx = 0.0f; bounceX = true; }
+		if (nx > 1.0f) { nx = 1.0f; bounceX = true; }
+		if (ny < 0.0f) { ny = 0.0f; bounceY = true; }
+		if (ny > 1.0f) { ny = 1.0f; bounceY = true; }
+
+		if (bounceX) {
+			pc->velocity.x() = -pc->velocity.x();
+			st.heading = std::atan2(pc->velocity.y(), pc->velocity.x());
+		}
+		if (bounceY) {
+			pc->velocity.y() = -pc->velocity.y();
+			st.heading = std::atan2(pc->velocity.y(), pc->velocity.x());
+		}
+
+		t->position.x() = nx;
+		t->position.y() = ny;
+	}
+}
+
+
+
+
+
 
 namespace {
 	constexpr float TWO_PI = 2.0f * glm::pi<float>();
@@ -49,6 +168,10 @@ namespace {
 Application::Application() {
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF); //enable memory leak check at program exit
 }
+
+
+
+
 
 
 void Application::init() {
@@ -152,6 +275,18 @@ void Application::init() {
 
 	gsm = std::make_unique<GameManager>(*ecs);
 	gsm->load(prefabPath.c_str(), scenePath.c_str(), textures);
+
+
+	// Wire prefab sprite_path -> GL texture id using your TextureStore API.
+// Must be set BEFORE any Prefab/Scene instantiation.
+	Prefab_SetTextureLookup([this](const std::string& p) -> int {
+		// robust to presence/absence of "assets/"
+		std::string path = p;
+		if (path.rfind("assets/", 0) != 0) path = "assets/" + path;
+		return static_cast<int>(textures.get(path));
+		});
+
+
 	renderer = std::make_unique<Renderer>(shader_filePATH_list);
 	textShader = std::make_unique<Shader>(textShaderVertexPath.c_str(), textShaderFragmentPath.c_str());
 	logic = std::make_unique<Animal_Logic>();
@@ -171,14 +306,36 @@ void Application::init() {
 	prefabManager->CreateEntityFromPrefab(prefabTestPath, "main_menu_button", "quit_button");
 	prefabManager->CreateEntityFromPrefab(prefabTestPath, "food", "owl_food");
 	prefabManager->CreateEntityFromPrefab(prefabTestPath, "animal", "flamingo");
+	prefabManager->CreateEntityFromPrefab(prefabTestPath, "firefly", "firefly");
 
 	
 	//logger.log("Created animal entity with ID: " + std::to_string(animal) + " and " + std::to_string(animal_2));
-	std::cout << "abcssss:" << ecs->getAllEntities().size() << "\n";
     textShader = std::make_unique<Shader>(textShaderVertexPath.c_str(), textShaderFragmentPath.c_str());
 
     // Wire text shader into the renderer (renderer controls projection per-viewport)
     renderer->setTextShader(*textShader);
+
+	// Spawn the initial scene (from scenes.json -> states.initial)
+	{
+		const std::string initialScene = Scenes_GetInitialName();
+		if (!initialScene.empty()) {
+			Prefab_SpawnEntitiesForScene(initialScene, *prefabManager);
+			logger.log("[SceneSpawn] Initial scene spawned: " + initialScene);
+		}
+	}
+
+	// When GameManager activates a new scene (keyboard or button 'goto'), respawn from JSON
+	gsm->setSceneChangedCallback([this](const std::string& sceneName) {
+		// Clear all current entities (brute force; refine later if you add persistence flags)
+		auto all = ecs->getAllEntities();
+		for (auto id : all) ecs->deleteEntity(id);
+
+		// Respawn from scenes.json
+		Prefab_SpawnEntitiesForScene(sceneName, *prefabManager);
+		logger.log(std::string{ "[SceneSpawn] Activated -> " } + sceneName);
+		});
+
+
 
 	imGuiManager = std::make_unique<ImGuiManager>(
 		m_window, *renderer,
@@ -210,6 +367,67 @@ int Application::run() {
 		gameLoop->display_FPS(m_window.handle(), windowTitle, dt);
 		inputSystem->update_mouse_pos(m_window.handle());
 
+		if (ecs) UpdateRandomDrift(*ecs, dt);
+
+
+
+
+		// Debug: log firefly state twice per second to confirm it's updating
+		static double dbgAccum = 0.0;
+		dbgAccum += dt;
+		/*if (dbgAccum > 0.5 && ecs) {
+			dbgAccum = 0.0;
+			EntityID ff = ecs->findEntityByName("firefly_1");
+			if (ff != INVALID_ENTITY_ID) {
+				auto* t = ecs->getComponent<Transform>(ff);
+				auto* pc = ecs->getComponent<PhysicsComponent>(ff);
+				auto* ai = ecs->getComponent<AIComponent>(ff);
+				if (t && pc && ai) {
+					logger.log(
+						"FF pos=(" + std::to_string(t->position.x()) + "," + std::to_string(t->position.y()) + ")"
+						+ " vel=(" + std::to_string(pc->velocity.x()) + "," + std::to_string(pc->velocity.y()) + ")"
+					);
+				}
+				else {
+					logger.log("firefly_1 missing component(s): "
+						+ std::string(t ? "" : "Transform ")
+						+ std::string(pc ? "" : "Physics ")
+						+ std::string(ai ? "" : "AI "));
+				}
+			}*/
+
+
+
+
+		if (dbgAccum > 0.5 && ecs) {
+			dbgAccum = 0.0;
+			if (EntityID ff = ecs->findEntityByName("firefly_1"); ff != INVALID_ENTITY_ID) {
+				if (auto* t = ecs->getComponent<Transform>(ff)) {
+					if (auto* pc = ecs->getComponent<PhysicsComponent>(ff)) {
+						logger.log("FF pos=(" + std::to_string(t->position.x()) + "," + std::to_string(t->position.y()) + ")" +
+							" vel=(" + std::to_string(pc->velocity.x()) + "," + std::to_string(pc->velocity.y()) + ")");
+					}
+				}
+			}
+			// else: stay quiet when not in Owl scene
+		}
+
+
+
+		//	else {
+		//		logger.log("firefly_1 not found");
+		//	}
+		//}
+
+
+
+
+
+
+
+		/*for (int k = GLFW_KEY_1; k <= GLFW_KEY_9; ++k)
+			if (inputSystem->WasPressed(k))
+				gsm->handleKeyPress(k);*/
         for (int k = GLFW_KEY_1; k <= GLFW_KEY_9; ++k)
             if (inputSystem->WasPressed(k))
                 gsm->switchToSceneForKey(k); // respects AppState::Playing
@@ -252,8 +470,13 @@ int Application::run() {
                 float nx = float((mp.x() - rmin.x) / (rmax.x - rmin.x));
                 float ny = float((mp.y() - rmin.y) / (rmax.y - rmin.y));
 
-                ny = 1.0f - ny;
+                //ny = 1.0f - ny;
                 gsm->handleClick(nx, ny);
+
+                if (gsm->popQuitRequested()) {
+                    glfwSetWindowShouldClose(m_window.handle(), GLFW_TRUE);
+                    break;
+                }
             }
         }
 		TransformSystem::TransformUpdate();

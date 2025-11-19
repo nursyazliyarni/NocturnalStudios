@@ -1,3 +1,21 @@
+/*!------------------------------------------------------------------------------------------------
+	File: ResourceManager.cpp
+	Project: NocturnalStudio
+
+	This file contains the implementation of the ResourceManager class
+
+	Primary Author:
+		Name (%)
+		-
+
+	Secondary Author:
+		Nur Syazliyarni (5%)
+		- Added a function for the asset browser to be able to add new 
+		textures from the file path
+
+	All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
+
 // Add filepath here
 constexpr char DEFAULT_AUDIO_FILEPATH[] = "DefaultAudio/filepath";
 
@@ -926,22 +944,21 @@ const Audio& ResourceManager::getDefaultAudio() const {
 // for imgui assets browser to get textures
 GLuint ResourceManager::getGLTextureFromFile(const std::string& filePath)
 {
-	static std::unordered_map<std::string, GLuint> textureCache;
+	// reuse texture
+	auto it = loadedGLTextures.find(filePath);
+	if (it != loadedGLTextures.end())
+		return it->second->get_textureID(0);
 
-	// Check if texture already loaded
-	auto it = textureCache.find(filePath);
-	if (it != textureCache.end())
-		return it->second;
-
-	// Load it using your graphics::Texture loader
+	// load and store texture object
 	std::vector<char const*> paths = { filePath.c_str() };
-	Texture tex(paths);
+	auto tex = std::make_unique<Texture>(paths);
 
-	if (tex.get_totalTexture() > 0)
+	if (tex->get_totalTexture() > 0)
 	{
-		GLuint texID = tex.get_textureID(0);
-		textureCache[filePath] = texID;
-		logger.log("[ResourceManager] Cached GL texture: " + filePath);
+		GLuint texID = tex->get_textureID(0);
+		loadedGLTextures[filePath] = std::move(tex); // store in manager
+		logger.log("[ResourceManager] Cached persistent GL texture: " + filePath +
+			" (ID " + std::to_string(texID) + ")");
 		return texID;
 	}
 
