@@ -870,7 +870,10 @@ void ImGuiManager::showAssetsBrowserUI() {
 			ImGui::TableNextColumn();
 			ImGui::PushID(index++);
 
-			if (ImGui::ImageButton((ImTextureID)(intptr_t)texID, ImVec2(thumbnailSize, thumbnailSize)))
+			if (ImGui::ImageButton(
+				("##tex" + std::to_string(index)).c_str(),     // unique ID
+				(ImTextureID)(intptr_t)texID,                  // texture
+				ImVec2(thumbnailSize, thumbnailSize)))         // size
 			{
 				Scene* scene = gsm.getCurrentScene();
 				if (scene && selectedEntityType < scene->items.size())
