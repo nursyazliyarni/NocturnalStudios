@@ -19,8 +19,11 @@
 // Add filepath here
 constexpr char DEFAULT_AUDIO_FILEPATH[] = "DefaultAudio/filepath";
 
+#define _HAS_STD_BYTE 0
+
 #include <iostream>
 #include <filesystem>
+#include <algorithm>
 #include "fmod_errors.h"
 
 #include "ECS/ECS.h"
@@ -29,7 +32,37 @@ constexpr char DEFAULT_AUDIO_FILEPATH[] = "DefaultAudio/filepath";
 #include "System/Audio_System.h"
 #include "graphics/Texture.h"
 
+#ifdef _WIN32
+#define GLFW_EXPOSE_NATIVE_WIN32
+#include <GLFW/glfw3.h>
+#include <GLFW/glfw3native.h>
+#include <windows.h>
+#endif
+
 extern Logger logger;
+
+namespace {
+    static const std::array<const char*, 6> kSupportedAudioExt = { ".wav", ".ogg", ".mp3", ".flac", ".aiff", ".fsb" };
+
+    static bool IsSupportedAudioExtension(const std::string& extLower)
+    {
+        for (auto* e : kSupportedAudioExt)
+            if (extLower == e) return true;
+        return false;
+    }
+
+    static void ShowAudioErrorPopup(const std::string& msg)
+    {
+    #ifdef _WIN32
+        GLFWwindow* gw = glfwGetCurrentContext();
+        HWND parent = gw ? glfwGetWin32Window(gw) : nullptr;
+        MessageBoxA(parent, msg.c_str(), "Audio Format Error", MB_OK | MB_ICONERROR | MB_TOPMOST);
+    #else
+        // Fallback: could integrate an ImGui modal if needed for other platforms.
+        logger.error(msg);
+    #endif
+    }
+}
 
 /**
  * ResourceManager
@@ -191,6 +224,116 @@ void ResourceManager::loadResources(std::string const& resourceFilePath) {
 }
 
 /**
+ * getFilePathsForKey
+ *
+ * Retrieves the file paths for all loaded resources of type `T` that match
+ * the provided key.
+ *
+ * Supported resource types `T`:
+ *  - See ResourceManager.h for the full list:
+ *   Audio, ShaderFile, TextureFile, Font, PrefabFile, SceneFile
+ * 
+ * Parameters:
+ *  - key: the resource key to search for.
+ * 
+ * Returns:
+ *  - std::vector<std::string> containing the file paths of all matching
+ *   resources. If no resources match, returns an empty vector.
+ * 
+ * Behavior:
+ * - Iterates over the internal storage for resources of type `T`.
+ * - Compares each resource's key with the provided `key`.
+ * - Collects and returns the file paths of all matching resources.
+ */
+std::size_t ResourceManager::reloadAudiosFromDirectory(const std::string& directoryPath) {
+	namespace fs = std::filesystem;
+	std::size_t added = 0;
+	static const char* extensions[] = { ".wav", ".ogg", ".mp3", ".flac", ".aiff", ".fsb" };
+
+	if (!fs::exists(directoryPath)) {
+		logger.error("Audio directory not found: " + directoryPath);
+		return 0;
+	}
+
+	for (const auto& entry : fs::recursive_directory_iterator(directoryPath)) {
+		if (!entry.is_regular_file()) continue;
+
+		std::string ext = entry.path().extension().string();
+		std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
+
+		if (!IsSupportedAudioExtension(ext)) {
+			ShowAudioErrorPopup("Unsupported audio file format:\n" + entry.path().string() + "\nAllowed: .wav .ogg .mp3 .flac .aiff .fsb");
+			logger.error("Blocked loading unsupported audio format: " + entry.path().string());
+			continue;
+		}
+
+		const std::string key = entry.path().stem().string();
+		const std::string path = entry.path().string();
+
+		if (this->findResource<Audio>(key) != NO_RESOURCE_ID) continue;
+
+		Audio& audio = this->loadAudio(key, path);
+		UNREFERENCED_PARAMETER(audio);
+		++added;
+	}
+
+	return added;
+}
+
+/**
+ * reloadTexturesFromDirectory
+ * 
+ * Scans the specified directory for texture files and loads any new textures
+ * that are not already present in the ResourceManager.
+ * 
+ * Parameters:
+ * - directoryPath: The filesystem path to the directory to scan for texture files.
+ * 
+ * Returns:
+ * - The number of new textures that were loaded.
+ * 
+ * Behavior:
+ * - Recursively iterates through the specified directory.
+ * - For each file, checks if its extension matches a supported texture format.
+ * - If a texture with the same key (filename without extension) is not already
+ * present, it loads the texture using loadTexture.
+ * - Supported texture formats include: .png, .jpg, .jpeg, .bmp, .tga, .gif, .hdr, .psd.
+ * - Logs an error if the specified directory does not exist.
+ */
+std::size_t ResourceManager::reloadTexturesFromDirectory(const std::string& directoryPath) {
+    namespace fs = std::filesystem;
+    std::size_t added = 0;
+    static const char* extensions[] = { ".png", ".jpg", ".jpeg", ".bmp", ".tga", ".gif", ".hdr", ".psd" };
+
+    if (!fs::exists(directoryPath)) {
+        logger.error("Textures directory not found: " + directoryPath);
+        return 0;
+    }
+
+    for (const auto& entry : fs::recursive_directory_iterator(directoryPath)) {
+        if (!entry.is_regular_file()) continue;
+
+        std::string ext = entry.path().extension().string();
+        std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
+
+        bool supported = std::any_of(std::begin(extensions), std::end(extensions),
+            [&](const char* e) { return ext == e; });
+        if (!supported) continue;
+
+        const std::string key = entry.path().stem().string();
+        const std::string path = entry.path().string();
+
+        if (this->findResource<TextureFile>(key) != NO_RESOURCE_ID) continue;
+
+        TextureFile& tex = this->loadTexture(key, path);
+        UNREFERENCED_PARAMETER(tex);
+        ++added;
+    }
+
+    return added;
+}
+
+/**
  * loadAudio
  *
  * Load or reuse an Audio resource record in the ResourceManager.
@@ -236,6 +379,17 @@ void ResourceManager::loadResources(std::string const& resourceFilePath) {
  *  // if (rm.getAudioSystem()) rm.getAudioSystem()->loadSound(a);
  */
 Audio& ResourceManager::loadAudio(const std::string& name, const std::string& filePath, ResourceID id) {
+    // Extension validation before creating the resource
+    std::filesystem::path fp{ filePath };
+    std::string ext = fp.extension().string();
+    std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
+
+    if (!IsSupportedAudioExtension(ext)) {
+        ShowAudioErrorPopup("Unsupported audio file format:\n" + filePath + "\nAllowed: .wav .ogg .mp3 .flac .aiff .fsb");
+        logger.error("Blocked loading unsupported audio format: " + filePath);
+		return defaultAudio;
+    }
+
 	for (auto& [key, audio] : audios) {
 		if (std::filesystem::path{ audio.getFilePath() } == std::filesystem::path{ filePath }) {
 			return audio;
@@ -348,7 +502,7 @@ ShaderFile& ResourceManager::loadShader(const std::string& name, const std::stri
  * Returns:
  *  - Reference to the found ShaderFile object.
  *  - If no matching ShaderFile exists the function asserts (caller should
- *    ensure id validity) — consistent with existing usage in this codebase.
+ *    ensure id validity) ï¿½ consistent with existing usage in this codebase.
  *
  * Simple usage:
  *  ResourceID id = /* previously obtained id * /;
@@ -420,7 +574,7 @@ TextureFile& ResourceManager::loadTexture(const std::string& name, const std::st
  * Returns:
  *  - Reference to the found TextureFile object.
  *  - If no matching TextureFile exists the function asserts (caller should
- *    ensure id validity) — consistent with existing usage in this codebase.
+ *    ensure id validity) ï¿½ consistent with existing usage in this codebase.
  *
  * Simple usage:
  *  ResourceID id = /* previously obtained id * /;
@@ -505,7 +659,7 @@ Font& ResourceManager::loadFont(const std::string& name, const std::string& file
  * Returns:
  *  - Reference to the found Font object.
  *  - If no matching Font exists the function asserts (caller should ensure id
- *    validity) — consistent with existing usage in this codebase.
+ *    validity) ï¿½ consistent with existing usage in this codebase.
  *
  * Simple usage:
  *  ResourceID id = /* previously obtained id * /;
@@ -575,7 +729,7 @@ PrefabFile& ResourceManager::loadPrefab(const std::string& name, const std::stri
  * Returns:
  *  - Reference to the found PrefabFile object.
  *  - If no matching PrefabFile exists the function asserts (caller should
- *    ensure id validity) — consistent with existing usage in this codebase.
+ *    ensure id validity) ï¿½ consistent with existing usage in this codebase.
  *
  * Simple usage:
  *  ResourceID id = /* previously obtained id * /;
@@ -645,7 +799,7 @@ SceneFile& ResourceManager::loadScene(const std::string& name, const std::string
  * Returns:
  *  - Reference to the found SceneFile object.
  *  - If no matching SceneFile exists the function asserts (caller should
- *    ensure id validity) — consistent with existing usage in this codebase.
+ *    ensure id validity) ï¿½ consistent with existing usage in this codebase.
  *
  * Simple usage:
  *  ResourceID id = /* previously obtained id * /;
@@ -964,4 +1118,9 @@ GLuint ResourceManager::getGLTextureFromFile(const std::string& filePath)
 
 	logger.error("[ResourceManager] Failed to load texture: " + filePath);
 	return 0;
+}
+
+void ResourceManager::clearAllGLTexturesCache() {
+	loadedGLTextures.clear();
+	logger.log("[ResourceManager] Cleared all cached GL textures.");
 }

@@ -57,7 +57,9 @@ public:
 	float getVolume(AudioInstanceID instanceID);
 
 	void pauseAllSFX();
+	void pauseAllBGM();
 	void resumeAllSFX();
+	void resumeAllBGM();
 
 	FMOD::System* getSystem() const;
 

@@ -14,6 +14,7 @@
 #include "Animation/SpriteAnimationComponent.h"
 #include "ECS/ECS.h"
 #include "graphics/Renderer.h"
+#include "core/GameManager.h"
 #include <iostream>
 
 /**
@@ -63,15 +64,32 @@ void AnimationSystem::Update(float dt, ECS& ecs, Renderer& renderer, TextureStor
         if (!img)
             continue;
 
-		//calculate UV coordinates for the current frame
-        int frameIndex = anim->currentFrame;
-        float uPerFrame = 1.0f / anim->sheetColumns;
-        float vPerFrame = 1.0f / anim->sheetRows;
+        // NEW: bind the spritesheet for the current animation
+        {
+            std::string path = current.spritePath;
+            if (!path.empty() && path.rfind("assets/", 0) != 0) {
+                path = "assets/" + path; // normalize
+            }
+            if (!path.empty()) {
+                if (current.cachedTexture == 0) {
+                    current.cachedTexture = texStore.get(path);
+                }
+                img->textureID = current.cachedTexture;
+                img->isVisible = (img->textureID != 0);
+            }
+        }
 
-        int col = frameIndex % anim->sheetColumns;
-        int row = frameIndex / anim->sheetColumns;
+        // calculate UVs using per-animation grid, fallback to component-wide if missing
+        const int cols = current.sheetColumns > 0 ? current.sheetColumns : anim->sheetColumns;
+        const int rows = current.sheetRows    > 0 ? current.sheetRows    : anim->sheetRows;
 
-        img->uvMin = glm::vec2(col * uPerFrame, row * vPerFrame);
-        img->uvMax = glm::vec2(img->uvMin.x + uPerFrame, img->uvMin.y + vPerFrame);
+        const float uPer = 1.0f / float(std::max(1, cols));
+        const float vPer = 1.0f / float(std::max(1, rows));
+
+        const int col = anim->currentFrame % std::max(1, cols);
+        const int row = anim->currentFrame / std::max(1, cols);
+
+        img->uvMin = { col * uPer,            row * vPer };
+        img->uvMax = { img->uvMin.x + uPer,   img->uvMin.y + vPer };
     }
 }

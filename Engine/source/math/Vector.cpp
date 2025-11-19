@@ -52,10 +52,10 @@ Vector2D& Vector2D::operator=(const glm::vec2& other) {
 
 // Matrix multiplication
 Vector2D Vector2D::operator*(const Matrix<2>& mat) const {
-	Vector2D result;
-	result.data[0] = mat[0][0] * data[0] + mat[0][1] * data[1];
-	result.data[1] = mat[1][0] * data[0] + mat[1][1] * data[1];
-	return result;
+    Vector2D result;
+    result.data[0] = std::fma(mat[0][1], data[1], mat[0][0] * data[0]);
+    result.data[1] = std::fma(mat[1][1], data[1], mat[1][0] * data[0]);
+    return result;
 }
 
 // Conversion operator to float pointer
@@ -110,11 +110,17 @@ Vector3D& Vector3D::operator=(const glm::vec3& other) {
 
 // Matrix multiplication
 Vector3D Vector3D::operator*(const Matrix<3>& mat) const {
-	Vector3D result;
-	result.data[0] = mat[0][0] * data[0] + mat[0][1] * data[1] + mat[0][2] * data[2];
-	result.data[1] = mat[1][0] * data[0] + mat[1][1] * data[1] + mat[1][2] * data[2];
-	result.data[2] = mat[2][0] * data[0] + mat[2][1] * data[1] + mat[2][2] * data[2];
-	return result;
+    Vector3D result;
+    result.data[0] =
+        std::fma(mat[0][1], data[1],
+        std::fma(mat[0][2], data[2], mat[0][0] * data[0]));
+    result.data[1] =
+        std::fma(mat[1][1], data[1],
+        std::fma(mat[1][2], data[2], mat[1][0] * data[0]));
+    result.data[2] =
+        std::fma(mat[2][1], data[1],
+        std::fma(mat[2][2], data[2], mat[2][0] * data[0]));
+    return result;
 }
 
 // Conversion operator to float pointer
@@ -189,12 +195,24 @@ Vector4D& Vector4D::operator=(const glm::vec4& other) {
 
 // Matrix multiplication
 Vector4D Vector4D::operator*(const Matrix<4>& mat) const {
-	Vector4D result;
-	result.data[0] = mat[0][0] * data[0] + mat[0][1] * data[1] + mat[0][2] * data[2] + mat[0][3] * data[3];
-	result.data[1] = mat[1][0] * data[0] + mat[1][1] * data[1] + mat[1][2] * data[2] + mat[1][3] * data[3];
-	result.data[2] = mat[2][0] * data[0] + mat[2][1] * data[1] + mat[2][2] * data[2] + mat[2][3] * data[3];
-	result.data[3] = mat[3][0] * data[0] + mat[3][1] * data[1] + mat[3][2] * data[2] + mat[3][3] * data[3];
-	return result;
+    Vector4D result;
+    result.data[0] =
+        std::fma(mat[0][1], data[1],
+        std::fma(mat[0][2], data[2],
+        std::fma(mat[0][3], data[3], mat[0][0] * data[0])));
+    result.data[1] =
+        std::fma(mat[1][1], data[1],
+        std::fma(mat[1][2], data[2],
+        std::fma(mat[1][3], data[3], mat[1][0] * data[0])));
+    result.data[2] =
+        std::fma(mat[2][1], data[1],
+        std::fma(mat[2][2], data[2],
+        std::fma(mat[2][3], data[3], mat[2][0] * data[0])));
+    result.data[3] =
+        std::fma(mat[3][1], data[1],
+        std::fma(mat[3][2], data[2],
+        std::fma(mat[3][3], data[3], mat[3][0] * data[0])));
+    return result;
 }
 
 // Conversion operator to float pointer

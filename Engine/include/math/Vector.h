@@ -37,31 +37,106 @@ class Matrix;
 template <size_t N>
 class Vector {
 public:
-    // Constructors
-    Vector();
-    Vector(const Vector& other);
-    Vector& operator=(const Vector& other) noexcept;
+    using value_type = float;
+    static constexpr size_t size = N;
 
-    // Arithmetic operators
-    Vector operator+(const Vector& other) const noexcept;
-    Vector operator-(const Vector& other) const noexcept;
+    constexpr Vector() noexcept : data{} {}
+    constexpr Vector(const Vector& other) noexcept = default;
+    constexpr Vector& operator=(const Vector& other) noexcept = default;
 
-    // Assignment operators
-    Vector& operator+=(const Vector& other) noexcept; 
-    Vector& operator-=(const Vector& other) noexcept;
-    Vector& operator*=(float scalar) noexcept;
-    Vector& operator/=(float scalar);
+    // Variadic ctor for direct component initialization
+    template <typename... Args>
+        requires (sizeof...(Args) == N && (std::is_convertible_v<Args,float> && ...))
+    constexpr explicit Vector(Args... args) noexcept : data{ static_cast<float>(args)... } {}
 
-    bool operator==(const Vector& other) const noexcept;
+    // glm interop (keeps existing derived class operators working)
+    template <glm::length_t L>
+        requires (L == N && (N == 2 || N == 3 || N == 4))
+    explicit constexpr Vector(glm::vec<L, float, glm::defaultp> const& v) noexcept {
+        for (size_t i = 0; i < N; ++i) data[i] = v[i];
+    }
 
-    // Unary operators
-    Vector operator-() const noexcept;
+    template <glm::length_t L>
+        requires (L == N && (N == 2 || N == 3 || N == 4))
+    constexpr operator glm::vec<L, float, glm::defaultp>() const noexcept {
+        if constexpr (N == 2) return glm::vec2{ data[0], data[1] };
+        else if constexpr (N == 3) return glm::vec3{ data[0], data[1], data[2] };
+        else return glm::vec4{ data[0], data[1], data[2], data[3] };
+    }
 
-    // Access operators
-    float& operator[](size_t index);
-    const float& operator[](size_t index) const;
+    // Element access
+    constexpr float& operator[](size_t i) noexcept { return data[i]; }
+    constexpr const float& operator[](size_t i) const noexcept { return data[i]; }
 
-public:
+    // Arithmetic
+    constexpr Vector& operator+=(const Vector& other) noexcept {
+        for (size_t i=0;i<N;++i) data[i] += other.data[i];
+        return *this;
+    }
+    constexpr Vector& operator-=(const Vector& other) noexcept {
+        for (size_t i=0;i<N;++i) data[i] -= other.data[i];
+        return *this;
+    }
+    constexpr Vector& operator*=(float s) noexcept {
+        for (auto& v : data) v *= s;
+        return *this;
+    }
+    constexpr Vector& operator/=(float s) noexcept {
+        // Caller responsibility; existing logger kept in specialized wrapper if needed
+        for (auto& v : data) v /= s;
+        return *this;
+    }
+    constexpr Vector operator+(const Vector& other) const noexcept {
+        Vector r(*this); r += other; return r;
+    }
+    constexpr Vector operator-(const Vector& other) const noexcept {
+        Vector r(*this); r -= other; return r;
+    }
+    constexpr Vector operator-() const noexcept {
+        Vector r;
+        for (size_t i=0;i<N;++i) r.data[i] = -data[i];
+        return r;
+    }
+    constexpr bool operator==(const Vector& other) const noexcept {
+        for (size_t i=0;i<N;++i) if (data[i] != other.data[i]) return false;
+        return true;
+    }
+
+    // Generic dot
+    constexpr float dot(const Vector& other) const noexcept {
+        float acc = 0.f;
+        for (size_t i=0;i<N;++i) acc = std::fma(data[i], other.data[i], acc);
+        return acc;
+    }
+
+    // Cross only meaningful for N=3; N=2 returns perpendicular scalar magnitude
+    constexpr auto cross(const Vector& other) const noexcept {
+        if constexpr (N == 3) {
+            return Vector<3>{
+                data[1] * other.data[2] - data[2] * other.data[1],
+                data[2] * other.data[0] - data[0] * other.data[2],
+                data[0] * other.data[1] - data[1] * other.data[0]
+            };
+        } else if constexpr (N == 2) {
+            // 2D "cross" magnitude (z-component if vectors embedded in 3D)
+            return data[0] * other.data[1] - data[1] * other.data[0];
+        } else {
+            static_assert(N == 2 || N == 3, "cross only defined for 2D (magnitude) or 3D");
+        }
+    }
+
+    // Length / normalization
+    constexpr float length2() const noexcept { return dot(*this); }
+    float length() const noexcept { return std::sqrt(length2()); }
+    Vector normalized() const noexcept {
+        float len = length();
+        return len > 0.f ? (*this) / len : *this;
+    }
+
+    friend constexpr Vector operator*(Vector v, float s) noexcept { v *= s; return v; }
+    friend constexpr Vector operator*(float s, Vector v) noexcept { v *= s; return v; }
+    friend constexpr Vector operator/(Vector v, float s) noexcept { v /= s; return v; }
+
     float data[N];
 };
 
@@ -239,112 +314,5 @@ Vector<N> normal(Vector<N>&& a) {
     return a /= result;
 }
 
-//********* Vector Class Template Implementation **********//
-
-// Default constructor
-template <size_t N>
-Vector<N>::Vector() {
-    for (size_t i = 0; i < N; ++i) 
-        data[i] = 0.0f;   
-}
-
-// Copy constructor
-template <size_t N>
-Vector<N>::Vector(const Vector& other) {
-    for (size_t i = 0; i < N; ++i)
-        data[i] = other.data[i];
-}
-
-// Copy assignment operator
-template <size_t N>
-Vector<N>& Vector<N>::operator=(const Vector& other) noexcept {
-    if (this != &other)
-        for (size_t i = 0; i < N; ++i)
-            data[i] = other.data[i];
-    return *this;
-}
-
-// Addition operator
-template <size_t N>
-Vector<N> Vector<N>::operator+(const Vector& other) const noexcept {
-    Vector<N> result;
-	for (size_t i = 0; i < N; ++i)
-        result.data[i] = data[i] + other.data[i];
-    return result;
-}
-
-// Subtraction operator
-template <size_t N>
-Vector<N> Vector<N>::operator-(const Vector& other) const noexcept {
-    Vector<N> result;
-    for (size_t i = 0; i < N; ++i)
-        result.data[i] = data[i] - other.data[i];
-    return result;
-}
-
-// Addition assignment operator
-template <size_t N>
-Vector<N>& Vector<N>::operator+=(const Vector& other) noexcept {
-    for (size_t i = 0; i < N; ++i)
-        data[i] += other.data[i];
-    return *this;
-}
-
-// Subtraction assignment operator
-template <size_t N>
-Vector<N>& Vector<N>::operator-=(const Vector& other) noexcept {
-    for(size_t i = 0; i < N; ++i)
-        data[i] -= other.data[i];
-    return *this;
-}
-
-// Multiplication assignment operator
-template <size_t N>
-Vector<N>& Vector<N>::operator*=(float scalar) noexcept {
-    for (size_t i = 0; i < N; ++i)
-        data[i] *= scalar;
-    return *this;
-}
-
-// Division assignment operator
-template <size_t N>
-Vector<N>& Vector<N>::operator/=(float scalar) {
-    if (scalar == 0.0f) {
-        logger.error("Division by zero in vector division assignment.");
-		return *this;
-    }
-    for (size_t i = 0; i < N; ++i)
-        data[i] /= scalar;
-    return *this;
-}
-
-// Equality operator
-template <size_t N>
-bool Vector<N>::operator==(const Vector<N>& other) const noexcept {
-    for (size_t i = 0; i < N; ++i)
-        if (this->data[i] != other.data[i]) return false;
-	return true;
-}
-
-// Unary negation operator
-template <size_t N>
-Vector<N> Vector<N>::operator-() const noexcept {
-    Vector<N> result;
-    for (size_t i = 0; i < N; ++i)
-        result[i] = -data[i];
-    return result;
-}
-
-// Access operator (non-const)
-template <size_t N>
-float& Vector<N>::operator[](size_t index) {
-    return data[index];
-}
-
-// Access operator (const)
-template <size_t N>
-const float& Vector<N>::operator[](size_t index) const {
-    return data[index];
-}
 
 #endif // VECTOR_H

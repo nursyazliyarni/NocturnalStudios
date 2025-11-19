@@ -30,6 +30,12 @@ struct SpriteAnimationComponent {
 		int frames; //number of frames in the animation
 		float frameTime; //time per frame in seconds
 		bool loop; //whether the animation loops
+
+        // NEW: per-animation spritesheet + layout
+        std::string spritePath;   // e.g. "assets/textures/idle.png" or "textures/idle.png"
+        int sheetColumns = 1;
+        int sheetRows = 1;
+        unsigned int cachedTexture = 0; // lazy-filled by AnimationSystem
     };
 
 	std::unordered_map<std::string, Animation> animations; //map of animation name to Animation data
@@ -37,6 +43,7 @@ struct SpriteAnimationComponent {
 	int currentFrame = 0; //current frame index
 	float timer = 0.0f; //timer to track frame time
 	bool playing = true; //is the animation playing
-	int sheetColumns = 1; //number of columns in the sprite sheet
-	int sheetRows = 1; //number of rows in the sprite sheet
+    // Keep for backward compatibility (used as fallback if per-animation cols/rows unset)
+    int sheetColumns = 1;
+    int sheetRows = 1;
 };

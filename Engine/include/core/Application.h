@@ -56,12 +56,18 @@ public:
     int run();            // create window from JSON + minimal loop
     void shutdown();
 
+    void onFocusChanged(bool focused);
+    void onIconifyChanged(bool iconified);
+
 private: // window and context
     Window m_window;
     bool isInitialized{ false };
     std::string windowTitle;
 
-private: // core subsystem and resources kept alive across run()
+    bool autoMinimizeOnFocusLoss{ true };
+    bool autoResumeOnFocusGain{ true };
+
+    private: // core subsystem and resources kept alive across run()
     ECS* ecs{ nullptr };
     Font* uiFont{ nullptr };
 	Font* uiFont2{ nullptr };
