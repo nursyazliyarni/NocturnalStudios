@@ -906,7 +906,7 @@ void ImGuiManager::showAssetsBrowserUI() {
 
 void ImGuiManager::showBottomDockUI()
 {
-
+	/*
 	//float dockPadding = 8.0f;   // gap between viewport and dock
 	float dockHeight = 200.0f; // desired dock height
 	float rightPanelWidth = 300.0f; // width of right sidebar
@@ -926,7 +926,7 @@ void ImGuiManager::showBottomDockUI()
 	ImVec2 dockSize = { dockWidth, dockHeight };
 
 	ImGui::SetNextWindowPos(dockPos);
-	ImGui::SetNextWindowSize(dockSize);
+	ImGui::SetNextWindowSize(dockSize);*/
 
 	ImGuiWindowFlags flags =
 		ImGuiWindowFlags_NoSavedSettings |
