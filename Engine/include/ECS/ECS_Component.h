@@ -229,8 +229,6 @@ struct AIComponent : public BaseComponent {
 
 };
 
-
-
 struct BoxCollider :public Collider {
 	float width{ 0.f }, height{ 0.f };
 	void FromJSON(const rapidjson::Value& json);

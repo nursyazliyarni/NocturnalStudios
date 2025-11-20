@@ -65,7 +65,7 @@ bool ComponentFactory::CreateFromName(EntityID entity, const std::string& name, 
 	}
 	if (name == "AABBCollider")
 	{
-		ecs.addComponent<AABBCollider>(entity, std::any_cast<AABBCollider>(Create(name,j)));
+		ecs.addComponent<BoxCollider>(entity, std::any_cast<BoxCollider>(Create(name,j)));
 		return true;
 	}
 	if (name=="AIComponent")
@@ -334,7 +334,7 @@ void AnimalBehavior::FromJSON(const rapidjson::Value& json) {
 }
 
 void AudioData::FromJSON(const rapidjson::Value& json) {
-	//bro
+	//axewhy pls add, ty!
 
 }
 
@@ -412,6 +412,10 @@ void BoxCollider::FromJSON(const rapidjson::Value& json) {
 				break;
 			}
 		}
+	}
+	if (json.HasMember("bounding_box_size") && json["bounding_box_size"].IsFloat())
+	{
+		width = height = json["bounding_box_size"].GetFloat();
 	}
 }
 void AIComponent::FromJSON(const rapidjson::Value& component_json) {
