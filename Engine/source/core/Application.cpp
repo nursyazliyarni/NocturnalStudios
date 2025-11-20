@@ -386,14 +386,20 @@ void Application::init() {
 
 	// When GameManager activates a new scene (keyboard or button 'goto'), respawn from JSON
 	gsm->setSceneChangedCallback([this](const std::string& sceneName) {
-		// Clear all current entities (brute force; refine later if you add persistence flags)
-		auto all = ecs->getAllEntities();
-		for (auto id : all) ecs->deleteEntity(id);
+        // Stop non-persistent audio before wiping entities.
+        if (audioSystem) {
+            // false => keep sounds with persist_on_scene_change == true
+            audioSystem->deleteAllAudioInstances(false);
+        }
 
-		// Respawn from scenes.json
-		Prefab_SpawnEntitiesForScene(sceneName, *prefabManager);
-		logger.log(std::string{ "[SceneSpawn] Activated -> " } + sceneName);
-		});
+        // Clear all current entities.
+        auto all = ecs->getAllEntities();
+        for (auto id : all) ecs->deleteEntity(id);
+
+        // Respawn from scenes.json.
+        Prefab_SpawnEntitiesForScene(sceneName, *prefabManager);
+        logger.log(std::string{ "[SceneSpawn] Activated -> " } + sceneName);
+    });
 
 
 

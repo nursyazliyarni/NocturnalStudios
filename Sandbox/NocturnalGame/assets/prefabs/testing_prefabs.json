@@ -134,7 +134,7 @@
           { "type": "AudioData",
             "listener": false,
             "audios": [
-              { "name": "BGM_Iris_Luminara_Loop_ROUGH", "loop": true, "to_play_at_start": true, "group": "Music", "volume": 0.6 }
+              { "name": "BGM_Iris_Luminara_Loop_ROUGH", "loop": true, "to_play_at_start": true, "group": "Music", "volume": 0.0, "persist_on_scene_change": true }
             ]
           }
         ]
@@ -144,7 +144,7 @@
           { "type": "Transform", "is_visible": false },
           { "type": "AudioData",
             "audios": [
-              { "name": "BGM_Ambience_Flamingo_01", "loop": true, "to_play_at_start": true, "group": "SFX", "volume": 0.4 }
+              { "name": "BGM_Ambience_Flamingo_01", "loop": true, "to_play_at_start": true, "group": "SFX", "volume": 0.4, "persist_on_scene_change": false }
             ]
           }
         ]
@@ -154,7 +154,7 @@
           { "type": "Transform", "is_visible": false },
           { "type": "AudioData",
             "audios": [
-                { "name": "BGM_Ambience_Seal_01", "loop": true, "to_play_at_start": true, "group": "SFX", "volume": 0.4 }
+                { "name": "BGM_Ambience_Seal_01", "loop": true, "to_play_at_start": true, "group": "SFX", "volume": 0.4, "persist_on_scene_change": false}
               ]
           }
         ]
@@ -165,7 +165,7 @@
           { "type": "Transform", "is_visible": false },
           { "type": "AudioData",
             "audios": [
-              { "name": "BGM_Ambience_Owl_01", "loop": true, "to_play_at_start": true, "group": "SFX", "volume": 0.45 }
+              { "name": "BGM_Ambience_Owl_01", "loop": true, "to_play_at_start": true, "group": "SFX", "volume": 0.45, "persist_on_scene_change": false }
             ]
           }
         ]
@@ -175,7 +175,7 @@
           { "type": "Transform", "is_visible": false },
           { "type": "AudioData",
             "audios": [
-              { "name": "BGM_Ambience_Horse_01", "loop": true, "to_play_at_start": true, "group": "SFX", "volume": 0.5 }
+              { "name": "BGM_Ambience_Horse_01", "loop": true, "to_play_at_start": true, "group": "SFX", "volume": 0.5, "persist_on_scene_change": false }
             ]
           }
         ]
