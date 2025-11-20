@@ -10,18 +10,10 @@
 #include <windows.h>
 #endif
 
+// global audio system pointer
+AudioSystem* gAudioSystem = nullptr;
+
 namespace {
-	/**
-	 * @brief Pointer to the currently active AudioSystem instance.
-	 *
-	 * This file-scoped pointer is used by FMOD channel callbacks to route
-	 * events back to the owning AudioSystem instance. It is assigned in
-	 * AudioSystem::AudioSystem and cleared on destruction.
-	 *
-	 * Usage:
-	 * - Do not access this pointer directly outside this translation unit.
-	 */
-	AudioSystem* audioSystem = nullptr;
 
 	/**
 	 * @brief FMOD channel callback used to detect when a channel finishes playback.
@@ -64,8 +56,8 @@ namespace {
 
 		case FMOD_CHANNELCONTROL_CHANNEL: {
 			FMOD::Channel* channel = (FMOD::Channel*)channelControl;
-			if (audioSystem) { // guard in case FMOD fires after shutdown
-				audioSystem->handleCompletedAudioInstance(channel);
+			if (gAudioSystem) { // guard in case FMOD fires after shutdown
+				gAudioSystem->handleCompletedAudioInstance(channel);
 			}
 			return FMOD_OK;
 		}
@@ -115,7 +107,7 @@ namespace {
  * - Constructed by engine initialization code. No direct calls needed from gameplay.
  */
 AudioSystem::AudioSystem(std::string name, ECS& ecs, ResourceManager& rm) : System{ ecs, name }, resourceManager{ rm }, bgmVolume{ 1.0f }, sfxVolume{ 1.0f } {
-	audioSystem = this;
+	gAudioSystem = this;
 
 	if (FMOD::System_Create(&fmodSystem) != FMOD_OK) {
 		logger.error("Failed to create FMOD system");
@@ -227,7 +219,7 @@ AudioSystem::~AudioSystem() {
 		fmodSystem = nullptr;
 	}
 
-	audioSystem = nullptr; // clear file-scoped pointer used by the callback
+	gAudioSystem = nullptr; // clear file-scoped pointer used by the callback
 
 }
 
@@ -632,18 +624,28 @@ void AudioSystem::deleteAllAudioInstances(bool forceDeletePersistentSounds) {
  * @return true if all requested startup playbacks succeeded; false otherwise.
  */
 bool AudioSystem::registerNewAudioResource(AudioData& audioData, EntityID id) {
-	for (auto& audio : audioData.audios) {
-		if (!audio.toPlayAtStart) {
-			continue;
-		}
+    for (auto& audio : audioData.audios) {
+        // Resolve by name if ID not serialized or unknown
+        if (audio.resourceID == 0 && !audio.name.empty()) {
+            ResourceID rid = resourceManager.findResource<Audio>(audio.name);
+            if (rid != NO_RESOURCE_ID) {
+                audio.resourceID = rid;
+            } else {
+                logger.warning("Audio name '" + audio.name + "' not found in resources; skipping playback.");
+            }
+        }
 
-		if (!createAudioInstance(audio, id)) {
-			logger.error("Failed to create audio instance for entity ID: " + std::to_string(id));
-			deleteAllAudioInstances();
-			return false;
-		}
-	}
-	return true;
+        if (!audio.toPlayAtStart) {
+            continue;
+        }
+
+        if (!createAudioInstance(audio, id)) {
+            logger.error("Failed to create audio instance for entity ID: " + std::to_string(id));
+            deleteAllAudioInstances();
+            return false;
+        }
+    }
+    return true;
 }
 
 /**

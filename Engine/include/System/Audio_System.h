@@ -106,3 +106,6 @@ private:
 	FMOD::ChannelGroup* reserved2ChannelGroup = nullptr	;
 	FMOD::DSP* lowPassFilter = nullptr;
 };
+
+// global audio system pointer
+extern AudioSystem* gAudioSystem;
