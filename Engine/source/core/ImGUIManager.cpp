@@ -31,6 +31,7 @@
 
 #include "graphics/Camera2D.h" 
 #include "core/TimeUtils.h"
+#include <filesystem>
 
 
 namespace {
@@ -48,6 +49,9 @@ void Gui::updateImGuiManager(double& deltaTime, ImGuiManager& imGuiManager) {
     // start ImGui frame (needed before creating windows)
     imGuiManager.startFrame();
 
+	//create dockspace
+	imGuiManager.createDockspace();
+
     // Render the viewport first — this contains renderer/physics/logic and measures those times itself.
     imGuiManager.showViewportWindowUI();
 
@@ -58,7 +62,7 @@ void Gui::updateImGuiManager(double& deltaTime, ImGuiManager& imGuiManager) {
         imGuiManager.showTransformUI();
         imGuiManager.showEntityListUI();
         //imGuiManager.showLogsOverlayUI();
-        imGuiManager.showBottomDockUI();
+		imGuiManager.showBottomDockUI();
     });
 
     // finish frame and record the exclusive ImGui time
@@ -78,6 +82,13 @@ ImGuiManager::ImGuiManager(Window& w, Renderer& r,
 	selectedEntityType{ 0 }, activeInstances{}
 {
 	ImGui::CreateContext();
+
+	// Enable docking
+	ImGuiIO& io = ImGui::GetIO();
+	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+	io.ConfigDockingWithShift = false;  // Dock without holding Shift
+	io.IniFilename = "editor_layout.ini";  // Save layout
+
 	ImGui_ImplGlfw_InitForOpenGL(mainWindow.handle(), /*install_callbacks=*/false);
 	ImGui_ImplOpenGL3_Init("#version 330");
 	ImGui::StyleColorsClassic();
@@ -236,14 +247,15 @@ void ImGuiManager::setInputTime(double time) {
 
 
 void ImGuiManager::showViewportWindowUI() {
-	constexpr float overlayW = 300.f, overlayH = 200.f;
+	//constexpr float overlayW = 300.f, overlayH = 200.f;
 	ImGuiWindowFlags flags = ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoResize;
 
-	float vpW = windowBottomRight.x - windowTopLeft.x - overlayW;
+	/*float vpW = windowBottomRight.x - windowTopLeft.x - overlayW;
 	float vpH = windowBottomRight.y - windowTopLeft.y - overlayH;
 
 	ImGui::SetNextWindowPos(windowTopLeft);
 	ImGui::SetNextWindowSize(ImVec2(vpW, vpH));
+	ImGui::Begin("Viewport", nullptr, flags);*/
 	ImGui::Begin("Viewport", nullptr, flags);
 
 	const ImVec2 avail = ImGui::GetContentRegionAvail();
@@ -359,11 +371,12 @@ void ImGuiManager::showMousePosOverlayUI() {
 	Vector2D mouse_pos = input.GET_mouse_pos(true, mainWindow.desc().width, mainWindow.desc().height);
 	
 	// Position the overlay at the top-right corner of the window
-	ImVec2 windowTopRightPos = { windowBottomRight.x - width, windowTopLeft.y };
+	/*ImVec2 windowTopRightPos = { windowBottomRight.x - width, windowTopLeft.y };
 	ImGui::SetNextWindowPos(windowTopRightPos);
 	ImGui::SetNextWindowBgAlpha(0.35f);
-	ImGui::SetNextWindowSize({ width, height });
+	ImGui::SetNextWindowSize({ width, height });*/
 
+	//ImGui::Begin("Overlay", nullptr, windowFlags);
 	ImGui::Begin("Overlay", nullptr, windowFlags);
 	ImGui::Text("Mouse position: %.2f, %.2f", mouse_pos[0], mouse_pos[1]);
 	ImGui::Text("World pos: %.2f, %.2f", worldPosition.x(), worldPosition.y());
@@ -381,10 +394,10 @@ void ImGuiManager::showPerformanceOverlayUI() {
 		ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
 
 	// Position the overlay at the top-right corner of the window, below mouse position overlay
-	ImVec2 windowTopRightPos = { windowBottomRight.x - width, windowTopLeft.y + 100.0f };
+	/*ImVec2 windowTopRightPos = { windowBottomRight.x - width, windowTopLeft.y + 100.0f };
 	ImGui::SetNextWindowPos(windowTopRightPos);
 	ImGui::SetNextWindowBgAlpha(0.35f);
-	ImGui::SetNextWindowSize({ width, height });
+	ImGui::SetNextWindowSize({ width, height });*/
 
 	ImGui::Begin("Performance", nullptr, windowFlags);
 
@@ -428,10 +441,10 @@ void ImGuiManager::showEntityListUI(/* Maybe an enum of paramEntityType, Maybe a
 		ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
 
 	// Position the overlay at the top-right corner of the window, below performance overlay
-	ImVec2 windowTopRightPos = { windowBottomRight.x - width, windowTopLeft.y + 250.0f };
+	/*ImVec2 windowTopRightPos = { windowBottomRight.x - width, windowTopLeft.y + 250.0f };
 	ImGui::SetNextWindowPos(windowTopRightPos);
 	ImGui::SetNextWindowBgAlpha(0.35f);
-	ImGui::SetNextWindowSize({ width, height });
+	ImGui::SetNextWindowSize({ width, height });*/
 
 	ImGui::Begin("Entity Picker", nullptr, windowFlags);
 	ImGui::Text("Entity List");
@@ -631,17 +644,17 @@ void ImGuiManager::showEntityListUI(/* Maybe an enum of paramEntityType, Maybe a
 
 void ImGuiManager::showTransformUI(/* A reference to a vector of object list objectList */) {
 	// Fixed size for transform window
-	constexpr float width = 300.0f;
-	constexpr float height = 200.0f;
+	/*constexpr float width = 300.0f;
+	constexpr float height = 200.0f;*/
 
 	ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDecoration |
 		ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
 
 	// Position the overlay at the top-right corner of the window, below entity list overlay
-	ImVec2 windowTopRightPos = { windowBottomRight.x - width, windowTopLeft.y + 550.0f };
+	/*ImVec2 windowTopRightPos = { windowBottomRight.x - width, windowTopLeft.y + 550.0f };
 	ImGui::SetNextWindowPos(windowTopRightPos);
 	ImGui::SetNextWindowBgAlpha(0.35f);
-	ImGui::SetNextWindowSize({ width, height });
+	ImGui::SetNextWindowSize({ width, height });*/
 	/*ImGui::Begin("Transform", nullptr, windowFlags);
 	ImGui::Text("Transform Controls");*/
 
@@ -732,10 +745,10 @@ void ImGuiManager::showLogsOverlayUI() {
 	ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoResize;
 
 	// Position the overlay at the bottom-center of the window
-    ImVec2 initialPos = { (windowTopLeft.x + windowBottomRight.x) / 2, windowBottomRight.y };
+    /*ImVec2 initialPos = { (windowTopLeft.x + windowBottomRight.x) / 2, windowBottomRight.y };
     ImGui::SetNextWindowPos(initialPos, ImGuiCond_Always, ImVec2(0.5f, 1.0f));
 	ImGui::SetNextWindowBgAlpha(0.35f);
-	ImGui::SetNextWindowSize({ width, height });
+	ImGui::SetNextWindowSize({ width, height });*/
 
 	ImGui::Text("Logs");
 
@@ -761,9 +774,9 @@ void ImGuiManager::showAssetsBrowserUI() {
 	constexpr float height = 350.0f;
 	ImGuiWindowFlags flags = ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing;
 
-	ImVec2 pos = { windowBottomRight.x - width - 340.0f, windowTopLeft.y + 520.0f }; // near Transform window
-	ImGui::SetNextWindowPos(pos);
-	ImGui::SetNextWindowSize({ width, height });
+	//ImVec2 pos = { windowBottomRight.x - width - 340.0f, windowTopLeft.y + 520.0f }; // near Transform window
+	//ImGui::SetNextWindowPos(pos);
+	//ImGui::SetNextWindowSize({ width, height });
 
 	ImGui::TextColored(ImVec4(0.8f, 0.9f, 1.0f, 1.0f), "Assets Browser");
 	ImGui::Separator();
@@ -1127,4 +1140,116 @@ void ImGuiManager::showAnimationEditorUI() {
         anim->playing = true;
     }
 
+}
+
+void ImGuiManager::createDockspace() {
+	// Setup fullscreen invisible window for docking
+	ImGuiWindowFlags windowFlags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
+	ImGuiViewport* viewport = ImGui::GetMainViewport();
+
+	// Make window fill entire screen
+	ImGui::SetNextWindowPos(viewport->Pos);
+	ImGui::SetNextWindowSize(viewport->Size);
+	ImGui::SetNextWindowViewport(viewport->ID);
+
+	// Remove window decorations
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+
+	windowFlags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse;
+	windowFlags |= ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
+	windowFlags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
+
+	// Create the invisible fullscreen window
+	ImGui::Begin("DockSpace", nullptr, windowFlags);
+	ImGui::PopStyleVar(3);
+
+	// CREATE THE ACTUAL DOCKSPACE
+	ImGuiID dockspaceID = ImGui::GetID("NocturnalStudioDockspace");
+	ImGui::DockSpace(dockspaceID, ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_None);
+
+	// setup initial laayout
+	setupInitialDockingLayout();
+
+	// Menu bar
+	if (ImGui::BeginMenuBar()) {
+		if (ImGui::BeginMenu("File")) {
+			if (ImGui::MenuItem("Exit")) {
+				// Handle exit
+			}
+			ImGui::EndMenu();
+		}
+
+		if (ImGui::BeginMenu("View")) {
+			// Add toggles for showing/hiding panels
+			if (ImGui::MenuItem("Viewport")) {}
+			if (ImGui::MenuItem("Performance")) {}
+			if (ImGui::MenuItem("Entity Picker")) {}
+			if (ImGui::MenuItem("Inspector")) {}
+			if (ImGui::MenuItem("Editor Dock")) {}
+
+			ImGui::Separator();
+
+			// ⭐ ADD RESET LAYOUT OPTION
+			if (ImGui::MenuItem("Reset Layout")) {
+				resetDockingLayout();
+			}
+
+			ImGui::EndMenu();
+		}
+
+		ImGui::EndMenuBar();
+	}
+
+	ImGui::End();
+}
+
+void ImGuiManager::setupInitialDockingLayout() {
+	//  Wait a few frames to ensure dockspace and windows are created
+	static int frameCount = 0;
+	if (frameCount < 2) {
+		frameCount++;
+		return;
+	}
+
+	if (m_dockingLayoutInitialized) return;
+
+	ImGuiID dockspace = ImGui::GetID("NocturnalStudioDockspace");
+
+	// Clear and rebuild layout
+	ImGui::DockBuilderRemoveNode(dockspace);
+	ImGui::DockBuilderAddNode(dockspace, ImGuiDockNodeFlags_DockSpace);
+	ImGui::DockBuilderSetNodeSize(dockspace, ImGui::GetMainViewport()->Size);
+
+	// Split the dockspace into regions
+	ImGuiID center = dockspace;
+	ImGuiID right = ImGui::DockBuilderSplitNode(center, ImGuiDir_Right, 0.25f, nullptr, &center);
+	ImGuiID bottom = ImGui::DockBuilderSplitNode(center, ImGuiDir_Down, 0.25f, nullptr, &center);
+
+	ImGuiID right_lower;
+	ImGuiID right_upper = ImGui::DockBuilderSplitNode(right, ImGuiDir_Up, 0.33f, nullptr, &right_lower);
+
+	ImGuiID right_bottom;
+	ImGuiID right_middle = ImGui::DockBuilderSplitNode(right_lower, ImGuiDir_Up, 0.5f, nullptr, &right_bottom);
+
+	// Dock windows
+	ImGui::DockBuilderDockWindow("Viewport", center);
+	ImGui::DockBuilderDockWindow("Overlay", right_upper);
+	ImGui::DockBuilderDockWindow("Performance", right_upper);
+	ImGui::DockBuilderDockWindow("Entity Picker", right_middle);
+	ImGui::DockBuilderDockWindow("Inspector", right_bottom);
+	ImGui::DockBuilderDockWindow("Editor Dock", bottom);
+
+	ImGui::DockBuilderFinish(dockspace);
+
+	m_dockingLayoutInitialized = true;
+	logger.log("Initial docking layout created");
+}
+
+void ImGuiManager::resetDockingLayout() {
+	ImGuiID dockspace = ImGui::GetID("NocturnalStudioDockspace");
+	ImGui::DockBuilderRemoveNode(dockspace);
+	m_dockingLayoutInitialized = false;
+	logger.log("Docking layout reset");
 }

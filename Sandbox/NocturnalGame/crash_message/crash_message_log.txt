@@ -50,3 +50,27 @@
 [19-11-2025] [19:09:49] [CRASH_MESSAGE] Prefab category 'firefly' not found.
 [19-11-2025] [19:16:13] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
 [19-11-2025] [19:16:15] [CRASH_MESSAGE] Prefab category 'firefly' not found.
+[20-11-2025] [09:59:24] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[20-11-2025] [09:59:28] [CRASH_MESSAGE] Prefab category 'firefly' not found.
+[20-11-2025] [10:43:12] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[20-11-2025] [10:43:16] [CRASH_MESSAGE] Prefab category 'firefly' not found.
+[20-11-2025] [10:44:31] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[20-11-2025] [10:44:34] [CRASH_MESSAGE] Prefab category 'firefly' not found.
+[20-11-2025] [10:45:21] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[20-11-2025] [10:45:24] [CRASH_MESSAGE] Prefab category 'firefly' not found.
+[20-11-2025] [10:45:47] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[20-11-2025] [10:45:50] [CRASH_MESSAGE] Prefab category 'firefly' not found.
+[20-11-2025] [10:47:05] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[20-11-2025] [10:47:07] [CRASH_MESSAGE] Prefab category 'firefly' not found.
+[20-11-2025] [10:49:39] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[20-11-2025] [10:49:41] [CRASH_MESSAGE] Prefab category 'firefly' not found.
+[20-11-2025] [10:52:32] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[20-11-2025] [10:52:34] [CRASH_MESSAGE] Prefab category 'firefly' not found.
+[20-11-2025] [10:56:58] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[20-11-2025] [10:57:00] [CRASH_MESSAGE] Prefab category 'firefly' not found.
+[20-11-2025] [10:57:54] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[20-11-2025] [10:57:56] [CRASH_MESSAGE] Prefab category 'firefly' not found.
+[20-11-2025] [11:00:10] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[20-11-2025] [11:00:12] [CRASH_MESSAGE] Prefab category 'firefly' not found.
+[20-11-2025] [11:00:39] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[20-11-2025] [11:00:41] [CRASH_MESSAGE] Prefab category 'firefly' not found.

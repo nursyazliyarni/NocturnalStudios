@@ -80,10 +80,16 @@ public:
 	void showBottomDockUI();
 	void showAnimationEditorUI();   
 
+	//dockspace
+	void createDockspace();
+	void setupInitialDockingLayout();  
+	void resetDockingLayout();
+
 	// Expose last measured logic time (seconds)
 	double getLogicTime() const { return logicTime; }
 
 private:
+	bool m_dockingLayoutInitialized = false;
 	Window& mainWindow;
 	Renderer& renderer;
 	//Texture& texture;
