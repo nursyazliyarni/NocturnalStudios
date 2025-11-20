@@ -1,11 +1,11 @@
 {
     "animal": {
-      "flamingo":{
+      "flamingo": {
         "components": [
-          { "type": "Transform", "x":0.10,"y":0.44,"w":0.26,"h":0.50, "angle": 0.0 },
+          { "type": "Transform", "x": 0.10, "y": 0.44, "w": 0.26, "h": 0.50, "angle": 0.0 },
           { "type": "SpriteRenderer", "sprite_path": "textures/flamingo.png" },
           { "type": "AABBCollider", "bounding_box_size": 1.0 },
-          { "type": "AnimalProperties", "health_bar":100,"hunger_bar":100, "sanity_bar":100 }
+          { "type": "AnimalProperties", "health_bar": 100, "hunger_bar": 100, "sanity_bar": 100 }
         ]
       },
       
@@ -27,12 +27,12 @@
         ]
       },
 
-      "horse":{
+      "horse": {
         "components": [
-          { "type": "Transform", "x":0.10,"y":0.40,"w":0.50,"h":0.66, "angle": 0.0 },
+          { "type": "Transform", "x": 0.10, "y": 0.40, "w": 0.50, "h": 0.66, "angle": 0.0 },
           { "type": "SpriteRenderer", "sprite_path": "textures/horse.png" },
           { "type": "AABBCollider", "bounding_box_size": 1.0 },
-          { "type": "AnimalProperties", "health_bar":100,"hunger_bar":100, "sanity_bar":100 }
+          { "type": "AnimalProperties", "health_bar": 100, "hunger_bar": 100, "sanity_bar": 100 }
         ]
       }
     },
@@ -125,5 +125,60 @@
             { "type": "SpriteRenderer", "sprite_path":"textures/menuQUIT.png" }
           ]
         }
+    },
+    
+    "prefabs": {
+      "audio_emitter_menu": {
+        "components": [
+          { "type": "Transform", "is_visible": false },
+          { "type": "AudioData",
+            "listener": false,
+            "audios": [
+              { "name": "BGM_Iris_Luminara_Loop_ROUGH", "loop": true, "to_play_at_start": true, "group": "Music", "volume": 0.6 }
+            ]
+          }
+        ]
+      },
+      "audio_emitter_flamingo": {
+        "components": [
+          { "type": "Transform", "is_visible": false },
+          { "type": "AudioData",
+            "audios": [
+              { "name": "BGM_Ambience_Flamingo_01", "loop": true, "to_play_at_start": true, "group": "SFX", "volume": 0.4 }
+            ]
+          }
+        ]
+      },
+      "audio_emitter_seal": {
+        "components": [
+          { "type": "Transform", "is_visible": false },
+          { "type": "AudioData",
+            "audios": [
+                { "name": "BGM_Ambience_Seal_01", "loop": true, "to_play_at_start": true, "group": "SFX", "volume": 0.4 }
+              ]
+          }
+        ]
+      },
+
+      "audio_emitter_owl": {
+        "components": [
+          { "type": "Transform", "is_visible": false },
+          { "type": "AudioData",
+            "audios": [
+              { "name": "BGM_Ambience_Owl_01", "loop": true, "to_play_at_start": true, "group": "SFX", "volume": 0.45 }
+            ]
+          }
+        ]
+      },
+      "audio_emitter_horse": {
+        "components": [
+          { "type": "Transform", "is_visible": false },
+          { "type": "AudioData",
+            "audios": [
+              { "name": "BGM_Ambience_Horse_01", "loop": true, "to_play_at_start": true, "group": "SFX", "volume": 0.5 }
+            ]
+          }
+        ]
+      }
     }
 }

@@ -405,6 +405,7 @@ public:
 		auto& map = GetMap();
 		auto it = map.find(name);
 		if (it != map.end()) return it->second(j);
+		logger.error("ComponentFactory::Create - Unknown component type: " + name);
 		throw std::runtime_error("Unknown component type: " + name);
 	}
 
