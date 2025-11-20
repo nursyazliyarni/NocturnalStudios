@@ -299,13 +299,13 @@ void Application::init() {
 
 	prefabManager = std::make_unique<PrefabManager>(*ecs);
 	prefabManager->Load_Prefab(prefabTestPath.c_str());
-	prefabManager->CreateEntityFromPrefab(prefabTestPath, "main_menu_button", "play_button");
+	/*prefabManager->CreateEntityFromPrefab(prefabTestPath, "main_menu_button", "play_button");
 	prefabManager->CreateEntityFromPrefab(prefabTestPath, "main_menu_button", "load_button");
 	prefabManager->CreateEntityFromPrefab(prefabTestPath, "main_menu_button", "setting_button");
 	prefabManager->CreateEntityFromPrefab(prefabTestPath, "main_menu_button", "quit_button");
 	prefabManager->CreateEntityFromPrefab(prefabTestPath, "food", "owl_food");
 	prefabManager->CreateEntityFromPrefab(prefabTestPath, "animal", "flamingo");
-	prefabManager->CreateEntityFromPrefab(prefabTestPath, "firefly", "firefly");
+	prefabManager->CreateEntityFromPrefab(prefabTestPath, "firefly", "firefly");*/
 
 	
 	//logger.log("Created animal entity with ID: " + std::to_string(animal) + " and " + std::to_string(animal_2));
