@@ -162,6 +162,15 @@ namespace {
 	int draggedSpriteIndex = -1; //index into sprite_vector
 	int duplicateIndex = -1; //where clone is in the vector
 	Vector2D dragOffset(0.0f, 0.0f); //mouse offset from top-left of sprite
+
+	static Application* s_App = nullptr;
+	static void App_OnGlfwFocus(GLFWwindow* window, int focused) {
+		if (s_App) s_App->onFocusChanged(focused == GLFW_TRUE);
+	}
+
+	static void App_OnGlfwIconify(GLFWwindow* window, int iconified) {
+		if (s_App) s_App->onIconifyChanged(iconified == GLFW_TRUE);
+	}
 }
 
 //Application::Application() = default;
@@ -169,9 +178,56 @@ Application::Application() {
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF); //enable memory leak check at program exit
 }
 
+void Application::onFocusChanged(bool focused) {
+	if (!focused) {
+		if (autoMinimizeOnFocusLoss) glfwIconifyWindow(m_window.handle());
 
+		if (audioSystem) {
+			audioSystem->pauseAllSFX();
+			audioSystem->pauseAllBGM();
+		}
 
+		if (gsm) gsm->pauseGame();
+		if (inputSystem) inputSystem->clearAllStates();
+	}
+	else {
+		if (glfwGetWindowAttrib(m_window.handle(), GLFW_ICONIFIED)) 
+			glfwRestoreWindow(m_window.handle());
 
+		if (autoResumeOnFocusGain) {
+			if (audioSystem) {
+				audioSystem->resumeAllSFX();
+				audioSystem->resumeAllBGM();
+			}
+			if (gsm && gsm->isPaused()) gsm->resumeGame();
+		}
+
+		if (inputSystem) inputSystem->EndFrame();
+	}
+}
+
+void Application::onIconifyChanged(bool iconified) {
+	if (iconified) {
+		if (audioSystem) {
+			audioSystem->pauseAllSFX();
+			audioSystem->pauseAllBGM();
+		}
+
+		if (gsm) gsm->pauseGame();
+		if (inputSystem) inputSystem->clearAllStates();
+	}
+	else {
+		if (autoResumeOnFocusGain) {
+			if (audioSystem) {
+				audioSystem->resumeAllSFX();
+				audioSystem->resumeAllBGM();
+			}
+			if (gsm && gsm->isPaused()) gsm->resumeGame();
+		}
+
+		if (inputSystem) inputSystem->EndFrame();
+	}
+}
 
 
 void Application::init() {
@@ -184,12 +240,17 @@ void Application::init() {
     wd.height = c.window.height;
     wd.title = c.window.title;
     wd.vsync = c.window.vsync;
+	wd.fullscreen = true;
 
     if (!m_window.create(wd)) {
         logger.error("Failed to create window");
         isInitialized = false;
         return;
     }
+
+	s_App = this;
+	glfwSetWindowFocusCallback(m_window.handle(), App_OnGlfwFocus);
+	glfwSetWindowIconifyCallback(m_window.handle(), App_OnGlfwIconify);
 
     glViewport(0, 0, wd.width, wd.height);
     glDisable(GL_DEPTH_TEST);
@@ -359,7 +420,10 @@ int Application::run() {
         m_window.poll();
 
 		double dt = gameLoop->calculate_DT();
-		gsm->update(static_cast<float>(dt),*renderer,textures);
+
+		if (gsm && !gsm->isPaused()) {
+			gsm->update(static_cast<float>(dt), *renderer, textures);
+		}
 		Gui::updateImGuiManager(dt, *imGuiManager);
 		gameLoop->display_FPS(m_window.handle(), windowTitle, dt);
 		inputSystem->update_mouse_pos(m_window.handle());
@@ -425,15 +489,21 @@ int Application::run() {
 		/*for (int k = GLFW_KEY_1; k <= GLFW_KEY_9; ++k)
 			if (inputSystem->WasPressed(k))
 				gsm->handleKeyPress(k);*/
-        for (int k = GLFW_KEY_1; k <= GLFW_KEY_9; ++k)
-            if (inputSystem->WasPressed(k))
-                gsm->switchToSceneForKey(k); // respects AppState::Playing
+		if (!gsm || !gsm->isPaused()) {
+			for (int k = GLFW_KEY_1; k <= GLFW_KEY_9; ++k)
+            	if (inputSystem->WasPressed(k))
+                	gsm->switchToSceneForKey(k); // respects AppState::Playing
 
-        if (inputSystem->WasPressed(GLFW_KEY_ESCAPE))
-            gsm->handleKeyPress(GLFW_KEY_ESCAPE);
+        	if (inputSystem->WasPressed(GLFW_KEY_ESCAPE))
+            	gsm->handleKeyPress(GLFW_KEY_ESCAPE);
 
-        inputSystem->ProcessHotkeys(*gsm);
-        TransformSystem::TransformInput(*inputSystem, dt);
+			if (inputSystem->WasPressed(GLFW_KEY_F11)) 
+				m_window.toggleFullscreen();
+
+        	inputSystem->ProcessHotkeys(*gsm);
+        	TransformSystem::TransformInput(*inputSystem, dt);
+		}
+
         int fbw = 0, fbh = 0; glfwGetFramebufferSize(m_window.handle(), &fbw, &fbh);
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         glViewport(0, 0, fbw, fbh);

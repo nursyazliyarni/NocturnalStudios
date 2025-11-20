@@ -57,59 +57,124 @@ void Logger::handle_crash_error(int signal) {
 	}
 }
 
-void Logger::error(std::string_view message) {
-	std::cerr << getCurrentTime() << " [ERROR] " << message << std::endl;
-	std::string formatError = getCurrentTime() + " [ERROR] " + message.data() + '\n';
-	consoleLogs.push_back(std::move(formatError));
-	log_crash_to_file(message);
-
-	while (consoleLogs.size() > MAX_LOG_MESSAGE) {
-		consoleLogs.pop_front();
+// New: safe level tag
+const char* Logger::levelTag(Level level) {
+	switch (level) {
+	case Level::Error:   return "[ERROR]";
+	case Level::Warning: return "[WARNING]";
+	default:             return "[LOG]";
 	}
+}
+
+// New: thread-safe current time as string
+std::string Logger::nowString() {
+	std::stringstream ss;
+	auto now = std::chrono::system_clock::now();
+	std::time_t t = std::chrono::system_clock::to_time_t(now);
+	std::tm tm{};
+#if defined(_WIN32)
+	localtime_s(&tm, &t);
+#else
+	localtime_r(&t, &tm);
+#endif
+	ss << std::put_time(&tm, logFormat);
+	return ss.str();
+}
+
+// New: unify formatting
+std::string Logger::formatLine(Level level, std::string_view message, const std::string& time) {
+	std::string line;
+	line.reserve(time.size() + 1 + 16 + message.size() + 1);
+	line.append(time)
+		.append(" ")
+		.append(levelTag(level))
+		.append(" ")
+		.append(message)
+		.push_back('\n');
+	return line;
+}
+
+// New: sinks + buffer + streams (single path)
+void Logger::write(Level level, std::string_view message, bool alsoCrashFile) {
+	const std::string time = nowString();
+	const std::string formatted = formatLine(level, message, time);
+
+	// console stream selection without repeating time formatting
+	{
+		// stdout for info, stderr for warnings/errors
+		std::ostream& os = (level == Level::Error) ? std::cerr
+							 : (level == Level::Warning) ? std::cerr
+							 : std::cout;
+		// Print without trailing extra newline (formatted has '\n')
+		os << formatted;
+		os.flush();
+	}
+
+	{
+		std::lock_guard<std::mutex> lock(mtx_);
+		consoleLogs.push_back(formatted);
+		while (consoleLogs.size() > maxMessages_) {
+			consoleLogs.pop_front();
+		}
+		// Fan-out to sinks
+		for (auto const& sink : sinks_) {
+			if (sink) sink(formatted, level);
+		}
+	}
+
+	if (alsoCrashFile) {
+		log_crash_to_file(message);
+	}
+}
+
+// Backward-compatible wrappers
+void Logger::error(std::string_view message) {
+	write(Level::Error, message, /*alsoCrashFile*/ true);
 }
 
 void Logger::log(std::string_view message) {
-	std::cout << getCurrentTime() << " [LOG] " << message << std::endl;
-	std::string formatLog = getCurrentTime() + " [LOG] " + message.data() + '\n';
-	consoleLogs.push_back(std::move(formatLog));
-
-	while (consoleLogs.size() > MAX_LOG_MESSAGE) {
-		consoleLogs.pop_front();
-	}
+	write(Level::Info, message, /*alsoCrashFile*/ false);
 }
 
 void Logger::warning(std::string_view message) {
-	std::cout << getCurrentTime() << " [WARNING] " << message << std::endl;
-	std::string formatWarning = getCurrentTime() + " [WARNING] " + message.data() + '\n';
+	write(Level::Warning, message, /*alsoCrashFile*/ false);
+}
 
-	consoleLogs.push_back(std::move(formatWarning));
-	while (consoleLogs.size() > MAX_LOG_MESSAGE) {
+std::deque<std::string> Logger::getLogs() const& {
+	std::lock_guard<std::mutex> lock(mtx_);
+	return consoleLogs; // copy out safely for UI like ImGui overlay
+}
+
+void Logger::addSink(Sink sink) {
+	std::lock_guard<std::mutex> lock(mtx_);
+	sinks_.push_back(std::move(sink));
+}
+
+void Logger::setMaxMessages(std::size_t max) {
+	std::lock_guard<std::mutex> lock(mtx_);
+	maxMessages_ = max > 0 ? max : 1;
+	while (consoleLogs.size() > maxMessages_) {
 		consoleLogs.pop_front();
 	}
 }
 
-std::deque<std::string> Logger::getLogs() const& {
-	return consoleLogs;
-}
-
 std::string Logger::getCurrentTime() {
-	std::stringstream ss;
-	auto now = std::chrono::system_clock::now();
-	auto time = std::chrono::system_clock::to_time_t(now);
-
-#pragma warning(suppress : 4996)
-	ss << std::put_time(std::localtime(&time), logFormat);
-#pragma warning(default : 4996)
-	return ss.str();
+	// Keep signature for compatibility; reuse thread-safe impl
+	return nowString();
 }
 
 std::string Logger::getUniqueTimeId() {
 	std::stringstream ss;
 	auto now = std::chrono::system_clock::now();
-	auto time = std::chrono::system_clock::to_time_t(now);
-
+	std::time_t t = std::chrono::system_clock::to_time_t(now);
+	std::tm tm{};
+#if defined(_WIN32)
+	localtime_s(&tm, &t);
+#else
+	localtime_r(&t, &tm);
+#endif
 #pragma warning(suppress : 4996)
-	ss << std::put_time(std::localtime(&time), fileNameFormat);
+	ss << std::put_time(&tm, fileNameFormat);
 #pragma warning(default : 4996)
 	return ss.str() + std::to_string(logCounter++);
 }

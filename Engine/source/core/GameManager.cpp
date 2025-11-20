@@ -252,6 +252,9 @@ bool GameManager::load(const char* prefabsPath, const char* scenesPath, TextureS
         idle.frames = 5;
         idle.frameTime = 0.12f;
         idle.loop = true;
+        idle.spritePath = "assets/textures/flamingo_spritesheet.png";
+        idle.sheetColumns = 5;
+        idle.sheetRows = 1;
 
         anim->animations["idle"] = idle;
         anim->currentAnim = "idle";
@@ -535,4 +538,16 @@ void GameManager::update(float dt,Renderer& renderer,TextureStore& tex) {
     //update ECS animations
 	const float fixedDt = 1.0f / 60.0f;
     animationSystem_.Update(fixedDt, ecs_, renderer, tex);
+}
+
+void GameManager::pauseGame() {
+    if (app == AppState::Playing) {
+        app = AppState::Paused;
+    }
+}
+
+void GameManager::resumeGame() {
+    if (app == AppState::Paused) {
+        app = AppState::Playing;
+    }
 }

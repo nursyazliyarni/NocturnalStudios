@@ -100,6 +100,8 @@ public:
 
 	bool IsDown(int key) const;
 
+	void clearAllStates();
+
 private:
 	//Non-static member functions need an object to call it
 	//So declare this function as static to avoid this issue

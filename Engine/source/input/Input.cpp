@@ -398,5 +398,10 @@ void Input::updateRotations() {
 	}
 }
 
-
+void Input::clearAllStates() {
+	pressedKeysThisFrame.clear();
+	pressedMouseThisFrame.clear();
+	m_keysDown.clear();
+	isDragging = false;
+}
 
