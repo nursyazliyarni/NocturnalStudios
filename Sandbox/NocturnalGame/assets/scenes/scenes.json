@@ -27,9 +27,9 @@
       "camera": { "cx": 0.5, "cy": 0.5, "zoom": 1.0, "minZoom": 1.0, "maxZoom": 3.0 },
       "entities":[
         { "prefab":"animal","name":"flamingo",
-          "overrides": { "x":0.10,"y":0.44, "w":0.26, "h":0.50,"sprite_path":"textures/flamingo.png" },
+          "overrides": { "x":0.10,"y":0.44, "w":0.26, "h":0.50,"sprite_path":"textures/flamingo_spritesheet.png" },
           "animal_properties": {"health_bar":100,"hunger_bar":100, "sanity_bar":100,
-          "slower_decreasing_rate":0.3,"normal_decreasing_rate":0.5,"faster_decreasing_rate":0.7,"penalty_decreasing_rate":1}
+          "slower_decreasing_rate":2.3,"normal_decreasing_rate":2.5,"faster_decreasing_rate":2.7,"penalty_decreasing_rate":3}
         },
 
         { "prefab":"food","name":"flamingo_food",
@@ -86,7 +86,7 @@
         { "prefab":"animal","name":"horse",
           "overrides": { "x":0.10,"y":0.40, "w":0.50, "h":0.66,"sprite_path":"textures/horse.png" },
           "animal_properties": {"health_bar":100,"hunger_bar":100, "sanity_bar":100,
-          "slower_decreasing_rate":0.3,"normal_decreasing_rate":0.5,"faster_decreasing_rate":0.7,"penalty_decreasing_rate":1}
+          "slower_decreasing_rate":1.3,"normal_decreasing_rate":1.5,"faster_decreasing_rate":1.7,"penalty_decreasing_rate":2}
         },
 
         { "prefab":"food","name":"horse_food",

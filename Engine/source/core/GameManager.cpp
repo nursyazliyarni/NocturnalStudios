@@ -329,14 +329,14 @@ void GameManager::render(Renderer& r, int w, int h) {
         float bx = 0.0f, by = 0.0f, bw = float(w), bh = float(h);
         Cam2D_Apply(currentScene, bx, by, bw, bh, w, h);
         r.texturedTri(sc.background, bx, by, bw, bh);
-        for (auto& items : getCurrentScene()->items) {
+        /*for (auto& items : getCurrentScene()->items) {
             if (items.still_alive) {
                 r.rect(w / 2, h / 2 - 200, items.health_bar * 4, 25, 1, 0, 0);
                 r.rect(w / 2, h / 2 - 150, items.hunger_bar * 4, 25, 0, 1, 0);
                 r.rect(w / 2, h / 2 - 100, items.sanity_bar * 4, 25, 0, 0, 1);
             }
 
-        }
+        }*/
     }
 
     
@@ -352,7 +352,7 @@ void GameManager::render(Renderer& r, int w, int h) {
     //   r.texturedTri(img.textureID, px, py, pw, ph); // same call you use for JSON entities
     //}
 
-    if (!ecs_.getAllEntities().empty()) {
+
         constexpr EntityID MAX_SCAN = 5000;
         for (EntityID e = 0; e < MAX_SCAN; ++e) {
             if (auto* t = ecs_.getComponent<Transform>(e)) {
@@ -365,30 +365,30 @@ void GameManager::render(Renderer& r, int w, int h) {
                     float pw = t->scale.x() * w;
                     float ph = t->scale.y() * h;*/
 
-                    float px = t->position.x() * w;
+                    /*float px = t->position.x() * w;
                     float py = t->position.y() * h;
                     float pw = t->scale.x() * w;
                     float ph = t->scale.y() * h;
 
-                    Cam2D_Apply(currentScene, px, py, pw, ph, w, h);
+                    Cam2D_Apply(currentScene, px, py, pw, ph, w, h);*/
 
                     if (auto* anim = ecs_.getComponent<SpriteAnimationComponent>(e)) {
                         auto it = anim->animations.find(anim->currentAnim);
                         if (it != anim->animations.end()) {
                             const auto& def = it->second;
 
-                    r.texturedTri(img->textureID, px, py, pw, ph);
+                            //r.texturedTri(img->textureID, px, py, pw, ph);
 
-                    // Debug AABB for ECS entities (so B toggle still shows boxes)
-                    if (Debug::Drawer::Instance().IsActive())
-                    {
-                        AABB collider(Vector2D(px, py), Vector2D(pw, ph));
-                        Debug::Drawer::Instance().AddRect(
-                            collider.pos.x(), collider.pos.y(),
-                            collider.size.x(), collider.size.y(),
-                            0xFFFF00FF // yellow
-                        );
-                    }
+                            // Debug AABB for ECS entities (so B toggle still shows boxes)
+                            //if (Debug::Drawer::Instance().IsActive())
+                            //{
+                            //    AABB collider(Vector2D(px, py), Vector2D(pw, ph));
+                            //    Debug::Drawer::Instance().AddRect(
+                            //        collider.pos.x(), collider.pos.y(),
+                            //        collider.size.x(), collider.size.y(),
+                            //        0xFFFF00FF // yellow
+                            //    );
+                            //}
 
                             int frameIndex = anim->currentFrame;
                             int sheetColumns = anim->sheetColumns;
@@ -411,16 +411,13 @@ void GameManager::render(Renderer& r, int w, int h) {
                             float ph = t->scale.y() * h;
 
                             Cam2D_Apply(currentScene, px, py, pw, ph, w, h);
-
                             r.drawSpriteUV(img->textureID, px, py, pw, ph, u0, v0, u1, v1);
                         }
                     }
-
-                   // r.texturedTri(img->textureID, px, py, pw, ph);
+                    //r.texturedTri(img->textureID, px, py, pw, ph);
                 }
             }
         }
-    }
 
     // entities (normalized ? pixels)
    // entities (normalized → pixels) — draw JSON **only** if there is NO ECS entity by the same name
@@ -436,18 +433,23 @@ void GameManager::render(Renderer& r, int w, int h) {
         if (di.tex == 0) continue;
         float px = di.x * w, py = di.y * h, pw = di.w * w, ph = di.h * h;
 
-        if (di.name == "flamingo" || di.name == "horse" || di.name == "owl" || di.name == "seal") {
+        if (di.name=="flamingo"||di.name=="seal"||di.name=="owl"||di.name=="horse") {
             if (di.still_alive) {
+                r.rect(w / 2, h / 2 - 200, di.health_bar * 4, 25, 1, 0, 0);
+                r.rect(w / 2, h / 2 - 150, di.hunger_bar * 4, 25, 0, 1, 0);
+                r.rect(w / 2, h / 2 - 100, di.sanity_bar * 4, 25, 0, 0, 1);
+
+                Cam2D_Apply(currentScene, px, py, pw, ph, w, h);
                 r.texturedTri(di.tex, px, py, pw, ph);
             }
         }
 
         else {
+            Cam2D_Apply(currentScene, px, py, pw, ph, w, h);
             r.texturedTri(di.tex, px, py, pw, ph);
         }
 
-        Cam2D_Apply(currentScene, px, py, pw, ph, w, h);
-        r.texturedTri(di.tex, px, py, pw, ph);
+        
 
         if (Debug::Drawer::Instance().IsActive()) {
             AABB collider(Vector2D(px, py), Vector2D(pw, ph));
