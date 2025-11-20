@@ -47,6 +47,10 @@ public:
    /* void size(int& w, int& h) const;
     GLFWwindow* native() const { return m_win; }*/
 
+    // Size queries
+    void getWindowSize(int& w, int& h) const;        // logical client size
+    void getFramebufferSize(int& w, int& h) const;   // pixel size for rendering
+
     void toggleFullscreen();
     void setFullscreen(bool fs);
     bool isFullscreen() const { return m_isFullscreen; }
