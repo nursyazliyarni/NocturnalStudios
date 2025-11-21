@@ -91,7 +91,7 @@ void Animal_Logic::update_animal_sanity(GameManager& gm, double deltaTime) {
 					if (acc_timer > 3) {
 						//sanity of flamingo decrease faster when player is not viewing it in the cameras
 						animal.sanity_bar -= animal.penalty_decreasing_rate * deltaTime;
-						logger.log("warning: please view the flamingo in the camera");
+						//logger.log("warning: please view the flamingo in the camera");
 						glColor4f(1.0f, 0.0f, 0.0f, 1.0f);
 					}
 
