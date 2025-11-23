@@ -168,14 +168,17 @@ bool GameManager::load(const char* prefabsPath, const char* scenesPath, TextureS
                 if (e.HasMember("prefab") && e["prefab"].IsString()) {
                     auto itp = prefabDefaults.find(e["prefab"].GetString());
                     if (itp != prefabDefaults.end()) def = itp->second;
-                    di.item_type = itp->first;
-                    //std::cout << di.item_type << "\n";
+                    if (e.HasMember("prefab") && e["prefab"].IsString()) {
+                        di.item_type = e["prefab"].GetString();  // always safe
 
-                    /*if (itp->first == "animal") {
-                        if (e.HasMember("name") && e["name"].IsString()) {
-                            std::cout << "Looking for name = " << e["name"].GetString() << "\n";
+                        auto itp = prefabDefaults.find(di.item_type);
+                        if (itp != prefabDefaults.end()) {
+                            def = itp->second;
                         }
-                    }*/
+                        else {
+                            logger.log(std::string("[load] prefab not found in prefabs.json: ") + di.item_type);
+                        }
+                    }
                 }
 
                 di.w = def.w;
