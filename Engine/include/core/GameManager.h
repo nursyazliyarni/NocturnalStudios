@@ -23,19 +23,22 @@
 #include <optional>
 #include "graphics/Renderer.h"
 #include "Animation/AnimationSystem.h"
+#include "input/Input.h"
+#include "physics/Collision.h"
 
 #include <functional>
 
 class TextureStore;
 class ECS;
+class Animal_Logic;
 
 struct DrawItem {
-    std::string name;  
+    std::string name; std::string item_type;
     GLuint tex = 0;
     float x = 0, y = 0, w = 0, h = 0, angle = 0; // normalized
     float health_bar, hunger_bar, sanity_bar;
     float slower_decreasing_rate, normal_decreasing_rate, faster_decreasing_rate, penalty_decreasing_rate;
-    bool still_alive;
+    bool still_alive, is_draggable, is_dragging;
 };
 
 struct ClickRegion {
@@ -68,7 +71,7 @@ public:
     const std::string& current() const { return currentScene; }
 
     void handleKeyPress(int key); // map numeric keys/ESC to scenes
-    void render(Renderer& r, int w, int h) ;
+    void render(Renderer& r, Input& input, GLFWwindow* window, int w, int h) ;
 
     bool handleClick(float nx, float ny);  // mouse click in normalized coords
     bool popQuitRequested();               // returns & clears quit flag
@@ -89,6 +92,7 @@ public:
     void update(float dt,Renderer& renderer,TextureStore& tex);
 
 	ECS& getECS() { return ecs_; }
+    std::unique_ptr<DrawItem>& get_duplicate_item();
 
     void pauseGame();
     void resumeGame();
@@ -109,6 +113,8 @@ public:
 private:
     std::unordered_map<std::string, Scene> scenes;
     std::unordered_map<int, std::string> keyMap; // GLFW_KEY_* to scene name
+    std::unique_ptr<DrawItem> duplicate_item{nullptr};
+    std::vector<std::string> animal_name;
     //std::string backKey = "MainMenu";
     //std::string currentScene;
 
