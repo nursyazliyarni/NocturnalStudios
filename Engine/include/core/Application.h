@@ -6,6 +6,8 @@
 
     Rishika Bimal Attodi
         - Declared Application interface and main run entrypoint.
+        - stabilized init & main loop, wired systems, 
+        fixed menu menu to scene transitions, and cleaned up redundant code paths.
 
     Secondary Author:
          Name (%)
@@ -53,12 +55,18 @@ public:
     int run();            // create window from JSON + minimal loop
     void shutdown();
 
+    void onFocusChanged(bool focused);
+    void onIconifyChanged(bool iconified);
+
 private: // window and context
     Window m_window;
     bool isInitialized{ false };
     std::string windowTitle;
 
-private: // core subsystem and resources kept alive across run()
+    bool autoMinimizeOnFocusLoss{ true };
+    bool autoResumeOnFocusGain{ true };
+
+    private: // core subsystem and resources kept alive across run()
     ECS* ecs{ nullptr };
     Font* uiFont{ nullptr };
 	Font* uiFont2{ nullptr };

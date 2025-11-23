@@ -1,5 +1,24 @@
+/*!------------------------------------------------------------------------------------------------
+	File: ECSComponentParsing.cpp
+	Project: NocturnalStudio
+
+		This file contains the declarations oif functions FromJson for various ECS Components, which
+		allows ECS components to be parsed from a JSON file
+
+	Primary Author:
+		Laycock Enhui Sarah (95%)
+		- Created and implemented 
+
+	Rishika added AIComponent
+
+	All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
+
 #include "ECS/ECS_Component.h"
+#include "System/Audio_System.h"
 #include "ECS/ECS.h"
+extern AudioSystem* gAudioSystem;
+
 bool ComponentFactory::CreateFromName(EntityID entity, const std::string& name, const Json& j) {
 	ECS& ecs = ECS::getECS();
 	if (name=="Transform")
@@ -32,11 +51,6 @@ bool ComponentFactory::CreateFromName(EntityID entity, const std::string& name, 
 		ecs.addComponent(entity, std::any_cast<AnimalBehavior>(Create(name,j)));
 		return true;
 	}
-	if (name == "AudioData")
-	{
-		ecs.addComponent(entity, std::any_cast<AudioData>(Create(name,j)));
-		return true;
-	}
 	if (name == "PhysicsComponent")
 	{
 		ecs.addComponent(entity, std::any_cast<PhysicsComponent>(Create(name,j)));
@@ -50,10 +64,29 @@ bool ComponentFactory::CreateFromName(EntityID entity, const std::string& name, 
 	if (name == "AABBCollider")
 	{
 		ecs.addComponent<AABBCollider>(entity, std::any_cast<AABBCollider>(Create(name,j)));
-		return false;
+		return true;
 	}
+	if (name=="AIComponent")
+	{
+		ecs.addComponent<AIComponent>(entity, std::any_cast<AIComponent>(Create(name, j)));
+		return true;
+	}
+
+	if (name == "AudioData") {
+		auto comp = std::any_cast<AudioData>(Create(name, j));
+
+		if (gAudioSystem) {
+			gAudioSystem->registerNewAudioResource(comp, entity);
+		}
+
+		ecs.addComponent(entity, std::move(comp));
+		return true;
+	}
+
+	return false;
 }
 void Collider::FromJSON(const rapidjson::Value& json){}
+void Collider::ToJSON(rapidjson::Value& json, rapidjson::Document::AllocatorType& allocator) const {}
 
 void RenderComponent::FromJSON(const rapidjson::Value& json) {
 	const char* members[]{ "opacity","is_visible","color_tint","color_to_add"};
@@ -106,6 +139,8 @@ void RenderComponent::FromJSON(const rapidjson::Value& json) {
 	}
 	
 }
+
+void RenderComponent::ToJSON(rapidjson::Value& json, rapidjson::Document::AllocatorType& allocator) const {}
 
 void Transform::FromJSON(const rapidjson::Value& json) {
 	const char* members[]{ 
@@ -205,6 +240,8 @@ void Transform::FromJSON(const rapidjson::Value& json) {
 	}
 }
 
+void Transform::ToJSON(rapidjson::Value& json, rapidjson::Document::AllocatorType& allocator) const {}
+
 void ImageRenderer::FromJSON(const rapidjson::Value& json) {
 	RenderComponent::FromJSON(json);
 	const char* members[]{
@@ -234,6 +271,8 @@ void ImageRenderer::FromJSON(const rapidjson::Value& json) {
 	}
 }
 
+void ImageRenderer::ToJSON(rapidjson::Value& json, rapidjson::Document::AllocatorType& allocator) const {}
+
 void SpriteRenderer::FromJSON(const rapidjson::Value& json) {
 	RenderComponent::FromJSON(json);
 	if (json.HasMember("sprite_path")&& json["sprite_path"].IsString())
@@ -244,6 +283,8 @@ void SpriteRenderer::FromJSON(const rapidjson::Value& json) {
 	}
 }
 
+void SpriteRenderer::ToJSON(rapidjson::Value& json, rapidjson::Document::AllocatorType& allocator) const {}
+
 void CircleRenderer::FromJSON(const rapidjson::Value& json) {
 	RenderComponent::FromJSON(json);
 	if (json.HasMember("radius") && json["radius"].IsFloat())
@@ -253,6 +294,8 @@ void CircleRenderer::FromJSON(const rapidjson::Value& json) {
 
 	}
 }
+
+void CircleRenderer::ToJSON(rapidjson::Value& json, rapidjson::Document::AllocatorType& allocator) const {}
 
 void RectRenderer::FromJSON(const rapidjson::Value& json) {
 	RenderComponent::FromJSON(json);
@@ -276,6 +319,8 @@ void RectRenderer::FromJSON(const rapidjson::Value& json) {
 		}
 	}
 }
+
+void RectRenderer::ToJSON(rapidjson::Value& json, rapidjson::Document::AllocatorType& allocator) const {}
 
 void AnimalBehavior::FromJSON(const rapidjson::Value& json) {
 	const char* members[]{
@@ -303,10 +348,7 @@ void AnimalBehavior::FromJSON(const rapidjson::Value& json) {
 	}
 }
 
-void AudioData::FromJSON(const rapidjson::Value& json) {
-	//bro
-
-}
+void AnimalBehavior::ToJSON(rapidjson::Value& json, rapidjson::Document::AllocatorType& allocator) const {}
 
 void PhysicsComponent::FromJSON(const rapidjson::Value& json) {
 	const char* members[]{
@@ -363,6 +405,8 @@ void PhysicsComponent::FromJSON(const rapidjson::Value& json) {
 	}
 }
 
+void PhysicsComponent::ToJSON(rapidjson::Value& json, rapidjson::Document::AllocatorType& allocator) const {}
+
 void BoxCollider::FromJSON(const rapidjson::Value& json) {
 	const char* members[]{
 		"width",//0
@@ -385,9 +429,145 @@ void BoxCollider::FromJSON(const rapidjson::Value& json) {
 	}
 }
 
+void BoxCollider::ToJSON(rapidjson::Value& json, rapidjson::Document::AllocatorType& allocator) const {}
+
+void AIComponent::FromJSON(const rapidjson::Value& component_json) {
+	
+
+		if (component_json.HasMember("state") && component_json["state"].IsString()) {
+			std::string s = component_json["state"].GetString();
+			if (s == "Chase") state = AIComponent::State::Chase;
+			else if (s == "Flee")  state = AIComponent::State::Flee;
+			else                   state = AIComponent::State::Wander;
+		}
+		if (component_json.HasMember("maxSpeed") && component_json["maxSpeed"].IsNumber())      maxSpeed = component_json["maxSpeed"].GetFloat();
+		if (component_json.HasMember("accel") && component_json["accel"].IsNumber())         accel = component_json["accel"].GetFloat();
+		if (component_json.HasMember("wanderJitter") && component_json["wanderJitter"].IsNumber())  wanderJitter = component_json["wanderJitter"].GetFloat();
+		if (component_json.HasMember("chaseStrength") && component_json["chaseStrength"].IsNumber()) chaseStrength = component_json["chaseStrength"].GetFloat();
+		if (component_json.HasMember("fleeStrength") && component_json["fleeStrength"].IsNumber())  fleeStrength = component_json["fleeStrength"].GetFloat();
+		if (component_json.HasMember("avoidRadius") && component_json["avoidRadius"].IsNumber())   avoidRadius = component_json["avoidRadius"].GetFloat();
+		if (component_json.HasMember("targetName") && component_json["targetName"].IsString())
+			targetName = component_json["targetName"].GetString();
+		if (component_json.HasMember("targetWeight") && component_json["targetWeight"].IsNumber())
+			targetWeight = component_json["targetWeight"].GetFloat();
+}
+
+void AIComponent::ToJSON(rapidjson::Value& json, rapidjson::Document::AllocatorType& allocator) const {}
+
 void AABBCollider::FromJSON(const rapidjson::Value& json) {
 	if (json.HasMember("bounding_box_size") && json["bounding_box_size"].IsFloat())
 	{
 		width = height = json["bounding_box_size"].GetFloat();
 	}
 }
+
+void AABBCollider::ToJSON(rapidjson::Value& json, rapidjson::Document::AllocatorType& allocator) const {}
+
+static AudioData::IndividualAudioData::Group AudioGroupFromString(const std::string& str) {
+	std::string v = str;
+	std::transform(v.begin(), v.end(), v.begin(), ::tolower);
+
+	if (v == "music") return AudioData::IndividualAudioData::Group::Music;
+	if (v == "sfx") return AudioData::IndividualAudioData::Group::SFX;
+	if (v == "reserved1") return AudioData::IndividualAudioData::Group::RESERVED1;
+	if (v == "reserved2") return AudioData::IndividualAudioData::Group::RESERVED2;
+
+	return AudioData::IndividualAudioData::Group::SFX;
+}
+
+static const char* AudioGroupToString(AudioData::IndividualAudioData::Group group) {
+	switch (group) {
+		case AudioData::IndividualAudioData::Group::Music: return "Music";
+		case AudioData::IndividualAudioData::Group::SFX: return "SFX";
+		case AudioData::IndividualAudioData::Group::RESERVED1: return "RESERVED1";
+		case AudioData::IndividualAudioData::Group::RESERVED2: return "RESERVED2";
+		default: return "SFX";
+	}
+}
+
+void AudioData::FromJSON(const rapidjson::Value& json) {
+    audios.clear();
+    listener = false;
+
+    if (json.HasMember("listener") && json["listener"].IsBool()) {
+        listener = json["listener"].GetBool();
+    }
+
+    if (!json.HasMember("audios") || !json["audios"].IsArray()) {
+        return;
+    }
+
+    const auto& arr = json["audios"];
+    for (auto it = arr.Begin(); it != arr.End(); ++it) {
+        if (!it->IsObject()) continue;
+        const rapidjson::Value& o = *it;
+
+        AudioData::IndividualAudioData a{};
+
+        if (o.HasMember("resource_id") && o["resource_id"].IsUint()) {
+            a.resourceID = o["resource_id"].GetUint();
+        } else {
+            a.resourceID = 0; // unresolved; will resolve by name in AudioSystem
+        }
+
+        if (o.HasMember("name") && o["name"].IsString())
+            a.name = o["name"].GetString();
+
+        if (o.HasMember("loop") && o["loop"].IsBool()) a.loop = o["loop"].GetBool();
+        if (o.HasMember("to_play_at_start") && o["to_play_at_start"].IsBool()) a.toPlayAtStart = o["to_play_at_start"].GetBool();
+        if (o.HasMember("locality") && o["locality"].IsBool()) a.locality = o["locality"].GetBool();
+
+        if (o.HasMember("persist_on_entity_destruction") && o["persist_on_entity_destruction"].IsBool())
+            a.persistOnEntityDestruction = o["persist_on_entity_destruction"].GetBool();
+        if (o.HasMember("persist_on_scene_change") && o["persist_on_scene_change"].IsBool())
+            a.persistOnSceneChange = o["persist_on_scene_change"].GetBool();
+
+        if (o.HasMember("volume") && o["volume"].IsNumber())
+            a.volume = std::clamp(static_cast<float>(o["volume"].GetDouble()), 0.0f, 1.0f);
+        if (o.HasMember("pitch") && o["pitch"].IsNumber())
+            a.pitch = static_cast<float>(o["pitch"].GetDouble());
+        if (o.HasMember("distance_mult") && o["distance_mult"].IsNumber())
+            a.distanceMult = static_cast<float>(o["distance_mult"].GetDouble());
+
+        if (o.HasMember("group") && o["group"].IsString())
+            a.group = AudioGroupFromString(o["group"].GetString());
+
+        audios.push_back(std::move(a));
+    }
+}
+
+void AudioData::ToJSON(rapidjson::Value& json, rapidjson::Document::AllocatorType& alloc) const {
+    json.SetObject();
+
+    rapidjson::Value aud(rapidjson::kArrayType);
+    for (const auto& a : audios) {
+        rapidjson::Value item(rapidjson::kObjectType);
+
+        item.AddMember("resource_id", a.resourceID, alloc);
+
+        rapidjson::Value nameV;
+        nameV.SetString(a.name.c_str(), static_cast<rapidjson::SizeType>(a.name.size()), alloc);
+        item.AddMember("name", nameV, alloc);
+
+        item.AddMember("loop", a.loop, alloc);
+        item.AddMember("to_play_at_start", a.toPlayAtStart, alloc);
+        item.AddMember("locality", a.locality, alloc);
+        item.AddMember("persist_on_entity_destruction", a.persistOnEntityDestruction, alloc);
+        item.AddMember("persist_on_scene_change", a.persistOnSceneChange, alloc);
+
+        item.AddMember("volume", a.volume, alloc);
+        item.AddMember("pitch", a.pitch, alloc);
+        item.AddMember("distance_mult", a.distanceMult, alloc);
+
+        const char* grp = AudioGroupToString(a.group);
+        rapidjson::Value grpV;
+        grpV.SetString(grp, static_cast<rapidjson::SizeType>(std::strlen(grp)), alloc);
+        item.AddMember("group", grpV, alloc);
+
+        aud.PushBack(item, alloc);
+    }
+
+    json.AddMember("audios", aud, alloc);
+    json.AddMember("listener", listener, alloc);
+}
+

@@ -89,6 +89,7 @@ public:
 	//  per-frame edge helpers 
 	bool WasPressed(int glfwKey) const;                // keyboard edge
 	bool WasMousePressed(int glfwMouseButton) const;   // mouse edge
+	static void char_input_callback(GLFWwindow* window, unsigned int c); //for imgui input
 	void EndFrame();                                   // clear edges each frame
 
 	// Returns: -1 = none, 0 = ESC, 1..9 = digit pressed (edge-triggered)
@@ -98,6 +99,8 @@ public:
 	void SetMessageBus(Messaging::MessageBus* bus) { messageBus = bus; }
 
 	bool IsDown(int key) const;
+
+	void clearAllStates();
 
 private:
 	//Non-static member functions need an object to call it

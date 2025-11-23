@@ -10,19 +10,67 @@
 [07-11-2025] [01:15:12] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
 [07-11-2025] [01:20:41] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
 [07-11-2025] [01:21:07] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
-[07-11-2025] [13:33:23] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
-[07-11-2025] [13:39:49] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
-[07-11-2025] [13:43:02] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
-[07-11-2025] [13:50:20] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
-[07-11-2025] [13:53:18] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
-[07-11-2025] [13:59:45] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
-[07-11-2025] [14:06:43] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
-[07-11-2025] [14:07:23] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
-[07-11-2025] [14:08:25] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
-[07-11-2025] [14:11:56] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
-[07-11-2025] [14:12:30] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
-[07-11-2025] [14:31:12] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
-[07-11-2025] [14:35:43] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
-[07-11-2025] [14:37:36] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
-[07-11-2025] [14:42:27] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
-[07-11-2025] [14:51:51] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[07-11-2025] [14:53:02] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[07-11-2025] [14:53:05] [CRASH_MESSAGE] Failed to parse prefab file: assets/prefabs\GameObj.json
+[07-11-2025] [15:05:29] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[07-11-2025] [15:09:01] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[07-11-2025] [15:11:08] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[07-11-2025] [15:12:13] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[07-11-2025] [15:15:52] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[07-11-2025] [15:16:20] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[07-11-2025] [15:21:03] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[07-11-2025] [15:21:05] [CRASH_MESSAGE] Prefab category 'firefly' not found.
+[07-11-2025] [16:21:38] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[07-11-2025] [16:21:41] [CRASH_MESSAGE] Prefab category 'firefly' not found.
+[19-11-2025] [14:05:06] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[19-11-2025] [14:05:09] [CRASH_MESSAGE] Prefab category 'firefly' not found.
+[19-11-2025] [14:16:13] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[19-11-2025] [14:16:16] [CRASH_MESSAGE] Prefab category 'firefly' not found.
+[19-11-2025] [14:17:46] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[19-11-2025] [14:17:48] [CRASH_MESSAGE] Prefab category 'firefly' not found.
+[19-11-2025] [14:18:42] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[19-11-2025] [14:18:44] [CRASH_MESSAGE] Prefab category 'firefly' not found.
+[19-11-2025] [14:18:54] [CRASH_MESSAGE] [ImGui] Failed to import texture: copy_file: The filename, directory name, or volume label syntax is incorrect.: ""C:\Users\user\Downloads\turtle.png"", "assets/textures/turtle.png""
+[19-11-2025] [15:19:19] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[19-11-2025] [15:19:22] [CRASH_MESSAGE] Prefab category 'firefly' not found.
+[19-11-2025] [15:29:47] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[19-11-2025] [15:29:49] [CRASH_MESSAGE] Prefab category 'firefly' not found.
+[19-11-2025] [18:40:54] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[19-11-2025] [18:40:56] [CRASH_MESSAGE] Prefab category 'firefly' not found.
+[19-11-2025] [18:42:29] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[19-11-2025] [18:42:31] [CRASH_MESSAGE] Prefab category 'firefly' not found.
+[19-11-2025] [18:44:20] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[19-11-2025] [18:44:22] [CRASH_MESSAGE] Prefab category 'firefly' not found.
+[19-11-2025] [18:47:01] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[19-11-2025] [18:47:03] [CRASH_MESSAGE] Prefab category 'firefly' not found.
+[19-11-2025] [18:47:12] [CRASH_MESSAGE] Program crash due to abort signal - std::abort() or failed assert()
+[19-11-2025] [18:48:33] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[19-11-2025] [18:48:35] [CRASH_MESSAGE] Prefab category 'firefly' not found.
+[19-11-2025] [19:09:47] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[19-11-2025] [19:09:49] [CRASH_MESSAGE] Prefab category 'firefly' not found.
+[19-11-2025] [19:16:13] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[19-11-2025] [19:16:15] [CRASH_MESSAGE] Prefab category 'firefly' not found.
+[20-11-2025] [09:59:24] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[20-11-2025] [09:59:28] [CRASH_MESSAGE] Prefab category 'firefly' not found.
+[20-11-2025] [10:43:12] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[20-11-2025] [10:43:16] [CRASH_MESSAGE] Prefab category 'firefly' not found.
+[20-11-2025] [10:44:31] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[20-11-2025] [10:44:34] [CRASH_MESSAGE] Prefab category 'firefly' not found.
+[20-11-2025] [10:45:21] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[20-11-2025] [10:45:24] [CRASH_MESSAGE] Prefab category 'firefly' not found.
+[20-11-2025] [10:45:47] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[20-11-2025] [10:45:50] [CRASH_MESSAGE] Prefab category 'firefly' not found.
+[20-11-2025] [10:47:05] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[20-11-2025] [10:47:07] [CRASH_MESSAGE] Prefab category 'firefly' not found.
+[20-11-2025] [10:49:39] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[20-11-2025] [10:49:41] [CRASH_MESSAGE] Prefab category 'firefly' not found.
+[20-11-2025] [10:52:32] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[20-11-2025] [10:52:34] [CRASH_MESSAGE] Prefab category 'firefly' not found.
+[20-11-2025] [10:56:58] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[20-11-2025] [10:57:00] [CRASH_MESSAGE] Prefab category 'firefly' not found.
+[20-11-2025] [10:57:54] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[20-11-2025] [10:57:56] [CRASH_MESSAGE] Prefab category 'firefly' not found.
+[20-11-2025] [11:00:10] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[20-11-2025] [11:00:12] [CRASH_MESSAGE] Prefab category 'firefly' not found.
+[20-11-2025] [11:00:39] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[20-11-2025] [11:00:41] [CRASH_MESSAGE] Prefab category 'firefly' not found.

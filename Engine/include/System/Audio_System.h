@@ -37,11 +37,11 @@ public:
 		FMOD::Channel* channel = nullptr;
 		bool isPlaying = false;
 		float volume = 1.0f;
-
-		bool persistAfterEntityDestruction = false;		// if false, the audio instance will be deleted when the entity is destroyed
-		bool persistOnSceneChange = false;				// if false, the audio instance will be deleted during scene change
+		bool persistAfterEntityDestruction = false;
+		bool persistOnSceneChange = false;
 		EntityID parentEntityID = INVALID_ENTITY_ID;
-		bool toDestroy = false;							// for delayed deletion when the audio finishes playing
+		bool toDestroy = false;
+		ResourceID channelResourceID = 0;
 	};
 
 	AudioSystem(std::string name, ECS& ecs, ResourceManager& rm);
@@ -57,7 +57,9 @@ public:
 	float getVolume(AudioInstanceID instanceID);
 
 	void pauseAllSFX();
+	void pauseAllBGM();
 	void resumeAllSFX();
+	void resumeAllBGM();
 
 	FMOD::System* getSystem() const;
 
@@ -104,3 +106,6 @@ private:
 	FMOD::ChannelGroup* reserved2ChannelGroup = nullptr	;
 	FMOD::DSP* lowPassFilter = nullptr;
 };
+
+// global audio system pointer
+extern AudioSystem* gAudioSystem;

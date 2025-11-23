@@ -39,6 +39,21 @@ bool Window::create(const WindowDesc& desc) {
         std::fprintf(stderr, "Failed to initialize GLEW\n");
     }
     glfwSwapInterval(m_desc.vsync ? 1 : 0);
+
+    // Save initial windowed size/pos
+    glfwGetWindowPos(m_win, &m_windowedX, &m_windowedY);
+    glfwGetWindowSize(m_win, &m_windowedW, &m_windowedH);
+
+    if (desc.fullscreen) {
+        GLFWmonitor* monitor = glfwGetPrimaryMonitor();
+        const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+        if (monitor && mode) {
+            glfwSetWindowMonitor(m_win, monitor, 0, 0, mode->width, mode->height, mode->refreshRate);
+            m_isFullscreen = true;
+        }
+    } else {
+        m_isFullscreen = false;
+    }
     return true;
 }
 
@@ -64,3 +79,51 @@ void Window::setTitleFps(const std::string& base, int fps) {
     std::snprintf(buf, sizeof(buf), "%s | FPS: %d", base.c_str(), fps);
     glfwSetWindowTitle(m_win, buf);
 }
+
+void Window::getWindowSize(int& w, int& h) const {
+    if (!m_win) { w = h = 0; return; }
+
+    // If fullscreen, report the monitor's current video mode
+    if (GLFWmonitor* mon = glfwGetWindowMonitor(m_win)) {
+        if (const GLFWvidmode* mode = glfwGetVideoMode(mon)) {
+            w = mode->width;
+            h = mode->height;
+            return;
+        }
+    }
+
+    // Windowed (or fallback)
+    glfwGetWindowSize(m_win, &w, &h);
+}
+
+void Window::getFramebufferSize(int& w, int& h) const {
+    if (!m_win) { w = h = 0; return; }
+    glfwGetFramebufferSize(m_win, &w, &h);
+}
+
+void Window::setFullscreen(bool fs) {
+    if (!m_win) return;
+    if (fs == m_isFullscreen) return;
+
+    if (fs) {
+        // Save windowed placement before going fullscreen
+        glfwGetWindowPos(m_win, &m_windowedX, &m_windowedY);
+        glfwGetWindowSize(m_win, &m_windowedW, &m_windowedH);
+
+        GLFWmonitor* monitor = glfwGetPrimaryMonitor();
+        const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+        if (monitor && mode) {
+            glfwSetWindowMonitor(m_win, monitor, 0, 0, mode->width, mode->height, mode->refreshRate);
+            m_isFullscreen = true;
+        }
+    } else {
+        // Restore windowed placement
+        glfwSetWindowMonitor(m_win, nullptr, m_windowedX, m_windowedY, m_windowedW, m_windowedH, 0);
+        m_isFullscreen = false;
+    }
+}
+
+void Window::toggleFullscreen() {
+    setFullscreen(!m_isFullscreen);
+}
+

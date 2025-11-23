@@ -1,11 +1,11 @@
 {
   "prefabs": {
     "animal": {
-"components": [
+  "components": [
+        { "type": "PhysicsComponent", "velocity": [0.0, 0.0], "gravityEnabled": false },
         { "type": "SpriteRenderer", "sprite_path": "assets/textures/flamingo_spritesheet.png" },
-	       { "type": "SpriteAnimationComponent", "anim_path": "assets/sprite.json", "currentAnim": "idle", "sheetColumns": 5, "sheetRows": 1},
-        { "type": "AABBCollider",  "bounding_box_size": 1.0 },
-        { "type": "PhysicsComponent", "velocity": [0.0, 0.0], "gravityEnabled": false }
+	      { "type": "SpriteAnimationComponent", "anim_path": "assets/sprite.json", "currentAnim": "idle", "sheetColumns": 5, "sheetRows": 1},
+        { "type": "AABBCollider",  "bounding_box_size": 1.0 }
       ],
       "defaults": { "w": 0.50, "h": 0.42, "angle": 0.0, "rotatable": false, "scalable": false }
     },
@@ -30,14 +30,12 @@
       "defaults": { "w": 0.40, "h": 0.09, "angle": 0.0, "rotatable": false, "scalable": false }
     },
 
-
-
     "firefly": {
   "components": [
     { "type": "Transform" },
     { "type": "ImageRenderer", "sprite_path": "textures/firefly.png" },
     { "type": "PhysicsComponent", "velocity": [0.0, 0.0], "gravityEnabled": false },
-    { "type": "AI",
+    { "type": "AIComponent",
       "state": "Wander",
       "maxSpeed": 0.30,
       "accel": 3.5,

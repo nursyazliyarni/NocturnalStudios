@@ -16,6 +16,7 @@
 #include "TextureFile.h"
 #include "PrefabFile.h"
 #include "SceneFile.h"
+#include "graphics/Texture.h"
 
 class AudioSystem;
 class ECS;
@@ -44,6 +45,9 @@ public:
 
 	void loadResources(std::string const& resourceFilePath = "");
 
+	std::size_t reloadAudiosFromDirectory(const std::string& directoryPath);
+	std::size_t reloadTexturesFromDirectory(const std::string& directoryPath);
+
 	Audio& loadAudio(const std::string& name, const std::string& filePath, ResourceID id = NEW_RESOURCE);
 	Audio& getAudio(ResourceID id);
 
@@ -71,6 +75,7 @@ public:
 	std::unordered_map<ResourceID, PrefabFile>& getPrefabs();
 	std::unordered_map<ResourceID, SceneFile>& getScenes();
 	const std::unordered_map<ResourceID, SceneFile>& getScenes() const;
+	std::unordered_map<std::string, std::unique_ptr<Texture>> loadedGLTextures;
 
 	std::vector<std::string> getFilePathsForKey(ResourceType type, const std::string& key) const;
 
@@ -94,7 +99,8 @@ public:
 	const Audio& getDefaultAudio() const;
 
 	GLuint getGLTextureFromFile(const std::string& filePath);
-
+	void clearAllGLTexturesCache();
+	
 private:
 	ECS& ecs;
 

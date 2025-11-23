@@ -1,3 +1,20 @@
+/*!------------------------------------------------------------------------------------------------
+    File: LevelManager.h
+    Project: NocturnalStudio
+
+    This file contains ...
+
+    Primary Author:
+         Name (%)
+        -Brief
+
+    Secondary Author:
+         Rishika Bimal Attodi (%)
+        -State integration for the play and exit button and scene switching via keys
+
+    All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
+
 //gsm.h
 #pragma once
 #include <string>
@@ -17,6 +34,8 @@ struct DrawItem {
     GLuint tex = 0;
     float x = 0, y = 0, w = 0, h = 0, angle = 0; // normalized
     float health_bar, hunger_bar, sanity_bar;
+    float slower_decreasing_rate, normal_decreasing_rate, faster_decreasing_rate, penalty_decreasing_rate;
+    bool still_alive;
 };
 
 struct ClickRegion {
@@ -69,6 +88,11 @@ public:
     GameManager(ECS& ecs) :ecs_{ ecs } {}
     void update(float dt,Renderer& renderer,TextureStore& tex);
 
+	ECS& getECS() { return ecs_; }
+
+    void pauseGame();
+    void resumeGame();
+
     // Camera controls (per scene)
     //void setCameraEnabled(const std::string& scene, bool on);
     //void setCameraCenter(const std::string& scene, float cx, float cy);
@@ -76,6 +100,7 @@ public:
     //void focusOnEntity(const std::string& scene, const std::string& entityName);
 
     Scene* getCurrentScene();
+    std::unordered_map<std::string, Scene>& get_scenes_map();
 
     void setSceneChangedCallback(std::function<void(const std::string&)> cb) { onSceneChanged = std::move(cb); }
 

@@ -1,165 +1,256 @@
 /*!------------------------------------------------------------------------------------------------
-    File: Application.cpp
-    Project: NocturnalStudio
+	File: Application.cpp
+	Project: NocturnalStudio
 
-    This file contains the main application loop that initializes the window creation, OpenGL
-    initialization, sprite rendering, input handling, drag and drop interactions, frame updates,
-    and ImGui systems.
+	This file contains the main application loop that initializes the window creation, OpenGL initialization,
+	sprite rendering, input handling, drag and drop interations, frame updates, ImGui systems.
 
-    Primary Author:
-        Rishika Bimal Attodi
-        - Implemented main loop scaffolding: window creation, OpenGL setup, sprite batching
+	Primary Author:
 
-    Secondary Author:
-        Yu Xuan
-        - Background
+		- Brief
 
-    Secondary Author
-        Xiang Yang
-        - FBO
+	Primary Author:
+		Rishika Bimal Attodi
+		- Implemented main loop scaffolding: window creation, OpenGL setup,
+		sprite batching
 
-    Secondary Author:
-        Chang Qi Xuan Celest (35%)
-        - Integrated drag and drop functionality for sprites.
+	Secondary Author:
+		Yu Xuan
+		-  Background
 
-    All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+	Secondary Authod
+		Xiang Yang
+		- FBO
+
+	Secondary Author:
+		Chang Qi Xuan Celest (35%)
+		- Integrated drag and drop functionality for sprites.
+
+	All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
 *------------------------------------------------------------------------------------------------*/
 
 #include "core/Application.h"
 
-#include <functional>
-#include <filesystem>
 #include <vector>
+
 #include <algorithm>
 #include <cmath>
-#include <unordered_map>
-#include <cstdlib>
-#include <ctime>
 
-#include "scene/Prefab.h"             // Prefab_SetTextureLookup, Scenes_GetInitialName, Prefab_SpawnEntitiesForScene
+#include "scene/Prefab.h"
+
+#include <cmath>
+#include <algorithm>
 #include "ECS/ECS.h"
 #include "ECS/ECS_Component.h"
 #include "ECS/ECS_DEF.h"
 #include "resources/ResourceManager.h"
+#include "scene/Prefab.h" // Prefab_SetTextureLookup, Scenes_GetInitialName, Prefab_SpawnEntitiesForScene
+
+#include <unordered_map>
+#include <cstdlib>
+#include <ctime>
+
 
 extern void Prefab_SetTextureLookup(std::function<int(const std::string&)>);
-extern Logger logger;
 
-//  simple AI drift (requires AIComponent + PhysicsComponent to exist)
+
+
+
+
+
+// --- Very simple random drift for any entity with AI + Physics (no fancy RNG) ---
 static void UpdateRandomDrift(ECS& ecs, double dt) {
-    if (dt <= 0.0) return;
+	if (dt <= 0.0) return;
 
-    static bool seeded = false;
-    if (!seeded) { std::srand(static_cast<unsigned>(std::time(nullptr))); seeded = true; }
+	// Seed std::rand once
+	static bool seeded = false;
+	if (!seeded) { std::srand(static_cast<unsigned>(std::time(nullptr))); seeded = true; }
 
-    struct DriftState { float heading = 0.0f; float nextTurn = 0.0f; };
-    static std::unordered_map<EntityID, DriftState> s_state;
+	// Per-entity drift state (heading + timer for next small turn)
+	struct DriftState { float heading = 0.0f; float nextTurn = 0.0f; };
+	static std::unordered_map<EntityID, DriftState> s_state;
 
-    auto frand = [](float a, float b) -> float {
-        return a + (b - a) * (static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX));
-    };
+	auto frand = [](float a, float b) -> float {
+		return a + (b - a) * (static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX));
+		};
 
-    constexpr EntityID MAX_SCAN = 5000;
+	constexpr EntityID MAX_SCAN = 5000;
 
-    for (EntityID e = 0; e < MAX_SCAN; ++e) {
-        auto* ai = ecs.getComponent<AIComponent>(e);
-        auto* pc = ecs.getComponent<PhysicsComponent>(e);
-        if (!ai || !pc) continue;
+	for (EntityID e = 0; e < MAX_SCAN; ++e) {
+		auto* ai = ecs.getComponent<AIComponent>(e);
+		auto* pc = ecs.getComponent<PhysicsComponent>(e);
+		if (!ai || !pc) continue;
 
-        auto* t = ecs.getComponent<Transform>(e);
-        if (!t) { Transform nt{}; ecs.addComponent<Transform>(e, nt); t = ecs.getComponent<Transform>(e); if (!t) continue; }
+		auto* t = ecs.getComponent<Transform>(e);
+		if (!t) { Transform nt{}; ecs.addComponent<Transform>(e, nt); t = ecs.getComponent<Transform>(e); if (!t) continue; }
 
-        DriftState& st = s_state[e];
-        if (st.nextTurn <= 0.0f && st.heading == 0.0f) {
-            st.heading = frand(0.0f, 6.2831853f);
-            st.nextTurn = frand(0.6f, 1.8f);
-        }
+		// Init per-entity state if needed
+		DriftState& st = s_state[e];
+		if (st.nextTurn <= 0.0f && st.heading == 0.0f) {
+			st.heading = frand(0.0f, 6.2831853f);   // random angle in [0, 2?)
+			st.nextTurn = frand(0.6f, 1.8f);        // seconds until next turn
+		}
 
-        st.nextTurn -= static_cast<float>(dt);
-        if (st.nextTurn <= 0.0f) {
-            st.heading += frand(-0.9f, 0.9f);
-            if (st.heading > 6.2831853f) st.heading -= 6.2831853f;
-            if (st.heading < 0.0f)       st.heading += 6.2831853f;
-            st.nextTurn = frand(0.6f, 1.8f);
-        }
+		// Count down & occasionally change heading slightly
+		st.nextTurn -= static_cast<float>(dt);
+		if (st.nextTurn <= 0.0f) {
+			st.heading += frand(-0.9f, 0.9f);       // small random turn
+			if (st.heading > 6.2831853f) st.heading -= 6.2831853f;
+			if (st.heading < 0.0f)       st.heading += 6.2831853f;
+			st.nextTurn = frand(0.6f, 1.8f);
+		}
 
-        float desiredVx = std::cos(st.heading) * ai->maxSpeed;
-        float desiredVy = std::sin(st.heading) * ai->maxSpeed;
+		// Desired velocity points along the heading at maxSpeed
+		float desiredVx = std::cos(st.heading) * ai->maxSpeed;
+		float desiredVy = std::sin(st.heading) * ai->maxSpeed;
 
-        float ax = desiredVx - pc->velocity.x();
-        float ay = desiredVy - pc->velocity.y();
-        float aLen2 = ax * ax + ay * ay;
-        float maxA = ai->accel * static_cast<float>(dt);
-        if (aLen2 > maxA * maxA && aLen2 > 0.0f) {
-            float s = maxA / std::sqrt(aLen2);
-            ax *= s; ay *= s;
-        }
-        pc->velocity.x() += ax;
-        pc->velocity.y() += ay;
+		// Accel toward desired vel, limited by ai->accel * dt
+		float ax = desiredVx - pc->velocity.x();
+		float ay = desiredVy - pc->velocity.y();
+		float aLen2 = ax * ax + ay * ay;
+		float maxA = ai->accel * static_cast<float>(dt);
+		if (aLen2 > maxA * maxA && aLen2 > 0.0f) {
+			float s = maxA / std::sqrt(aLen2);
+			ax *= s; ay *= s;
+		}
+		pc->velocity.x() += ax;
+		pc->velocity.y() += ay;
 
-        float v2 = pc->velocity.x() * pc->velocity.x() + pc->velocity.y() * pc->velocity.y();
-        float ms = ai->maxSpeed;
-        if (v2 > ms * ms && v2 > 0.0f) {
-            float k = ms / std::sqrt(v2);
-            pc->velocity.x() *= k; pc->velocity.y() *= k;
-        }
+		// Clamp speed to maxSpeed
+		float v2 = pc->velocity.x() * pc->velocity.x() + pc->velocity.y() * pc->velocity.y();
+		float ms = ai->maxSpeed;
+		if (v2 > ms * ms && v2 > 0.0f) {
+			float k = ms / std::sqrt(v2);
+			pc->velocity.x() *= k; pc->velocity.y() *= k;
+		}
 
-        float nx = t->position.x() + pc->velocity.x() * static_cast<float>(dt);
-        float ny = t->position.y() + pc->velocity.y() * static_cast<float>(dt);
-        bool bounceX = false, bounceY = false;
+		// Integrate position in normalized [0..1] space, bounce at edges
+		float nx = t->position.x() + pc->velocity.x() * static_cast<float>(dt);
+		float ny = t->position.y() + pc->velocity.y() * static_cast<float>(dt);
+		bool bounceX = false, bounceY = false;
 
-        if (nx < 0.0f) { nx = 0.0f; bounceX = true; }
-        if (nx > 1.0f) { nx = 1.0f; bounceX = true; }
-        if (ny < 0.0f) { ny = 0.0f; bounceY = true; }
-        if (ny > 1.0f) { ny = 1.0f; bounceY = true; }
+		if (nx < 0.0f) { nx = 0.0f; bounceX = true; }
+		if (nx > 1.0f) { nx = 1.0f; bounceX = true; }
+		if (ny < 0.0f) { ny = 0.0f; bounceY = true; }
+		if (ny > 1.0f) { ny = 1.0f; bounceY = true; }
 
-        if (bounceX) {
-            pc->velocity.x() = -pc->velocity.x();
-            st.heading = std::atan2(pc->velocity.y(), pc->velocity.x());
-        }
-        if (bounceY) {
-            pc->velocity.y() = -pc->velocity.y();
-            st.heading = std::atan2(pc->velocity.y(), pc->velocity.x());
-        }
+		if (bounceX) {
+			pc->velocity.x() = -pc->velocity.x();
+			st.heading = std::atan2(pc->velocity.y(), pc->velocity.x());
+		}
+		if (bounceY) {
+			pc->velocity.y() = -pc->velocity.y();
+			st.heading = std::atan2(pc->velocity.y(), pc->velocity.x());
+		}
 
-        t->position.x() = nx;
-        t->position.y() = ny;
-    }
+		t->position.x() = nx;
+		t->position.y() = ny;
+	}
 }
 
-// One anonymous namespace only (no duplicates)
+
+
+
+
+
 namespace {
-    constexpr float TWO_PI = 2.0f * glm::pi<float>();
-    constexpr int   CIRCLE_SEGMENTS = 64;
-    using Clock = std::chrono::high_resolution_clock;
+	constexpr float TWO_PI = 2.0f * glm::pi<float>();
+	constexpr int   CIRCLE_SEGMENTS = 64;
+	using Clock = std::chrono::high_resolution_clock;
 
-    bool isDragging = false;
-    int  draggedSpriteIndex = -1;
-    int  duplicateIndex = -1;
-    Vector2D dragOffset(0.0f, 0.0f);
+	bool isDragging = false; //is a sprite being dragged
+	int draggedSpriteIndex = -1; //index into sprite_vector
+	int duplicateIndex = -1; //where clone is in the vector
+	Vector2D dragOffset(0.0f, 0.0f); //mouse offset from top-left of sprite
+
+	static Application* s_App = nullptr;
+	static void App_OnGlfwFocus(GLFWwindow* window, int focused) {
+		if (s_App) s_App->onFocusChanged(focused == GLFW_TRUE);
+	}
+
+	static void App_OnGlfwIconify(GLFWwindow* window, int iconified) {
+		if (s_App) s_App->onIconifyChanged(iconified == GLFW_TRUE);
+	}
 }
 
-// ctor
+//Application::Application() = default;
 Application::Application() {
-    _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF); //enable memory leak check at program exit
 }
+
+void Application::onFocusChanged(bool focused) {
+	if (!focused) {
+		if (autoMinimizeOnFocusLoss) glfwIconifyWindow(m_window.handle());
+
+		if (audioSystem) {
+			audioSystem->pauseAllSFX();
+			audioSystem->pauseAllBGM();
+		}
+
+		if (gsm) gsm->pauseGame();
+		if (inputSystem) inputSystem->clearAllStates();
+	}
+	else {
+		if (glfwGetWindowAttrib(m_window.handle(), GLFW_ICONIFIED)) 
+			glfwRestoreWindow(m_window.handle());
+
+		if (autoResumeOnFocusGain) {
+			if (audioSystem) {
+				audioSystem->resumeAllSFX();
+				audioSystem->resumeAllBGM();
+			}
+			if (gsm && gsm->isPaused()) gsm->resumeGame();
+		}
+
+		if (inputSystem) inputSystem->EndFrame();
+	}
+}
+
+void Application::onIconifyChanged(bool iconified) {
+	if (iconified) {
+		if (audioSystem) {
+			audioSystem->pauseAllSFX();
+			audioSystem->pauseAllBGM();
+		}
+
+		if (gsm) gsm->pauseGame();
+		if (inputSystem) inputSystem->clearAllStates();
+	}
+	else {
+		if (autoResumeOnFocusGain) {
+			if (audioSystem) {
+				audioSystem->resumeAllSFX();
+				audioSystem->resumeAllBGM();
+			}
+			if (gsm && gsm->isPaused()) gsm->resumeGame();
+		}
+
+		if (inputSystem) inputSystem->EndFrame();
+	}
+}
+
 
 void Application::init() {
-    logger.setup_crash_handler();
-    const GameConfig c = loadConfig("assets/config.json");
-    windowTitle = c.window.title;
+	logger.setup_crash_handler();
+	const GameConfig c = loadConfig("assets/config.json");
+	windowTitle = c.window.title;
 
     WindowDesc wd;
     wd.width = c.window.width;
     wd.height = c.window.height;
-    wd.title  = c.window.title;
-    wd.vsync  = c.window.vsync;
+    wd.title = c.window.title;
+    wd.vsync = c.window.vsync;
+	wd.fullscreen = true;
 
     if (!m_window.create(wd)) {
         logger.error("Failed to create window");
         isInitialized = false;
         return;
     }
+
+	s_App = this;
+	glfwSetWindowFocusCallback(m_window.handle(), App_OnGlfwFocus);
+	glfwSetWindowIconifyCallback(m_window.handle(), App_OnGlfwIconify);
 
     glViewport(0, 0, wd.width, wd.height);
     glDisable(GL_DEPTH_TEST);
@@ -197,30 +288,31 @@ void Application::init() {
     resourceManager->loadResources("prefabs");
     resourceManager->loadResources("scenes");
 
-    std::vector<std::pair<std::string, std::string>> shader_filePATH_list;
-    std::string vertexPath, fragmentPath, prefabPath, prefabTestPath, textShaderVertexPath, textShaderFragmentPath, scenePath;
+	std::vector<std::pair<std::string, std::string>> shader_filePATH_list;
+	std::string vertexPath,
+		fragmentPath,
+		prefabPath, prefabTestPath,
+		textShaderVertexPath, textShaderFragmentPath,
+		scenePath;
 
-    // background shader (pair: vert/frag)
-    auto shaderPath_1 = resourceManager->getFilePathsForKey<ShaderFile>("background");
-    for (auto const& path : shaderPath_1) {
-        std::filesystem::path p{ path };
-        auto ext = p.extension().string();
-        if (ext == ".vert") vertexPath = p.string();
-        else if (ext == ".frag") fragmentPath = p.string();
-    }
-    shader_filePATH_list.push_back({ vertexPath, fragmentPath });
+	auto shaderPath_1 = resourceManager->getFilePathsForKey<ShaderFile>("background");
+	for (auto const& path : shaderPath_1) {
+		std::filesystem::path p{ path };
+		auto ext = p.extension().string();
+		if (ext == ".vert") vertexPath = p.string();
+		else if (ext == ".frag") fragmentPath = p.string();
+	}
+	shader_filePATH_list.push_back({ vertexPath, fragmentPath });
 
-    // special background shader (pair: vert/frag)
-    auto shaderPath_2 = resourceManager->getFilePathsForKey<ShaderFile>("special_background");
-    for (auto const& path : shaderPath_2) {
-        std::filesystem::path p{ path };
-        auto ext = p.extension().string();
-        if (ext == ".vert") vertexPath = p.string();
-        else if (ext == ".frag") fragmentPath = p.string();
-    }
-    shader_filePATH_list.push_back({ vertexPath, fragmentPath });
+	auto shaderPath_2 = resourceManager->getFilePathsForKey<ShaderFile>("special_background");
+	for (auto const& path : shaderPath_2) {
+		std::filesystem::path p{ path };
+		auto ext = p.extension().string();
+		if (ext == ".vert") vertexPath = p.string();
+		else if (ext == ".frag") fragmentPath = p.string();
+	}
+	shader_filePATH_list.push_back({ vertexPath, fragmentPath });
 
-    // text shader (pair: vert/frag)
     auto textShaderPaths = resourceManager->getFilePathsForKey<ShaderFile>("text");
     for (auto const& path : textShaderPaths) {
         std::filesystem::path p{ path };
@@ -241,64 +333,81 @@ void Application::init() {
     gameLoop = std::make_unique<Game_Loop>(m_window.handle());
     bus.Register(gameLoop.get());
 
-    gsm = std::make_unique<GameManager>(*ecs);
-    gsm->load(prefabPath.c_str(), scenePath.c_str(), textures);
+	gsm = std::make_unique<GameManager>(*ecs);
+	gsm->load(prefabPath.c_str(), scenePath.c_str(), textures);
 
-    // One quit callback only
-    gsm->quitCallback = [this]() {
-        logger.log("[Quit] quitCallback → glfwSetWindowShouldClose(TRUE)");
-        glfwSetWindowShouldClose(m_window.handle(), GLFW_TRUE);
-    };
 
-    // Renderer (shader list variant)
-    renderer  = std::make_unique<Renderer>(shader_filePATH_list);
-    textShader = std::make_unique<Shader>(textShaderVertexPath.c_str(), textShaderFragmentPath.c_str());
-    logic     = std::make_unique<Animal_Logic>();
+	// Wire prefab sprite_path -> GL texture id using your TextureStore API.
+// Must be set BEFORE any Prefab/Scene instantiation.
+	Prefab_SetTextureLookup([this](const std::string& p) -> int {
+		// robust to presence/absence of "assets/"
+		std::string path = p;
+		if (path.rfind("assets/", 0) != 0) path = "assets/" + path;
+		return static_cast<int>(textures.get(path));
+		});
 
-    // Texture lookup for prefab sprite paths (robust: add "assets/" if missing)
+
+	renderer = std::make_unique<Renderer>(shader_filePATH_list);
+	textShader = std::make_unique<Shader>(textShaderVertexPath.c_str(), textShaderFragmentPath.c_str());
+	logic = std::make_unique<Animal_Logic>();
+
+    // After textures is constructed and before any Instantiate()
     Prefab_SetTextureLookup([this](const std::string& p) -> int {
         std::string path = p;
         if (path.rfind("assets/", 0) != 0) path = "assets/" + path;
         return static_cast<int>(textures.get(path));
     });
 
-    prefabManager = std::make_unique<PrefabManager>(*ecs);
+	prefabManager = std::make_unique<PrefabManager>(*ecs);
+	prefabManager->Load_Prefab(prefabTestPath.c_str());
+	/*prefabManager->CreateEntityFromPrefab(prefabTestPath, "main_menu_button", "play_button");
+	prefabManager->CreateEntityFromPrefab(prefabTestPath, "main_menu_button", "load_button");
+	prefabManager->CreateEntityFromPrefab(prefabTestPath, "main_menu_button", "setting_button");
+	prefabManager->CreateEntityFromPrefab(prefabTestPath, "main_menu_button", "quit_button");
+	prefabManager->CreateEntityFromPrefab(prefabTestPath, "food", "owl_food");
+	prefabManager->CreateEntityFromPrefab(prefabTestPath, "animal", "flamingo");
+	prefabManager->CreateEntityFromPrefab(prefabTestPath, "firefly", "firefly");*/
 
-    // Load every prefab file discovered by ResourceManager
-    for (auto& [pid, pf] : resourceManager->getPrefabs()) {
-        prefabManager->Load_Prefab(pf.getFilePath());
-    }
-    logger.log("[Prefabs] Loaded " + std::to_string(resourceManager->getPrefabs().size()) + " prefab file(s).");
+	
+	//logger.log("Created animal entity with ID: " + std::to_string(animal) + " and " + std::to_string(animal_2));
+    textShader = std::make_unique<Shader>(textShaderVertexPath.c_str(), textShaderFragmentPath.c_str());
 
-    std::cout << "abcssss:" << ecs->getAllEntities().size() << "\n";
-
-    // Text shader into renderer
+    // Wire text shader into the renderer (renderer controls projection per-viewport)
     renderer->setTextShader(*textShader);
 
-    // Spawn initial scene (from scenes.json -> states.initial)
-    {
-        const std::string initialScene = Scenes_GetInitialName();
-        if (!initialScene.empty()) {
-            Prefab_SpawnEntitiesForScene(initialScene, *prefabManager);
-            logger.log("[SceneSpawn] Initial scene spawned: " + initialScene);
-        }
-    }
+	// Spawn the initial scene (from scenes.json -> states.initial)
+	{
+		const std::string initialScene = Scenes_GetInitialName();
+		if (!initialScene.empty()) {
+			Prefab_SpawnEntitiesForScene(initialScene, *prefabManager);
+			logger.log("[SceneSpawn] Initial scene spawned: " + initialScene);
+		}
+	}
 
-    // On scene change, wipe + respawn from JSON
-    gsm->setSceneChangedCallback([this](const std::string& sceneName) {
+	// When GameManager activates a new scene (keyboard or button 'goto'), respawn from JSON
+	gsm->setSceneChangedCallback([this](const std::string& sceneName) {
+        // Stop non-persistent audio before wiping entities.
+        if (audioSystem) {
+            // false => keep sounds with persist_on_scene_change == true
+            audioSystem->deleteAllAudioInstances(false);
+        }
+
+        // Clear all current entities.
         auto all = ecs->getAllEntities();
         for (auto id : all) ecs->deleteEntity(id);
 
+        // Respawn from scenes.json.
         Prefab_SpawnEntitiesForScene(sceneName, *prefabManager);
         logger.log(std::string{ "[SceneSpawn] Activated -> " } + sceneName);
     });
 
-    imGuiManager = std::make_unique<ImGuiManager>(
-        m_window, *renderer,
-        *inputSystem, physicsSystem,
-        *audioSystem, *resourceManager,
-        *gsm, *logic
-    );
+
+
+	imGuiManager = std::make_unique<ImGuiManager>(
+		m_window, *renderer,
+		*inputSystem, physicsSystem,
+		*audioSystem, *resourceManager,
+		*gsm, *logic);
 
     isInitialized = true;
 }
@@ -316,59 +425,135 @@ int Application::run() {
     while (!m_window.shouldClose()) {
         m_window.poll();
 
-        double dt = gameLoop->calculate_DT();
-        gsm->update(static_cast<float>(dt), *renderer, textures);
-        Gui::updateImGuiManager(dt, *imGuiManager);
-        gameLoop->display_FPS(m_window.handle(), windowTitle, dt);
-        inputSystem->update_mouse_pos(m_window.handle());
+		double dt = gameLoop->calculate_DT();
 
-        //  simple AI drift (safe no-op if components absent)
-        if (ecs) UpdateRandomDrift(*ecs, dt);
+		if (gsm && !gsm->isPaused()) {
+			gsm->update(static_cast<float>(dt), *renderer, textures);
+		}
+		Gui::updateImGuiManager(dt, *imGuiManager);
+		gameLoop->display_FPS(m_window.handle(), windowTitle, dt);
+		inputSystem->update_mouse_pos(m_window.handle());
 
-        // Number keys 1..9 (respects AppState::Playing inside GameManager)
-        for (int k = GLFW_KEY_1; k <= GLFW_KEY_9; ++k)
-            if (inputSystem->WasPressed(k))
-                gsm->switchToSceneForKey(k);
+		if (ecs) UpdateRandomDrift(*ecs, dt);
 
-        if (inputSystem->WasPressed(GLFW_KEY_ESCAPE))
-            gsm->handleKeyPress(GLFW_KEY_ESCAPE);
 
-        inputSystem->ProcessHotkeys(*gsm);
+
+
+		// Debug: log firefly state twice per second to confirm it's updating
+		static double dbgAccum = 0.0;
+		dbgAccum += dt;
+		/*if (dbgAccum > 0.5 && ecs) {
+			dbgAccum = 0.0;
+			EntityID ff = ecs->findEntityByName("firefly_1");
+			if (ff != INVALID_ENTITY_ID) {
+				auto* t = ecs->getComponent<Transform>(ff);
+				auto* pc = ecs->getComponent<PhysicsComponent>(ff);
+				auto* ai = ecs->getComponent<AIComponent>(ff);
+				if (t && pc && ai) {
+					logger.log(
+						"FF pos=(" + std::to_string(t->position.x()) + "," + std::to_string(t->position.y()) + ")"
+						+ " vel=(" + std::to_string(pc->velocity.x()) + "," + std::to_string(pc->velocity.y()) + ")"
+					);
+				}
+				else {
+					logger.log("firefly_1 missing component(s): "
+						+ std::string(t ? "" : "Transform ")
+						+ std::string(pc ? "" : "Physics ")
+						+ std::string(ai ? "" : "AI "));
+				}
+			}*/
+
+
+
+
+		if (dbgAccum > 0.5 && ecs) {
+			dbgAccum = 0.0;
+			if (EntityID ff = ecs->findEntityByName("firefly_1"); ff != INVALID_ENTITY_ID) {
+				if (auto* t = ecs->getComponent<Transform>(ff)) {
+					if (auto* pc = ecs->getComponent<PhysicsComponent>(ff)) {
+						logger.log("FF pos=(" + std::to_string(t->position.x()) + "," + std::to_string(t->position.y()) + ")" +
+							" vel=(" + std::to_string(pc->velocity.x()) + "," + std::to_string(pc->velocity.y()) + ")");
+					}
+				}
+			}
+			// else: stay quiet when not in Owl scene
+		}
+
+
+
+		//	else {
+		//		logger.log("firefly_1 not found");
+		//	}
+		//}
+
+
+
+
+
+
+
+		/*for (int k = GLFW_KEY_1; k <= GLFW_KEY_9; ++k)
+			if (inputSystem->WasPressed(k))
+				gsm->handleKeyPress(k);*/
+		if (!gsm || !gsm->isPaused()) {
+			for (int k = GLFW_KEY_1; k <= GLFW_KEY_9; ++k)
+            	if (inputSystem->WasPressed(k))
+                	gsm->switchToSceneForKey(k); // respects AppState::Playing
+
+        	if (inputSystem->WasPressed(GLFW_KEY_ESCAPE))
+            	gsm->handleKeyPress(GLFW_KEY_ESCAPE);
+
+			if (inputSystem->WasPressed(GLFW_KEY_F11)) 
+				m_window.toggleFullscreen();
+
+        	inputSystem->ProcessHotkeys(*gsm);
+        	TransformSystem::TransformInput(*inputSystem, dt);
+		}
 
         int fbw = 0, fbh = 0; glfwGetFramebufferSize(m_window.handle(), &fbw, &fbh);
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         glViewport(0, 0, fbw, fbh);
         glDisable(GL_DEPTH_TEST);
         glClearColor(0.06f, 0.06f, 0.07f, 1.0f);
+
+        Prefab_SetTextureLookup([this](const std::string& p) -> int {
+            return static_cast<int>(textures.get(p));
+        });
+
         glClear(GL_COLOR_BUFFER_BIT);
+
+        Gui::updateImGuiManager(dt, *imGuiManager);
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         glViewport(0, 0, fbw, fbh);
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-        // Mouse click → normalized coords within viewport (flip Y to match your JSON/UI math)
+        // Text overlay is now rendered by Renderer inside the viewport FBO (see ImGuiManager)
+
         if (inputSystem->WasMousePressed(GLFW_MOUSE_BUTTON_LEFT)) {
             ImVec2 rmin, rmax;
+
             imGuiManager->getViewportRectWindow(rmin, rmax);
 
             Vector2D mp = inputSystem->GET_mouse_pos(false, 0, 0);
             if (mp.x() >= rmin.x && mp.x() <= rmax.x &&
                 mp.y() >= rmin.y && mp.y() <= rmax.y) {
-
                 float nx = float((mp.x() - rmin.x) / (rmax.x - rmin.x));
                 float ny = float((mp.y() - rmin.y) / (rmax.y - rmin.y));
-                ny = 1.0f - ny; // keep this flip (your earlier working path)
 
-                logger.log("[Click] nx=" + std::to_string(nx) + " ny=" + std::to_string(ny) + " (viewport)");
+                //ny = 1.0f - ny;
                 gsm->handleClick(nx, ny);
 
                 if (gsm->popQuitRequested()) {
-                    if (gsm->quitCallback) gsm->quitCallback();
-                    else glfwSetWindowShouldClose(m_window.handle(), GLFW_TRUE);
-                    break; // leave the loop now
+                    glfwSetWindowShouldClose(m_window.handle(), GLFW_TRUE);
+                    break;
                 }
             }
+        }
+		TransformSystem::TransformUpdate();
+        if (gsm->popQuitRequested()) {
+            glfwSetWindowShouldClose(m_window.handle(), 1);
         }
 
         inputSystem->EndFrame();
@@ -380,22 +565,22 @@ int Application::run() {
 }
 
 void Application::shutdown() {
-    if (resourceManager) {
-        for (auto& [id, font] : resourceManager->getFonts()) {
-            font.Cleanup();
-        }
-    }
+	if (resourceManager) {
+		for (auto& [id, font] : resourceManager->getFonts()) {
+			font.Cleanup();
+		}
+	}
 
-    imGuiManager.reset();
-    textShader.reset();
-    renderer.reset();
-    audioSystem.reset();
-    resourceManager.reset();
-    prefabManager.reset();
-    gsm.reset();
-    gameLoop.reset();
-    inputSystem.reset();
+	imGuiManager.reset();
+	textShader.reset();
+	renderer.reset();
+	audioSystem.reset();
+	resourceManager.reset();
+	prefabManager.reset();
+	gsm.reset();
+	gameLoop.reset();
+	inputSystem.reset();
 
-    m_window.destroy();
-    isInitialized = false;
+	m_window.destroy();
+	isInitialized = false;
 }

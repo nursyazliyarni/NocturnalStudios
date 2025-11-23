@@ -14,9 +14,12 @@
          - Implemented FBO
 
     Secondary Author
-        Nur Syazliyarni 5%
+        Nur Syazliyarni (5%)
         - Added the debugging lines for drawAllSprites
 
+    Secondary Author:
+         Chang Qi Xuan Celest
+        -Function to draw text controlled by Renderer class.
 
 
     All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
@@ -138,13 +141,14 @@ void Renderer::tri(float x1, float y1, float x2, float y2, float x3, float y3) {
     glEnd();
 }
 
-void Renderer::rect(float x, float y, float w, float h) {
+void Renderer::rect(float x, float y, float w, float h, float r, float g, float b) {
     glLoadIdentity();
     glBegin(GL_TRIANGLES);
-    glColor3f(0.9f, 0.8f, 0.2f);
+    glColor4f(r, g, b, 1.0f);
     glVertex2f(x, y); glVertex2f(x + w, y); glVertex2f(x + w, y + h);
     glVertex2f(x, y); glVertex2f(x + w, y + h); glVertex2f(x, y + h);
     glEnd();
+    glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 }
 
 void Renderer::line(float x1, float y1, float x2, float y2) {
@@ -363,7 +367,16 @@ std::vector<Renderer::sprite>& Renderer::get_sprite_vector() {
     return sprite_vector;
 }
 
-// ---- Text rendering controlled by Renderer ----
+// --------- Text rendering controlled by Renderer ---------
+/**
+* @brief Assigns the active shader used for text rendering.
+* Initializes the text shader by binding it once and setting its texture sampler
+* uniform (`text`) to texture unit 0. The shader is then unbound to avoid
+* affecting other rendering stages.
+* @param shader Reference to the Shader object used for text rendering.
+* @see Renderer::setTextProjection()
+* @see Renderer::drawText()
+*/
 void Renderer::setTextShader(Shader& shader) {
     text_shader = &shader;
     text_shader->user_Shader_program(0);
@@ -371,6 +384,16 @@ void Renderer::setTextShader(Shader& shader) {
     glUseProgram(0);
 }
 
+/**
+* @brief Configures the orthographic projection matrix for text rendering.
+* This projection uses the bottom-left corner as the origin (0,0) and matches
+* the window or framebuffer dimensions. It ensures consistent text positioning
+* when rendering 2D overlay text.
+* @param w The width of the rendering viewport in pixels.
+* @param h The height of the rendering viewport in pixels.
+* @note The text shader must be set using `setTextShader()` before calling this function.
+* @see Renderer::setTextShader()
+*/
 void Renderer::setTextProjection(int w, int h) {
     if (!text_shader) return;
     glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(w),
@@ -383,6 +406,21 @@ void Renderer::setTextProjection(int w, int h) {
     glUseProgram(0);
 }
 
+/**
+* @brief Renders text strings using the assigned text shader and specified font.
+* Iterates through each character in the input string and draws textured quads
+* representing glyphs. Uses per-character metrics from the Font resource
+* (size, bearing, and advance) to calculate screen positions.
+* @param font Font resource containing glyph textures and layout metrics.
+* @param text The text string to render.
+* @param x X position (in pixels, bottom-left origin).
+* @param y Y position (in pixels, bottom-left origin).
+* @param scale Scale factor applied to glyph size.
+* @param color Text color (RGB).
+* @note Requires that `setTextShader()` and `setTextProjection()` have been called.
+* @see Font::GetCharacters()
+* @see Shader::SET_uniform_variable()
+*/
 void Renderer::drawText(const Font& font, const std::string& text, float x, float y, float scale, const glm::vec3& color) {
     if (!text_shader) return;
 
@@ -429,7 +467,25 @@ void Renderer::drawText(const Font& font, const std::string& text, float x, floa
     glUseProgram(0);
 }
 
-//draw a sprite using sub-UVs from a spritesheet
+/**
+* @brief Draws a textured rectangle (sprite) with custom UV coordinates.
+* This function renders a 2D sprite at the specified position and size,
+* using a portion of the texture defined by UV coordinates. It uses
+* immediate-mode OpenGL (`glBegin/glEnd`) for simple sprite rendering.
+* @param tex OpenGL texture ID to render.
+* @param x X position of the sprite's bottom-left corner (screen space).
+* @param y Y position of the sprite's bottom-left corner (screen space).
+* @param w Width of the sprite in pixels.
+* @param h Height of the sprite in pixels.
+* @param u0 Left (minimum) U coordinate in texture space (0.0–1.0).
+* @param v0 Bottom (minimum) V coordinate in texture space (0.0–1.0).
+* @param u1 Right (maximum) U coordinate in texture space (0.0–1.0).
+* @param v1 Top (maximum) V coordinate in texture space (0.0–1.0).
+* @note Depth testing is disabled for this draw call.
+*       Immediate-mode OpenGL is used, which is suitable for simple or debug rendering
+*       but not recommended for performance-critical production code.
+* @see Renderer::drawText() for text rendering using sprites/glyphs.
+*/
 void Renderer::drawSpriteUV(GLuint tex, float x, float y, float w, float h, float u0, float v0, float u1, float v1)
 {
     glUseProgram(0);
