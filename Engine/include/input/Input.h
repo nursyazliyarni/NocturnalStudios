@@ -64,6 +64,8 @@ public:
 
 	void detect_keyboard_event(GLFWwindow* window, int key, int event_action);
 	void detect_mouse_event(GLFWwindow* window, int mouse, int event_action);
+	bool isLeftMousePressed(GLFWwindow* window);
+	bool isLeftMouseReleased(GLFWwindow* window);
 
 	// initialize per-sprite scales to 1.0f for all textures
 	// void initSpriteScales(size_t textureCount);

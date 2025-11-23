@@ -106,6 +106,29 @@ double ImGuiManager::getDeltaTime(double& dt) const {
 	dt = deltaTime; return dt;
 }
 
+ImVec2 ImGuiManager::get_mousePOS(bool is_normalized) {
+	// Get current window size
+	ImVec2 windowSize = ImGui::GetWindowSize();
+	ImVec2 windowPos = ImGui::GetWindowPos();
+	// Get mouse position
+	ImVec2 mousePos = ImGui::GetMousePos();
+
+	if (is_normalized) {
+		// Normalize to [0, 1] relative to this window
+		float normalizedX = mousePos.x / windowSize.x;
+		float normalizedY = mousePos.y / windowSize.y;
+
+		// Clamp to [0, 1] range
+		normalizedX = std::clamp(normalizedX, 0.0f, 1.0f);
+		normalizedY = std::clamp(normalizedY, 0.0f, 1.0f);
+		return { normalizedX,normalizedY };
+	}
+
+	else {
+		return { mousePos.x,mousePos.y };
+	}
+}
+
 void ImGuiManager::startFrame() {
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplGlfw_NewFrame();
@@ -253,7 +276,9 @@ void ImGuiManager::showViewportWindowUI() {
 	// Logic timing (animal state update)
 	logicTime = TimeUtils::MeasureSeconds([&]() {
 		logic.check_animal_status(gsm);
+		auto drag_value = logic.check_item_status(gsm, get_mousePOS(true), input, mainWindow.handle());
 		logic.update_animal_ALLstate(gsm,getDeltaTime(deltaTime));
+		logic.drag_drop(gsm,get_mousePOS(true),input,mainWindow.handle(),drag_value);
 	});
 
 	// Physics timing scope
@@ -273,7 +298,7 @@ void ImGuiManager::showViewportWindowUI() {
 		renderer.clear(0.06f, 0.06f, 0.07f);
 
 		// Draw current SCENE into the FBO
-		gsm.render(renderer, vw, vh);
+		gsm.render(renderer, input, mainWindow.handle(), vw, vh);
 
 		// Text overlay (rendered into the viewport FBO)
 		renderer.setTextProjection(vw, vh); // bottom-left origin for the text shader
