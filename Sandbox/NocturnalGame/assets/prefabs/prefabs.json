@@ -30,8 +30,6 @@
       "defaults": { "w": 0.40, "h": 0.09, "angle": 0.0, "rotatable": false, "scalable": false }
     },
 
-
-
     "firefly": {
   "components": [
     { "type": "Transform" },

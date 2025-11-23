@@ -80,6 +80,27 @@ void Window::setTitleFps(const std::string& base, int fps) {
     glfwSetWindowTitle(m_win, buf);
 }
 
+void Window::getWindowSize(int& w, int& h) const {
+    if (!m_win) { w = h = 0; return; }
+
+    // If fullscreen, report the monitor's current video mode
+    if (GLFWmonitor* mon = glfwGetWindowMonitor(m_win)) {
+        if (const GLFWvidmode* mode = glfwGetVideoMode(mon)) {
+            w = mode->width;
+            h = mode->height;
+            return;
+        }
+    }
+
+    // Windowed (or fallback)
+    glfwGetWindowSize(m_win, &w, &h);
+}
+
+void Window::getFramebufferSize(int& w, int& h) const {
+    if (!m_win) { w = h = 0; return; }
+    glfwGetFramebufferSize(m_win, &w, &h);
+}
+
 void Window::setFullscreen(bool fs) {
     if (!m_win) return;
     if (fs == m_isFullscreen) return;

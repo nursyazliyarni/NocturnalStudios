@@ -43,6 +43,12 @@ extern Logger logger;
 
 class ImGuiManager {
 public:
+
+	enum class EditorMode {
+		EDIT,
+		PLAY
+	};
+
 	// Accept lists of resource IDs for quick audio testing.
 	ImGuiManager(Window& window, Renderer& renderer,  Input& input, 
 		Physics& physics, AudioSystem& audio, ResourceManager& resourceManager, GameManager& gsm, Animal_Logic& logic);
@@ -81,10 +87,23 @@ public:
 	void showBottomDockUI();
 	void showAnimationEditorUI();   
 
+	//dockspace
+	void createDockspace();
+	void setupInitialDockingLayout();  
+	void resetDockingLayout();
+
 	// Expose last measured logic time (seconds)
 	double getLogicTime() const { return logicTime; }
 
+	void onPlayButtonPressed();
+	void onStopButtonPressed();
+	bool isPlaying() const { return m_editorMode == EditorMode::PLAY; }
+
+	void saveSceneSnapshot();
+	void restoreSceneSnapshot();
+
 private:
+	bool m_dockingLayoutInitialized = false;
 	Window& mainWindow;
 	Renderer& renderer;
 	//Texture& texture;
@@ -112,6 +131,9 @@ private:
 	std::unordered_map<ResourceID, AudioInstanceID> activeInstances;
 
 	ImVec2 vpMinWin{}, vpMaxWin{};
+
+	EditorMode m_editorMode = EditorMode::EDIT;
+	std::string m_savedSceneState;
 };
 
 

@@ -18,7 +18,8 @@
         { "prefab":"button","name":"btn_settings",
           "overrides": { "x":0.38,"y":0.75, "w":0.26, "h":0.09, "sprite_path":"textures/menuSETTINGS_btn.png" } },
         { "prefab":"button","name":"btn_quit",
-          "overrides": { "x":0.38,"y":0.90, "w":0.26, "h":0.09, "sprite_path":"textures/menuQUIT.png" }, "quit": true }
+          "overrides": { "x":0.38,"y":0.90, "w":0.26, "h":0.09, "sprite_path":"textures/menuQUIT.png" }, "quit": true },
+        { "prefab": "audio_emitter_menu", "name": "menu_bgm_emitter" }
       ]
     },
 
@@ -38,7 +39,8 @@
           "overrides": { "x":0.66,"y":0.50, "sprite_path":"textures/flamingo_medicine.png", "is_draggable":true, "is_dragging":false } },
         { "prefab":"toy","name":"flamingo_toy",
           "overrides": { "x":0.40,"y":0.50, "w":0.14, "h":0.14, "sprite_path":"textures/flamingo_toy.png", 
-          "is_draggable":true,"is_dragging":false,"rotatable": false, "scalable": false } }
+          "is_draggable":true,"is_dragging":false,"rotatable": false, "scalable": false } },
+        { "prefab": "audio_emitter_flamingo", "name": "flamingo_ambience_emitter" }
       ]
     },
 
@@ -57,7 +59,8 @@
           "overrides": { "x":0.66,"y":0.50, "sprite_path":"textures/seal_medicine.png", "is_draggable":true, "is_dragging":false } },
         { "prefab":"toy","name":"seal_toy",
           "overrides": { "x":0.40,"y":0.50, "w":0.14, "h":0.14, "sprite_path":"textures/seal_toy.png", 
-          "is_draggable":true,"is_dragging":false,"rotatable": false, "scalable": false } }
+          "is_draggable":true,"is_dragging":false,"rotatable": false, "scalable": false } },
+        { "prefab": "audio_emitter_seal", "name": "seal_ambience_emitter" }
       ]
     },
 
@@ -80,7 +83,8 @@
 
       { "prefab":"firefly","name":"firefly_1",
         "overrides": { "x":0.66, "y":0.42, "w":0.05, "h":0.05, "sprite_path":"textures/firefly.png" }
-      }
+      },
+      { "prefab": "audio_emitter_owl", "name": "owl_ambience_emitter" }
       ]
     },
 
@@ -101,7 +105,8 @@
           "rotatable": false, "scalable": false } },
         { "prefab":"toy","name":"horse_toy",
           "overrides": { "x":0.40,"y":0.50, "w":0.14, "h":0.14, "sprite_path":"textures/horse_toy.png",
-          "is_draggable":true,"is_dragging":false,"rotatable": true, "scalable": true } }
+          "is_draggable":true,"is_dragging":false,"rotatable": true, "scalable": true } },
+        { "prefab": "audio_emitter_horse", "name": "horse_ambience_emitter" }
       ]
     }
   }
