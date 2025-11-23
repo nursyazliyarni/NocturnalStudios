@@ -304,6 +304,7 @@ std::optional<AudioInstanceID> AudioSystem::createAudioInstance(AudioData::Indiv
 
     AudioInstance newAudioInstance{ ++totalInstanceCount, channel, true, audioData.volume,
         audioData.persistOnEntityDestruction, audioData.persistOnSceneChange, id };
+    newAudioInstance.channelResourceID = audioResourceID;
 
     float volume = audioData.volume;
 
@@ -623,25 +624,32 @@ void AudioSystem::deleteAllAudioInstances(bool forceDeletePersistentSounds) {
  * @param id EntityID to associate with created audio instances.
  * @return true if all requested startup playbacks succeeded; false otherwise.
  */
-bool AudioSystem::registerNewAudioResource(AudioData& audioData, EntityID id) {
+bool AudioSystem::registerNewAudioResource(AudioData& audioData, EntityID entityID) {
     for (auto& audio : audioData.audios) {
-        // Resolve by name if ID not serialized or unknown
+        // Resolve by name if needed (existing logic assumed here)
         if (audio.resourceID == 0 && !audio.name.empty()) {
             ResourceID rid = resourceManager.findResource<Audio>(audio.name);
-            if (rid != NO_RESOURCE_ID) {
-                audio.resourceID = rid;
-            } else {
-                logger.warning("Audio name '" + audio.name + "' not found in resources; skipping playback.");
+            if (rid != NO_RESOURCE_ID) audio.resourceID = rid;
+        }
+
+        // Prevent duplicate persistent instance of same resource.
+        if (audio.persistOnSceneChange) {
+            bool alreadyPlaying = false;
+            for (auto const& [iid, inst] : audioInstances) {
+                if (inst.isPlaying && inst.persistOnSceneChange &&
+                    audio.resourceID == inst.channelResourceID /* add this member if missing */) {
+                    alreadyPlaying = true;
+                    break;
+                }
             }
+            if (alreadyPlaying) continue;
         }
 
-        if (!audio.toPlayAtStart) {
-            continue;
-        }
+        if (!audio.toPlayAtStart) continue;
 
-        if (!createAudioInstance(audio, id)) {
-            logger.error("Failed to create audio instance for entity ID: " + std::to_string(id));
-            deleteAllAudioInstances();
+        auto opt = createAudioInstance(audio, entityID);
+        if (!opt.has_value()) {
+            logger.error("Failed to start audio (ID=" + std::to_string(audio.resourceID) + ")");
             return false;
         }
     }
