@@ -805,6 +805,7 @@ void ImGuiManager::showTransformUI(/* A reference to a vector of object list obj
         for (EntityID e : ecs.getAllEntities()) {
             if (ecs.getComponent<AudioData>(e))
                 audioEntities.push_back(e);
+        }
 
         if (audioEntities.empty()) {
             ImGui::TextDisabled("No audio emitter entities found.");
