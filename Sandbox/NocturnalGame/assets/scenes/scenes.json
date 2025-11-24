@@ -28,17 +28,18 @@
       "camera": { "cx": 0.5, "cy": 0.5, "zoom": 1.0, "minZoom": 1.0, "maxZoom": 3.0 },
       "entities":[
         { "prefab":"animal","name":"flamingo",
-          "overrides": { "x":0.10,"y":0.44, "w":0.26, "h":0.50,"sprite_path":"textures/flamingo_spritesheet.png" },
+          "overrides": { "x":0.10,"y":0.44, "w":0.26, "h":0.50,"sprite_path":"textures/flamingo.png" },
           "animal_properties": {"health_bar":100,"hunger_bar":100, "sanity_bar":100,
           "slower_decreasing_rate":2.3,"normal_decreasing_rate":2.5,"faster_decreasing_rate":2.7,"penalty_decreasing_rate":3}
         },
 
         { "prefab":"food","name":"flamingo_food",
-          "overrides": { "x":0.52,"y":0.40, "sprite_path":"textures/flamingo_food.png" } },
+          "overrides": { "x":0.52,"y":0.40, "sprite_path":"textures/flamingo_food.png", "is_draggable":true, "is_dragging":false } },
         { "prefab":"medicine","name":"flamingo_medicine",
-          "overrides": { "x":0.66,"y":0.50, "sprite_path":"textures/flamingo_medicine.png" } },
+          "overrides": { "x":0.66,"y":0.50, "sprite_path":"textures/flamingo_medicine.png", "is_draggable":true, "is_dragging":false } },
         { "prefab":"toy","name":"flamingo_toy",
-          "overrides": { "x":0.40,"y":0.50, "w":0.14, "h":0.14, "sprite_path":"textures/flamingo_toy.png", "rotatable": false, "scalable": false } },
+          "overrides": { "x":0.40,"y":0.50, "w":0.14, "h":0.14, "sprite_path":"textures/flamingo_toy.png", 
+          "is_draggable":true,"is_dragging":false,"rotatable": false, "scalable": false } },
         { "prefab": "audio_emitter_flamingo", "name": "flamingo_ambience_emitter" }
       ]
     },
@@ -46,18 +47,19 @@
     "Seal": {
       "background":"textures/seal_bg.png",
       "entities":[
-        { "prefab":"animal","name":"seal",
+        { "prefab":"animal","name":"seal", "id": 2,
           "overrides": { "x":0.10,"y":0.46, "w":0.34, "h":0.30,"sprite_path":"textures/seal.png" },
           "animal_properties": {"health_bar":100,"hunger_bar":100, "sanity_bar":100,
           "slower_decreasing_rate":0.3,"normal_decreasing_rate":0.5,"faster_decreasing_rate":0.7,"penalty_decreasing_rate":1}
         },
 
         { "prefab":"food","name":"seal_food",
-          "overrides": { "x":0.52,"y":0.40, "sprite_path":"textures/seal_food.png" } },
+          "overrides": { "x":0.52,"y":0.40, "sprite_path":"textures/seal_food.png", "is_draggable":true, "is_dragging":false } },
         { "prefab":"medicine","name":"seal_medicine",
-          "overrides": { "x":0.66,"y":0.50, "sprite_path":"textures/seal_medicine.png" } },
+          "overrides": { "x":0.66,"y":0.50, "sprite_path":"textures/seal_medicine.png", "is_draggable":true, "is_dragging":false } },
         { "prefab":"toy","name":"seal_toy",
-          "overrides": { "x":0.40,"y":0.50, "w":0.14, "h":0.14, "sprite_path":"textures/seal_toy.png", "rotatable": false, "scalable": false } },
+          "overrides": { "x":0.40,"y":0.50, "w":0.14, "h":0.14, "sprite_path":"textures/seal_toy.png", 
+          "is_draggable":true,"is_dragging":false,"rotatable": false, "scalable": false } },
         { "prefab": "audio_emitter_seal", "name": "seal_ambience_emitter" }
       ]
     },
@@ -65,18 +67,20 @@
     "Owl": {
       "background":"textures/owl_bg.png",
       "entities":[
-        { "prefab":"animal","name":"owl",
+        { "prefab":"animal","name":"owl", "id": 3,
           "overrides": { "x":0.12,"y":0.40, "w":0.24, "h":0.34,"sprite_path":"textures/owl.png" },
           "animal_properties": {"health_bar":100,"hunger_bar":100, "sanity_bar":100,
           "slower_decreasing_rate":0.3,"normal_decreasing_rate":0.5,"faster_decreasing_rate":0.7,"penalty_decreasing_rate":1}
         },
 
         { "prefab":"food","name":"owl_food",
-          "overrides": { "x":0.52,"y":0.40, "sprite_path":"textures/owl_food.png" } },
+          "overrides": { "x":0.52,"y":0.40, "sprite_path":"textures/owl_food.png", "is_draggable":true, "is_dragging":false } },
         { "prefab":"medicine","name":"owl_medicine",
-          "overrides": { "x":0.66,"y":0.50, "sprite_path":"textures/owl_medicine.png" } },
+          "overrides": { "x":0.66,"y":0.50, "sprite_path":"textures/owl_medicine.png", "is_draggable":true, "is_dragging":false } },
         { "prefab":"toy","name":"owl_toy",
-          "overrides": { "x":0.40,"y":0.50, "w":0.14, "h":0.14, "sprite_path":"textures/owl_toy.png", "rotatable": false, "scalable": false } },
+          "overrides": { "x":0.40,"y":0.50, "w":0.14, "h":0.14, "sprite_path":"textures/owl_toy.png", 
+          "is_draggable":true,"is_dragging":false,"rotatable": false, "scalable": false } },
+
       { "prefab":"firefly","name":"firefly_1",
         "overrides": { "x":0.66, "y":0.42, "w":0.05, "h":0.05, "sprite_path":"textures/firefly.png" }
       },
@@ -87,18 +91,21 @@
     "Horse": {
       "background":"textures/horse_bg.png",
       "entities":[
-        { "prefab":"animal","name":"horse",
+        { "prefab":"animal","name":"horse", "id": 4,
           "overrides": { "x":0.10,"y":0.40, "w":0.50, "h":0.66,"sprite_path":"textures/horse.png" },
           "animal_properties": {"health_bar":100,"hunger_bar":100, "sanity_bar":100,
           "slower_decreasing_rate":1.3,"normal_decreasing_rate":1.5,"faster_decreasing_rate":1.7,"penalty_decreasing_rate":2}
         },
 
         { "prefab":"food","name":"horse_food",
-          "overrides": { "x":0.52,"y":0.50, "sprite_path":"textures/horse_food.png", "rotatable": false, "scalable": false } },
+          "overrides": { "x":0.52,"y":0.50, "sprite_path":"textures/horse_food.png","is_draggable":true,"is_dragging":false,
+          "rotatable": false, "scalable": false } },
         { "prefab":"medicine","name":"horse_medicine",
-          "overrides": { "x":0.66,"y":0.50, "sprite_path":"textures/horse_medicine.png", "rotatable": false, "scalable": false } },
+          "overrides": { "x":0.66,"y":0.50, "sprite_path":"textures/horse_medicine.png","is_draggable":true,"is_dragging":false,
+          "rotatable": false, "scalable": false } },
         { "prefab":"toy","name":"horse_toy",
-          "overrides": { "x":0.40,"y":0.50, "w":0.14, "h":0.14, "sprite_path":"textures/horse_toy.png", "rotatable": true, "scalable": true } },
+          "overrides": { "x":0.40,"y":0.50, "w":0.14, "h":0.14, "sprite_path":"textures/horse_toy.png",
+          "is_draggable":true,"is_dragging":false,"rotatable": true, "scalable": true } },
         { "prefab": "audio_emitter_horse", "name": "horse_ambience_emitter" }
       ]
     }

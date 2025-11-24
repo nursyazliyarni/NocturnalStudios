@@ -1,3 +1,16 @@
+/*!------------------------------------------------------------------------------------------------
+    File: TimeUtils.h
+    Project: NocturnalStudio
+
+    This file contains utility functions and classes for measuring time intervals
+
+    Primary Author:
+		Lau Xiang Yang (100%): 
+		- TimeUtils class definition.
+
+    All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
+
 #pragma once
 
 #include <chrono>

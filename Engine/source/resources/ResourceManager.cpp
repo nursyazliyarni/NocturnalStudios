@@ -5,8 +5,8 @@
 	This file contains the implementation of the ResourceManager class
 
 	Primary Author:
-		Name (%)
-		-
+		Lau Xiang Yang (95%)
+		- Created the ResourceManager class to manage all resources in the engine
 
 	Secondary Author:
 		Nur Syazliyarni (5%)

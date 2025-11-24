@@ -74,10 +74,12 @@
 [20-11-2025] [11:00:12] [CRASH_MESSAGE] Prefab category 'firefly' not found.
 [20-11-2025] [11:00:39] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
 [20-11-2025] [11:00:41] [CRASH_MESSAGE] Prefab category 'firefly' not found.
-[20-11-2025] [14:07:04] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
-[20-11-2025] [14:26:31] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
-[20-11-2025] [14:48:53] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
-[20-11-2025] [14:50:40] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
-[20-11-2025] [14:56:31] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
-[20-11-2025] [17:39:56] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
-[20-11-2025] [17:53:49] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[24-11-2025] [02:17:22] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[24-11-2025] [02:17:56] [CRASH_MESSAGE] Program crash due to abort signal - std::abort() or failed assert()
+[24-11-2025] [02:19:08] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[24-11-2025] [02:19:18] [CRASH_MESSAGE] Program crash due to abort signal - std::abort() or failed assert()
+[24-11-2025] [02:25:10] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[24-11-2025] [02:28:02] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[24-11-2025] [02:28:06] [CRASH_MESSAGE] Program crash due to abort signal - std::abort() or failed assert()
+[24-11-2025] [02:37:13] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[24-11-2025] [02:38:53] [CRASH_MESSAGE] Failed to load default audio soundFile not found.

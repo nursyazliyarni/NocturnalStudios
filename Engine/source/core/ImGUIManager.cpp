@@ -32,7 +32,7 @@
 #include "graphics/Camera2D.h" 
 #include "core/TimeUtils.h"
 #include <filesystem>
-
+#include <algorithm>
 
 namespace {
 	using Clock = std::chrono::high_resolution_clock;
@@ -115,6 +115,29 @@ void ImGuiManager::updateDeltaTime(double& dt) {
 
 double ImGuiManager::getDeltaTime(double& dt) const {
 	dt = deltaTime; return dt;
+}
+
+ImVec2 ImGuiManager::get_mousePOS(bool is_normalized) {
+	// Get current window size
+	ImVec2 windowSize = ImGui::GetWindowSize();
+	ImVec2 windowPos = ImGui::GetWindowPos();
+	// Get mouse position
+	ImVec2 mousePos = ImGui::GetMousePos();
+
+	if (is_normalized) {
+		// Normalize to [0, 1] relative to this window
+		float normalizedX = mousePos.x / windowSize.x;
+		float normalizedY = mousePos.y / windowSize.y;
+
+		// Clamp to [0, 1] range
+		normalizedX = std::clamp(normalizedX, 0.0f, 1.0f);
+		normalizedY = std::clamp(normalizedY, 0.0f, 1.0f);
+		return { normalizedX,normalizedY };
+	}
+
+	else {
+		return { mousePos.x,mousePos.y };
+	}
 }
 
 void ImGuiManager::startFrame() {
@@ -265,7 +288,9 @@ void ImGuiManager::showViewportWindowUI() {
 	// Logic timing (animal state update)
 	logicTime = TimeUtils::MeasureSeconds([&]() {
 		logic.check_animal_status(gsm);
+		auto drag_value = logic.check_item_status(gsm, get_mousePOS(true), input, mainWindow.handle());
 		logic.update_animal_ALLstate(gsm,getDeltaTime(deltaTime));
+		logic.drag_drop(gsm,get_mousePOS(true),input,mainWindow.handle(),drag_value);
 	});
 
 	// Physics timing scope
@@ -285,7 +310,7 @@ void ImGuiManager::showViewportWindowUI() {
 		renderer.clear(0.06f, 0.06f, 0.07f);
 
 		// Draw current SCENE into the FBO
-		gsm.render(renderer, vw, vh);
+		gsm.render(renderer, input, mainWindow.handle(), vw, vh);
 
 		// Text overlay (rendered into the viewport FBO)
 		renderer.setTextProjection(vw, vh); // bottom-left origin for the text shader
@@ -340,16 +365,34 @@ void ImGuiManager::showViewportWindowUI() {
 		renderer.unbindFBO();
 	}
 
-	// Show the FBO as an ImGui Image (flipped V)
+	//// Show the FBO as an ImGui Image (flipped V)
+	//ImVec2 imgMin = ImGui::GetCursorScreenPos();
+	//ImGui::Image((ImTextureID)(intptr_t)renderer.getFBOTexture(),
+	//ImVec2(static_cast<float>(vw), static_cast<float>(vh)), ImVec2(0, 1), ImVec2(1, 0));
+	//ImVec2 imgMax = ImVec2(imgMin.x + vw, imgMin.y + vh);
+
+	//// Handle click -> normalized coords -> GSM
+	//// (Input handles clicks; store the rect in window client coords)
+	//vpMinWin = ImVec2(imgMin.x - windowTopLeft.x, imgMin.y - windowTopLeft.y);
+	//vpMaxWin = ImVec2(imgMax.x - windowTopLeft.x, imgMax.y - windowTopLeft.y);
+
+	//ImGui::End();
+
+	//Show the FBO as an ImGui Image (flipped V)
 	ImVec2 imgMin = ImGui::GetCursorScreenPos();
-	ImGui::Image((ImTextureID)(intptr_t)renderer.getFBOTexture(),
-	ImVec2(static_cast<float>(vw), static_cast<float>(vh)), ImVec2(0, 1), ImVec2(1, 0));
+	ImGui::Image(
+		(ImTextureID)(intptr_t)renderer.getFBOTexture(),
+		ImVec2(static_cast<float>(vw), static_cast<float>(vh)),
+		ImVec2(0, 1), ImVec2(1, 0)
+	);
 	ImVec2 imgMax = ImVec2(imgMin.x + vw, imgMin.y + vh);
 
-	// Handle click -> normalized coords -> GSM
-	// (Input handles clicks; store the rect in window client coords)
+	//Store rect relative to the main window (you were already doing this)
 	vpMinWin = ImVec2(imgMin.x - windowTopLeft.x, imgMin.y - windowTopLeft.y);
 	vpMaxWin = ImVec2(imgMax.x - windowTopLeft.x, imgMax.y - windowTopLeft.y);
+
+	//handle click and drag picking on scene items
+	handleViewportPicking(imgMin, imgMax, vw, vh);
 
 	ImGui::End();
 }
@@ -793,7 +836,131 @@ void ImGuiManager::showTransformUI(/* A reference to a vector of object list obj
 		}
 	}*/
 
-	ImGui::End();
+	// --- Audio Emitters Control -------------------------------------------------
+    ImGui::Separator();
+    if (ImGui::CollapsingHeader("Audio Emitters", ImGuiTreeNodeFlags_DefaultOpen))
+    {
+        ECS& ecs = gsm.getECS();
+
+        // Gather audio emitter entities
+        std::vector<EntityID> audioEntities;
+        audioEntities.reserve(32);
+        for (EntityID e : ecs.getAllEntities()) {
+            if (ecs.getComponent<AudioData>(e))
+                audioEntities.push_back(e);
+        }
+
+        if (audioEntities.empty()) {
+            ImGui::TextDisabled("No audio emitter entities found.");
+        } else {
+            static EntityID selectedAudioEntity = (EntityID)0;
+            // Validate selection
+            bool selectionValid = false;
+            for (auto e : audioEntities) if (e == selectedAudioEntity) { selectionValid = true; break; }
+            if (!selectionValid) selectedAudioEntity = audioEntities.front();
+
+            // Emitter selector
+            if (ImGui::BeginCombo("Emitter Entity", std::to_string(selectedAudioEntity).c_str())) {
+                for (auto e : audioEntities) {
+                    bool sel = (e == selectedAudioEntity);
+                    if (ImGui::Selectable(std::to_string(e).c_str(), sel))
+                        selectedAudioEntity = e;
+                    if (sel) ImGui::SetItemDefaultFocus();
+                }
+                ImGui::EndCombo();
+            }
+
+            AudioData* ad = ecs.getComponent<AudioData>(selectedAudioEntity);
+            if (!ad) {
+                ImGui::TextDisabled("Selected entity lost its AudioData component.");
+            } else if (ad->audios.empty()) {
+                ImGui::TextDisabled("Emitter has no tracks.");
+            } else {
+                ImGui::Text("Tracks:");
+                ImGui::Separator();
+
+                // Iterate tracks
+                for (std::size_t i = 0; i < ad->audios.size(); ++i) {
+                    auto& track = ad->audios[i];
+                    ImGui::PushID((int)i);
+
+                    // Display basic info
+                    ImGui::Text("%s (RID:%u)", track.name.empty() ? "<unnamed>" : track.name.c_str(), track.resourceID);
+                    ImGui::SameLine();
+                    bool loopFlag = track.loop;
+                    ImGui::Checkbox("Loop", &loopFlag);
+                    if (loopFlag != track.loop) {
+                        track.loop = loopFlag;
+                        // Optional: if you want loop change to apply immediately, restart instance after modification
+                    }
+
+                    // Instance lookup
+                    AudioInstanceID instanceID = 0;
+                    bool hasInstance = false;
+                    auto it = activeInstances.find(track.resourceID);
+                    if (it != activeInstances.end()) {
+                        instanceID = it->second;
+                        hasInstance = true;
+                    }
+
+                    // Play/Pause/Restart buttons
+                    if (ImGui::Button(hasInstance ? "Pause" : "Play")) {
+                        if (hasInstance) {
+                            audioSystem.pauseSound(instanceID);
+                        } else {
+                            // Create (starts paused per your API) then resume
+                            auto opt = audioSystem.createAudioInstance(track, selectedAudioEntity);
+                            if (opt) {
+                                activeInstances[track.resourceID] = *opt;
+                                audioSystem.resumeSound(*opt);
+                            } else {
+                                logger.error("[Inspector] Failed to create audio instance for RID " + std::to_string(track.resourceID));
+                            }
+                        }
+                    }
+                    ImGui::SameLine();
+                    if (ImGui::Button("Resume")) {
+                        if (hasInstance) audioSystem.resumeSound(instanceID);
+                    }
+                    ImGui::SameLine();
+                    if (ImGui::Button("Restart")) {
+                        if (hasInstance) audioSystem.restartSound(instanceID);
+                    }
+
+                    // Volume slider
+                    float currentVol = hasInstance ? audioSystem.getVolume(instanceID) : track.volume;
+                    if (ImGui::SliderFloat("Volume", &currentVol, 0.0f, 1.0f)) {
+                        if (hasInstance) {
+                            audioSystem.modifyVolume(instanceID, currentVol);
+                        }
+                        track.volume = currentVol; // Keep JSON-serializable state coherent
+                    }
+
+                    // Pitch (optional if supported)
+                    float pitchVal = track.pitch;
+                    if (ImGui::DragFloat("Pitch", &pitchVal, 0.01f, 0.25f, 4.0f, "%.2f")) {
+                        track.pitch = pitchVal;
+                        // If runtime pitch control exists, apply here (not shown in AudioSystem public API snippet)
+                    }
+
+                    ImGui::Separator();
+                    ImGui::PopID();
+                }
+
+                // Global controls (BGM/SFX group pause/resume) if desired
+                if (ImGui::Button("Pause All BGM")) audioSystem.pauseAllBGM();
+                ImGui::SameLine();
+                if (ImGui::Button("Resume All BGM")) audioSystem.resumeAllBGM();
+                ImGui::SameLine();
+                if (ImGui::Button("Pause All SFX")) audioSystem.pauseAllSFX();
+                ImGui::SameLine();
+                if (ImGui::Button("Resume All SFX")) audioSystem.resumeAllSFX();
+            }
+        }
+    }
+    // --- End Audio Emitters -----------------------------------------------------
+
+    ImGui::End();
 }
 
 void ImGuiManager::showLogsOverlayUI() {
@@ -1479,4 +1646,129 @@ void ImGuiManager::onStopButtonPressed() {
 	m_editorMode = EditorMode::EDIT;
 
 	logger.log("Edit mode restored");
+}
+
+void ImGuiManager::handleViewportPicking(const ImVec2& imgMin,
+	const ImVec2& imgMax,
+	int vpW, int vpH)
+{
+	//only allow editing in EDIT mode
+	if (m_editorMode == EditorMode::PLAY)
+		return;
+
+	Scene* scene = gsm.getCurrentScene();
+	if (!scene)
+		return;
+
+	auto& items = scene->items;
+	if (items.empty())
+		return;
+
+	//mouse position (screen space)
+	ImVec2 mouse = ImGui::GetMousePos();
+
+	//is mouse inside the viewport image
+	bool inside =
+		mouse.x >= imgMin.x && mouse.x <= imgMax.x &&
+		mouse.y >= imgMin.y && mouse.y <= imgMax.y;
+
+	//mouse in normalized [0..1] viewport coordinates
+	float localX = 0.0f;
+	float localY = 0.0f;
+
+	if (inside) {
+		float px = mouse.x - imgMin.x;
+		float py = mouse.y - imgMin.y;
+
+		localX = px / static_cast<float>(vpW);
+		localY = py / static_cast<float>(vpH);
+	}
+
+	//--------delete currently selected item--------
+	if (ImGui::IsKeyPressed(ImGuiKey_Delete, false)) {
+		if (!items.empty() && selectedEntityType < items.size()) {
+			logger.log("[ImGui] Deleted object via Delete key: " + items[selectedEntityType].name);
+			items.erase(items.begin() + static_cast<std::ptrdiff_t>(selectedEntityType));
+			if (selectedEntityType >= items.size() && !items.empty())
+				selectedEntityType = static_cast<unsigned int>(items.size() - 1);
+			else if (items.empty())
+				selectedEntityType = 0;
+		}
+	}
+
+	//if mouse left the viewport, stop dragging
+	if (!inside) {
+		if (!ImGui::IsMouseDown(ImGuiMouseButton_Left)) {
+			m_isDragging = false;
+			m_draggedItem = -1;
+		}
+		m_hoveredItem = -1;
+		return;
+	}
+
+	//--------hit-test items (from top-most to bottom)--------
+	int hitIndex = -1;
+
+	for (int i = static_cast<int>(items.size()) - 1; i >= 0; --i) {
+		const DrawItem& it = items[static_cast<size_t>(i)];
+
+		float halfW = it.w * 0.5f;
+		float halfH = it.h * 0.5f;
+
+		float minX = it.x - halfW;
+		float maxX = it.x + halfW;
+		float minY = it.y - halfH;
+		float maxY = it.y + halfH;
+
+		if (localX >= minX && localX <= maxX &&
+			localY >= minY && localY <= maxY)
+		{
+			hitIndex = i;
+			break;  //first match from the end = top-most
+		}
+	}
+
+	m_hoveredItem = hitIndex;
+
+	//--------click to select/start dragging--------
+	if (hitIndex >= 0 && ImGui::IsMouseClicked(ImGuiMouseButton_Left)) {
+		selectedEntityType = static_cast<unsigned int>(hitIndex);
+		m_draggedItem = hitIndex;
+		m_isDragging = true;
+
+		DrawItem& it = items[static_cast<size_t>(hitIndex)];
+		m_dragOffset.x = localX - it.x;
+		m_dragOffset.y = localY - it.y;
+
+		logger.log("[ImGui] Selected item from viewport: " + it.name);
+	}
+
+	//--------drag while LMB is held--------
+	if (m_isDragging && m_draggedItem >= 0 &&
+		ImGui::IsMouseDown(ImGuiMouseButton_Left))
+	{
+		if (m_draggedItem < static_cast<int>(items.size())) {
+			DrawItem& it = items[static_cast<size_t>(m_draggedItem)];
+
+			float newX = localX - m_dragOffset.x;
+			float newY = localY - m_dragOffset.y;
+
+			//keep inside world bounds
+			newX = std::clamp(newX, 0.0f, 1.0f);
+			newY = std::clamp(newY, 0.0f, 1.0f);
+
+			it.x = newX;
+			it.y = newY;
+		}
+		else {
+			//dragged item was removed
+			m_isDragging = false;
+			m_draggedItem = -1;
+		}
+	}
+	//--------stop dragging when LMB is released--------
+	if (!ImGui::IsMouseDown(ImGuiMouseButton_Left)) {
+		m_isDragging = false;
+		m_draggedItem = -1;
+	}
 }

@@ -12,8 +12,8 @@
 	- Manage per-sprite helpers for selection/deselection, scaling, and rotation
 	used for later physics and logic.
 
-		Primary Author:
-		 Ang Yu Xuan (55%)
+	Primary Author:
+		 Ang Yu Xuan (54%)
 		-implement functions for captures user keyboard input and mouse input and the respective
 		callback functions. The callback functions will update the input action accordingly.
 
@@ -21,10 +21,12 @@
 		 Nur Syazliyarni (15%)
 		-Created the messaging system for input
 
-	Secondary Author:
 		 Rishika Bimal Attodi  (35%)
 		-Added sprite selection/deselection logic and the scaling/rotation key handling,
 		plus per-sprite transform helpers (init/get pointers, rotation updates)
+
+		Lau Xiang Yang (1%)
+		- Implemented clearAllStates to reset input states
 
 	All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
 *------------------------------------------------------------------------------------------------*/
@@ -64,6 +66,8 @@ public:
 
 	void detect_keyboard_event(GLFWwindow* window, int key, int event_action);
 	void detect_mouse_event(GLFWwindow* window, int mouse, int event_action);
+	bool isLeftMousePressed(GLFWwindow* window);
+	bool isLeftMouseReleased(GLFWwindow* window);
 
 	// initialize per-sprite scales to 1.0f for all textures
 	// void initSpriteScales(size_t textureCount);
