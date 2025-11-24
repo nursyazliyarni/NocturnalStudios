@@ -32,7 +32,7 @@
 #include "graphics/Camera2D.h" 
 #include "core/TimeUtils.h"
 #include <filesystem>
-
+#include <algorithm>
 
 namespace {
 	using Clock = std::chrono::high_resolution_clock;
@@ -340,16 +340,34 @@ void ImGuiManager::showViewportWindowUI() {
 		renderer.unbindFBO();
 	}
 
-	// Show the FBO as an ImGui Image (flipped V)
+	//// Show the FBO as an ImGui Image (flipped V)
+	//ImVec2 imgMin = ImGui::GetCursorScreenPos();
+	//ImGui::Image((ImTextureID)(intptr_t)renderer.getFBOTexture(),
+	//ImVec2(static_cast<float>(vw), static_cast<float>(vh)), ImVec2(0, 1), ImVec2(1, 0));
+	//ImVec2 imgMax = ImVec2(imgMin.x + vw, imgMin.y + vh);
+
+	//// Handle click -> normalized coords -> GSM
+	//// (Input handles clicks; store the rect in window client coords)
+	//vpMinWin = ImVec2(imgMin.x - windowTopLeft.x, imgMin.y - windowTopLeft.y);
+	//vpMaxWin = ImVec2(imgMax.x - windowTopLeft.x, imgMax.y - windowTopLeft.y);
+
+	//ImGui::End();
+
+	//Show the FBO as an ImGui Image (flipped V)
 	ImVec2 imgMin = ImGui::GetCursorScreenPos();
-	ImGui::Image((ImTextureID)(intptr_t)renderer.getFBOTexture(),
-	ImVec2(static_cast<float>(vw), static_cast<float>(vh)), ImVec2(0, 1), ImVec2(1, 0));
+	ImGui::Image(
+		(ImTextureID)(intptr_t)renderer.getFBOTexture(),
+		ImVec2(static_cast<float>(vw), static_cast<float>(vh)),
+		ImVec2(0, 1), ImVec2(1, 0)
+	);
 	ImVec2 imgMax = ImVec2(imgMin.x + vw, imgMin.y + vh);
 
-	// Handle click -> normalized coords -> GSM
-	// (Input handles clicks; store the rect in window client coords)
+	//Store rect relative to the main window (you were already doing this)
 	vpMinWin = ImVec2(imgMin.x - windowTopLeft.x, imgMin.y - windowTopLeft.y);
 	vpMaxWin = ImVec2(imgMax.x - windowTopLeft.x, imgMax.y - windowTopLeft.y);
+
+	//handle click and drag picking on scene items
+	handleViewportPicking(imgMin, imgMax, vw, vh);
 
 	ImGui::End();
 }
@@ -1479,4 +1497,129 @@ void ImGuiManager::onStopButtonPressed() {
 	m_editorMode = EditorMode::EDIT;
 
 	logger.log("Edit mode restored");
+}
+
+void ImGuiManager::handleViewportPicking(const ImVec2& imgMin,
+	const ImVec2& imgMax,
+	int vpW, int vpH)
+{
+	//only allow editing in EDIT mode
+	if (m_editorMode == EditorMode::PLAY)
+		return;
+
+	Scene* scene = gsm.getCurrentScene();
+	if (!scene)
+		return;
+
+	auto& items = scene->items;
+	if (items.empty())
+		return;
+
+	//mouse position (screen space)
+	ImVec2 mouse = ImGui::GetMousePos();
+
+	//is mouse inside the viewport image
+	bool inside =
+		mouse.x >= imgMin.x && mouse.x <= imgMax.x &&
+		mouse.y >= imgMin.y && mouse.y <= imgMax.y;
+
+	//mouse in normalized [0..1] viewport coordinates
+	float localX = 0.0f;
+	float localY = 0.0f;
+
+	if (inside) {
+		float px = mouse.x - imgMin.x;
+		float py = mouse.y - imgMin.y;
+
+		localX = px / static_cast<float>(vpW);
+		localY = py / static_cast<float>(vpH);
+	}
+
+	//--------delete currently selected item--------
+	if (ImGui::IsKeyPressed(ImGuiKey_Delete, false)) {
+		if (!items.empty() && selectedEntityType < items.size()) {
+			logger.log("[ImGui] Deleted object via Delete key: " + items[selectedEntityType].name);
+			items.erase(items.begin() + static_cast<std::ptrdiff_t>(selectedEntityType));
+			if (selectedEntityType >= items.size() && !items.empty())
+				selectedEntityType = static_cast<unsigned int>(items.size() - 1);
+			else if (items.empty())
+				selectedEntityType = 0;
+		}
+	}
+
+	//if mouse left the viewport, stop dragging
+	if (!inside) {
+		if (!ImGui::IsMouseDown(ImGuiMouseButton_Left)) {
+			m_isDragging = false;
+			m_draggedItem = -1;
+		}
+		m_hoveredItem = -1;
+		return;
+	}
+
+	//--------hit-test items (from top-most to bottom)--------
+	int hitIndex = -1;
+
+	for (int i = static_cast<int>(items.size()) - 1; i >= 0; --i) {
+		const DrawItem& it = items[static_cast<size_t>(i)];
+
+		float halfW = it.w * 0.5f;
+		float halfH = it.h * 0.5f;
+
+		float minX = it.x - halfW;
+		float maxX = it.x + halfW;
+		float minY = it.y - halfH;
+		float maxY = it.y + halfH;
+
+		if (localX >= minX && localX <= maxX &&
+			localY >= minY && localY <= maxY)
+		{
+			hitIndex = i;
+			break;  //first match from the end = top-most
+		}
+	}
+
+	m_hoveredItem = hitIndex;
+
+	//--------click to select/start dragging--------
+	if (hitIndex >= 0 && ImGui::IsMouseClicked(ImGuiMouseButton_Left)) {
+		selectedEntityType = static_cast<unsigned int>(hitIndex);
+		m_draggedItem = hitIndex;
+		m_isDragging = true;
+
+		DrawItem& it = items[static_cast<size_t>(hitIndex)];
+		m_dragOffset.x = localX - it.x;
+		m_dragOffset.y = localY - it.y;
+
+		logger.log("[ImGui] Selected item from viewport: " + it.name);
+	}
+
+	//--------drag while LMB is held--------
+	if (m_isDragging && m_draggedItem >= 0 &&
+		ImGui::IsMouseDown(ImGuiMouseButton_Left))
+	{
+		if (m_draggedItem < static_cast<int>(items.size())) {
+			DrawItem& it = items[static_cast<size_t>(m_draggedItem)];
+
+			float newX = localX - m_dragOffset.x;
+			float newY = localY - m_dragOffset.y;
+
+			//keep inside world bounds
+			newX = std::clamp(newX, 0.0f, 1.0f);
+			newY = std::clamp(newY, 0.0f, 1.0f);
+
+			it.x = newX;
+			it.y = newY;
+		}
+		else {
+			//dragged item was removed
+			m_isDragging = false;
+			m_draggedItem = -1;
+		}
+	}
+	//--------stop dragging when LMB is released--------
+	if (!ImGui::IsMouseDown(ImGuiMouseButton_Left)) {
+		m_isDragging = false;
+		m_draggedItem = -1;
+	}
 }

@@ -133,6 +133,14 @@ private:
 
 	EditorMode m_editorMode = EditorMode::EDIT;
 	std::string m_savedSceneState;
+
+	int  m_hoveredItem = -1;
+	int  m_draggedItem = -1; //index currently being dragged, or -1
+	bool m_isDragging = false; //true while left mouse button held on an item
+	ImVec2 m_dragOffset = { 0, 0 }; //offset (normalised from item center to click point
+
+	//helper to handle picking/dragging inside the viewport
+	void handleViewportPicking(const ImVec2& imgMin,const ImVec2& imgMax,int vpW, int vpH);
 };
 
 
