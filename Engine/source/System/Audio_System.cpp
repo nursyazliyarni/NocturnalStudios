@@ -1,3 +1,19 @@
+/*!------------------------------------------------------------------------------------------------
+	File: Audio_System.cpp
+	Project: NocturnalStudio
+
+	This file contains the declaration of the AudioSystem class, which manages the integration
+	of the FMOD library into the customize game engine. It handles the initialization,
+	frame updates, and rendering of audio components, as well as providing various UI elements
+	for debugging and interaction within the engine.
+
+	Primary Author:
+		Lau Xiang Yang (100%)
+		- Created the AudioSystem class and its specializations.
+
+	All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
+
 #define _HAS_STD_BYTE 0
 
 #include "System/Audio_System.h"

@@ -74,6 +74,7 @@ public:
 	void showViewportWindowUI();
 	void showMousePosOverlayUI();
 	void showLogsOverlayUI();
+	ImVec2 get_mousePOS(bool is_normalized);
 
 	// @Todo(axewhy): These functions are not fully implemented yet
 	void showPerformanceOverlayUI();
