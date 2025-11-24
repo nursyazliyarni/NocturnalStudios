@@ -77,6 +77,10 @@ static bool readFile(const char* p, std::string& out) {
     return true;
 }
 
+std::unique_ptr<DrawItem>& GameManager::get_duplicate_item() {
+    return duplicate_item;
+}
+
 static std::string toAssetsPath(const std::string& p) {
     if (p.rfind("assets/", 0) == 0) return p;
     return "assets/" + p; // scenes use "textures/.." to make "assets/textures/.."
@@ -160,12 +164,23 @@ bool GameManager::load(const char* prefabsPath, const char* scenesPath, TextureS
                 if (!e.IsObject()) continue;
 
                 PrefabDef def;
+                DrawItem di{};
                 if (e.HasMember("prefab") && e["prefab"].IsString()) {
                     auto itp = prefabDefaults.find(e["prefab"].GetString());
                     if (itp != prefabDefaults.end()) def = itp->second;
+                    if (e.HasMember("prefab") && e["prefab"].IsString()) {
+                        di.item_type = e["prefab"].GetString();  // always safe
+
+                        auto itp = prefabDefaults.find(di.item_type);
+                        if (itp != prefabDefaults.end()) {
+                            def = itp->second;
+                        }
+                        else {
+                            logger.log(std::string("[load] prefab not found in prefabs.json: ") + di.item_type);
+                        }
+                    }
                 }
 
-                DrawItem di{};
                 di.w = def.w;
                 di.h = def.h;
                 di.angle = def.angle;
@@ -177,6 +192,8 @@ bool GameManager::load(const char* prefabsPath, const char* scenesPath, TextureS
                     if (ov.HasMember("w") && ov["w"].IsNumber())      di.w = ov["w"].GetFloat();
                     if (ov.HasMember("h") && ov["h"].IsNumber())      di.h = ov["h"].GetFloat();
                     if (ov.HasMember("angle") && ov["angle"].IsNumber()) di.angle = ov["angle"].GetFloat();
+                    if (ov.HasMember("is_draggable") && ov["is_draggable"].IsBool()) di.is_draggable = ov["is_draggable"].GetBool();
+                    if (ov.HasMember("is_dragging") && ov["is_dragging"].IsBool()) di.is_dragging = ov["is_dragging"].GetBool();
 
          
 
@@ -204,13 +221,6 @@ bool GameManager::load(const char* prefabsPath, const char* scenesPath, TextureS
 
 
                 sc.items.push_back(di);
-
-                // clickable?
-                /*ClickRegion cr;
-                cr.x = di.x; cr.y = di.y; cr.w = di.w; cr.h = di.h;
-                if (e.HasMember("goto") && e["goto"].IsString()) cr.gotoScene = e["goto"].GetString();
-                if (e.HasMember("quit") && e["quit"].IsBool())   cr.quit = e["quit"].GetBool();
-                if (cr.quit || !cr.gotoScene.empty()) sc.clicks.push_back(cr);*/
 
                 ClickRegion cr;
                 cr.x = di.x; cr.y = di.y; cr.w = di.w; cr.h = di.h;
@@ -284,14 +294,6 @@ bool GameManager::switchToSceneForKey(int glfwKey) {
     return true;
 }
 
-
-//void GameManager::handleKeyPress(int key) {
-//    auto it = keyMap.find(key);
-//    if (it != keyMap.end()) requestScene(it->second);
-//    if (key == GLFW_KEY_ESCAPE) requestScene(backKey);
-//}
-
-
 void GameManager::handleKeyPress(int key) {
     // ESC always returns to menu
     if (key == GLFW_KEY_ESCAPE) {
@@ -312,12 +314,12 @@ void GameManager::handleKeyPress(int key) {
     }
 }
 
-void GameManager::render(Renderer& r, int w, int h) {
+void GameManager::render(Renderer& r, Input& input, GLFWwindow* window, int w, int h) {
 
     auto it = scenes.find(currentScene);
     if (it == scenes.end()) return;
     const Scene& sc = it->second;
-    
+
     // background (fullscreen) � NOTE uniform must be "bg_texture"
     if (it->first == "MainMenu") {
         r.special_background_render(sc.background, "bgTexture", 1);
@@ -329,95 +331,47 @@ void GameManager::render(Renderer& r, int w, int h) {
         float bx = 0.0f, by = 0.0f, bw = float(w), bh = float(h);
         Cam2D_Apply(currentScene, bx, by, bw, bh, w, h);
         r.texturedTri(sc.background, bx, by, bw, bh);
-        /*for (auto& items : getCurrentScene()->items) {
-            if (items.still_alive) {
-                r.rect(w / 2, h / 2 - 200, items.health_bar * 4, 25, 1, 0, 0);
-                r.rect(w / 2, h / 2 - 150, items.hunger_bar * 4, 25, 0, 1, 0);
-                r.rect(w / 2, h / 2 - 100, items.sanity_bar * 4, 25, 0, 0, 1);
-            }
-
-        }*/
     }
 
-    
+    constexpr EntityID MAX_SCAN = 5000;
+    for (EntityID e = 0; e < MAX_SCAN; ++e) {
+        if (auto* t = ecs_.getComponent<Transform>(e)) {
+            if (auto* img = ecs_.getComponent<ImageRenderer>(e)) {
+                if (!img->isVisible) continue;
+                if (img->textureID <= 0) continue;  // << guard: skip �white box� draws
 
-    // Example snippet you can drop right AFTER your existing textured background draw:
-    //auto view = ecs.view<Transform, ImageRenderer>();  // however your ECS exposes views
-    //for (auto [ent, t, img] : view) {
-    //    if (!img.isVisible) continue;
-    //    float px = t.position.x * w;
-    //    float py = t.position.y * h;
-    //    float pw = t.scale.x * w;
-    //    float ph = t.scale.y * h;
-    //   r.texturedTri(img.textureID, px, py, pw, ph); // same call you use for JSON entities
-    //}
+                if (auto* anim = ecs_.getComponent<SpriteAnimationComponent>(e)) {
+                    auto it = anim->animations.find(anim->currentAnim);
+                    if (it != anim->animations.end()) {
+                        const auto& def = it->second;
 
+                        int frameIndex = anim->currentFrame;
+                        int sheetColumns = anim->sheetColumns;
+                        int sheetRows = anim->sheetRows;
 
-        constexpr EntityID MAX_SCAN = 5000;
-        for (EntityID e = 0; e < MAX_SCAN; ++e) {
-            if (auto* t = ecs_.getComponent<Transform>(e)) {
-                if (auto* img = ecs_.getComponent<ImageRenderer>(e)) {
-                    if (!img->isVisible) continue;
-                    if (img->textureID <= 0) continue;  // << guard: skip �white box� draws
+                        float uPerFrame = 1.0f / float(sheetColumns);
+                        float vPerFrame = 1.0f / float(sheetRows);
 
-                    /*float px = t->position.x() * w;
-                    float py = t->position.y() * h;
-                    float pw = t->scale.x() * w;
-                    float ph = t->scale.y() * h;*/
+                        int col = frameIndex % sheetColumns;
+                        int row = frameIndex / sheetColumns;
 
-                    /*float px = t->position.x() * w;
-                    float py = t->position.y() * h;
-                    float pw = t->scale.x() * w;
-                    float ph = t->scale.y() * h;
+                        float u0 = col * uPerFrame;
+                        float v0 = row * vPerFrame;
+                        float u1 = u0 + uPerFrame;
+                        float v1 = v0 + vPerFrame;
 
-                    Cam2D_Apply(currentScene, px, py, pw, ph, w, h);*/
+                        float px = t->position.x() * w;
+                        float py = t->position.y() * h;
+                        float pw = t->scale.x() * w;
+                        float ph = t->scale.y() * h;
 
-                    if (auto* anim = ecs_.getComponent<SpriteAnimationComponent>(e)) {
-                        auto it = anim->animations.find(anim->currentAnim);
-                        if (it != anim->animations.end()) {
-                            const auto& def = it->second;
-
-                            //r.texturedTri(img->textureID, px, py, pw, ph);
-
-                            // Debug AABB for ECS entities (so B toggle still shows boxes)
-                            //if (Debug::Drawer::Instance().IsActive())
-                            //{
-                            //    AABB collider(Vector2D(px, py), Vector2D(pw, ph));
-                            //    Debug::Drawer::Instance().AddRect(
-                            //        collider.pos.x(), collider.pos.y(),
-                            //        collider.size.x(), collider.size.y(),
-                            //        0xFFFF00FF // yellow
-                            //    );
-                            //}
-
-                            int frameIndex = anim->currentFrame;
-                            int sheetColumns = anim->sheetColumns;
-                            int sheetRows = anim->sheetRows;
-
-                            float uPerFrame = 1.0f / float(sheetColumns);
-                            float vPerFrame = 1.0f / float(sheetRows);
-
-                            int col = frameIndex % sheetColumns;
-                            int row = frameIndex / sheetColumns;
-
-                            float u0 = col * uPerFrame;
-                            float v0 = row * vPerFrame;
-                            float u1 = u0 + uPerFrame;
-                            float v1 = v0 + vPerFrame;
-
-                            float px = t->position.x() * w;
-                            float py = t->position.y() * h;
-                            float pw = t->scale.x() * w;
-                            float ph = t->scale.y() * h;
-
-                            Cam2D_Apply(currentScene, px, py, pw, ph, w, h);
-                            r.drawSpriteUV(img->textureID, px, py, pw, ph, u0, v0, u1, v1);
-                        }
+                        Cam2D_Apply(currentScene, px, py, pw, ph, w, h);
+                        r.drawSpriteUV(img->textureID, px, py, pw, ph, u0, v0, u1, v1);
                     }
-                    //r.texturedTri(img->textureID, px, py, pw, ph);
                 }
             }
         }
+    }
 
     // entities (normalized ? pixels)
    // entities (normalized → pixels) — draw JSON **only** if there is NO ECS entity by the same name
@@ -449,7 +403,17 @@ void GameManager::render(Renderer& r, int w, int h) {
             r.texturedTri(di.tex, px, py, pw, ph);
         }
 
-        
+        if (di.is_dragging && !duplicate_item) {
+            duplicate_item = std::make_unique<DrawItem>(di);
+        }
+
+        if (duplicate_item) {
+            r.texturedTri(duplicate_item->tex, duplicate_item->x * w, duplicate_item->y * h, duplicate_item->w * w, duplicate_item->h * h);
+        }
+
+        //if (!input.isLeftMousePressed(window)) {
+        //    duplicate_item.reset(); //The unique_ptr releases ownership
+        //}
 
         if (Debug::Drawer::Instance().IsActive()) {
             AABB collider(Vector2D(px, py), Vector2D(pw, ph));

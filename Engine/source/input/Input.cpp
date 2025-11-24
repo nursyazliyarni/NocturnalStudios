@@ -111,6 +111,14 @@ Vector2D Input::GET_mouse_delta() {
 	return { mouse_pos[1] - mouse_pos[0] };
 }
 
+bool Input::isLeftMousePressed(GLFWwindow* window) {
+	return glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
+}
+
+bool Input::isLeftMouseReleased(GLFWwindow* window) {
+	return glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE;
+}
+
 std::vector<std::tuple<int, int, Input_action>>& Input::GET_keyboard() {
 	return keyboard_action;
 }
