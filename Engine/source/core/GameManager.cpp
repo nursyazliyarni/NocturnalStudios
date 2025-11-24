@@ -474,6 +474,7 @@ bool GameManager::handleClick(float nx, float ny) {
         }
         return true;
     }
+    return false;
 }
 void GameManager::startGame() {
     app = AppState::Playing;
