@@ -13,6 +13,9 @@
         Nur Syazliyarni (5%)
         - Added function to get current scene for level editor
 
+        Lau Xiang Yang (2%)
+        - Implemented pause and resume functionality in GameManager
+
     All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
 *------------------------------------------------------------------------------------------------*/
 
@@ -504,12 +507,22 @@ void GameManager::update(float dt,Renderer& renderer,TextureStore& tex) {
     animationSystem_.Update(fixedDt, ecs_, renderer, tex);
 }
 
+/**
+ * @brief Pauses the game, changing the application state to Paused.
+ * @param void
+ * @returns void
+ */
 void GameManager::pauseGame() {
     if (app == AppState::Playing) {
         app = AppState::Paused;
     }
 }
 
+/**
+ * @brief Resumes the game, changing the application state to Playing.
+ * @param void
+ * @returns void
+ */
 void GameManager::resumeGame() {
     if (app == AppState::Paused) {
         app = AppState::Playing;

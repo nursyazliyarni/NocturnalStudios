@@ -12,6 +12,9 @@
          Rishika Bimal Attodi (%)
         -State integration for the play and exit button and scene switching via keys
 
+        Lau Xiang Yang (2%)
+        - Implemented pause and resume functionality in GameManager
+
     All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
 *------------------------------------------------------------------------------------------------*/
 
@@ -93,8 +96,16 @@ public:
 
 	ECS& getECS() { return ecs_; }
     std::unique_ptr<DrawItem>& get_duplicate_item();
-
+    /**
+     * @brief Pauses the game, changing the application state to Paused.
+     * 
+     */
     void pauseGame();
+
+    /**
+     * @brief Resumes the game, changing the application state to Playing.
+     * 
+     */
     void resumeGame();
 
     // Camera controls (per scene)
