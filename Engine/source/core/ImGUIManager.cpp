@@ -1256,27 +1256,6 @@ void ImGuiManager::showAnimationEditorUI() {
 		ImGui::BeginDisabled();
 	}
 
-    // Spritesheet path input (for replacement)
-    static char sheetPath[256] = "assets/textures/";
-    ImGui::InputText("Spritesheet Path", sheetPath, IM_ARRAYSIZE(sheetPath));
-    if (ImGui::Button("Load / Apply Spritesheet")) {
-        if (sheetPath[0]) {
-            // Ensure path normalization similar to Prefab texture lookup
-            std::string p = sheetPath;
-            if (p.rfind("assets/", 0) != 0) p = "assets/" + p;
-            auto texID = resourceManager.getGLTextureFromFile(p);
-            if (texID) {
-                img->textureID = texID;
-                img->isVisible = true;
-            }
-        }
-    }
-    ImGui::Separator();
-
-    // Sheet layout
-    ImGui::DragInt("Columns", &anim->sheetColumns, 0.1f, 1, 256);
-    ImGui::DragInt("Rows",    &anim->sheetRows,    0.1f, 1, 256);
-
     // Current animation
     if (anim->currentAnim.empty() && !anim->animations.empty())
         anim->currentAnim = anim->animations.begin()->first;

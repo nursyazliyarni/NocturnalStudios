@@ -8,6 +8,7 @@ std::string Animal_Logic::to_string(const Animal_type& type) {
 	case Animal_type::Horse: return "horse";
 	case Animal_type::Seal: return "seal";
 	case Animal_type::Owl: return "owl";
+	default: return "unknown";
 	}
 }
 
