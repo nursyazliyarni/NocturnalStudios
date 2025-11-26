@@ -999,250 +999,287 @@ void ImGuiManager::showLogsOverlayUI() {
 }
 
 void ImGuiManager::showAssetsBrowserUI() {
+	bool isPlayMode = (m_editorMode == EditorMode::PLAY);
+
 	ImGui::TextColored(ImVec4(0.8f, 0.9f, 1.0f, 1.0f), "Assets Browser");
 	ImGui::Separator();
 
-	bool isPlayMode = (m_editorMode == EditorMode::PLAY);
-
-	// === SECTION 1: Import Controls (DISABLED IN PLAY MODE) ===
-	if (isPlayMode) {
-		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.6f, 0.2f, 1.0f));
-		ImGui::Text("Asset import disabled during play mode");
-		ImGui::PopStyleColor();
-		ImGui::Separator();
-		ImGui::BeginDisabled();
-	}
-
-	ImGui::Text("Import New Texture:");
-	static char newPath[256] = "assets/textures/";
-	ImGui::InputText("New Texture Path", newPath, IM_ARRAYSIZE(newPath));
-	ImGui::Spacing();
-
-	if (ImGui::Button("Import Texture"))
+	// "Folders" for each asset type
+	if (ImGui::BeginTabBar("AssetTypeTabs"))
 	{
-		std::string sourcePath = newPath;
-
-		if (sourcePath.empty())
+		// ============================================================
+		//  TEXTURE "FOLDER"
+		// ============================================================
+		if (ImGui::BeginTabItem("Textures"))
 		{
-			logger.error("[ImGui] No source path specified!");
-		}
-		else
-		{
-			try
-			{
-				std::filesystem::path destFolder = "assets/textures/";
-				std::filesystem::create_directories(destFolder);
-
-				std::filesystem::path src(sourcePath);
-				std::string filename = src.filename().string();
-				std::filesystem::path destPath = destFolder / filename;
-
-				std::filesystem::copy_file(src, destPath,
-					std::filesystem::copy_options::overwrite_existing);
-
-				std::string texKey = destPath.stem().string();
-				resourceManager.loadTexture(texKey, destPath.string());
-				resourceManager.getGLTextureFromFile(destPath.string());
-
-				logger.log("[ImGui] Imported new texture: " + destPath.string());
+			// === SECTION 1: Import Controls (DISABLED IN PLAY MODE) ===
+			if (isPlayMode) {
+				ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.6f, 0.2f, 1.0f));
+				ImGui::Text("Asset import disabled during play mode");
+				ImGui::PopStyleColor();
+				ImGui::Separator();
+				ImGui::BeginDisabled();
 			}
-			catch (const std::exception& e)
+
+			ImGui::Text("Import New Texture:");
+			static char newPath[256] = "assets/textures/";
+			ImGui::InputText("New Texture Path", newPath, IM_ARRAYSIZE(newPath));
+			ImGui::Spacing();
+
+			if (ImGui::Button("Import Texture"))
 			{
-				logger.error(std::string("[ImGui] Failed to import texture: ") + e.what());
-			}
-		}
+				std::string sourcePath = newPath;
 
-		newPath[0] = '\0';
-	}
-
-	ImGui::Spacing();
-	ImGui::Separator();
-	ImGui::Spacing();
-
-	if (ImGui::Button("Rescan assets/textures")) {
-		std::size_t added = resourceManager.reloadTexturesFromDirectory("assets/textures");
-		logger.log("[ImGui] Rescan complete. New textures added: " + std::to_string(added));
-	}
-	ImGui::SameLine();
-
-	if (ImGui::Button("Clear GL texture cache")) {
-		resourceManager.clearAllGLTexturesCache();
-	}
-
-	if (isPlayMode) {
-		ImGui::EndDisabled();  // ⭐ END SECTION 1
-	}
-
-	// === SECTION 2: Texture Display ===
-	ImGui::Text("Loaded Textures:");
-	ImGui::Separator();
-
-	static float thumbnailSize = 60.0f;
-	float panelWidth = ImGui::GetContentRegionAvail().x;
-	float padding = 10.0f;
-	float cellSize = thumbnailSize + padding;
-	int columnCount = (int)(panelWidth / cellSize);
-	if (columnCount < 1) columnCount = 1;
-
-	if (ImGui::BeginTable("TextureTable", columnCount, ImGuiTableFlags_SizingStretchSame))
-	{
-		auto& textures = resourceManager.getTextures();
-		int index = 0;
-
-		// === SECTION 3: Texture Application (DISABLED IN PLAY MODE) ===
-		if (isPlayMode) {
-			ImGui::BeginDisabled();
-		}
-
-		for (auto& [id, texFile] : textures)
-		{
-			const std::string& texName = texFile.getKey();
-			const std::string& texPath = texFile.getFilePath();
-
-			GLuint texID = resourceManager.getGLTextureFromFile(texPath);
-			if (texID == 0) continue;
-
-			ImGui::TableNextColumn();
-			ImGui::PushID(index++);
-
-			if (ImGui::ImageButton(
-				("##tex" + std::to_string(index)).c_str(),
-				(ImTextureID)(intptr_t)texID,
-				ImVec2(thumbnailSize, thumbnailSize)))
-			{
-				Scene* scene = gsm.getCurrentScene();
-				if (scene && selectedEntityType < scene->items.size())
+				if (sourcePath.empty())
 				{
-					scene->items[selectedEntityType].tex = texID;
-					logger.log("[ImGui] Applied texture: " + texName);
+					logger.error("[ImGui] No source path specified!");
 				}
+				else
+				{
+					try
+					{
+						std::filesystem::path destFolder = "assets/textures/";
+						std::filesystem::create_directories(destFolder);
+
+						std::filesystem::path src(sourcePath);
+						std::string filename = src.filename().string();
+						std::filesystem::path destPath = destFolder / filename;
+
+						std::filesystem::copy_file(src, destPath,
+							std::filesystem::copy_options::overwrite_existing);
+
+						std::string texKey = destPath.stem().string();
+						resourceManager.loadTexture(texKey, destPath.string());
+						resourceManager.getGLTextureFromFile(destPath.string());
+
+						logger.log("[ImGui] Imported new texture: " + destPath.string());
+					}
+					catch (const std::exception& e)
+					{
+						logger.error(std::string("[ImGui] Failed to import texture: ") + e.what());
+					}
+				}
+
+				newPath[0] = '\0';
 			}
 
-			ImGui::TextWrapped(texName.c_str());
-			ImGui::PopID();
+			ImGui::Spacing();
+			ImGui::Separator();
+			ImGui::Spacing();
+
+			if (ImGui::Button("Rescan assets/textures")) {
+				std::size_t added = resourceManager.reloadTexturesFromDirectory("assets/textures");
+				logger.log("[ImGui] Rescan complete. New textures added: " + std::to_string(added));
+			}
+			ImGui::SameLine();
+
+			if (ImGui::Button("Clear GL texture cache")) {
+				resourceManager.clearAllGLTexturesCache();
+			}
+
+			if (isPlayMode) {
+				ImGui::EndDisabled();  // ⭐ END SECTION 1
+			}
+
+			// === SECTION 2: Texture Display ===
+			ImGui::Text("Loaded Textures:");
+			ImGui::Separator();
+
+			static float thumbnailSize = 60.0f;
+			float panelWidth = ImGui::GetContentRegionAvail().x;
+			float padding = 10.0f;
+			float cellSize = thumbnailSize + padding;
+			int columnCount = (int)(panelWidth / cellSize);
+			if (columnCount < 1) columnCount = 1;
+
+			if (ImGui::BeginTable("TextureTable", columnCount, ImGuiTableFlags_SizingStretchSame))
+			{
+				auto& textures = resourceManager.getTextures();
+				int index = 0;
+
+				// === SECTION 3: Texture Application (DISABLED IN PLAY MODE) ===
+				if (isPlayMode) {
+					ImGui::BeginDisabled();
+				}
+
+				for (auto& [id, texFile] : textures)
+				{
+					const std::string& texName = texFile.getKey();
+					const std::string& texPath = texFile.getFilePath();
+
+					GLuint texID = resourceManager.getGLTextureFromFile(texPath);
+					if (texID == 0) continue;
+
+					ImGui::TableNextColumn();
+					ImGui::PushID(index++);
+
+					if (ImGui::ImageButton(
+						("##tex" + std::to_string(index)).c_str(),
+						(ImTextureID)(intptr_t)texID,
+						ImVec2(thumbnailSize, thumbnailSize)))
+					{
+						Scene* scene = gsm.getCurrentScene();
+						if (scene && selectedEntityType < scene->items.size())
+						{
+							scene->items[selectedEntityType].tex = texID;
+							logger.log("[ImGui] Applied texture: " + texName);
+						}
+					}
+
+					ImGui::TextWrapped(texName.c_str());
+					ImGui::PopID();
+				}
+
+				if (isPlayMode) {
+					ImGui::EndDisabled();  // ⭐ END SECTION 3
+				}
+
+				ImGui::EndTable();
+			}
+
+			ImGui::EndTabItem();
 		}
 
-		if (isPlayMode) {
-			ImGui::EndDisabled();  // ⭐ END SECTION 3
-		}
+		// ============================================================
+//  AUDIO "FOLDER"
+// ============================================================
+		if (ImGui::BeginTabItem("Audio"))
+		{
+			ImGui::Text("Audio Assets:");
+			ImGui::Separator();
 
-		ImGui::EndTable();
-	}
-	// === SECTION 4: Audio Browser ===
-	ImGui::Separator();
-	ImGui::Spacing();
-	ImGui::Text("Audio Assets:");
-	ImGui::Separator();
-
-	// Build lists of audio IDs and names
-	std::vector<ResourceID> audioIDs;
-	std::vector<std::string> audioNames;
-	audioIDs.reserve(resourceManager.getAudios().size());
-	audioNames.reserve(resourceManager.getAudios().size());
-
-	for (auto const& kv : resourceManager.getAudios()) {
-		audioIDs.push_back(kv.first);
-		audioNames.push_back(kv.second.getKey());
-	}
-
-	static int selectedAudioIndex = 0;
-
-	// Reloading / importing is disabled while the game is in PLAY mode
-	if (isPlayMode) {
-		ImGui::BeginDisabled();
-	}
-
-	if (ImGui::Button("Reload audio assets")) {
-		auto added = resourceManager.reloadAudiosFromDirectory("assets/audio");
-		if (added > 0) {
-			// Rebuild vectors after reload
-			audioIDs.clear();
-			audioNames.clear();
+			// Build lists of audio IDs and names
+			std::vector<ResourceID> audioIDs;
+			std::vector<std::string> audioNames;
 			audioIDs.reserve(resourceManager.getAudios().size());
 			audioNames.reserve(resourceManager.getAudios().size());
+
 			for (auto const& kv : resourceManager.getAudios()) {
 				audioIDs.push_back(kv.first);
 				audioNames.push_back(kv.second.getKey());
 			}
-			if (selectedAudioIndex >= (int)audioNames.size())
-				selectedAudioIndex = 0;
-		}
-	}
 
-	if (isPlayMode) {
-		ImGui::EndDisabled();
-	}
+			static int selectedAudioIndex = 0;
 
-	if (!audioNames.empty()) {
-		if (selectedAudioIndex >= (int)audioNames.size())
-			selectedAudioIndex = 0;
-
-		// Dropdown list of all audio files (the “browser”)
-		if (ImGui::BeginCombo("Audio Asset", audioNames[selectedAudioIndex].c_str())) {
-			for (int i = 0; i < (int)audioNames.size(); ++i) {
-				bool selected = (i == selectedAudioIndex);
-				if (ImGui::Selectable(audioNames[i].c_str(), selected)) {
-					selectedAudioIndex = i;
-				}
-				if (selected) ImGui::SetItemDefaultFocus();
+			// Reloading is disabled while the game is in PLAY mode
+			if (isPlayMode) {
+				ImGui::BeginDisabled();
 			}
-			ImGui::EndCombo();
-		}
 
-		ResourceID rid = audioIDs[selectedAudioIndex];
+			if (ImGui::Button("Reload audio assets")) {
+				auto added = resourceManager.reloadAudiosFromDirectory("assets/audio");
+				if (added > 0) {
+					// Rebuild vectors after reload
+					audioIDs.clear();
+					audioNames.clear();
+					audioIDs.reserve(resourceManager.getAudios().size());
+					audioNames.reserve(resourceManager.getAudios().size());
+					for (auto const& kv : resourceManager.getAudios()) {
+						audioIDs.push_back(kv.first);
+						audioNames.push_back(kv.second.getKey());
+					}
+					if (selectedAudioIndex >= (int)audioNames.size())
+						selectedAudioIndex = 0;
+				}
+			}
 
-		// Simple preview controls using your existing AudioSystem + activeInstances
-		if (ImGui::Button("Play")) {
-			auto it = activeInstances.find(rid);
-			std::optional<AudioInstanceID> opt;
+			if (isPlayMode) {
+				ImGui::EndDisabled();
+			}
 
-			if (it != activeInstances.end()) {
-				audioSystem.resumeSound(it->second);
+			if (!audioNames.empty()) {
+				if (selectedAudioIndex >= (int)audioNames.size())
+					selectedAudioIndex = 0;
+
+				ImGui::Text("Loaded audio files:");
+				ImGui::Separator();
+
+				// List-style view like Explorer: one name per row, scrollable
+				// Width: fill available; Height: 8–10 rows tall
+				ImVec2 listSize = ImVec2(-FLT_MIN, ImGui::GetTextLineHeightWithSpacing() * 10.0f);
+				if (ImGui::BeginListBox("##AudioList", listSize)) {
+					for (int i = 0; i < (int)audioNames.size(); ++i) {
+						bool isSelected = (i == selectedAudioIndex);
+
+						if (ImGui::Selectable(audioNames[i].c_str(), isSelected)) {
+							selectedAudioIndex = i;
+						}
+						if (isSelected) {
+							ImGui::SetItemDefaultFocus();
+						}
+					}
+					ImGui::EndListBox();
+				}
+
+				// --- controls for the currently selected item ---
+				ResourceID rid = audioIDs[selectedAudioIndex];
+
+				ImGui::Separator();
+				ImGui::Text("Selected: %s", audioNames[selectedAudioIndex].c_str());
+
+				if (ImGui::Button("Play")) {
+					auto it = activeInstances.find(rid);
+					std::optional<AudioInstanceID> opt;
+
+					if (it != activeInstances.end()) {
+						audioSystem.resumeSound(it->second);
+					}
+					else {
+						const std::string& name = audioNames[selectedAudioIndex];
+
+						if (name.find("BGM_") != std::string::npos) {
+							AudioData::IndividualAudioData data{};
+							data.resourceID = rid;
+							data.name = name;
+							data.loop = true;
+							data.group = AudioData::IndividualAudioData::Group::Music;
+							data.volume = audioSystem.getBGMVolume();
+							opt = audioSystem.createAudioInstance(data, INVALID_ENTITY_ID);
+						}
+						else if (name.find("SFX_") != std::string::npos) {
+							audioSystem.playSFX(rid); // one-shot SFX
+						}
+
+						if (opt) {
+							activeInstances[rid] = *opt;
+							audioSystem.resumeSound(*opt);
+						}
+					}
+				}
+
+				ImGui::SameLine();
+				if (ImGui::Button("Pause")) {
+					auto it = activeInstances.find(rid);
+					if (it != activeInstances.end())
+						audioSystem.pauseSound(it->second);
+				}
+
+				ImGui::SameLine();
+				if (ImGui::Button("Stop")) {
+					auto it = activeInstances.find(rid);
+					if (it != activeInstances.end()) {
+						//audioSystem.stopSound(it->second);
+						activeInstances.erase(it);
+					}
+				}
 			}
 			else {
-				// Decide BGM vs SFX by name (same logic you already used)
-				const std::string& name = audioNames[selectedAudioIndex];
-				if (name.find("BGM_") != std::string::npos) {
-					AudioData::IndividualAudioData data{};
-					data.resourceID = rid;
-					data.name = name;
-					data.loop = true;
-					data.group = AudioData::IndividualAudioData::Group::Music;
-					data.volume = audioSystem.getBGMVolume();
-					opt = audioSystem.createAudioInstance(data, INVALID_ENTITY_ID);
-				}
-				else if (name.find("SFX_") != std::string::npos) {
-					audioSystem.playSFX(rid);   // one-shot SFX
-				}
-
-				if (opt) {
-					activeInstances[rid] = *opt;
-					audioSystem.resumeSound(*opt); // instance starts paused
-				}
+				ImGui::TextDisabled("No audio assets loaded.");
 			}
+
+
+			ImGui::EndTabItem();
 		}
 
-		ImGui::SameLine();
-		if (ImGui::Button("Pause")) {
-			auto it = activeInstances.find(rid);
-			if (it != activeInstances.end())
-				audioSystem.pauseSound(it->second);
-		}
 
-		ImGui::SameLine();
-		if (ImGui::Button("Stop")) {
-			auto it = activeInstances.find(rid);
-			if (it != activeInstances.end()) {
-				//audioSystem.stopSound(it->second);
-				activeInstances.erase(it);
-			}
-		}
+		// ============================================================
+		//  (OPTIONAL) FUTURE "FOLDERS"
+		// ============================================================
+		// if (ImGui::BeginTabItem("Fonts")) { ... ImGui::EndTabItem(); }
+		// if (ImGui::BeginTabItem("Animations")) { ... ImGui::EndTabItem(); }
+
+		ImGui::EndTabBar();
 	}
-	else {
-		ImGui::TextDisabled("No audio assets loaded.");
-	}
-
-
 }
 
 void ImGuiManager::showBottomDockUI()
