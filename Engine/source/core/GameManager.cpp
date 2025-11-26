@@ -540,9 +540,6 @@ void GameManager::renderWithHUD(Renderer& r,
 }
 
 
-
-
-
 void GameManager :: imGUIlessRender(Renderer& r, Input& input, GLFWwindow* window, int w, int h) {
     r.initFBO(w, h);
     r.bindFBO();
