@@ -70,6 +70,7 @@ private:
 class GameManager {
 public:
     bool load(const char* prefabsJsonPath, const char* scenesJsonPath, TextureStore& tex);
+    bool saveScene(const char* scenesJsonPath);
 
     void requestScene(const std::string& name);
     const std::string& current() const { return currentScene; }

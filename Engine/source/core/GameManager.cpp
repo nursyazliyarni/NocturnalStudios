@@ -92,6 +92,9 @@ static std::string toAssetsPath(const std::string& p) {
 struct PrefabDef { float w = 0.2f, h = 0.2f, angle = 0.0f; };
 
 //  GameManager 
+bool GameManager::saveScene(const char* scenesJsonPath) {
+    return true;
+}
 bool GameManager::load(const char* prefabsPath, const char* scenesPath, TextureStore& tex) {
 
     app = AppState::Menu;   // lock number keys until Play is pressed

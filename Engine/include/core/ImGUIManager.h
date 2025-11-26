@@ -133,7 +133,7 @@ private:
 
 	ImVec2 vpMinWin{}, vpMaxWin{};
 
-	EditorMode m_editorMode = EditorMode::EDIT;
+	EditorMode m_editorMode = EditorMode::PLAY;
 	std::string m_savedSceneState;
 
 	int  m_hoveredItem = -1;

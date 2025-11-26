@@ -17,6 +17,19 @@
 #include "ECS/ECS_Component.h"
 #include "System/Audio_System.h"
 #include "ECS/ECS.h"
+
+
+	//  Texture lookup hook for sprite_path, GL texture id 
+	static std::function<int(const std::string&)> sTextureLokup;
+
+	// Safe fallback that compiles even if nobody sets sTextureLookup.
+	static int ResolveTextureIDPser(const char* p) {
+		if (!p || !*p) return 0;
+		if (sTextureLokup) return sTextureLokup(std::string{ p });
+		return 0; // not wired yet -> invisible sprite (isVisible=false)
+	}
+
+	
 extern AudioSystem* gAudioSystem;
 
 bool ComponentFactory::CreateFromName(EntityID entity, const std::string& name, const Json& j) {
@@ -29,11 +42,6 @@ bool ComponentFactory::CreateFromName(EntityID entity, const std::string& name, 
 	if (name == "ImageRenderer")
 	{
 		ecs.addComponent(entity, std::any_cast<ImageRenderer>(Create(name,j)));
-		return true;
-	}
-	if (name == "SpriteRenderer")
-	{
-		ecs.addComponent(entity, std::any_cast<SpriteRenderer>(Create(name,j)));
 		return true;
 	}
 	if (name == "CircleRenderer")
@@ -254,7 +262,8 @@ void ImageRenderer::FromJSON(const rapidjson::Value& json) {
 	RenderComponent::FromJSON(json);
 	const char* members[]{
 		"texture_id",//0
-		"image_path"//1
+		"image_path",//1
+		"sprite_path"
 	};
 	for (int i{}; i < 2; i++)
 	{
@@ -271,7 +280,15 @@ void ImageRenderer::FromJSON(const rapidjson::Value& json) {
 			case 1://isVisible
 				if (json[members[i]].IsString())
 				{
-					image_path = json[members[i]].GetString();
+					textureID = ResolveTextureIDPser(json[members[i]].GetString());
+					isVisible = (textureID > 0);
+				}
+				break;
+			case 2://isVisible
+				if (json[members[i]].IsString())
+				{
+					textureID = ResolveTextureIDPser(json[members[i]].GetString());
+					isVisible = (textureID > 0);
 				}
 				break;
 			}
@@ -281,17 +298,7 @@ void ImageRenderer::FromJSON(const rapidjson::Value& json) {
 
 void ImageRenderer::ToJSON(rapidjson::Value& json, rapidjson::Document::AllocatorType& allocator) const {}
 
-void SpriteRenderer::FromJSON(const rapidjson::Value& json) {
-	RenderComponent::FromJSON(json);
-	if (json.HasMember("sprite_path")&& json["sprite_path"].IsString())
-	{
-		
-			spritePath = json["sprite_path"].GetString();
-		
-	}
-}
 
-void SpriteRenderer::ToJSON(rapidjson::Value& json, rapidjson::Document::AllocatorType& allocator) const {}
 
 void CircleRenderer::FromJSON(const rapidjson::Value& json) {
 	RenderComponent::FromJSON(json);

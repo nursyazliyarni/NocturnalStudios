@@ -39,7 +39,6 @@ ECS::ECS() {
 	// Register all components here
 	registerComponent<Transform>();
 	registerComponent<ImageRenderer>();
-	registerComponent<SpriteRenderer>();
 	registerComponent<SpriteAnimationComponent>();
 	registerComponent<CircleRenderer>();
 	registerComponent<RectRenderer>();
@@ -53,7 +52,6 @@ ECS::ECS() {
 
 	ComponentFactory::Register<Transform>("Transform");
 	ComponentFactory::Register<ImageRenderer>("ImageRenderer");
-	ComponentFactory::Register<SpriteRenderer>("SpriteRenderer");
 	ComponentFactory::Register<CircleRenderer>("CircleRenderer");
 	ComponentFactory::Register<RectRenderer>("RectRenderer");
 	ComponentFactory::Register<AnimalBehavior>("AnimalBehavior");
@@ -369,6 +367,8 @@ bool ECS::removeComponent(EntityID entityID, ComponentID componentID) {
 	reUpdateMetadata();
 	return true;
 }
+
+void ECS::emptyAllEntities(){}
 
 /**
  * @brief Find the ComponentData entry for a component ID (const).
