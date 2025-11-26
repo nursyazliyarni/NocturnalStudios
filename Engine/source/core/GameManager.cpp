@@ -428,10 +428,121 @@ void GameManager::render(Renderer& r, Input& input, GLFWwindow* window, int w, i
             );
         }
     }
-
-
-
 }
+
+
+
+
+void GameManager::renderWithHUD(Renderer& r,
+    Input& input,
+    GLFWwindow* window,
+    int w, int h,
+    double dt,
+    ResourceManager& resourceManager,
+    bool showFPS)
+{
+    // 1) First, render the usual scene
+    render(r, input, window, w, h);
+
+    // 2) Now overlay HUD text into the same render target
+    r.setTextProjection(w, h); // bottom-left origin for text shader
+
+    // Cache fonts the first time we’re called
+    static std::optional<ResourceID> s_fontTitle;
+    static std::optional<ResourceID> s_fontFPS;
+
+    if (!s_fontTitle) {
+        s_fontTitle = resourceManager.findResource<Font>("NanumBrushScript-Regular");
+    }
+    if (!s_fontFPS) {
+        s_fontFPS = resourceManager.findResource<Font>("PAPYRUS");
+    }
+
+    // --- Responsive scaling based on viewport size ---
+    // Pretend our "reference" resolution is 1280x720
+    const float refW = 1280.0f;
+    const float refH = 720.0f;
+
+    float sx = static_cast<float>(w) / refW;
+    float sy = static_cast<float>(h) / refH;
+
+    // Use the smaller scale so text doesn't overflow in one direction
+    float textScale = std::min(sx, sy);
+
+    // Clamp so it doesn’t get insanely small/huge
+    if (textScale < 0.4f) textScale = 0.4f;
+    if (textScale > 2.5f) textScale = 2.5f;
+
+    // If viewport is super tiny, just skip HUD entirely
+    if (w < 150 || h < 120) {
+        return;
+    }
+
+    // --- Title (Font A) ---
+    if (s_fontTitle) {
+        const Font& f = resourceManager.getFont(*s_fontTitle);
+
+        // Keep margins as percentage of viewport → stays nicely anchored
+        float marginX = 0.02f * w;
+        float marginTop = 0.08f * h;
+
+        float titleX = marginX;
+        float titleY = h - marginTop;
+
+        r.drawText(
+            f,
+            "Nocturnal Studio Engine",
+            titleX,
+            titleY,
+            textScale,
+            glm::vec3(1.0f, 0.0f, 0.2f) // reddish
+        );
+    }
+
+    // --- FPS (Font B) ---
+    if (showFPS && s_fontFPS) {
+        // If viewport height is small, we show FPS but tuck it closer
+        bool compact = (h < 300);
+
+        const Font& f2 = resourceManager.getFont(*s_fontFPS);
+
+        static double accumTime = 0.0;
+        static double fpsDisplay = 0.0;
+
+        // avoid division by zero
+        if (dt <= 0.0) dt = 1e-6;
+
+        accumTime += dt;
+        if (accumTime >= 1.0) {
+            fpsDisplay = 1.0 / dt;
+            accumTime = 0.0;
+        }
+
+        int fpsInt = static_cast<int>(std::round(fpsDisplay));
+        std::string fpsText = "FPS: " + std::to_string(fpsInt);
+
+        float marginX = 0.02f * w;
+        float offsetY = compact ? 0.12f : 0.15f; // pull closer when small
+        float y = h - offsetY * h;
+
+        float fpsScale = textScale * 0.6f;   // 60% of title size
+        if (fpsScale < 0.25f) fpsScale = 0.25f; // clamp so it doesn't vanish
+
+        r.drawText(
+            f2,
+            fpsText,
+            marginX,
+            y,
+            fpsScale,
+            glm::vec3(0.2f, 0.8f, 1.0f) // bluish
+        );
+    }
+}
+
+
+
+
+
 void GameManager :: imGUIlessRender(Renderer& r, Input& input, GLFWwindow* window, int w, int h) {
     r.initFBO(w, h);
     r.bindFBO();
