@@ -285,6 +285,18 @@ void ImGuiManager::showViewportWindowUI() {
 	const int vw = (int)std::max(1.0f, avail.x);
 	const int vh = (int)std::max(1.0f, avail.y);
 
+
+	static bool prevF = false;
+	int fState = glfwGetKey(mainWindow.handle(), GLFW_KEY_F);
+	bool currF = (fState == GLFW_PRESS);
+
+	// on key DOWN edge: toggle
+	if (currF && !prevF) {
+		m_showFPS = !m_showFPS;
+	}
+	prevF = currF;
+
+
 	// Logic timing (animal state update)
 	logicTime = TimeUtils::MeasureSeconds([&]() {
 		logic.check_animal_status(gsm);
@@ -321,18 +333,67 @@ void ImGuiManager::showViewportWindowUI() {
 		if (!s_fontA) s_fontA = resourceManager.findResource<Font>("NanumBrushScript-Regular");
 		if (!s_fontB) s_fontB = resourceManager.findResource<Font>("PAPYRUS");
 
+		// --- common scale for all viewport text ---
+		float baseHeight = 720.0f;                    // reference resolution
+		float textScale = static_cast<float>(vh) / baseHeight;
+		if (textScale < 0.5f) textScale = 0.5f;
+		if (textScale > 2.0f) textScale = 2.0f;
+
+		// --- Title (Font A) ---
 		if (s_fontA) {
 			const Font& f = resourceManager.getFont(*s_fontA);
-			renderer.drawText(f, "Nocturnal Studio Engine",
-							 25.0f, vh - 50.0f, // near top (BL origin)
-							 1.0f, glm::vec3(1.0f, 0.0f, 0.2f));
+
+			// e.g. 8% down from top, 2% from left
+			float titleX = 0.02f * vw;
+			float titleY = vh - 0.08f * vh;
+
+			renderer.drawText(
+				f,
+				"Nocturnal Studio Engine",
+				titleX,
+				titleY,
+				textScale,
+				glm::vec3(1.0f, 0.0f, 0.2f)
+			);
 		}
-		if (s_fontB) {
+
+		//  FPS (Font B) 
+		if (m_showFPS && s_fontB) {
 			const Font& f2 = resourceManager.getFont(*s_fontB);
-			renderer.drawText(f2, "Sample Font: Papyrus",
-							 25.0f, vh - 100.0f, // near top (BL origin)
-							 1.0f, glm::vec3(0.2f, 0.8f, 1.0f));
+
+			static double accumTime = 0.0;
+			static double fpsDisplay = 0.0;
+
+			double dt = deltaTime;
+			if (dt <= 0.0) dt = 1e-6;
+
+			accumTime += dt;
+			if (accumTime >= 1.0) {
+				fpsDisplay = 1.0 / dt;
+				accumTime = 0.0;
+			}
+
+			float baseHeight = 720.0f;
+			float textScale = static_cast<float>(vh) / baseHeight;
+			if (textScale < 0.5f) textScale = 0.5f;
+			if (textScale > 2.0f) textScale = 2.0f;
+
+			int fpsInt = static_cast<int>(std::round(fpsDisplay));
+			std::string fpsText = "FPS: " + std::to_string(fpsInt);
+
+			float x = 0.02f * vw;
+			float y = vh - 0.15f * vh;
+
+			renderer.drawText(
+				f2,
+				fpsText,
+				x, y,
+				textScale,
+				glm::vec3(0.2f, 0.8f, 1.0f)
+			);
 		}
+
+
 
 		// Debugging Drawer //
 		static bool printed = false;
