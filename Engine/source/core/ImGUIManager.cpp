@@ -285,6 +285,18 @@ void ImGuiManager::showViewportWindowUI() {
 	const int vw = (int)std::max(1.0f, avail.x);
 	const int vh = (int)std::max(1.0f, avail.y);
 
+
+	static bool prevF = false;
+	int fState = glfwGetKey(mainWindow.handle(), GLFW_KEY_F);
+	bool currF = (fState == GLFW_PRESS);
+
+	// on key DOWN edge: toggle
+	if (currF && !prevF) {
+		m_showFPS = !m_showFPS;
+	}
+	prevF = currF;
+
+
 	// Logic timing (animal state update)
 	logicTime = TimeUtils::MeasureSeconds([&]() {
 		logic.check_animal_status(gsm);
@@ -321,18 +333,67 @@ void ImGuiManager::showViewportWindowUI() {
 		if (!s_fontA) s_fontA = resourceManager.findResource<Font>("NanumBrushScript-Regular");
 		if (!s_fontB) s_fontB = resourceManager.findResource<Font>("PAPYRUS");
 
+		// --- common scale for all viewport text ---
+		float baseHeight = 720.0f;                    // reference resolution
+		float textScale = static_cast<float>(vh) / baseHeight;
+		if (textScale < 0.5f) textScale = 0.5f;
+		if (textScale > 2.0f) textScale = 2.0f;
+
+		// --- Title (Font A) ---
 		if (s_fontA) {
 			const Font& f = resourceManager.getFont(*s_fontA);
-			renderer.drawText(f, "Nocturnal Studio Engine",
-							 25.0f, vh - 50.0f, // near top (BL origin)
-							 1.0f, glm::vec3(1.0f, 0.0f, 0.2f));
+
+			// e.g. 8% down from top, 2% from left
+			float titleX = 0.02f * vw;
+			float titleY = vh - 0.08f * vh;
+
+			renderer.drawText(
+				f,
+				"Nocturnal Studio Engine",
+				titleX,
+				titleY,
+				textScale,
+				glm::vec3(1.0f, 0.0f, 0.2f)
+			);
 		}
-		if (s_fontB) {
+
+		//  FPS (Font B) 
+		if (m_showFPS && s_fontB) {
 			const Font& f2 = resourceManager.getFont(*s_fontB);
-			renderer.drawText(f2, "Sample Font: Papyrus",
-							 25.0f, vh - 100.0f, // near top (BL origin)
-							 1.0f, glm::vec3(0.2f, 0.8f, 1.0f));
+
+			static double accumTime = 0.0;
+			static double fpsDisplay = 0.0;
+
+			double dt = deltaTime;
+			if (dt <= 0.0) dt = 1e-6;
+
+			accumTime += dt;
+			if (accumTime >= 1.0) {
+				fpsDisplay = 1.0 / dt;
+				accumTime = 0.0;
+			}
+
+			float baseHeight = 720.0f;
+			float textScale = static_cast<float>(vh) / baseHeight;
+			if (textScale < 0.5f) textScale = 0.5f;
+			if (textScale > 2.0f) textScale = 2.0f;
+
+			int fpsInt = static_cast<int>(std::round(fpsDisplay));
+			std::string fpsText = "FPS: " + std::to_string(fpsInt);
+
+			float x = 0.02f * vw;
+			float y = vh - 0.15f * vh;
+
+			renderer.drawText(
+				f2,
+				fpsText,
+				x, y,
+				textScale,
+				glm::vec3(0.2f, 0.8f, 1.0f)
+			);
 		}
+
+
 
 		// Debugging Drawer //
 		static bool printed = false;
@@ -481,7 +542,8 @@ void ImGuiManager::showEntityListUI(/* Maybe an enum of paramEntityType, Maybe a
 	constexpr float height = 300.0f;
 
 	ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDecoration |
-		ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
+		ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | 
+		ImGuiWindowFlags_NoNav | ImGuiWindowFlags_AlwaysVerticalScrollbar;;
 
 	// Position the overlay at the top-right corner of the window, below performance overlay
 	/*ImVec2 windowTopRightPos = { windowBottomRight.x - width, windowTopLeft.y + 250.0f };
@@ -511,6 +573,7 @@ void ImGuiManager::showEntityListUI(/* Maybe an enum of paramEntityType, Maybe a
 	ImGui::SameLine();
 	if (ImGui::Button("+")) selectedEntityType++;
 
+	/*
 	//disable clone/delete in play mode
 	if (isPlayMode) {
 		ImGui::BeginDisabled();
@@ -539,7 +602,7 @@ void ImGuiManager::showEntityListUI(/* Maybe an enum of paramEntityType, Maybe a
 	if (isPlayMode) {
 		ImGui::EndDisabled();
 	}
-
+	*/
 	// --- build vectors for combo display (cheap, rebuild each frame) ---
 	std::vector<ResourceID> audioIDs;
 	std::vector<std::string> audioNames;
@@ -969,6 +1032,7 @@ void ImGuiManager::showLogsOverlayUI() {
 	constexpr float height = 200.0f;
 
 	ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoResize;
+	//ImGuiWindowFlags_AlwaysVerticalScrollbar;
 
 	// Position the overlay at the bottom-center of the window
     /*ImVec2 initialPos = { (windowTopLeft.x + windowBottomRight.x) / 2, windowBottomRight.y };
@@ -1001,131 +1065,338 @@ void ImGuiManager::showAssetsBrowserUI() {
 
 	bool isPlayMode = (m_editorMode == EditorMode::PLAY);
 
-	// === SECTION 1: Import Controls (DISABLED IN PLAY MODE) ===
-	if (isPlayMode) {
-		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.6f, 0.2f, 1.0f));
-		ImGui::Text("Asset import disabled during play mode");
-		ImGui::PopStyleColor();
-		ImGui::Separator();
-		ImGui::BeginDisabled();
-	}
-
-	ImGui::Text("Import New Texture:");
-	static char newPath[256] = "assets/textures/";
-	ImGui::InputText("New Texture Path", newPath, IM_ARRAYSIZE(newPath));
-	ImGui::Spacing();
-
-	if (ImGui::Button("Import Texture"))
-	{
-		std::string sourcePath = newPath;
-
-		if (sourcePath.empty())
+	// Small helper to list files in a folder (used by fonts/levels/prefabs/scenes/shaders)
+	auto drawFolderFileList = [&](const char* debugName,
+		const char* folderPath,
+		int& selectedIdx)
 		{
-			logger.error("[ImGui] No source path specified!");
-		}
-		else
-		{
-			try
-			{
-				std::filesystem::path destFolder = "assets/textures/";
-				std::filesystem::create_directories(destFolder);
+			ImGui::Text("%s (%s)", debugName, folderPath);
+			ImGui::Separator();
 
-				std::filesystem::path src(sourcePath);
-				std::string filename = src.filename().string();
-				std::filesystem::path destPath = destFolder / filename;
-
-				std::filesystem::copy_file(src, destPath,
-					std::filesystem::copy_options::overwrite_existing);
-
-				std::string texKey = destPath.stem().string();
-				resourceManager.loadTexture(texKey, destPath.string());
-				resourceManager.getGLTextureFromFile(destPath.string());
-
-				logger.log("[ImGui] Imported new texture: " + destPath.string());
-			}
-			catch (const std::exception& e)
-			{
-				logger.error(std::string("[ImGui] Failed to import texture: ") + e.what());
-			}
-		}
-
-		newPath[0] = '\0';
-	}
-
-	ImGui::Spacing();
-	ImGui::Separator();
-	ImGui::Spacing();
-
-	if (ImGui::Button("Rescan assets/textures")) {
-		std::size_t added = resourceManager.reloadTexturesFromDirectory("assets/textures");
-		logger.log("[ImGui] Rescan complete. New textures added: " + std::to_string(added));
-	}
-	ImGui::SameLine();
-
-	if (ImGui::Button("Clear GL texture cache")) {
-		resourceManager.clearAllGLTexturesCache();
-	}
-
-	if (isPlayMode) {
-		ImGui::EndDisabled();  // ⭐ END SECTION 1
-	}
-
-	// === SECTION 2: Texture Display ===
-	ImGui::Text("Loaded Textures:");
-	ImGui::Separator();
-
-	static float thumbnailSize = 60.0f;
-	float panelWidth = ImGui::GetContentRegionAvail().x;
-	float padding = 10.0f;
-	float cellSize = thumbnailSize + padding;
-	int columnCount = (int)(panelWidth / cellSize);
-	if (columnCount < 1) columnCount = 1;
-
-	if (ImGui::BeginTable("TextureTable", columnCount, ImGuiTableFlags_SizingStretchSame))
-	{
-		auto& textures = resourceManager.getTextures();
-		int index = 0;
-
-		// === SECTION 3: Texture Application (DISABLED IN PLAY MODE) ===
-		if (isPlayMode) {
-			ImGui::BeginDisabled();
-		}
-
-		for (auto& [id, texFile] : textures)
-		{
-			const std::string& texName = texFile.getKey();
-			const std::string& texPath = texFile.getFilePath();
-
-			GLuint texID = resourceManager.getGLTextureFromFile(texPath);
-			if (texID == 0) continue;
-
-			ImGui::TableNextColumn();
-			ImGui::PushID(index++);
-
-			if (ImGui::ImageButton(
-				("##tex" + std::to_string(index)).c_str(),
-				(ImTextureID)(intptr_t)texID,
-				ImVec2(thumbnailSize, thumbnailSize)))
-			{
-				Scene* scene = gsm.getCurrentScene();
-				if (scene && selectedEntityType < scene->items.size())
-				{
-					scene->items[selectedEntityType].tex = texID;
-					logger.log("[ImGui] Applied texture: " + texName);
+			std::vector<std::string> files;
+			if (std::filesystem::exists(folderPath)) {
+				for (auto const& entry : std::filesystem::directory_iterator(folderPath)) {
+					if (!entry.is_regular_file()) continue;
+					files.push_back(entry.path().filename().string());
 				}
 			}
 
-			ImGui::TextWrapped(texName.c_str());
-			ImGui::PopID();
+			if (files.empty()) {
+				ImGui::TextDisabled("No files found in this folder.");
+				return;
+			}
+
+			if (selectedIdx < 0 || selectedIdx >= (int)files.size())
+				selectedIdx = 0;
+
+			ImVec2 listSize(-FLT_MIN, ImGui::GetTextLineHeightWithSpacing() * 10.0f);
+			std::string id = "##";
+			id += debugName;
+			id += "List";
+
+			if (ImGui::BeginListBox(id.c_str(), listSize)) {
+				for (int i = 0; i < (int)files.size(); ++i) {
+					bool isSelected = (i == selectedIdx);
+					if (ImGui::Selectable(files[i].c_str(), isSelected)) {
+						selectedIdx = i;
+					}
+					if (isSelected)
+						ImGui::SetItemDefaultFocus();
+				}
+				ImGui::EndListBox();
+			}
+		};
+
+	if (ImGui::BeginTabBar("AssetTypeTabs"))
+	{
+		// ============================================================
+		//  TEXTURES
+		// ============================================================
+		if (ImGui::BeginTabItem("Textures"))
+		{
+			// === SECTION 1: Import Controls (DISABLED IN PLAY MODE) ===
+			if (isPlayMode) {
+				ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.6f, 0.2f, 1.0f));
+				ImGui::Text("Asset import disabled during play mode");
+				ImGui::PopStyleColor();
+				ImGui::Separator();
+				ImGui::BeginDisabled();
+			}
+
+			ImGui::Text("Import New Texture:");
+			static char newPath[256] = "assets/textures/";
+			ImGui::InputText("New Texture Path", newPath, IM_ARRAYSIZE(newPath));
+			ImGui::Spacing();
+
+			if (ImGui::Button("Import Texture"))
+			{
+				std::string sourcePath = newPath;
+
+				if (sourcePath.empty())
+				{
+					logger.error("[ImGui] No source path specified!");
+				}
+				else
+				{
+					try
+					{
+						std::filesystem::path destFolder = "assets/textures/";
+						std::filesystem::create_directories(destFolder);
+
+						std::filesystem::path src(sourcePath);
+						std::string filename = src.filename().string();
+						std::filesystem::path destPath = destFolder / filename;
+
+						std::filesystem::copy_file(src, destPath,
+							std::filesystem::copy_options::overwrite_existing);
+
+						std::string texKey = destPath.stem().string();
+						resourceManager.loadTexture(texKey, destPath.string());
+						resourceManager.getGLTextureFromFile(destPath.string());
+
+						logger.log("[ImGui] Imported new texture: " + destPath.string());
+					}
+					catch (const std::exception& e)
+					{
+						logger.error(std::string("[ImGui] Failed to import texture: ") + e.what());
+					}
+				}
+
+				newPath[0] = '\0';
+			}
+
+			ImGui::Spacing();
+			ImGui::Separator();
+			ImGui::Spacing();
+
+			if (ImGui::Button("Rescan assets/textures")) {
+				std::size_t added = resourceManager.reloadTexturesFromDirectory("assets/textures");
+				logger.log("[ImGui] Rescan complete. New textures added: " + std::to_string(added));
+			}
+			ImGui::SameLine();
+
+			if (ImGui::Button("Clear GL texture cache")) {
+				resourceManager.clearAllGLTexturesCache();
+			}
+
+			if (isPlayMode) {
+				ImGui::EndDisabled();  // END SECTION 1
+			}
+
+			// === SECTION 2: Texture Display ===
+			ImGui::Text("Loaded Textures:");
+			ImGui::Separator();
+
+			static float thumbnailSize = 60.0f;
+			float panelWidth = ImGui::GetContentRegionAvail().x;
+			float padding = 10.0f;
+			float cellSize = thumbnailSize + padding;
+			int columnCount = (int)(panelWidth / cellSize);
+			if (columnCount < 1) columnCount = 1;
+
+			if (ImGui::BeginTable("TextureTable", columnCount, ImGuiTableFlags_SizingStretchSame))
+			{
+				auto& textures = resourceManager.getTextures();
+				int index = 0;
+
+				if (isPlayMode) {
+					ImGui::BeginDisabled();
+				}
+
+				for (auto& [id, texFile] : textures)
+				{
+					const std::string& texName = texFile.getKey();
+					const std::string& texPath = texFile.getFilePath();
+
+					GLuint texID = resourceManager.getGLTextureFromFile(texPath);
+					if (texID == 0) continue;
+
+					ImGui::TableNextColumn();
+					ImGui::PushID(index++);
+
+					if (ImGui::ImageButton(
+						("##tex" + std::to_string(index)).c_str(),
+						(ImTextureID)(intptr_t)texID,
+						ImVec2(thumbnailSize, thumbnailSize)))
+					{
+						Scene* scene = gsm.getCurrentScene();
+						if (scene && selectedEntityType < scene->items.size())
+						{
+							scene->items[selectedEntityType].tex = texID;
+							logger.log("[ImGui] Applied texture: " + texName);
+						}
+					}
+
+					ImGui::TextWrapped(texName.c_str());
+					ImGui::PopID();
+				}
+
+				if (isPlayMode) {
+					ImGui::EndDisabled();
+				}
+
+				ImGui::EndTable();
+			}
+
+			ImGui::EndTabItem();
 		}
 
-		if (isPlayMode) {
-			ImGui::EndDisabled();  // ⭐ END SECTION 3
+		// ============================================================
+		//  AUDIO
+		// ============================================================
+		if (ImGui::BeginTabItem("Audio"))
+		{
+			ImGui::Text("Audio Assets:");
+			ImGui::Separator();
+
+			std::vector<ResourceID> audioIDs;
+			std::vector<std::string> audioNames;
+			audioIDs.reserve(resourceManager.getAudios().size());
+			audioNames.reserve(resourceManager.getAudios().size());
+
+			for (auto const& kv : resourceManager.getAudios()) {
+				audioIDs.push_back(kv.first);
+				audioNames.push_back(kv.second.getKey());
+			}
+
+			static int selectedAudioIndex = 0;
+
+			if (isPlayMode) {
+				ImGui::BeginDisabled();
+			}
+
+			if (ImGui::Button("Reload audio assets")) {
+				auto added = resourceManager.reloadAudiosFromDirectory("assets/audio");
+				if (added > 0) {
+					audioIDs.clear();
+					audioNames.clear();
+					audioIDs.reserve(resourceManager.getAudios().size());
+					audioNames.reserve(resourceManager.getAudios().size());
+					for (auto const& kv : resourceManager.getAudios()) {
+						audioIDs.push_back(kv.first);
+						audioNames.push_back(kv.second.getKey());
+					}
+					if (selectedAudioIndex >= (int)audioNames.size())
+						selectedAudioIndex = 0;
+				}
+			}
+
+			if (isPlayMode) {
+				ImGui::EndDisabled();
+			}
+
+			if (!audioNames.empty()) {
+				if (selectedAudioIndex >= (int)audioNames.size())
+					selectedAudioIndex = 0;
+
+				ImVec2 listSize(-FLT_MIN, ImGui::GetTextLineHeightWithSpacing() * 10.0f);
+				if (ImGui::BeginListBox("##AudioList", listSize)) {
+					for (int i = 0; i < (int)audioNames.size(); ++i) {
+						bool isSelected = (i == selectedAudioIndex);
+						if (ImGui::Selectable(audioNames[i].c_str(), isSelected)) {
+							selectedAudioIndex = i;
+						}
+						if (isSelected)
+							ImGui::SetItemDefaultFocus();
+					}
+					ImGui::EndListBox();
+				}
+
+				ResourceID rid = audioIDs[selectedAudioIndex];
+
+				ImGui::Separator();
+				ImGui::Text("Selected: %s", audioNames[selectedAudioIndex].c_str());
+
+				if (ImGui::Button("Play")) {
+					auto it = activeInstances.find(rid);
+					std::optional<AudioInstanceID> opt;
+
+					if (it != activeInstances.end()) {
+						audioSystem.resumeSound(it->second);
+					}
+					else {
+						const std::string& name = audioNames[selectedAudioIndex];
+						if (name.find("BGM_") != std::string::npos) {
+							AudioData::IndividualAudioData data{};
+							data.resourceID = rid;
+							data.name = name;
+							data.loop = true;
+							data.group = AudioData::IndividualAudioData::Group::Music;
+							data.volume = audioSystem.getBGMVolume();
+							opt = audioSystem.createAudioInstance(data, INVALID_ENTITY_ID);
+						}
+						else if (name.find("SFX_") != std::string::npos) {
+							audioSystem.playSFX(rid);
+						}
+
+						if (opt) {
+							activeInstances[rid] = *opt;
+							audioSystem.resumeSound(*opt);
+						}
+					}
+				}
+
+				ImGui::SameLine();
+				if (ImGui::Button("Pause")) {
+					auto it = activeInstances.find(rid);
+					if (it != activeInstances.end())
+						audioSystem.pauseSound(it->second);
+				}
+
+				ImGui::SameLine();
+				if (ImGui::Button("Stop")) {
+					auto it = activeInstances.find(rid);
+					if (it != activeInstances.end()) {
+						//audioSystem.stopSound(it->second);
+						activeInstances.erase(it);
+					}
+				}
+			}
+			else {
+				ImGui::TextDisabled("No audio assets loaded.");
+			}
+
+			ImGui::EndTabItem();
 		}
 
-		ImGui::EndTable();
+		// ============================================================
+		//  FONTS / LEVELS / PREFABS / SCENES / SHADERS
+		//  (directory listing only for now)
+		// ============================================================
+		if (ImGui::BeginTabItem("Fonts")) {
+			static int fontIdx = -1;
+			drawFolderFileList("Fonts", "assets/fonts", fontIdx);
+			ImGui::EndTabItem();
+		}
+
+		if (ImGui::BeginTabItem("Levels")) {
+			static int levelIdx = -1;
+			drawFolderFileList("Levels", "assets/levels", levelIdx);
+			ImGui::EndTabItem();
+		}
+
+		if (ImGui::BeginTabItem("Prefabs")) {
+			static int prefabIdx = -1;
+			drawFolderFileList("Prefabs", "assets/prefabs", prefabIdx);
+			ImGui::EndTabItem();
+		}
+
+		if (ImGui::BeginTabItem("Scenes")) {
+			static int sceneIdx = -1;
+			drawFolderFileList("Scenes", "assets/scenes", sceneIdx);
+			ImGui::EndTabItem();
+		}
+
+		if (ImGui::BeginTabItem("Shaders")) {
+			static int shaderIdx = -1;
+			drawFolderFileList("Shaders", "assets/shaders", shaderIdx);
+			ImGui::EndTabItem();
+		}
+
+		ImGui::EndTabBar();
 	}
 }
+
 
 void ImGuiManager::showBottomDockUI()
 {
@@ -1154,7 +1425,8 @@ void ImGuiManager::showBottomDockUI()
 	ImGuiWindowFlags flags =
 		ImGuiWindowFlags_NoSavedSettings |
 		ImGuiWindowFlags_NoCollapse |
-		ImGuiWindowFlags_NoResize;
+		ImGuiWindowFlags_NoResize |
+		ImGuiWindowFlags_AlwaysVerticalScrollbar;
 
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(8, 8));
 	ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(4, 4));
@@ -1461,46 +1733,70 @@ void ImGuiManager::createDockspace() {
 }
 
 void ImGuiManager::setupInitialDockingLayout() {
-	//  Wait a few frames to ensure dockspace and windows are created
+	// wait a couple frames so dockspace exists
 	static int frameCount = 0;
 	if (frameCount < 2) {
-		frameCount++;
+		++frameCount;
 		return;
 	}
 
-	if (m_dockingLayoutInitialized) return;
+	if (m_dockingLayoutInitialized)
+		return;
 
 	ImGuiID dockspace = ImGui::GetID("NocturnalStudioDockspace");
 
-	// Clear and rebuild layout
+	// fresh dockspace
 	ImGui::DockBuilderRemoveNode(dockspace);
 	ImGui::DockBuilderAddNode(dockspace, ImGuiDockNodeFlags_DockSpace);
 	ImGui::DockBuilderSetNodeSize(dockspace, ImGui::GetMainViewport()->Size);
 
-	// Split the dockspace into regions
-	ImGuiID center = dockspace;
-	ImGuiID right = ImGui::DockBuilderSplitNode(center, ImGuiDir_Right, 0.25f, nullptr, &center);
-	ImGuiID bottom = ImGui::DockBuilderSplitNode(center, ImGuiDir_Down, 0.25f, nullptr, &center);
+	ImGuiID dock_main = dockspace;
+	ImGuiID dock_bottom = 0;
+	ImGuiID dock_left = 0;
+	ImGuiID dock_right = 0;
 
-	ImGuiID right_lower;
-	ImGuiID right_upper = ImGui::DockBuilderSplitNode(right, ImGuiDir_Up, 0.33f, nullptr, &right_lower);
+	// 1) Split full dockspace into TOP and BOTTOM (bottom = full-width editor dock)
+	dock_bottom = ImGui::DockBuilderSplitNode(
+		dock_main,          // node to split
+		ImGuiDir_Down,
+		0.25f,              // 25% height for bottom
+		nullptr,            // return id for bottom
+		&dock_main          // dock_main becomes the TOP area
+	);
 
-	ImGuiID right_bottom;
-	ImGuiID right_middle = ImGui::DockBuilderSplitNode(right_lower, ImGuiDir_Up, 0.5f, nullptr, &right_bottom);
+	// 2) Split TOP into LEFT (Entity Picker) and remaining
+	dock_left = ImGui::DockBuilderSplitNode(
+		dock_main,
+		ImGuiDir_Left,
+		0.22f,              // 22% width for left
+		nullptr,
+		&dock_main          // dock_main is now the center strip
+	);
 
-	// Dock windows
-	ImGui::DockBuilderDockWindow("Viewport", center);
-	ImGui::DockBuilderDockWindow("Overlay", right_upper);
-	ImGui::DockBuilderDockWindow("Performance", right_upper);
-	ImGui::DockBuilderDockWindow("Entity Picker", right_middle);
-	ImGui::DockBuilderDockWindow("Inspector", right_bottom);
-	ImGui::DockBuilderDockWindow("Editor Dock", bottom);
+	// 3) Split remaining TOP into RIGHT (Inspector) and CENTER (Viewport)
+	dock_right = ImGui::DockBuilderSplitNode(
+		dock_main,
+		ImGuiDir_Right,
+		0.25f,              // 25% width for right
+		nullptr,
+		&dock_main          // dock_main is now the center area
+	);
+	ImGuiID dock_center = dock_main;
+
+	// ---- Dock windows ----
+	ImGui::DockBuilderDockWindow("Viewport", dock_center);
+	ImGui::DockBuilderDockWindow("Entity Picker", dock_left);
+	ImGui::DockBuilderDockWindow("Inspector", dock_right);
+	ImGui::DockBuilderDockWindow("Overlay", dock_right);
+	ImGui::DockBuilderDockWindow("Performance", dock_right);
+	ImGui::DockBuilderDockWindow("Editor Dock", dock_bottom);
 
 	ImGui::DockBuilderFinish(dockspace);
 
 	m_dockingLayoutInitialized = true;
-	logger.log("Initial docking layout created");
+	logger.log("Initial docking layout set.");
 }
+
 
 void ImGuiManager::resetDockingLayout() {
 	ImGuiID dockspace = ImGui::GetID("NocturnalStudioDockspace");
@@ -1549,11 +1845,10 @@ void ImGuiManager::restoreSceneSnapshot() {
 	Scene* scene = gsm.getCurrentScene();
 	if (!scene) return;
 
-	// For now, we'll use a simple parsing approach
-	// Store original data temporarily
+	// store original data temporarily
 	std::vector<DrawItem> originalItems = scene->items;
 
-	// Clear current items
+	// clear current items
 	scene->items.clear();
 
 	// Parse the saved JSON (simplified parsing)

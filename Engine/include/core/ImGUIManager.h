@@ -103,6 +103,7 @@ public:
 	void restoreSceneSnapshot();
 
 private:
+	bool m_showFPS = false;
 	bool m_dockingLayoutInitialized = false;
 	Window& mainWindow;
 	Renderer& renderer;
