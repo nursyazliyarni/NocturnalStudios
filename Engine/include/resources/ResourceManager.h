@@ -231,20 +231,11 @@ public:
     ResourceID getNewAssetID();
 
     /**
-     * @brief The built-in default Audio returned on lookup failures.
-     */
-    Audio defaultAudio;
-
-    /**
      * @brief Attach or replace the AudioSystem used to forward audio loads.
      * @param audioSystem Pointer to AudioSystem (may be nullptr).
      */
     void setAudioSystem(AudioSystem* audioSystem);
 
-    /**
-     * @brief Const accessor for the default audio record.
-     */
-    const Audio& getDefaultAudio() const;
 
     /**
      * @brief Load an image into an OpenGL texture and cache it for the asset browser.
