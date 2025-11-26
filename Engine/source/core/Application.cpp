@@ -234,6 +234,7 @@ void Application::init() {
 	logger.setup_crash_handler();
 	const GameConfig c = loadConfig("assets/config.json");
 	windowTitle = c.window.title;
+	imGUIVisible = c.imgui_enabled;
 
     WindowDesc wd;
     wd.width = c.window.width;
@@ -360,13 +361,6 @@ void Application::init() {
 
 	prefabManager = std::make_unique<PrefabManager>(*ecs);
 	prefabManager->Load_Prefab(prefabTestPath.c_str());
-	/*prefabManager->CreateEntityFromPrefab(prefabTestPath, "main_menu_button", "play_button");
-	prefabManager->CreateEntityFromPrefab(prefabTestPath, "main_menu_button", "load_button");
-	prefabManager->CreateEntityFromPrefab(prefabTestPath, "main_menu_button", "setting_button");
-	prefabManager->CreateEntityFromPrefab(prefabTestPath, "main_menu_button", "quit_button");
-	prefabManager->CreateEntityFromPrefab(prefabTestPath, "food", "owl_food");
-	prefabManager->CreateEntityFromPrefab(prefabTestPath, "animal", "flamingo");
-	prefabManager->CreateEntityFromPrefab(prefabTestPath, "firefly", "firefly");*/
 
 	
 	//logger.log("Created animal entity with ID: " + std::to_string(animal) + " and " + std::to_string(animal_2));
@@ -401,7 +395,7 @@ void Application::init() {
         logger.log(std::string{ "[SceneSpawn] Activated -> " } + sceneName);
     });
 
-
+	if (!imGUIVisible)renderer->initFBO(wd.width, wd.height);
 
 	imGuiManager = std::make_unique<ImGuiManager>(
 		m_window, *renderer,
@@ -442,26 +436,6 @@ int Application::run() {
 		// Debug: log firefly state twice per second to confirm it's updating
 		static double dbgAccum = 0.0;
 		dbgAccum += dt;
-		/*if (dbgAccum > 0.5 && ecs) {
-			dbgAccum = 0.0;
-			EntityID ff = ecs->findEntityByName("firefly_1");
-			if (ff != INVALID_ENTITY_ID) {
-				auto* t = ecs->getComponent<Transform>(ff);
-				auto* pc = ecs->getComponent<PhysicsComponent>(ff);
-				auto* ai = ecs->getComponent<AIComponent>(ff);
-				if (t && pc && ai) {
-					logger.log(
-						"FF pos=(" + std::to_string(t->position.x()) + "," + std::to_string(t->position.y()) + ")"
-						+ " vel=(" + std::to_string(pc->velocity.x()) + "," + std::to_string(pc->velocity.y()) + ")"
-					);
-				}
-				else {
-					logger.log("firefly_1 missing component(s): "
-						+ std::string(t ? "" : "Transform ")
-						+ std::string(pc ? "" : "Physics ")
-						+ std::string(ai ? "" : "AI "));
-				}
-			}*/
 
 
 
@@ -479,22 +453,6 @@ int Application::run() {
 			// else: stay quiet when not in Owl scene
 		}
 
-
-
-		//	else {
-		//		logger.log("firefly_1 not found");
-		//	}
-		//}
-
-
-
-
-
-
-
-		/*for (int k = GLFW_KEY_1; k <= GLFW_KEY_9; ++k)
-			if (inputSystem->WasPressed(k))
-				gsm->handleKeyPress(k);*/
 		if (!gsm || !gsm->isPaused()) {
 			for (int k = GLFW_KEY_1; k <= GLFW_KEY_9; ++k)
             	if (inputSystem->WasPressed(k))
@@ -522,7 +480,12 @@ int Application::run() {
 
         glClear(GL_COLOR_BUFFER_BIT);
 
-        Gui::updateImGuiManager(dt, *imGuiManager);
+		if (imGUIVisible)Gui::updateImGuiManager(dt, *imGuiManager);
+		else {
+			int winheight,winwidth;
+			m_window.getWindowSize(winwidth, winheight);
+			gsm->imGUIlessRender(*renderer, *inputSystem, m_window.handle(), winwidth,winheight);
+		}
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         glViewport(0, 0, fbw, fbh);

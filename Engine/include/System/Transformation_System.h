@@ -31,6 +31,7 @@ public:
 	
 	static void CollisionUpdate(BoxCollider *coll);
 private:
+
 	static std::vector<std::pair<EntityID, EntityID>> BroadphaseCollision();
 };
 

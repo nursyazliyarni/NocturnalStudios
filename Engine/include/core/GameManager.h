@@ -75,6 +75,7 @@ public:
 
     void handleKeyPress(int key); // map numeric keys/ESC to scenes
     void render(Renderer& r, Input& input, GLFWwindow* window, int w, int h) ;
+    void imGUIlessRender(Renderer& r, Input& input, GLFWwindow* window, int w, int h);
 
     bool handleClick(float nx, float ny);  // mouse click in normalized coords
     bool popQuitRequested();               // returns & clears quit flag

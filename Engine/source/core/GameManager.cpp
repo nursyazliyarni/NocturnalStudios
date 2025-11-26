@@ -319,8 +319,9 @@ void GameManager::handleKeyPress(int key) {
 
 void GameManager::render(Renderer& r, Input& input, GLFWwindow* window, int w, int h) {
 
+
     auto it = scenes.find(currentScene);
-    if (it == scenes.end()) return;
+    if (it == scenes.end()) {  return; }
     const Scene& sc = it->second;
 
     // background (fullscreen) � NOTE uniform must be "bg_texture"
@@ -429,6 +430,19 @@ void GameManager::render(Renderer& r, Input& input, GLFWwindow* window, int w, i
     }
 
 
+
+}
+void GameManager :: imGUIlessRender(Renderer& r, Input& input, GLFWwindow* window, int w, int h) {
+    r.initFBO(w, h);
+    r.bindFBO();
+    r.resize(w, h);
+    r.clear(0.06f, 0.06f, 0.07f);
+    render(r, input, window, w, h);
+    r.setTextProjection(w, h);
+
+    r.unbindFBO();
+    glViewport(0, 0, w, h);
+    r.background_render(r.getFBOTexture(), "tex", 0);
 }
 
 bool GameManager::handleClick(float nx, float ny) {

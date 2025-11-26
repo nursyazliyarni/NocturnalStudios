@@ -32,6 +32,7 @@ struct WindowConfig {
 
 struct GameConfig {
     WindowConfig window;
+    bool imgui_enabled;
 };
 
 GameConfig loadConfig(const std::string& filename);

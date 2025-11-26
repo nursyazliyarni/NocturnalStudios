@@ -124,6 +124,7 @@ public:
 
 private: // window and context
     Window m_window;
+    bool imGUIVisible{ false };
     bool isInitialized{ false };
     std::string windowTitle;
 

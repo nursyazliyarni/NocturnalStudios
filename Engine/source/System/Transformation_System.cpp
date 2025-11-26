@@ -22,7 +22,8 @@ extern Logger logger;
 namespace {
 	ECS& ecs = ECS::getECS();
 	EntityID selectedID = NO_ENTITY_SELECTED;
-
+	static std::vector<std::vector<EntityID>> gridtracker{};
+	static std::vector<std::pair<EntityID, EntityID>> possible_collisions, collisions{};
 	
 }
 /**
@@ -174,8 +175,10 @@ void CollisionSystem::CollisionUpdate(BoxCollider *coll){
 
 std::vector<std::pair<EntityID, EntityID>> CollisionSystem::BroadphaseCollision() {
 	std::vector<std::pair<EntityID, EntityID>> uwah;
+	gridtracker.clear();
+	//neeed to check how big grid is in relation to aabb box
 
-
+	for (EntityID e : ecs.getAllEntities())
 
 
 
