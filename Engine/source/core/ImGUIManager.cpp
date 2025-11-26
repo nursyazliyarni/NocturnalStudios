@@ -619,7 +619,7 @@ void ImGuiManager::showEntityListUI(/* Maybe an enum of paramEntityType, Maybe a
 	//Show current game objects in scene
 	if (ImGui::CollapsingHeader("Scene Objects", ImGuiTreeNodeFlags_DefaultOpen))
 	{
-		const Scene* scene = gsm.getCurrentScene();
+		Scene* scene = gsm.getCurrentScene();
 		if (!scene) // if no scene, show message
 		{
 			ImGui::TextDisabled("No active scene loaded.");
@@ -633,16 +633,40 @@ void ImGuiManager::showEntityListUI(/* Maybe an enum of paramEntityType, Maybe a
 
 			for (size_t i = 0; i < scene->items.size(); ++i)
 			{
-				const DrawItem& item = scene->items[i];
-				bool selected = (selectedEntityType == i); // check if obj is current selected one
+				//const DrawItem& item = scene->items[i];
+				//bool selected = (selectedEntityType == i); // check if obj is current selected one
 
-				// labels obj as Entity if it has no name
+				//// labels obj as Entity if it has no name
+				//std::string label = item.name.empty()
+				//	? "Entity " + std::to_string(i)
+				//	: item.name;
+
+				//if (ImGui::Selectable(label.c_str(), selected)) // selectable list
+				//	selectedEntityType = static_cast<unsigned int>(i);
+
+				DrawItem& item = scene->items[i];
+				bool selected = (selectedEntityType == i);
+
 				std::string label = item.name.empty()
 					? "Entity " + std::to_string(i)
 					: item.name;
 
-				if (ImGui::Selectable(label.c_str(), selected)) // selectable list
+				if (ImGui::Selectable(label.c_str(), selected))
 					selectedEntityType = static_cast<unsigned int>(i);
+
+				//accept dropped textures here
+				if (ImGui::BeginDragDropTarget())
+				{
+					if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ASSET_TEXTURE"))
+					{
+						IM_ASSERT(payload->DataSize == sizeof(GLuint));
+						GLuint droppedTex = *reinterpret_cast<const GLuint*>(payload->Data);
+
+						item.tex = droppedTex;
+						logger.log("[ImGui] Applied texture via drag-drop to object: " + label);
+					}
+					ImGui::EndDragDropTarget();
+				}
 			}
 
 			if (isPlayMode) {
@@ -1142,8 +1166,9 @@ void ImGuiManager::showAssetsBrowserUI() {
 					ImGui::TableNextColumn();
 					ImGui::PushID(index++);
 
+					//thumbnail: click still directly applies to currently selected object
 					if (ImGui::ImageButton(
-						("##tex" + std::to_string(index)).c_str(),
+						"##thumb",
 						(ImTextureID)(intptr_t)texID,
 						ImVec2(thumbnailSize, thumbnailSize)))
 					{
@@ -1153,6 +1178,14 @@ void ImGuiManager::showAssetsBrowserUI() {
 							scene->items[selectedEntityType].tex = texID;
 							logger.log("[ImGui] Applied texture: " + texName);
 						}
+					}
+
+					//drag source: drag this thumbnail onto entity
+					if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID))
+					{
+						ImGui::SetDragDropPayload("ASSET_TEXTURE", &texID, sizeof(GLuint));
+						ImGui::Text("Texture: %s", texName.c_str());
+						ImGui::EndDragDropSource();
 					}
 
 					ImGui::TextWrapped(texName.c_str());
