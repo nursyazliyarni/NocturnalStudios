@@ -495,24 +495,30 @@ int Application::run() {
         // Text overlay is now rendered by Renderer inside the viewport FBO (see ImGuiManager)
 
         if (inputSystem->WasMousePressed(GLFW_MOUSE_BUTTON_LEFT)) {
-            ImVec2 rmin, rmax;
+			ImVec2 rmin{}, rmax;
 
-            imGuiManager->getViewportRectWindow(rmin, rmax);
+			if (imGUIVisible)imGuiManager->getViewportRectWindow(rmin, rmax);
+			else { //uses window size to dtermine click coords
+				int maxx, maxy;
+				m_window.getWindowSize(maxx, maxy);
+				rmax={ static_cast<float>(maxx) ,static_cast<float>(maxy) };
+			}
+			
+			Vector2D mp = inputSystem->GET_mouse_pos(false, 0, 0);
+			if (mp.x() >= rmin.x && mp.x() <= rmax.x &&
+				mp.y() >= rmin.y && mp.y() <= rmax.y) {
+				float nx = float((mp.x() - rmin.x) / (rmax.x - rmin.x));
+				float ny = float((mp.y() - rmin.y) / (rmax.y - rmin.y));
 
-            Vector2D mp = inputSystem->GET_mouse_pos(false, 0, 0);
-            if (mp.x() >= rmin.x && mp.x() <= rmax.x &&
-                mp.y() >= rmin.y && mp.y() <= rmax.y) {
-                float nx = float((mp.x() - rmin.x) / (rmax.x - rmin.x));
-                float ny = float((mp.y() - rmin.y) / (rmax.y - rmin.y));
+				//ny = 1.0f - ny;
+				gsm->handleClick(nx, ny);
 
-                //ny = 1.0f - ny;
-                gsm->handleClick(nx, ny);
-
-                if (gsm->popQuitRequested()) {
-                    glfwSetWindowShouldClose(m_window.handle(), GLFW_TRUE);
-                    break;
-                }
-            }
+				if (gsm->popQuitRequested()) {
+					glfwSetWindowShouldClose(m_window.handle(), GLFW_TRUE);
+					break;
+				}
+			}
+            
         }
 		TransformSystem::TransformUpdate();
         if (gsm->popQuitRequested()) {
