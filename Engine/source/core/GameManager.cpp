@@ -23,6 +23,9 @@
 #include "core/GameManager.h"
 #include "stb_image.h"
 #include <rapidjson/document.h>
+#include "rapidjson/writer.h"
+#include "rapidjson/prettywriter.h"
+#include "rapidjson/filewritestream.h"
 #include <fstream>
 #include <sstream>
 #include <GLFW/glfw3.h>
@@ -65,6 +68,14 @@ GLuint TextureStore::get(const std::string& path) {
     return id;
 }
 
+std::string TextureStore::find(const GLuint id) const {
+    for (auto& it:cache)
+    {
+        if (it.second == id) return it.first;
+    }
+    return"";
+}
+
 void TextureStore::clear() {
     for (auto& kv : cache) if (kv.second) glDeleteTextures(1, &kv.second);
     cache.clear();
@@ -92,7 +103,59 @@ static std::string toAssetsPath(const std::string& p) {
 struct PrefabDef { float w = 0.2f, h = 0.2f, angle = 0.0f; };
 
 //  GameManager 
-bool GameManager::saveScene(const char* scenesJsonPath) {
+bool GameManager::saveScene(const Scene& scene, const char* scenesJsonPath, TextureStore& tex) {
+    rapidjson::Document doc;
+    doc.SetObject();
+    auto& alloc = doc.GetAllocator();
+
+    if (scene.background) {
+        rapidjson::Value bgVal;
+        bgVal.SetString(tex.find(scene.background).c_str(), alloc);
+        doc.AddMember("background", bgVal, alloc);
+        
+    }
+
+    if (!scene.items.empty())
+    {
+        rapidjson::Value entityArray(rapidjson::kArrayType);
+
+        for (DrawItem i: scene.items){
+            rapidjson::Value entObj(rapidjson::kObjectType);
+            if (i.item_type.empty()) //treat as a non prefab item
+            {
+
+            }
+            else {
+                //prefab has 3 things: prefab, name, overrides
+                rapidjson::Value pregabval;
+                pregabval.SetString(i.item_type.c_str(), alloc);
+                entObj.AddMember("prefab", pregabval, alloc);
+                
+                rapidjson::Value nvs;
+                nvs.SetString(i.name.c_str(), alloc);
+                entObj.AddMember("name", nvs, alloc);
+                //overrides
+                rapidjson::Value overrides(rapidjson::kObjectType);
+                if (ecs_.findEntityByName(i.name)!=INVALID_ENTITY_ID&&!ecs_.getEntityComponents(ecs_.findEntityByName(i.name)).empty())
+                {
+                    for (ComponentID cis: ecs_.getEntityComponents(ecs_.findEntityByName(i.name)))
+                    {
+                        //ecs_.getco
+                    }
+                }
+                entObj.AddMember("overrides", overrides, alloc);
+            }
+        }
+    }
+
+    FILE* fp = fopen(scenesJsonPath, "wb");
+    if (!fp) return false;
+
+    char buffer[9920];
+    rapidjson::FileWriteStream os(fp, buffer, sizeof(buffer));
+    rapidjson::PrettyWriter<rapidjson::FileWriteStream> writer(os);
+    doc.Accept(writer);
+    fclose(fp);
     return true;
 }
 bool GameManager::load(const char* prefabsPath, const char* scenesPath, TextureStore& tex) {

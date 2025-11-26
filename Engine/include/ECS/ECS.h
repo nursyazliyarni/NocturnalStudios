@@ -236,6 +236,23 @@ public:
 	T* getComponent(EntityID entityID);
 
 
+
+	/**
+	 * @brief Get list of all component ids for a specific entity
+	 *
+	 * Returns a const reference to a set of componentIDs
+	 *
+	 * @param entityID Target entity
+	 * @return const reference to a set of ComponentIDs
+	 *
+	 * Simple usage:
+	 *   
+	 */
+	const std::set<ComponentID>& getEntityComponents(EntityID);
+
+
+
+
 	void emptyAllEntities();
 
 private:
@@ -278,6 +295,10 @@ private:
 
 };
 
+template<typename T>
+bool isBaseComponent(T* ptr) {
+	return dynamic_cast<BaseComponent*>(ptr) != nullptr;
+}
 //********* ECS Class Template Implementation **********//
 
 template <typename T>
@@ -368,8 +389,6 @@ T* ECS::getComponent(EntityID entityID) {
 	}
 	return specificPool->getComponent(entityID);
 }
-
-
 
 
 // [====================*====================]

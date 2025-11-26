@@ -368,6 +368,27 @@ bool ECS::removeComponent(EntityID entityID, ComponentID componentID) {
 	return true;
 }
 
+
+/**
+ * @brief Get list of all component ids for a specific entity
+ *
+ * Returns a const reference to a set of componentIDs
+ *
+ * @param entityID Target entity
+ * @return const reference to a set of ComponentIDs
+ *
+ * Simple usage:
+ *
+ */
+const std::set<ComponentID>& ECS::getEntityComponents(EntityID id) {
+	auto it = entityMetadataMap.find(id);
+
+	if (it == entityMetadataMap.end())return{};
+	else return it->second.componentIDs;
+	
+}
+
+
 void ECS::emptyAllEntities(){}
 
 /**

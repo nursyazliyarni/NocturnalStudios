@@ -62,6 +62,7 @@ struct Scene {
 class TextureStore {
 public:
     GLuint get(const std::string& path); // loads on first use
+    std::string find(const GLuint id) const;
     void clear();
 private:
     std::unordered_map<std::string, GLuint> cache;
@@ -70,7 +71,7 @@ private:
 class GameManager {
 public:
     bool load(const char* prefabsJsonPath, const char* scenesJsonPath, TextureStore& tex);
-    bool saveScene(const char* scenesJsonPath);
+    bool saveScene(const Scene& scene, const char* scenesJsonPath, TextureStore& tex);
 
     void requestScene(const std::string& name);
     const std::string& current() const { return currentScene; }
