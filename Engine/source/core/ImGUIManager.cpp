@@ -316,115 +316,27 @@ void ImGuiManager::showViewportWindowUI() {
 	// Render timing scope (includes scene render + debug draw + unbind)
 	{
 		TimeUtils::ScopedTimer t{ renderTime };
+
 		renderer.initFBO(vw, vh);
 		renderer.bindFBO();
 		renderer.resize(vw, vh);
 		renderer.clear(0.06f, 0.06f, 0.07f);
 
-		// Draw current SCENE into the FBO
-		gsm.render(renderer, input, mainWindow.handle(), vw, vh);
-
-		// Text overlay (rendered into the viewport FBO)
-		renderer.setTextProjection(vw, vh); // bottom-left origin for the text shader
-
-		// Resolve fonts from ResourceManager (cache IDs across frames)
-		static std::optional<ResourceID> s_fontA;
-		static std::optional<ResourceID> s_fontB;
-		if (!s_fontA) s_fontA = resourceManager.findResource<Font>("NanumBrushScript-Regular");
-		if (!s_fontB) s_fontB = resourceManager.findResource<Font>("PAPYRUS");
-
-		// --- common scale for all viewport text ---
-		float baseHeight = 720.0f;                    // reference resolution
-		float textScale = static_cast<float>(vh) / baseHeight;
-		if (textScale < 0.5f) textScale = 0.5f;
-		if (textScale > 2.0f) textScale = 2.0f;
-
-		// --- Title (Font A) ---
-		if (s_fontA) {
-			const Font& f = resourceManager.getFont(*s_fontA);
-
-			// e.g. 8% down from top, 2% from left
-			float titleX = 0.02f * vw;
-			float titleY = vh - 0.08f * vh;
-
-			renderer.drawText(
-				f,
-				"Nocturnal Studio Engine",
-				titleX,
-				titleY,
-				textScale,
-				glm::vec3(1.0f, 0.0f, 0.2f)
-			);
-		}
-
-		//  FPS (Font B) 
-		if (m_showFPS && s_fontB) {
-			const Font& f2 = resourceManager.getFont(*s_fontB);
-
-			static double accumTime = 0.0;
-			static double fpsDisplay = 0.0;
-
-			double dt = deltaTime;
-			if (dt <= 0.0) dt = 1e-6;
-
-			accumTime += dt;
-			if (accumTime >= 1.0) {
-				fpsDisplay = 1.0 / dt;
-				accumTime = 0.0;
-			}
-
-			float baseHeight = 720.0f;
-			float textScale = static_cast<float>(vh) / baseHeight;
-			if (textScale < 0.5f) textScale = 0.5f;
-			if (textScale > 2.0f) textScale = 2.0f;
-
-			int fpsInt = static_cast<int>(std::round(fpsDisplay));
-			std::string fpsText = "FPS: " + std::to_string(fpsInt);
-
-			float x = 0.02f * vw;
-			float y = vh - 0.15f * vh;
-
-			renderer.drawText(
-				f2,
-				fpsText,
-				x, y,
-				textScale,
-				glm::vec3(0.2f, 0.8f, 1.0f)
-			);
-		}
-
-
-
-		// Debugging Drawer //
-		static bool printed = false;
-		if (Debug::Drawer::Instance().IsActive()) {
-			if (!printed) {
-				std::cout << "[ImGuiManager] DebugDraw active\n";
-				printed = true;
-			}
-
-			glPushAttrib(GL_ALL_ATTRIB_BITS);
-			glUseProgram(0);
-			glDisable(GL_TEXTURE_2D);
-			glDisable(GL_DEPTH_TEST);
-			glEnable(GL_BLEND);
-			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-			glMatrixMode(GL_MODELVIEW);
-			glLoadIdentity();
-
-			Debug::Drawer::Instance().Render(Matrix<3>().Identity());
-
-			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-			glPopAttrib();
-		}
-		else {
-			printed = false;
-		}
-		// Debugging Drawer //
+		// Let GameManager draw scene + HUD text
+		gsm.renderWithHUD(
+			renderer,
+			input,
+			mainWindow.handle(),
+			vw,
+			vh,
+			deltaTime,
+			resourceManager,
+			m_showFPS
+		);
 
 		renderer.unbindFBO();
 	}
+
 
 	//// Show the FBO as an ImGui Image (flipped V)
 	//ImVec2 imgMin = ImGui::GetCursorScreenPos();
