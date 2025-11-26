@@ -999,16 +999,57 @@ void ImGuiManager::showLogsOverlayUI() {
 }
 
 void ImGuiManager::showAssetsBrowserUI() {
-	bool isPlayMode = (m_editorMode == EditorMode::PLAY);
-
 	ImGui::TextColored(ImVec4(0.8f, 0.9f, 1.0f, 1.0f), "Assets Browser");
 	ImGui::Separator();
 
-	// "Folders" for each asset type
+	bool isPlayMode = (m_editorMode == EditorMode::PLAY);
+
+	// Small helper to list files in a folder (used by fonts/levels/prefabs/scenes/shaders)
+	auto drawFolderFileList = [&](const char* debugName,
+		const char* folderPath,
+		int& selectedIdx)
+		{
+			ImGui::Text("%s (%s)", debugName, folderPath);
+			ImGui::Separator();
+
+			std::vector<std::string> files;
+			if (std::filesystem::exists(folderPath)) {
+				for (auto const& entry : std::filesystem::directory_iterator(folderPath)) {
+					if (!entry.is_regular_file()) continue;
+					files.push_back(entry.path().filename().string());
+				}
+			}
+
+			if (files.empty()) {
+				ImGui::TextDisabled("No files found in this folder.");
+				return;
+			}
+
+			if (selectedIdx < 0 || selectedIdx >= (int)files.size())
+				selectedIdx = 0;
+
+			ImVec2 listSize(-FLT_MIN, ImGui::GetTextLineHeightWithSpacing() * 10.0f);
+			std::string id = "##";
+			id += debugName;
+			id += "List";
+
+			if (ImGui::BeginListBox(id.c_str(), listSize)) {
+				for (int i = 0; i < (int)files.size(); ++i) {
+					bool isSelected = (i == selectedIdx);
+					if (ImGui::Selectable(files[i].c_str(), isSelected)) {
+						selectedIdx = i;
+					}
+					if (isSelected)
+						ImGui::SetItemDefaultFocus();
+				}
+				ImGui::EndListBox();
+			}
+		};
+
 	if (ImGui::BeginTabBar("AssetTypeTabs"))
 	{
 		// ============================================================
-		//  TEXTURE "FOLDER"
+		//  TEXTURES
 		// ============================================================
 		if (ImGui::BeginTabItem("Textures"))
 		{
@@ -1078,7 +1119,7 @@ void ImGuiManager::showAssetsBrowserUI() {
 			}
 
 			if (isPlayMode) {
-				ImGui::EndDisabled();  // ⭐ END SECTION 1
+				ImGui::EndDisabled();  // END SECTION 1
 			}
 
 			// === SECTION 2: Texture Display ===
@@ -1097,7 +1138,6 @@ void ImGuiManager::showAssetsBrowserUI() {
 				auto& textures = resourceManager.getTextures();
 				int index = 0;
 
-				// === SECTION 3: Texture Application (DISABLED IN PLAY MODE) ===
 				if (isPlayMode) {
 					ImGui::BeginDisabled();
 				}
@@ -1131,7 +1171,7 @@ void ImGuiManager::showAssetsBrowserUI() {
 				}
 
 				if (isPlayMode) {
-					ImGui::EndDisabled();  // ⭐ END SECTION 3
+					ImGui::EndDisabled();
 				}
 
 				ImGui::EndTable();
@@ -1141,14 +1181,13 @@ void ImGuiManager::showAssetsBrowserUI() {
 		}
 
 		// ============================================================
-//  AUDIO "FOLDER"
-// ============================================================
+		//  AUDIO
+		// ============================================================
 		if (ImGui::BeginTabItem("Audio"))
 		{
 			ImGui::Text("Audio Assets:");
 			ImGui::Separator();
 
-			// Build lists of audio IDs and names
 			std::vector<ResourceID> audioIDs;
 			std::vector<std::string> audioNames;
 			audioIDs.reserve(resourceManager.getAudios().size());
@@ -1161,7 +1200,6 @@ void ImGuiManager::showAssetsBrowserUI() {
 
 			static int selectedAudioIndex = 0;
 
-			// Reloading is disabled while the game is in PLAY mode
 			if (isPlayMode) {
 				ImGui::BeginDisabled();
 			}
@@ -1169,7 +1207,6 @@ void ImGuiManager::showAssetsBrowserUI() {
 			if (ImGui::Button("Reload audio assets")) {
 				auto added = resourceManager.reloadAudiosFromDirectory("assets/audio");
 				if (added > 0) {
-					// Rebuild vectors after reload
 					audioIDs.clear();
 					audioNames.clear();
 					audioIDs.reserve(resourceManager.getAudios().size());
@@ -1191,27 +1228,19 @@ void ImGuiManager::showAssetsBrowserUI() {
 				if (selectedAudioIndex >= (int)audioNames.size())
 					selectedAudioIndex = 0;
 
-				ImGui::Text("Loaded audio files:");
-				ImGui::Separator();
-
-				// List-style view like Explorer: one name per row, scrollable
-				// Width: fill available; Height: 8–10 rows tall
-				ImVec2 listSize = ImVec2(-FLT_MIN, ImGui::GetTextLineHeightWithSpacing() * 10.0f);
+				ImVec2 listSize(-FLT_MIN, ImGui::GetTextLineHeightWithSpacing() * 10.0f);
 				if (ImGui::BeginListBox("##AudioList", listSize)) {
 					for (int i = 0; i < (int)audioNames.size(); ++i) {
 						bool isSelected = (i == selectedAudioIndex);
-
 						if (ImGui::Selectable(audioNames[i].c_str(), isSelected)) {
 							selectedAudioIndex = i;
 						}
-						if (isSelected) {
+						if (isSelected)
 							ImGui::SetItemDefaultFocus();
-						}
 					}
 					ImGui::EndListBox();
 				}
 
-				// --- controls for the currently selected item ---
 				ResourceID rid = audioIDs[selectedAudioIndex];
 
 				ImGui::Separator();
@@ -1226,7 +1255,6 @@ void ImGuiManager::showAssetsBrowserUI() {
 					}
 					else {
 						const std::string& name = audioNames[selectedAudioIndex];
-
 						if (name.find("BGM_") != std::string::npos) {
 							AudioData::IndividualAudioData data{};
 							data.resourceID = rid;
@@ -1237,7 +1265,7 @@ void ImGuiManager::showAssetsBrowserUI() {
 							opt = audioSystem.createAudioInstance(data, INVALID_ENTITY_ID);
 						}
 						else if (name.find("SFX_") != std::string::npos) {
-							audioSystem.playSFX(rid); // one-shot SFX
+							audioSystem.playSFX(rid);
 						}
 
 						if (opt) {
@@ -1267,20 +1295,47 @@ void ImGuiManager::showAssetsBrowserUI() {
 				ImGui::TextDisabled("No audio assets loaded.");
 			}
 
-
 			ImGui::EndTabItem();
 		}
 
+		// ============================================================
+		//  FONTS / LEVELS / PREFABS / SCENES / SHADERS
+		//  (directory listing only for now)
+		// ============================================================
+		if (ImGui::BeginTabItem("Fonts")) {
+			static int fontIdx = -1;
+			drawFolderFileList("Fonts", "assets/fonts", fontIdx);
+			ImGui::EndTabItem();
+		}
 
-		// ============================================================
-		//  (OPTIONAL) FUTURE "FOLDERS"
-		// ============================================================
-		// if (ImGui::BeginTabItem("Fonts")) { ... ImGui::EndTabItem(); }
-		// if (ImGui::BeginTabItem("Animations")) { ... ImGui::EndTabItem(); }
+		if (ImGui::BeginTabItem("Levels")) {
+			static int levelIdx = -1;
+			drawFolderFileList("Levels", "assets/levels", levelIdx);
+			ImGui::EndTabItem();
+		}
+
+		if (ImGui::BeginTabItem("Prefabs")) {
+			static int prefabIdx = -1;
+			drawFolderFileList("Prefabs", "assets/prefabs", prefabIdx);
+			ImGui::EndTabItem();
+		}
+
+		if (ImGui::BeginTabItem("Scenes")) {
+			static int sceneIdx = -1;
+			drawFolderFileList("Scenes", "assets/scenes", sceneIdx);
+			ImGui::EndTabItem();
+		}
+
+		if (ImGui::BeginTabItem("Shaders")) {
+			static int shaderIdx = -1;
+			drawFolderFileList("Shaders", "assets/shaders", shaderIdx);
+			ImGui::EndTabItem();
+		}
 
 		ImGui::EndTabBar();
 	}
 }
+
 
 void ImGuiManager::showBottomDockUI()
 {
