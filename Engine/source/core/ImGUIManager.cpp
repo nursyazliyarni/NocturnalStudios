@@ -481,7 +481,8 @@ void ImGuiManager::showEntityListUI(/* Maybe an enum of paramEntityType, Maybe a
 	constexpr float height = 300.0f;
 
 	ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDecoration |
-		ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
+		ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | 
+		ImGuiWindowFlags_NoNav | ImGuiWindowFlags_AlwaysVerticalScrollbar;;
 
 	// Position the overlay at the top-right corner of the window, below performance overlay
 	/*ImVec2 windowTopRightPos = { windowBottomRight.x - width, windowTopLeft.y + 250.0f };
@@ -511,6 +512,7 @@ void ImGuiManager::showEntityListUI(/* Maybe an enum of paramEntityType, Maybe a
 	ImGui::SameLine();
 	if (ImGui::Button("+")) selectedEntityType++;
 
+	/*
 	//disable clone/delete in play mode
 	if (isPlayMode) {
 		ImGui::BeginDisabled();
@@ -539,7 +541,7 @@ void ImGuiManager::showEntityListUI(/* Maybe an enum of paramEntityType, Maybe a
 	if (isPlayMode) {
 		ImGui::EndDisabled();
 	}
-
+	*/
 	// --- build vectors for combo display (cheap, rebuild each frame) ---
 	std::vector<ResourceID> audioIDs;
 	std::vector<std::string> audioNames;
@@ -969,6 +971,7 @@ void ImGuiManager::showLogsOverlayUI() {
 	constexpr float height = 200.0f;
 
 	ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoResize;
+	//ImGuiWindowFlags_AlwaysVerticalScrollbar;
 
 	// Position the overlay at the bottom-center of the window
     /*ImVec2 initialPos = { (windowTopLeft.x + windowBottomRight.x) / 2, windowBottomRight.y };
@@ -1125,6 +1128,121 @@ void ImGuiManager::showAssetsBrowserUI() {
 
 		ImGui::EndTable();
 	}
+	// === SECTION 4: Audio Browser ===
+	ImGui::Separator();
+	ImGui::Spacing();
+	ImGui::Text("Audio Assets:");
+	ImGui::Separator();
+
+	// Build lists of audio IDs and names
+	std::vector<ResourceID> audioIDs;
+	std::vector<std::string> audioNames;
+	audioIDs.reserve(resourceManager.getAudios().size());
+	audioNames.reserve(resourceManager.getAudios().size());
+
+	for (auto const& kv : resourceManager.getAudios()) {
+		audioIDs.push_back(kv.first);
+		audioNames.push_back(kv.second.getKey());
+	}
+
+	static int selectedAudioIndex = 0;
+
+	// Reloading / importing is disabled while the game is in PLAY mode
+	if (isPlayMode) {
+		ImGui::BeginDisabled();
+	}
+
+	if (ImGui::Button("Reload audio assets")) {
+		auto added = resourceManager.reloadAudiosFromDirectory("assets/audio");
+		if (added > 0) {
+			// Rebuild vectors after reload
+			audioIDs.clear();
+			audioNames.clear();
+			audioIDs.reserve(resourceManager.getAudios().size());
+			audioNames.reserve(resourceManager.getAudios().size());
+			for (auto const& kv : resourceManager.getAudios()) {
+				audioIDs.push_back(kv.first);
+				audioNames.push_back(kv.second.getKey());
+			}
+			if (selectedAudioIndex >= (int)audioNames.size())
+				selectedAudioIndex = 0;
+		}
+	}
+
+	if (isPlayMode) {
+		ImGui::EndDisabled();
+	}
+
+	if (!audioNames.empty()) {
+		if (selectedAudioIndex >= (int)audioNames.size())
+			selectedAudioIndex = 0;
+
+		// Dropdown list of all audio files (the “browser”)
+		if (ImGui::BeginCombo("Audio Asset", audioNames[selectedAudioIndex].c_str())) {
+			for (int i = 0; i < (int)audioNames.size(); ++i) {
+				bool selected = (i == selectedAudioIndex);
+				if (ImGui::Selectable(audioNames[i].c_str(), selected)) {
+					selectedAudioIndex = i;
+				}
+				if (selected) ImGui::SetItemDefaultFocus();
+			}
+			ImGui::EndCombo();
+		}
+
+		ResourceID rid = audioIDs[selectedAudioIndex];
+
+		// Simple preview controls using your existing AudioSystem + activeInstances
+		if (ImGui::Button("Play")) {
+			auto it = activeInstances.find(rid);
+			std::optional<AudioInstanceID> opt;
+
+			if (it != activeInstances.end()) {
+				audioSystem.resumeSound(it->second);
+			}
+			else {
+				// Decide BGM vs SFX by name (same logic you already used)
+				const std::string& name = audioNames[selectedAudioIndex];
+				if (name.find("BGM_") != std::string::npos) {
+					AudioData::IndividualAudioData data{};
+					data.resourceID = rid;
+					data.name = name;
+					data.loop = true;
+					data.group = AudioData::IndividualAudioData::Group::Music;
+					data.volume = audioSystem.getBGMVolume();
+					opt = audioSystem.createAudioInstance(data, INVALID_ENTITY_ID);
+				}
+				else if (name.find("SFX_") != std::string::npos) {
+					audioSystem.playSFX(rid);   // one-shot SFX
+				}
+
+				if (opt) {
+					activeInstances[rid] = *opt;
+					audioSystem.resumeSound(*opt); // instance starts paused
+				}
+			}
+		}
+
+		ImGui::SameLine();
+		if (ImGui::Button("Pause")) {
+			auto it = activeInstances.find(rid);
+			if (it != activeInstances.end())
+				audioSystem.pauseSound(it->second);
+		}
+
+		ImGui::SameLine();
+		if (ImGui::Button("Stop")) {
+			auto it = activeInstances.find(rid);
+			if (it != activeInstances.end()) {
+				//audioSystem.stopSound(it->second);
+				activeInstances.erase(it);
+			}
+		}
+	}
+	else {
+		ImGui::TextDisabled("No audio assets loaded.");
+	}
+
+
 }
 
 void ImGuiManager::showBottomDockUI()
@@ -1154,7 +1272,8 @@ void ImGuiManager::showBottomDockUI()
 	ImGuiWindowFlags flags =
 		ImGuiWindowFlags_NoSavedSettings |
 		ImGuiWindowFlags_NoCollapse |
-		ImGuiWindowFlags_NoResize;
+		ImGuiWindowFlags_NoResize |
+		ImGuiWindowFlags_AlwaysVerticalScrollbar;
 
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(8, 8));
 	ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(4, 4));
@@ -1461,46 +1580,70 @@ void ImGuiManager::createDockspace() {
 }
 
 void ImGuiManager::setupInitialDockingLayout() {
-	//  Wait a few frames to ensure dockspace and windows are created
+	// wait a couple frames so dockspace exists
 	static int frameCount = 0;
 	if (frameCount < 2) {
-		frameCount++;
+		++frameCount;
 		return;
 	}
 
-	if (m_dockingLayoutInitialized) return;
+	if (m_dockingLayoutInitialized)
+		return;
 
 	ImGuiID dockspace = ImGui::GetID("NocturnalStudioDockspace");
 
-	// Clear and rebuild layout
+	// fresh dockspace
 	ImGui::DockBuilderRemoveNode(dockspace);
 	ImGui::DockBuilderAddNode(dockspace, ImGuiDockNodeFlags_DockSpace);
 	ImGui::DockBuilderSetNodeSize(dockspace, ImGui::GetMainViewport()->Size);
 
-	// Split the dockspace into regions
-	ImGuiID center = dockspace;
-	ImGuiID right = ImGui::DockBuilderSplitNode(center, ImGuiDir_Right, 0.25f, nullptr, &center);
-	ImGuiID bottom = ImGui::DockBuilderSplitNode(center, ImGuiDir_Down, 0.25f, nullptr, &center);
+	ImGuiID dock_main = dockspace;
+	ImGuiID dock_bottom = 0;
+	ImGuiID dock_left = 0;
+	ImGuiID dock_right = 0;
 
-	ImGuiID right_lower;
-	ImGuiID right_upper = ImGui::DockBuilderSplitNode(right, ImGuiDir_Up, 0.33f, nullptr, &right_lower);
+	// 1) Split full dockspace into TOP and BOTTOM (bottom = full-width editor dock)
+	dock_bottom = ImGui::DockBuilderSplitNode(
+		dock_main,          // node to split
+		ImGuiDir_Down,
+		0.25f,              // 25% height for bottom
+		nullptr,            // return id for bottom
+		&dock_main          // dock_main becomes the TOP area
+	);
 
-	ImGuiID right_bottom;
-	ImGuiID right_middle = ImGui::DockBuilderSplitNode(right_lower, ImGuiDir_Up, 0.5f, nullptr, &right_bottom);
+	// 2) Split TOP into LEFT (Entity Picker) and remaining
+	dock_left = ImGui::DockBuilderSplitNode(
+		dock_main,
+		ImGuiDir_Left,
+		0.22f,              // 22% width for left
+		nullptr,
+		&dock_main          // dock_main is now the center strip
+	);
 
-	// Dock windows
-	ImGui::DockBuilderDockWindow("Viewport", center);
-	ImGui::DockBuilderDockWindow("Overlay", right_upper);
-	ImGui::DockBuilderDockWindow("Performance", right_upper);
-	ImGui::DockBuilderDockWindow("Entity Picker", right_middle);
-	ImGui::DockBuilderDockWindow("Inspector", right_bottom);
-	ImGui::DockBuilderDockWindow("Editor Dock", bottom);
+	// 3) Split remaining TOP into RIGHT (Inspector) and CENTER (Viewport)
+	dock_right = ImGui::DockBuilderSplitNode(
+		dock_main,
+		ImGuiDir_Right,
+		0.25f,              // 25% width for right
+		nullptr,
+		&dock_main          // dock_main is now the center area
+	);
+	ImGuiID dock_center = dock_main;
+
+	// ---- Dock windows ----
+	ImGui::DockBuilderDockWindow("Viewport", dock_center);
+	ImGui::DockBuilderDockWindow("Entity Picker", dock_left);
+	ImGui::DockBuilderDockWindow("Inspector", dock_right);
+	ImGui::DockBuilderDockWindow("Overlay", dock_right);
+	ImGui::DockBuilderDockWindow("Performance", dock_right);
+	ImGui::DockBuilderDockWindow("Editor Dock", dock_bottom);
 
 	ImGui::DockBuilderFinish(dockspace);
 
 	m_dockingLayoutInitialized = true;
-	logger.log("Initial docking layout created");
+	logger.log("Initial docking layout set.");
 }
+
 
 void ImGuiManager::resetDockingLayout() {
 	ImGuiID dockspace = ImGui::GetID("NocturnalStudioDockspace");
@@ -1549,11 +1692,10 @@ void ImGuiManager::restoreSceneSnapshot() {
 	Scene* scene = gsm.getCurrentScene();
 	if (!scene) return;
 
-	// For now, we'll use a simple parsing approach
-	// Store original data temporarily
+	// store original data temporarily
 	std::vector<DrawItem> originalItems = scene->items;
 
-	// Clear current items
+	// clear current items
 	scene->items.clear();
 
 	// Parse the saved JSON (simplified parsing)
