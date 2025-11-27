@@ -88,7 +88,12 @@ ImGuiManager::ImGuiManager(Window& w, Renderer& r,
 	ImGuiIO& io = ImGui::GetIO();
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 	io.ConfigDockingWithShift = false;  // Dock without holding Shift
-	io.IniFilename = "editor_layout.ini";  // Save layout
+
+	#ifdef IMGUI_SAVE_LAYOUT
+		io.IniFilename = "editor_layout.ini";  // Save layout
+	#else
+		io.IniFilename = nullptr;  // Don't save layout
+	#endif
 
 	ImGui_ImplGlfw_InitForOpenGL(mainWindow.handle(), /*install_callbacks=*/false);
 	ImGui_ImplOpenGL3_Init("#version 330");
