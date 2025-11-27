@@ -20,7 +20,7 @@
 
 	Secondary Authod
 		Xiang Yang
-		- FBO
+		- Full Screen mode toggle
 
 	Secondary Author:
 		Chang Qi Xuan Celest (35%)
