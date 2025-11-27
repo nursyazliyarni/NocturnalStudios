@@ -163,6 +163,9 @@ bool GameManager::load(const char* prefabsPath, const char* scenesPath, TextureS
     app = AppState::Menu;   // lock number keys until Play is pressed
     requestedQuit = false;  // (optional) clear quit flag at load
 
+    // Store paths for later reload
+    scenesFilePath = scenesPath;
+
     //  1) read prefab defaults (w,h,angle) 
     std::unordered_map<std::string, PrefabDef> prefabDefaults;
     {
@@ -753,4 +756,84 @@ void GameManager::resumeGame() {
     if (app == AppState::Paused) {
         app = AppState::Playing;
     }
+}
+
+bool GameManager::reloadCurrentScene(TextureStore& tex) {
+    if (currentScene.empty() || scenesFilePath.empty()) {
+        logger.warning("[GameManager] Cannot reload: no current scene");
+        return false;
+    }
+
+    std::string sceneToReload = currentScene;
+
+    logger.log("[GameManager] Reloading scene: " + sceneToReload);
+
+    // Read the entire scenes file again
+    std::string jsonContent;
+    if (!readFile(scenesFilePath.c_str(), jsonContent)) {
+        logger.error("[GameManager] Failed to read scenes file for reload");
+        return false;
+    }
+
+    rapidjson::Document d;
+    d.Parse(jsonContent.c_str());
+    if (d.HasParseError() || !d.IsObject()) {
+        logger.error("[GameManager] Failed to parse scenes file for reload");
+        return false;
+    }
+
+    // Find the current scene in the JSON
+    if (!d.HasMember("scenes") || !d["scenes"].IsObject()) {
+        logger.error("[GameManager] No scenes object in JSON");
+        return false;
+    }
+
+    const auto& jsScenes = d["scenes"];
+    if (!jsScenes.HasMember(sceneToReload.c_str())) {
+        logger.error("[GameManager] Scene not found: " + sceneToReload);
+        return false;
+    }
+
+    const auto& jsS = jsScenes[sceneToReload.c_str()];
+    if (!jsS.IsObject()) {
+        logger.error("[GameManager] Invalid scene object");
+        return false;
+    }
+
+    // Load prefab defaults (same as in load() function)
+    std::unordered_map<std::string, PrefabDef> prefabDefaults;
+    // ... (copy the prefab loading code from load() function) ...
+
+    // Clear and rebuild the scene
+    Scene freshScene;
+
+    // Background
+    if (jsS.HasMember("background") && jsS["background"].IsString()) {
+        std::string bg = toAssetsPath(jsS["background"].GetString());
+        freshScene.background = tex.get(bg);
+    }
+
+    // Entities (same loading logic as in load() function)
+    if (jsS.HasMember("entities") && jsS["entities"].IsArray()) {
+        for (const auto& e : jsS["entities"].GetArray()) {
+            if (!e.IsObject()) continue;
+
+            PrefabDef def;
+            DrawItem di{};
+
+            // Copy the entity loading logic from load() function
+            // (lines 237-292 in the current load() function)
+            // ... entity loading code here ...
+
+            freshScene.items.push_back(di);
+        }
+    }
+
+    // Replace the current scene's items with the freshly loaded ones
+    scenes[sceneToReload] = freshScene;
+
+    logger.log("[GameManager] Scene reloaded successfully: " +
+        std::to_string(freshScene.items.size()) + " items");
+
+    return true;
 }

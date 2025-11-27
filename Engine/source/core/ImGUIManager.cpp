@@ -39,38 +39,35 @@ namespace {
 }
 
 void Gui::updateImGuiManager(double& deltaTime, ImGuiManager& imGuiManager) {
-    // update delta/window info
-    imGuiManager.updateDeltaTime(deltaTime);
+	// update delta/window info
+	imGuiManager.updateDeltaTime(deltaTime);
 
-    ImGuiViewport* mainViewport = ImGui::GetMainViewport();
-    imGuiManager.updateWindowTopLeft(mainViewport->Pos);
-    imGuiManager.updateWindowBottomRight({ mainViewport->Pos.x + mainViewport->Size.x, mainViewport->Pos.y + mainViewport->Size.y });
+	ImGuiViewport* mainViewport = ImGui::GetMainViewport();
+	imGuiManager.updateWindowTopLeft(mainViewport->Pos);
+	imGuiManager.updateWindowBottomRight({ mainViewport->Pos.x + mainViewport->Size.x, mainViewport->Pos.y + mainViewport->Size.y });
 
-	//handle external file drops
-	imGuiManager.handleExternalFileDrops();
-
-    // start ImGui frame (needed before creating windows)
-    imGuiManager.startFrame();
+	// start ImGui frame (needed before creating windows)
+	imGuiManager.startFrame();
 
 	//create dockspace
 	imGuiManager.createDockspace();
 
-    // Render the viewport first — this contains renderer/physics/logic and measures those times itself.
-    imGuiManager.showViewportWindowUI();
+	// Render the viewport first — this contains renderer/physics/logic and measures those times itself.
+	imGuiManager.showViewportWindowUI();
 
-    // Measure only the remaining ImGui overhead (exclusive UI time)
-    double imGuiSec = TimeUtils::MeasureSeconds([&]() {
-        imGuiManager.showMousePosOverlayUI();
-        imGuiManager.showPerformanceOverlayUI();
-        imGuiManager.showTransformUI();
-        imGuiManager.showEntityListUI();
-        //imGuiManager.showLogsOverlayUI();
+	// Measure only the remaining ImGui overhead (exclusive UI time)
+	double imGuiSec = TimeUtils::MeasureSeconds([&]() {
+		imGuiManager.showMousePosOverlayUI();
+		imGuiManager.showPerformanceOverlayUI();
+		imGuiManager.showTransformUI();
+		imGuiManager.showEntityListUI();
+		//imGuiManager.showLogsOverlayUI();
 		imGuiManager.showBottomDockUI();
-    });
+		});
 
-    // finish frame and record the exclusive ImGui time
-    imGuiManager.endFrame();
-    imGuiManager.setSystemTimings(imGuiSec);
+	// finish frame and record the exclusive ImGui time
+	imGuiManager.endFrame();
+	imGuiManager.setSystemTimings(imGuiSec);
 }
 
 ImGuiManager::ImGuiManager(Window& w, Renderer& r,
@@ -79,10 +76,11 @@ ImGuiManager::ImGuiManager(Window& w, Renderer& r,
 	GameManager& g, Animal_Logic& l)
 	: mainWindow{ w }, renderer{ r },
 	input{ i }, physics{ p }, audioSystem{ a }, resourceManager{ rm },
-	gsm{ g }, logic{l}, windowTopLeft {}, windowBottomRight{},
+	gsm{ g }, logic{ l }, windowTopLeft{}, windowBottomRight{},
 	deltaTime{ 0.0 }, imGuiTime{ 0.0 }, inputTime{ 0.0 },
 	logicTime{ 0.0 }, renderTime{ 0.0 }, physicsTime{ 0.0 },
-	selectedEntityType{ 0 }, activeInstances{}
+	selectedEntityType{ 0 }, activeInstances{},
+	m_editorMode{ EditorMode::EDIT }  // Initialize to EDIT mode
 {
 	ImGui::CreateContext();
 
@@ -305,21 +303,31 @@ void ImGuiManager::showViewportWindowUI() {
 	}
 	prevF = currF;
 
+	bool isPlayMode = (m_editorMode == EditorMode::PLAY);
 
 	// Logic timing (animal state update)
-	logicTime = TimeUtils::MeasureSeconds([&]() {
-		logic.check_animal_status(gsm);
-		auto drag_value = logic.check_item_status(gsm, get_mousePOS(true), input, mainWindow.handle());
-		logic.update_animal_ALLstate(gsm,getDeltaTime(deltaTime));
-		logic.drag_drop(gsm,get_mousePOS(true),input,mainWindow.handle(),drag_value);
-	});
+	if (isPlayMode) {
+		logicTime = TimeUtils::MeasureSeconds([&]() {
+			logic.check_animal_status(gsm);
+			auto drag_value = logic.check_item_status(
+				gsm, get_mousePOS(true), input, mainWindow.handle());
+			logic.update_animal_ALLstate(gsm, getDeltaTime(deltaTime));
+			logic.drag_drop(gsm, get_mousePOS(true), input, mainWindow.handle(), drag_value);
+			});
+	}
+	else {
+		logicTime = 0.0;
+	}
 
 	// Physics timing scope
-	{
+	if (isPlayMode) {
 		TimeUtils::ScopedTimer t{ physicsTime };
 		physics.update_sprite_movement(renderer, input);
 		physics.update_sprite_scaling(renderer, input);
 		physics.update_sprite_rotation(renderer, input);
+	}
+	else {
+		physicsTime = 0.0;
 	}
 
 	// Render timing scope (includes scene render + debug draw + unbind)
@@ -332,13 +340,14 @@ void ImGuiManager::showViewportWindowUI() {
 		renderer.clear(0.06f, 0.06f, 0.07f);
 
 		// Let GameManager draw scene + HUD text
+		// In edit mode, pass deltaTime as 0 to prevent game state updates
 		gsm.renderWithHUD(
 			renderer,
 			input,
 			mainWindow.handle(),
 			vw,
 			vh,
-			deltaTime,
+			isPlayMode ? deltaTime : 0.0,  // Pass 0 deltaTime in edit mode
 			resourceManager,
 			m_showFPS
 		);
@@ -381,8 +390,8 @@ void ImGuiManager::showViewportWindowUI() {
 
 
 void ImGuiManager::showMousePosOverlayUI() {
-	//constexpr float width = 300.0f;
-	//constexpr float height = 100.0f;
+	constexpr float width = 300.0f;
+	constexpr float height = 100.0f;
 
 	ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDecoration |
 		ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
@@ -394,7 +403,7 @@ void ImGuiManager::showMousePosOverlayUI() {
 	Vector2D screenPosition;
 	//true->get normalized value, false->unnormalized value
 	Vector2D mouse_pos = input.GET_mouse_pos(true, mainWindow.desc().width, mainWindow.desc().height);
-	
+
 	// Position the overlay at the top-right corner of the window
 	/*ImVec2 windowTopRightPos = { windowBottomRight.x - width, windowTopLeft.y };
 	ImGui::SetNextWindowPos(windowTopRightPos);
@@ -411,9 +420,9 @@ void ImGuiManager::showMousePosOverlayUI() {
 }
 
 void ImGuiManager::showPerformanceOverlayUI() {
-	constexpr double secondsToMs =1000.0;
-	//constexpr float width = 300.0f;
-	//constexpr float height = 150.0f;
+	constexpr double secondsToMs = 1000.0;
+	constexpr float width = 300.0f;
+	constexpr float height = 150.0f;
 
 	ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDecoration |
 		ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
@@ -428,11 +437,11 @@ void ImGuiManager::showPerformanceOverlayUI() {
 
 	// Clamp dt to avoid div-by-zero and negative values
 	double dt = deltaTime;
-	if (dt <=0.0) dt =1e-6; // tiny epsilon when paused or first frame
-	ImGui::Text("Current FPS: %.2f (%.2f ms)",1.0 / dt, dt * secondsToMs);
+	if (dt <= 0.0) dt = 1e-6; // tiny epsilon when paused or first frame
+	ImGui::Text("Current FPS: %.2f (%.2f ms)", 1.0 / dt, dt * secondsToMs);
 
 	// Compute percentages against the frame time (dt)
-	auto pct = [dt](double t) -> double { return (t <=0.0) ?0.0 : (t / dt) *100.0; };
+	auto pct = [dt](double t) -> double { return (t <= 0.0) ? 0.0 : (t / dt) * 100.0; };
 
 	// Known subsystem times
 	double imguiMs = imGuiTime * secondsToMs;
@@ -449,7 +458,7 @@ void ImGuiManager::showPerformanceOverlayUI() {
 	ImGui::Separator();
 	ImGui::Text("ImGui: %.2f ms (%.2f%%)", imguiMs, pct(imGuiTime));
 	ImGui::Text("Renderer: %.2f ms (%.2f%%)", renderMs, pct(renderTime));
-	ImGui::Text("Physics: %.2f ms (%.2f%%)", physicsMs, pct(physicsTime));		
+	ImGui::Text("Physics: %.2f ms (%.2f%%)", physicsMs, pct(physicsTime));
 	ImGui::Text("Input: %.2f ms (%.2f%%)", inputMs, pct(inputTime));
 	ImGui::Text("Logic: %.2f ms (%.2f%%)", logicMs, pct(logicTime));
 	ImGui::Text("Other: %.2f ms (%.2f%%)", otherMs, pct(otherSec));
@@ -459,11 +468,11 @@ void ImGuiManager::showPerformanceOverlayUI() {
 
 void ImGuiManager::showEntityListUI(/* Maybe an enum of paramEntityType, Maybe a Reference to a std::vector of objectList?*/) {
 	// Fixed size for entity list window
-	//constexpr float width = 300.0f;
-	//constexpr float height = 300.0f;
+	constexpr float width = 300.0f;
+	constexpr float height = 300.0f;
 
 	ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDecoration |
-		ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | 
+		ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing |
 		ImGuiWindowFlags_NoNav | ImGuiWindowFlags_AlwaysVerticalScrollbar;;
 
 	// Position the overlay at the top-right corner of the window, below performance overlay
@@ -629,8 +638,8 @@ void ImGuiManager::showEntityListUI(/* Maybe an enum of paramEntityType, Maybe a
 		}
 		else
 		{
-			bool isPlayModeScene = (m_editorMode == EditorMode::PLAY);
-			if (isPlayModeScene) {
+			bool isPlayMode = (m_editorMode == EditorMode::PLAY);
+			if (isPlayMode) {
 				ImGui::BeginDisabled();
 			}
 
@@ -684,7 +693,7 @@ void ImGuiManager::showEntityListUI(/* Maybe an enum of paramEntityType, Maybe a
 	if (sceneMut)
 	{
 		ImGui::Separator();
-		
+
 		//disable add/remove in play mode
 		bool isPlayMode = (m_editorMode == EditorMode::PLAY);
 
@@ -693,7 +702,7 @@ void ImGuiManager::showEntityListUI(/* Maybe an enum of paramEntityType, Maybe a
 		}
 
 		//this button will change to load a gameobject,, currently loads just an empty game object
-		if (ImGui::Button("Add New Object")) 
+		if (ImGui::Button("Add New Object"))
 		{
 			//save state for undo
 			pushUndoState("Add New Object");
@@ -711,12 +720,6 @@ void ImGuiManager::showEntityListUI(/* Maybe an enum of paramEntityType, Maybe a
 			ECS& ecs = gsm.getECS();
 			EntityID e = ecs.createEntity();
 			newItem.entityID = e;
-			//default collider settings
-			newItem.hasCollider = true;
-			newItem.colOffsetX = 0.0f;
-			newItem.colOffsetY = 0.0f;
-			newItem.colW = newItem.w;
-			newItem.colH = newItem.h;
 
 			// Add it to the current scene
 			sceneMut->items.push_back(newItem);
@@ -819,26 +822,6 @@ void ImGuiManager::showTransformUI(/* A reference to a vector of object list obj
 		ImGui::EndDisabled();
 	}
 
-	//collision controls
-	ImGui::Separator();
-	ImGui::Text("Collision");
-
-	ImGui::Checkbox("Has Collider", &item.hasCollider);
-
-	if (item.hasCollider)
-	{
-		ImGui::DragFloat("Collider Offset X", &item.colOffsetX, 0.01f, -1.0f, 1.0f);
-		ImGui::DragFloat("Collider Offset Y", &item.colOffsetY, 0.01f, -1.0f, 1.0f);
-		ImGui::DragFloat("Collider Width", &item.colW, 0.01f, 0.0f, 2.0f);
-		ImGui::DragFloat("Collider Height", &item.colH, 0.01f, 0.0f, 2.0f);
-
-		if (ImGui::Button("Reset Collider to Sprite")) {
-			item.colOffsetX = item.colOffsetY = 0.0f;
-			item.colW = item.w;
-			item.colH = item.h;
-		}
-	}
-
 	/*if (changed)
 	{
 		logger.log("[ImGui] Updated transform of " + item.name);
@@ -847,9 +830,9 @@ void ImGuiManager::showTransformUI(/* A reference to a vector of object list obj
 	// @Todo (axewhy): Change this with the selected entity transform. This is only a placeholder
 	static Vector2D position(0.f, 0.f);
 	static Matrix<3> rotationMatrix = Matrix<3>().Identity();
-	static Matrix<3> scaleMatrix = Matrix<3>().Identity();	
+	static Matrix<3> scaleMatrix = Matrix<3>().Identity();
 
-	
+
 	// Position controls
 	ImGui::SliderFloat("Position X", &position.x(), -1000.0f, 1000.0f);
 	ImGui::SliderFloat("Position Y", &position.y(), -1000.0f, 1000.0f);
@@ -1066,20 +1049,20 @@ void ImGuiManager::showTransformUI(/* A reference to a vector of object list obj
 	}
 
 
-    ImGui::End();
+	ImGui::End();
 }
 
 void ImGuiManager::showLogsOverlayUI() {
 	// Fixed size for log window
-	//constexpr float width = 600.0f;
-	//constexpr float height = 200.0f;
+	constexpr float width = 600.0f;
+	constexpr float height = 200.0f;
 
-	//ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoResize;
+	ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoResize;
 	//ImGuiWindowFlags_AlwaysVerticalScrollbar;
 
 	// Position the overlay at the bottom-center of the window
-    /*ImVec2 initialPos = { (windowTopLeft.x + windowBottomRight.x) / 2, windowBottomRight.y };
-    ImGui::SetNextWindowPos(initialPos, ImGuiCond_Always, ImVec2(0.5f, 1.0f));
+	/*ImVec2 initialPos = { (windowTopLeft.x + windowBottomRight.x) / 2, windowBottomRight.y };
+	ImGui::SetNextWindowPos(initialPos, ImGuiCond_Always, ImVec2(0.5f, 1.0f));
 	ImGui::SetNextWindowBgAlpha(0.35f);
 	ImGui::SetNextWindowSize({ width, height });*/
 
@@ -1087,11 +1070,11 @@ void ImGuiManager::showLogsOverlayUI() {
 
 	for (auto const& log : logger.getLogs()) {
 		if (log.find("[ERROR]") != std::string::npos)
-            ImGui::TextColored(ImVec4(255 / 255.f, 130 / 255.f, 130 / 255.f, 1.f), log.c_str());
+			ImGui::TextColored(ImVec4(255 / 255.f, 130 / 255.f, 130 / 255.f, 1.f), log.c_str());
 		else if (log.find("[WARNING]") != std::string::npos)
-            ImGui::TextColored(ImVec4(255 / 255.f, 255 / 255.f, 130 / 255.f, 1.f), log.c_str());
+			ImGui::TextColored(ImVec4(255 / 255.f, 255 / 255.f, 130 / 255.f, 1.f), log.c_str());
 		else if (log.find("[LOG]") != std::string::npos)
-            ImGui::TextColored(ImVec4(33 / 255.f, 165 / 255.f, 57 / 255.f, 1.f), log.c_str());
+			ImGui::TextColored(ImVec4(33 / 255.f, 165 / 255.f, 57 / 255.f, 1.f), log.c_str());
 		else
 			ImGui::TextUnformatted(log.c_str());
 	}
@@ -1392,7 +1375,7 @@ void ImGuiManager::showAssetsBrowserUI() {
 				if (ImGui::Button("Pause")) {
 					auto it = activeInstances.find(rid);
 					if (it != activeInstances.end()) {
-						audioSystem.pauseSound(it->second);  
+						audioSystem.pauseSound(it->second);
 						activeInstances.erase(it);
 					}
 				}
@@ -1504,11 +1487,11 @@ void ImGuiManager::showBottomDockUI()
 
 		if (ImGui::BeginTabItem("Animation Editor"))
 		{
-			showAnimationEditorUI(); 
+			showAnimationEditorUI();
 			ImGui::EndTabItem();
 		}
 
-		if (ImGui::BeginTabItem("Camera")) { 
+		if (ImGui::BeginTabItem("Camera")) {
 			Cam2D_Params p = Cam2D_GetActiveParams();
 			bool changed = false;
 
@@ -1536,43 +1519,43 @@ void ImGuiManager::showBottomDockUI()
 }
 
 void ImGuiManager::showAnimationEditorUI() {
-    //ImGuiWindowFlags flags = ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing;
-    constexpr float width = 400.0f, height = 330.0f;
-    ImVec2 pos{ windowBottomRight.x - width - 780.0f, windowTopLeft.y + 520.0f };
-    ImGui::SetNextWindowPos(pos);
-    ImGui::SetNextWindowSize({ width, height });
-    ImGui::Text("Sprite Animation Editor");
+	ImGuiWindowFlags flags = ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing;
+	constexpr float width = 400.0f, height = 330.0f;
+	ImVec2 pos{ windowBottomRight.x - width - 780.0f, windowTopLeft.y + 520.0f };
+	ImGui::SetNextWindowPos(pos);
+	ImGui::SetNextWindowSize({ width, height });
+	ImGui::Text("Sprite Animation Editor");
 
-    ECS& ecs = gsm.getECS();
+	ECS& ecs = gsm.getECS();
 
-    // Build list of anim-capable entities
-    static int selected = -1;
-    std::vector<EntityID> animEntities;
-    for (EntityID e : ecs.getAllEntities()) {
-        if (ecs.getComponent<SpriteAnimationComponent>(e) && ecs.getComponent<ImageRenderer>(e))
-            animEntities.push_back(e);
-    }
+	// Build list of anim-capable entities
+	static int selected = -1;
+	std::vector<EntityID> animEntities;
+	for (EntityID e : ecs.getAllEntities()) {
+		if (ecs.getComponent<SpriteAnimationComponent>(e) && ecs.getComponent<ImageRenderer>(e))
+			animEntities.push_back(e);
+	}
 
-    if (animEntities.empty()) {
-        ImGui::TextDisabled("No entities with SpriteAnimationComponent.");
-        return;
-    }
+	if (animEntities.empty()) {
+		ImGui::TextDisabled("No entities with SpriteAnimationComponent.");
+		return;
+	}
 
-    // Entity selector
-    if (selected < 0 || selected >= (int)animEntities.size()) selected = 0;
-    if (ImGui::BeginCombo("Entity", std::to_string(animEntities[selected]).c_str())) {
-        for (int i = 0; i < (int)animEntities.size(); ++i) {
-            bool sel = (i == selected);
-            if (ImGui::Selectable(std::to_string(animEntities[i]).c_str(), sel))
-                selected = i;
-            if (sel) ImGui::SetItemDefaultFocus();
-        }
-        ImGui::EndCombo();
-    }
+	// Entity selector
+	if (selected < 0 || selected >= (int)animEntities.size()) selected = 0;
+	if (ImGui::BeginCombo("Entity", std::to_string(animEntities[selected]).c_str())) {
+		for (int i = 0; i < (int)animEntities.size(); ++i) {
+			bool sel = (i == selected);
+			if (ImGui::Selectable(std::to_string(animEntities[i]).c_str(), sel))
+				selected = i;
+			if (sel) ImGui::SetItemDefaultFocus();
+		}
+		ImGui::EndCombo();
+	}
 
-    EntityID eid = animEntities[selected];
-    auto* anim = ecs.getComponent<SpriteAnimationComponent>(eid);
-    //auto* img  = ecs.getComponent<ImageRenderer>(eid);
+	EntityID eid = animEntities[selected];
+	auto* anim = ecs.getComponent<SpriteAnimationComponent>(eid);
+	auto* img = ecs.getComponent<ImageRenderer>(eid);
 
 	bool isPlayMode = (m_editorMode == EditorMode::PLAY);
 	if (isPlayMode) {
@@ -1583,100 +1566,100 @@ void ImGuiManager::showAnimationEditorUI() {
 		ImGui::BeginDisabled();
 	}
 
-    // Current animation
-    if (anim->currentAnim.empty() && !anim->animations.empty())
-        anim->currentAnim = anim->animations.begin()->first;
+	// Current animation
+	if (anim->currentAnim.empty() && !anim->animations.empty())
+		anim->currentAnim = anim->animations.begin()->first;
 
-    // Animation list
-    ImGui::Text("Animations:");
-    if (ImGui::BeginListBox("##animlist", ImVec2(-FLT_MIN, 100))) {
-        for (auto& kv : anim->animations) {
-            bool sel = (kv.first == anim->currentAnim);
-            if (ImGui::Selectable(kv.first.c_str(), sel))
-                anim->currentAnim = kv.first;
-            if (sel) ImGui::SetItemDefaultFocus();
-        }
-        ImGui::EndListBox();
-    }
+	// Animation list
+	ImGui::Text("Animations:");
+	if (ImGui::BeginListBox("##animlist", ImVec2(-FLT_MIN, 100))) {
+		for (auto& kv : anim->animations) {
+			bool sel = (kv.first == anim->currentAnim);
+			if (ImGui::Selectable(kv.first.c_str(), sel))
+				anim->currentAnim = kv.first;
+			if (sel) ImGui::SetItemDefaultFocus();
+		}
+		ImGui::EndListBox();
+	}
 
-    // Edit selected animation
-    if (!anim->currentAnim.empty()) {
-        auto& def = anim->animations[anim->currentAnim];
-        int frames = def.frames;
-        float frameTime = def.frameTime;
-        bool loop = def.loop;
+	// Edit selected animation
+	if (!anim->currentAnim.empty()) {
+		auto& def = anim->animations[anim->currentAnim];
+		int frames = def.frames;
+		float frameTime = def.frameTime;
+		bool loop = def.loop;
 
-        ImGui::DragInt("Frames", &frames, 0.2f, 1, 1024);
-        ImGui::DragFloat("Frame Time", &frameTime, 0.001f, 0.001f, 5.0f, "%.3f");
-        ImGui::Checkbox("Loop", &loop);
+		ImGui::DragInt("Frames", &frames, 0.2f, 1, 1024);
+		ImGui::DragFloat("Frame Time", &frameTime, 0.001f, 0.001f, 5.0f, "%.3f");
+		ImGui::Checkbox("Loop", &loop);
 
-        if (ImGui::Button("Apply Changes")) {
-            def.frames = frames;
-            def.frameTime = frameTime;
-            def.loop = loop;
-            anim->currentFrame = 0;
-            anim->timer = 0.0f;
-            anim->playing = true;
-        }
-        ImGui::SameLine();
-        if (ImGui::Button("Delete Animation") && anim->animations.size() > 1) {
-            anim->animations.erase(anim->currentAnim);
-            if (anim->animations.empty()) anim->currentAnim.clear();
-            else anim->currentAnim = anim->animations.begin()->first;
-            anim->currentFrame = 0;
-            anim->timer = 0.0f;
-        }
-    }
+		if (ImGui::Button("Apply Changes")) {
+			def.frames = frames;
+			def.frameTime = frameTime;
+			def.loop = loop;
+			anim->currentFrame = 0;
+			anim->timer = 0.0f;
+			anim->playing = true;
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("Delete Animation") && anim->animations.size() > 1) {
+			anim->animations.erase(anim->currentAnim);
+			if (anim->animations.empty()) anim->currentAnim.clear();
+			else anim->currentAnim = anim->animations.begin()->first;
+			anim->currentFrame = 0;
+			anim->timer = 0.0f;
+		}
+	}
 
-    ImGui::Separator();
-    // Add new animation
-    static char newName[64] = "";
-    static int newFrames = 1;
-    static float newFrameTime = 0.1f;
-    static bool newLoop = true;
-    static char newSpritePath[256] = "assets/textures/";
-    static int newCols = 1;
-    static int newRows = 1;
+	ImGui::Separator();
+	// Add new animation
+	static char newName[64] = "";
+	static int newFrames = 1;
+	static float newFrameTime = 0.1f;
+	static bool newLoop = true;
+	static char newSpritePath[256] = "assets/textures/";
+	static int newCols = 1;
+	static int newRows = 1;
 
-    ImGui::InputText("New Name", newName, IM_ARRAYSIZE(newName));
-    ImGui::InputText("New Sprite Path", newSpritePath, IM_ARRAYSIZE(newSpritePath));
-    ImGui::DragInt("New Frames", &newFrames, 0.2f, 1, 1024);
-    ImGui::DragFloat("New Frame Time", &newFrameTime, 0.001f, 0.001f, 5.0f, "%.3f");
-    ImGui::Checkbox("New Loop", &newLoop);
-    ImGui::DragInt("New Columns", &newCols, 0.2f, 1, 256);
-    ImGui::DragInt("New Rows", &newRows, 0.2f, 1, 256);
+	ImGui::InputText("New Name", newName, IM_ARRAYSIZE(newName));
+	ImGui::InputText("New Sprite Path", newSpritePath, IM_ARRAYSIZE(newSpritePath));
+	ImGui::DragInt("New Frames", &newFrames, 0.2f, 1, 1024);
+	ImGui::DragFloat("New Frame Time", &newFrameTime, 0.001f, 0.001f, 5.0f, "%.3f");
+	ImGui::Checkbox("New Loop", &newLoop);
+	ImGui::DragInt("New Columns", &newCols, 0.2f, 1, 256);
+	ImGui::DragInt("New Rows", &newRows, 0.2f, 1, 256);
 
-    if (ImGui::Button("Add Animation") && newName[0]) {
-        SpriteAnimationComponent::Animation a{};
-        a.frames = newFrames;
-        a.frameTime = newFrameTime;
-        a.loop = newLoop;
-        a.sheetColumns = newCols;
-        a.sheetRows = newRows;
-        if (newSpritePath[0]) {
-            std::string p = newSpritePath;
-            if (p.rfind("assets/", 0) != 0) p = "assets/" + p;
-            a.spritePath = p;
-        }
-        anim->animations[newName] = a;
-        anim->currentAnim = newName;
-        anim->currentFrame = 0;
-        anim->timer = 0.0f;
-        anim->playing = true;
-        newName[0] = '\0';
-    }
+	if (ImGui::Button("Add Animation") && newName[0]) {
+		SpriteAnimationComponent::Animation a{};
+		a.frames = newFrames;
+		a.frameTime = newFrameTime;
+		a.loop = newLoop;
+		a.sheetColumns = newCols;
+		a.sheetRows = newRows;
+		if (newSpritePath[0]) {
+			std::string p = newSpritePath;
+			if (p.rfind("assets/", 0) != 0) p = "assets/" + p;
+			a.spritePath = p;
+		}
+		anim->animations[newName] = a;
+		anim->currentAnim = newName;
+		anim->currentFrame = 0;
+		anim->timer = 0.0f;
+		anim->playing = true;
+		newName[0] = '\0';
+	}
 
-    // Playback controls
-    ImGui::Separator();
-    ImGui::Text("Playback:");
-    if (ImGui::Button(anim->playing ? "Pause" : "Play"))
-        anim->playing = !anim->playing;
-    ImGui::SameLine();
-    if (ImGui::Button("Restart")) {
-        anim->currentFrame = 0;
-        anim->timer = 0.0f;
-        anim->playing = true;
-    }
+	// Playback controls
+	ImGui::Separator();
+	ImGui::Text("Playback:");
+	if (ImGui::Button(anim->playing ? "Pause" : "Play"))
+		anim->playing = !anim->playing;
+	ImGui::SameLine();
+	if (ImGui::Button("Restart")) {
+		anim->currentFrame = 0;
+		anim->timer = 0.0f;
+		anim->playing = true;
+	}
 
 	if (isPlayMode) {
 		ImGui::EndDisabled();
@@ -1740,49 +1723,49 @@ void ImGuiManager::createDockspace() {
 			ImGui::EndMenu();
 		}
 
-			ImGui::Separator();
+		ImGui::Separator();
 
-			// Calculate center position
-			float menuBarWidth = ImGui::GetContentRegionAvail().x + ImGui::GetCursorPosX();
-			float buttonWidth = 100.0f;
-			float centerPos = (menuBarWidth * 0.5f) - (buttonWidth * 0.5f);
-			ImGui::SetCursorPosX(centerPos);
+		// Calculate center position
+		float menuBarWidth = ImGui::GetContentRegionAvail().x + ImGui::GetCursorPosX();
+		float buttonWidth = 100.0f;
+		float centerPos = (menuBarWidth * 0.5f) - (buttonWidth * 0.5f);
+		ImGui::SetCursorPosX(centerPos);
 
-			if (m_editorMode == EditorMode::EDIT) {
-				// Green Play button
-				ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.2f, 0.7f, 0.3f, 1.0f));
-				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.3f, 0.8f, 0.4f, 1.0f));
-				ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.1f, 0.6f, 0.2f, 1.0f));
-				if (ImGui::Button("Play", ImVec2(buttonWidth, 0))) {
-					onPlayButtonPressed();
-				}
-				ImGui::PopStyleColor(3);
+		if (m_editorMode == EditorMode::EDIT) {
+			// Green Play button
+			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.2f, 0.7f, 0.3f, 1.0f));
+			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.3f, 0.8f, 0.4f, 1.0f));
+			ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.1f, 0.6f, 0.2f, 1.0f));
+			if (ImGui::Button("Play", ImVec2(buttonWidth, 0))) {
+				onPlayButtonPressed();
 			}
-			else {
-				// Red Stop button
-				ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.7f, 0.2f, 0.2f, 1.0f));
-				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.8f, 0.3f, 0.3f, 1.0f));
-				ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.6f, 0.1f, 0.1f, 1.0f));
-				if (ImGui::Button("Stop", ImVec2(buttonWidth, 0))) {
-					onStopButtonPressed();
-				}
-				ImGui::PopStyleColor(3);
+			ImGui::PopStyleColor(3);
+		}
+		else {
+			// Red Stop button
+			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.7f, 0.2f, 0.2f, 1.0f));
+			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.8f, 0.3f, 0.3f, 1.0f));
+			ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.6f, 0.1f, 0.1f, 1.0f));
+			if (ImGui::Button("Stop", ImVec2(buttonWidth, 0))) {
+				onStopButtonPressed();
 			}
-
-			// Show current mode
-			ImGui::Separator();
-			ImGui::Text("Mode:");
-			ImGui::SameLine();
-			if (m_editorMode == EditorMode::EDIT) {
-				ImGui::TextColored(ImVec4(0.2f, 0.8f, 0.3f, 1.0f), "EDIT");
-			}
-			else {
-				ImGui::TextColored(ImVec4(1.0f, 0.6f, 0.2f, 1.0f), "PLAY");
-			}
+			ImGui::PopStyleColor(3);
 		}
 
-		ImGui::EndMenuBar();
-	
+		// Show current mode
+		ImGui::Separator();
+		ImGui::Text("Mode:");
+		ImGui::SameLine();
+		if (m_editorMode == EditorMode::EDIT) {
+			ImGui::TextColored(ImVec4(0.2f, 0.8f, 0.3f, 1.0f), "EDIT");
+		}
+		else {
+			ImGui::TextColored(ImVec4(1.0f, 0.6f, 0.2f, 1.0f), "PLAY");
+		}
+	}
+
+	ImGui::EndMenuBar();
+
 
 	ImGui::End();
 }
@@ -1880,7 +1863,19 @@ void ImGuiManager::saveSceneSnapshot() {
 		m_savedSceneState += "\"w\":" + std::to_string(item.w) + ",";
 		m_savedSceneState += "\"h\":" + std::to_string(item.h) + ",";
 		m_savedSceneState += "\"angle\":" + std::to_string(item.angle) + ",";
-		m_savedSceneState += "\"tex\":" + std::to_string(item.tex);
+		m_savedSceneState += "\"tex\":" + std::to_string(item.tex) + ",";
+
+		// CRITICAL: Save animal-specific properties
+		m_savedSceneState += "\"item_type\":\"" + item.item_type + "\",";
+		m_savedSceneState += "\"health_bar\":" + std::to_string(item.health_bar) + ",";
+		m_savedSceneState += "\"hunger_bar\":" + std::to_string(item.hunger_bar) + ",";
+		m_savedSceneState += "\"sanity_bar\":" + std::to_string(item.sanity_bar) + ",";
+		m_savedSceneState += "\"still_alive\":" + std::string(item.still_alive ? "true" : "false") + ",";
+		m_savedSceneState += "\"is_draggable\":" + std::string(item.is_draggable ? "true" : "false") + ",";
+		m_savedSceneState += "\"is_dragging\":" + std::string(item.is_dragging ? "true" : "false") + ",";
+		m_savedSceneState += "\"acc_timer\":" + std::to_string(item.acc_timer) + ",";
+		m_savedSceneState += "\"staring_countdown\":" + std::to_string(item.staring_countdown);
+
 		m_savedSceneState += "}";
 
 		if (i < scene->items.size() - 1) m_savedSceneState += ",";
@@ -1888,7 +1883,7 @@ void ImGuiManager::saveSceneSnapshot() {
 
 	m_savedSceneState += "]";
 
-	logger.log("Scene snapshot saved (" + std::to_string(scene->items.size()) + " items)");
+	logger.log("Scene snapshot saved (" + std::to_string(scene->items.size()) + " items) with full animal state");
 }
 
 void ImGuiManager::restoreSceneSnapshot() {
@@ -1916,9 +1911,17 @@ void ImGuiManager::restoreSceneSnapshot() {
 		if (endPos == std::string::npos) break;
 
 		std::string objStr = json.substr(pos, endPos - pos + 1);
-		DrawItem item;
+		DrawItem item{};
+
+		// Explicitly set critical values to known defaults
+		item.health_bar = 0.0f;
+		item.hunger_bar = 0.0f;
+		item.sanity_bar = 0.0f;
+		item.acc_timer = 0.0f;
+		item.staring_countdown = 10.0f;
 
 		// Parse fields (simplified)
+		/*
 		auto getValue = [](const std::string& str, const std::string& key) -> std::string {
 			size_t keyPos = str.find("\"" + key + "\":");
 			if (keyPos == std::string::npos) return "";
@@ -1932,6 +1935,36 @@ void ImGuiManager::restoreSceneSnapshot() {
 
 			return value;
 			};
+		*/
+		auto getValue = [](const std::string& str, const std::string& key) -> std::string {
+			size_t keyPos = str.find("\"" + key + "\":");
+			if (keyPos == std::string::npos) return "";
+
+			keyPos = str.find(":", keyPos) + 1;
+
+			// Skip whitespace
+			while (keyPos < str.length() && (str[keyPos] == ' ' || str[keyPos] == '\t')) {
+				keyPos++;
+			}
+
+			size_t endPos = str.find_first_of(",}", keyPos);
+			if (endPos == std::string::npos) return "";  // ← ADDED: Safety check
+
+			std::string value = str.substr(keyPos, endPos - keyPos);
+
+			// Trim whitespace from end
+			while (!value.empty() && (value.back() == ' ' || value.back() == '\t')) {
+				value.pop_back();
+			}
+
+			// Remove quotes if present (with safety check)
+			if (!value.empty() && value.length() >= 2 &&  // ← ADDED: Safety checks
+				value.front() == '"' && value.back() == '"') {
+				value = value.substr(1, value.length() - 2);
+			}
+
+			return value;
+			};
 
 		item.name = getValue(objStr, "name");
 		item.x = std::stof(getValue(objStr, "x"));
@@ -1941,11 +1974,57 @@ void ImGuiManager::restoreSceneSnapshot() {
 		item.angle = std::stof(getValue(objStr, "angle"));
 		item.tex = std::stoul(getValue(objStr, "tex"));
 
+		// CRITICAL: Restore animal-specific properties
+		std::string itemType = getValue(objStr, "item_type");
+		if (!itemType.empty()) {
+			item.item_type = itemType;
+		}
+
+		std::string healthStr = getValue(objStr, "health_bar");
+		if (!healthStr.empty()) {
+			item.health_bar = std::stof(healthStr);
+		}
+
+		std::string hungerStr = getValue(objStr, "hunger_bar");
+		if (!hungerStr.empty()) {
+			item.hunger_bar = std::stof(hungerStr);
+		}
+
+		std::string sanityStr = getValue(objStr, "sanity_bar");
+		if (!sanityStr.empty()) {
+			item.sanity_bar = std::stof(sanityStr);
+		}
+
+		std::string aliveStr = getValue(objStr, "still_alive");
+		if (!aliveStr.empty()) {
+			item.still_alive = (aliveStr == "true" || aliveStr == "1");
+		}
+
+		std::string draggableStr = getValue(objStr, "is_draggable");
+		if (!draggableStr.empty()) {
+			item.is_draggable = (draggableStr == "true" || draggableStr == "1");
+		}
+
+		std::string draggingStr = getValue(objStr, "is_dragging");
+		if (!draggingStr.empty()) {
+			item.is_dragging = (draggingStr == "true" || draggingStr == "1");
+		}
+
+		std::string accTimerStr = getValue(objStr, "acc_timer");
+		if (!accTimerStr.empty()) {
+			item.acc_timer = std::stof(accTimerStr);
+		}
+
+		std::string staringStr = getValue(objStr, "staring_countdown");
+		if (!staringStr.empty()) {
+			item.staring_countdown = std::stof(staringStr);
+		}
+
 		scene->items.push_back(item);
 		pos = endPos + 1;
 	}
 
-	logger.log("Scene snapshot restored (" + std::to_string(scene->items.size()) + " items)");
+	logger.log("Scene snapshot restored (" + std::to_string(scene->items.size()) + " items) with full animal state");
 	m_savedSceneState.clear();
 }
 
@@ -1954,8 +2033,13 @@ void ImGuiManager::onPlayButtonPressed() {
 
 	logger.log("=== ENTERING PLAY MODE ===");
 
-	// Save current scene state
-	saveSceneSnapshot();
+	// Save initial state ONLY on the first play
+	if (!m_hasInitialState) {
+		saveSceneSnapshot();
+		m_initialSceneState = m_savedSceneState;  // Store as initial
+		m_hasInitialState = true;
+		logger.log("Initial scene state stored");
+	}
 
 	// Switch to play mode
 	m_editorMode = EditorMode::PLAY;
@@ -1968,13 +2052,37 @@ void ImGuiManager::onStopButtonPressed() {
 
 	logger.log("=== EXITING PLAY MODE ===");
 
-	// Restore scene to pre-play state
-	restoreSceneSnapshot();
+	// Get current scene and reset all animal values to defaults
+	Scene* scene = gsm.getCurrentScene();
+	if (scene) {
+		for (auto& item : scene->items) {
+			if (item.item_type == "animal") {
+				// Reset bars to full
+				item.health_bar = 100.0f;
+				item.hunger_bar = 100.0f;
+				item.sanity_bar = 100.0f;
+
+				// Reset timers
+				item.acc_timer = 0.0f;
+				item.staring_countdown = 10.0f;
+
+				// Reset status
+				item.still_alive = true;
+				item.is_dragging = false;
+			}
+		}
+	}
+
+	// Switch back to the main menu scene
+	gsm.requestScene("MainMenu");
+
+	// Set app state to Menu (locks number keys, enables menu buttons)
+	gsm.goToMenu();
 
 	// Switch back to edit mode
 	m_editorMode = EditorMode::EDIT;
 
-	logger.log("Edit mode restored");
+	logger.log("Edit mode restored - returned to menu");
 }
 
 void ImGuiManager::pushUndoState(const char* reason)
@@ -2154,54 +2262,5 @@ void ImGuiManager::handleViewportPicking(const ImVec2& imgMin,
 	if (!ImGui::IsMouseDown(ImGuiMouseButton_Left)) {
 		m_isDragging = false;
 		m_draggedItem = -1;
-	}
-}
-
-void ImGuiManager::handleExternalFileDrops()
-{
-	//get & clear any file paths dropped onto the GLFW window
-	auto files = mainWindow.consumeDroppedFiles();
-	if (files.empty())
-		return;
-
-	logger.log("[Drop] handleExternalFileDrops: got " + std::to_string(files.size()) + " file(s)");
-
-	for (const std::string& src : files)
-	{
-		try {
-			std::filesystem::path srcPath(src);
-
-			//only support images for now
-			std::string ext = srcPath.extension().string();
-			std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
-			if (ext != ".png" && ext != ".jpg" && ext != ".jpeg" && ext != ".bmp")
-			{
-				logger.warning("[Drop] Ignored non-image file: " + src);
-				continue;
-			}
-
-			// Copy into assets/textures
-			std::filesystem::path destFolder = "assets/textures";
-			std::filesystem::create_directories(destFolder);
-
-			std::filesystem::path dest = destFolder / srcPath.filename();
-			std::filesystem::copy_file(
-				srcPath, dest,
-				std::filesystem::copy_options::overwrite_existing
-			);
-
-			//register with ResourceManager so it appears in the thumbnail list
-			std::string key = dest.stem().string();
-			std::string fullPath = dest.string();
-
-			resourceManager.loadTexture(key, fullPath);
-			resourceManager.getGLTextureFromFile(fullPath); // create GL texture
-
-			logger.log("[Drop] Imported texture via OS drag-drop: " + fullPath);
-		}
-		catch (const std::exception& e)
-		{
-			logger.error(std::string("[Drop] Failed to import dropped file: ") + e.what());
-		}
 	}
 }

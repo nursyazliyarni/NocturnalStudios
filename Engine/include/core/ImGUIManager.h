@@ -153,6 +153,9 @@ private:
 	//undo helpers
 	void pushUndoState(const char* reason = nullptr);
 	void undoLastAction();
+
+	bool m_hasInitialState = false;
+	std::string m_initialSceneState;
 };
 
 

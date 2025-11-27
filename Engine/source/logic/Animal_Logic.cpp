@@ -81,20 +81,30 @@ void Animal_Logic::update_animal_sanity(GameManager& gm, double deltaTime) {
 		for (auto& [scene, scene_data] : gm.get_scenes_map()) {
 			for (auto& animal : scene_data.items) {
 				if (animal.still_alive && animal.name == to_string(Animal_type::Flamingo)) {
-					static double acc_timer{ 0 };
+					//static double acc_timer{ 0 };
+					//if (gm.current() != to_string(Animal_type::Flamingo)) {
+					//	//acc_timer is to calculate the time player is not viewing it in the cameras
+					//    acc_timer += deltaTime;
+					//}
+
+					//else {
+					//	acc_timer = 0; //reset this timer if player is viewing flamingo currently
+					//}
+
+					//if (acc_timer > 3) {
+					//	//sanity of flamingo decrease faster when player is not viewing it in the cameras
+					//	animal.sanity_bar -= animal.penalty_decreasing_rate * deltaTime;
+					//	//logger.log("warning: please view the flamingo in the camera");
+					//}
 					if (gm.current() != to_string(Animal_type::Flamingo)) {
-						//acc_timer is to calculate the time player is not viewing it in the cameras
-					    acc_timer += deltaTime;
+						animal.acc_timer += deltaTime;  
 					}
-
 					else {
-						acc_timer = 0; //reset this timer if player is viewing flamingo currently
+						animal.acc_timer = 0;  
 					}
 
-					if (acc_timer > 3) {
-						//sanity of flamingo decrease faster when player is not viewing it in the cameras
+					if (animal.acc_timer > 3) {  
 						animal.sanity_bar -= animal.penalty_decreasing_rate * deltaTime;
-						//logger.log("warning: please view the flamingo in the camera");
 					}
 
 					else {
@@ -114,12 +124,20 @@ void Animal_Logic::update_animal_sanity(GameManager& gm, double deltaTime) {
 				else if (animal.still_alive && animal.name == to_string(Animal_type::Seal)) {
 					animal.sanity_bar -= animal.normal_decreasing_rate * deltaTime; //sanity of seal decrease normally
 					if (stats.action == Zookeeper_action::staring) {
-						static double static_staring_countdown{ 10 };
-						static_staring_countdown -= 0.5;
-						if (static_staring_countdown <= 0) {
-							//when players look at it for more than x seconds, bar goes down faster
-							animal.sanity_bar -= animal.penalty_decreasing_rate * deltaTime; //sanity of seal decrease faster
+						//static double static_staring_countdown{ 10 };
+						//static_staring_countdown -= 0.5;
+						//if (static_staring_countdown <= 0) {
+						//	//when players look at it for more than x seconds, bar goes down faster
+						//	animal.sanity_bar -= animal.penalty_decreasing_rate * deltaTime; //sanity of seal decrease faster
+						//}
+						animal.staring_countdown -= 0.5;  // USE animal.staring_countdown
+						if (animal.staring_countdown <= 0) {  //USE animal.staring_countdown
+							animal.sanity_bar -= animal.penalty_decreasing_rate * deltaTime;
 						}
+					}
+					else {
+						// Reset countdown when not staring
+						animal.staring_countdown = 10.0f;
 					}
 				}
 			}
@@ -176,9 +194,10 @@ std::optional<ImVec2> Animal_Logic::check_item_status(GameManager& gm, ImVec2 mo
 void Animal_Logic::drag_drop(GameManager& gm, ImVec2 mouse_pos, Input& input, GLFWwindow* window, std::optional<ImVec2> drag_value)
 {
 	auto& item_data{ gm.get_duplicate_item() };
-	static bool feeding{ false };
+	//static bool feeding{ false };
 	if (gm.isPlaying()) { 
-		if (item_data && drag_value.has_value() && !feeding) {
+		//if (item_data && drag_value.has_value() && !feeding ) {
+		if (item_data && drag_value.has_value()) {
 			item_data->x = mouse_pos.x + drag_value.value().x;
 			item_data->y = mouse_pos.y + drag_value.value().y;
 			for (auto& animal : gm.getCurrentScene()->items) {
@@ -186,7 +205,7 @@ void Animal_Logic::drag_drop(GameManager& gm, ImVec2 mouse_pos, Input& input, GL
 					if (checkCollision(animal.x, animal.y, animal.w, animal.h, item_data->x, item_data->y, item_data->w, item_data->h)
 						&&item_data->item_type == "food")
 					{
-						feeding = true;
+						//feeding = true;
 						animal.hunger_bar += 20;
 						if (animal.hunger_bar >= 100) {
 							animal.hunger_bar = 100;
@@ -197,7 +216,7 @@ void Animal_Logic::drag_drop(GameManager& gm, ImVec2 mouse_pos, Input& input, GL
 					else if (checkCollision(animal.x, animal.y, animal.w, animal.h, item_data->x, item_data->y, item_data->w, item_data->h)
 						&& item_data->item_type == "medicine")
 					{
-						feeding = true;
+						//feeding = true;
 						animal.health_bar += 20;
 						if (animal.health_bar >= 100) {
 							animal.health_bar = 100;
@@ -208,7 +227,7 @@ void Animal_Logic::drag_drop(GameManager& gm, ImVec2 mouse_pos, Input& input, GL
 					else if (checkCollision(animal.x, animal.y, animal.w, animal.h, item_data->x, item_data->y, item_data->w, item_data->h)
 						&& item_data->item_type == "toy")
 					{
-						feeding = true;
+						//feeding = true;
 						animal.sanity_bar += 20;
 						if (animal.sanity_bar >= 100) {
 							animal.sanity_bar = 100;
@@ -220,7 +239,7 @@ void Animal_Logic::drag_drop(GameManager& gm, ImVec2 mouse_pos, Input& input, GL
 		}
 
 		if (input.isLeftMouseReleased(window)) {
-			feeding = false;
+			//feeding = false;
 			item_data.reset(); //The unique_ptr releases ownership
 		}
 	}

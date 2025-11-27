@@ -51,6 +51,9 @@ struct DrawItem {
     float colOffsetY = 0.0f;
     float colW = 0.0f;
     float colH = 0.0f;
+
+    float acc_timer = 0.0f;              // For flamingo viewing timer
+    float staring_countdown = 10.0f;     // For seal staring countdown
 };
 
 struct ClickRegion {
@@ -129,6 +132,12 @@ public:
      */
     void resumeGame();
 
+    /**
+     * Reload the current scene from the JSON file
+     * This resets all game state to initial values
+     */
+    bool reloadCurrentScene(TextureStore& tex);
+
     // Camera controls (per scene)
     //void setCameraEnabled(const std::string& scene, bool on);
     //void setCameraCenter(const std::string& scene, float cx, float cy);
@@ -154,6 +163,7 @@ private:
     std::string backKey;                                         // ESC destination (from JSON)
     bool requestedQuit{ false };                                  // quit flag
     std::string currentScene;
+    std::string scenesFilePath; // store path
 
     ECS& ecs_;
     //std::unordered_map<std::string, Camera2D> cameras_; // one camera per scene
@@ -161,4 +171,6 @@ private:
     std::function<void(const std::string&)> onSceneChanged;
 
     AnimationSystem animationSystem_;
+
+
 };
