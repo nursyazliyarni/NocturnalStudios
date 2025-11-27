@@ -46,6 +46,9 @@ void Gui::updateImGuiManager(double& deltaTime, ImGuiManager& imGuiManager) {
     imGuiManager.updateWindowTopLeft(mainViewport->Pos);
     imGuiManager.updateWindowBottomRight({ mainViewport->Pos.x + mainViewport->Size.x, mainViewport->Pos.y + mainViewport->Size.y });
 
+	//handle external file drops
+	imGuiManager.handleExternalFileDrops();
+
     // start ImGui frame (needed before creating windows)
     imGuiManager.startFrame();
 
@@ -378,8 +381,8 @@ void ImGuiManager::showViewportWindowUI() {
 
 
 void ImGuiManager::showMousePosOverlayUI() {
-	constexpr float width = 300.0f;
-	constexpr float height = 100.0f;
+	//constexpr float width = 300.0f;
+	//constexpr float height = 100.0f;
 
 	ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDecoration |
 		ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
@@ -409,8 +412,8 @@ void ImGuiManager::showMousePosOverlayUI() {
 
 void ImGuiManager::showPerformanceOverlayUI() {
 	constexpr double secondsToMs =1000.0;
-	constexpr float width = 300.0f;
-	constexpr float height = 150.0f;
+	//constexpr float width = 300.0f;
+	//constexpr float height = 150.0f;
 
 	ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDecoration |
 		ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
@@ -456,8 +459,8 @@ void ImGuiManager::showPerformanceOverlayUI() {
 
 void ImGuiManager::showEntityListUI(/* Maybe an enum of paramEntityType, Maybe a Reference to a std::vector of objectList?*/) {
 	// Fixed size for entity list window
-	constexpr float width = 300.0f;
-	constexpr float height = 300.0f;
+	//constexpr float width = 300.0f;
+	//constexpr float height = 300.0f;
 
 	ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDecoration |
 		ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | 
@@ -626,8 +629,8 @@ void ImGuiManager::showEntityListUI(/* Maybe an enum of paramEntityType, Maybe a
 		}
 		else
 		{
-			bool isPlayMode = (m_editorMode == EditorMode::PLAY);
-			if (isPlayMode) {
+			bool isPlayModeScene = (m_editorMode == EditorMode::PLAY);
+			if (isPlayModeScene) {
 				ImGui::BeginDisabled();
 			}
 
@@ -708,6 +711,12 @@ void ImGuiManager::showEntityListUI(/* Maybe an enum of paramEntityType, Maybe a
 			ECS& ecs = gsm.getECS();
 			EntityID e = ecs.createEntity();
 			newItem.entityID = e;
+			//default collider settings
+			newItem.hasCollider = true;
+			newItem.colOffsetX = 0.0f;
+			newItem.colOffsetY = 0.0f;
+			newItem.colW = newItem.w;
+			newItem.colH = newItem.h;
 
 			// Add it to the current scene
 			sceneMut->items.push_back(newItem);
@@ -808,6 +817,26 @@ void ImGuiManager::showTransformUI(/* A reference to a vector of object list obj
 
 	if (isPlayMode) {
 		ImGui::EndDisabled();
+	}
+
+	//collision controls
+	ImGui::Separator();
+	ImGui::Text("Collision");
+
+	ImGui::Checkbox("Has Collider", &item.hasCollider);
+
+	if (item.hasCollider)
+	{
+		ImGui::DragFloat("Collider Offset X", &item.colOffsetX, 0.01f, -1.0f, 1.0f);
+		ImGui::DragFloat("Collider Offset Y", &item.colOffsetY, 0.01f, -1.0f, 1.0f);
+		ImGui::DragFloat("Collider Width", &item.colW, 0.01f, 0.0f, 2.0f);
+		ImGui::DragFloat("Collider Height", &item.colH, 0.01f, 0.0f, 2.0f);
+
+		if (ImGui::Button("Reset Collider to Sprite")) {
+			item.colOffsetX = item.colOffsetY = 0.0f;
+			item.colW = item.w;
+			item.colH = item.h;
+		}
 	}
 
 	/*if (changed)
@@ -1042,10 +1071,10 @@ void ImGuiManager::showTransformUI(/* A reference to a vector of object list obj
 
 void ImGuiManager::showLogsOverlayUI() {
 	// Fixed size for log window
-	constexpr float width = 600.0f;
-	constexpr float height = 200.0f;
+	//constexpr float width = 600.0f;
+	//constexpr float height = 200.0f;
 
-	ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoResize;
+	//ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoResize;
 	//ImGuiWindowFlags_AlwaysVerticalScrollbar;
 
 	// Position the overlay at the bottom-center of the window
@@ -1507,7 +1536,7 @@ void ImGuiManager::showBottomDockUI()
 }
 
 void ImGuiManager::showAnimationEditorUI() {
-    ImGuiWindowFlags flags = ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing;
+    //ImGuiWindowFlags flags = ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing;
     constexpr float width = 400.0f, height = 330.0f;
     ImVec2 pos{ windowBottomRight.x - width - 780.0f, windowTopLeft.y + 520.0f };
     ImGui::SetNextWindowPos(pos);
@@ -1543,7 +1572,7 @@ void ImGuiManager::showAnimationEditorUI() {
 
     EntityID eid = animEntities[selected];
     auto* anim = ecs.getComponent<SpriteAnimationComponent>(eid);
-    auto* img  = ecs.getComponent<ImageRenderer>(eid);
+    //auto* img  = ecs.getComponent<ImageRenderer>(eid);
 
 	bool isPlayMode = (m_editorMode == EditorMode::PLAY);
 	if (isPlayMode) {
@@ -2125,5 +2154,54 @@ void ImGuiManager::handleViewportPicking(const ImVec2& imgMin,
 	if (!ImGui::IsMouseDown(ImGuiMouseButton_Left)) {
 		m_isDragging = false;
 		m_draggedItem = -1;
+	}
+}
+
+void ImGuiManager::handleExternalFileDrops()
+{
+	//get & clear any file paths dropped onto the GLFW window
+	auto files = mainWindow.consumeDroppedFiles();
+	if (files.empty())
+		return;
+
+	logger.log("[Drop] handleExternalFileDrops: got " + std::to_string(files.size()) + " file(s)");
+
+	for (const std::string& src : files)
+	{
+		try {
+			std::filesystem::path srcPath(src);
+
+			//only support images for now
+			std::string ext = srcPath.extension().string();
+			std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
+			if (ext != ".png" && ext != ".jpg" && ext != ".jpeg" && ext != ".bmp")
+			{
+				logger.warning("[Drop] Ignored non-image file: " + src);
+				continue;
+			}
+
+			// Copy into assets/textures
+			std::filesystem::path destFolder = "assets/textures";
+			std::filesystem::create_directories(destFolder);
+
+			std::filesystem::path dest = destFolder / srcPath.filename();
+			std::filesystem::copy_file(
+				srcPath, dest,
+				std::filesystem::copy_options::overwrite_existing
+			);
+
+			//register with ResourceManager so it appears in the thumbnail list
+			std::string key = dest.stem().string();
+			std::string fullPath = dest.string();
+
+			resourceManager.loadTexture(key, fullPath);
+			resourceManager.getGLTextureFromFile(fullPath); // create GL texture
+
+			logger.log("[Drop] Imported texture via OS drag-drop: " + fullPath);
+		}
+		catch (const std::exception& e)
+		{
+			logger.error(std::string("[Drop] Failed to import dropped file: ") + e.what());
+		}
 	}
 }

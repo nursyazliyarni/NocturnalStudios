@@ -4,5 +4,6 @@
         "height": 720,
         "title": "NocturnalStudios",
         "vsync": true
-    }
+    },
+    "imGUI":false
 }

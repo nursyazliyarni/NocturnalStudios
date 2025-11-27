@@ -15,6 +15,10 @@ target_include_directories(Engine PUBLIC
   ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
+if (MSVC)
+  target_compile_options(Engine PRIVATE /W4 /MP)
+endif()
+
 if (NS_HAVE_GLFW)
   target_link_libraries(Engine PUBLIC glfw)
   target_compile_definitions(Engine PUBLIC USE_GLFW=1)

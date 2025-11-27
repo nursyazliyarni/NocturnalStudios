@@ -16,7 +16,7 @@ AppPublisherURL=http://www.digipen.edu/
 AppSupportURL=http://www.digipen.edu/
 
 ; Default install folder, under Program Files
-DefaultDirName={pf}\DigiPen\NocturnalGame
+DefaultDirName={userdocs}\DigiPen\NocturnalGame
 
 ; Start menu folder
 DefaultGroupName=DigiPen\NocturnalGame

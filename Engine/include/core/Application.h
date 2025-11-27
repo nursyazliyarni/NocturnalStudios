@@ -122,6 +122,17 @@ public:
      */
     void onIconifyChanged(bool iconified);
 
+    /**
+     * @brief Handle external file drop (GLFW drop callback)
+     *
+     * Called when files are dragged and dropped onto the window.
+     * This can be used to load assets like scenes, textures or fonts at runtime.
+     *
+     * @param count The number of dropped files.
+     * @param paths The array of file paths (UTF-8 encoded strings).
+     */
+    void onFilesDropped(int count, const char** paths);
+
 private: // window and context
     Window m_window;
     bool imGUIVisible{ false };

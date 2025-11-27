@@ -20,7 +20,7 @@
 
 	Secondary Authod
 		Xiang Yang
-		- FBO
+		- Full Screen mode toggle
 
 	Secondary Author:
 		Chang Qi Xuan Celest (35%)
@@ -50,12 +50,11 @@
 #include <cstdlib>
 #include <ctime>
 
+#define UNUSED(x) (void)(x)  // To suppress unused variable warnings
+
+
 
 extern void Prefab_SetTextureLookup(std::function<int(const std::string&)>);
-
-
-
-
 
 
 // --- Very simple random drift for any entity with AI + Physics (no fancy RNG) ---
@@ -63,8 +62,8 @@ static void UpdateRandomDrift(ECS& ecs, double dt) {
 	if (dt <= 0.0) return;
 
 	// Seed std::rand once
-	static bool seeded = false;
-	if (!seeded) { std::srand(static_cast<unsigned>(std::time(nullptr))); seeded = true; }
+	static bool s_seeded = false;
+	if (!s_seeded) { std::srand(static_cast<unsigned>(std::time(nullptr))); s_seeded = true; }
 
 	// Per-entity drift state (heading + timer for next small turn)
 	struct DriftState { float heading = 0.0f; float nextTurn = 0.0f; };
@@ -165,11 +164,17 @@ namespace {
 
 	static Application* s_App = nullptr;
 	static void App_OnGlfwFocus(GLFWwindow* window, int focused) {
+		UNUSED(window);
 		if (s_App) s_App->onFocusChanged(focused == GLFW_TRUE);
 	}
 
 	static void App_OnGlfwIconify(GLFWwindow* window, int iconified) {
+		UNUSED(window);
 		if (s_App) s_App->onIconifyChanged(iconified == GLFW_TRUE);
+	}
+	static void App_OnGlfwDrop(GLFWwindow* window, int count, const char** paths) {
+		UNUSED(window);
+		if (s_App) s_App->onFilesDropped(count, paths);
 	}
 }
 
@@ -252,6 +257,7 @@ void Application::init() {
 	s_App = this;
 	glfwSetWindowFocusCallback(m_window.handle(), App_OnGlfwFocus);
 	glfwSetWindowIconifyCallback(m_window.handle(), App_OnGlfwIconify);
+	glfwSetDropCallback(m_window.handle(), App_OnGlfwDrop);
 
     glViewport(0, 0, wd.width, wd.height);
     glDisable(GL_DEPTH_TEST);
@@ -552,4 +558,33 @@ void Application::shutdown() {
 
 	m_window.destroy();
 	isInitialized = false;
+}
+
+void Application::onFilesDropped(int count, const char** paths) {
+    if (!resourceManager) return;
+    int loadedAudio = 0;
+    int loadedTex = 0;
+    for (int i = 0; i < count; ++i) {
+        std::filesystem::path p{ paths[i] };
+        if (!p.has_extension()) continue;
+        std::string ext = p.extension().string();
+        std::transform(ext.begin(), ext.end(), ext.begin(), [](unsigned char c){ return static_cast<char>(std::tolower(c)); });
+        std::string stem = p.stem().string();
+        std::string full = p.string();
+        // Accept textures
+        if (ext == ".png" || ext == ".jpg" || ext == ".jpeg" || ext == ".bmp" || ext == ".tga" || ext == ".gif" || ext == ".hdr" || ext == ".psd") {
+            resourceManager->loadTexture(stem, full);
+            ++loadedTex;
+        }
+        // Accept audio
+        else if (ext == ".wav" || ext == ".ogg" || ext == ".mp3" || ext == ".flac" || ext == ".aiff" || ext == ".fsb") {
+            resourceManager->loadAudio(stem, full);
+            ++loadedAudio;
+        }
+    }
+    if (loadedTex || loadedAudio) {
+        logger.log("[DragDrop] Added " + std::to_string(loadedTex) + " textures, " + std::to_string(loadedAudio) + " audio assets.");
+    } else {
+        logger.warning("[DragDrop] No supported assets dropped.");
+    }
 }

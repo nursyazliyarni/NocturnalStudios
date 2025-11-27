@@ -45,6 +45,12 @@ struct DrawItem {
     bool still_alive, is_draggable, is_dragging;
 
     EntityID entityID = INVALID_ENTITY_ID;
+	//collider info
+    bool  hasCollider = true;
+    float colOffsetX = 0.0f;
+    float colOffsetY = 0.0f;
+    float colW = 0.0f;
+    float colH = 0.0f;
 };
 
 struct ClickRegion {
