@@ -60,6 +60,7 @@ void Gui::updateImGuiManager(double& deltaTime, ImGuiManager& imGuiManager) {
         imGuiManager.showMousePosOverlayUI();
         imGuiManager.showPerformanceOverlayUI();
         imGuiManager.showTransformUI();
+		imGuiManager.draw_logic_selector();
         imGuiManager.showEntityListUI();
         //imGuiManager.showLogsOverlayUI();
 		imGuiManager.showBottomDockUI();
@@ -790,15 +791,38 @@ void ImGuiManager::showTransformUI(/* A reference to a vector of object list obj
 
 
 	// edits the game objects actual transform
-	bool changed = false;
-	changed |= ImGui::DragFloat("X", &item.x, 0.01f, 0.0f, 1.0f);
-	changed |= ImGui::DragFloat("Y", &item.y, 0.01f, 0.0f, 1.0f);
-	changed |= ImGui::DragFloat("Width", &item.w, 0.01f, 0.0f, 2.0f);
-	changed |= ImGui::DragFloat("Height", &item.h, 0.01f, 0.0f, 2.0f);
-	changed |= ImGui::DragFloat("Angle", &item.angle, 0.5f, -360.0f, 360.0f);
+	if (ImGui::DragFloat("X", &item.x, 0.01f, 0.0f, 1.0f)) {
+		if (ImGui::IsItemActivated()) {
+			pushUndoState("Inspector transform change");
+		}
+	}
 
-	if (changed) {
-		pushUndoState("Inspector transform change");
+	// Y
+	if (ImGui::DragFloat("Y", &item.y, 0.01f, 0.0f, 1.0f)) {
+		if (ImGui::IsItemActivated()) {
+			pushUndoState("Inspector transform change");
+		}
+	}
+
+	// Width
+	if (ImGui::DragFloat("Width", &item.w, 0.01f, 0.0f, 2.0f)) {
+		if (ImGui::IsItemActivated()) {
+			pushUndoState("Inspector transform change");
+		}
+	}
+
+	// Height
+	if (ImGui::DragFloat("Height", &item.h, 0.01f, 0.0f, 2.0f)) {
+		if (ImGui::IsItemActivated()) {
+			pushUndoState("Inspector transform change");
+		}
+	}
+
+	// Angle
+	if (ImGui::DragFloat("Angle", &item.angle, 0.5f, -360.0f, 360.0f)) {
+		if (ImGui::IsItemActivated()) {
+			pushUndoState("Inspector transform change");
+		}
 	}
 
 	if (isPlayMode) {
@@ -1881,6 +1905,68 @@ void ImGuiManager::onStopButtonPressed() {
 	m_editorMode = EditorMode::EDIT;
 
 	logger.log("Edit mode restored");
+}
+
+void ImGuiManager::draw_logic_selector() {
+	//ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDecoration |
+	//	ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
+
+	//ImGuiViewport* viewport = ImGui::GetMainViewport();
+	//ImVec2 viewport_size = viewport->WorkSize;
+	//ImVec2 viewport_pos = viewport->WorkPos;
+
+	//// Make sure the window has a reasonable size
+	//float inspector_width = 100.0f;
+	//float window_height = 300.0f; // Ensure this is not too small
+
+	//ImVec2 window_pos = ImVec2(viewport_pos.x + viewport_size.x - inspector_width, viewport_pos.y);
+	//ImVec2 window_size = ImVec2(inspector_width, window_height);
+
+	//ImGui::SetNextWindowPos(window_pos);
+	//ImGui::SetNextWindowSize(window_size);
+
+	//// Add these flags to ensure proper rendering
+	//ImGui::Begin("Logic Selector", nullptr, windowFlags);
+
+	//// ADD ACTUAL CONTENT - this might be why it's black
+	//ImGui::Text("Logic Selector Content");
+	//ImGui::Button("Test Button");
+	// Add more UI elements here
+
+
+	//ImGui::Text("Object: %s", selected_obj->name.c_str());
+
+	//// Add logic dropdown
+	//static const char* logic_types[] = { "Flamingo", "Owl", "Horse", "Seal" };
+	//static int current_logic = 0;
+
+	//ImGui::Combo("Add Logic", &current_logic, logic_types, IM_ARRAYSIZE(logic_types));
+	//if (ImGui::Button("Add Selected Logic")) {
+	//	selected_obj->add_logic(logic_types[current_logic]);
+	//}
+
+	//// Show current logics
+	//ImGui::Separator();
+	//ImGui::Text("Current Logics:");
+
+	//for (int i = 0; i < selected_obj->logics.size(); i++) {
+	//	ImGui::PushID(i);
+	//	auto& logic = selected_obj->logics[i];
+
+	//	ImGui::Checkbox("", &logic->enabled);
+	//	ImGui::SameLine();
+	//	ImGui::Text("%s", logic->logic_name.c_str());
+	//	ImGui::SameLine();
+	//	if (ImGui::Button("Remove")) {
+	//		selected_obj->remove_logic(i);
+	//		ImGui::PopID();
+	//		break;
+	//	}
+
+	//	ImGui::PopID();
+	//}
+
+	//ImGui::End();
 }
 
 void ImGuiManager::pushUndoState(const char* reason)

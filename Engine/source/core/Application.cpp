@@ -411,7 +411,7 @@ int Application::run() {
 		if (gsm && !gsm->isPaused()) {
 			gsm->update(static_cast<float>(dt), *renderer, textures);
 		}
-		Gui::updateImGuiManager(dt, *imGuiManager);
+		//Gui::updateImGuiManager(dt, *imGuiManager);
 		gameLoop->display_FPS(m_window.handle(), windowTitle, dt);
 		inputSystem->update_mouse_pos(m_window.handle());
 

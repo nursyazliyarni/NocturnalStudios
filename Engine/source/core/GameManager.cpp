@@ -264,8 +264,6 @@ bool GameManager::load(const char* prefabsPath, const char* scenesPath, TextureS
                     if (ov.HasMember("is_draggable") && ov["is_draggable"].IsBool()) di.is_draggable = ov["is_draggable"].GetBool();
                     if (ov.HasMember("is_dragging") && ov["is_dragging"].IsBool()) di.is_dragging = ov["is_dragging"].GetBool();
 
-         
-
                     if (ov.HasMember("sprite_path") && ov["sprite_path"].IsString()) {
                         std::string sp = toAssetsPath(ov["sprite_path"].GetString());
                         di.tex = tex.get(sp);
@@ -282,12 +280,12 @@ bool GameManager::load(const char* prefabsPath, const char* scenesPath, TextureS
                     if (animal.HasMember("normal_decreasing_rate") && animal["normal_decreasing_rate"].IsNumber()) di.normal_decreasing_rate = animal["normal_decreasing_rate"].GetFloat();
                     if (animal.HasMember("faster_decreasing_rate") && animal["faster_decreasing_rate"].IsNumber()) di.faster_decreasing_rate = animal["faster_decreasing_rate"].GetFloat();
                     if (animal.HasMember("penalty_decreasing_rate") && animal["penalty_decreasing_rate"].IsNumber()) di.penalty_decreasing_rate = animal["penalty_decreasing_rate"].GetFloat();
+                    if (animal.HasMember("hungry_threshold") && animal["hungry_threshold"].IsNumber()) di.hungry_threshold = animal["hungry_threshold"].GetInt();
                     di.still_alive = true;
                 }
 
                 if (e.HasMember("name") && e["name"].IsString())
                     di.name = e["name"].GetString();
-
 
                 sc.items.push_back(di);
 

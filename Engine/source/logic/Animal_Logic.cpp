@@ -27,12 +27,13 @@ void Animal_Logic::update_animal_health(GameManager& gm, double deltaTime) {
 		for (auto& [scene, scene_data] : gm.get_scenes_map()) {
 			for (auto& animal : scene_data.items) {
 				if (animal.name == to_string(Animal_type::Flamingo) && animal.still_alive) {
-					if (animal.hunger_bar <= animal.hunger_bar/3) { //health of flamingo decreases faster when hunger bar is low
+					if (animal.hunger_bar <= animal.hungry_threshold) { //health of flamingo decreases faster when hunger bar is low
 						animal.health_bar -= animal.penalty_decreasing_rate * deltaTime;
 					}
 
 					else {
 						//health of flamingo decrease slowly when hungry bar is above normal standard
+						std::cout << animal.name << animal.hungry_threshold << "\n";
 						animal.health_bar -= animal.slower_decreasing_rate * deltaTime;
 					}
 				}
