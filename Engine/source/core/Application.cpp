@@ -50,6 +50,7 @@
 #include <cstdlib>
 #include <ctime>
 
+#define UNUSED(x) (void)(x)  // To suppress unused variable warnings
 
 extern void Prefab_SetTextureLookup(std::function<int(const std::string&)>);
 
@@ -63,8 +64,8 @@ static void UpdateRandomDrift(ECS& ecs, double dt) {
 	if (dt <= 0.0) return;
 
 	// Seed std::rand once
-	static bool seeded = false;
-	if (!seeded) { std::srand(static_cast<unsigned>(std::time(nullptr))); seeded = true; }
+	static bool s_seeded = false;
+	if (!s_seeded) { std::srand(static_cast<unsigned>(std::time(nullptr))); s_seeded = true; }
 
 	// Per-entity drift state (heading + timer for next small turn)
 	struct DriftState { float heading = 0.0f; float nextTurn = 0.0f; };
@@ -165,13 +166,16 @@ namespace {
 
 	static Application* s_App = nullptr;
 	static void App_OnGlfwFocus(GLFWwindow* window, int focused) {
+		UNUSED(window);
 		if (s_App) s_App->onFocusChanged(focused == GLFW_TRUE);
 	}
 
 	static void App_OnGlfwIconify(GLFWwindow* window, int iconified) {
+		UNUSED(window);
 		if (s_App) s_App->onIconifyChanged(iconified == GLFW_TRUE);
 	}
 	static void App_OnGlfwDrop(GLFWwindow* window, int count, const char** paths) {
+		UNUSED(window);
 		if (s_App) s_App->onFilesDropped(count, paths);
 	}
 }
