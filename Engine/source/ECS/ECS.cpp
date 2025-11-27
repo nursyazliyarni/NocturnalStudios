@@ -381,11 +381,15 @@ bool ECS::removeComponent(EntityID entityID, ComponentID componentID) {
  *
  */
 const std::set<ComponentID>& ECS::getEntityComponents(EntityID id) {
-	auto it = entityMetadataMap.find(id);
+    auto it = entityMetadataMap.find(id);
 
-	if (it == entityMetadataMap.end())return{};
-	else return it->second.componentIDs;
-	
+    if (it == entityMetadataMap.end()) {
+        static const std::set<ComponentID> emptySet{};
+        return emptySet;
+    }
+    else {
+        return it->second.componentIDs;
+    }
 }
 
 

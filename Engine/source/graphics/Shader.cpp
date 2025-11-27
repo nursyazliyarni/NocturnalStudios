@@ -41,7 +41,7 @@ Shader::Shader(const char* vertex_path, const char* fragment_path) {
 Shader::Shader(const std::vector<std::pair<std::string, std::string>>& shader_filePATH_list) {
     for (const auto& [vertex_path, fragment_path] : shader_filePATH_list) {
         //Read vertex AND fragment shader source code from files
-        const char* vertex_Code, * fragment_Code;
+        // const char* vertex_Code, * fragment_Code;
         std::ifstream vertex_ShaderFile{ vertex_path };
         std::ifstream fragment_ShaderFile{ fragment_path };
         if (!vertex_ShaderFile || !fragment_ShaderFile) { //if file fails to open

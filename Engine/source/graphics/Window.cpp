@@ -17,6 +17,8 @@
 #include <vector>
 #include <iostream>
 
+
+
 Window::~Window() { destroy(); }
 
 bool Window::create(const WindowDesc& desc) {
