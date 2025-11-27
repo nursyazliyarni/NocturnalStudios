@@ -17,6 +17,8 @@
 #include "core/GameManager.h"
 #include <iostream>
 
+#define UNREF(x) (void)(x)  // To suppress unused variable warnings
+
 /**
 * @brief Updates all sprite animations and applies current frame to ImageRenderer UVs.
 * This function iterates over all entities in the ECS. For each entity:
@@ -33,6 +35,8 @@
 */
 void AnimationSystem::Update(float dt, ECS& ecs, Renderer& renderer, TextureStore& texStore)
 {
+	UNREF(renderer); // Currently unused
+
     for (EntityID id : ecs.getAllEntities()) {
         auto* anim = ecs.getComponent<SpriteAnimationComponent>(id);
         if (!anim || !anim->playing)
