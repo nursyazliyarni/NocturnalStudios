@@ -7,10 +7,13 @@ file(GLOB_RECURSE GAME_HDR CONFIGURE_DEPENDS
   "${CMAKE_CURRENT_SOURCE_DIR}/*.h"   "${CMAKE_CURRENT_SOURCE_DIR}/*.hpp"
 )
 
+
 add_executable(NocturnalGame ${GAME_SRC} ${GAME_HDR})
 target_link_libraries(NocturnalGame PRIVATE Engine)
 
-
+if (MSVC)
+  target_compile_options(NocturnalGame PRIVATE /W4 /MP)
+endif()
 
 
 # Copy the correct FMOD runtime DLL next to the EXE after build
