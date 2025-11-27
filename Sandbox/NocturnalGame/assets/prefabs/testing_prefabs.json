@@ -134,7 +134,7 @@
           { "type": "AudioData",
             "listener": false,
             "audios": [
-              { "name": "BGM_Iris_Luminara_Loop_ROUGH", "loop": true, "to_play_at_start": false, "group": "Music", "volume": 0.6, "persist_on_scene_change": true }
+              { "name": "BGM_Iris_Luminara_Loop_ROUGH", "loop": true, "to_play_at_start": true, "group": "Music", "volume": 0.6, "persist_on_scene_change": true }
             ]
           }
         ]

@@ -379,8 +379,8 @@ void ImGuiManager::showViewportWindowUI() {
 
 
 void ImGuiManager::showMousePosOverlayUI() {
-	constexpr float width = 300.0f;
-	constexpr float height = 100.0f;
+	//constexpr float width = 300.0f;
+	//constexpr float height = 100.0f;
 
 	ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDecoration |
 		ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
@@ -410,8 +410,8 @@ void ImGuiManager::showMousePosOverlayUI() {
 
 void ImGuiManager::showPerformanceOverlayUI() {
 	constexpr double secondsToMs =1000.0;
-	constexpr float width = 300.0f;
-	constexpr float height = 150.0f;
+	//constexpr float width = 300.0f;
+	//constexpr float height = 150.0f;
 
 	ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDecoration |
 		ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
@@ -457,8 +457,8 @@ void ImGuiManager::showPerformanceOverlayUI() {
 
 void ImGuiManager::showEntityListUI(/* Maybe an enum of paramEntityType, Maybe a Reference to a std::vector of objectList?*/) {
 	// Fixed size for entity list window
-	constexpr float width = 300.0f;
-	constexpr float height = 300.0f;
+	//constexpr float width = 300.0f;
+	//constexpr float height = 300.0f;
 
 	ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDecoration |
 		ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | 
@@ -627,8 +627,8 @@ void ImGuiManager::showEntityListUI(/* Maybe an enum of paramEntityType, Maybe a
 		}
 		else
 		{
-			bool isPlayMode = (m_editorMode == EditorMode::PLAY);
-			if (isPlayMode) {
+			bool isPlayModeScene = (m_editorMode == EditorMode::PLAY);
+			if (isPlayModeScene) {
 				ImGui::BeginDisabled();
 			}
 
@@ -1004,10 +1004,10 @@ void ImGuiManager::showTransformUI(/* A reference to a vector of object list obj
 
 void ImGuiManager::showLogsOverlayUI() {
 	// Fixed size for log window
-	constexpr float width = 600.0f;
-	constexpr float height = 200.0f;
+	//constexpr float width = 600.0f;
+	//constexpr float height = 200.0f;
 
-	ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoResize;
+	//ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoResize;
 	//ImGuiWindowFlags_AlwaysVerticalScrollbar;
 
 	// Position the overlay at the bottom-center of the window
@@ -1466,7 +1466,7 @@ void ImGuiManager::showBottomDockUI()
 }
 
 void ImGuiManager::showAnimationEditorUI() {
-    ImGuiWindowFlags flags = ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing;
+    //ImGuiWindowFlags flags = ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing;
     constexpr float width = 400.0f, height = 330.0f;
     ImVec2 pos{ windowBottomRight.x - width - 780.0f, windowTopLeft.y + 520.0f };
     ImGui::SetNextWindowPos(pos);
@@ -1502,7 +1502,7 @@ void ImGuiManager::showAnimationEditorUI() {
 
     EntityID eid = animEntities[selected];
     auto* anim = ecs.getComponent<SpriteAnimationComponent>(eid);
-    auto* img  = ecs.getComponent<ImageRenderer>(eid);
+    //auto* img  = ecs.getComponent<ImageRenderer>(eid);
 
 	bool isPlayMode = (m_editorMode == EditorMode::PLAY);
 	if (isPlayMode) {

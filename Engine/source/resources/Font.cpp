@@ -108,7 +108,7 @@ bool Font::LoadFont(const std::string& fontPath, unsigned int pixelVal) {
 */
 void Font::RenderText(Shader& shader, const std::string& text, float x, float y, float scale, glm::vec3 color) {
     shader.user_Shader_program(0);
-    shader.SET_uniform_variable("textColor", color.x, color.y, color.z);
+    shader.SET_uniform_variable("textColor", static_cast<GLfloat>(color.x), static_cast<GLfloat>(color.y), static_cast<GLfloat>(color.z));
 
     glActiveTexture(GL_TEXTURE0);
     glBindVertexArray(VAO);
