@@ -1,3 +1,19 @@
+/* !------------------------------------------------------------------------------------------------
+    File: Prefab.h
+    Project : NocturnalStudio
+
+    This file contains ...
+
+     Author :
+        Name(%)
+        - Brief
+
+     Author :
+        Name(%) Rishika Bimal Attodi
+        - Integrated with prefabs.json
+
+All content(c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+* ------------------------------------------------------------------------------------------------ */
 #pragma once
 
 #include <unordered_map>
@@ -60,10 +76,7 @@ private:
         int id{};
     };
     std::vector<placeholderformove> scenes{};
-    std::unordered_map<std::string, rapidjson::Document> prefab_map;
-    /*ECS& entity_component_based_system;*/
     std::unordered_map<std::string, std::shared_ptr<rapidjson::Document>> prefab_map;
-    ECS& entity_component_based_system;
 };
 
 // SceneID -> scene name (used by SceneManager to activate camera)

@@ -4,13 +4,14 @@
 
 	This file contains ...
 
-	Primary Author :
-		Name(%)
+	 Author :
+		Sarah(%)
 		- Brief
 
-	Secondary Author :
-		Name(%)
-		- Brief
+	 Author :
+		Name(%) Rishika Bimal Attodi
+		- stabilized init & main loop, wired systems, 
+        fixed menu menu to scene transitions, and cleaned up redundant code paths.
 
 All content(c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
 * ------------------------------------------------------------------------------------------------ */
@@ -20,6 +21,7 @@ All content(c) 2025 DigiPen Institute of Technology Singapore, all rights reserv
 #include <rapidjson/istreamwrapper.h>
 #include <fstream>
 #include <iostream>
+#include <sstream>
 
 #include "ECS/ECS_Component.h"
 #include "ECS/ECS.h"        // we call createEntity/addComponent here
@@ -142,36 +144,7 @@ EntityID PrefabManager::CreateEntityFromPrefab(const std::string& json_path, con
         if (!comp.HasMember("type")) continue;
         std::string type = comp["type"].GetString();
 
-        if (type == "Transform") {
-            prefab_data.transform_struct.position[0] = comp.HasMember("x") ? comp["x"].GetDouble() : 0.0;
-            prefab_data.transform_struct.position[1] = comp.HasMember("y") ? comp["y"].GetDouble() : 0.0;
-            prefab_data.transform_struct.scale[0] = comp.HasMember("w") ? comp["w"].GetDouble() : 1.0; // safe default
-            prefab_data.transform_struct.scale[1] = comp.HasMember("h") ? comp["h"].GetDouble() : 1.0;
-            prefab_data.transform_struct.rotation = comp.HasMember("angle") ? comp["angle"].GetDouble() : 0.0;
-            entity_component_based_system.addComponent<Transform>(entity, prefab_data.transform_struct);
-        }
-
-        else if (type == "SpriteRenderer") {
-            prefab_data.image_render_struct.image_path = comp["sprite_path"].GetString();
-            entity_component_based_system.addComponent<ImageRenderer>(entity, prefab_data.image_render_struct);
-        }
-
-        else if (type == "AABBCollider") {
-            prefab_data.collider_struct.width = comp["bounding_box_size"].GetDouble();
-            prefab_data.collider_struct.height = comp["bounding_box_size"].GetDouble();
-            entity_component_based_system.addComponent<BoxCollider>(entity, prefab_data.collider_struct);
-        }
-
-        else if (type == "AnimalProperties") {
-            prefab_data.animal_behaviour_struct.health_bar = comp["health_bar"].GetDouble();
-            prefab_data.animal_behaviour_struct.hunger_bar = comp["hunger_bar"].GetDouble();
-            prefab_data.animal_behaviour_struct.sanity_bar = comp["sanity_bar"].GetDouble();
-            entity_component_based_system.addComponent<AnimalBehavior>(entity, prefab_data.animal_behaviour_struct);
-        }
-
-        else {
-            logger.warning("Unknown component type: " + type);
-        }
+        AddComponentFromJSON(entity, comp);
     }
     return entity;
 }
@@ -285,158 +258,20 @@ void PrefabManager::AddComponentFromJSON(EntityID entity, const rapidjson::Value
     if (!component_json.HasMember("type") || !component_json["type"].IsString()) {
         return;
     }
-    
-
     std::string component_type = component_json["type"].GetString();
-    std::cout << "Adding Component "<< component_type<<" to Entity "<<entity<<"\n";
+    
+    std::stringstream msg;
+    msg<<"Adding Component " << component_type << " to Entity " << entity;
+    logger.log(msg.str());
     if (ComponentFactory::CreateFromName(entity,component_type, component_json))
     {
-        std::cout << component_type << " succsessfully added to Entity " << entity << "\n";
+        msg.str("");
+        msg.clear();
+        msg << component_type << " succsessfully added to Entity " << entity;
+        logger.log(msg.str());
     }
     
-    // BoxCollider
-
-    //else if (component_type == "BoxCollider") {
-    //    BoxCollider collider_component;
-    //    if (component_json.HasMember("width") && component_json["width"].IsNumber()) {
-    //        collider_component.width = component_json["width"].GetFloat();
-    //    }
-    //    if (component_json.HasMember("height") && component_json["height"].IsNumber()) {
-    //        collider_component.height = component_json["height"].GetFloat();
-    //    }
-    //    entity_component_based_system.addComponent<BoxCollider>(entity, collider_component);
-    //}
-    //// AnimalBehavior
-    //else if (component_type == "AnimalBehavior") {
-    //    AnimalBehavior behavior_component;
-    //    if (component_json.HasMember("sound") && component_json["sound"].IsString()) {
-    //        behavior_component.sound = component_json["sound"].GetString();
-    //    }
-    //    entity_component_based_system.addComponent<AnimalBehavior>(entity, behavior_component);
-    //}
-
-    else if (component_type == "BoxCollider") {
-        BoxCollider c{};
-
-        // Single size -> square
-        if (component_json.HasMember("bounding_box_size") && component_json["bounding_box_size"].IsNumber()) {
-            float s = component_json["bounding_box_size"].GetFloat();
-            c.width = s;
-            c.height = s;
-        }
-
-        // Optional explicit overrides
-        if (component_json.HasMember("width") && component_json["width"].IsNumber()) {
-            c.width = component_json["width"].GetFloat();
-        }
-        if (component_json.HasMember("height") && component_json["height"].IsNumber()) {
-            c.height = component_json["height"].GetFloat();
-        }
-
-        entity_component_based_system.addComponent<BoxCollider>(entity, c);
-        }
-
-
-    else if (component_type == "AI") {
-        AIComponent ai{};
-
-        if (component_json.HasMember("state") && component_json["state"].IsString()) {
-            std::string s = component_json["state"].GetString();
-            if (s == "Chase") ai.state = AIComponent::State::Chase;
-            else if (s == "Flee")  ai.state = AIComponent::State::Flee;
-            else                   ai.state = AIComponent::State::Wander;
-        }
-        if (component_json.HasMember("maxSpeed") && component_json["maxSpeed"].IsNumber())      ai.maxSpeed = component_json["maxSpeed"].GetFloat();
-        if (component_json.HasMember("accel") && component_json["accel"].IsNumber())         ai.accel = component_json["accel"].GetFloat();
-        if (component_json.HasMember("wanderJitter") && component_json["wanderJitter"].IsNumber())  ai.wanderJitter = component_json["wanderJitter"].GetFloat();
-        if (component_json.HasMember("chaseStrength") && component_json["chaseStrength"].IsNumber()) ai.chaseStrength = component_json["chaseStrength"].GetFloat();
-        if (component_json.HasMember("fleeStrength") && component_json["fleeStrength"].IsNumber())  ai.fleeStrength = component_json["fleeStrength"].GetFloat();
-        if (component_json.HasMember("avoidRadius") && component_json["avoidRadius"].IsNumber())   ai.avoidRadius = component_json["avoidRadius"].GetFloat();
-        if (component_json.HasMember("targetName") && component_json["targetName"].IsString())
-            ai.targetName = component_json["targetName"].GetString();
-        if (component_json.HasMember("targetWeight") && component_json["targetWeight"].IsNumber())
-            ai.targetWeight = component_json["targetWeight"].GetFloat();
-
-        entity_component_based_system.addComponent<AIComponent>(entity, ai);
-        }
-
-
-
-    // Add more component types as needed...
 }
-
-//void PrefabManager::ApplyComponentDefaults(EntityID entity, const rapidjson::Value& defaults) {
-//    // This function can be used to apply runtime overrides to components
-//    // For example, setting specific positions or properties when instantiating
-//    if (Transform* t = entity_component_based_system.getComponent<Transform>(entity)) {
-//        if (defaults.HasMember("x") && defaults["x"].IsNumber()) t->position.x() = defaults["x"].GetFloat();
-//        if (defaults.HasMember("y") && defaults["y"].IsNumber()) t->position.y() = defaults["y"].GetFloat();
-//        if (defaults.HasMember("w") && defaults["w"].IsNumber()) t->scale.x() = defaults["w"].GetFloat();
-//        if (defaults.HasMember("h") && defaults["h"].IsNumber()) t->scale.y() = defaults["h"].GetFloat();
-//        if (defaults.HasMember("angle") && defaults["angle"].IsNumber()) t->rotation = defaults["angle"].GetFloat();
-//        if (defaults.HasMember("height") && defaults["height"].IsNumber()) t->height = defaults["height"].GetFloat();
-//    }
-//    // Example: Override transform position if specified in defaults
-//    if (defaults.HasMember("position") && defaults["position"].IsArray()) {
-//        Transform* transform_ptr = entity_component_based_system.getComponent<Transform>(entity);
-//        if (transform_ptr != nullptr) {
-//            const auto& position_array = defaults["position"].GetArray();
-//            if (position_array.Size() >= 2) {
-//                //transform_ptr->position.x = position_array[0].GetFloat();
-//                //transform_ptr->position.y = position_array[1].GetFloat();
-//            }
-//        }
-//    }
-//}
-
-
-
-bool Prefab_SpawnEntitiesForScene(const std::string& sceneName, PrefabManager& pm) {
-    rapidjson::Document d;
-    if (!LoadScenesJson(d)) return false;
-    if (!d.HasMember("scenes") || !d["scenes"].IsObject()) return false;
-
-    const auto& scenes = d["scenes"];
-    if (!scenes.HasMember(sceneName.c_str())) return false;
-
-    const auto& sc = scenes[sceneName.c_str()];
-    if (!sc.HasMember("entities") || !sc["entities"].IsArray()) return true;
-
-    ECS& ecs = pm.entity_component_based_system;
-
-    for (const auto& e : sc["entities"].GetArray()) {
-        std::string name = (e.HasMember("name") && e["name"].IsString()) ? e["name"].GetString() : "";
-        std::string prefab = (e.HasMember("prefab") && e["prefab"].IsString()) ? e["prefab"].GetString() : "";
-        if (prefab.empty()) continue;
-
-        EntityID id = pm.Instantiate(prefab, name);
-        if (id == INVALID_ENTITY_ID) continue;
-
-        // Prefer 'overrides' but accept 'defaults'
-        const rapidjson::Value* ov = nullptr;
-        if (e.HasMember("overrides") && e["overrides"].IsObject()) ov = &e["overrides"];
-        else if (e.HasMember("defaults") && e["defaults"].IsObject()) ov = &e["defaults"];
-
-        if (ov) pm.ApplyComponentDefaults(id, *ov);
-
-        // If overrides has sprite_path, resolve and apply to ImageRenderer now
-        if (ov && ov->HasMember("sprite_path") && (*ov)["sprite_path"].IsString()) {
-            if (auto* r = ecs.getComponent<ImageRenderer>(id)) {
-                r->textureID = ResolveTextureID((*ov)["sprite_path"].GetString());
-                r->isVisible = (r->textureID > 0);
-            }
-        }
-
-        // Optional: allow per-entity extra components inline
-        if (e.HasMember("components") && e["components"].IsArray()) {
-            for (const auto& comp : e["components"].GetArray())
-                pm.AddComponentFromJSON(id, comp);
-        }
-    }
-    return true;
-}
-
-
 
 void PrefabManager::LoadScenes() {
     // Build key?scene map once (rebuilt if SetScenesJsonPath is called)
@@ -585,4 +420,48 @@ const std::string& Prefab_GetSceneName(SceneID id) {
     static std::string empty;
     auto it = sIdToName.find(id);
     return (it == sIdToName.end()) ? empty : it->second;
+}
+bool Prefab_SpawnEntitiesForScene(const std::string& sceneName, PrefabManager& pm) {
+    rapidjson::Document d;
+    if (!LoadScenesJson(d)) return false;
+    if (!d.HasMember("scenes") || !d["scenes"].IsObject()) return false;
+
+    const auto& scenes = d["scenes"];
+    if (!scenes.HasMember(sceneName.c_str())) return false;
+
+    const auto& sc = scenes[sceneName.c_str()];
+    if (!sc.HasMember("entities") || !sc["entities"].IsArray()) return true;
+
+    ECS& ecs = pm.entity_component_based_system;
+
+    for (const auto& e : sc["entities"].GetArray()) {
+        std::string name = (e.HasMember("name") && e["name"].IsString()) ? e["name"].GetString() : "";
+        std::string prefab = (e.HasMember("prefab") && e["prefab"].IsString()) ? e["prefab"].GetString() : "";
+        if (prefab.empty()) continue;
+
+        EntityID id = pm.Instantiate(prefab, name);
+        if (id == INVALID_ENTITY_ID) continue;
+
+        // Prefer 'overrides' but accept 'defaults'
+        const rapidjson::Value* ov = nullptr;
+        if (e.HasMember("overrides") && e["overrides"].IsObject()) ov = &e["overrides"];
+        else if (e.HasMember("defaults") && e["defaults"].IsObject()) ov = &e["defaults"];
+
+        if (ov) pm.ApplyComponentDefaults(id, *ov);
+
+        // If overrides has sprite_path, resolve and apply to ImageRenderer now
+        if (ov && ov->HasMember("sprite_path") && (*ov)["sprite_path"].IsString()) {
+            if (auto* r = ecs.getComponent<ImageRenderer>(id)) {
+                r->textureID = ResolveTextureID((*ov)["sprite_path"].GetString());
+                r->isVisible = (r->textureID > 0);
+            }
+        }
+
+        // Optional: allow per-entity extra components inline
+        if (e.HasMember("components") && e["components"].IsArray()) {
+            for (const auto& comp : e["components"].GetArray())
+                pm.AddComponentFromJSON(id, comp);
+        }
+    }
+    return true;
 }

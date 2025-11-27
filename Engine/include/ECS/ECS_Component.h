@@ -26,6 +26,7 @@
 #include <rapidjson/document.h>
 #include "../include/math/Matrix.h"
 #include "../include/math/Vector.h"
+#include "../include/math/Rand.h"
 
 //-------------------------- Add new ECS component type here --------------------------//
 struct RenderComponent;
@@ -53,12 +54,14 @@ struct BaseComponent {
 
 	// Each derived component should implement this
 	virtual void FromJSON(const rapidjson::Value& json) = 0;
+	virtual void ToJSON(rapidjson::Value& json, rapidjson::Document::AllocatorType& allocator) const = 0;
 };
 
 //collider base struct
 struct Collider : public BaseComponent {
 	bool isColliding{ false };
 	void FromJSON(const rapidjson::Value& json);
+	void ToJSON(rapidjson::Value& json, rapidjson::Document::AllocatorType& allocator) const override;	
 };
 
 //renderer base struct (renamed to avoid collision with graphics::Renderer)
@@ -68,8 +71,9 @@ struct RenderComponent : public BaseComponent {
 
 	Vector4D colorTint = { 1.0f, 1.0f, 1.0f, 1.0f };
 	Vector4D colorToAdd = {};
-
+	
 	void FromJSON(const rapidjson::Value& json);
+	void ToJSON(rapidjson::Value& json, rapidjson::Document::AllocatorType& allocator) const override;	
 };
 
 
@@ -90,9 +94,18 @@ struct Transform : public BaseComponent {
 	};
 
 	CoordinateSpace space = CoordinateSpace::World;
-	bool isVisible{ true }, isRotatable{ false }, isScalable{ false };
+	bool isVisible{ true }, isRotatable{ false }, isScalable{ false }, randomPos{ false }, randomRot{ false };
 
-	Transform():position {}, scale{  }, rotation{  }, height{}{}
+	Transform():position{}, scale{}, rotation{}, height{}{
+		if (randomPos)
+		{
+			position = { Random_Range(-100.f,100.f),Random_Range(-50.f,50.f) };
+		}
+		if (randomRot)
+		{
+			rotation = Random_Range(0.f, 6.28319f);
+		}
+	}
 	Transform(Vector2D pos, Vector2D scl, float rot) :position{ pos }, scale{ scl }, rotation{ rot }, height{} {}
 	/**
 	* Returns the translated vector2d matrix
@@ -129,6 +142,7 @@ struct Transform : public BaseComponent {
 	Vector2D Scale(float x, float y);
 
 	void FromJSON(const rapidjson::Value& json);
+	void ToJSON(rapidjson::Value& json, rapidjson::Document::AllocatorType& allocator) const override;	
 };
 
 
@@ -136,59 +150,58 @@ struct ImageRenderer: public RenderComponent {
 	int textureID = -1; // Default to -1 (no texture)
 	std::string image_path;
 	void FromJSON(const rapidjson::Value& json);
+	void ToJSON(rapidjson::Value& json, rapidjson::Document::AllocatorType& allocator) const override;	
 
 	glm::vec2 uvMin = glm::vec2(0.0f, 0.0f);
 	glm::vec2 uvMax = glm::vec2(1.0f, 1.0f);
 };
-struct SpriteRenderer : public RenderComponent {
-	std::string spritePath{};
-	void FromJSON(const rapidjson::Value& json);
 
-	glm::vec2 uvMin = glm::vec2(0.0f, 0.0f);
-	glm::vec2 uvMax = glm::vec2(1.0f, 1.0f);
-};
 struct CircleRenderer : public RenderComponent {
 	float radius{ 1.f };
 	void FromJSON(const rapidjson::Value& json);
+	void ToJSON(rapidjson::Value& json, rapidjson::Document::AllocatorType& allocator) const override;	
 };
 struct RectRenderer : public RenderComponent {
 	float width{ 1.f }, height{ 1.f };
 	void FromJSON(const rapidjson::Value& json);
+	void ToJSON(rapidjson::Value& json, rapidjson::Document::AllocatorType& allocator) const override;	
 };
 
 
 struct AnimalBehavior {
 	double health_bar, hunger_bar, sanity_bar;
 	void FromJSON(const rapidjson::Value& json);
+	void ToJSON(rapidjson::Value& json, rapidjson::Document::AllocatorType& allocator) const;
 };
 
 struct AudioData : public BaseComponent {
-	struct IndividualAudioData {
-		unsigned resourceID;
-		std::string name;
+    struct IndividualAudioData {
+        unsigned resourceID;
+        std::string name;
 
-		bool loop;
-		bool toPlayAtStart;
-		bool locality = false;
-		bool persistOnEntityDestruction = false;
-		bool persistOnSceneChange = false;
+        bool loop;
+        bool toPlayAtStart;
+        bool locality = false;
+        bool persistOnEntityDestruction = false;
+        bool persistOnSceneChange = false;
 
-		float volume = 1.0f;
-		float pitch = 1.0f;
-		float distanceMult = 1.0f;
+        float volume = 1.0f;
+        float pitch = 1.0f;
+        float distanceMult = 1.0f;
 
-		enum class Group {
-			Music,
-			SFX,
-			RESERVED1,
-			RESERVED2
-		} group = Group::SFX;
-	};
+        enum class Group {
+            Music,
+            SFX,
+            RESERVED1,
+            RESERVED2
+        } group = Group::SFX;
+    };
 
-	std::vector<IndividualAudioData> audios;
-	bool listener = false;
+    std::vector<IndividualAudioData> audios;
+    bool listener = false;
 
-	void FromJSON(const rapidjson::Value& json);
+    void FromJSON(const rapidjson::Value& json);
+    void ToJSON(rapidjson::Value& json, rapidjson::Document::AllocatorType& allocator) const override;	
 };
 
 struct PhysicsComponent : public BaseComponent
@@ -196,10 +209,11 @@ struct PhysicsComponent : public BaseComponent
 	Vector2D position, velocity{ 0.f,0.f }, acceleration{ 0.f,0.f };
 	bool gravityEnabled{ true };
 	void FromJSON(const rapidjson::Value& json);
+	void ToJSON(rapidjson::Value& json, rapidjson::Document::AllocatorType& allocator) const override;	
 };
 
 
-struct AIComponent {
+struct AIComponent : public BaseComponent {
 	enum class State { Wander = 0, Chase = 1, Flee = 2 };
 
 	State  state = State::Wander;
@@ -215,17 +229,19 @@ struct AIComponent {
 
 	std::string targetName;   // optional: entity name to chase/flee
 	float targetWeight = 1.0f; // how strong target influence is
+	void FromJSON(const rapidjson::Value& json);
+	void ToJSON(rapidjson::Value& json, rapidjson::Document::AllocatorType& allocator) const override;
 
 };
-
-
 
 struct BoxCollider :public Collider {
 	float width{ 0.f }, height{ 0.f };
 	void FromJSON(const rapidjson::Value& json);
+	void ToJSON(rapidjson::Value& json, rapidjson::Document::AllocatorType& allocator) const override;
 };
 
 struct AABBCollider :public BoxCollider {
 	void FromJSON(const rapidjson::Value& json);
+	void ToJSON(rapidjson::Value& json, rapidjson::Document::AllocatorType& allocator) const override;
 };
 #endif // ECS_COMPONENT_H

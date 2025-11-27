@@ -162,6 +162,15 @@ namespace {
 	int draggedSpriteIndex = -1; //index into sprite_vector
 	int duplicateIndex = -1; //where clone is in the vector
 	Vector2D dragOffset(0.0f, 0.0f); //mouse offset from top-left of sprite
+
+	static Application* s_App = nullptr;
+	static void App_OnGlfwFocus(GLFWwindow* window, int focused) {
+		if (s_App) s_App->onFocusChanged(focused == GLFW_TRUE);
+	}
+
+	static void App_OnGlfwIconify(GLFWwindow* window, int iconified) {
+		if (s_App) s_App->onIconifyChanged(iconified == GLFW_TRUE);
+	}
 }
 
 //Application::Application() = default;
@@ -169,27 +178,80 @@ Application::Application() {
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF); //enable memory leak check at program exit
 }
 
+void Application::onFocusChanged(bool focused) {
+	if (!focused) {
+		if (autoMinimizeOnFocusLoss) glfwIconifyWindow(m_window.handle());
 
+		if (audioSystem) {
+			audioSystem->pauseAllSFX();
+			audioSystem->pauseAllBGM();
+		}
 
+		if (gsm) gsm->pauseGame();
+		if (inputSystem) inputSystem->clearAllStates();
+	}
+	else {
+		if (glfwGetWindowAttrib(m_window.handle(), GLFW_ICONIFIED)) 
+			glfwRestoreWindow(m_window.handle());
 
+		if (autoResumeOnFocusGain) {
+			if (audioSystem) {
+				audioSystem->resumeAllSFX();
+				audioSystem->resumeAllBGM();
+			}
+			if (gsm && gsm->isPaused()) gsm->resumeGame();
+		}
+
+		if (inputSystem) inputSystem->EndFrame();
+	}
+}
+
+void Application::onIconifyChanged(bool iconified) {
+	if (iconified) {
+		if (audioSystem) {
+			audioSystem->pauseAllSFX();
+			audioSystem->pauseAllBGM();
+		}
+
+		if (gsm) gsm->pauseGame();
+		if (inputSystem) inputSystem->clearAllStates();
+	}
+	else {
+		if (autoResumeOnFocusGain) {
+			if (audioSystem) {
+				audioSystem->resumeAllSFX();
+				audioSystem->resumeAllBGM();
+			}
+			if (gsm && gsm->isPaused()) gsm->resumeGame();
+		}
+
+		if (inputSystem) inputSystem->EndFrame();
+	}
+}
 
 
 void Application::init() {
 	logger.setup_crash_handler();
 	const GameConfig c = loadConfig("assets/config.json");
 	windowTitle = c.window.title;
+	imGUIVisible = c.imgui_enabled;
 
     WindowDesc wd;
     wd.width = c.window.width;
     wd.height = c.window.height;
     wd.title = c.window.title;
     wd.vsync = c.window.vsync;
+	wd.fullscreen = true;
 
     if (!m_window.create(wd)) {
         logger.error("Failed to create window");
         isInitialized = false;
         return;
     }
+
+	s_App = this;
+	glfwSetWindowFocusCallback(m_window.handle(), App_OnGlfwFocus);
+	glfwSetWindowIconifyCallback(m_window.handle(), App_OnGlfwIconify);
 
     glViewport(0, 0, wd.width, wd.height);
     glDisable(GL_DEPTH_TEST);
@@ -286,7 +348,6 @@ void Application::init() {
 		});
 
 
-	renderer = std::make_unique<Renderer>(vertexPath.c_str(), fragmentPath.c_str());
 	renderer = std::make_unique<Renderer>(shader_filePATH_list);
 	textShader = std::make_unique<Shader>(textShaderVertexPath.c_str(), textShaderFragmentPath.c_str());
 	logic = std::make_unique<Animal_Logic>();
@@ -298,30 +359,11 @@ void Application::init() {
         return static_cast<int>(textures.get(path));
     });
 
-	/*prefabManager = std::make_unique<PrefabManager>(*ecs);
-	prefabManager->Load_Prefab(prefabTestPath.c_str());*/
-
 	prefabManager = std::make_unique<PrefabManager>(*ecs);
-
-	// Load every prefab file that ResourceManager found (so 'medicine' and 'firefly' exist)
-	for (auto& [pid, pf] : resourceManager->getPrefabs()) {
-		prefabManager->Load_Prefab(pf.getFilePath());
-	}
-
-	// RISHIKAAA 
-	
-	// logger.log("[Prefabs] Loaded " + std::to_string(resourceManager->getPrefabs().size()) + " prefab file(s).");
-	// prefabManager->Load_Prefab(prefabTestPath.c_str());
-	// prefabManager->CreateEntityFromPrefab(prefabTestPath, "main_menu_button", "play_button");
-	// prefabManager->CreateEntityFromPrefab(prefabTestPath, "main_menu_button", "load_button");
-	// prefabManager->CreateEntityFromPrefab(prefabTestPath, "main_menu_button", "setting_button");
-	// prefabManager->CreateEntityFromPrefab(prefabTestPath, "main_menu_button", "quit_button");
-	// prefabManager->CreateEntityFromPrefab(prefabTestPath, "food", "owl_food");
-	// prefabManager->CreateEntityFromPrefab(prefabTestPath, "animal", "flamingo");
+	prefabManager->Load_Prefab(prefabTestPath.c_str());
 
 	
 	//logger.log("Created animal entity with ID: " + std::to_string(animal) + " and " + std::to_string(animal_2));
-	std::cout << "abcssss:" << ecs->getAllEntities().size() << "\n";
     textShader = std::make_unique<Shader>(textShaderVertexPath.c_str(), textShaderFragmentPath.c_str());
 
     // Wire text shader into the renderer (renderer controls projection per-viewport)
@@ -338,16 +380,22 @@ void Application::init() {
 
 	// When GameManager activates a new scene (keyboard or button 'goto'), respawn from JSON
 	gsm->setSceneChangedCallback([this](const std::string& sceneName) {
-		// Clear all current entities (brute force; refine later if you add persistence flags)
-		auto all = ecs->getAllEntities();
-		for (auto id : all) ecs->deleteEntity(id);
+        // Stop non-persistent audio before wiping entities.
+        if (audioSystem) {
+            // false => keep sounds with persist_on_scene_change == true
+            audioSystem->deleteAllAudioInstances(false);
+        }
 
-		// Respawn from scenes.json
-		Prefab_SpawnEntitiesForScene(sceneName, *prefabManager);
-		logger.log(std::string{ "[SceneSpawn] Activated -> " } + sceneName);
-		});
+        // Clear all current entities.
+        auto all = ecs->getAllEntities();
+        for (auto id : all) ecs->deleteEntity(id);
 
+        // Respawn from scenes.json.
+        Prefab_SpawnEntitiesForScene(sceneName, *prefabManager);
+        logger.log(std::string{ "[SceneSpawn] Activated -> " } + sceneName);
+    });
 
+	if (!imGUIVisible)renderer->initFBO(wd.width, wd.height);
 
 	imGuiManager = std::make_unique<ImGuiManager>(
 		m_window, *renderer,
@@ -372,7 +420,10 @@ int Application::run() {
         m_window.poll();
 
 		double dt = gameLoop->calculate_DT();
-		gsm->update(static_cast<float>(dt),*renderer,textures);
+
+		if (gsm && !gsm->isPaused()) {
+			gsm->update(static_cast<float>(dt), *renderer, textures);
+		}
 		Gui::updateImGuiManager(dt, *imGuiManager);
 		gameLoop->display_FPS(m_window.handle(), windowTitle, dt);
 		inputSystem->update_mouse_pos(m_window.handle());
@@ -385,26 +436,6 @@ int Application::run() {
 		// Debug: log firefly state twice per second to confirm it's updating
 		static double dbgAccum = 0.0;
 		dbgAccum += dt;
-		/*if (dbgAccum > 0.5 && ecs) {
-			dbgAccum = 0.0;
-			EntityID ff = ecs->findEntityByName("firefly_1");
-			if (ff != INVALID_ENTITY_ID) {
-				auto* t = ecs->getComponent<Transform>(ff);
-				auto* pc = ecs->getComponent<PhysicsComponent>(ff);
-				auto* ai = ecs->getComponent<AIComponent>(ff);
-				if (t && pc && ai) {
-					logger.log(
-						"FF pos=(" + std::to_string(t->position.x()) + "," + std::to_string(t->position.y()) + ")"
-						+ " vel=(" + std::to_string(pc->velocity.x()) + "," + std::to_string(pc->velocity.y()) + ")"
-					);
-				}
-				else {
-					logger.log("firefly_1 missing component(s): "
-						+ std::string(t ? "" : "Transform ")
-						+ std::string(pc ? "" : "Physics ")
-						+ std::string(ai ? "" : "AI "));
-				}
-			}*/
 
 
 
@@ -422,27 +453,20 @@ int Application::run() {
 			// else: stay quiet when not in Owl scene
 		}
 
+		if (!gsm || !gsm->isPaused()) {
+			for (int k = GLFW_KEY_1; k <= GLFW_KEY_9; ++k)
+            	if (inputSystem->WasPressed(k))
+                	gsm->switchToSceneForKey(k); // respects AppState::Playing
 
+        	if (inputSystem->WasPressed(GLFW_KEY_ESCAPE))
+            	gsm->handleKeyPress(GLFW_KEY_ESCAPE);
 
-		//	else {
-		//		logger.log("firefly_1 not found");
-		//	}
-		//}
+			if (inputSystem->WasPressed(GLFW_KEY_F11)) 
+				m_window.toggleFullscreen();
 
-
-
-
-
-
-
-		/*for (int k = GLFW_KEY_1; k <= GLFW_KEY_9; ++k)
-			if (inputSystem->WasPressed(k))
-				gsm->handleKeyPress(k);*/
-
-        if (inputSystem->WasPressed(GLFW_KEY_ESCAPE))
-            gsm->handleKeyPress(GLFW_KEY_ESCAPE);
-
-        inputSystem->ProcessHotkeys(*gsm);
+        	inputSystem->ProcessHotkeys(*gsm);
+        	TransformSystem::TransformInput(*inputSystem, dt);
+		}
 
         int fbw = 0, fbh = 0; glfwGetFramebufferSize(m_window.handle(), &fbw, &fbh);
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -456,42 +480,47 @@ int Application::run() {
 
         glClear(GL_COLOR_BUFFER_BIT);
 
-        Gui::updateImGuiManager(dt, *imGuiManager);
+		if (imGUIVisible)Gui::updateImGuiManager(dt, *imGuiManager);
+		else {
+			int winheight,winwidth;
+			m_window.getWindowSize(winwidth, winheight);
+			gsm->imGUIlessRender(*renderer, *inputSystem, m_window.handle(), winwidth,winheight);
+		}
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         glViewport(0, 0, fbw, fbh);
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-		// Wire prefab sprite_path -> GL texture id using your TextureStore API.
-		
-		//Prefab_SetTextureLookup([this](const std::string& p) -> int {
-			
-		// If your JSON sometimes omits the "assets/" prefix, uncomment the 3 lines below.
-		//  std::string path = p;
-		//  if (path.rfind("assets/", 0) != 0) path = "assets/" + path;
-		//  return static_cast<int>(textures.get(path));
-
-			//return static_cast<int>(textures.get(p));   // <matches TextureStore::get
-			//});
         // Text overlay is now rendered by Renderer inside the viewport FBO (see ImGuiManager)
 
         if (inputSystem->WasMousePressed(GLFW_MOUSE_BUTTON_LEFT)) {
-            ImVec2 rmin, rmax;
+			ImVec2 rmin{}, rmax;
 
-            imGuiManager->getViewportRectWindow(rmin, rmax);
+			if (imGUIVisible)imGuiManager->getViewportRectWindow(rmin, rmax);
+			else { //uses window size to dtermine click coords
+				int maxx, maxy;
+				m_window.getWindowSize(maxx, maxy);
+				rmax={ static_cast<float>(maxx) ,static_cast<float>(maxy) };
+			}
+			
+			Vector2D mp = inputSystem->GET_mouse_pos(false, 0, 0);
+			if (mp.x() >= rmin.x && mp.x() <= rmax.x &&
+				mp.y() >= rmin.y && mp.y() <= rmax.y) {
+				float nx = float((mp.x() - rmin.x) / (rmax.x - rmin.x));
+				float ny = float((mp.y() - rmin.y) / (rmax.y - rmin.y));
 
-            Vector2D mp = inputSystem->GET_mouse_pos(false, 0, 0);
-            if (mp.x() >= rmin.x && mp.x() <= rmax.x &&
-                mp.y() >= rmin.y && mp.y() <= rmax.y) {
-                float nx = float((mp.x() - rmin.x) / (rmax.x - rmin.x));
-                float ny = float((mp.y() - rmin.y) / (rmax.y - rmin.y));
+				//ny = 1.0f - ny;
+				gsm->handleClick(nx, ny);
 
-                ny = 1.0f - ny;
-                gsm->handleClick(nx, ny);
-            }
+				if (gsm->popQuitRequested()) {
+					glfwSetWindowShouldClose(m_window.handle(), GLFW_TRUE);
+					break;
+				}
+			}
+            
         }
-
+		TransformSystem::TransformUpdate();
         if (gsm->popQuitRequested()) {
             glfwSetWindowShouldClose(m_window.handle(), 1);
         }

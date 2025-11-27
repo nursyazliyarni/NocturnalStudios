@@ -8,15 +8,15 @@
 	for debugging and interaction within the engine.
 
 	Primary Author:
-		Lau Xiang Yang (100%)
+		Lau Xiang Yang (40%)
 		- Created the ImGuiManager class and its specializations.
 
 	Secondary Author:
-		Rishika Bimal Attodi
+		Rishika Bimal Attodi (30%)
 		- Integrated drawAllSprites and drawViewportShapes
 
 	Secondary Author:
-		Nur Syazliyarni (25%)
+		Nur Syazliyarni (30%)
 		- Added the debug drawer that will load under showViewportWindowUI
 		- Editor able to list and edit transform game objects in current scene
 		- Added assets browser and layout of bottom editor dock
@@ -31,35 +31,43 @@
 
 #include "graphics/Camera2D.h" 
 #include "core/TimeUtils.h"
+#include <filesystem>
+#include <algorithm>
 
 namespace {
 	using Clock = std::chrono::high_resolution_clock;
 }
 
 void Gui::updateImGuiManager(double& deltaTime, ImGuiManager& imGuiManager) {
-	// Measure the entire ImGui update using a utility and avoid manual start/end pairs
-	double imGuiSec = TimeUtils::MeasureSeconds([&]() {
-		imGuiManager.updateDeltaTime(deltaTime);
+    // update delta/window info
+    imGuiManager.updateDeltaTime(deltaTime);
 
-		// Get main viewport position and size
-		ImGuiViewport* mainViewport = ImGui::GetMainViewport();
-		imGuiManager.updateWindowTopLeft(mainViewport->Pos);
-		imGuiManager.updateWindowBottomRight({ mainViewport->Pos.x + mainViewport->Size.x, mainViewport->Pos.y + mainViewport->Size.y });
+    ImGuiViewport* mainViewport = ImGui::GetMainViewport();
+    imGuiManager.updateWindowTopLeft(mainViewport->Pos);
+    imGuiManager.updateWindowBottomRight({ mainViewport->Pos.x + mainViewport->Size.x, mainViewport->Pos.y + mainViewport->Size.y });
 
-		imGuiManager.startFrame();
-		imGuiManager.showViewportWindowUI();
-		//imGuiManager.showAssetsBrowserUI();
-		imGuiManager.showMousePosOverlayUI();
-		imGuiManager.showPerformanceOverlayUI();
-		imGuiManager.showTransformUI();
-		imGuiManager.showEntityListUI();
-		//imGuiManager.showLogsOverlayUI();
+    // start ImGui frame (needed before creating windows)
+    imGuiManager.startFrame();
+
+	//create dockspace
+	imGuiManager.createDockspace();
+
+    // Render the viewport first — this contains renderer/physics/logic and measures those times itself.
+    imGuiManager.showViewportWindowUI();
+
+    // Measure only the remaining ImGui overhead (exclusive UI time)
+    double imGuiSec = TimeUtils::MeasureSeconds([&]() {
+        imGuiManager.showMousePosOverlayUI();
+        imGuiManager.showPerformanceOverlayUI();
+        imGuiManager.showTransformUI();
+        imGuiManager.showEntityListUI();
+        //imGuiManager.showLogsOverlayUI();
 		imGuiManager.showBottomDockUI();
-		imGuiManager.endFrame();
-	});
+    });
 
-	// Preserve logic time measured within UI instead of resetting to
-	imGuiManager.setSystemTimings(imGuiSec);
+    // finish frame and record the exclusive ImGui time
+    imGuiManager.endFrame();
+    imGuiManager.setSystemTimings(imGuiSec);
 }
 
 ImGuiManager::ImGuiManager(Window& w, Renderer& r,
@@ -74,6 +82,13 @@ ImGuiManager::ImGuiManager(Window& w, Renderer& r,
 	selectedEntityType{ 0 }, activeInstances{}
 {
 	ImGui::CreateContext();
+
+	// Enable docking
+	ImGuiIO& io = ImGui::GetIO();
+	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+	io.ConfigDockingWithShift = false;  // Dock without holding Shift
+	io.IniFilename = "editor_layout.ini";  // Save layout
+
 	ImGui_ImplGlfw_InitForOpenGL(mainWindow.handle(), /*install_callbacks=*/false);
 	ImGui_ImplOpenGL3_Init("#version 330");
 	ImGui::StyleColorsClassic();
@@ -98,8 +113,31 @@ void ImGuiManager::updateDeltaTime(double& dt) {
 	deltaTime = dt;
 }
 
-void ImGuiManager::getDeltaTime(double& dt) const {
-	dt = deltaTime;
+double ImGuiManager::getDeltaTime(double& dt) const {
+	dt = deltaTime; return dt;
+}
+
+ImVec2 ImGuiManager::get_mousePOS(bool is_normalized) {
+	// Get current window size
+	ImVec2 windowSize = ImGui::GetWindowSize();
+	ImVec2 windowPos = ImGui::GetWindowPos();
+	// Get mouse position
+	ImVec2 mousePos = ImGui::GetMousePos();
+
+	if (is_normalized) {
+		// Normalize to [0, 1] relative to this window
+		float normalizedX = mousePos.x / windowSize.x;
+		float normalizedY = mousePos.y / windowSize.y;
+
+		// Clamp to [0, 1] range
+		normalizedX = std::clamp(normalizedX, 0.0f, 1.0f);
+		normalizedY = std::clamp(normalizedY, 0.0f, 1.0f);
+		return { normalizedX,normalizedY };
+	}
+
+	else {
+		return { mousePos.x,mousePos.y };
+	}
 }
 
 void ImGuiManager::startFrame() {
@@ -232,19 +270,46 @@ void ImGuiManager::setInputTime(double time) {
 
 
 void ImGuiManager::showViewportWindowUI() {
-	constexpr float overlayW = 300.f, overlayH = 200.f;
+	//constexpr float overlayW = 300.f, overlayH = 200.f;
 	ImGuiWindowFlags flags = ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoResize;
 
-	float vpW = windowBottomRight.x - windowTopLeft.x - overlayW;
+	/*float vpW = windowBottomRight.x - windowTopLeft.x - overlayW;
 	float vpH = windowBottomRight.y - windowTopLeft.y - overlayH;
 
 	ImGui::SetNextWindowPos(windowTopLeft);
 	ImGui::SetNextWindowSize(ImVec2(vpW, vpH));
+	ImGui::Begin("Viewport", nullptr, flags);*/
 	ImGui::Begin("Viewport", nullptr, flags);
+
+	//global editor undo (ctrl+z)
+	ImGuiIO& io = ImGui::GetIO();
+	if (io.KeyCtrl && ImGui::IsKeyPressed(ImGuiKey_Z, false)) {
+		undoLastAction();
+	}
 
 	const ImVec2 avail = ImGui::GetContentRegionAvail();
 	const int vw = (int)std::max(1.0f, avail.x);
 	const int vh = (int)std::max(1.0f, avail.y);
+
+
+	static bool prevF = false;
+	int fState = glfwGetKey(mainWindow.handle(), GLFW_KEY_F);
+	bool currF = (fState == GLFW_PRESS);
+
+	// on key DOWN edge: toggle
+	if (currF && !prevF) {
+		m_showFPS = !m_showFPS;
+	}
+	prevF = currF;
+
+
+	// Logic timing (animal state update)
+	logicTime = TimeUtils::MeasureSeconds([&]() {
+		logic.check_animal_status(gsm);
+		auto drag_value = logic.check_item_status(gsm, get_mousePOS(true), input, mainWindow.handle());
+		logic.update_animal_ALLstate(gsm,getDeltaTime(deltaTime));
+		logic.drag_drop(gsm,get_mousePOS(true),input,mainWindow.handle(),drag_value);
+	});
 
 	// Physics timing scope
 	{
@@ -257,82 +322,56 @@ void ImGuiManager::showViewportWindowUI() {
 	// Render timing scope (includes scene render + debug draw + unbind)
 	{
 		TimeUtils::ScopedTimer t{ renderTime };
+
 		renderer.initFBO(vw, vh);
 		renderer.bindFBO();
 		renderer.resize(vw, vh);
 		renderer.clear(0.06f, 0.06f, 0.07f);
 
-		// Draw current SCENE into the FBO
-		gsm.render(renderer, vw, vh);
-
-		// Text overlay (rendered into the viewport FBO)
-		renderer.setTextProjection(vw, vh); // bottom-left origin for the text shader
-
-		// Resolve fonts from ResourceManager (cache IDs across frames)
-		static std::optional<ResourceID> s_fontA;
-		static std::optional<ResourceID> s_fontB;
-		if (!s_fontA) s_fontA = resourceManager.findResource<Font>("NanumBrushScript-Regular");
-		if (!s_fontB) s_fontB = resourceManager.findResource<Font>("PAPYRUS");
-
-		if (s_fontA) {
-			const Font& f = resourceManager.getFont(*s_fontA);
-			renderer.drawText(f, "Nocturnal Studio Engine",
-							 25.0f, vh - 50.0f, // near top (BL origin)
-							 1.0f, glm::vec3(1.0f, 0.0f, 0.2f));
-		}
-		if (s_fontB) {
-			const Font& f2 = resourceManager.getFont(*s_fontB);
-			renderer.drawText(f2, "Sample Font: Papyrus",
-							 25.0f, vh - 100.0f, // near top (BL origin)
-							 1.0f, glm::vec3(0.2f, 0.8f, 1.0f));
-		}
-
-		// Debugging Drawer //
-		static bool printed = false;
-		if (Debug::Drawer::Instance().IsActive()) {
-			if (!printed) {
-				std::cout << "[ImGuiManager] DebugDraw active\n";
-				printed = true;
-			}
-
-			glPushAttrib(GL_ALL_ATTRIB_BITS);
-			glUseProgram(0);
-			glDisable(GL_TEXTURE_2D);
-			glDisable(GL_DEPTH_TEST);
-			glEnable(GL_BLEND);
-			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-			glMatrixMode(GL_MODELVIEW);
-			glLoadIdentity();
-
-			Debug::Drawer::Instance().Render(Matrix<3>().Identity());
-
-			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-			glPopAttrib();
-		}
-		else {
-			printed = false;
-		}
-		// Debugging Drawer //
+		// Let GameManager draw scene + HUD text
+		gsm.renderWithHUD(
+			renderer,
+			input,
+			mainWindow.handle(),
+			vw,
+			vh,
+			deltaTime,
+			resourceManager,
+			m_showFPS
+		);
 
 		renderer.unbindFBO();
 	}
 
-	// Show the FBO as an ImGui Image (flipped V)
+
+	//// Show the FBO as an ImGui Image (flipped V)
+	//ImVec2 imgMin = ImGui::GetCursorScreenPos();
+	//ImGui::Image((ImTextureID)(intptr_t)renderer.getFBOTexture(),
+	//ImVec2(static_cast<float>(vw), static_cast<float>(vh)), ImVec2(0, 1), ImVec2(1, 0));
+	//ImVec2 imgMax = ImVec2(imgMin.x + vw, imgMin.y + vh);
+
+	//// Handle click -> normalized coords -> GSM
+	//// (Input handles clicks; store the rect in window client coords)
+	//vpMinWin = ImVec2(imgMin.x - windowTopLeft.x, imgMin.y - windowTopLeft.y);
+	//vpMaxWin = ImVec2(imgMax.x - windowTopLeft.x, imgMax.y - windowTopLeft.y);
+
+	//ImGui::End();
+
+	//Show the FBO as an ImGui Image (flipped V)
 	ImVec2 imgMin = ImGui::GetCursorScreenPos();
-	ImGui::Image((ImTextureID)(intptr_t)renderer.getFBOTexture(),
-	ImVec2(static_cast<float>(vw), static_cast<float>(vh)), ImVec2(0, 1), ImVec2(1, 0));
+	ImGui::Image(
+		(ImTextureID)(intptr_t)renderer.getFBOTexture(),
+		ImVec2(static_cast<float>(vw), static_cast<float>(vh)),
+		ImVec2(0, 1), ImVec2(1, 0)
+	);
 	ImVec2 imgMax = ImVec2(imgMin.x + vw, imgMin.y + vh);
 
-	// Logic timing (animal state update)
-	logicTime = TimeUtils::MeasureSeconds([&]() {
-		logic.update_animal_ALLstate(gsm);
-	});
-
-	// Handle click -> normalized coords -> GSM
-	// (Input handles clicks; store the rect in window client coords)
+	//Store rect relative to the main window (you were already doing this)
 	vpMinWin = ImVec2(imgMin.x - windowTopLeft.x, imgMin.y - windowTopLeft.y);
 	vpMaxWin = ImVec2(imgMax.x - windowTopLeft.x, imgMax.y - windowTopLeft.y);
+
+	//handle click and drag picking on scene items
+	handleViewportPicking(imgMin, imgMax, vw, vh);
 
 	ImGui::End();
 }
@@ -354,11 +393,12 @@ void ImGuiManager::showMousePosOverlayUI() {
 	Vector2D mouse_pos = input.GET_mouse_pos(true, mainWindow.desc().width, mainWindow.desc().height);
 	
 	// Position the overlay at the top-right corner of the window
-	ImVec2 windowTopRightPos = { windowBottomRight.x - width, windowTopLeft.y };
+	/*ImVec2 windowTopRightPos = { windowBottomRight.x - width, windowTopLeft.y };
 	ImGui::SetNextWindowPos(windowTopRightPos);
 	ImGui::SetNextWindowBgAlpha(0.35f);
-	ImGui::SetNextWindowSize({ width, height });
+	ImGui::SetNextWindowSize({ width, height });*/
 
+	//ImGui::Begin("Overlay", nullptr, windowFlags);
 	ImGui::Begin("Overlay", nullptr, windowFlags);
 	ImGui::Text("Mouse position: %.2f, %.2f", mouse_pos[0], mouse_pos[1]);
 	ImGui::Text("World pos: %.2f, %.2f", worldPosition.x(), worldPosition.y());
@@ -376,10 +416,10 @@ void ImGuiManager::showPerformanceOverlayUI() {
 		ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
 
 	// Position the overlay at the top-right corner of the window, below mouse position overlay
-	ImVec2 windowTopRightPos = { windowBottomRight.x - width, windowTopLeft.y + 100.0f };
+	/*ImVec2 windowTopRightPos = { windowBottomRight.x - width, windowTopLeft.y + 100.0f };
 	ImGui::SetNextWindowPos(windowTopRightPos);
 	ImGui::SetNextWindowBgAlpha(0.35f);
-	ImGui::SetNextWindowSize({ width, height });
+	ImGui::SetNextWindowSize({ width, height });*/
 
 	ImGui::Begin("Performance", nullptr, windowFlags);
 
@@ -420,15 +460,25 @@ void ImGuiManager::showEntityListUI(/* Maybe an enum of paramEntityType, Maybe a
 	constexpr float height = 300.0f;
 
 	ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDecoration |
-		ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
+		ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | 
+		ImGuiWindowFlags_NoNav | ImGuiWindowFlags_AlwaysVerticalScrollbar;;
 
 	// Position the overlay at the top-right corner of the window, below performance overlay
-	ImVec2 windowTopRightPos = { windowBottomRight.x - width, windowTopLeft.y + 250.0f };
+	/*ImVec2 windowTopRightPos = { windowBottomRight.x - width, windowTopLeft.y + 250.0f };
 	ImGui::SetNextWindowPos(windowTopRightPos);
 	ImGui::SetNextWindowBgAlpha(0.35f);
-	ImGui::SetNextWindowSize({ width, height });
+	ImGui::SetNextWindowSize({ width, height });*/
 
 	ImGui::Begin("Entity Picker", nullptr, windowFlags);
+
+	bool isPlayMode = (m_editorMode == EditorMode::PLAY);
+	if (isPlayMode) {
+		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.6f, 0.2f, 1.0f));
+		ImGui::Text("Play Mode - Entity creation/deletion disabled");
+		ImGui::PopStyleColor();
+		ImGui::Separator();
+	}
+
 	ImGui::Text("Entity List");
 
 	// if (selectedEntityID == paramEntityIDList::MAX) selectedEntityID = paramEntityIDList::MAX - 1; // we assume paramEntityIDList is an enum with it's last entry as MAX
@@ -440,6 +490,12 @@ void ImGuiManager::showEntityListUI(/* Maybe an enum of paramEntityType, Maybe a
 	if (ImGui::Button("-") && selectedEntityType > 0) selectedEntityType--;
 	ImGui::SameLine();
 	if (ImGui::Button("+")) selectedEntityType++;
+
+	/*
+	//disable clone/delete in play mode
+	if (isPlayMode) {
+		ImGui::BeginDisabled();
+	}
 
 	// Clone the selected entity
 	if (ImGui::Button("Clone")) {
@@ -461,6 +517,10 @@ void ImGuiManager::showEntityListUI(/* Maybe an enum of paramEntityType, Maybe a
 		logger.log("Deleting entity of Type: " + std::to_string(selectedEntityType));
 	}
 
+	if (isPlayMode) {
+		ImGui::EndDisabled();
+	}
+	*/
 	// --- build vectors for combo display (cheap, rebuild each frame) ---
 	std::vector<ResourceID> audioIDs;
 	std::vector<std::string> audioNames;
@@ -474,6 +534,32 @@ void ImGuiManager::showEntityListUI(/* Maybe an enum of paramEntityType, Maybe a
 	// BGM selector
 	static int bgmIndex = 0;
 	static int sfxIndex = 0;
+
+	if (isPlayMode) {
+		ImGui::BeginDisabled();
+	}
+
+	if (ImGui::Button("Reload audio assets")) {
+		auto added = resourceManager.reloadAudiosFromDirectory("assets/audio");
+		if (added > 0) {
+			audioIDs.clear();
+			audioNames.clear();
+			audioIDs.reserve(resourceManager.getAudios().size());
+			audioNames.reserve(resourceManager.getAudios().size());
+
+			for (auto const& kv : resourceManager.getAudios()) {
+				audioIDs.push_back(kv.first);
+				audioNames.push_back(kv.second.getKey());
+			}
+			if (bgmIndex >= (int)audioNames.size()) bgmIndex = 0;
+			if (sfxIndex >= (int)audioNames.size()) sfxIndex = 0;
+		}
+	}
+
+	if (isPlayMode) {
+		ImGui::EndDisabled();
+	}
+
 	if (!audioNames.empty()) {
 		if (bgmIndex >= (int)audioNames.size()) bgmIndex = 0;
 		ImGui::Text("Simple Audio Test:");
@@ -498,7 +584,7 @@ void ImGuiManager::showEntityListUI(/* Maybe an enum of paramEntityType, Maybe a
 			}
 			else {
 				// check if audio type is music or sfx
-				if (audioNames[bgmIndex].find("bgm_") != std::string::npos) {
+				if (audioNames[bgmIndex].find("BGM_") != std::string::npos) {
 					// create bgm instance
 					AudioData::IndividualAudioData d{};
 					d.resourceID = bgmRID;
@@ -508,7 +594,7 @@ void ImGuiManager::showEntityListUI(/* Maybe an enum of paramEntityType, Maybe a
 					d.volume = audioSystem.getBGMVolume();
 					opt = audioSystem.createAudioInstance(d, INVALID_ENTITY_ID);
 				}
-				else if (audioNames[bgmIndex].find("sfx_") != std::string::npos) {
+				else if (audioNames[bgmIndex].find("SFX_") != std::string::npos) {
 					// play sfx instance (one-shot)
 					audioSystem.playSFX(bgmRID);
 				}
@@ -533,25 +619,58 @@ void ImGuiManager::showEntityListUI(/* Maybe an enum of paramEntityType, Maybe a
 	//Show current game objects in scene
 	if (ImGui::CollapsingHeader("Scene Objects", ImGuiTreeNodeFlags_DefaultOpen))
 	{
-		const Scene* scene = gsm.getCurrentScene();
+		Scene* scene = gsm.getCurrentScene();
 		if (!scene) // if no scene, show message
 		{
 			ImGui::TextDisabled("No active scene loaded.");
 		}
 		else
 		{
+			bool isPlayMode = (m_editorMode == EditorMode::PLAY);
+			if (isPlayMode) {
+				ImGui::BeginDisabled();
+			}
+
 			for (size_t i = 0; i < scene->items.size(); ++i)
 			{
-				const DrawItem& item = scene->items[i];
-				bool selected = (selectedEntityType == i); // check if obj is current selected one
+				//const DrawItem& item = scene->items[i];
+				//bool selected = (selectedEntityType == i); // check if obj is current selected one
 
-				// labels obj as Entity if it has no name
+				//// labels obj as Entity if it has no name
+				//std::string label = item.name.empty()
+				//	? "Entity " + std::to_string(i)
+				//	: item.name;
+
+				//if (ImGui::Selectable(label.c_str(), selected)) // selectable list
+				//	selectedEntityType = static_cast<unsigned int>(i);
+
+				DrawItem& item = scene->items[i];
+				bool selected = (selectedEntityType == i);
+
 				std::string label = item.name.empty()
 					? "Entity " + std::to_string(i)
 					: item.name;
 
-				if (ImGui::Selectable(label.c_str(), selected)) // selectable list
+				if (ImGui::Selectable(label.c_str(), selected))
 					selectedEntityType = static_cast<unsigned int>(i);
+
+				//accept dropped textures here
+				if (ImGui::BeginDragDropTarget())
+				{
+					if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ASSET_TEXTURE"))
+					{
+						IM_ASSERT(payload->DataSize == sizeof(GLuint));
+						GLuint droppedTex = *reinterpret_cast<const GLuint*>(payload->Data);
+
+						item.tex = droppedTex;
+						logger.log("[ImGui] Applied texture via drag-drop to object: " + label);
+					}
+					ImGui::EndDragDropTarget();
+				}
+			}
+
+			if (isPlayMode) {
+				ImGui::EndDisabled();
 			}
 		}
 	}
@@ -562,9 +681,20 @@ void ImGuiManager::showEntityListUI(/* Maybe an enum of paramEntityType, Maybe a
 	if (sceneMut)
 	{
 		ImGui::Separator();
+		
+		//disable add/remove in play mode
+		bool isPlayMode = (m_editorMode == EditorMode::PLAY);
+
+		if (isPlayMode) {
+			ImGui::BeginDisabled();
+		}
+
 		//this button will change to load a gameobject,, currently loads just an empty game object
 		if (ImGui::Button("Add New Object")) 
 		{
+			//save state for undo
+			pushUndoState("Add New Object");
+
 			// Create a simple new DrawItem
 			DrawItem newItem;
 			newItem.name = "NewObject_" + std::to_string(sceneMut->items.size());
@@ -587,6 +717,9 @@ void ImGuiManager::showEntityListUI(/* Maybe an enum of paramEntityType, Maybe a
 		{
 			if (!sceneMut->items.empty() && selectedEntityType < sceneMut->items.size())
 			{
+				//save state for undo
+				pushUndoState("Remove Selected");
+
 				logger.log("[ImGui] Removed object: " + sceneMut->items[selectedEntityType].name);
 				sceneMut->items.erase(sceneMut->items.begin() + selectedEntityType);
 
@@ -597,6 +730,11 @@ void ImGuiManager::showEntityListUI(/* Maybe an enum of paramEntityType, Maybe a
 					selectedEntityType = 0;
 			}
 		}
+
+		if (isPlayMode) {
+			ImGui::EndDisabled();
+		}
+
 	}
 	else
 	{
@@ -608,17 +746,17 @@ void ImGuiManager::showEntityListUI(/* Maybe an enum of paramEntityType, Maybe a
 
 void ImGuiManager::showTransformUI(/* A reference to a vector of object list objectList */) {
 	// Fixed size for transform window
-	constexpr float width = 300.0f;
-	constexpr float height = 200.0f;
+	/*constexpr float width = 300.0f;
+	constexpr float height = 200.0f;*/
 
 	ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDecoration |
 		ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
 
 	// Position the overlay at the top-right corner of the window, below entity list overlay
-	ImVec2 windowTopRightPos = { windowBottomRight.x - width, windowTopLeft.y + 550.0f };
+	/*ImVec2 windowTopRightPos = { windowBottomRight.x - width, windowTopLeft.y + 550.0f };
 	ImGui::SetNextWindowPos(windowTopRightPos);
 	ImGui::SetNextWindowBgAlpha(0.35f);
-	ImGui::SetNextWindowSize({ width, height });
+	ImGui::SetNextWindowSize({ width, height });*/
 	/*ImGui::Begin("Transform", nullptr, windowFlags);
 	ImGui::Text("Transform Controls");*/
 
@@ -644,6 +782,13 @@ void ImGuiManager::showTransformUI(/* A reference to a vector of object list obj
 	ImGui::Text("Editing: %s", item.name.empty() ? "(Unnamed)" : item.name.c_str());
 	ImGui::Separator();
 
+	//disable editing in play mode
+	bool isPlayMode = (m_editorMode == EditorMode::PLAY);
+	if (isPlayMode) {
+		ImGui::BeginDisabled();
+	}
+
+
 	// edits the game objects actual transform
 	bool changed = false;
 	changed |= ImGui::DragFloat("X", &item.x, 0.01f, 0.0f, 1.0f);
@@ -651,6 +796,14 @@ void ImGuiManager::showTransformUI(/* A reference to a vector of object list obj
 	changed |= ImGui::DragFloat("Width", &item.w, 0.01f, 0.0f, 2.0f);
 	changed |= ImGui::DragFloat("Height", &item.h, 0.01f, 0.0f, 2.0f);
 	changed |= ImGui::DragFloat("Angle", &item.angle, 0.5f, -360.0f, 360.0f);
+
+	if (changed) {
+		pushUndoState("Inspector transform change");
+	}
+
+	if (isPlayMode) {
+		ImGui::EndDisabled();
+	}
 
 	/*if (changed)
 	{
@@ -698,7 +851,131 @@ void ImGuiManager::showTransformUI(/* A reference to a vector of object list obj
 		}
 	}*/
 
-	ImGui::End();
+	// --- Audio Emitters Control -------------------------------------------------
+    ImGui::Separator();
+    if (ImGui::CollapsingHeader("Audio Emitters", ImGuiTreeNodeFlags_DefaultOpen))
+    {
+        ECS& ecs = gsm.getECS();
+
+        // Gather audio emitter entities
+        std::vector<EntityID> audioEntities;
+        audioEntities.reserve(32);
+        for (EntityID e : ecs.getAllEntities()) {
+            if (ecs.getComponent<AudioData>(e))
+                audioEntities.push_back(e);
+        }
+
+        if (audioEntities.empty()) {
+            ImGui::TextDisabled("No audio emitter entities found.");
+        } else {
+            static EntityID selectedAudioEntity = (EntityID)0;
+            // Validate selection
+            bool selectionValid = false;
+            for (auto e : audioEntities) if (e == selectedAudioEntity) { selectionValid = true; break; }
+            if (!selectionValid) selectedAudioEntity = audioEntities.front();
+
+            // Emitter selector
+            if (ImGui::BeginCombo("Emitter Entity", std::to_string(selectedAudioEntity).c_str())) {
+                for (auto e : audioEntities) {
+                    bool sel = (e == selectedAudioEntity);
+                    if (ImGui::Selectable(std::to_string(e).c_str(), sel))
+                        selectedAudioEntity = e;
+                    if (sel) ImGui::SetItemDefaultFocus();
+                }
+                ImGui::EndCombo();
+            }
+
+            AudioData* ad = ecs.getComponent<AudioData>(selectedAudioEntity);
+            if (!ad) {
+                ImGui::TextDisabled("Selected entity lost its AudioData component.");
+            } else if (ad->audios.empty()) {
+                ImGui::TextDisabled("Emitter has no tracks.");
+            } else {
+                ImGui::Text("Tracks:");
+                ImGui::Separator();
+
+                // Iterate tracks
+                for (std::size_t i = 0; i < ad->audios.size(); ++i) {
+                    auto& track = ad->audios[i];
+                    ImGui::PushID((int)i);
+
+                    // Display basic info
+                    ImGui::Text("%s (RID:%u)", track.name.empty() ? "<unnamed>" : track.name.c_str(), track.resourceID);
+                    ImGui::SameLine();
+                    bool loopFlag = track.loop;
+                    ImGui::Checkbox("Loop", &loopFlag);
+                    if (loopFlag != track.loop) {
+                        track.loop = loopFlag;
+                        // Optional: if you want loop change to apply immediately, restart instance after modification
+                    }
+
+                    // Instance lookup
+                    AudioInstanceID instanceID = 0;
+                    bool hasInstance = false;
+                    auto it = activeInstances.find(track.resourceID);
+                    if (it != activeInstances.end()) {
+                        instanceID = it->second;
+                        hasInstance = true;
+                    }
+
+                    // Play/Pause/Restart buttons
+                    if (ImGui::Button(hasInstance ? "Pause" : "Play")) {
+                        if (hasInstance) {
+                            audioSystem.pauseSound(instanceID);
+                        } else {
+                            // Create (starts paused per your API) then resume
+                            auto opt = audioSystem.createAudioInstance(track, selectedAudioEntity);
+                            if (opt) {
+                                activeInstances[track.resourceID] = *opt;
+                                audioSystem.resumeSound(*opt);
+                            } else {
+                                logger.error("[Inspector] Failed to create audio instance for RID " + std::to_string(track.resourceID));
+                            }
+                        }
+                    }
+                    ImGui::SameLine();
+                    if (ImGui::Button("Resume")) {
+                        if (hasInstance) audioSystem.resumeSound(instanceID);
+                    }
+                    ImGui::SameLine();
+                    if (ImGui::Button("Restart")) {
+                        if (hasInstance) audioSystem.restartSound(instanceID);
+                    }
+
+                    // Volume slider
+                    float currentVol = hasInstance ? audioSystem.getVolume(instanceID) : track.volume;
+                    if (ImGui::SliderFloat("Volume", &currentVol, 0.0f, 1.0f)) {
+                        if (hasInstance) {
+                            audioSystem.modifyVolume(instanceID, currentVol);
+                        }
+                        track.volume = currentVol; // Keep JSON-serializable state coherent
+                    }
+
+                    // Pitch (optional if supported)
+                    float pitchVal = track.pitch;
+                    if (ImGui::DragFloat("Pitch", &pitchVal, 0.01f, 0.25f, 4.0f, "%.2f")) {
+                        track.pitch = pitchVal;
+                        // If runtime pitch control exists, apply here (not shown in AudioSystem public API snippet)
+                    }
+
+                    ImGui::Separator();
+                    ImGui::PopID();
+                }
+
+                // Global controls (BGM/SFX group pause/resume) if desired
+                if (ImGui::Button("Pause All BGM")) audioSystem.pauseAllBGM();
+                ImGui::SameLine();
+                if (ImGui::Button("Resume All BGM")) audioSystem.resumeAllBGM();
+                ImGui::SameLine();
+                if (ImGui::Button("Pause All SFX")) audioSystem.pauseAllSFX();
+                ImGui::SameLine();
+                if (ImGui::Button("Resume All SFX")) audioSystem.resumeAllSFX();
+            }
+        }
+    }
+    // --- End Audio Emitters -----------------------------------------------------
+
+    ImGui::End();
 }
 
 void ImGuiManager::showLogsOverlayUI() {
@@ -707,17 +984,15 @@ void ImGuiManager::showLogsOverlayUI() {
 	constexpr float height = 200.0f;
 
 	ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoResize;
+	//ImGuiWindowFlags_AlwaysVerticalScrollbar;
 
 	// Position the overlay at the bottom-center of the window
-    ImVec2 initialPos = { (windowTopLeft.x + windowBottomRight.x) / 2, windowBottomRight.y };
+    /*ImVec2 initialPos = { (windowTopLeft.x + windowBottomRight.x) / 2, windowBottomRight.y };
     ImGui::SetNextWindowPos(initialPos, ImGuiCond_Always, ImVec2(0.5f, 1.0f));
 	ImGui::SetNextWindowBgAlpha(0.35f);
-	ImGui::SetNextWindowSize({ width, height });
+	ImGui::SetNextWindowSize({ width, height });*/
 
-	ImGui::Begin("Logs", nullptr, windowFlags);
-
-	// Add a Child window to enable vertical and horizontal scrolling
-	ImGui::BeginChild("LogRegionHorizontal", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar);
+	ImGui::Text("Logs");
 
 	for (auto const& log : logger.getLogs()) {
 		if (log.find("[ERROR]") != std::string::npos)
@@ -734,95 +1009,359 @@ void ImGuiManager::showLogsOverlayUI() {
 	if (ImGui::GetScrollY() >= ImGui::GetScrollMaxY())
 		ImGui::SetScrollHereY(1.0f);
 
-	ImGui::EndChild();
-	ImGui::End();
 }
 
 void ImGuiManager::showAssetsBrowserUI() {
-	constexpr float width = 400.0f;
-	constexpr float height = 350.0f;
-	ImGuiWindowFlags flags = ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing;
-
-	ImVec2 pos = { windowBottomRight.x - width - 340.0f, windowTopLeft.y + 520.0f }; // near Transform window
-	ImGui::SetNextWindowPos(pos);
-	ImGui::SetNextWindowSize({ width, height });
-
 	ImGui::TextColored(ImVec4(0.8f, 0.9f, 1.0f, 1.0f), "Assets Browser");
 	ImGui::Separator();
-	
-	// importing new texture
-	static char newPath[256] = "assets/textures/";
-	ImGui::InputText("New Texture Path", newPath, IM_ARRAYSIZE(newPath));
-	if (ImGui::Button("Import Texture"))
-	{
-		std::string fullPath = newPath;
-		std::filesystem::path p(fullPath);
-		std::string name = p.stem().string();
 
-		try
+	bool isPlayMode = (m_editorMode == EditorMode::PLAY);
+
+	// Small helper to list files in a folder (used by fonts/levels/prefabs/scenes/shaders)
+	auto drawFolderFileList = [&](const char* debugName,
+		const char* folderPath,
+		int& selectedIdx)
 		{
-			TextureFile& newTex = resourceManager.loadTexture(name, fullPath);
-			logger.log("[ImGui] Imported new texture: " + name + " (" + fullPath + ")");
-		}
-		catch (...)
-		{
-			logger.error("[ImGui] Failed to import texture from path: " + fullPath);
-		}
-	}
-	
-	ImGui::Text("Loaded Textures:");
-	ImGui::Separator();
+			ImGui::Text("%s (%s)", debugName, folderPath);
+			ImGui::Separator();
 
-	// thumbnail size
-	static float thumbnailSize = 60.0f;
-	
-	// thumbnail grid
-	float panelWidth = ImGui::GetContentRegionAvail().x; // total space in tab
-
-
-	float padding = 10.0f;
-	float cellSize = thumbnailSize + padding;
-	int columnCount = (int)(panelWidth / cellSize);
-	if (columnCount < 1) columnCount = 1;
-	
-	// texture grid table 
-	if (ImGui::BeginTable("TextureTable", columnCount, ImGuiTableFlags_SizingStretchSame))
-	{
-		auto& textures = resourceManager.getTextures();
-		int index = 0;
-
-		for (auto& [id, texFile] : textures)
-		{
-			const std::string& texName = texFile.getKey();
-			const std::string& texPath = texFile.getFilePath();
-
-			GLuint texID = resourceManager.getGLTextureFromFile(texPath);
-			if (texID == 0) continue;
-
-			ImGui::TableNextColumn();
-			ImGui::PushID(index++);
-
-			if (ImGui::ImageButton((ImTextureID)(intptr_t)texID, ImVec2(thumbnailSize, thumbnailSize)))
-			{
-				Scene* scene = gsm.getCurrentScene();
-				if (scene && selectedEntityType < scene->items.size())
-				{
-					scene->items[selectedEntityType].tex = texID;
-					logger.log("[ImGui] Applied texture: " + texName);
+			std::vector<std::string> files;
+			if (std::filesystem::exists(folderPath)) {
+				for (auto const& entry : std::filesystem::directory_iterator(folderPath)) {
+					if (!entry.is_regular_file()) continue;
+					files.push_back(entry.path().filename().string());
 				}
 			}
 
-			ImGui::TextWrapped(texName.c_str());
-			ImGui::PopID();
+			if (files.empty()) {
+				ImGui::TextDisabled("No files found in this folder.");
+				return;
+			}
+
+			if (selectedIdx < 0 || selectedIdx >= (int)files.size())
+				selectedIdx = 0;
+
+			ImVec2 listSize(-FLT_MIN, ImGui::GetTextLineHeightWithSpacing() * 10.0f);
+			std::string id = "##";
+			id += debugName;
+			id += "List";
+
+			if (ImGui::BeginListBox(id.c_str(), listSize)) {
+				for (int i = 0; i < (int)files.size(); ++i) {
+					bool isSelected = (i == selectedIdx);
+					if (ImGui::Selectable(files[i].c_str(), isSelected)) {
+						selectedIdx = i;
+					}
+					if (isSelected)
+						ImGui::SetItemDefaultFocus();
+				}
+				ImGui::EndListBox();
+			}
+		};
+
+	if (ImGui::BeginTabBar("AssetTypeTabs"))
+	{
+		// ============================================================
+		//  TEXTURES
+		// ============================================================
+		if (ImGui::BeginTabItem("Textures"))
+		{
+			// === SECTION 1: Import Controls (DISABLED IN PLAY MODE) ===
+			if (isPlayMode) {
+				ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.6f, 0.2f, 1.0f));
+				ImGui::Text("Asset import disabled during play mode");
+				ImGui::PopStyleColor();
+				ImGui::Separator();
+				ImGui::BeginDisabled();
+			}
+
+			ImGui::Text("Import New Texture:");
+			static char newPath[256] = "assets/textures/";
+			ImGui::InputText("New Texture Path", newPath, IM_ARRAYSIZE(newPath));
+			ImGui::Spacing();
+
+			if (ImGui::Button("Import Texture"))
+			{
+				std::string sourcePath = newPath;
+
+				if (sourcePath.empty())
+				{
+					logger.error("[ImGui] No source path specified!");
+				}
+				else
+				{
+					try
+					{
+						std::filesystem::path destFolder = "assets/textures/";
+						std::filesystem::create_directories(destFolder);
+
+						std::filesystem::path src(sourcePath);
+						std::string filename = src.filename().string();
+						std::filesystem::path destPath = destFolder / filename;
+
+						std::filesystem::copy_file(src, destPath,
+							std::filesystem::copy_options::overwrite_existing);
+
+						std::string texKey = destPath.stem().string();
+						resourceManager.loadTexture(texKey, destPath.string());
+						resourceManager.getGLTextureFromFile(destPath.string());
+
+						logger.log("[ImGui] Imported new texture: " + destPath.string());
+					}
+					catch (const std::exception& e)
+					{
+						logger.error(std::string("[ImGui] Failed to import texture: ") + e.what());
+					}
+				}
+
+				newPath[0] = '\0';
+			}
+
+			ImGui::Spacing();
+			ImGui::Separator();
+			ImGui::Spacing();
+
+			if (ImGui::Button("Rescan assets/textures")) {
+				std::size_t added = resourceManager.reloadTexturesFromDirectory("assets/textures");
+				logger.log("[ImGui] Rescan complete. New textures added: " + std::to_string(added));
+			}
+			ImGui::SameLine();
+
+			if (ImGui::Button("Clear GL texture cache")) {
+				resourceManager.clearAllGLTexturesCache();
+			}
+
+			if (isPlayMode) {
+				ImGui::EndDisabled();  // END SECTION 1
+			}
+
+			// === SECTION 2: Texture Display ===
+			ImGui::Text("Loaded Textures:");
+			ImGui::Separator();
+
+			static float thumbnailSize = 60.0f;
+			float panelWidth = ImGui::GetContentRegionAvail().x;
+			float padding = 10.0f;
+			float cellSize = thumbnailSize + padding;
+			int columnCount = (int)(panelWidth / cellSize);
+			if (columnCount < 1) columnCount = 1;
+
+			if (ImGui::BeginTable("TextureTable", columnCount, ImGuiTableFlags_SizingStretchSame))
+			{
+				auto& textures = resourceManager.getTextures();
+				int index = 0;
+
+				if (isPlayMode) {
+					ImGui::BeginDisabled();
+				}
+
+				for (auto& [id, texFile] : textures)
+				{
+					const std::string& texName = texFile.getKey();
+					const std::string& texPath = texFile.getFilePath();
+
+					GLuint texID = resourceManager.getGLTextureFromFile(texPath);
+					if (texID == 0) continue;
+
+					ImGui::TableNextColumn();
+					ImGui::PushID(index++);
+
+					//thumbnail: click still directly applies to currently selected object
+					if (ImGui::ImageButton(
+						"##thumb",
+						(ImTextureID)(intptr_t)texID,
+						ImVec2(thumbnailSize, thumbnailSize)))
+					{
+						Scene* scene = gsm.getCurrentScene();
+						if (scene && selectedEntityType < scene->items.size())
+						{
+							scene->items[selectedEntityType].tex = texID;
+							logger.log("[ImGui] Applied texture: " + texName);
+						}
+					}
+
+					//drag source: drag this thumbnail onto entity
+					if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID))
+					{
+						ImGui::SetDragDropPayload("ASSET_TEXTURE", &texID, sizeof(GLuint));
+						ImGui::Text("Texture: %s", texName.c_str());
+						ImGui::EndDragDropSource();
+					}
+
+					ImGui::TextWrapped(texName.c_str());
+					ImGui::PopID();
+				}
+
+				if (isPlayMode) {
+					ImGui::EndDisabled();
+				}
+
+				ImGui::EndTable();
+			}
+
+			ImGui::EndTabItem();
 		}
 
-		ImGui::EndTable();
+		// ============================================================
+		//  AUDIO
+		// ============================================================
+		if (ImGui::BeginTabItem("Audio"))
+		{
+			ImGui::Text("Audio Assets:");
+			ImGui::Separator();
+
+			std::vector<ResourceID> audioIDs;
+			std::vector<std::string> audioNames;
+			audioIDs.reserve(resourceManager.getAudios().size());
+			audioNames.reserve(resourceManager.getAudios().size());
+
+			for (auto const& kv : resourceManager.getAudios()) {
+				audioIDs.push_back(kv.first);
+				audioNames.push_back(kv.second.getKey());
+			}
+
+			static int selectedAudioIndex = 0;
+
+			if (isPlayMode) {
+				ImGui::BeginDisabled();
+			}
+
+			if (ImGui::Button("Reload audio assets")) {
+				auto added = resourceManager.reloadAudiosFromDirectory("assets/audio");
+				if (added > 0) {
+					audioIDs.clear();
+					audioNames.clear();
+					audioIDs.reserve(resourceManager.getAudios().size());
+					audioNames.reserve(resourceManager.getAudios().size());
+					for (auto const& kv : resourceManager.getAudios()) {
+						audioIDs.push_back(kv.first);
+						audioNames.push_back(kv.second.getKey());
+					}
+					if (selectedAudioIndex >= (int)audioNames.size())
+						selectedAudioIndex = 0;
+				}
+			}
+
+			if (isPlayMode) {
+				ImGui::EndDisabled();
+			}
+
+			if (!audioNames.empty()) {
+				if (selectedAudioIndex >= (int)audioNames.size())
+					selectedAudioIndex = 0;
+
+				ImVec2 listSize(-FLT_MIN, ImGui::GetTextLineHeightWithSpacing() * 10.0f);
+				if (ImGui::BeginListBox("##AudioList", listSize)) {
+					for (int i = 0; i < (int)audioNames.size(); ++i) {
+						bool isSelected = (i == selectedAudioIndex);
+						if (ImGui::Selectable(audioNames[i].c_str(), isSelected)) {
+							selectedAudioIndex = i;
+						}
+						if (isSelected)
+							ImGui::SetItemDefaultFocus();
+					}
+					ImGui::EndListBox();
+				}
+
+				ResourceID rid = audioIDs[selectedAudioIndex];
+
+				ImGui::Separator();
+				ImGui::Text("Selected: %s", audioNames[selectedAudioIndex].c_str());
+
+				if (ImGui::Button("Play")) {
+					auto it = activeInstances.find(rid);
+					std::optional<AudioInstanceID> opt;
+
+					if (it != activeInstances.end()) {
+						audioSystem.resumeSound(it->second);
+					}
+					else {
+						const std::string& name = audioNames[selectedAudioIndex];
+						if (name.find("BGM_") != std::string::npos) {
+							AudioData::IndividualAudioData data{};
+							data.resourceID = rid;
+							data.name = name;
+							data.loop = true;
+							data.group = AudioData::IndividualAudioData::Group::Music;
+							data.volume = audioSystem.getBGMVolume();
+							opt = audioSystem.createAudioInstance(data, INVALID_ENTITY_ID);
+						}
+						else if (name.find("SFX_") != std::string::npos) {
+							audioSystem.playSFX(rid);
+						}
+
+						if (opt) {
+							activeInstances[rid] = *opt;
+							audioSystem.resumeSound(*opt);
+						}
+					}
+				}
+
+				ImGui::SameLine();
+				if (ImGui::Button("Pause")) {
+					auto it = activeInstances.find(rid);
+					if (it != activeInstances.end())
+						audioSystem.pauseSound(it->second);
+				}
+
+				ImGui::SameLine();
+				if (ImGui::Button("Stop")) {
+					auto it = activeInstances.find(rid);
+					if (it != activeInstances.end()) {
+						//audioSystem.stopSound(it->second);
+						activeInstances.erase(it);
+					}
+				}
+			}
+			else {
+				ImGui::TextDisabled("No audio assets loaded.");
+			}
+
+			ImGui::EndTabItem();
+		}
+
+		// ============================================================
+		//  FONTS / LEVELS / PREFABS / SCENES / SHADERS
+		//  (directory listing only for now)
+		// ============================================================
+		if (ImGui::BeginTabItem("Fonts")) {
+			static int fontIdx = -1;
+			drawFolderFileList("Fonts", "assets/fonts", fontIdx);
+			ImGui::EndTabItem();
+		}
+
+		if (ImGui::BeginTabItem("Levels")) {
+			static int levelIdx = -1;
+			drawFolderFileList("Levels", "assets/levels", levelIdx);
+			ImGui::EndTabItem();
+		}
+
+		if (ImGui::BeginTabItem("Prefabs")) {
+			static int prefabIdx = -1;
+			drawFolderFileList("Prefabs", "assets/prefabs", prefabIdx);
+			ImGui::EndTabItem();
+		}
+
+		if (ImGui::BeginTabItem("Scenes")) {
+			static int sceneIdx = -1;
+			drawFolderFileList("Scenes", "assets/scenes", sceneIdx);
+			ImGui::EndTabItem();
+		}
+
+		if (ImGui::BeginTabItem("Shaders")) {
+			static int shaderIdx = -1;
+			drawFolderFileList("Shaders", "assets/shaders", shaderIdx);
+			ImGui::EndTabItem();
+		}
+
+		ImGui::EndTabBar();
 	}
 }
 
+
 void ImGuiManager::showBottomDockUI()
 {
-
+	/*
 	//float dockPadding = 8.0f;   // gap between viewport and dock
 	float dockHeight = 200.0f; // desired dock height
 	float rightPanelWidth = 300.0f; // width of right sidebar
@@ -842,12 +1381,13 @@ void ImGuiManager::showBottomDockUI()
 	ImVec2 dockSize = { dockWidth, dockHeight };
 
 	ImGui::SetNextWindowPos(dockPos);
-	ImGui::SetNextWindowSize(dockSize);
+	ImGui::SetNextWindowSize(dockSize);*/
 
 	ImGuiWindowFlags flags =
 		ImGuiWindowFlags_NoSavedSettings |
 		ImGuiWindowFlags_NoCollapse |
-		ImGuiWindowFlags_NoResize;
+		ImGuiWindowFlags_NoResize |
+		ImGuiWindowFlags_AlwaysVerticalScrollbar;
 
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(8, 8));
 	ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(4, 4));
@@ -868,6 +1408,11 @@ void ImGuiManager::showBottomDockUI()
 			ImGui::EndTabItem();
 		}
 
+		if (ImGui::BeginTabItem("Animation Editor"))
+		{
+			showAnimationEditorUI(); 
+			ImGui::EndTabItem();
+		}
 
 		if (ImGui::BeginTabItem("Camera")) { 
 			Cam2D_Params p = Cam2D_GetActiveParams();
@@ -894,4 +1439,626 @@ void ImGuiManager::showBottomDockUI()
 
 	ImGui::End();
 	ImGui::PopStyleVar(2);
+}
+
+void ImGuiManager::showAnimationEditorUI() {
+    ImGuiWindowFlags flags = ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing;
+    constexpr float width = 400.0f, height = 330.0f;
+    ImVec2 pos{ windowBottomRight.x - width - 780.0f, windowTopLeft.y + 520.0f };
+    ImGui::SetNextWindowPos(pos);
+    ImGui::SetNextWindowSize({ width, height });
+    ImGui::Text("Sprite Animation Editor");
+
+    ECS& ecs = gsm.getECS();
+
+    // Build list of anim-capable entities
+    static int selected = -1;
+    std::vector<EntityID> animEntities;
+    for (EntityID e : ecs.getAllEntities()) {
+        if (ecs.getComponent<SpriteAnimationComponent>(e) && ecs.getComponent<ImageRenderer>(e))
+            animEntities.push_back(e);
+    }
+
+    if (animEntities.empty()) {
+        ImGui::TextDisabled("No entities with SpriteAnimationComponent.");
+        return;
+    }
+
+    // Entity selector
+    if (selected < 0 || selected >= (int)animEntities.size()) selected = 0;
+    if (ImGui::BeginCombo("Entity", std::to_string(animEntities[selected]).c_str())) {
+        for (int i = 0; i < (int)animEntities.size(); ++i) {
+            bool sel = (i == selected);
+            if (ImGui::Selectable(std::to_string(animEntities[i]).c_str(), sel))
+                selected = i;
+            if (sel) ImGui::SetItemDefaultFocus();
+        }
+        ImGui::EndCombo();
+    }
+
+    EntityID eid = animEntities[selected];
+    auto* anim = ecs.getComponent<SpriteAnimationComponent>(eid);
+    auto* img  = ecs.getComponent<ImageRenderer>(eid);
+
+	bool isPlayMode = (m_editorMode == EditorMode::PLAY);
+	if (isPlayMode) {
+		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.6f, 0.2f, 1.0f));
+		ImGui::Text("Animation editing disabled during play mode");
+		ImGui::PopStyleColor();
+		ImGui::Separator();
+		ImGui::BeginDisabled();
+	}
+
+    // Current animation
+    if (anim->currentAnim.empty() && !anim->animations.empty())
+        anim->currentAnim = anim->animations.begin()->first;
+
+    // Animation list
+    ImGui::Text("Animations:");
+    if (ImGui::BeginListBox("##animlist", ImVec2(-FLT_MIN, 100))) {
+        for (auto& kv : anim->animations) {
+            bool sel = (kv.first == anim->currentAnim);
+            if (ImGui::Selectable(kv.first.c_str(), sel))
+                anim->currentAnim = kv.first;
+            if (sel) ImGui::SetItemDefaultFocus();
+        }
+        ImGui::EndListBox();
+    }
+
+    // Edit selected animation
+    if (!anim->currentAnim.empty()) {
+        auto& def = anim->animations[anim->currentAnim];
+        int frames = def.frames;
+        float frameTime = def.frameTime;
+        bool loop = def.loop;
+
+        ImGui::DragInt("Frames", &frames, 0.2f, 1, 1024);
+        ImGui::DragFloat("Frame Time", &frameTime, 0.001f, 0.001f, 5.0f, "%.3f");
+        ImGui::Checkbox("Loop", &loop);
+
+        if (ImGui::Button("Apply Changes")) {
+            def.frames = frames;
+            def.frameTime = frameTime;
+            def.loop = loop;
+            anim->currentFrame = 0;
+            anim->timer = 0.0f;
+            anim->playing = true;
+        }
+        ImGui::SameLine();
+        if (ImGui::Button("Delete Animation") && anim->animations.size() > 1) {
+            anim->animations.erase(anim->currentAnim);
+            if (anim->animations.empty()) anim->currentAnim.clear();
+            else anim->currentAnim = anim->animations.begin()->first;
+            anim->currentFrame = 0;
+            anim->timer = 0.0f;
+        }
+    }
+
+    ImGui::Separator();
+    // Add new animation
+    static char newName[64] = "";
+    static int newFrames = 1;
+    static float newFrameTime = 0.1f;
+    static bool newLoop = true;
+    static char newSpritePath[256] = "assets/textures/";
+    static int newCols = 1;
+    static int newRows = 1;
+
+    ImGui::InputText("New Name", newName, IM_ARRAYSIZE(newName));
+    ImGui::InputText("New Sprite Path", newSpritePath, IM_ARRAYSIZE(newSpritePath));
+    ImGui::DragInt("New Frames", &newFrames, 0.2f, 1, 1024);
+    ImGui::DragFloat("New Frame Time", &newFrameTime, 0.001f, 0.001f, 5.0f, "%.3f");
+    ImGui::Checkbox("New Loop", &newLoop);
+    ImGui::DragInt("New Columns", &newCols, 0.2f, 1, 256);
+    ImGui::DragInt("New Rows", &newRows, 0.2f, 1, 256);
+
+    if (ImGui::Button("Add Animation") && newName[0]) {
+        SpriteAnimationComponent::Animation a{};
+        a.frames = newFrames;
+        a.frameTime = newFrameTime;
+        a.loop = newLoop;
+        a.sheetColumns = newCols;
+        a.sheetRows = newRows;
+        if (newSpritePath[0]) {
+            std::string p = newSpritePath;
+            if (p.rfind("assets/", 0) != 0) p = "assets/" + p;
+            a.spritePath = p;
+        }
+        anim->animations[newName] = a;
+        anim->currentAnim = newName;
+        anim->currentFrame = 0;
+        anim->timer = 0.0f;
+        anim->playing = true;
+        newName[0] = '\0';
+    }
+
+    // Playback controls
+    ImGui::Separator();
+    ImGui::Text("Playback:");
+    if (ImGui::Button(anim->playing ? "Pause" : "Play"))
+        anim->playing = !anim->playing;
+    ImGui::SameLine();
+    if (ImGui::Button("Restart")) {
+        anim->currentFrame = 0;
+        anim->timer = 0.0f;
+        anim->playing = true;
+    }
+
+	if (isPlayMode) {
+		ImGui::EndDisabled();
+	}
+}
+
+void ImGuiManager::createDockspace() {
+	// Setup fullscreen invisible window for docking
+	ImGuiWindowFlags windowFlags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
+	ImGuiViewport* viewport = ImGui::GetMainViewport();
+
+	// Make window fill entire screen
+	ImGui::SetNextWindowPos(viewport->Pos);
+	ImGui::SetNextWindowSize(viewport->Size);
+	ImGui::SetNextWindowViewport(viewport->ID);
+
+	// Remove window decorations
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+
+	windowFlags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse;
+	windowFlags |= ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
+	windowFlags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
+
+	// Create the invisible fullscreen window
+	ImGui::Begin("DockSpace", nullptr, windowFlags);
+	ImGui::PopStyleVar(3);
+
+	// CREATE THE ACTUAL DOCKSPACE
+	ImGuiID dockspaceID = ImGui::GetID("NocturnalStudioDockspace");
+	ImGui::DockSpace(dockspaceID, ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_None);
+
+	// setup initial laayout
+	setupInitialDockingLayout();
+
+	// Menu bar
+	if (ImGui::BeginMenuBar()) {
+		if (ImGui::BeginMenu("File")) {
+			if (ImGui::MenuItem("Exit")) {
+				// Handle exit
+			}
+			ImGui::EndMenu();
+		}
+
+		if (ImGui::BeginMenu("View")) {
+			// Add toggles for showing/hiding panels
+			if (ImGui::MenuItem("Viewport")) {}
+			if (ImGui::MenuItem("Performance")) {}
+			if (ImGui::MenuItem("Entity Picker")) {}
+			if (ImGui::MenuItem("Inspector")) {}
+			if (ImGui::MenuItem("Editor Dock")) {}
+
+			ImGui::Separator();
+
+			// ⭐ ADD RESET LAYOUT OPTION
+			if (ImGui::MenuItem("Reset Layout")) {
+				resetDockingLayout();
+			}
+
+			ImGui::EndMenu();
+		}
+
+			ImGui::Separator();
+
+			// Calculate center position
+			float menuBarWidth = ImGui::GetContentRegionAvail().x + ImGui::GetCursorPosX();
+			float buttonWidth = 100.0f;
+			float centerPos = (menuBarWidth * 0.5f) - (buttonWidth * 0.5f);
+			ImGui::SetCursorPosX(centerPos);
+
+			if (m_editorMode == EditorMode::EDIT) {
+				// Green Play button
+				ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.2f, 0.7f, 0.3f, 1.0f));
+				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.3f, 0.8f, 0.4f, 1.0f));
+				ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.1f, 0.6f, 0.2f, 1.0f));
+				if (ImGui::Button("Play", ImVec2(buttonWidth, 0))) {
+					onPlayButtonPressed();
+				}
+				ImGui::PopStyleColor(3);
+			}
+			else {
+				// Red Stop button
+				ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.7f, 0.2f, 0.2f, 1.0f));
+				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.8f, 0.3f, 0.3f, 1.0f));
+				ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.6f, 0.1f, 0.1f, 1.0f));
+				if (ImGui::Button("Stop", ImVec2(buttonWidth, 0))) {
+					onStopButtonPressed();
+				}
+				ImGui::PopStyleColor(3);
+			}
+
+			// Show current mode
+			ImGui::Separator();
+			ImGui::Text("Mode:");
+			ImGui::SameLine();
+			if (m_editorMode == EditorMode::EDIT) {
+				ImGui::TextColored(ImVec4(0.2f, 0.8f, 0.3f, 1.0f), "EDIT");
+			}
+			else {
+				ImGui::TextColored(ImVec4(1.0f, 0.6f, 0.2f, 1.0f), "PLAY");
+			}
+		}
+
+		ImGui::EndMenuBar();
+	
+
+	ImGui::End();
+}
+
+void ImGuiManager::setupInitialDockingLayout() {
+	// wait a couple frames so dockspace exists
+	static int frameCount = 0;
+	if (frameCount < 2) {
+		++frameCount;
+		return;
+	}
+
+	if (m_dockingLayoutInitialized)
+		return;
+
+	ImGuiID dockspace = ImGui::GetID("NocturnalStudioDockspace");
+
+	// fresh dockspace
+	ImGui::DockBuilderRemoveNode(dockspace);
+	ImGui::DockBuilderAddNode(dockspace, ImGuiDockNodeFlags_DockSpace);
+	ImGui::DockBuilderSetNodeSize(dockspace, ImGui::GetMainViewport()->Size);
+
+	ImGuiID dock_main = dockspace;
+	ImGuiID dock_bottom = 0;
+	ImGuiID dock_left = 0;
+	ImGuiID dock_right = 0;
+
+	// 1) Split full dockspace into TOP and BOTTOM (bottom = full-width editor dock)
+	dock_bottom = ImGui::DockBuilderSplitNode(
+		dock_main,          // node to split
+		ImGuiDir_Down,
+		0.25f,              // 25% height for bottom
+		nullptr,            // return id for bottom
+		&dock_main          // dock_main becomes the TOP area
+	);
+
+	// 2) Split TOP into LEFT (Entity Picker) and remaining
+	dock_left = ImGui::DockBuilderSplitNode(
+		dock_main,
+		ImGuiDir_Left,
+		0.22f,              // 22% width for left
+		nullptr,
+		&dock_main          // dock_main is now the center strip
+	);
+
+	// 3) Split remaining TOP into RIGHT (Inspector) and CENTER (Viewport)
+	dock_right = ImGui::DockBuilderSplitNode(
+		dock_main,
+		ImGuiDir_Right,
+		0.25f,              // 25% width for right
+		nullptr,
+		&dock_main          // dock_main is now the center area
+	);
+	ImGuiID dock_center = dock_main;
+
+	// ---- Dock windows ----
+	ImGui::DockBuilderDockWindow("Viewport", dock_center);
+	ImGui::DockBuilderDockWindow("Entity Picker", dock_left);
+	ImGui::DockBuilderDockWindow("Inspector", dock_right);
+	ImGui::DockBuilderDockWindow("Overlay", dock_right);
+	ImGui::DockBuilderDockWindow("Performance", dock_right);
+	ImGui::DockBuilderDockWindow("Editor Dock", dock_bottom);
+
+	ImGui::DockBuilderFinish(dockspace);
+
+	m_dockingLayoutInitialized = true;
+	logger.log("Initial docking layout set.");
+}
+
+
+void ImGuiManager::resetDockingLayout() {
+	ImGuiID dockspace = ImGui::GetID("NocturnalStudioDockspace");
+	ImGui::DockBuilderRemoveNode(dockspace);
+	m_dockingLayoutInitialized = false;
+	logger.log("Docking layout reset");
+}
+
+void ImGuiManager::saveSceneSnapshot() {
+	Scene* scene = gsm.getCurrentScene();
+	if (!scene) {
+		logger.warning("No scene to save snapshot");
+		return;
+	}
+
+	// Create JSON string
+	m_savedSceneState = "[";
+
+	for (size_t i = 0; i < scene->items.size(); ++i) {
+		const DrawItem& item = scene->items[i];
+
+		m_savedSceneState += "{";
+		m_savedSceneState += "\"name\":\"" + item.name + "\",";
+		m_savedSceneState += "\"x\":" + std::to_string(item.x) + ",";
+		m_savedSceneState += "\"y\":" + std::to_string(item.y) + ",";
+		m_savedSceneState += "\"w\":" + std::to_string(item.w) + ",";
+		m_savedSceneState += "\"h\":" + std::to_string(item.h) + ",";
+		m_savedSceneState += "\"angle\":" + std::to_string(item.angle) + ",";
+		m_savedSceneState += "\"tex\":" + std::to_string(item.tex);
+		m_savedSceneState += "}";
+
+		if (i < scene->items.size() - 1) m_savedSceneState += ",";
+	}
+
+	m_savedSceneState += "]";
+
+	logger.log("Scene snapshot saved (" + std::to_string(scene->items.size()) + " items)");
+}
+
+void ImGuiManager::restoreSceneSnapshot() {
+	if (m_savedSceneState.empty()) {
+		logger.warning("No snapshot to restore");
+		return;
+	}
+
+	Scene* scene = gsm.getCurrentScene();
+	if (!scene) return;
+
+	// store original data temporarily
+	std::vector<DrawItem> originalItems = scene->items;
+
+	// clear current items
+	scene->items.clear();
+
+	// Parse the saved JSON (simplified parsing)
+	// NOTE: This is a basic implementation. For production, use a proper JSON library
+	size_t pos = 0;
+	std::string json = m_savedSceneState;
+
+	while ((pos = json.find("{", pos)) != std::string::npos) {
+		size_t endPos = json.find("}", pos);
+		if (endPos == std::string::npos) break;
+
+		std::string objStr = json.substr(pos, endPos - pos + 1);
+		DrawItem item;
+
+		// Parse fields (simplified)
+		auto getValue = [](const std::string& str, const std::string& key) -> std::string {
+			size_t keyPos = str.find("\"" + key + "\":");
+			if (keyPos == std::string::npos) return "";
+
+			keyPos = str.find(":", keyPos) + 1;
+			size_t endPos = str.find_first_of(",}", keyPos);
+			std::string value = str.substr(keyPos, endPos - keyPos);
+
+			// Remove quotes if present
+			if (value.front() == '"') value = value.substr(1, value.length() - 2);
+
+			return value;
+			};
+
+		item.name = getValue(objStr, "name");
+		item.x = std::stof(getValue(objStr, "x"));
+		item.y = std::stof(getValue(objStr, "y"));
+		item.w = std::stof(getValue(objStr, "w"));
+		item.h = std::stof(getValue(objStr, "h"));
+		item.angle = std::stof(getValue(objStr, "angle"));
+		item.tex = std::stoul(getValue(objStr, "tex"));
+
+		scene->items.push_back(item);
+		pos = endPos + 1;
+	}
+
+	logger.log("Scene snapshot restored (" + std::to_string(scene->items.size()) + " items)");
+	m_savedSceneState.clear();
+}
+
+void ImGuiManager::onPlayButtonPressed() {
+	if (m_editorMode == EditorMode::PLAY) return;
+
+	logger.log("=== ENTERING PLAY MODE ===");
+
+	// Save current scene state
+	saveSceneSnapshot();
+
+	// Switch to play mode
+	m_editorMode = EditorMode::PLAY;
+
+	logger.log("Play mode started");
+}
+
+void ImGuiManager::onStopButtonPressed() {
+	if (m_editorMode == EditorMode::EDIT) return;
+
+	logger.log("=== EXITING PLAY MODE ===");
+
+	// Restore scene to pre-play state
+	restoreSceneSnapshot();
+
+	// Switch back to edit mode
+	m_editorMode = EditorMode::EDIT;
+
+	logger.log("Edit mode restored");
+}
+
+void ImGuiManager::pushUndoState(const char* reason)
+{
+	if (m_editorMode == EditorMode::PLAY)
+		return; //no undo recording in play mode
+
+	Scene* scene = gsm.getCurrentScene();
+	if (!scene)
+		return;
+
+	//keep up to kMaxUndoSteps snapshots
+	if (m_undoStack.size() >= kMaxUndoSteps) {
+		//drop the oldest
+		m_undoStack.erase(m_undoStack.begin());
+	}
+
+	m_undoStack.emplace_back(scene->items);
+
+	if (reason) {
+		logger.log(std::string("[Undo] Saved state: ") + reason);
+	}
+}
+
+void ImGuiManager::undoLastAction()
+{
+	Scene* scene = gsm.getCurrentScene();
+	if (!scene)
+		return;
+
+	//need at least 2 states, previous and current
+	if (m_undoStack.size() < 2) {
+		logger.warning("[Undo] No more undo steps available.");
+		return;
+	}
+
+	//remove current state
+	m_undoStack.pop_back();
+
+	//restore previous
+	scene->items = m_undoStack.back();
+
+	//fix selection index
+	if (selectedEntityType >= scene->items.size()) {
+		selectedEntityType = scene->items.empty()
+			? 0
+			: static_cast<unsigned int>(scene->items.size() - 1);
+	}
+
+	logger.log("[Undo] Undo applied.");
+}
+
+
+void ImGuiManager::handleViewportPicking(const ImVec2& imgMin,
+	const ImVec2& imgMax,
+	int vpW, int vpH)
+{
+	//only allow editing in EDIT mode
+	if (m_editorMode == EditorMode::PLAY)
+		return;
+
+	Scene* scene = gsm.getCurrentScene();
+	if (!scene)
+		return;
+
+	auto& items = scene->items;
+	if (items.empty())
+		return;
+
+	//mouse position (screen space)
+	ImVec2 mouse = ImGui::GetMousePos();
+
+	//is mouse inside the viewport image
+	bool inside =
+		mouse.x >= imgMin.x && mouse.x <= imgMax.x &&
+		mouse.y >= imgMin.y && mouse.y <= imgMax.y;
+
+	//mouse in normalized [0..1] viewport coordinates
+	float localX = 0.0f;
+	float localY = 0.0f;
+
+	if (inside) {
+		float px = mouse.x - imgMin.x;
+		float py = mouse.y - imgMin.y;
+
+		localX = px / static_cast<float>(vpW);
+		localY = py / static_cast<float>(vpH);
+	}
+
+	//--------delete currently selected item--------
+	if (ImGui::IsKeyPressed(ImGuiKey_Delete, false)) {
+		if (!items.empty() && selectedEntityType < items.size()) {
+			//save state for undo
+			pushUndoState("Delete object (Delete key)");
+			logger.log("[ImGui] Deleted object via Delete key: " + items[selectedEntityType].name);
+			items.erase(items.begin() + static_cast<std::ptrdiff_t>(selectedEntityType));
+			if (selectedEntityType >= items.size() && !items.empty())
+				selectedEntityType = static_cast<unsigned int>(items.size() - 1);
+			else if (items.empty())
+				selectedEntityType = 0;
+		}
+	}
+
+	//if mouse left the viewport, stop dragging
+	if (!inside) {
+		if (!ImGui::IsMouseDown(ImGuiMouseButton_Left)) {
+			m_isDragging = false;
+			m_draggedItem = -1;
+		}
+		m_hoveredItem = -1;
+		return;
+	}
+
+	//--------hit-test items (from top-most to bottom)--------
+	int hitIndex = -1;
+
+	for (int i = static_cast<int>(items.size()) - 1; i >= 0; --i) {
+		const DrawItem& it = items[static_cast<size_t>(i)];
+
+		float halfW = it.w * 0.5f;
+		float halfH = it.h * 0.5f;
+
+		float minX = it.x - halfW;
+		float maxX = it.x + halfW;
+		float minY = it.y - halfH;
+		float maxY = it.y + halfH;
+
+		if (localX >= minX && localX <= maxX &&
+			localY >= minY && localY <= maxY)
+		{
+			hitIndex = i;
+			break;  //first match from the end = top-most
+		}
+	}
+
+	m_hoveredItem = hitIndex;
+
+	//--------click to select/start dragging--------
+	if (hitIndex >= 0 && ImGui::IsMouseClicked(ImGuiMouseButton_Left)) {
+		//save pre-drag state
+		pushUndoState("Begin viewport drag/select");
+		selectedEntityType = static_cast<unsigned int>(hitIndex);
+		m_draggedItem = hitIndex;
+		m_isDragging = true;
+
+		DrawItem& it = items[static_cast<size_t>(hitIndex)];
+		m_dragOffset.x = localX - it.x;
+		m_dragOffset.y = localY - it.y;
+
+		logger.log("[ImGui] Selected item from viewport: " + it.name);
+	}
+
+	//--------drag while LMB is held--------
+	if (m_isDragging && m_draggedItem >= 0 &&
+		ImGui::IsMouseDown(ImGuiMouseButton_Left))
+	{
+		if (m_draggedItem < static_cast<int>(items.size())) {
+			DrawItem& it = items[static_cast<size_t>(m_draggedItem)];
+
+			float newX = localX - m_dragOffset.x;
+			float newY = localY - m_dragOffset.y;
+
+			//keep inside world bounds
+			newX = std::clamp(newX, 0.0f, 1.0f);
+			newY = std::clamp(newY, 0.0f, 1.0f);
+
+			it.x = newX;
+			it.y = newY;
+		}
+		else {
+			//dragged item was removed
+			m_isDragging = false;
+			m_draggedItem = -1;
+		}
+	}
+	//--------stop dragging when LMB is released--------
+	if (!ImGui::IsMouseDown(ImGuiMouseButton_Left)) {
+		m_isDragging = false;
+		m_draggedItem = -1;
+	}
 }

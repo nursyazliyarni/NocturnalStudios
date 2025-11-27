@@ -1,4 +1,31 @@
+/*!------------------------------------------------------------------------------------------------
+	File: Transformation_System.cpp
+	Project: NocturnalStudio
+
+
+
+	Primary Author:
+		Laycock Enhui Sarah (100%)
+		- Created the TransformationSyatem
+
+	All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
+
 #include "ECS/ECS_Component.h"
+#include "ECS/ECS.h"
+#include "../include/core/Logger.h"
+#include "../include/System/Transformation_System.h"
+
+extern Logger logger;
+
+
+namespace {
+	ECS& ecs = ECS::getECS();
+	EntityID selectedID = NO_ENTITY_SELECTED;
+	static std::vector<std::vector<EntityID>> gridtracker{};
+	static std::vector<std::pair<EntityID, EntityID>> possible_collisions, collisions{};
+	
+}
 /**
 	* Returns the translated vector2d matrix
 	* translates the object to x and y
@@ -50,4 +77,147 @@ Vector2D Transform::ScaleUniform(float s) {
 Vector2D Transform::Scale(float x, float y) {
 	scale ={ scale.x()*x,scale.y()*y };
 	return scale;
+}
+
+
+void TransformSystem::TransformUpdate() {
+	//ECS& ecs = ECS::getECS();
+	std::vector<EntityID> ectities = ecs.getAllEntities();
+	for (EntityID e:ectities)
+	{
+		Transform* t = ecs.getComponent<Transform>(e);
+		if (t)
+		{
+			t->lastPosition = t->position;
+			t->lastHeight = t->height;
+			t->lastScale = t->scale;
+			t->lastRotation = t->rotation;
+			//std::string poob{ "Transform updated for entity " };
+			//poob.append(std::to_string(e));
+			//logger.log(poob);
+		}
+	}
+}
+
+void TransformSystem::TransformInput(Input& in,double dt) {
+	//ECS& ecs = ECS::getECS();
+
+	if (selectedID == NO_ENTITY_SELECTED)
+	{
+		if (in.WasPressed(GLFW_KEY_SPACE)) //up
+		{
+			selectedID = ecs.getAllEntities().front();
+		}
+	}
+
+	Transform* t = ecs.getComponent<Transform>(selectedID);
+
+	
+
+	if (t)
+	{
+		Vector2D movedir{};
+		if (in.IsDown(GLFW_KEY_W)) //up
+		{
+			movedir.y() -= static_cast<float>(dt * 1.0);
+		}
+		else if (in.IsDown(GLFW_KEY_S))
+		{
+			movedir.y() += static_cast<float>(dt * 1.0);
+		}
+		if (in.IsDown(GLFW_KEY_A)) //up
+		{
+			movedir.x() -= static_cast<float>(dt * 1.0);
+		}
+		else if (in.IsDown(GLFW_KEY_D))
+		{
+			movedir.x() += static_cast<float>(dt * 1.0);
+		}
+
+		float rot{t->rotation};
+		if (in.IsDown(GLFW_KEY_K))
+		{
+			rot -= static_cast<float>(dt * 100.0);
+		}
+		else if (in.IsDown(GLFW_KEY_J)) {
+			rot += static_cast<float>(dt * 100.0);
+		}
+
+		float scaling{1.f};
+		if (in.IsDown(GLFW_KEY_U))
+		{
+			scaling -= static_cast<float>(dt * 2.0);
+		}
+		else if (in.IsDown(GLFW_KEY_I)) {
+			scaling += static_cast<float>(dt * 2.0);
+		}
+
+
+		t->ScaleUniform(scaling);
+		if (AABBCollider *collider= ecs.getComponent<AABBCollider>(selectedID))
+		{
+			collider->height *= scaling;
+			collider->width *= scaling;
+		}
+		t->rotation = rot;
+		t->TranslateBy(movedir.x(),movedir.y());
+	}
+	
+	
+	
+}
+
+void CollisionSystem::CollisionUpdate(BoxCollider *coll){
+	
+	
+
+}
+
+std::vector<std::pair<EntityID, EntityID>> CollisionSystem::BroadphaseCollision() {
+	std::vector<std::pair<EntityID, EntityID>> uwah;
+	gridtracker.clear();
+	//neeed to check how big grid is in relation to aabb box
+
+	for (EntityID e : ecs.getAllEntities()) {
+
+	}
+
+
+
+
+	return uwah;
+}
+
+void PhysicsSystem::PhysicsUpdate(double dt) {
+	//first, we process the physics
+	std::vector<EntityID> ectities = ecs.getAllEntities();
+	for (EntityID e : ectities)
+	{
+		PhysicsComponent* p = ecs.getComponent<PhysicsComponent>(e);
+		if (p)
+		{
+			BoxCollider* c = ecs.getComponent<BoxCollider>(e);
+			if (c)CollisionSystem::CollisionUpdate(c);
+
+			p->velocity += p->acceleration * dt;
+			p->position += p->velocity * dt;
+
+			//apply pos to transform
+			Transform* t = ecs.getComponent<Transform>(e);
+			if (t)
+			{
+				t->position = p->position;
+			}
+		}
+	}
+}
+
+void PhysicsSystem::PhysicsInput(Input& in,double dt) {
+	if (selectedID == NO_ENTITY_SELECTED)
+	{
+		if (in.WasPressed(GLFW_KEY_SPACE)) //up
+		{
+			selectedID = ecs.getAllEntities().front();
+		}
+	}
 }

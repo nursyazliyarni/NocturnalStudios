@@ -15,12 +15,15 @@
 
 	Secondary Author:
 		 Nur Syazliyarni (15%)
-		-Created the messaging system for input
+		- Created the messaging system for input
+		- Added simple input connection for imgui
 
-	Secondary Author:
 		 Rishika Bimal Attodi  (35%)
 		-Added sprite selection/deselection logic and the scaling/rotation key handling,
 		plus per-sprite transform helpers (init/get pointers, rotation updates)
+
+		Lau Xiang Yang (1%)
+		- Implemented clearAllStates to reset input states
 
 	All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
 *------------------------------------------------------------------------------------------------*/
@@ -58,7 +61,7 @@ Input::Input(GLFWwindow* window) {
 	m_window = window;
 	glfwSetKeyCallback(window, keyboard_input_callback); //setup keyboard input callback before main game loop
 	glfwSetMouseButtonCallback(window, mouse_input_callback); //setup mouse input callback before main game loop
-
+	glfwSetCharCallback(window, Input::char_input_callback); //for imgui input
 	glfwSetWindowUserPointer(window, this);
 
 
@@ -108,6 +111,14 @@ Vector2D Input::GET_mouse_pos(bool want_normalize, int window_width, int window_
 Vector2D Input::GET_mouse_delta() {
 	//current - previous-> how much the mouse move in current frame as compared to last frame
 	return { mouse_pos[1] - mouse_pos[0] };
+}
+
+bool Input::isLeftMousePressed(GLFWwindow* window) {
+	return glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
+}
+
+bool Input::isLeftMouseReleased(GLFWwindow* window) {
+	return glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE;
 }
 
 std::vector<std::tuple<int, int, Input_action>>& Input::GET_keyboard() {
@@ -170,6 +181,9 @@ void Input::keyboard_input_callback(GLFWwindow* window, int key, int scancode, i
 	if (ImGui::GetCurrentContext())
 		ImGui_ImplGlfw_KeyCallback(window, key, scancode, action, mods);
 
+	// stop engine input if ImGui wants to use keyboard
+	if (ImGui::GetIO().WantCaptureKeyboard) { return; }
+
 	if (action == GLFW_PRESS) pressedKeysThisFrame.insert(key);          // Input owns it
 
 	//messaging system//
@@ -210,6 +224,12 @@ void Input::mouse_input_callback(GLFWwindow* window, int button, int action, int
 	}
 }
 
+//keyboard input for imgui
+void Input::char_input_callback(GLFWwindow* window, unsigned int c)
+{
+	if (ImGui::GetCurrentContext())
+		ImGui_ImplGlfw_CharCallback(window, c);
+}
 
 
 bool Input::WasPressed(int k) const {
@@ -388,5 +408,15 @@ void Input::updateRotations() {
 	}
 }
 
-
+/**
+ * @brief Clears all input states, including pressed keys, pressed mouse buttons, and keys currently held down.
+ * @param void
+ * @return void
+ */
+void Input::clearAllStates() {
+	pressedKeysThisFrame.clear();
+	pressedMouseThisFrame.clear();
+	m_keysDown.clear();
+	isDragging = false;
+}
 

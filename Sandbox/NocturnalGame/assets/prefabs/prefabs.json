@@ -1,44 +1,40 @@
 {
   "prefabs": {
     "animal": {
-      "components": [
-        { "type": "SpriteRenderer", "sprite_path": "assets/textures/flamingo_spritesheet.png" },
-	{ "type": "SpriteAnimationComponent", "anim_path": "assets/sprite.json", "currentAnim": "idle", "sheetColumns": 5, "sheetRows": 1},
-        { "type": "AABBCollider",  "bounding_box_size": 1.0 }
-        ,
-    { "type": "PhysicsComponent", "velocity": [0.0, 0.0], "gravityEnabled": false }
+  "components": [
+        { "type": "PhysicsComponent", "velocity": [0.0, 0.0], "gravityEnabled": false },
+	      { "type": "SpriteAnimationComponent", "anim_path": "assets/sprite.json", "currentAnim": "idle", "sheetColumns": 5, "sheetRows": 1},
+        { "type": "AABBCollider",  "bounding_box_size": 0.00 }
       ],
-      "defaults": { "w": 0.50, "h": 0.42, "angle": 0.0, "rotatable": false, "scalable": false }
+      "defaults": { "w": 0.00, "h": 0.00, "angle": 0.0, "rotatable": false, "scalable": false }
     },
     "food": {
-      "components": [ { "type": "SpriteRenderer", "sprite_path": "" },
+      "components": [ { "type": "ImageRenderer", "sprite_path": "" },
         { "type": "Transform",  "rotation": 0.0, "rotatable": false, "scalable": false} ],
       "defaults": { "w": 0.16, "h": 0.18, "angle": 0.0, "rotatable": false, "scalable": false }
     },
     "medicine": {
-      "components": [ { "type": "SpriteRenderer", "sprite_path": "" },
+      "components": [ { "type": "ImageRenderer", "sprite_path": "" },
         { "type": "Transform",  "rotation": 0.0, "rotatable": false, "scalable": false} ],
       "defaults": { "w": 0.12, "h": 0.18, "angle": 0.0, "rotatable": false, "scalable": false }
     },
     "toy": {
-      "components": [ { "type": "SpriteRenderer", "sprite_path": "" },
+      "components": [ { "type": "ImageRenderer", "sprite_path": "" },
         { "type": "Transform",  "rotation": 0.0, "rotatable": true, "scalable": true} ],
       "defaults": { "w": 0.14, "h": 0.14,  "angle": 0.0, "rotatable": true, "scalable": true, "rotationSpeedDeg": 90.0, "scaleSpeed": 0.75 }
     },
     "button": {
-      "components": [ { "type": "SpriteRenderer", "sprite_path": "" },
+      "components": [ { "type": "ImageRenderer", "sprite_path": "" },
         { "type": "Transform",  "rotation": 0.0, "rotatable": false, "scalable": false} ],
       "defaults": { "w": 0.40, "h": 0.09, "angle": 0.0, "rotatable": false, "scalable": false }
     },
-
-
 
     "firefly": {
   "components": [
     { "type": "Transform" },
     { "type": "ImageRenderer", "sprite_path": "textures/firefly.png" },
     { "type": "PhysicsComponent", "velocity": [0.0, 0.0], "gravityEnabled": false },
-    { "type": "AI",
+    { "type": "AIComponent",
       "state": "Wander",
       "maxSpeed": 0.30,
       "accel": 3.5,

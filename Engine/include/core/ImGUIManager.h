@@ -43,13 +43,19 @@ extern Logger logger;
 
 class ImGuiManager {
 public:
+
+	enum class EditorMode {
+		EDIT,
+		PLAY
+	};
+
 	// Accept lists of resource IDs for quick audio testing.
 	ImGuiManager(Window& window, Renderer& renderer,  Input& input, 
 		Physics& physics, AudioSystem& audio, ResourceManager& resourceManager, GameManager& gsm, Animal_Logic& logic);
 	~ImGuiManager();
 
 	void updateDeltaTime(double& dt);
-	void getDeltaTime(double& dt) const;
+	double getDeltaTime(double& dt) const;
 	void updateWindowTopLeft(const ImVec2& topLeft);
 	void updateWindowBottomRight(const ImVec2& bottomRight);
 	void setSystemTimings(double imGuiTime);
@@ -68,6 +74,7 @@ public:
 	void showViewportWindowUI();
 	void showMousePosOverlayUI();
 	void showLogsOverlayUI();
+	ImVec2 get_mousePOS(bool is_normalized);
 
 	// @Todo(axewhy): These functions are not fully implemented yet
 	void showPerformanceOverlayUI();
@@ -78,11 +85,26 @@ public:
 
 	void showAssetsBrowserUI();
 	void showBottomDockUI();
+	void showAnimationEditorUI();   
+
+	//dockspace
+	void createDockspace();
+	void setupInitialDockingLayout();  
+	void resetDockingLayout();
 
 	// Expose last measured logic time (seconds)
 	double getLogicTime() const { return logicTime; }
 
+	void onPlayButtonPressed();
+	void onStopButtonPressed();
+	bool isPlaying() const { return m_editorMode == EditorMode::PLAY; }
+
+	void saveSceneSnapshot();
+	void restoreSceneSnapshot();
+
 private:
+	bool m_showFPS = false;
+	bool m_dockingLayoutInitialized = false;
 	Window& mainWindow;
 	Renderer& renderer;
 	//Texture& texture;
@@ -110,6 +132,24 @@ private:
 	std::unordered_map<ResourceID, AudioInstanceID> activeInstances;
 
 	ImVec2 vpMinWin{}, vpMaxWin{};
+
+	EditorMode m_editorMode = EditorMode::PLAY;
+	std::string m_savedSceneState;
+
+	int  m_hoveredItem = -1;
+	int  m_draggedItem = -1; //index currently being dragged, or -1
+	bool m_isDragging = false; //true while left mouse button held on an item
+	ImVec2 m_dragOffset = { 0, 0 }; //offset (normalised from item center to click point
+
+	std::vector<std::vector<DrawItem>> m_undoStack; //undo stack
+	static constexpr std::size_t kMaxUndoSteps = 20; //max undo steps
+
+	//helper to handle picking/dragging inside the viewport
+	void handleViewportPicking(const ImVec2& imgMin,const ImVec2& imgMax,int vpW, int vpH);
+
+	//undo helpers
+	void pushUndoState(const char* reason = nullptr);
+	void undoLastAction();
 };
 
 

@@ -1,19 +1,20 @@
 /*!------------------------------------------------------------------------------------------------
-    File: ImGUIManager.cpp
+    File: GameManager.cpp
     Project: NocturnalStudio
 
-    This file contains the implementation of the ImGuiManager class, which manages the integration
-    of the ImGui library into the customize game engine. It handles the initialization,
-    frame updates, and rendering of ImGui components, as well as providing various UI elements
-    for debugging and interaction within the engine.
+    This file contains the implementation of the GameManager class
+
 
     Primary Author:
-        Name %
-        -
+        Rishika Bimal Attodi %
+        -State integration for the play and exit button and scene switching via keys
 
     Secondary Author:
         Nur Syazliyarni (5%)
         - Added function to get current scene for level editor
+
+        Lau Xiang Yang (2%)
+        - Implemented pause and resume functionality in GameManager
 
     All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
 *------------------------------------------------------------------------------------------------*/
@@ -22,6 +23,9 @@
 #include "core/GameManager.h"
 #include "stb_image.h"
 #include <rapidjson/document.h>
+#include "rapidjson/writer.h"
+#include "rapidjson/prettywriter.h"
+#include "rapidjson/filewritestream.h"
 #include <fstream>
 #include <sstream>
 #include <GLFW/glfw3.h>
@@ -34,7 +38,9 @@
 #include "physics/AABB.h"
 #include "Animation/SpriteAnimationComponent.h"
 
-#include "scene/Prefab.h" // for Prefab_GetSceneName
+#include "core/Application.h"
+
+#include <functional>
 
 //  TextureStore 
 static GLuint loadGLTexture(const std::string& path) {
@@ -62,6 +68,14 @@ GLuint TextureStore::get(const std::string& path) {
     return id;
 }
 
+std::string TextureStore::find(const GLuint id) const {
+    for (auto& it:cache)
+    {
+        if (it.second == id) return it.first;
+    }
+    return"";
+}
+
 void TextureStore::clear() {
     for (auto& kv : cache) if (kv.second) glDeleteTextures(1, &kv.second);
     cache.clear();
@@ -77,6 +91,10 @@ static bool readFile(const char* p, std::string& out) {
     return true;
 }
 
+std::unique_ptr<DrawItem>& GameManager::get_duplicate_item() {
+    return duplicate_item;
+}
+
 static std::string toAssetsPath(const std::string& p) {
     if (p.rfind("assets/", 0) == 0) return p;
     return "assets/" + p; // scenes use "textures/.." to make "assets/textures/.."
@@ -85,6 +103,61 @@ static std::string toAssetsPath(const std::string& p) {
 struct PrefabDef { float w = 0.2f, h = 0.2f, angle = 0.0f; };
 
 //  GameManager 
+bool GameManager::saveScene(const Scene& scene, const char* scenesJsonPath, TextureStore& tex) {
+    rapidjson::Document doc;
+    doc.SetObject();
+    auto& alloc = doc.GetAllocator();
+
+    if (scene.background) {
+        rapidjson::Value bgVal;
+        bgVal.SetString(tex.find(scene.background).c_str(), alloc);
+        doc.AddMember("background", bgVal, alloc);
+        
+    }
+
+    if (!scene.items.empty())
+    {
+        rapidjson::Value entityArray(rapidjson::kArrayType);
+
+        for (DrawItem i: scene.items){
+            rapidjson::Value entObj(rapidjson::kObjectType);
+            if (i.item_type.empty()) //treat as a non prefab item
+            {
+
+            }
+            else {
+                //prefab has 3 things: prefab, name, overrides
+                rapidjson::Value pregabval;
+                pregabval.SetString(i.item_type.c_str(), alloc);
+                entObj.AddMember("prefab", pregabval, alloc);
+                
+                rapidjson::Value nvs;
+                nvs.SetString(i.name.c_str(), alloc);
+                entObj.AddMember("name", nvs, alloc);
+                //overrides
+                rapidjson::Value overrides(rapidjson::kObjectType);
+                if (ecs_.findEntityByName(i.name)!=INVALID_ENTITY_ID&&!ecs_.getEntityComponents(ecs_.findEntityByName(i.name)).empty())
+                {
+                    for (ComponentID cis: ecs_.getEntityComponents(ecs_.findEntityByName(i.name)))
+                    {
+                        //ecs_.getco
+                    }
+                }
+                entObj.AddMember("overrides", overrides, alloc);
+            }
+        }
+    }
+
+    FILE* fp = fopen(scenesJsonPath, "wb");
+    if (!fp) return false;
+
+    char buffer[9920];
+    rapidjson::FileWriteStream os(fp, buffer, sizeof(buffer));
+    rapidjson::PrettyWriter<rapidjson::FileWriteStream> writer(os);
+    doc.Accept(writer);
+    fclose(fp);
+    return true;
+}
 bool GameManager::load(const char* prefabsPath, const char* scenesPath, TextureStore& tex) {
 
     app = AppState::Menu;   // lock number keys until Play is pressed
@@ -160,12 +233,23 @@ bool GameManager::load(const char* prefabsPath, const char* scenesPath, TextureS
                 if (!e.IsObject()) continue;
 
                 PrefabDef def;
+                DrawItem di{};
                 if (e.HasMember("prefab") && e["prefab"].IsString()) {
                     auto itp = prefabDefaults.find(e["prefab"].GetString());
                     if (itp != prefabDefaults.end()) def = itp->second;
+                    if (e.HasMember("prefab") && e["prefab"].IsString()) {
+                        di.item_type = e["prefab"].GetString();  // always safe
+
+                        auto itp = prefabDefaults.find(di.item_type);
+                        if (itp != prefabDefaults.end()) {
+                            def = itp->second;
+                        }
+                        else {
+                            logger.log(std::string("[load] prefab not found in prefabs.json: ") + di.item_type);
+                        }
+                    }
                 }
 
-                DrawItem di{};
                 di.w = def.w;
                 di.h = def.h;
                 di.angle = def.angle;
@@ -177,15 +261,28 @@ bool GameManager::load(const char* prefabsPath, const char* scenesPath, TextureS
                     if (ov.HasMember("w") && ov["w"].IsNumber())      di.w = ov["w"].GetFloat();
                     if (ov.HasMember("h") && ov["h"].IsNumber())      di.h = ov["h"].GetFloat();
                     if (ov.HasMember("angle") && ov["angle"].IsNumber()) di.angle = ov["angle"].GetFloat();
+                    if (ov.HasMember("is_draggable") && ov["is_draggable"].IsBool()) di.is_draggable = ov["is_draggable"].GetBool();
+                    if (ov.HasMember("is_dragging") && ov["is_dragging"].IsBool()) di.is_dragging = ov["is_dragging"].GetBool();
 
-                    if (ov.HasMember("health_bar") && ov["health_bar"].IsNumber()) di.health_bar = ov["health_bar"].GetFloat();
-                    if (ov.HasMember("hunger_bar") && ov["hunger_bar"].IsNumber()) di.hunger_bar = ov["hunger_bar"].GetFloat();
-                    if (ov.HasMember("sanity_bar") && ov["sanity_bar"].IsNumber()) di.sanity_bar = ov["sanity_bar"].GetFloat();
+         
 
                     if (ov.HasMember("sprite_path") && ov["sprite_path"].IsString()) {
                         std::string sp = toAssetsPath(ov["sprite_path"].GetString());
                         di.tex = tex.get(sp);
                     }
+                }
+
+                if (e.HasMember("animal_properties") && e["animal_properties"].IsObject()) {
+                    const auto& animal = e["animal_properties"];
+                    if (animal.HasMember("health_bar") && animal["health_bar"].IsNumber()) di.health_bar = animal["health_bar"].GetFloat();
+                    if (animal.HasMember("hunger_bar") && animal["hunger_bar"].IsNumber()) di.hunger_bar = animal["hunger_bar"].GetFloat();
+                    if (animal.HasMember("sanity_bar") && animal["sanity_bar"].IsNumber()) di.sanity_bar = animal["sanity_bar"].GetFloat();
+
+                    if (animal.HasMember("slower_decreasing_rate") && animal["slower_decreasing_rate"].IsNumber()) di.slower_decreasing_rate = animal["slower_decreasing_rate"].GetFloat();
+                    if (animal.HasMember("normal_decreasing_rate") && animal["normal_decreasing_rate"].IsNumber()) di.normal_decreasing_rate = animal["normal_decreasing_rate"].GetFloat();
+                    if (animal.HasMember("faster_decreasing_rate") && animal["faster_decreasing_rate"].IsNumber()) di.faster_decreasing_rate = animal["faster_decreasing_rate"].GetFloat();
+                    if (animal.HasMember("penalty_decreasing_rate") && animal["penalty_decreasing_rate"].IsNumber()) di.penalty_decreasing_rate = animal["penalty_decreasing_rate"].GetFloat();
+                    di.still_alive = true;
                 }
 
                 if (e.HasMember("name") && e["name"].IsString())
@@ -194,15 +291,9 @@ bool GameManager::load(const char* prefabsPath, const char* scenesPath, TextureS
 
                 sc.items.push_back(di);
 
-                // clickable?
-                /*ClickRegion cr;
-                cr.x = di.x; cr.y = di.y; cr.w = di.w; cr.h = di.h;
-                if (e.HasMember("goto") && e["goto"].IsString()) cr.gotoScene = e["goto"].GetString();
-                if (e.HasMember("quit") && e["quit"].IsBool())   cr.quit = e["quit"].GetBool();
-                if (cr.quit || !cr.gotoScene.empty()) sc.clicks.push_back(cr);*/
-
                 ClickRegion cr;
                 cr.x = di.x; cr.y = di.y; cr.w = di.w; cr.h = di.h;
+                cr.name = di.name;
                 if (e.HasMember("goto") && e["goto"].IsString()) cr.gotoScene = e["goto"].GetString();
                 if (e.HasMember("quit") && e["quit"].IsBool())   cr.quit = e["quit"].GetBool();
                 if (e.HasMember("start") && e["start"].IsBool())  cr.start = e["start"].GetBool();
@@ -240,6 +331,9 @@ bool GameManager::load(const char* prefabsPath, const char* scenesPath, TextureS
         idle.frames = 5;
         idle.frameTime = 0.12f;
         idle.loop = true;
+        idle.spritePath = "assets/textures/flamingo_spritesheet.png";
+        idle.sheetColumns = 5;
+        idle.sheetRows = 1;
 
         anim->animations["idle"] = idle;
         anim->currentAnim = "idle";
@@ -269,14 +363,6 @@ bool GameManager::switchToSceneForKey(int glfwKey) {
     return true;
 }
 
-
-//void GameManager::handleKeyPress(int key) {
-//    auto it = keyMap.find(key);
-//    if (it != keyMap.end()) requestScene(it->second);
-//    if (key == GLFW_KEY_ESCAPE) requestScene(backKey);
-//}
-
-
 void GameManager::handleKeyPress(int key) {
     // ESC always returns to menu
     if (key == GLFW_KEY_ESCAPE) {
@@ -297,12 +383,13 @@ void GameManager::handleKeyPress(int key) {
     }
 }
 
-void GameManager::render(Renderer& r, int w, int h) {
+void GameManager::render(Renderer& r, Input& input, GLFWwindow* window, int w, int h) {
+
 
     auto it = scenes.find(currentScene);
-    if (it == scenes.end()) return;
+    if (it == scenes.end()) {  return; }
     const Scene& sc = it->second;
-    
+
     // background (fullscreen) � NOTE uniform must be "bg_texture"
     if (it->first == "MainMenu") {
         r.special_background_render(sc.background, "bgTexture", 1);
@@ -316,84 +403,41 @@ void GameManager::render(Renderer& r, int w, int h) {
         r.texturedTri(sc.background, bx, by, bw, bh);
     }
 
-    
+    constexpr EntityID MAX_SCAN = 5000;
+    for (EntityID e = 0; e < MAX_SCAN; ++e) {
+        if (auto* t = ecs_.getComponent<Transform>(e)) {
+            if (auto* img = ecs_.getComponent<ImageRenderer>(e)) {
+                if (!img->isVisible) continue;
+                if (img->textureID <= 0) continue;  // << guard: skip �white box� draws
 
-    // Example snippet you can drop right AFTER your existing textured background draw:
-    //auto view = ecs.view<Transform, ImageRenderer>();  // however your ECS exposes views
-    //for (auto [ent, t, img] : view) {
-    //    if (!img.isVisible) continue;
-    //    float px = t.position.x * w;
-    //    float py = t.position.y * h;
-    //    float pw = t.scale.x * w;
-    //    float ph = t.scale.y * h;
-    //   r.texturedTri(img.textureID, px, py, pw, ph); // same call you use for JSON entities
-    //}
+                if (auto* anim = ecs_.getComponent<SpriteAnimationComponent>(e)) {
+                    auto it = anim->animations.find(anim->currentAnim);
+                    if (it != anim->animations.end()) {
+                        const auto& def = it->second;
 
-    if (!ecs_.getAllEntities().empty()) {
-        constexpr EntityID MAX_SCAN = 5000;
-        for (EntityID e = 0; e < MAX_SCAN; ++e) {
-            if (auto* t = ecs_.getComponent<Transform>(e)) {
-                if (auto* img = ecs_.getComponent<ImageRenderer>(e)) {
-                    if (!img->isVisible) continue;
-                    if (img->textureID <= 0) continue;  // << guard: skip �white box� draws
+                        int frameIndex = anim->currentFrame;
+                        int sheetColumns = anim->sheetColumns;
+                        int sheetRows = anim->sheetRows;
 
-                    /*float px = t->position.x() * w;
-                    float py = t->position.y() * h;
-                    float pw = t->scale.x() * w;
-                    float ph = t->scale.y() * h;*/
+                        float uPerFrame = 1.0f / float(sheetColumns);
+                        float vPerFrame = 1.0f / float(sheetRows);
 
-                    float px = t->position.x() * w;
-                    float py = t->position.y() * h;
-                    float pw = t->scale.x() * w;
-                    float ph = t->scale.y() * h;
+                        int col = frameIndex % sheetColumns;
+                        int row = frameIndex / sheetColumns;
 
-                    Cam2D_Apply(currentScene, px, py, pw, ph, w, h);
+                        float u0 = col * uPerFrame;
+                        float v0 = row * vPerFrame;
+                        float u1 = u0 + uPerFrame;
+                        float v1 = v0 + vPerFrame;
 
-                    if (auto* anim = ecs_.getComponent<SpriteAnimationComponent>(e)) {
-                        auto it = anim->animations.find(anim->currentAnim);
-                        if (it != anim->animations.end()) {
-                            const auto& def = it->second;
+                        float px = t->position.x() * w;
+                        float py = t->position.y() * h;
+                        float pw = t->scale.x() * w;
+                        float ph = t->scale.y() * h;
 
-                    r.texturedTri(img->textureID, px, py, pw, ph);
-
-                    // Debug AABB for ECS entities (so B toggle still shows boxes)
-                    if (Debug::Drawer::Instance().IsActive())
-                    {
-                        AABB collider(Vector2D(px, py), Vector2D(pw, ph));
-                        Debug::Drawer::Instance().AddRect(
-                            collider.pos.x(), collider.pos.y(),
-                            collider.size.x(), collider.size.y(),
-                            0xFFFF00FF // yellow
-                        );
+                        Cam2D_Apply(currentScene, px, py, pw, ph, w, h);
+                        r.drawSpriteUV(img->textureID, px, py, pw, ph, u0, v0, u1, v1);
                     }
-
-                            int frameIndex = anim->currentFrame;
-                            int sheetColumns = anim->sheetColumns;
-                            int sheetRows = anim->sheetRows;
-
-                            float uPerFrame = 1.0f / float(sheetColumns);
-                            float vPerFrame = 1.0f / float(sheetRows);
-
-                            int col = frameIndex % sheetColumns;
-                            int row = frameIndex / sheetColumns;
-
-                            float u0 = col * uPerFrame;
-                            float v0 = row * vPerFrame;
-                            float u1 = u0 + uPerFrame;
-                            float v1 = v0 + vPerFrame;
-
-                            float px = t->position.x() * w;
-                            float py = t->position.y() * h;
-                            float pw = t->scale.x() * w;
-                            float ph = t->scale.y() * h;
-
-                            Cam2D_Apply(currentScene, px, py, pw, ph, w, h);
-
-                            r.drawSpriteUV(img->textureID, px, py, pw, ph, u0, v0, u1, v1);
-                        }
-                    }
-
-                   // r.texturedTri(img->textureID, px, py, pw, ph);
                 }
             }
         }
@@ -413,8 +457,33 @@ void GameManager::render(Renderer& r, int w, int h) {
         if (di.tex == 0) continue;
         float px = di.x * w, py = di.y * h, pw = di.w * w, ph = di.h * h;
 
-        Cam2D_Apply(currentScene, px, py, pw, ph, w, h);
-        r.texturedTri(di.tex, px, py, pw, ph);
+        if (di.name=="flamingo"||di.name=="seal"||di.name=="owl"||di.name=="horse") {
+            if (di.still_alive) {
+                r.rect(w / 2, h / 2 - 200, di.health_bar * 4, 25, 1, 0, 0);
+                r.rect(w / 2, h / 2 - 150, di.hunger_bar * 4, 25, 0, 1, 0);
+                r.rect(w / 2, h / 2 - 100, di.sanity_bar * 4, 25, 0, 0, 1);
+
+                Cam2D_Apply(currentScene, px, py, pw, ph, w, h);
+                r.texturedTri(di.tex, px, py, pw, ph);
+            }
+        }
+
+        else {
+            Cam2D_Apply(currentScene, px, py, pw, ph, w, h);
+            r.texturedTri(di.tex, px, py, pw, ph);
+        }
+
+        if (di.is_dragging && !duplicate_item) {
+            duplicate_item = std::make_unique<DrawItem>(di);
+        }
+
+        if (duplicate_item) {
+            r.texturedTri(duplicate_item->tex, duplicate_item->x * w, duplicate_item->y * h, duplicate_item->w * w, duplicate_item->h * h);
+        }
+
+        //if (!input.isLeftMousePressed(window)) {
+        //    duplicate_item.reset(); //The unique_ptr releases ownership
+        //}
 
         if (Debug::Drawer::Instance().IsActive()) {
             AABB collider(Vector2D(px, py), Vector2D(pw, ph));
@@ -425,8 +494,129 @@ void GameManager::render(Renderer& r, int w, int h) {
             );
         }
     }
+}
 
 
+
+
+void GameManager::renderWithHUD(Renderer& r,
+    Input& input,
+    GLFWwindow* window,
+    int w, int h,
+    double dt,
+    ResourceManager& resourceManager,
+    bool showFPS)
+{
+    // 1) First, render the usual scene
+    render(r, input, window, w, h);
+
+    // 2) Now overlay HUD text into the same render target
+    r.setTextProjection(w, h); // bottom-left origin for text shader
+
+    // Cache fonts the first time we’re called
+    static std::optional<ResourceID> s_fontTitle;
+    static std::optional<ResourceID> s_fontFPS;
+
+    if (!s_fontTitle) {
+        s_fontTitle = resourceManager.findResource<Font>("NanumBrushScript-Regular");
+    }
+    if (!s_fontFPS) {
+        s_fontFPS = resourceManager.findResource<Font>("PAPYRUS");
+    }
+
+    // --- Responsive scaling based on viewport size ---
+    // Pretend our "reference" resolution is 1280x720
+    const float refW = 1280.0f;
+    const float refH = 720.0f;
+
+    float sx = static_cast<float>(w) / refW;
+    float sy = static_cast<float>(h) / refH;
+
+    // Use the smaller scale so text doesn't overflow in one direction
+    float textScale = std::min(sx, sy);
+
+    // Clamp so it doesn’t get insanely small/huge
+    if (textScale < 0.4f) textScale = 0.4f;
+    if (textScale > 2.5f) textScale = 2.5f;
+
+    // If viewport is super tiny, just skip HUD entirely
+    if (w < 150 || h < 120) {
+        return;
+    }
+
+    // --- Title (Font A) ---
+    if (s_fontTitle) {
+        const Font& f = resourceManager.getFont(*s_fontTitle);
+
+        // Keep margins as percentage of viewport → stays nicely anchored
+        float marginX = 0.02f * w;
+        float marginTop = 0.08f * h;
+
+        float titleX = marginX;
+        float titleY = h - marginTop;
+
+        r.drawText(
+            f,
+            "Nocturnal Studio Engine",
+            titleX,
+            titleY,
+            textScale,
+            glm::vec3(1.0f, 0.0f, 0.2f) // reddish
+        );
+    }
+
+    // --- FPS (Font B) ---
+    if (showFPS && s_fontFPS) {
+        // If viewport height is small, we show FPS but tuck it closer
+        bool compact = (h < 300);
+
+        const Font& f2 = resourceManager.getFont(*s_fontFPS);
+
+        static double accumTime = 0.0;
+        static double fpsDisplay = 0.0;
+
+        // avoid division by zero
+        if (dt <= 0.0) dt = 1e-6;
+
+        accumTime += dt;
+        if (accumTime >= 1.0) {
+            fpsDisplay = 1.0 / dt;
+            accumTime = 0.0;
+        }
+
+        int fpsInt = static_cast<int>(std::round(fpsDisplay));
+        std::string fpsText = "FPS: " + std::to_string(fpsInt);
+
+        float marginX = 0.02f * w;
+        float offsetY = compact ? 0.12f : 0.15f; // pull closer when small
+        float y = h - offsetY * h;
+
+        float fpsScale = textScale * 0.6f;   // 60% of title size
+        if (fpsScale < 0.25f) fpsScale = 0.25f; // clamp so it doesn't vanish
+
+        r.drawText(
+            f2,
+            fpsText,
+            marginX,
+            y,
+            fpsScale,
+            glm::vec3(0.2f, 0.8f, 1.0f) // bluish
+        );
+    }
+}
+
+
+void GameManager :: imGUIlessRender(Renderer& r, Input& input, GLFWwindow* window, int w, int h) {
+    r.initFBO(w, h);
+    r.bindFBO();
+    r.resize(w, h);
+    r.clear(0.06f, 0.06f, 0.07f);
+    render(r, input, window, w, h);
+    r.setTextProjection(w, h);
+
+    r.unbindFBO();
+    glViewport(0, 0, w, h);
+    r.background_render(r.getFBOTexture(), "tex", 0);
 }
 
 bool GameManager::handleClick(float nx, float ny) {
@@ -435,60 +625,42 @@ bool GameManager::handleClick(float nx, float ny) {
     const Scene& sc = it->second;
 
     for (const auto& cr : sc.clicks) {
-        //if (nx >= cr.x && nx <= cr.x + cr.w && ny >= cr.y && ny <= cr.y + cr.h) {
-        //    if (cr.quit) {
-        //        requestedQuit = true;
-        //    }
-        //    if (app == AppState::Menu) {
-        //        startGame();                 // unlock 1..9 only after Play was clicked
-        //    }
-        //    else if (!cr.gotoScene.empty()) {
-        //        requestScene(cr.gotoScene);
-        //    }
-        //    return true;
-        //}
+        bool hit = (nx >= cr.x && nx <= cr.x + cr.w && ny >= cr.y && ny <= cr.y + cr.h);
+        logger.log(std::string("hit-test ") + (cr.name.empty() ? "<noname>" : cr.name) +
+            (hit ? " 1" : " 0"));
 
-        if (nx >= cr.x && nx <= cr.x + cr.w && ny >= cr.y && ny <= cr.y + cr.h) {
+        if (!hit) continue;
 
-            logger.log("Click hit: start=" + std::to_string(cr.start) +
-                " quit=" + std::to_string(cr.quit) +
-                " goto='" + cr.gotoScene + "'");
+        logger.log("Click hit: start=" + std::to_string(cr.start) +
+            " quit=" + std::to_string(cr.quit) +
+            " goto='" + cr.gotoScene + "'");
 
+        // Quit first (works in Menu and Play)
+        if (cr.quit) {
+            logger.log("[Quit] click region flagged quit=true");
+            if (quitCallback) quitCallback();
+            else requestedQuit = true;
+            return true;
+        }
 
-            // ESC-like quit buttons always work
-            if (cr.quit) {
-                requestedQuit = true;
-                return true;
-            }
-
-            // While in Menu: ONLY a region marked start:true can unlock gameplay,
-            // and it may also jump to a first scene via goto (optional).
-            if (app == AppState::Menu) {
-                if (cr.start) {
-                    startGame();  // unlock number keys
-
-                    if (!cr.gotoScene.empty()) {
-                        requestScene(cr.gotoScene);// explicit target from JSON
-                    }
-                    else {
-                        // Fallback: jump to key "1" mapping if present
-                        auto it1 = keyMap.find(GLFW_KEY_1);
-                        if (it1 != keyMap.end())
-                            requestScene(it1->second);
-                    }
+        // In Menu: only start:true does anything (exactly how 'start' works)
+        if (app == AppState::Menu) {
+            if (cr.start) {
+                startGame();
+                if (!cr.gotoScene.empty()) requestScene(cr.gotoScene);
+                else {
+                    auto it1 = keyMap.find(GLFW_KEY_1);
+                    if (it1 != keyMap.end()) requestScene(it1->second);
                 }
-                // ignore other clickable regions in Menu (buttons without start:true)
-                return true;
-            }
-
-            // Already Playing: allow normal scene transitions via goto regions
-            if (!cr.gotoScene.empty()) {
-                requestScene(cr.gotoScene);
             }
             return true;
         }
 
-
+        // Playing: allow goto
+        if (!cr.gotoScene.empty()) {
+            requestScene(cr.gotoScene);
+        }
+        return true;
     }
     return false;
 }
@@ -513,8 +685,35 @@ Scene* GameManager::getCurrentScene() {
     return nullptr;
 }
 
+//function to get the unordered map for scenes
+std::unordered_map<std::string, Scene>& GameManager::get_scenes_map() {
+    return scenes;
+}
+
 void GameManager::update(float dt,Renderer& renderer,TextureStore& tex) {
     //update ECS animations
 	const float fixedDt = 1.0f / 60.0f;
     animationSystem_.Update(fixedDt, ecs_, renderer, tex);
+}
+
+/**
+ * @brief Pauses the game, changing the application state to Paused.
+ * @param void
+ * @returns void
+ */
+void GameManager::pauseGame() {
+    if (app == AppState::Playing) {
+        app = AppState::Paused;
+    }
+}
+
+/**
+ * @brief Resumes the game, changing the application state to Playing.
+ * @param void
+ * @returns void
+ */
+void GameManager::resumeGame() {
+    if (app == AppState::Paused) {
+        app = AppState::Playing;
+    }
 }

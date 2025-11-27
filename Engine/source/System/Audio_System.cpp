@@ -1,18 +1,35 @@
+/*!------------------------------------------------------------------------------------------------
+	File: Audio_System.cpp
+	Project: NocturnalStudio
+
+	This file contains the declaration of the AudioSystem class, which manages the integration
+	of the FMOD library into the customize game engine. It handles the initialization,
+	frame updates, and rendering of audio components, as well as providing various UI elements
+	for debugging and interaction within the engine.
+
+	Primary Author:
+		Lau Xiang Yang (100%)
+		- Created the AudioSystem class and its specializations.
+
+	All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
+
+#define _HAS_STD_BYTE 0
+
 #include "System/Audio_System.h"
 #include <filesystem>
 
+#ifdef _WIN32
+#define GLFW_EXPOSE_NATIVE_WIN32
+#include <GLFW/glfw3.h>
+#include <GLFW/glfw3native.h>
+#include <windows.h>
+#endif
+
+// global audio system pointer
+AudioSystem* gAudioSystem = nullptr;
+
 namespace {
-	/**
-	 * @brief Pointer to the currently active AudioSystem instance.
-	 *
-	 * This file-scoped pointer is used by FMOD channel callbacks to route
-	 * events back to the owning AudioSystem instance. It is assigned in
-	 * AudioSystem::AudioSystem and cleared on destruction.
-	 *
-	 * Usage:
-	 * - Do not access this pointer directly outside this translation unit.
-	 */
-	AudioSystem* audioSystem = nullptr;
 
 	/**
 	 * @brief FMOD channel callback used to detect when a channel finishes playback.
@@ -55,8 +72,8 @@ namespace {
 
 		case FMOD_CHANNELCONTROL_CHANNEL: {
 			FMOD::Channel* channel = (FMOD::Channel*)channelControl;
-			if (audioSystem) { // guard in case FMOD fires after shutdown
-				audioSystem->handleCompletedAudioInstance(channel);
+			if (gAudioSystem) { // guard in case FMOD fires after shutdown
+				gAudioSystem->handleCompletedAudioInstance(channel);
 			}
 			return FMOD_OK;
 		}
@@ -68,6 +85,19 @@ namespace {
 			return FMOD_OK;
 		}
 	}
+
+    static void ShowAudioLoadFailurePopup(const std::string& filepath, FMOD_RESULT result) {
+    #ifdef _WIN32
+        GLFWwindow* gw = glfwGetCurrentContext();
+        HWND parent = gw ? glfwGetWin32Window(gw) : nullptr;
+        std::string msg =
+            "Failed to load audio:\n" + filepath +
+            "\nFMOD error: " + std::string(FMOD_ErrorString(result));
+        MessageBoxA(parent, msg.c_str(), "Audio Load Error", MB_OK | MB_ICONERROR | MB_TOPMOST);
+    #else
+        logger.error("Failed to load audio (popup not available): " + filepath + " : " + FMOD_ErrorString(result));
+    #endif
+    }	
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -93,7 +123,7 @@ namespace {
  * - Constructed by engine initialization code. No direct calls needed from gameplay.
  */
 AudioSystem::AudioSystem(std::string name, ECS& ecs, ResourceManager& rm) : System{ ecs, name }, resourceManager{ rm }, bgmVolume{ 1.0f }, sfxVolume{ 1.0f } {
-	audioSystem = this;
+	gAudioSystem = this;
 
 	if (FMOD::System_Create(&fmodSystem) != FMOD_OK) {
 		logger.error("Failed to create FMOD system");
@@ -137,15 +167,15 @@ AudioSystem::AudioSystem(std::string name, ECS& ecs, ResourceManager& rm) : Syst
 	
 	FMOD::Sound* defaultSound = nullptr;
 	// Use the accessor + a valid FMOD_MODE flag instead of 'false'
-	FMOD_RESULT result = fmodSystem->createSound(
-		resourceManager.getDefaultAudio().getFilePath().c_str(),
-		FMOD_2D, nullptr, &defaultSound
-	);
+	//FMOD_RESULT result = fmodSystem->createSound(
+	//	resourceManager.getDefaultAudio().getFilePath().c_str(),
+	//	FMOD_2D, nullptr, &defaultSound
+	//);
 
 
-	if (result != FMOD_OK) {
-		logger.error("Failed to load default audio sound" + std::string{ FMOD_ErrorString(result) });
-	}
+	//if (result != FMOD_OK) {
+	//	//logger.error("Failed to load default audio sound" + std::string{ FMOD_ErrorString(result) });
+	//}
 	soundMap.insert({ 0, defaultSound });
 
 	setBGMVolume(bgmVolume);
@@ -205,7 +235,7 @@ AudioSystem::~AudioSystem() {
 		fmodSystem = nullptr;
 	}
 
-	audioSystem = nullptr; // clear file-scoped pointer used by the callback
+	gAudioSystem = nullptr; // clear file-scoped pointer used by the callback
 
 }
 
@@ -272,48 +302,58 @@ void AudioSystem::update(double deltaTime) {
  * if (optId) { // playback started  }
  */
 std::optional<AudioInstanceID> AudioSystem::createAudioInstance(AudioData::IndividualAudioData const& audioData, EntityID id) {
-	ResourceID const& audioResourceID = audioData.resourceID;
+    ResourceID const& audioResourceID = audioData.resourceID;
 
-	auto soundIt = soundMap.find(audioResourceID);
-	if (soundIt == soundMap.end()) {
-		logger.error("Failed to find audio resource with ID: " + std::to_string(audioResourceID));
-		return std::nullopt;
-	}
+    auto soundIt = soundMap.find(audioResourceID);
+    if (soundIt == soundMap.end()) {
+        logger.error("Failed to find audio resource with ID: " + std::to_string(audioResourceID));
+        return std::nullopt;
+    }
 
-	FMOD::Sound* sound = soundIt->second;
-	FMOD::Channel* channel = nullptr;
+    FMOD::Sound* sound = soundIt->second;
+    FMOD::Channel* channel = nullptr;
 
-	if (fmodSystem->playSound(sound, nullptr, false, &channel) != FMOD_OK) {
-		logger.error("Failed to play sound for audio resource ID: " + std::to_string(audioResourceID));
-		return std::nullopt;
-	}
+    if (fmodSystem->playSound(sound, nullptr, false, &channel) != FMOD_OK) {
+        logger.error("Failed to play sound for audio resource ID: " + std::to_string(audioResourceID));
+        return std::nullopt;
+    }
 
-	AudioInstance newAudioInstance{ ++totalInstanceCount, channel, true, audioData.volume,
-		audioData.persistOnEntityDestruction, audioData.persistOnSceneChange, id };
+    AudioInstance newAudioInstance{ ++totalInstanceCount, channel, true, audioData.volume,
+        audioData.persistOnEntityDestruction, audioData.persistOnSceneChange, id };
+    newAudioInstance.channelResourceID = audioResourceID;
 
-	float volume = audioData.volume;
+    float volume = audioData.volume;
 
-	channel->setVolume(volume);
-	channel->setCallback(channelCallback);
-	channel->setMode(audioData.loop ? FMOD_LOOP_NORMAL : FMOD_LOOP_OFF);
+    channel->setVolume(volume);
+    channel->setCallback(channelCallback);
+    channel->setMode(audioData.loop ? FMOD_LOOP_NORMAL : FMOD_LOOP_OFF);
 
-	switch (audioData.group) {
-	case AudioData::IndividualAudioData::Group::Music:
-		channel->setChannelGroup(bgmChannelGroup);
-		break;
-	case AudioData::IndividualAudioData::Group::SFX:
-		channel->setChannelGroup(sfxChannelGroup);
-		break;
-	case AudioData::IndividualAudioData::Group::RESERVED1:
-		channel->setChannelGroup(reserved1ChannelGroup);
-		break;
-	case AudioData::IndividualAudioData::Group::RESERVED2:
-		channel->setChannelGroup(reserved2ChannelGroup);
-		break;
-	}
+    switch (audioData.group) {
+    case AudioData::IndividualAudioData::Group::Music:
+        channel->setChannelGroup(bgmChannelGroup);
+        break;
+    case AudioData::IndividualAudioData::Group::SFX:
+        channel->setChannelGroup(sfxChannelGroup);
+        break;
+    case AudioData::IndividualAudioData::Group::RESERVED1:
+        channel->setChannelGroup(reserved1ChannelGroup);
+        break;
+    case AudioData::IndividualAudioData::Group::RESERVED2:
+        channel->setChannelGroup(reserved2ChannelGroup);
+        break;
+    }
 
-	audioInstances[newAudioInstance.instanceID] = newAudioInstance;
-	return newAudioInstance.instanceID;
+    // Apply pitch if provided (1.0f is neutral)
+    if (audioData.pitch != 1.0f) {
+        channel->setPitch(audioData.pitch);
+    }
+
+    // Store the instance first, then attach a stable pointer to its ID as channel user data.
+    audioInstances[newAudioInstance.instanceID] = newAudioInstance;
+    auto& storedInstance = audioInstances[newAudioInstance.instanceID];
+    channel->setUserData(&storedInstance.instanceID);
+
+    return newAudioInstance.instanceID;
 }
 
 /**
@@ -455,6 +495,32 @@ void AudioSystem::resumeAllSFX() {
 }
 
 /**
+ * @brief Pause all audio routed through the BGM channel group.
+ *
+ * Useful for temporarily muting sound effects while leaving music playing.
+ *
+ * Example:
+ * audioSystem.pauseAllBGM();
+ */
+void AudioSystem::pauseAllBGM() {
+	if (bgmChannelGroup) {
+		bgmChannelGroup->setPaused(true);
+	}
+}
+
+/**
+ * @brief Resume playback of the BGM channel group.
+ *
+ * Example:
+ * audioSystem.resumeAllBGM();
+ */
+void AudioSystem::resumeAllBGM() {
+	if (bgmChannelGroup) {
+		bgmChannelGroup->setPaused(false);
+	}
+}
+
+/**
  * @brief Get the raw FMOD system pointer.
  *
  * Use with care; prefer AudioSystem methods for common operations.
@@ -520,15 +586,26 @@ void AudioSystem::handleEntityDestruction(EntityID entityId) {
  * @param channel The FMOD channel that completed playback.
  */
 void AudioSystem::handleCompletedAudioInstance(FMOD::Channel* channel) {
-	auto it = std::find_if(audioInstances.begin(), audioInstances.end(), [&](auto const& keyPairValue) {
-		return channel == keyPairValue.second.channel;
-		});
+    // Prefer resolving by user data (AudioInstanceID*)
+    if (channel) {
+        void* udata = nullptr;
+        if (channel->getUserData(&udata) == FMOD_OK && udata) {
+            auto idPtr = static_cast<AudioInstanceID*>(udata);
+            auto it = audioInstances.find(*idPtr);
+            if (it != audioInstances.end()) {
+                it->second.toDestroy = true;
+                return;
+            }
+        }
+    }
 
-	if (it == audioInstances.end()) {
-		return;
-	}
-
-	it->second.toDestroy = true;
+    // Fallback: resolve by matching channel pointer
+    for (auto& [id, inst] : audioInstances) {
+        if (inst.channel == channel) {
+            inst.toDestroy = true;
+            return;
+        }
+    }
 }
 
 /**
@@ -563,19 +640,36 @@ void AudioSystem::deleteAllAudioInstances(bool forceDeletePersistentSounds) {
  * @param id EntityID to associate with created audio instances.
  * @return true if all requested startup playbacks succeeded; false otherwise.
  */
-bool AudioSystem::registerNewAudioResource(AudioData& audioData, EntityID id) {
-	for (auto& audio : audioData.audios) {
-		if (!audio.toPlayAtStart) {
-			continue;
-		}
+bool AudioSystem::registerNewAudioResource(AudioData& audioData, EntityID entityID) {
+    for (auto& audio : audioData.audios) {
+        // Resolve by name if needed (existing logic assumed here)
+        if (audio.resourceID == 0 && !audio.name.empty()) {
+            ResourceID rid = resourceManager.findResource<Audio>(audio.name);
+            if (rid != NO_RESOURCE_ID) audio.resourceID = rid;
+        }
 
-		if (!createAudioInstance(audio, id)) {
-			logger.error("Failed to create audio instance for entity ID: " + std::to_string(id));
-			deleteAllAudioInstances();
-			return false;
-		}
-	}
-	return true;
+        // Prevent duplicate persistent instance of same resource.
+        if (audio.persistOnSceneChange) {
+            bool alreadyPlaying = false;
+            for (auto const& [iid, inst] : audioInstances) {
+                if (inst.isPlaying && inst.persistOnSceneChange &&
+                    audio.resourceID == inst.channelResourceID /* add this member if missing */) {
+                    alreadyPlaying = true;
+                    break;
+                }
+            }
+            if (alreadyPlaying) continue;
+        }
+
+        if (!audio.toPlayAtStart) continue;
+
+        auto opt = createAudioInstance(audio, entityID);
+        if (!opt.has_value()) {
+            logger.error("Failed to start audio (ID=" + std::to_string(audio.resourceID) + ")");
+            return false;
+        }
+    }
+    return true;
 }
 
 /**
@@ -589,16 +683,17 @@ bool AudioSystem::registerNewAudioResource(AudioData& audioData, EntityID id) {
  * // Called by the ResourceManager during initialization; not typically called by gameplay code.
  */
 void AudioSystem::loadSound(Audio const& audio) {
-	FMOD::Sound* sound = nullptr;
-	//FMOD_RESULT result = fmodSystem->createSound(audio.getFilePath().c_str(), FMOD_2D, nullptr, &sound);
-	FMOD_MODE mode = FMOD_DEFAULT | FMOD_2D | FMOD_CREATESTREAM; // stream long files
-	FMOD_RESULT result = fmodSystem->createSound(audio.getFilePath().c_str(), mode, nullptr, &sound);
-	if (result != FMOD_OK) {
-		logger.error("Failed to load audio sound from file: " + audio.getFilePath() + " Error: " + std::string{ FMOD_ErrorString(result) });
-		return;
-	}
-
-	soundMap.insert({ audio.getID(), sound });
+    FMOD::Sound* sound = nullptr;
+    FMOD_MODE mode = FMOD_DEFAULT | FMOD_2D | FMOD_CREATESTREAM;
+    FMOD_RESULT result = fmodSystem->createSound(audio.getFilePath().c_str(), mode, nullptr, &sound);
+    if (result != FMOD_OK) {
+        if (result == FMOD_ERR_FORMAT || result == FMOD_ERR_FILE_BAD || result == FMOD_ERR_FILE_NOTFOUND) {
+            ShowAudioLoadFailurePopup(audio.getFilePath(), result);
+        }
+        logger.error("Failed to load audio sound from file: " + audio.getFilePath() + " Error: " + std::string{ FMOD_ErrorString(result) });
+        return;
+    }
+    soundMap.insert({ audio.getID(), sound });
 }
 
 /**
@@ -792,28 +887,33 @@ AudioInstanceID AudioSystem::playBGM(ResourceID id) {
  * @return AudioInstanceID ID of the created audio instance on success, or 0 on failure.
  */
 AudioInstanceID AudioSystem::playSFX(ResourceID id) {
-	auto it = soundMap.find(id);
-	if (it == soundMap.end()) {
-		logger.error("AudioSystem::playSFX: Failed to find audio resource with ID: " + std::to_string(id));
-		return 0;
-	}
+    auto it = soundMap.find(id);
+    if (it == soundMap.end()) {
+        logger.error("AudioSystem::playSFX: Failed to find audio resource with ID: " + std::to_string(id));
+        return 0;
+    }
 
-	logger.log("AudioSystem::playSFX: Playing SFX with audio resource ID: " + std::to_string(id));
+    logger.log("AudioSystem::playSFX: Playing SFX with audio resource ID: " + std::to_string(id));
 
-	FMOD::Channel* channel = nullptr;
-	FMOD_RESULT result = fmodSystem->playSound(it->second, sfxChannelGroup, false, &channel);
-	if (result != FMOD_OK) {
-		logger.error("AudioSystem::playSFX: Failed to play SFX sound for audio resource ID: " + std::to_string(id));
-		return 0;
-	}
+    FMOD::Channel* channel = nullptr;
+    FMOD_RESULT result = fmodSystem->playSound(it->second, sfxChannelGroup, false, &channel);
+    if (result != FMOD_OK) {
+        logger.error("AudioSystem::playSFX: Failed to play SFX sound for audio resource ID: " + std::to_string(id));
+        return 0;
+    }
 
-	AudioInstance inst{};
-	inst.channel = channel;
-	inst.isPlaying = true;
-	inst.volume = sfxVolume;
-	++totalInstanceCount;
-	audioInstances[totalInstanceCount] = std::move(inst);
+    AudioInstance inst{};
+    inst.channel = channel;
+    inst.isPlaying = true;
+    inst.volume = sfxVolume;
+    ++totalInstanceCount;
+    inst.instanceID = totalInstanceCount;
+    audioInstances[totalInstanceCount] = std::move(inst);
 
-	channel->setVolume(sfxVolume);
-	return totalInstanceCount;
+    // Attach user data to match the general instance cleanup path
+    auto& stored = audioInstances[totalInstanceCount];
+    channel->setUserData(&stored.instanceID);
+
+    channel->setVolume(sfxVolume);
+    return totalInstanceCount;
 }
