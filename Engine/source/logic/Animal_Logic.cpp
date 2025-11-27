@@ -2,6 +2,10 @@
 
 Animal_Logic::Animal_Logic() = default;
 
+void Animal_Logic::update(float dt) {
+
+}
+
 std::string Animal_Logic::to_string(const Animal_type& type) {
 	switch (type) {
 	case Animal_type::Flamingo: return "flamingo";
@@ -113,14 +117,14 @@ void Animal_Logic::update_animal_sanity(GameManager& gm, double deltaTime) {
 
 				else if (animal.still_alive && animal.name == to_string(Animal_type::Seal)) {
 					animal.sanity_bar -= animal.normal_decreasing_rate * deltaTime; //sanity of seal decrease normally
-					if (stats.action == Zookeeper_action::staring) {
-						static double static_staring_countdown{ 10 };
-						static_staring_countdown -= 0.5;
-						if (static_staring_countdown <= 0) {
-							//when players look at it for more than x seconds, bar goes down faster
-							animal.sanity_bar -= animal.penalty_decreasing_rate * deltaTime; //sanity of seal decrease faster
-						}
-					}
+					//if (stats.action == Zookeeper_action::staring) {
+					//	static double static_staring_countdown{ 10 };
+					//	static_staring_countdown -= 0.5;
+					//	if (static_staring_countdown <= 0) {
+					//		//when players look at it for more than x seconds, bar goes down faster
+					//		animal.sanity_bar -= animal.penalty_decreasing_rate * deltaTime; //sanity of seal decrease faster
+					//	}
+					//}
 				}
 			}
 		}

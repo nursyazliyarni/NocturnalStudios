@@ -50,13 +50,7 @@
 #include <cstdlib>
 #include <ctime>
 
-
 extern void Prefab_SetTextureLookup(std::function<int(const std::string&)>);
-
-
-
-
-
 
 // --- Very simple random drift for any entity with AI + Physics (no fancy RNG) ---
 static void UpdateRandomDrift(ECS& ecs, double dt) {
@@ -148,11 +142,6 @@ static void UpdateRandomDrift(ECS& ecs, double dt) {
 	}
 }
 
-
-
-
-
-
 namespace {
 	constexpr float TWO_PI = 2.0f * glm::pi<float>();
 	constexpr int   CIRCLE_SEGMENTS = 64;
@@ -234,7 +223,6 @@ void Application::init() {
 	logger.setup_crash_handler();
 	const GameConfig c = loadConfig("assets/config.json");
 	windowTitle = c.window.title;
-	imGUIVisible = c.imgui_enabled;
 
     WindowDesc wd;
     wd.width = c.window.width;
@@ -361,9 +349,8 @@ void Application::init() {
 
 	prefabManager = std::make_unique<PrefabManager>(*ecs);
 	prefabManager->Load_Prefab(prefabTestPath.c_str());
-
+	//prefabManager->CreateEntityFromPrefab(prefabTestPath, "main_menu_button", "play_button");
 	
-	//logger.log("Created animal entity with ID: " + std::to_string(animal) + " and " + std::to_string(animal_2));
     textShader = std::make_unique<Shader>(textShaderVertexPath.c_str(), textShaderFragmentPath.c_str());
 
     // Wire text shader into the renderer (renderer controls projection per-viewport)
@@ -395,7 +382,7 @@ void Application::init() {
         logger.log(std::string{ "[SceneSpawn] Activated -> " } + sceneName);
     });
 
-	if (!imGUIVisible)renderer->initFBO(wd.width, wd.height);
+
 
 	imGuiManager = std::make_unique<ImGuiManager>(
 		m_window, *renderer,
@@ -430,15 +417,9 @@ int Application::run() {
 
 		if (ecs) UpdateRandomDrift(*ecs, dt);
 
-
-
-
 		// Debug: log firefly state twice per second to confirm it's updating
 		static double dbgAccum = 0.0;
 		dbgAccum += dt;
-
-
-
 
 		if (dbgAccum > 0.5 && ecs) {
 			dbgAccum = 0.0;
@@ -480,12 +461,7 @@ int Application::run() {
 
         glClear(GL_COLOR_BUFFER_BIT);
 
-		if (imGUIVisible)Gui::updateImGuiManager(dt, *imGuiManager);
-		else {
-			int winheight,winwidth;
-			m_window.getWindowSize(winwidth, winheight);
-			gsm->imGUIlessRender(*renderer, *inputSystem, m_window.handle(), winwidth,winheight);
-		}
+        Gui::updateImGuiManager(dt, *imGuiManager);
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         glViewport(0, 0, fbw, fbh);
@@ -495,30 +471,24 @@ int Application::run() {
         // Text overlay is now rendered by Renderer inside the viewport FBO (see ImGuiManager)
 
         if (inputSystem->WasMousePressed(GLFW_MOUSE_BUTTON_LEFT)) {
-			ImVec2 rmin{}, rmax;
+            ImVec2 rmin, rmax;
 
-			if (imGUIVisible)imGuiManager->getViewportRectWindow(rmin, rmax);
-			else { //uses window size to dtermine click coords
-				int maxx, maxy;
-				m_window.getWindowSize(maxx, maxy);
-				rmax={ static_cast<float>(maxx) ,static_cast<float>(maxy) };
-			}
-			
-			Vector2D mp = inputSystem->GET_mouse_pos(false, 0, 0);
-			if (mp.x() >= rmin.x && mp.x() <= rmax.x &&
-				mp.y() >= rmin.y && mp.y() <= rmax.y) {
-				float nx = float((mp.x() - rmin.x) / (rmax.x - rmin.x));
-				float ny = float((mp.y() - rmin.y) / (rmax.y - rmin.y));
+            imGuiManager->getViewportRectWindow(rmin, rmax);
 
-				//ny = 1.0f - ny;
-				gsm->handleClick(nx, ny);
+            Vector2D mp = inputSystem->GET_mouse_pos(false, 0, 0);
+            if (mp.x() >= rmin.x && mp.x() <= rmax.x &&
+                mp.y() >= rmin.y && mp.y() <= rmax.y) {
+                float nx = float((mp.x() - rmin.x) / (rmax.x - rmin.x));
+                float ny = float((mp.y() - rmin.y) / (rmax.y - rmin.y));
 
-				if (gsm->popQuitRequested()) {
-					glfwSetWindowShouldClose(m_window.handle(), GLFW_TRUE);
-					break;
-				}
-			}
-            
+                //ny = 1.0f - ny;
+                gsm->handleClick(nx, ny);
+
+                if (gsm->popQuitRequested()) {
+                    glfwSetWindowShouldClose(m_window.handle(), GLFW_TRUE);
+                    break;
+                }
+            }
         }
 		TransformSystem::TransformUpdate();
         if (gsm->popQuitRequested()) {
