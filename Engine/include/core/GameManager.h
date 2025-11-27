@@ -43,6 +43,13 @@ struct DrawItem {
     float health_bar, hunger_bar, sanity_bar;
     float slower_decreasing_rate, normal_decreasing_rate, faster_decreasing_rate, penalty_decreasing_rate;
     bool still_alive, is_draggable, is_dragging;
+
+	//collider info
+    bool  hasCollider = true;
+    float colOffsetX = 0.0f;
+    float colOffsetY = 0.0f;
+    float colW = 0.0f;
+    float colH = 0.0f;
 };
 
 struct ClickRegion {

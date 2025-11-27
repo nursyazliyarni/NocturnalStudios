@@ -471,6 +471,23 @@ void GameManager::render(Renderer& r, Input& input, GLFWwindow* window, int w, i
         else {
             Cam2D_Apply(currentScene, px, py, pw, ph, w, h);
             r.texturedTri(di.tex, px, py, pw, ph);
+
+            // --- COLLIDER VISUALIZATION ---
+            if (di.hasCollider)
+            {
+                float colX = di.x * w + di.colOffsetX * w;
+                float colY = di.y * h + di.colOffsetY * h;
+                float colW = di.colW * w;
+                float colH = di.colH * h;
+
+                // convert collider location from center to top-left
+                float cx = colX + colW * 0.5f;
+                float cy = colY + colH * 0.5f;
+
+                // green rectangle
+                r.rect(cx, cy, colW, colH, 0.0f, 1.0f, 0.0f);
+            }
+            // --------------------------------
         }
 
         if (di.is_dragging && !duplicate_item) {
@@ -485,12 +502,32 @@ void GameManager::render(Renderer& r, Input& input, GLFWwindow* window, int w, i
         //    duplicate_item.reset(); //The unique_ptr releases ownership
         //}
 
-        if (Debug::Drawer::Instance().IsActive()) {
+        /*if (Debug::Drawer::Instance().IsActive()) {
             AABB collider(Vector2D(px, py), Vector2D(pw, ph));
             Debug::Drawer::Instance().AddRect(
                 collider.pos.x(), collider.pos.y(),
                 collider.size.x(), collider.size.y(),
                 0xFFFF00FF
+            );
+        }*/
+		// --- Debug Draw Collider Box ---
+        if (Debug::Drawer::Instance().IsActive() && di.hasCollider)
+        {
+            float cx = di.x + di.colOffsetX;
+            float cy = di.y + di.colOffsetY;
+
+            float px = cx * w;
+            float py = cy * h;
+
+            float cw = di.colW * w;
+            float ch = di.colH * h;
+
+            Debug::Drawer::Instance().AddRect(
+                px - cw * 0.5f,
+                py - ch * 0.5f,
+                cw,
+                ch,
+                0x00FF00FF //green box
             );
         }
     }

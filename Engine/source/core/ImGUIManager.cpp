@@ -707,6 +707,13 @@ void ImGuiManager::showEntityListUI(/* Maybe an enum of paramEntityType, Maybe a
 			newItem.y = 0.5f;
 			newItem.angle = 0.0f; // no rotation
 
+			//default collider settings
+			newItem.hasCollider = true;
+			newItem.colOffsetX = 0.0f;
+			newItem.colOffsetY = 0.0f;
+			newItem.colW = newItem.w;
+			newItem.colH = newItem.h;
+
 			// Add it to the current scene
 			sceneMut->items.push_back(newItem);
 			selectedEntityType = static_cast<unsigned int>(sceneMut->items.size() - 1);
@@ -806,6 +813,26 @@ void ImGuiManager::showTransformUI(/* A reference to a vector of object list obj
 
 	if (isPlayMode) {
 		ImGui::EndDisabled();
+	}
+
+	//collision controls
+	ImGui::Separator();
+	ImGui::Text("Collision");
+
+	ImGui::Checkbox("Has Collider", &item.hasCollider);
+
+	if (item.hasCollider)
+	{
+		ImGui::DragFloat("Collider Offset X", &item.colOffsetX, 0.01f, -1.0f, 1.0f);
+		ImGui::DragFloat("Collider Offset Y", &item.colOffsetY, 0.01f, -1.0f, 1.0f);
+		ImGui::DragFloat("Collider Width", &item.colW, 0.01f, 0.0f, 2.0f);
+		ImGui::DragFloat("Collider Height", &item.colH, 0.01f, 0.0f, 2.0f);
+
+		if (ImGui::Button("Reset Collider to Sprite")) {
+			item.colOffsetX = item.colOffsetY = 0.0f;
+			item.colW = item.w;
+			item.colH = item.h;
+		}
 	}
 
 	/*if (changed)
