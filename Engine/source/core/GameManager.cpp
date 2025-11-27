@@ -103,7 +103,18 @@ static std::string toAssetsPath(const std::string& p) {
 struct PrefabDef { float w = 0.2f, h = 0.2f, angle = 0.0f; };
 
 //  GameManager 
-bool GameManager::saveScene(const Scene& scene, const char* scenesJsonPath, TextureStore& tex) {
+bool GameManager::saveScene( std::string scenename, const char* scenesJsonPath, TextureStore& tex) {
+    if (scenename == "___currscene___")scenename = currentScene;
+
+    logger.log("Attempting to save scene: " + scenename);
+
+    auto sitr = scenes.find(scenename);
+    if (sitr == scenes.end()) { 
+        logger.log("Scene not found: " + scenename);
+        return false; }
+
+    Scene& scene = sitr->second;
+
     rapidjson::Document doc;
     doc.SetObject();
     auto& alloc = doc.GetAllocator();
@@ -138,14 +149,13 @@ bool GameManager::saveScene(const Scene& scene, const char* scenesJsonPath, Text
                 rapidjson::Value overrides(rapidjson::kObjectType);
                 if (ecs_.findEntityByName(i.name)!=INVALID_ENTITY_ID&&!ecs_.getEntityComponents(ecs_.findEntityByName(i.name)).empty())
                 {
-                    for (ComponentID cis: ecs_.getEntityComponents(ecs_.findEntityByName(i.name)))
-                    {
-                        //ecs_.getco
-                    }
+                    writeAllComponentsToJSON(ecs_.findEntityByName(i.name), overrides, alloc);
                 }
                 entObj.AddMember("overrides", overrides, alloc);
             }
+            entityArray.PushBack(entObj, alloc);
         }
+        doc.AddMember("entities", entityArray, alloc);
     }
 
     FILE* fp = fopen(scenesJsonPath, "wb");
@@ -836,4 +846,25 @@ bool GameManager::reloadCurrentScene(TextureStore& tex) {
         std::to_string(freshScene.items.size()) + " items");
 
     return true;
+}
+/**
+ * Current printing method for hamobjects components.
+ *  it is incredibly lazy
+ * \param id
+ * \param overridesObj
+ * \param alloc
+ */
+void GameManager::writeAllComponentsToJSON(EntityID id, rapidjson::Value& obj, rapidjson::Document::AllocatorType& alloc) {
+
+    if (ecs_.getComponent<AudioData>(id))ecs_.getComponent<AudioData>(id)->ToJSON(obj, alloc);
+    if (ecs_.getComponent<Transform>(id))ecs_.getComponent<Transform>(id)->ToJSON(obj, alloc);
+    if (ecs_.getComponent<ImageRenderer>(id))ecs_.getComponent<ImageRenderer>(id)->ToJSON(obj, alloc);
+    if (ecs_.getComponent<CircleRenderer>(id))ecs_.getComponent<CircleRenderer>(id)->ToJSON(obj, alloc);
+    if (ecs_.getComponent<RectRenderer>(id))ecs_.getComponent<RectRenderer>(id)->ToJSON(obj, alloc);
+    if (ecs_.getComponent<AnimalBehavior>(id))ecs_.getComponent<AnimalBehavior>(id)->ToJSON(obj, alloc);
+    if (ecs_.getComponent<PhysicsComponent>(id))ecs_.getComponent<PhysicsComponent>(id)->ToJSON(obj, alloc);
+
+    if (ecs_.getComponent<AIComponent>(id))ecs_.getComponent<AIComponent>(id)->ToJSON(obj, alloc);
+
+    if (ecs_.getComponent<BoxCollider>(id))ecs_.getComponent<BoxCollider>(id)->ToJSON(obj, alloc);
 }
