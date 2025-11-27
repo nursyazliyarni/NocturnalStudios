@@ -46,5 +46,11 @@ GameConfig loadConfig(const std::string& filename) {
         win["vsync"].GetBool()
     };
 
-    return { window };
+    bool imguienabled = false;
+    if (doc.HasMember("imGUI") && doc["imGUI"].IsBool())
+    {
+        imguienabled = doc["imGUI"].GetBool();
+    }
+
+    return { window ,imguienabled};
 }

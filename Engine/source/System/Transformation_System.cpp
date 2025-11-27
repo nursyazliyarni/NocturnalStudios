@@ -22,6 +22,9 @@ extern Logger logger;
 namespace {
 	ECS& ecs = ECS::getECS();
 	EntityID selectedID = NO_ENTITY_SELECTED;
+	static std::vector<std::vector<EntityID>> gridtracker{};
+	static std::vector<std::pair<EntityID, EntityID>> possible_collisions, collisions{};
+	
 }
 /**
 	* Returns the translated vector2d matrix
@@ -78,7 +81,7 @@ Vector2D Transform::Scale(float x, float y) {
 
 
 void TransformSystem::TransformUpdate() {
-	ECS& ecs = ECS::getECS();
+	//ECS& ecs = ECS::getECS();
 	std::vector<EntityID> ectities = ecs.getAllEntities();
 	for (EntityID e:ectities)
 	{
@@ -97,7 +100,7 @@ void TransformSystem::TransformUpdate() {
 }
 
 void TransformSystem::TransformInput(Input& in,double dt) {
-	ECS& ecs = ECS::getECS();
+	//ECS& ecs = ECS::getECS();
 
 	if (selectedID == NO_ENTITY_SELECTED)
 	{
@@ -164,12 +167,49 @@ void TransformSystem::TransformInput(Input& in,double dt) {
 	
 }
 
-void CollisionSystem::CollisionUpdate(){
+void CollisionSystem::CollisionUpdate(BoxCollider *coll){
+	
+	
 
 }
 
-void PhysicsSystem::PhysicsUpdate() {
+std::vector<std::pair<EntityID, EntityID>> CollisionSystem::BroadphaseCollision() {
+	std::vector<std::pair<EntityID, EntityID>> uwah;
+	gridtracker.clear();
+	//neeed to check how big grid is in relation to aabb box
 
+	for (EntityID e : ecs.getAllEntities()) {
+
+	}
+
+
+
+
+	return uwah;
+}
+
+void PhysicsSystem::PhysicsUpdate(double dt) {
+	//first, we process the physics
+	std::vector<EntityID> ectities = ecs.getAllEntities();
+	for (EntityID e : ectities)
+	{
+		PhysicsComponent* p = ecs.getComponent<PhysicsComponent>(e);
+		if (p)
+		{
+			BoxCollider* c = ecs.getComponent<BoxCollider>(e);
+			if (c)CollisionSystem::CollisionUpdate(c);
+
+			p->velocity += p->acceleration * dt;
+			p->position += p->velocity * dt;
+
+			//apply pos to transform
+			Transform* t = ecs.getComponent<Transform>(e);
+			if (t)
+			{
+				t->position = p->position;
+			}
+		}
+	}
 }
 
 void PhysicsSystem::PhysicsInput(Input& in,double dt) {

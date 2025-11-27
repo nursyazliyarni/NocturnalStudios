@@ -15,18 +15,26 @@
 
 #include "graphics/Camera2D.h" 
 #include "scene/Prefab.h"       // Prefab_GetSceneName 
-
+namespace {
+    int numbox{ 3 };
+    ECS& ecs = ECS::getECS();
+}
 /**
  * A he;per function for M2 that a
  * 
  */
-void SceneManagerTest() {
-
+void SceneManager::SceneManagerTest(PrefabManager& p) {
+    
+    if (curr_scene->layers[0].entities.size()<numbox)
+    {
+        
+        curr_scene->layers[0].entities.push_back(p.Instantiate("toy", "kms"));
+    }
 }
 
 void SceneManager::InitScene(SceneID id) {
     for (const auto& s : scenes) {
-        if (s.id == id) {
+        if (s.s_id == id) {
             /*curr_scene = std::make_unique<Scene>(s);
             return;*/
 
@@ -62,4 +70,12 @@ void SceneManager::Render() {
     }
 }
 
+SceneManager::SceneManager() {
+    Scene d{ {},0,"Testscn" };
+    d.layers.push_back({ {},1,"TEST" });
+    scenes.push_back(d);
 
+    InitScene(0);
+
+    curr_scene->layers[0].entities.push_back(0);
+}

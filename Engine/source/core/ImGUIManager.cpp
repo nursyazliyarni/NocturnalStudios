@@ -281,9 +281,27 @@ void ImGuiManager::showViewportWindowUI() {
 	ImGui::Begin("Viewport", nullptr, flags);*/
 	ImGui::Begin("Viewport", nullptr, flags);
 
+	//global editor undo (ctrl+z)
+	ImGuiIO& io = ImGui::GetIO();
+	if (io.KeyCtrl && ImGui::IsKeyPressed(ImGuiKey_Z, false)) {
+		undoLastAction();
+	}
+
 	const ImVec2 avail = ImGui::GetContentRegionAvail();
 	const int vw = (int)std::max(1.0f, avail.x);
 	const int vh = (int)std::max(1.0f, avail.y);
+
+
+	static bool prevF = false;
+	int fState = glfwGetKey(mainWindow.handle(), GLFW_KEY_F);
+	bool currF = (fState == GLFW_PRESS);
+
+	// on key DOWN edge: toggle
+	if (currF && !prevF) {
+		m_showFPS = !m_showFPS;
+	}
+	prevF = currF;
+
 
 	// Logic timing (animal state update)
 	logicTime = TimeUtils::MeasureSeconds([&]() {
@@ -304,66 +322,27 @@ void ImGuiManager::showViewportWindowUI() {
 	// Render timing scope (includes scene render + debug draw + unbind)
 	{
 		TimeUtils::ScopedTimer t{ renderTime };
+
 		renderer.initFBO(vw, vh);
 		renderer.bindFBO();
 		renderer.resize(vw, vh);
 		renderer.clear(0.06f, 0.06f, 0.07f);
 
-		// Draw current SCENE into the FBO
-		gsm.render(renderer, input, mainWindow.handle(), vw, vh);
-
-		// Text overlay (rendered into the viewport FBO)
-		renderer.setTextProjection(vw, vh); // bottom-left origin for the text shader
-
-		// Resolve fonts from ResourceManager (cache IDs across frames)
-		static std::optional<ResourceID> s_fontA;
-		static std::optional<ResourceID> s_fontB;
-		if (!s_fontA) s_fontA = resourceManager.findResource<Font>("NanumBrushScript-Regular");
-		if (!s_fontB) s_fontB = resourceManager.findResource<Font>("PAPYRUS");
-
-		if (s_fontA) {
-			const Font& f = resourceManager.getFont(*s_fontA);
-			renderer.drawText(f, "Nocturnal Studio Engine",
-							 25.0f, vh - 50.0f, // near top (BL origin)
-							 1.0f, glm::vec3(1.0f, 0.0f, 0.2f));
-		}
-		if (s_fontB) {
-			const Font& f2 = resourceManager.getFont(*s_fontB);
-			renderer.drawText(f2, "Sample Font: Papyrus",
-							 25.0f, vh - 100.0f, // near top (BL origin)
-							 1.0f, glm::vec3(0.2f, 0.8f, 1.0f));
-		}
-
-		// Debugging Drawer //
-		static bool printed = false;
-		if (Debug::Drawer::Instance().IsActive()) {
-			if (!printed) {
-				std::cout << "[ImGuiManager] DebugDraw active\n";
-				printed = true;
-			}
-
-			glPushAttrib(GL_ALL_ATTRIB_BITS);
-			glUseProgram(0);
-			glDisable(GL_TEXTURE_2D);
-			glDisable(GL_DEPTH_TEST);
-			glEnable(GL_BLEND);
-			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-			glMatrixMode(GL_MODELVIEW);
-			glLoadIdentity();
-
-			Debug::Drawer::Instance().Render(Matrix<3>().Identity());
-
-			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-			glPopAttrib();
-		}
-		else {
-			printed = false;
-		}
-		// Debugging Drawer //
+		// Let GameManager draw scene + HUD text
+		gsm.renderWithHUD(
+			renderer,
+			input,
+			mainWindow.handle(),
+			vw,
+			vh,
+			deltaTime,
+			resourceManager,
+			m_showFPS
+		);
 
 		renderer.unbindFBO();
 	}
+
 
 	//// Show the FBO as an ImGui Image (flipped V)
 	//ImVec2 imgMin = ImGui::GetCursorScreenPos();
@@ -640,7 +619,7 @@ void ImGuiManager::showEntityListUI(/* Maybe an enum of paramEntityType, Maybe a
 	//Show current game objects in scene
 	if (ImGui::CollapsingHeader("Scene Objects", ImGuiTreeNodeFlags_DefaultOpen))
 	{
-		const Scene* scene = gsm.getCurrentScene();
+		Scene* scene = gsm.getCurrentScene();
 		if (!scene) // if no scene, show message
 		{
 			ImGui::TextDisabled("No active scene loaded.");
@@ -654,16 +633,40 @@ void ImGuiManager::showEntityListUI(/* Maybe an enum of paramEntityType, Maybe a
 
 			for (size_t i = 0; i < scene->items.size(); ++i)
 			{
-				const DrawItem& item = scene->items[i];
-				bool selected = (selectedEntityType == i); // check if obj is current selected one
+				//const DrawItem& item = scene->items[i];
+				//bool selected = (selectedEntityType == i); // check if obj is current selected one
 
-				// labels obj as Entity if it has no name
+				//// labels obj as Entity if it has no name
+				//std::string label = item.name.empty()
+				//	? "Entity " + std::to_string(i)
+				//	: item.name;
+
+				//if (ImGui::Selectable(label.c_str(), selected)) // selectable list
+				//	selectedEntityType = static_cast<unsigned int>(i);
+
+				DrawItem& item = scene->items[i];
+				bool selected = (selectedEntityType == i);
+
 				std::string label = item.name.empty()
 					? "Entity " + std::to_string(i)
 					: item.name;
 
-				if (ImGui::Selectable(label.c_str(), selected)) // selectable list
+				if (ImGui::Selectable(label.c_str(), selected))
 					selectedEntityType = static_cast<unsigned int>(i);
+
+				//accept dropped textures here
+				if (ImGui::BeginDragDropTarget())
+				{
+					if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ASSET_TEXTURE"))
+					{
+						IM_ASSERT(payload->DataSize == sizeof(GLuint));
+						GLuint droppedTex = *reinterpret_cast<const GLuint*>(payload->Data);
+
+						item.tex = droppedTex;
+						logger.log("[ImGui] Applied texture via drag-drop to object: " + label);
+					}
+					ImGui::EndDragDropTarget();
+				}
 			}
 
 			if (isPlayMode) {
@@ -689,6 +692,9 @@ void ImGuiManager::showEntityListUI(/* Maybe an enum of paramEntityType, Maybe a
 		//this button will change to load a gameobject,, currently loads just an empty game object
 		if (ImGui::Button("Add New Object")) 
 		{
+			//save state for undo
+			pushUndoState("Add New Object");
+
 			// Create a simple new DrawItem
 			DrawItem newItem;
 			newItem.name = "NewObject_" + std::to_string(sceneMut->items.size());
@@ -716,6 +722,9 @@ void ImGuiManager::showEntityListUI(/* Maybe an enum of paramEntityType, Maybe a
 		{
 			if (!sceneMut->items.empty() && selectedEntityType < sceneMut->items.size())
 			{
+				//save state for undo
+				pushUndoState("Remove Selected");
+
 				logger.log("[ImGui] Removed object: " + sceneMut->items[selectedEntityType].name);
 				sceneMut->items.erase(sceneMut->items.begin() + selectedEntityType);
 
@@ -792,6 +801,10 @@ void ImGuiManager::showTransformUI(/* A reference to a vector of object list obj
 	changed |= ImGui::DragFloat("Width", &item.w, 0.01f, 0.0f, 2.0f);
 	changed |= ImGui::DragFloat("Height", &item.h, 0.01f, 0.0f, 2.0f);
 	changed |= ImGui::DragFloat("Angle", &item.angle, 0.5f, -360.0f, 360.0f);
+
+	if (changed) {
+		pushUndoState("Inspector transform change");
+	}
 
 	if (isPlayMode) {
 		ImGui::EndDisabled();
@@ -1215,8 +1228,9 @@ void ImGuiManager::showAssetsBrowserUI() {
 					ImGui::TableNextColumn();
 					ImGui::PushID(index++);
 
+					//thumbnail: click still directly applies to currently selected object
 					if (ImGui::ImageButton(
-						("##tex" + std::to_string(index)).c_str(),
+						"##thumb",
 						(ImTextureID)(intptr_t)texID,
 						ImVec2(thumbnailSize, thumbnailSize)))
 					{
@@ -1226,6 +1240,14 @@ void ImGuiManager::showAssetsBrowserUI() {
 							scene->items[selectedEntityType].tex = texID;
 							logger.log("[ImGui] Applied texture: " + texName);
 						}
+					}
+
+					//drag source: drag this thumbnail onto entity
+					if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID))
+					{
+						ImGui::SetDragDropPayload("ASSET_TEXTURE", &texID, sizeof(GLuint));
+						ImGui::Text("Texture: %s", texName.c_str());
+						ImGui::EndDragDropSource();
 					}
 
 					ImGui::TextWrapped(texName.c_str());
@@ -1926,6 +1948,57 @@ void ImGuiManager::onStopButtonPressed() {
 	logger.log("Edit mode restored");
 }
 
+void ImGuiManager::pushUndoState(const char* reason)
+{
+	if (m_editorMode == EditorMode::PLAY)
+		return; //no undo recording in play mode
+
+	Scene* scene = gsm.getCurrentScene();
+	if (!scene)
+		return;
+
+	//keep up to kMaxUndoSteps snapshots
+	if (m_undoStack.size() >= kMaxUndoSteps) {
+		//drop the oldest
+		m_undoStack.erase(m_undoStack.begin());
+	}
+
+	m_undoStack.emplace_back(scene->items);
+
+	if (reason) {
+		logger.log(std::string("[Undo] Saved state: ") + reason);
+	}
+}
+
+void ImGuiManager::undoLastAction()
+{
+	Scene* scene = gsm.getCurrentScene();
+	if (!scene)
+		return;
+
+	//need at least 2 states, previous and current
+	if (m_undoStack.size() < 2) {
+		logger.warning("[Undo] No more undo steps available.");
+		return;
+	}
+
+	//remove current state
+	m_undoStack.pop_back();
+
+	//restore previous
+	scene->items = m_undoStack.back();
+
+	//fix selection index
+	if (selectedEntityType >= scene->items.size()) {
+		selectedEntityType = scene->items.empty()
+			? 0
+			: static_cast<unsigned int>(scene->items.size() - 1);
+	}
+
+	logger.log("[Undo] Undo applied.");
+}
+
+
 void ImGuiManager::handleViewportPicking(const ImVec2& imgMin,
 	const ImVec2& imgMax,
 	int vpW, int vpH)
@@ -1965,6 +2038,8 @@ void ImGuiManager::handleViewportPicking(const ImVec2& imgMin,
 	//--------delete currently selected item--------
 	if (ImGui::IsKeyPressed(ImGuiKey_Delete, false)) {
 		if (!items.empty() && selectedEntityType < items.size()) {
+			//save state for undo
+			pushUndoState("Delete object (Delete key)");
 			logger.log("[ImGui] Deleted object via Delete key: " + items[selectedEntityType].name);
 			items.erase(items.begin() + static_cast<std::ptrdiff_t>(selectedEntityType));
 			if (selectedEntityType >= items.size() && !items.empty())
@@ -2010,6 +2085,8 @@ void ImGuiManager::handleViewportPicking(const ImVec2& imgMin,
 
 	//--------click to select/start dragging--------
 	if (hitIndex >= 0 && ImGui::IsMouseClicked(ImGuiMouseButton_Left)) {
+		//save pre-drag state
+		pushUndoState("Begin viewport drag/select");
 		selectedEntityType = static_cast<unsigned int>(hitIndex);
 		m_draggedItem = hitIndex;
 		m_isDragging = true;

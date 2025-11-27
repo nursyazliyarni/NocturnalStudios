@@ -27,6 +27,7 @@ Texture::Texture(std::vector<char const*> &image_path_v):texture_info_vector(ima
 				        ((stbi_failure_reason())));
 			continue; //skip this iteration
 		}
+		
 		logger.log("Texture "+std::string(image_path_v[index])+" loads successfully");
 
 		//GLuint/Glenum->unsigned int, Glsizei->int

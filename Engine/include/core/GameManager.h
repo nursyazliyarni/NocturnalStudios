@@ -34,6 +34,7 @@
 class TextureStore;
 class ECS;
 class Animal_Logic;
+class ResourceManager;
 
 struct DrawItem {
     std::string name; std::string item_type;
@@ -63,6 +64,7 @@ struct Scene {
 class TextureStore {
 public:
     GLuint get(const std::string& path); // loads on first use
+    std::string find(const GLuint id) const;
     void clear();
 private:
     std::unordered_map<std::string, GLuint> cache;
@@ -71,12 +73,23 @@ private:
 class GameManager {
 public:
     bool load(const char* prefabsJsonPath, const char* scenesJsonPath, TextureStore& tex);
+    bool saveScene(const Scene& scene, const char* scenesJsonPath, TextureStore& tex);
 
     void requestScene(const std::string& name);
     const std::string& current() const { return currentScene; }
 
     void handleKeyPress(int key); // map numeric keys/ESC to scenes
     void render(Renderer& r, Input& input, GLFWwindow* window, int w, int h) ;
+
+    void renderWithHUD(Renderer& r,
+        Input& input,
+        GLFWwindow* window,
+        int w, int h,
+        double dt,
+        ResourceManager& resourceManager,
+        bool showFPS);
+
+    void imGUIlessRender(Renderer& r, Input& input, GLFWwindow* window, int w, int h);
 
     bool handleClick(float nx, float ny);  // mouse click in normalized coords
     bool popQuitRequested();               // returns & clears quit flag

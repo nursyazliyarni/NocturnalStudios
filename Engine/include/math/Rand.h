@@ -20,7 +20,10 @@
 #include <cstdlib>  // For rand() and srand()
 #include <ctime>    // For time()
 
-bool seeded = false;
+namespace {
+	static bool seeded = false;
+}
+
 template <typename T>
 T Random() {
 	static_assert(std::is_arithmetic_v<T>, "T must be an arithmetic type.");
