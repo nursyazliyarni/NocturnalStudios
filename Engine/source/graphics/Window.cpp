@@ -15,6 +15,8 @@
 #include <GLFW/glfw3.h>
 #include <cstdio>
 
+
+
 Window::~Window() { destroy(); }
 
 bool Window::create(const WindowDesc& desc) {

@@ -51,11 +51,9 @@
 #include <ctime>
 
 
+
+
 extern void Prefab_SetTextureLookup(std::function<int(const std::string&)>);
-
-
-
-
 
 
 // --- Very simple random drift for any entity with AI + Physics (no fancy RNG) ---
