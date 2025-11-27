@@ -244,37 +244,37 @@ bool GameManager::load(const char* prefabsPath, const char* scenesPath, TextureS
     }
 	//temp: add a flamingo entity with sprite animation to ECS
     {
-        EntityID flamingo = ecs_.createEntity();
+        //EntityID flamingo = ecs_.createEntity();
 
-        ecs_.addComponent<Transform>(flamingo, Transform{});
-        ecs_.addComponent<ImageRenderer>(flamingo, ImageRenderer{});
-        ecs_.addComponent<SpriteAnimationComponent>(flamingo, SpriteAnimationComponent{});
+        //ecs_.addComponent<Transform>(flamingo, Transform{});
+        //ecs_.addComponent<ImageRenderer>(flamingo, ImageRenderer{});
+        //ecs_.addComponent<SpriteAnimationComponent>(flamingo, SpriteAnimationComponent{});
 
-        auto* t = ecs_.getComponent<Transform>(flamingo);
-        auto* img = ecs_.getComponent<ImageRenderer>(flamingo);
-        auto* anim = ecs_.getComponent<SpriteAnimationComponent>(flamingo);
+        //auto* t = ecs_.getComponent<Transform>(flamingo);
+        //auto* img = ecs_.getComponent<ImageRenderer>(flamingo);
+        //auto* anim = ecs_.getComponent<SpriteAnimationComponent>(flamingo);
 
-        t->position = { 0.5f, 0.5f };
-        t->scale = { 0.25f, 0.25f };
+        //t->position = { 0.5f, 0.5f };
+        //t->scale = { 0.25f, 0.25f };
 
-        img->isVisible = true;
-        img->textureID = tex.get("assets/textures/flamingo_spritesheet.png");
+        //img->isVisible = true;
+        //img->textureID = tex.get("assets/textures/flamingo_spritesheet.png");
 
-        //Define an animation sequence
-        SpriteAnimationComponent::Animation idle;
-        idle.frames = 5;
-        idle.frameTime = 0.12f;
-        idle.loop = true;
-        idle.spritePath = "assets/textures/flamingo_spritesheet.png";
-        idle.sheetColumns = 5;
-        idle.sheetRows = 1;
+        ////Define an animation sequence
+        //SpriteAnimationComponent::Animation idle;
+        //idle.frames = 5;
+        //idle.frameTime = 0.12f;
+        //idle.loop = true;
+        //idle.spritePath = "assets/textures/flamingo_spritesheet.png";
+        //idle.sheetColumns = 5;
+        //idle.sheetRows = 1;
 
-        anim->animations["idle"] = idle;
-        anim->currentAnim = "idle";
-        anim->playing = true;
-        anim->currentFrame = 0;
-        anim->sheetColumns = 5;
-        anim->sheetRows = 1;
+        //anim->animations["idle"] = idle;
+        //anim->currentAnim = "idle";
+        //anim->playing = true;
+        //anim->currentFrame = 0;
+        //anim->sheetColumns = 5;
+        //anim->sheetRows = 1;
     }
 
 

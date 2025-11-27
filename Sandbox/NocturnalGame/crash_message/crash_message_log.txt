@@ -83,3 +83,4 @@
 [24-11-2025] [02:28:06] [CRASH_MESSAGE] Program crash due to abort signal - std::abort() or failed assert()
 [24-11-2025] [02:37:13] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
 [24-11-2025] [02:38:53] [CRASH_MESSAGE] Failed to load default audio soundFile not found.
+[27-11-2025] [13:12:14] [CRASH_MESSAGE] Failed to load default audio soundFile not found.

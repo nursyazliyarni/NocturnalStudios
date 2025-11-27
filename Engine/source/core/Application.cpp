@@ -50,13 +50,7 @@
 #include <cstdlib>
 #include <ctime>
 
-
 extern void Prefab_SetTextureLookup(std::function<int(const std::string&)>);
-
-
-
-
-
 
 // --- Very simple random drift for any entity with AI + Physics (no fancy RNG) ---
 static void UpdateRandomDrift(ECS& ecs, double dt) {
@@ -147,11 +141,6 @@ static void UpdateRandomDrift(ECS& ecs, double dt) {
 		t->position.y() = ny;
 	}
 }
-
-
-
-
-
 
 namespace {
 	constexpr float TWO_PI = 2.0f * glm::pi<float>();
@@ -360,16 +349,8 @@ void Application::init() {
 
 	prefabManager = std::make_unique<PrefabManager>(*ecs);
 	prefabManager->Load_Prefab(prefabTestPath.c_str());
-	/*prefabManager->CreateEntityFromPrefab(prefabTestPath, "main_menu_button", "play_button");
-	prefabManager->CreateEntityFromPrefab(prefabTestPath, "main_menu_button", "load_button");
-	prefabManager->CreateEntityFromPrefab(prefabTestPath, "main_menu_button", "setting_button");
-	prefabManager->CreateEntityFromPrefab(prefabTestPath, "main_menu_button", "quit_button");
-	prefabManager->CreateEntityFromPrefab(prefabTestPath, "food", "owl_food");
-	prefabManager->CreateEntityFromPrefab(prefabTestPath, "animal", "flamingo");
-	prefabManager->CreateEntityFromPrefab(prefabTestPath, "firefly", "firefly");*/
-
+	//prefabManager->CreateEntityFromPrefab(prefabTestPath, "main_menu_button", "play_button");
 	
-	//logger.log("Created animal entity with ID: " + std::to_string(animal) + " and " + std::to_string(animal_2));
     textShader = std::make_unique<Shader>(textShaderVertexPath.c_str(), textShaderFragmentPath.c_str());
 
     // Wire text shader into the renderer (renderer controls projection per-viewport)
@@ -436,35 +417,9 @@ int Application::run() {
 
 		if (ecs) UpdateRandomDrift(*ecs, dt);
 
-
-
-
 		// Debug: log firefly state twice per second to confirm it's updating
 		static double dbgAccum = 0.0;
 		dbgAccum += dt;
-		/*if (dbgAccum > 0.5 && ecs) {
-			dbgAccum = 0.0;
-			EntityID ff = ecs->findEntityByName("firefly_1");
-			if (ff != INVALID_ENTITY_ID) {
-				auto* t = ecs->getComponent<Transform>(ff);
-				auto* pc = ecs->getComponent<PhysicsComponent>(ff);
-				auto* ai = ecs->getComponent<AIComponent>(ff);
-				if (t && pc && ai) {
-					logger.log(
-						"FF pos=(" + std::to_string(t->position.x()) + "," + std::to_string(t->position.y()) + ")"
-						+ " vel=(" + std::to_string(pc->velocity.x()) + "," + std::to_string(pc->velocity.y()) + ")"
-					);
-				}
-				else {
-					logger.log("firefly_1 missing component(s): "
-						+ std::string(t ? "" : "Transform ")
-						+ std::string(pc ? "" : "Physics ")
-						+ std::string(ai ? "" : "AI "));
-				}
-			}*/
-
-
-
 
 		if (dbgAccum > 0.5 && ecs) {
 			dbgAccum = 0.0;
@@ -479,22 +434,6 @@ int Application::run() {
 			// else: stay quiet when not in Owl scene
 		}
 
-
-
-		//	else {
-		//		logger.log("firefly_1 not found");
-		//	}
-		//}
-
-
-
-
-
-
-
-		/*for (int k = GLFW_KEY_1; k <= GLFW_KEY_9; ++k)
-			if (inputSystem->WasPressed(k))
-				gsm->handleKeyPress(k);*/
 		if (!gsm || !gsm->isPaused()) {
 			for (int k = GLFW_KEY_1; k <= GLFW_KEY_9; ++k)
             	if (inputSystem->WasPressed(k))

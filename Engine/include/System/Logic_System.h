@@ -4,7 +4,7 @@
 #include "ECS/ECS.h"
 
 struct AnimalLogicComponent {
-    Animal_Logic logic;
+    //Animal_Logic logic;
 };
 
 // ==================== ECS SYSTEM CLASS ====================
