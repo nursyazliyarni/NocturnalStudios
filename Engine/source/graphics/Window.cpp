@@ -14,6 +14,8 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <cstdio>
+#include <vector>
+#include <iostream>
 
 Window::~Window() { destroy(); }
 
@@ -54,6 +56,11 @@ bool Window::create(const WindowDesc& desc) {
     } else {
         m_isFullscreen = false;
     }
+
+	//enable file drop callback
+    glfwSetWindowUserPointer(m_win, this);
+    glfwSetDropCallback(m_win, Window::glfwDropCallback);
+
     return true;
 }
 
@@ -125,5 +132,29 @@ void Window::setFullscreen(bool fs) {
 
 void Window::toggleFullscreen() {
     setFullscreen(!m_isFullscreen);
+}
+
+std::vector<std::string> Window::consumeDroppedFiles()
+{
+    std::vector<std::string> out;
+    out.swap(m_droppedFiles);   //move & clear internal vector
+    return out;
+}
+
+void Window::glfwDropCallback(GLFWwindow* win, int count, const char** paths)
+{
+    Window* self = static_cast<Window*>(glfwGetWindowUserPointer(win));
+    if (!self) return;
+    self->onFilesDropped(count, paths);
+}
+
+void Window::onFilesDropped(int count, const char** paths)
+{
+    std::cout << "[Window] onFilesDropped: count = " << count << "\n";
+    for (int i = 0; i < count; i++)
+    {
+        if (paths[i])
+            m_droppedFiles.emplace_back(paths[i]);
+    }
 }
 

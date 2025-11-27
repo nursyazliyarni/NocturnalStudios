@@ -20,6 +20,7 @@
 
 #pragma once
 #include <string>
+#include <vector>
 
 struct GLFWwindow; // fwd
 
@@ -46,6 +47,8 @@ struct WindowDesc {
 class Window {
 public:
     Window() = default;
+    Window(const Window&) = delete;
+    Window& operator=(const Window&) = delete;
     ~Window();
 
     /**
@@ -101,6 +104,9 @@ public:
      */
     const WindowDesc& desc() const { return m_desc; }
 
+
+    std::vector<std::string> consumeDroppedFiles(); //retrieve any files dropped onto the window
+
     // Size queries
     /**
      * getWindowSize - retrieve the logical client area size in screen coordinates.
@@ -143,4 +149,8 @@ private:
 
     bool m_isFullscreen{ false };
     int  m_windowedX{ 100 }, m_windowedY{ 100 }, m_windowedW{ 1280 }, m_windowedH{ 720 };
+
+    std::vector<std::string> m_droppedFiles;
+    static void glfwDropCallback(GLFWwindow* win, int count, const char** paths);
+    void onFilesDropped(int count, const char** paths);
 };

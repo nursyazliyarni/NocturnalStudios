@@ -102,6 +102,9 @@ public:
 	void saveSceneSnapshot();
 	void restoreSceneSnapshot();
 
+	//handle external file drops into the window
+	void handleExternalFileDrops();
+
 private:
 	bool m_showFPS = false;
 	bool m_dockingLayoutInitialized = false;
