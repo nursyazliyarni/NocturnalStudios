@@ -97,6 +97,9 @@
 
 #include "core/Application.h"
 
+
+
+
 Logger logger;
 int main() {
     Application app;
