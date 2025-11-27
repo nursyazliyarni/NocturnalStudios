@@ -178,7 +178,9 @@ std::vector<std::pair<EntityID, EntityID>> CollisionSystem::BroadphaseCollision(
 	gridtracker.clear();
 	//neeed to check how big grid is in relation to aabb box
 
-	for (EntityID e : ecs.getAllEntities())
+	for (EntityID e : ecs.getAllEntities()) {
+
+	}
 
 
 

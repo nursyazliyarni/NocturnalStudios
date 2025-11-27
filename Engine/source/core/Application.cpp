@@ -20,7 +20,7 @@
 
 	Secondary Authod
 		Xiang Yang
-		- FBO
+		- Full Screen mode toggle
 
 	Secondary Author:
 		Chang Qi Xuan Celest (35%)
@@ -171,6 +171,9 @@ namespace {
 	static void App_OnGlfwIconify(GLFWwindow* window, int iconified) {
 		if (s_App) s_App->onIconifyChanged(iconified == GLFW_TRUE);
 	}
+	static void App_OnGlfwDrop(GLFWwindow* window, int count, const char** paths) {
+		if (s_App) s_App->onFilesDropped(count, paths);
+	}
 }
 
 //Application::Application() = default;
@@ -252,6 +255,7 @@ void Application::init() {
 	s_App = this;
 	glfwSetWindowFocusCallback(m_window.handle(), App_OnGlfwFocus);
 	glfwSetWindowIconifyCallback(m_window.handle(), App_OnGlfwIconify);
+	glfwSetDropCallback(m_window.handle(), App_OnGlfwDrop);
 
     glViewport(0, 0, wd.width, wd.height);
     glDisable(GL_DEPTH_TEST);
@@ -552,4 +556,33 @@ void Application::shutdown() {
 
 	m_window.destroy();
 	isInitialized = false;
+}
+
+void Application::onFilesDropped(int count, const char** paths) {
+    if (!resourceManager) return;
+    int loadedAudio = 0;
+    int loadedTex = 0;
+    for (int i = 0; i < count; ++i) {
+        std::filesystem::path p{ paths[i] };
+        if (!p.has_extension()) continue;
+        std::string ext = p.extension().string();
+        std::transform(ext.begin(), ext.end(), ext.begin(), [](unsigned char c){ return static_cast<char>(std::tolower(c)); });
+        std::string stem = p.stem().string();
+        std::string full = p.string();
+        // Accept textures
+        if (ext == ".png" || ext == ".jpg" || ext == ".jpeg" || ext == ".bmp" || ext == ".tga" || ext == ".gif" || ext == ".hdr" || ext == ".psd") {
+            resourceManager->loadTexture(stem, full);
+            ++loadedTex;
+        }
+        // Accept audio
+        else if (ext == ".wav" || ext == ".ogg" || ext == ".mp3" || ext == ".flac" || ext == ".aiff" || ext == ".fsb") {
+            resourceManager->loadAudio(stem, full);
+            ++loadedAudio;
+        }
+    }
+    if (loadedTex || loadedAudio) {
+        logger.log("[DragDrop] Added " + std::to_string(loadedTex) + " textures, " + std::to_string(loadedAudio) + " audio assets.");
+    } else {
+        logger.warning("[DragDrop] No supported assets dropped.");
+    }
 }
