@@ -78,7 +78,7 @@ private:
 class GameManager {
 public:
     bool load(const char* prefabsJsonPath, const char* scenesJsonPath, TextureStore& tex);
-    bool saveScene(const Scene& scene, const char* scenesJsonPath, TextureStore& tex);
+    bool saveScene( std::string scenename, const char* scenesJsonPath, TextureStore& tex);
 
     void requestScene(const std::string& name);
     const std::string& current() const { return currentScene; }
@@ -158,6 +158,9 @@ private:
     //std::unordered_map<std::string, Camera2D> cameras_; // one camera per scene
 
     std::function<void(const std::string&)> onSceneChanged;
+   
+    void writeAllComponentsToJSON(EntityID id,rapidjson::Value& overridesObj,rapidjson::Document::AllocatorType& alloc);
+
 
     AnimationSystem animationSystem_;
 };
