@@ -698,6 +698,11 @@ void ImGuiManager::showEntityListUI(/* Maybe an enum of paramEntityType, Maybe a
 			newItem.y = 0.5f;
 			newItem.angle = 0.0f; // no rotation
 
+			// Create a matching ECS entity for this object
+			ECS& ecs = gsm.getECS();
+			EntityID e = ecs.createEntity();
+			newItem.entityID = e;
+
 			// Add it to the current scene
 			sceneMut->items.push_back(newItem);
 			selectedEntityType = static_cast<unsigned int>(sceneMut->items.size() - 1);
@@ -838,129 +843,186 @@ void ImGuiManager::showTransformUI(/* A reference to a vector of object list obj
 		}
 	}*/
 
-	// --- Audio Emitters Control -------------------------------------------------
-    ImGui::Separator();
-    if (ImGui::CollapsingHeader("Audio Emitters", ImGuiTreeNodeFlags_DefaultOpen))
-    {
-        ECS& ecs = gsm.getECS();
+	// --- Audio for this object -------------------------------------------------
+	ImGui::Separator();
+	if (ImGui::CollapsingHeader("Audio", ImGuiTreeNodeFlags_DefaultOpen))
+	{
+		ECS& ecs = gsm.getECS();
 
-        // Gather audio emitter entities
-        std::vector<EntityID> audioEntities;
-        audioEntities.reserve(32);
-        for (EntityID e : ecs.getAllEntities()) {
-            if (ecs.getComponent<AudioData>(e))
-                audioEntities.push_back(e);
-        }
+		// Get the ECS entity linked 
+		EntityID eid = item.entityID;
 
-        if (audioEntities.empty()) {
-            ImGui::TextDisabled("No audio emitter entities found.");
-        } else {
-            static EntityID selectedAudioEntity = (EntityID)0;
-            // Validate selection
-            bool selectionValid = false;
-            for (auto e : audioEntities) if (e == selectedAudioEntity) { selectionValid = true; break; }
-            if (!selectionValid) selectedAudioEntity = audioEntities.front();
+		// If entityID is invalid, create automatically
+		if (eid == INVALID_ENTITY_ID)
+		{
+			eid = ecs.createEntity();
+			item.entityID = eid;
+			logger.log("[Inspector] Auto-created ECS entity for " + item.name);
+		}
 
-            // Emitter selector
-            if (ImGui::BeginCombo("Emitter Entity", std::to_string(selectedAudioEntity).c_str())) {
-                for (auto e : audioEntities) {
-                    bool sel = (e == selectedAudioEntity);
-                    if (ImGui::Selectable(std::to_string(e).c_str(), sel))
-                        selectedAudioEntity = e;
-                    if (sel) ImGui::SetItemDefaultFocus();
-                }
-                ImGui::EndCombo();
-            }
+		// Ensure the entity has an AudioData component
+		AudioData* ad = ecs.getComponent<AudioData>(eid);
+		if (!ad)
+		{
+			ImGui::TextDisabled("No AudioData on this object.");
+			if (ImGui::Button("Add AudioData component"))
+			{
+				ecs.addComponent<AudioData>(eid, AudioData{});
+				ad = ecs.getComponent<AudioData>(eid);
+				logger.log("[Inspector] Added AudioData to entity " + std::to_string(eid));
+			}
+		}
 
-            AudioData* ad = ecs.getComponent<AudioData>(selectedAudioEntity);
-            if (!ad) {
-                ImGui::TextDisabled("Selected entity lost its AudioData component.");
-            } else if (ad->audios.empty()) {
-                ImGui::TextDisabled("Emitter has no tracks.");
-            } else {
-                ImGui::Text("Tracks:");
-                ImGui::Separator();
+		if (!ad)
+		{
+			// Could not add / still null
+			ImGui::Separator();
+			ImGui::End();
+			return;
+		}
 
-                // Iterate tracks
-                for (std::size_t i = 0; i < ad->audios.size(); ++i) {
-                    auto& track = ad->audios[i];
-                    ImGui::PushID((int)i);
+		// Build the audio resource list from ResourceManager
+		std::vector<ResourceID> audioIDs;
+		std::vector<std::string> audioNames;
+		audioIDs.reserve(resourceManager.getAudios().size());
+		audioNames.reserve(resourceManager.getAudios().size());
 
-                    // Display basic info
-                    ImGui::Text("%s (RID:%u)", track.name.empty() ? "<unnamed>" : track.name.c_str(), track.resourceID);
-                    ImGui::SameLine();
-                    bool loopFlag = track.loop;
-                    ImGui::Checkbox("Loop", &loopFlag);
-                    if (loopFlag != track.loop) {
-                        track.loop = loopFlag;
-                        // Optional: if you want loop change to apply immediately, restart instance after modification
-                    }
+		for (auto const& kv : resourceManager.getAudios()) {
+			audioIDs.push_back(kv.first);
+			audioNames.push_back(kv.second.getKey());
+		}
 
-                    // Instance lookup
-                    AudioInstanceID instanceID = 0;
-                    bool hasInstance = false;
-                    auto it = activeInstances.find(track.resourceID);
-                    if (it != activeInstances.end()) {
-                        instanceID = it->second;
-                        hasInstance = true;
-                    }
+		if (audioNames.empty()) {
+			ImGui::TextDisabled("No audio assets loaded.");
+		}
+		else {
+			static int newTrackIndex = 0;
+			if (newTrackIndex >= (int)audioNames.size())
+				newTrackIndex = 0;
 
-                    // Play/Pause/Restart buttons
-                    if (ImGui::Button(hasInstance ? "Pause" : "Play")) {
-                        if (hasInstance) {
-                            audioSystem.pauseSound(instanceID);
-                        } else {
-                            // Create (starts paused per your API) then resume
-                            auto opt = audioSystem.createAudioInstance(track, selectedAudioEntity);
-                            if (opt) {
-                                activeInstances[track.resourceID] = *opt;
-                                audioSystem.resumeSound(*opt);
-                            } else {
-                                logger.error("[Inspector] Failed to create audio instance for RID " + std::to_string(track.resourceID));
-                            }
-                        }
-                    }
-                    ImGui::SameLine();
-                    if (ImGui::Button("Resume")) {
-                        if (hasInstance) audioSystem.resumeSound(instanceID);
-                    }
-                    ImGui::SameLine();
-                    if (ImGui::Button("Restart")) {
-                        if (hasInstance) audioSystem.restartSound(instanceID);
-                    }
+			ImGui::Text("Add audio track to this object:");
+			if (ImGui::BeginCombo("Audio Asset", audioNames[newTrackIndex].c_str())) {
+				for (int i = 0; i < (int)audioNames.size(); ++i) {
+					bool sel = (i == newTrackIndex);
+					if (ImGui::Selectable(audioNames[i].c_str(), sel))
+						newTrackIndex = i;
+					if (sel) ImGui::SetItemDefaultFocus();
+				}
+				ImGui::EndCombo();
+			}
 
-                    // Volume slider
-                    float currentVol = hasInstance ? audioSystem.getVolume(instanceID) : track.volume;
-                    if (ImGui::SliderFloat("Volume", &currentVol, 0.0f, 1.0f)) {
-                        if (hasInstance) {
-                            audioSystem.modifyVolume(instanceID, currentVol);
-                        }
-                        track.volume = currentVol; // Keep JSON-serializable state coherent
-                    }
+			if (ImGui::Button("Attach Selected Audio")) {
+				ResourceID rid = audioIDs[newTrackIndex];
 
-                    // Pitch (optional if supported)
-                    float pitchVal = track.pitch;
-                    if (ImGui::DragFloat("Pitch", &pitchVal, 0.01f, 0.25f, 4.0f, "%.2f")) {
-                        track.pitch = pitchVal;
-                        // If runtime pitch control exists, apply here (not shown in AudioSystem public API snippet)
-                    }
+				AudioData::IndividualAudioData track{};
+				track.resourceID = rid;
+				track.name = audioNames[newTrackIndex];
+				track.loop = false;
+				track.group = AudioData::IndividualAudioData::Group::SFX; // or Music
+				track.volume = 1.0f;
+				track.pitch = 1.0f;
 
-                    ImGui::Separator();
-                    ImGui::PopID();
-                }
+				ad->audios.push_back(track);
 
-                // Global controls (BGM/SFX group pause/resume) if desired
-                if (ImGui::Button("Pause All BGM")) audioSystem.pauseAllBGM();
-                ImGui::SameLine();
-                if (ImGui::Button("Resume All BGM")) audioSystem.resumeAllBGM();
-                ImGui::SameLine();
-                if (ImGui::Button("Pause All SFX")) audioSystem.pauseAllSFX();
-                ImGui::SameLine();
-                if (ImGui::Button("Resume All SFX")) audioSystem.resumeAllSFX();
-            }
-        }
-    }
-    // --- End Audio Emitters -----------------------------------------------------
+				logger.log("[Inspector] Attached audio '" + track.name +
+					"' to object " + item.name);
+			}
+		}
+
+		ImGui::Separator();
+		ImGui::Text("Tracks on this object:");
+
+		if (ad->audios.empty()) {
+			ImGui::TextDisabled("No tracks attached.");
+		}
+		else {
+			for (std::size_t i = 0; i < ad->audios.size(); ++i) {
+				auto& track = ad->audios[i];
+				ImGui::PushID((int)i);
+
+				ImGui::Text("%s (RID:%u)",
+					track.name.empty() ? "<unnamed>" : track.name.c_str(),
+					track.resourceID);
+
+				bool loopFlag = track.loop;
+				ImGui::Checkbox("Loop", &loopFlag);
+				track.loop = loopFlag;
+
+				// Instance lookup for playback
+				AudioInstanceID instanceID = 0;
+				bool hasInstance = false;
+				auto it = activeInstances.find(track.resourceID);
+				if (it != activeInstances.end()) {
+					instanceID = it->second;
+					hasInstance = true;
+				}
+
+				if (ImGui::Button(hasInstance ? "Pause" : "Play")) {
+					if (hasInstance) {
+						audioSystem.pauseSound(instanceID);
+					}
+					else {
+						auto opt = audioSystem.createAudioInstance(track, eid);
+						if (opt) {
+							activeInstances[track.resourceID] = *opt;
+							audioSystem.resumeSound(*opt);
+						}
+						else {
+							logger.error("[Inspector] Failed to create instance for RID " +
+								std::to_string(track.resourceID));
+						}
+					}
+				}
+				ImGui::SameLine();
+				if (ImGui::Button("Resume") && hasInstance) {
+					audioSystem.resumeSound(instanceID);
+				}
+				if (ImGui::Button("Restart")) {
+					auto it = activeInstances.find(track.resourceID);
+					if (it != activeInstances.end()) {
+						audioSystem.restartSound(it->second);   // reset audio to start
+						audioSystem.resumeSound(it->second);    // play it again
+					}
+				}
+
+
+				float currentVol = hasInstance ? audioSystem.getVolume(instanceID)
+					: track.volume;
+				if (ImGui::SliderFloat("Volume", &currentVol, 0.0f, 1.0f)) {
+					if (hasInstance)
+						audioSystem.modifyVolume(instanceID, currentVol);
+					track.volume = currentVol;
+				}
+
+				float pitchVal = track.pitch;
+				if (ImGui::DragFloat("Pitch", &pitchVal, 0.01f, 0.25f, 4.0f, "%.2f")) {
+					track.pitch = pitchVal;
+					// Apply runtime pitch
+				}
+
+				if (ImGui::Button("Remove Track"))
+				{
+					// If this track has an active instance, stop/pause it first
+					auto itInst = activeInstances.find(track.resourceID);
+					if (itInst != activeInstances.end()) {
+						audioSystem.pauseSound(itInst->second);
+						activeInstances.erase(itInst);
+					}
+
+					// Now remove the track data from this object
+					ad->audios.erase(ad->audios.begin() + static_cast<std::ptrdiff_t>(i));
+
+					ImGui::PopID();
+					break;      // vector changed, break out of the loop
+				}
+
+
+				ImGui::Separator();
+				ImGui::PopID();
+			}
+		}
+	}
+
 
     ImGui::End();
 }
@@ -1278,9 +1340,12 @@ void ImGuiManager::showAssetsBrowserUI() {
 				ImGui::SameLine();
 				if (ImGui::Button("Pause")) {
 					auto it = activeInstances.find(rid);
-					if (it != activeInstances.end())
-						audioSystem.pauseSound(it->second);
+					if (it != activeInstances.end()) {
+						audioSystem.pauseSound(it->second);  
+						activeInstances.erase(it);
+					}
 				}
+
 
 				ImGui::SameLine();
 				if (ImGui::Button("Stop")) {

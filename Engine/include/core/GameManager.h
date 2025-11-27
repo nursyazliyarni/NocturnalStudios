@@ -42,6 +42,8 @@ struct DrawItem {
     float health_bar, hunger_bar, sanity_bar;
     float slower_decreasing_rate, normal_decreasing_rate, faster_decreasing_rate, penalty_decreasing_rate;
     bool still_alive, is_draggable, is_dragging;
+
+    EntityID entityID = INVALID_ENTITY_ID;
 };
 
 struct ClickRegion {
