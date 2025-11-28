@@ -81,7 +81,6 @@ private:
 
 class GameManager {
 public:
-
     bool checkForSceneChange();
 
     bool load(const char* prefabsJsonPath, const char* scenesJsonPath, TextureStore& tex);
