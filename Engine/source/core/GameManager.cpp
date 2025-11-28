@@ -103,6 +103,16 @@ static std::string toAssetsPath(const std::string& p) {
 struct PrefabDef { float w = 0.2f, h = 0.2f, angle = 0.0f; };
 
 //  GameManager 
+bool GameManager::checkForSceneChange() {
+    if (scene_changed_since_click)
+    {
+        scene_changed_since_click = false;
+        return true;
+    }
+    else return false;
+}
+
+
 bool GameManager::saveScene( std::string scenename, const char* scenesJsonPath, TextureStore& tex) {
     if (scenename == "___currscene___")scenename = currentScene;
 
@@ -368,6 +378,7 @@ bool GameManager::load(const char* prefabsPath, const char* scenesPath, TextureS
 void GameManager::requestScene(const std::string& name) {
     if (!scenes.count(name)) return;
     currentScene = name;
+    scene_changed_since_click = true;
     if (onSceneChanged) onSceneChanged(currentScene);
 }
 

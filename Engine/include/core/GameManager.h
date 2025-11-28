@@ -81,6 +81,8 @@ private:
 
 class GameManager {
 public:
+    bool checkForSceneChange();
+
     bool load(const char* prefabsJsonPath, const char* scenesJsonPath, TextureStore& tex);
     bool saveScene( std::string scenename, const char* scenesJsonPath, TextureStore& tex);
 
@@ -178,6 +180,7 @@ private:
    
     void writeAllComponentsToJSON(EntityID id,rapidjson::Value& overridesObj,rapidjson::Document::AllocatorType& alloc);
 
+    bool scene_changed_since_click{ false };
 
     AnimationSystem animationSystem_;
 
