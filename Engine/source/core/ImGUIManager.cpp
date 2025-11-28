@@ -876,7 +876,28 @@ void ImGuiManager::showTransformUI(/* A reference to a vector of object list obj
 	ImGui::Separator();
 	if (ImGui::CollapsingHeader("Collision", ImGuiTreeNodeFlags_DefaultOpen))
 	{
-		ImGui::Checkbox("Has Collider", &item.hasCollider);
+		//if collider is enabled but has never been sized, auto-init to sprite
+		if (item.hasCollider && (item.colW == 0.0f || item.colH == 0.0f))
+		{
+			item.colOffsetX = 0.0f;
+			item.colOffsetY = 0.0f;
+			item.colW = item.w;
+			item.colH = item.h;
+		}
+
+		//checkbox (can still turn collider on/off)
+		bool prevHasCollider = item.hasCollider;
+		if (ImGui::Checkbox("Has Collider", &item.hasCollider))
+		{
+			if (item.hasCollider && !prevHasCollider &&
+				(item.colW == 0.0f || item.colH == 0.0f))
+			{
+				item.colOffsetX = 0.0f;
+				item.colOffsetY = 0.0f;
+				item.colW = item.w;
+				item.colH = item.h;
+			}
+		}
 
 		if (item.hasCollider)
 		{
@@ -886,7 +907,8 @@ void ImGuiManager::showTransformUI(/* A reference to a vector of object list obj
 			ImGui::DragFloat("Collider Height", &item.colH, 0.01f, 0.0f, 2.0f);
 
 			if (ImGui::Button("Reset Collider to Sprite")) {
-				item.colOffsetX = item.colOffsetY = 0.0f;
+				item.colOffsetX = 0.0f;
+				item.colOffsetY = 0.0f;
 				item.colW = item.w;
 				item.colH = item.h;
 			}

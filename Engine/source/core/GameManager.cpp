@@ -42,6 +42,33 @@
 
 #include <functional>
 
+
+namespace {
+    //build collider AABB in screen-pixel space from DrawItem
+    AABB BuildColliderAABB(const DrawItem& di, int screenW, int screenH)
+    {
+        if (!di.hasCollider) {
+            //zero-size box (won't be hit)
+            return AABB(Vector2D(0.f, 0.f), Vector2D(0.f, 0.f));
+        }
+
+        //center of collider in normalized coords
+        float cxNorm = di.x + di.colOffsetX;
+        float cyNorm = di.y + di.colOffsetY;
+
+        //size in pixels
+        float wPix = di.colW * screenW;
+        float hPix = di.colH * screenH;
+
+        //convert to pixel center
+        float cxPix = cxNorm * screenW;
+        float cyPix = cyNorm * screenH;
+        Vector2D pos(cxPix - wPix * 0.5f, cyPix - hPix * 0.5f);
+        Vector2D size(wPix, hPix);
+        return AABB(pos, size);
+    }
+}
+
 //  TextureStore 
 static GLuint loadGLTexture(const std::string& path) {
     int w, h, n;
@@ -485,63 +512,70 @@ void GameManager::render(Renderer& r, Input& input, GLFWwindow* window, int w, i
             Cam2D_Apply(currentScene, px, py, pw, ph, w, h);
             r.texturedTri(di.tex, px, py, pw, ph);
 
-            // --- COLLIDER VISUALIZATION ---
-            if (di.hasCollider)
+            // --- Collider outline (debug) ---
+            if (/*Debug::Drawer::Instance().IsActive() &&*/ di.hasCollider)
             {
-                float colX = di.x * w + di.colOffsetX * w;
-                float colY = di.y * h + di.colOffsetY * h;
-                float colW = di.colW * w;
-                float colH = di.colH * h;
+                //collider center in NORMALIZED coords (same as di.x/di.y)
+                float cxNorm = di.x + di.colOffsetX;
+                float cyNorm = di.y + di.colOffsetY;
 
-                // convert collider location from center to top-left
-                float cx = colX + colW * 0.5f;
-                float cy = colY + colH * 0.5f;
+                //collider size in NORMALIZED space
+                float cwNorm = di.colW;
+                float chNorm = di.colH;
 
-                // green rectangle
-                r.rect(cx, cy, colW, colH, 0.0f, 1.0f, 0.0f);
+                //convert to pixels
+                float cw = cwNorm * w;
+                float ch = chNorm * h;
+                float cx = cxNorm * w;
+                float cy = cyNorm * h;
+
+                //apply same camera transform as sprites
+                Cam2D_Apply(currentScene, cx, cy, cw, ch, w, h);
+
+                float left = cx;
+                float bottom = cy;
+
+                //draw a green outline rectangle
+                glPushAttrib(GL_ALL_ATTRIB_BITS);
+                glUseProgram(0);
+                glDisable(GL_TEXTURE_2D);
+                glDisable(GL_DEPTH_TEST);
+                glEnable(GL_BLEND);
+                glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+                glColor3f(0.0f, 1.0f, 0.0f);  // green
+                glBegin(GL_LINE_LOOP);
+                glVertex2f(left,bottom);
+                glVertex2f(left+cw,bottom);
+                glVertex2f(left+cw,bottom+ch);
+                glVertex2f(left,bottom+ch);
+                glEnd();
+
+                glPopAttrib();
             }
-            // --------------------------------
-        }
+            // --- end collider outline ---
 
-        if (di.is_dragging && !duplicate_item) {
-            duplicate_item = std::make_unique<DrawItem>(di);
-        }
+            if (di.is_dragging && !duplicate_item) {
+                duplicate_item = std::make_unique<DrawItem>(di);
+            }
 
-        if (duplicate_item) {
-            r.texturedTri(duplicate_item->tex, duplicate_item->x * w, duplicate_item->y * h, duplicate_item->w * w, duplicate_item->h * h);
-        }
+            if (duplicate_item) {
+                r.texturedTri(duplicate_item->tex, duplicate_item->x * w, duplicate_item->y * h, duplicate_item->w * w, duplicate_item->h * h);
+            }
 
-        //if (!input.isLeftMousePressed(window)) {
-        //    duplicate_item.reset(); //The unique_ptr releases ownership
-        //}
+            //if (!input.isLeftMousePressed(window)) {
+            //    duplicate_item.reset(); //The unique_ptr releases ownership
+            //}
 
-        /*if (Debug::Drawer::Instance().IsActive()) {
-            AABB collider(Vector2D(px, py), Vector2D(pw, ph));
-            Debug::Drawer::Instance().AddRect(
-                collider.pos.x(), collider.pos.y(),
-                collider.size.x(), collider.size.y(),
-                0xFFFF00FF
-            );
-        }*/
-		// --- Debug Draw Collider Box ---
-        if (Debug::Drawer::Instance().IsActive() && di.hasCollider)
-        {
-            float cx = di.x + di.colOffsetX;
-            float cy = di.y + di.colOffsetY;
-
-            float px = cx * w;
-            float py = cy * h;
-
-            float cw = di.colW * w;
-            float ch = di.colH * h;
-
-            Debug::Drawer::Instance().AddRect(
-                px - cw * 0.5f,
-                py - ch * 0.5f,
-                cw,
-                ch,
-                0x00FF00FF //green box
-            );
+            /*if (Debug::Drawer::Instance().IsActive()) {
+                AABB collider(Vector2D(px, py), Vector2D(pw, ph));
+                Debug::Drawer::Instance().AddRect(
+                    collider.pos.x(), collider.pos.y(),
+                    collider.size.x(), collider.size.y(),
+                    0xFFFF00FF
+                );
+            }*/
+            // --- Debug Draw Collider Box ---
         }
     }
 }
@@ -672,7 +706,45 @@ void GameManager :: imGUIlessRender(Renderer& r, Input& input, GLFWwindow* windo
 bool GameManager::handleClick(float nx, float ny) {
     auto it = scenes.find(currentScene);
     if (it == scenes.end()) return false;
-    const Scene& sc = it->second;
+    Scene& sc = it->second;
+
+    //--- Sync click regions from DrawItem colliders ---
+    for (auto& cr : sc.clicks)
+    {
+        //find DrawItem whose name matches click region name
+        DrawItem* diPtr = nullptr;
+
+        for (auto& item : sc.items)
+        {
+            if (item.name == cr.name)
+            {
+                diPtr = &item;
+                break;
+            }
+        }
+
+        //no matching DrawItem=skip
+        if (!diPtr) continue;
+
+        DrawItem& di = *diPtr;
+
+        if (!di.hasCollider)
+            continue;
+
+        //collider center in normalized coordinates
+        float cx = di.x + di.colOffsetX;
+        float cy = di.y + di.colOffsetY;
+
+        float w = di.colW;
+        float h = di.colH;
+
+        //convert collider to click region rect (top-left + size)
+        cr.w = w;
+        cr.h = h;
+        cr.x = cx - w * 0.5f;
+        cr.y = cy - h * 0.5f;
+    }
+    //--- end sync ---
 
     for (const auto& cr : sc.clicks) {
         bool hit = (nx >= cr.x && nx <= cr.x + cr.w && ny >= cr.y && ny <= cr.y + cr.h);
