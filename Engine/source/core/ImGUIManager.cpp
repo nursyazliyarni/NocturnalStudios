@@ -89,11 +89,11 @@ ImGuiManager::ImGuiManager(Window& w, Renderer& r,
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 	io.ConfigDockingWithShift = false;  // Dock without holding Shift
 
-	#ifdef IMGUI_SAVE_LAYOUT
-		io.IniFilename = "editor_layout.ini";  // Save layout
-	#else
-		io.IniFilename = nullptr;  // Don't save layout
-	#endif
+#ifdef IMGUI_SAVE_LAYOUT
+	io.IniFilename = "editor_layout.ini";  // Save layout
+#else
+	io.IniFilename = nullptr;  // Don't save layout
+#endif
 
 	ImGui_ImplGlfw_InitForOpenGL(mainWindow.handle(), /*install_callbacks=*/false);
 	ImGui_ImplOpenGL3_Init("#version 330");
@@ -2234,21 +2234,32 @@ void ImGuiManager::handleViewportPicking(const ImVec2& imgMin,
 	for (int i = static_cast<int>(items.size()) - 1; i >= 0; --i) {
 		const DrawItem& it = items[static_cast<size_t>(i)];
 
-		float halfW = it.w * 0.5f;
-		float halfH = it.h * 0.5f;
+		float minX, maxX, minY, maxY;
 
-		float minX = it.x - halfW;
-		float maxX = it.x + halfW;
-		float minY = it.y - halfH;
-		float maxY = it.y + halfH;
+		if (it.hasCollider && it.colW > 0.0f && it.colH > 0.0f) {
+			// collider is also top-left + size in normalized space
+			minX = it.x + it.colOffsetX;
+			minY = it.y + it.colOffsetY;
+			maxX = minX + it.colW;
+			maxY = minY + it.colH;
+		}
+		else {
+			// sprite rect: top-left (x,y) with width/height
+			minX = it.x;
+			minY = it.y;
+			maxX = it.x + it.w;
+			maxY = it.y + it.h;
+		}
 
 		if (localX >= minX && localX <= maxX &&
 			localY >= minY && localY <= maxY)
 		{
 			hitIndex = i;
-			break;  //first match from the end = top-most
+			break;
 		}
 	}
+
+
 
 	m_hoveredItem = hitIndex;
 
