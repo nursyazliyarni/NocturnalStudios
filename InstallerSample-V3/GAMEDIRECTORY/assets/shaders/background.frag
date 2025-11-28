@@ -5,6 +5,7 @@ out vec4 fragment_RGBA_color;
 uniform sampler2D bg_texture;
 
 void main() {
-    //texture() returns vec4 containing the sampled texel color(RGBA)
-    fragment_RGBA_color = texture(bg_texture, output_Tex_Coord);
+    // Flip the Y coordinate (0 ↔ 1)
+    vec2 uv = vec2(output_Tex_Coord.x, 1.0 - output_Tex_Coord.y);
+    fragment_RGBA_color = texture(bg_texture, uv);
 }

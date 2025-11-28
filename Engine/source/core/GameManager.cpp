@@ -103,7 +103,18 @@ static std::string toAssetsPath(const std::string& p) {
 struct PrefabDef { float w = 0.2f, h = 0.2f, angle = 0.0f; };
 
 //  GameManager 
-bool GameManager::saveScene(const Scene& scene, const char* scenesJsonPath, TextureStore& tex) {
+bool GameManager::saveScene( std::string scenename, const char* scenesJsonPath, TextureStore& tex) {
+    if (scenename == "___currscene___")scenename = currentScene;
+
+    logger.log("Attempting to save scene: " + scenename);
+
+    auto sitr = scenes.find(scenename);
+    if (sitr == scenes.end()) { 
+        logger.log("Scene not found: " + scenename);
+        return false; }
+
+    Scene& scene = sitr->second;
+
     rapidjson::Document doc;
     doc.SetObject();
     auto& alloc = doc.GetAllocator();
@@ -138,14 +149,13 @@ bool GameManager::saveScene(const Scene& scene, const char* scenesJsonPath, Text
                 rapidjson::Value overrides(rapidjson::kObjectType);
                 if (ecs_.findEntityByName(i.name)!=INVALID_ENTITY_ID&&!ecs_.getEntityComponents(ecs_.findEntityByName(i.name)).empty())
                 {
-                    for (ComponentID cis: ecs_.getEntityComponents(ecs_.findEntityByName(i.name)))
-                    {
-                        //ecs_.getco
-                    }
+                    writeAllComponentsToJSON(ecs_.findEntityByName(i.name), overrides, alloc);
                 }
                 entObj.AddMember("overrides", overrides, alloc);
             }
+            entityArray.PushBack(entObj, alloc);
         }
+        doc.AddMember("entities", entityArray, alloc);
     }
 
     FILE* fp = fopen(scenesJsonPath, "wb");
@@ -162,6 +172,9 @@ bool GameManager::load(const char* prefabsPath, const char* scenesPath, TextureS
 
     app = AppState::Menu;   // lock number keys until Play is pressed
     requestedQuit = false;  // (optional) clear quit flag at load
+
+    // Store paths for later reload
+    scenesFilePath = scenesPath;
 
     //  1) read prefab defaults (w,h,angle) 
     std::unordered_map<std::string, PrefabDef> prefabDefaults;
@@ -469,6 +482,23 @@ void GameManager::render(Renderer& r, Input& input, GLFWwindow* window, int w, i
         else {
             Cam2D_Apply(currentScene, px, py, pw, ph, w, h);
             r.texturedTri(di.tex, px, py, pw, ph);
+
+            // --- COLLIDER VISUALIZATION ---
+            if (di.hasCollider)
+            {
+                float colX = di.x * w + di.colOffsetX * w;
+                float colY = di.y * h + di.colOffsetY * h;
+                float colW = di.colW * w;
+                float colH = di.colH * h;
+
+                // convert collider location from center to top-left
+                float cx = colX + colW * 0.5f;
+                float cy = colY + colH * 0.5f;
+
+                // green rectangle
+                r.rect(cx, cy, colW, colH, 0.0f, 1.0f, 0.0f);
+            }
+            // --------------------------------
         }
 
         if (di.is_dragging && !duplicate_item) {
@@ -483,12 +513,32 @@ void GameManager::render(Renderer& r, Input& input, GLFWwindow* window, int w, i
         //    duplicate_item.reset(); //The unique_ptr releases ownership
         //}
 
-        if (Debug::Drawer::Instance().IsActive()) {
+        /*if (Debug::Drawer::Instance().IsActive()) {
             AABB collider(Vector2D(px, py), Vector2D(pw, ph));
             Debug::Drawer::Instance().AddRect(
                 collider.pos.x(), collider.pos.y(),
                 collider.size.x(), collider.size.y(),
                 0xFFFF00FF
+            );
+        }*/
+		// --- Debug Draw Collider Box ---
+        if (Debug::Drawer::Instance().IsActive() && di.hasCollider)
+        {
+            float cx = di.x + di.colOffsetX;
+            float cy = di.y + di.colOffsetY;
+
+            float px = cx * w;
+            float py = cy * h;
+
+            float cw = di.colW * w;
+            float ch = di.colH * h;
+
+            Debug::Drawer::Instance().AddRect(
+                px - cw * 0.5f,
+                py - ch * 0.5f,
+                cw,
+                ch,
+                0x00FF00FF //green box
             );
         }
     }
@@ -714,4 +764,105 @@ void GameManager::resumeGame() {
     if (app == AppState::Paused) {
         app = AppState::Playing;
     }
+}
+
+bool GameManager::reloadCurrentScene(TextureStore& tex) {
+    if (currentScene.empty() || scenesFilePath.empty()) {
+        logger.warning("[GameManager] Cannot reload: no current scene");
+        return false;
+    }
+
+    std::string sceneToReload = currentScene;
+
+    logger.log("[GameManager] Reloading scene: " + sceneToReload);
+
+    // Read the entire scenes file again
+    std::string jsonContent;
+    if (!readFile(scenesFilePath.c_str(), jsonContent)) {
+        logger.error("[GameManager] Failed to read scenes file for reload");
+        return false;
+    }
+
+    rapidjson::Document d;
+    d.Parse(jsonContent.c_str());
+    if (d.HasParseError() || !d.IsObject()) {
+        logger.error("[GameManager] Failed to parse scenes file for reload");
+        return false;
+    }
+
+    // Find the current scene in the JSON
+    if (!d.HasMember("scenes") || !d["scenes"].IsObject()) {
+        logger.error("[GameManager] No scenes object in JSON");
+        return false;
+    }
+
+    const auto& jsScenes = d["scenes"];
+    if (!jsScenes.HasMember(sceneToReload.c_str())) {
+        logger.error("[GameManager] Scene not found: " + sceneToReload);
+        return false;
+    }
+
+    const auto& jsS = jsScenes[sceneToReload.c_str()];
+    if (!jsS.IsObject()) {
+        logger.error("[GameManager] Invalid scene object");
+        return false;
+    }
+
+    // Load prefab defaults (same as in load() function)
+    std::unordered_map<std::string, PrefabDef> prefabDefaults;
+    // ... (copy the prefab loading code from load() function) ...
+
+    // Clear and rebuild the scene
+    Scene freshScene;
+
+    // Background
+    if (jsS.HasMember("background") && jsS["background"].IsString()) {
+        std::string bg = toAssetsPath(jsS["background"].GetString());
+        freshScene.background = tex.get(bg);
+    }
+
+    // Entities (same loading logic as in load() function)
+    if (jsS.HasMember("entities") && jsS["entities"].IsArray()) {
+        for (const auto& e : jsS["entities"].GetArray()) {
+            if (!e.IsObject()) continue;
+
+            PrefabDef def;
+            DrawItem di{};
+
+            // Copy the entity loading logic from load() function
+            // (lines 237-292 in the current load() function)
+            // ... entity loading code here ...
+
+            freshScene.items.push_back(di);
+        }
+    }
+
+    // Replace the current scene's items with the freshly loaded ones
+    scenes[sceneToReload] = freshScene;
+
+    logger.log("[GameManager] Scene reloaded successfully: " +
+        std::to_string(freshScene.items.size()) + " items");
+
+    return true;
+}
+/**
+ * Current printing method for hamobjects components.
+ *  it is incredibly lazy
+ * \param id
+ * \param overridesObj
+ * \param alloc
+ */
+void GameManager::writeAllComponentsToJSON(EntityID id, rapidjson::Value& obj, rapidjson::Document::AllocatorType& alloc) {
+
+    if (ecs_.getComponent<AudioData>(id))ecs_.getComponent<AudioData>(id)->ToJSON(obj, alloc);
+    if (ecs_.getComponent<Transform>(id))ecs_.getComponent<Transform>(id)->ToJSON(obj, alloc);
+    if (ecs_.getComponent<ImageRenderer>(id))ecs_.getComponent<ImageRenderer>(id)->ToJSON(obj, alloc);
+    if (ecs_.getComponent<CircleRenderer>(id))ecs_.getComponent<CircleRenderer>(id)->ToJSON(obj, alloc);
+    if (ecs_.getComponent<RectRenderer>(id))ecs_.getComponent<RectRenderer>(id)->ToJSON(obj, alloc);
+    if (ecs_.getComponent<AnimalBehavior>(id))ecs_.getComponent<AnimalBehavior>(id)->ToJSON(obj, alloc);
+    if (ecs_.getComponent<PhysicsComponent>(id))ecs_.getComponent<PhysicsComponent>(id)->ToJSON(obj, alloc);
+
+    if (ecs_.getComponent<AIComponent>(id))ecs_.getComponent<AIComponent>(id)->ToJSON(obj, alloc);
+
+    if (ecs_.getComponent<BoxCollider>(id))ecs_.getComponent<BoxCollider>(id)->ToJSON(obj, alloc);
 }
