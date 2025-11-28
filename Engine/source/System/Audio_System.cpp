@@ -1,3 +1,19 @@
+/*!------------------------------------------------------------------------------------------------
+	File: Audio_System.cpp
+	Project: NocturnalStudio
+
+	This file contains the declaration of the AudioSystem class, which manages the integration
+	of the FMOD library into the customize game engine. It handles the initialization,
+	frame updates, and rendering of audio components, as well as providing various UI elements
+	for debugging and interaction within the engine.
+
+	Primary Author:
+		Lau Xiang Yang (100%)
+		- Created the AudioSystem class and its specializations.
+
+	All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
+
 #define _HAS_STD_BYTE 0
 
 #include "System/Audio_System.h"
@@ -151,15 +167,15 @@ AudioSystem::AudioSystem(std::string name, ECS& ecs, ResourceManager& rm) : Syst
 	
 	FMOD::Sound* defaultSound = nullptr;
 	// Use the accessor + a valid FMOD_MODE flag instead of 'false'
-	FMOD_RESULT result = fmodSystem->createSound(
-		resourceManager.getDefaultAudio().getFilePath().c_str(),
-		FMOD_2D, nullptr, &defaultSound
-	);
+	//FMOD_RESULT result = fmodSystem->createSound(
+	//	resourceManager.getDefaultAudio().getFilePath().c_str(),
+	//	FMOD_2D, nullptr, &defaultSound
+	//);
 
 
-	if (result != FMOD_OK) {
-		logger.error("Failed to load default audio sound" + std::string{ FMOD_ErrorString(result) });
-	}
+	//if (result != FMOD_OK) {
+	//	//logger.error("Failed to load default audio sound" + std::string{ FMOD_ErrorString(result) });
+	//}
 	soundMap.insert({ 0, defaultSound });
 
 	setBGMVolume(bgmVolume);

@@ -39,7 +39,6 @@ ECS::ECS() {
 	// Register all components here
 	registerComponent<Transform>();
 	registerComponent<ImageRenderer>();
-	registerComponent<SpriteRenderer>();
 	registerComponent<SpriteAnimationComponent>();
 	registerComponent<CircleRenderer>();
 	registerComponent<RectRenderer>();
@@ -53,7 +52,6 @@ ECS::ECS() {
 
 	ComponentFactory::Register<Transform>("Transform");
 	ComponentFactory::Register<ImageRenderer>("ImageRenderer");
-	ComponentFactory::Register<SpriteRenderer>("SpriteRenderer");
 	ComponentFactory::Register<CircleRenderer>("CircleRenderer");
 	ComponentFactory::Register<RectRenderer>("RectRenderer");
 	ComponentFactory::Register<AnimalBehavior>("AnimalBehavior");
@@ -369,6 +367,33 @@ bool ECS::removeComponent(EntityID entityID, ComponentID componentID) {
 	reUpdateMetadata();
 	return true;
 }
+
+
+/**
+ * @brief Get list of all component ids for a specific entity
+ *
+ * Returns a const reference to a set of componentIDs
+ *
+ * @param entityID Target entity
+ * @return const reference to a set of ComponentIDs
+ *
+ * Simple usage:
+ *
+ */
+const std::set<ComponentID>& ECS::getEntityComponents(EntityID id) {
+    auto it = entityMetadataMap.find(id);
+
+    if (it == entityMetadataMap.end()) {
+        static const std::set<ComponentID> emptySet{};
+        return emptySet;
+    }
+    else {
+        return it->second.componentIDs;
+    }
+}
+
+
+void ECS::emptyAllEntities(){}
 
 /**
  * @brief Find the ComponentData entry for a component ID (const).

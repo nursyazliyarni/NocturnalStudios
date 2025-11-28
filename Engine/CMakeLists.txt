@@ -11,9 +11,18 @@ file(GLOB_RECURSE ENGINE_HDR CONFIGURE_DEPENDS
 
 add_library(Engine STATIC ${ENGINE_SRC} ${ENGINE_HDR})
 
+# Enable ImGui layout saving only in Debug builds
+target_compile_definitions(Engine PRIVATE
+  $<$<CONFIG:Debug>:IMGUI_SAVE_LAYOUT>
+)
+
 target_include_directories(Engine PUBLIC
   ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
+
+if (MSVC)
+  target_compile_options(Engine PRIVATE /W4 /MP)
+endif()
 
 if (NS_HAVE_GLFW)
   target_link_libraries(Engine PUBLIC glfw)

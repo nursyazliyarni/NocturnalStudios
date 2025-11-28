@@ -102,7 +102,11 @@ public:
 	void saveSceneSnapshot();
 	void restoreSceneSnapshot();
 
+	//handle external file drops into the window
+	void handleExternalFileDrops();
+
 private:
+	bool m_showFPS = false;
 	bool m_dockingLayoutInitialized = false;
 	Window& mainWindow;
 	Renderer& renderer;
@@ -132,8 +136,26 @@ private:
 
 	ImVec2 vpMinWin{}, vpMaxWin{};
 
-	EditorMode m_editorMode = EditorMode::EDIT;
+	EditorMode m_editorMode = EditorMode::PLAY;
 	std::string m_savedSceneState;
+
+	int  m_hoveredItem = -1;
+	int  m_draggedItem = -1; //index currently being dragged, or -1
+	bool m_isDragging = false; //true while left mouse button held on an item
+	ImVec2 m_dragOffset = { 0, 0 }; //offset (normalised from item center to click point
+
+	std::vector<std::vector<DrawItem>> m_undoStack; //undo stack
+	static constexpr std::size_t kMaxUndoSteps = 20; //max undo steps
+
+	//helper to handle picking/dragging inside the viewport
+	void handleViewportPicking(const ImVec2& imgMin,const ImVec2& imgMax,int vpW, int vpH);
+
+	//undo helpers
+	void pushUndoState(const char* reason = nullptr);
+	void undoLastAction();
+
+	bool m_hasInitialState = false;
+	std::string m_initialSceneState;
 };
 
 

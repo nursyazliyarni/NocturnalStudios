@@ -20,7 +20,7 @@
 
 	Secondary Authod
 		Xiang Yang
-		- FBO
+		- Full Screen mode toggle
 
 	Secondary Author:
 		Chang Qi Xuan Celest (35%)
@@ -50,12 +50,11 @@
 #include <cstdlib>
 #include <ctime>
 
+#define UNUSED(x) (void)(x)  // To suppress unused variable warnings
+
+
 
 extern void Prefab_SetTextureLookup(std::function<int(const std::string&)>);
-
-
-
-
 
 
 // --- Very simple random drift for any entity with AI + Physics (no fancy RNG) ---
@@ -63,8 +62,8 @@ static void UpdateRandomDrift(ECS& ecs, double dt) {
 	if (dt <= 0.0) return;
 
 	// Seed std::rand once
-	static bool seeded = false;
-	if (!seeded) { std::srand(static_cast<unsigned>(std::time(nullptr))); seeded = true; }
+	static bool s_seeded = false;
+	if (!s_seeded) { std::srand(static_cast<unsigned>(std::time(nullptr))); s_seeded = true; }
 
 	// Per-entity drift state (heading + timer for next small turn)
 	struct DriftState { float heading = 0.0f; float nextTurn = 0.0f; };
@@ -165,11 +164,17 @@ namespace {
 
 	static Application* s_App = nullptr;
 	static void App_OnGlfwFocus(GLFWwindow* window, int focused) {
+		UNUSED(window);
 		if (s_App) s_App->onFocusChanged(focused == GLFW_TRUE);
 	}
 
 	static void App_OnGlfwIconify(GLFWwindow* window, int iconified) {
+		UNUSED(window);
 		if (s_App) s_App->onIconifyChanged(iconified == GLFW_TRUE);
+	}
+	static void App_OnGlfwDrop(GLFWwindow* window, int count, const char** paths) {
+		UNUSED(window);
+		if (s_App) s_App->onFilesDropped(count, paths);
 	}
 }
 
@@ -234,6 +239,7 @@ void Application::init() {
 	logger.setup_crash_handler();
 	const GameConfig c = loadConfig("assets/config.json");
 	windowTitle = c.window.title;
+	imGUIVisible = c.imgui_enabled;
 
     WindowDesc wd;
     wd.width = c.window.width;
@@ -251,6 +257,7 @@ void Application::init() {
 	s_App = this;
 	glfwSetWindowFocusCallback(m_window.handle(), App_OnGlfwFocus);
 	glfwSetWindowIconifyCallback(m_window.handle(), App_OnGlfwIconify);
+	glfwSetDropCallback(m_window.handle(), App_OnGlfwDrop);
 
     glViewport(0, 0, wd.width, wd.height);
     glDisable(GL_DEPTH_TEST);
@@ -360,13 +367,6 @@ void Application::init() {
 
 	prefabManager = std::make_unique<PrefabManager>(*ecs);
 	prefabManager->Load_Prefab(prefabTestPath.c_str());
-	/*prefabManager->CreateEntityFromPrefab(prefabTestPath, "main_menu_button", "play_button");
-	prefabManager->CreateEntityFromPrefab(prefabTestPath, "main_menu_button", "load_button");
-	prefabManager->CreateEntityFromPrefab(prefabTestPath, "main_menu_button", "setting_button");
-	prefabManager->CreateEntityFromPrefab(prefabTestPath, "main_menu_button", "quit_button");
-	prefabManager->CreateEntityFromPrefab(prefabTestPath, "food", "owl_food");
-	prefabManager->CreateEntityFromPrefab(prefabTestPath, "animal", "flamingo");
-	prefabManager->CreateEntityFromPrefab(prefabTestPath, "firefly", "firefly");*/
 
 	
 	//logger.log("Created animal entity with ID: " + std::to_string(animal) + " and " + std::to_string(animal_2));
@@ -401,7 +401,7 @@ void Application::init() {
         logger.log(std::string{ "[SceneSpawn] Activated -> " } + sceneName);
     });
 
-
+	if (!imGUIVisible)renderer->initFBO(wd.width, wd.height);
 
 	imGuiManager = std::make_unique<ImGuiManager>(
 		m_window, *renderer,
@@ -442,26 +442,6 @@ int Application::run() {
 		// Debug: log firefly state twice per second to confirm it's updating
 		static double dbgAccum = 0.0;
 		dbgAccum += dt;
-		/*if (dbgAccum > 0.5 && ecs) {
-			dbgAccum = 0.0;
-			EntityID ff = ecs->findEntityByName("firefly_1");
-			if (ff != INVALID_ENTITY_ID) {
-				auto* t = ecs->getComponent<Transform>(ff);
-				auto* pc = ecs->getComponent<PhysicsComponent>(ff);
-				auto* ai = ecs->getComponent<AIComponent>(ff);
-				if (t && pc && ai) {
-					logger.log(
-						"FF pos=(" + std::to_string(t->position.x()) + "," + std::to_string(t->position.y()) + ")"
-						+ " vel=(" + std::to_string(pc->velocity.x()) + "," + std::to_string(pc->velocity.y()) + ")"
-					);
-				}
-				else {
-					logger.log("firefly_1 missing component(s): "
-						+ std::string(t ? "" : "Transform ")
-						+ std::string(pc ? "" : "Physics ")
-						+ std::string(ai ? "" : "AI "));
-				}
-			}*/
 
 
 
@@ -479,22 +459,6 @@ int Application::run() {
 			// else: stay quiet when not in Owl scene
 		}
 
-
-
-		//	else {
-		//		logger.log("firefly_1 not found");
-		//	}
-		//}
-
-
-
-
-
-
-
-		/*for (int k = GLFW_KEY_1; k <= GLFW_KEY_9; ++k)
-			if (inputSystem->WasPressed(k))
-				gsm->handleKeyPress(k);*/
 		if (!gsm || !gsm->isPaused()) {
 			for (int k = GLFW_KEY_1; k <= GLFW_KEY_9; ++k)
             	if (inputSystem->WasPressed(k))
@@ -522,7 +486,12 @@ int Application::run() {
 
         glClear(GL_COLOR_BUFFER_BIT);
 
-        Gui::updateImGuiManager(dt, *imGuiManager);
+		if (imGUIVisible)Gui::updateImGuiManager(dt, *imGuiManager);
+		else {
+			int winheight,winwidth;
+			m_window.getWindowSize(winwidth, winheight);
+			gsm->imGUIlessRender(*renderer, *inputSystem, m_window.handle(), winwidth,winheight);
+		}
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         glViewport(0, 0, fbw, fbh);
@@ -532,26 +501,38 @@ int Application::run() {
         // Text overlay is now rendered by Renderer inside the viewport FBO (see ImGuiManager)
 
         if (inputSystem->WasMousePressed(GLFW_MOUSE_BUTTON_LEFT)) {
-            ImVec2 rmin, rmax;
+			ImVec2 rmin{}, rmax;
 
-            imGuiManager->getViewportRectWindow(rmin, rmax);
+			if (imGUIVisible)imGuiManager->getViewportRectWindow(rmin, rmax);
+			else { //uses window size to dtermine click coords
+				int maxx, maxy;
+				m_window.getWindowSize(maxx, maxy);
+				rmax={ static_cast<float>(maxx) ,static_cast<float>(maxy) };
+			}
+			
+			Vector2D mp = inputSystem->GET_mouse_pos(false, 0, 0);
+			if (mp.x() >= rmin.x && mp.x() <= rmax.x &&
+				mp.y() >= rmin.y && mp.y() <= rmax.y) {
+				float nx = float((mp.x() - rmin.x) / (rmax.x - rmin.x));
+				float ny = float((mp.y() - rmin.y) / (rmax.y - rmin.y));
 
-            Vector2D mp = inputSystem->GET_mouse_pos(false, 0, 0);
-            if (mp.x() >= rmin.x && mp.x() <= rmax.x &&
-                mp.y() >= rmin.y && mp.y() <= rmax.y) {
-                float nx = float((mp.x() - rmin.x) / (rmax.x - rmin.x));
-                float ny = float((mp.y() - rmin.y) / (rmax.y - rmin.y));
+				//ny = 1.0f - ny;
+				gsm->handleClick(nx, ny);
 
-                //ny = 1.0f - ny;
-                gsm->handleClick(nx, ny);
-
-                if (gsm->popQuitRequested()) {
-                    glfwSetWindowShouldClose(m_window.handle(), GLFW_TRUE);
-                    break;
-                }
-            }
+				if (gsm->popQuitRequested()) {
+					glfwSetWindowShouldClose(m_window.handle(), GLFW_TRUE);
+					break;
+				}
+			}
+            
         }
 		TransformSystem::TransformUpdate();
+
+		if (inputSystem->WasPressed(GLFW_KEY_P))
+		{
+			if (gsm->saveScene("___currscene___", "assets/scenes/testttttttt.json", textures))logger.log("Current scene saved successfully");
+			else logger.log("Failed to save");
+		}
         if (gsm->popQuitRequested()) {
             glfwSetWindowShouldClose(m_window.handle(), 1);
         }
@@ -583,4 +564,33 @@ void Application::shutdown() {
 
 	m_window.destroy();
 	isInitialized = false;
+}
+
+void Application::onFilesDropped(int count, const char** paths) {
+    if (!resourceManager) return;
+    int loadedAudio = 0;
+    int loadedTex = 0;
+    for (int i = 0; i < count; ++i) {
+        std::filesystem::path p{ paths[i] };
+        if (!p.has_extension()) continue;
+        std::string ext = p.extension().string();
+        std::transform(ext.begin(), ext.end(), ext.begin(), [](unsigned char c){ return static_cast<char>(std::tolower(c)); });
+        std::string stem = p.stem().string();
+        std::string full = p.string();
+        // Accept textures
+        if (ext == ".png" || ext == ".jpg" || ext == ".jpeg" || ext == ".bmp" || ext == ".tga" || ext == ".gif" || ext == ".hdr" || ext == ".psd") {
+            resourceManager->loadTexture(stem, full);
+            ++loadedTex;
+        }
+        // Accept audio
+        else if (ext == ".wav" || ext == ".ogg" || ext == ".mp3" || ext == ".flac" || ext == ".aiff" || ext == ".fsb") {
+            resourceManager->loadAudio(stem, full);
+            ++loadedAudio;
+        }
+    }
+    if (loadedTex || loadedAudio) {
+        logger.log("[DragDrop] Added " + std::to_string(loadedTex) + " textures, " + std::to_string(loadedAudio) + " audio assets.");
+    } else {
+        logger.warning("[DragDrop] No supported assets dropped.");
+    }
 }

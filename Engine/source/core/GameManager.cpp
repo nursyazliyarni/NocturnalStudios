@@ -13,6 +13,9 @@
         Nur Syazliyarni (5%)
         - Added function to get current scene for level editor
 
+        Lau Xiang Yang (2%)
+        - Implemented pause and resume functionality in GameManager
+
     All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
 *------------------------------------------------------------------------------------------------*/
 
@@ -20,6 +23,9 @@
 #include "core/GameManager.h"
 #include "stb_image.h"
 #include <rapidjson/document.h>
+#include "rapidjson/writer.h"
+#include "rapidjson/prettywriter.h"
+#include "rapidjson/filewritestream.h"
 #include <fstream>
 #include <sstream>
 #include <GLFW/glfw3.h>
@@ -62,6 +68,14 @@ GLuint TextureStore::get(const std::string& path) {
     return id;
 }
 
+std::string TextureStore::find(const GLuint id) const {
+    for (auto& it:cache)
+    {
+        if (it.second == id) return it.first;
+    }
+    return"";
+}
+
 void TextureStore::clear() {
     for (auto& kv : cache) if (kv.second) glDeleteTextures(1, &kv.second);
     cache.clear();
@@ -89,10 +103,78 @@ static std::string toAssetsPath(const std::string& p) {
 struct PrefabDef { float w = 0.2f, h = 0.2f, angle = 0.0f; };
 
 //  GameManager 
+bool GameManager::saveScene( std::string scenename, const char* scenesJsonPath, TextureStore& tex) {
+    if (scenename == "___currscene___")scenename = currentScene;
+
+    logger.log("Attempting to save scene: " + scenename);
+
+    auto sitr = scenes.find(scenename);
+    if (sitr == scenes.end()) { 
+        logger.log("Scene not found: " + scenename);
+        return false; }
+
+    Scene& scene = sitr->second;
+
+    rapidjson::Document doc;
+    doc.SetObject();
+    auto& alloc = doc.GetAllocator();
+
+    if (scene.background) {
+        rapidjson::Value bgVal;
+        bgVal.SetString(tex.find(scene.background).c_str(), alloc);
+        doc.AddMember("background", bgVal, alloc);
+        
+    }
+
+    if (!scene.items.empty())
+    {
+        rapidjson::Value entityArray(rapidjson::kArrayType);
+
+        for (DrawItem i: scene.items){
+            rapidjson::Value entObj(rapidjson::kObjectType);
+            if (i.item_type.empty()) //treat as a non prefab item
+            {
+
+            }
+            else {
+                //prefab has 3 things: prefab, name, overrides
+                rapidjson::Value pregabval;
+                pregabval.SetString(i.item_type.c_str(), alloc);
+                entObj.AddMember("prefab", pregabval, alloc);
+                
+                rapidjson::Value nvs;
+                nvs.SetString(i.name.c_str(), alloc);
+                entObj.AddMember("name", nvs, alloc);
+                //overrides
+                rapidjson::Value overrides(rapidjson::kObjectType);
+                if (ecs_.findEntityByName(i.name)!=INVALID_ENTITY_ID&&!ecs_.getEntityComponents(ecs_.findEntityByName(i.name)).empty())
+                {
+                    writeAllComponentsToJSON(ecs_.findEntityByName(i.name), overrides, alloc);
+                }
+                entObj.AddMember("overrides", overrides, alloc);
+            }
+            entityArray.PushBack(entObj, alloc);
+        }
+        doc.AddMember("entities", entityArray, alloc);
+    }
+
+    FILE* fp = fopen(scenesJsonPath, "wb");
+    if (!fp) return false;
+
+    char buffer[9920];
+    rapidjson::FileWriteStream os(fp, buffer, sizeof(buffer));
+    rapidjson::PrettyWriter<rapidjson::FileWriteStream> writer(os);
+    doc.Accept(writer);
+    fclose(fp);
+    return true;
+}
 bool GameManager::load(const char* prefabsPath, const char* scenesPath, TextureStore& tex) {
 
     app = AppState::Menu;   // lock number keys until Play is pressed
     requestedQuit = false;  // (optional) clear quit flag at load
+
+    // Store paths for later reload
+    scenesFilePath = scenesPath;
 
     //  1) read prefab defaults (w,h,angle) 
     std::unordered_map<std::string, PrefabDef> prefabDefaults;
@@ -168,9 +250,6 @@ bool GameManager::load(const char* prefabsPath, const char* scenesPath, TextureS
                 if (e.HasMember("prefab") && e["prefab"].IsString()) {
                     auto itp = prefabDefaults.find(e["prefab"].GetString());
                     if (itp != prefabDefaults.end()) def = itp->second;
-                    //di.item_type = itp->first;
-                    // 
-                    
                     if (e.HasMember("prefab") && e["prefab"].IsString()) {
                         di.item_type = e["prefab"].GetString();  // always safe
 
@@ -180,19 +259,8 @@ bool GameManager::load(const char* prefabsPath, const char* scenesPath, TextureS
                         }
                         else {
                             logger.log(std::string("[load] prefab not found in prefabs.json: ") + di.item_type);
-                            // def stays default (0.2f,0.2f,0)
-                            // you can also continue; if you want to skip bad entities
                         }
                     }
-
-              
-                    //std::cout << di.item_type << "\n";
-
-                    /*if (itp->first == "animal") {
-                        if (e.HasMember("name") && e["name"].IsString()) {
-                            std::cout << "Looking for name = " << e["name"].GetString() << "\n";
-                        }
-                    }*/
                 }
 
                 di.w = def.w;
@@ -253,6 +321,10 @@ bool GameManager::load(const char* prefabsPath, const char* scenesPath, TextureS
 
         scenes[sceneName] = std::move(sc);
     }
+
+    initialScenes_ = scenes;
+
+
 	//temp: add a flamingo entity with sprite animation to ECS
     {
         EntityID flamingo = ecs_.createEntity();
@@ -300,6 +372,20 @@ void GameManager::requestScene(const std::string& name) {
 }
 
 
+
+
+
+void GameManager::resetAllScenesToInitial()
+{
+    // If we have a snapshot, restore it
+    if (!initialScenes_.empty())
+    {
+        scenes = initialScenes_;
+    }
+}
+
+
+
 bool GameManager::switchToSceneForKey(int glfwKey) {
     if (app != AppState::Playing) return false;   // lock numbers unless Playing
     auto it = keyMap.find(glfwKey);
@@ -330,8 +416,9 @@ void GameManager::handleKeyPress(int key) {
 
 void GameManager::render(Renderer& r, Input& input, GLFWwindow* window, int w, int h) {
 
+
     auto it = scenes.find(currentScene);
-    if (it == scenes.end()) return;
+    if (it == scenes.end()) {  return; }
     const Scene& sc = it->second;
 
     // background (fullscreen) � NOTE uniform must be "bg_texture"
@@ -415,6 +502,23 @@ void GameManager::render(Renderer& r, Input& input, GLFWwindow* window, int w, i
         else {
             Cam2D_Apply(currentScene, px, py, pw, ph, w, h);
             r.texturedTri(di.tex, px, py, pw, ph);
+
+            // --- COLLIDER VISUALIZATION ---
+            if (di.hasCollider)
+            {
+                float colX = di.x * w + di.colOffsetX * w;
+                float colY = di.y * h + di.colOffsetY * h;
+                float colW = di.colW * w;
+                float colH = di.colH * h;
+
+                // convert collider location from center to top-left
+                float cx = colX + colW * 0.5f;
+                float cy = colY + colH * 0.5f;
+
+                // green rectangle
+                r.rect(cx, cy, colW, colH, 0.0f, 1.0f, 0.0f);
+            }
+            // --------------------------------
         }
 
         if (di.is_dragging && !duplicate_item) {
@@ -429,17 +533,158 @@ void GameManager::render(Renderer& r, Input& input, GLFWwindow* window, int w, i
         //    duplicate_item.reset(); //The unique_ptr releases ownership
         //}
 
-        if (Debug::Drawer::Instance().IsActive()) {
+        /*if (Debug::Drawer::Instance().IsActive()) {
             AABB collider(Vector2D(px, py), Vector2D(pw, ph));
             Debug::Drawer::Instance().AddRect(
                 collider.pos.x(), collider.pos.y(),
                 collider.size.x(), collider.size.y(),
                 0xFFFF00FF
             );
+        }*/
+		// --- Debug Draw Collider Box ---
+        if (Debug::Drawer::Instance().IsActive() && di.hasCollider)
+        {
+            float cx = di.x + di.colOffsetX;
+            float cy = di.y + di.colOffsetY;
+
+            float px = cx * w;
+            float py = cy * h;
+
+            float cw = di.colW * w;
+            float ch = di.colH * h;
+
+            Debug::Drawer::Instance().AddRect(
+                px - cw * 0.5f,
+                py - ch * 0.5f,
+                cw,
+                ch,
+                0x00FF00FF //green box
+            );
         }
     }
+}
 
 
+
+
+void GameManager::renderWithHUD(Renderer& r,
+    Input& input,
+    GLFWwindow* window,
+    int w, int h,
+    double dt,
+    ResourceManager& resourceManager,
+    bool showFPS)
+{
+    // 1) First, render the usual scene
+    render(r, input, window, w, h);
+
+    // 2) Now overlay HUD text into the same render target
+    r.setTextProjection(w, h); // bottom-left origin for text shader
+
+    // Cache fonts the first time we’re called
+    static std::optional<ResourceID> s_fontTitle;
+    static std::optional<ResourceID> s_fontFPS;
+
+    if (!s_fontTitle) {
+        s_fontTitle = resourceManager.findResource<Font>("NanumBrushScript-Regular");
+    }
+    if (!s_fontFPS) {
+        s_fontFPS = resourceManager.findResource<Font>("PAPYRUS");
+    }
+
+    // --- Responsive scaling based on viewport size ---
+    // Pretend our "reference" resolution is 1280x720
+    const float refW = 1280.0f;
+    const float refH = 720.0f;
+
+    float sx = static_cast<float>(w) / refW;
+    float sy = static_cast<float>(h) / refH;
+
+    // Use the smaller scale so text doesn't overflow in one direction
+    float textScale = std::min(sx, sy);
+
+    // Clamp so it doesn’t get insanely small/huge
+    if (textScale < 0.4f) textScale = 0.4f;
+    if (textScale > 2.5f) textScale = 2.5f;
+
+    // If viewport is super tiny, just skip HUD entirely
+    if (w < 150 || h < 120) {
+        return;
+    }
+
+    // --- Title (Font A) ---
+    if (s_fontTitle) {
+        const Font& f = resourceManager.getFont(*s_fontTitle);
+
+        // Keep margins as percentage of viewport → stays nicely anchored
+        float marginX = 0.02f * w;
+        float marginTop = 0.08f * h;
+
+        float titleX = marginX;
+        float titleY = h - marginTop;
+
+        r.drawText(
+            f,
+            "Nocturnal Studio Engine",
+            titleX,
+            titleY,
+            textScale,
+            glm::vec3(1.0f, 0.0f, 0.2f) // reddish
+        );
+    }
+
+    // --- FPS (Font B) ---
+    if (showFPS && s_fontFPS) {
+        // If viewport height is small, we show FPS but tuck it closer
+        bool compact = (h < 300);
+
+        const Font& f2 = resourceManager.getFont(*s_fontFPS);
+
+        static double accumTime = 0.0;
+        static double fpsDisplay = 0.0;
+
+        // avoid division by zero
+        if (dt <= 0.0) dt = 1e-6;
+
+        accumTime += dt;
+        if (accumTime >= 1.0) {
+            fpsDisplay = 1.0 / dt;
+            accumTime = 0.0;
+        }
+
+        int fpsInt = static_cast<int>(std::round(fpsDisplay));
+        std::string fpsText = "FPS: " + std::to_string(fpsInt);
+
+        float marginX = 0.02f * w;
+        float offsetY = compact ? 0.12f : 0.15f; // pull closer when small
+        float y = h - offsetY * h;
+
+        float fpsScale = textScale * 0.6f;   // 60% of title size
+        if (fpsScale < 0.25f) fpsScale = 0.25f; // clamp so it doesn't vanish
+
+        r.drawText(
+            f2,
+            fpsText,
+            marginX,
+            y,
+            fpsScale,
+            glm::vec3(0.2f, 0.8f, 1.0f) // bluish
+        );
+    }
+}
+
+
+void GameManager :: imGUIlessRender(Renderer& r, Input& input, GLFWwindow* window, int w, int h) {
+    r.initFBO(w, h);
+    r.bindFBO();
+    r.resize(w, h);
+    r.clear(0.06f, 0.06f, 0.07f);
+    render(r, input, window, w, h);
+    r.setTextProjection(w, h);
+
+    r.unbindFBO();
+    glViewport(0, 0, w, h);
+    r.background_render(r.getFBOTexture(), "tex", 0);
 }
 
 bool GameManager::handleClick(float nx, float ny) {
@@ -469,8 +714,16 @@ bool GameManager::handleClick(float nx, float ny) {
         // In Menu: only start:true does anything (exactly how 'start' works)
         if (app == AppState::Menu) {
             if (cr.start) {
+
+                // reset all scenes to the initial JSON values
+                resetAllScenesToInitial();
+
+                // enter Play mode
                 startGame();
-                if (!cr.gotoScene.empty()) requestScene(cr.gotoScene);
+
+                if (!cr.gotoScene.empty()) {
+                    requestScene(cr.gotoScene);
+                }
                 else {
                     auto it1 = keyMap.find(GLFW_KEY_1);
                     if (it1 != keyMap.end()) requestScene(it1->second);
@@ -479,16 +732,44 @@ bool GameManager::handleClick(float nx, float ny) {
             return true;
         }
 
+
         // Playing: allow goto
         if (!cr.gotoScene.empty()) {
             requestScene(cr.gotoScene);
         }
         return true;
     }
+    return false;
 }
+//void GameManager::startGame() {
+//    // enter play state
+//    app = AppState::Playing;
+//
+//    // every time a new game starts, reset ALL animals in ALL scenes
+//    for (auto& [name, scene] : scenes) {
+//        for (auto& item : scene.items) {
+//            if (item.item_type == "animal") {
+//                // reset bars
+//                item.health_bar        = 100.0f;
+//                item.hunger_bar        = 100.0f;
+//                item.sanity_bar        = 100.0f;
+//
+//                // reset timers
+//                item.acc_timer         = 0.0f;
+//                item.staring_countdown = 10.0f;
+//
+//                // reset status / drag flags
+//                item.still_alive       = true;
+//                item.is_dragging       = false;
+//            }
+//        }
+//    }
+//}
+
 void GameManager::startGame() {
     app = AppState::Playing;
-}
+}   
+
 
 void GameManager::goToMenu() {
     app = AppState::Menu;
@@ -518,14 +799,125 @@ void GameManager::update(float dt,Renderer& renderer,TextureStore& tex) {
     animationSystem_.Update(fixedDt, ecs_, renderer, tex);
 }
 
+/**
+ * @brief Pauses the game, changing the application state to Paused.
+ * @param void
+ * @returns void
+ */
 void GameManager::pauseGame() {
     if (app == AppState::Playing) {
         app = AppState::Paused;
     }
 }
 
+/**
+ * @brief Resumes the game, changing the application state to Playing.
+ * @param void
+ * @returns void
+ */
 void GameManager::resumeGame() {
     if (app == AppState::Paused) {
         app = AppState::Playing;
     }
+}
+
+bool GameManager::reloadCurrentScene(TextureStore& tex) {
+    if (currentScene.empty() || scenesFilePath.empty()) {
+        logger.warning("[GameManager] Cannot reload: no current scene");
+        return false;
+    }
+
+    std::string sceneToReload = currentScene;
+
+    logger.log("[GameManager] Reloading scene: " + sceneToReload);
+
+    // Read the entire scenes file again
+    std::string jsonContent;
+    if (!readFile(scenesFilePath.c_str(), jsonContent)) {
+        logger.error("[GameManager] Failed to read scenes file for reload");
+        return false;
+    }
+
+    rapidjson::Document d;
+    d.Parse(jsonContent.c_str());
+    if (d.HasParseError() || !d.IsObject()) {
+        logger.error("[GameManager] Failed to parse scenes file for reload");
+        return false;
+    }
+
+    // Find the current scene in the JSON
+    if (!d.HasMember("scenes") || !d["scenes"].IsObject()) {
+        logger.error("[GameManager] No scenes object in JSON");
+        return false;
+    }
+
+    const auto& jsScenes = d["scenes"];
+    if (!jsScenes.HasMember(sceneToReload.c_str())) {
+        logger.error("[GameManager] Scene not found: " + sceneToReload);
+        return false;
+    }
+
+    const auto& jsS = jsScenes[sceneToReload.c_str()];
+    if (!jsS.IsObject()) {
+        logger.error("[GameManager] Invalid scene object");
+        return false;
+    }
+
+    // Load prefab defaults (same as in load() function)
+    std::unordered_map<std::string, PrefabDef> prefabDefaults;
+    // ... (copy the prefab loading code from load() function) ...
+
+    // Clear and rebuild the scene
+    Scene freshScene;
+
+    // Background
+    if (jsS.HasMember("background") && jsS["background"].IsString()) {
+        std::string bg = toAssetsPath(jsS["background"].GetString());
+        freshScene.background = tex.get(bg);
+    }
+
+    // Entities (same loading logic as in load() function)
+    if (jsS.HasMember("entities") && jsS["entities"].IsArray()) {
+        for (const auto& e : jsS["entities"].GetArray()) {
+            if (!e.IsObject()) continue;
+
+            PrefabDef def;
+            DrawItem di{};
+
+            // Copy the entity loading logic from load() function
+            // (lines 237-292 in the current load() function)
+            // ... entity loading code here ...
+
+            freshScene.items.push_back(di);
+        }
+    }
+
+    // Replace the current scene's items with the freshly loaded ones
+    scenes[sceneToReload] = freshScene;
+
+    logger.log("[GameManager] Scene reloaded successfully: " +
+        std::to_string(freshScene.items.size()) + " items");
+
+    return true;
+}
+/**
+ * Current printing method for hamobjects components.
+ *  it is incredibly lazy
+ * \param id
+ * \param overridesObj
+ * \param alloc
+ */
+void GameManager::writeAllComponentsToJSON(EntityID id, rapidjson::Value& obj, rapidjson::Document::AllocatorType& alloc) {
+
+    if (ecs_.getComponent<AudioData>(id))ecs_.getComponent<AudioData>(id)->ToJSON(obj, alloc);
+    if (ecs_.getComponent<Transform>(id))ecs_.getComponent<Transform>(id)->ToJSON(obj, alloc);
+    if (ecs_.getComponent<ImageRenderer>(id))ecs_.getComponent<ImageRenderer>(id)->ToJSON(obj, alloc);
+    if (ecs_.getComponent<CircleRenderer>(id))ecs_.getComponent<CircleRenderer>(id)->ToJSON(obj, alloc);
+    if (ecs_.getComponent<RectRenderer>(id))ecs_.getComponent<RectRenderer>(id)->ToJSON(obj, alloc);
+    if (ecs_.getComponent<AnimalBehavior>(id))ecs_.getComponent<AnimalBehavior>(id)->ToJSON(obj, alloc);
+    if (ecs_.getComponent<PhysicsComponent>(id))ecs_.getComponent<PhysicsComponent>(id)->ToJSON(obj, alloc);
+
+    if (ecs_.getComponent<AIComponent>(id))ecs_.getComponent<AIComponent>(id)->ToJSON(obj, alloc);
+
+    if (ecs_.getComponent<BoxCollider>(id))ecs_.getComponent<BoxCollider>(id)->ToJSON(obj, alloc);
 }

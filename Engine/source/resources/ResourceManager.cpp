@@ -5,8 +5,8 @@
 	This file contains the implementation of the ResourceManager class
 
 	Primary Author:
-		Name (%)
-		-
+		Lau Xiang Yang (95%)
+		- Created the ResourceManager class to manage all resources in the engine
 
 	Secondary Author:
 		Nur Syazliyarni (5%)
@@ -17,7 +17,7 @@
 *------------------------------------------------------------------------------------------------*/
 
 // Add filepath here
-constexpr char DEFAULT_AUDIO_FILEPATH[] = "DefaultAudio/filepath";
+// constexpr char DEFAULT_AUDIO_FILEPATH[] = "DefaultAudio/filepath";
 
 #define _HAS_STD_BYTE 0
 
@@ -87,8 +87,7 @@ namespace {
  *  ResourceManager rm(ecs, audioSys);
  */
 ResourceManager::ResourceManager(ECS& ecs, AudioSystem* audioSystem) 
-	: defaultAudio{ 0, "Default", DEFAULT_AUDIO_FILEPATH }, ecs{ ecs }, audioSystem{ audioSystem } {
-	// Deserialize the asset meta data here (TODO)
+	: ecs{ ecs }, audioSystem{ audioSystem } {
 }
 
 /**
@@ -103,7 +102,7 @@ ResourceManager::ResourceManager(ECS& ecs, AudioSystem* audioSystem)
  *  // Automatic when ResourceManager goes out of scope or during engine shutdown.
  */
 ResourceManager::~ResourceManager() {
-	// Serialize the asset meta data here (TODO)
+
 }
 
 /**
@@ -387,7 +386,6 @@ Audio& ResourceManager::loadAudio(const std::string& name, const std::string& fi
     if (!IsSupportedAudioExtension(ext)) {
         ShowAudioErrorPopup("Unsupported audio file format:\n" + filePath + "\nAllowed: .wav .ogg .mp3 .flac .aiff .fsb");
         logger.error("Blocked loading unsupported audio format: " + filePath);
-		return defaultAudio;
     }
 
 	for (auto& [key, audio] : audios) {
@@ -436,7 +434,6 @@ Audio& ResourceManager::getAudio(ResourceID id) {
 	auto found = audios.find(id);
 	if (found == audios.end()) {
 		logger.error("No key found, default audio returned");
-		return defaultAudio;
 	}
 	return found->second;
 }
@@ -1089,10 +1086,6 @@ ResourceID ResourceManager::getNewAssetID() {
 
 	usedIDs.insert(totalResourceID);
 	return totalResourceID;
-}
-
-const Audio& ResourceManager::getDefaultAudio() const {
-	return defaultAudio;
 }
 
 // for imgui assets browser to get textures

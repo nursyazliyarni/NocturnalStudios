@@ -26,6 +26,7 @@
 #include <rapidjson/document.h>
 #include "../include/math/Matrix.h"
 #include "../include/math/Vector.h"
+#include "../include/math/Rand.h"
 
 //-------------------------- Add new ECS component type here --------------------------//
 struct RenderComponent;
@@ -93,9 +94,18 @@ struct Transform : public BaseComponent {
 	};
 
 	CoordinateSpace space = CoordinateSpace::World;
-	bool isVisible{ true }, isRotatable{ false }, isScalable{ false };
+	bool isVisible{ true }, isRotatable{ false }, isScalable{ false }, randomPos{ false }, randomRot{ false };
 
-	Transform():position {}, scale{  }, rotation{  }, height{}{}
+	Transform():position{}, scale{}, rotation{}, height{}{
+		if (randomPos)
+		{
+			position = { Random_Range(-100.f,100.f),Random_Range(-50.f,50.f) };
+		}
+		if (randomRot)
+		{
+			rotation = Random_Range(0.f, 6.28319f);
+		}
+	}
 	Transform(Vector2D pos, Vector2D scl, float rot) :position{ pos }, scale{ scl }, rotation{ rot }, height{} {}
 	/**
 	* Returns the translated vector2d matrix
@@ -145,14 +155,7 @@ struct ImageRenderer: public RenderComponent {
 	glm::vec2 uvMin = glm::vec2(0.0f, 0.0f);
 	glm::vec2 uvMax = glm::vec2(1.0f, 1.0f);
 };
-struct SpriteRenderer : public RenderComponent {
-	std::string spritePath{};
-	void FromJSON(const rapidjson::Value& json);
-	void ToJSON(rapidjson::Value& json, rapidjson::Document::AllocatorType& allocator) const override;	
 
-	glm::vec2 uvMin = glm::vec2(0.0f, 0.0f);
-	glm::vec2 uvMax = glm::vec2(1.0f, 1.0f);
-};
 struct CircleRenderer : public RenderComponent {
 	float radius{ 1.f };
 	void FromJSON(const rapidjson::Value& json);
@@ -230,8 +233,6 @@ struct AIComponent : public BaseComponent {
 	void ToJSON(rapidjson::Value& json, rapidjson::Document::AllocatorType& allocator) const override;
 
 };
-
-
 
 struct BoxCollider :public Collider {
 	float width{ 0.f }, height{ 0.f };
