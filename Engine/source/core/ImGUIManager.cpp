@@ -801,21 +801,11 @@ void ImGuiManager::showEntityListUI(/* Maybe an enum of paramEntityType, Maybe a
 }
 
 void ImGuiManager::showTransformUI(/* A reference to a vector of object list objectList */) {
-	// Fixed size for transform window
-	/*constexpr float width = 300.0f;
-	constexpr float height = 200.0f;*/
 
 	ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDecoration |
 		ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
 
-	// Position the overlay at the top-right corner of the window, below entity list overlay
-	/*ImVec2 windowTopRightPos = { windowBottomRight.x - width, windowTopLeft.y + 550.0f };
-	ImGui::SetNextWindowPos(windowTopRightPos);
-	ImGui::SetNextWindowBgAlpha(0.35f);
-	ImGui::SetNextWindowSize({ width, height });*/
-	/*ImGui::Begin("Transform", nullptr, windowFlags);
-	ImGui::Text("Transform Controls");*/
-
+	//-----------INSPECTOR HEADER-------------------//
 	ImGui::Begin("Inspector", nullptr, windowFlags);
 	ImGui::TextColored(ImVec4(0.8f, 0.9f, 1.0f, 1.0f), "In-Game Property Editor"); // section title
 	ImGui::Separator();
@@ -835,7 +825,7 @@ void ImGuiManager::showTransformUI(/* A reference to a vector of object list obj
 
 	DrawItem& item = scene->items[selectedEntityType];
 
-	// Editable Name Field
+	//---------NAME FIELD---------//
 	ImGui::Text("Name:");
 	ImGui::SameLine();
 
@@ -859,98 +849,124 @@ void ImGuiManager::showTransformUI(/* A reference to a vector of object list obj
 	}
 	ImGui::PopItemWidth();
 
-	ImGui::Separator();
-
 	//disable editing in play mode
 	bool isPlayMode = (m_editorMode == EditorMode::PLAY);
 	if (isPlayMode) {
 		ImGui::BeginDisabled();
 	}
 
-
-	// edits the game objects actual transform
-	bool changed = false;
-	changed |= ImGui::DragFloat("X", &item.x, 0.01f, 0.0f, 1.0f);
-	changed |= ImGui::DragFloat("Y", &item.y, 0.01f, 0.0f, 1.0f);
-	changed |= ImGui::DragFloat("Width", &item.w, 0.01f, 0.0f, 2.0f);
-	changed |= ImGui::DragFloat("Height", &item.h, 0.01f, 0.0f, 2.0f);
-	changed |= ImGui::DragFloat("Angle", &item.angle, 0.5f, -360.0f, 360.0f);
-
-	if (changed) {
-		pushUndoState("Inspector transform change");
-	}
-
-	if (isPlayMode) {
-		ImGui::EndDisabled();
-	}
-
-	//collision controls
+	//--------------------TRANSFORM FIELD---------------------------//
 	ImGui::Separator();
-	ImGui::Text("Collision");
-
-	ImGui::Checkbox("Has Collider", &item.hasCollider);
-
-	if (item.hasCollider)
+	if (ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_DefaultOpen))
 	{
-		ImGui::DragFloat("Collider Offset X", &item.colOffsetX, 0.01f, -1.0f, 1.0f);
-		ImGui::DragFloat("Collider Offset Y", &item.colOffsetY, 0.01f, -1.0f, 1.0f);
-		ImGui::DragFloat("Collider Width", &item.colW, 0.01f, 0.0f, 2.0f);
-		ImGui::DragFloat("Collider Height", &item.colH, 0.01f, 0.0f, 2.0f);
+		// edits the game objects actual transform
+		bool changed = false;
+		changed |= ImGui::DragFloat("X", &item.x, 0.01f, 0.0f, 1.0f);
+		changed |= ImGui::DragFloat("Y", &item.y, 0.01f, 0.0f, 1.0f);
+		changed |= ImGui::DragFloat("Width", &item.w, 0.01f, 0.0f, 2.0f);
+		changed |= ImGui::DragFloat("Height", &item.h, 0.01f, 0.0f, 2.0f);
+		changed |= ImGui::DragFloat("Angle", &item.angle, 0.5f, -360.0f, 360.0f);
 
-		if (ImGui::Button("Reset Collider to Sprite")) {
-			item.colOffsetX = item.colOffsetY = 0.0f;
-			item.colW = item.w;
-			item.colH = item.h;
+		if (changed) {
+			pushUndoState("Inspector transform change");
+		}
+	}
+	
+	//-----------COLLISION FIELD----------------//
+	ImGui::Separator();
+	if (ImGui::CollapsingHeader("Collision", ImGuiTreeNodeFlags_DefaultOpen))
+	{
+		ImGui::Checkbox("Has Collider", &item.hasCollider);
+
+		if (item.hasCollider)
+		{
+			ImGui::DragFloat("Collider Offset X", &item.colOffsetX, 0.01f, -1.0f, 1.0f);
+			ImGui::DragFloat("Collider Offset Y", &item.colOffsetY, 0.01f, -1.0f, 1.0f);
+			ImGui::DragFloat("Collider Width", &item.colW, 0.01f, 0.0f, 2.0f);
+			ImGui::DragFloat("Collider Height", &item.colH, 0.01f, 0.0f, 2.0f);
+
+			if (ImGui::Button("Reset Collider to Sprite")) {
+				item.colOffsetX = item.colOffsetY = 0.0f;
+				item.colW = item.w;
+				item.colH = item.h;
+			}
 		}
 	}
 
-	/*if (changed)
+	//-----------------TEXTURE FIELD----------------------------//
+	ImGui::Separator();
+	if (ImGui::CollapsingHeader("Texture", ImGuiTreeNodeFlags_DefaultOpen))
 	{
-		logger.log("[ImGui] Updated transform of " + item.name);
-	}*/
-	/*
-	// @Todo (axewhy): Change this with the selected entity transform. This is only a placeholder
-	static Vector2D position(0.f, 0.f);
-	static Matrix<3> rotationMatrix = Matrix<3>().Identity();
-	static Matrix<3> scaleMatrix = Matrix<3>().Identity();
+		// Display current texture
+		if (item.tex != 0) {
+			// Show texture preview thumbnail (64x64)
+			constexpr float previewSize = 64.0f;
+			ImGui::Image((ImTextureID)(intptr_t)item.tex, ImVec2(previewSize, previewSize));
 
+			// Find texture name from ResourceManager
+			std::string textureName = "Unknown";
+			auto& textures = resourceManager.getTextures();
+			for (auto& [id, texFile] : textures) {
+				GLuint texID = resourceManager.getGLTextureFromFile(texFile.getFilePath());
+				if (texID == item.tex) {
+					textureName = texFile.getKey();
+					break;
+				}
+			}
 
-	// Position controls
-	ImGui::SliderFloat("Position X", &position.x(), -1000.0f, 1000.0f);
-	ImGui::SliderFloat("Position Y", &position.y(), -1000.0f, 1000.0f);
-
-	// Scaling controls
-	ImGui::SliderFloat("Scale X", &scaleMatrix[0][0], 0.1f, 10.0f);
-	ImGui::SliderFloat("Scale Y", &scaleMatrix[1][1], 0.1f, 10.0f);
-
-	// Rotation controls (in degrees)
-	static float rotationDegrees = 0.0f;
-	ImGui::SliderFloat("Rotation", &rotationDegrees, -180.0f, 180.0f);
-	*/
-
-	// Showing current game objects in scene
-	/*if (ImGui::CollapsingHeader("Scene Object Transform", ImGuiTreeNodeFlags_DefaultOpen))
-	{
-		Scene* scene = gsm.getCurrentScene();
-		if (scene && selectedEntityType < scene->items.size())
-		{
-			DrawItem& item = scene->items[selectedEntityType];
-			ImGui::Text("Editing: %s", item.name.empty() ? "(Unnamed)" : item.name.c_str());
-			ImGui::Separator();
-
-			ImGui::DragFloat("X", &item.x, 0.01f, 0.0f, 1.0f);
-			ImGui::DragFloat("Y", &item.y, 0.01f, 0.0f, 1.0f);
-			ImGui::DragFloat("Width", &item.w, 0.01f, 0.0f, 2.0f);
-			ImGui::DragFloat("Height", &item.h, 0.01f, 0.0f, 2.0f);
-			ImGui::DragFloat("Angle", &item.angle, 0.5f, -360.0f, 360.0f);
+			// Display info next to thumbnail
+			ImGui::SameLine();
+			ImGui::BeginGroup();
+			ImGui::Text("Name: %s", textureName.c_str());
+			ImGui::Text("ID: %u", item.tex);
+			ImGui::EndGroup();
 		}
-		else
-		{
-			ImGui::TextDisabled("No object selected or invalid index.");
+		else {
+			ImGui::TextDisabled("No texture assigned");
 		}
-	}*/
 
-	// --- Audio for this object -------------------------------------------------
+		// Texture Selector Dropdown
+		if (ImGui::BeginCombo("Select Texture", "Change texture...")) {
+			auto& textures = resourceManager.getTextures();
+
+			for (auto& [id, texFile] : textures) {
+				const std::string& texName = texFile.getKey();
+				const std::string& texPath = texFile.getFilePath();
+				GLuint texID = resourceManager.getGLTextureFromFile(texPath);
+
+				if (texID == 0) continue;
+
+				bool isSelected = (item.tex == texID);
+
+				// Show small thumbnail in dropdown (24x24)
+				ImGui::Image((ImTextureID)(intptr_t)texID, ImVec2(24, 24));
+				ImGui::SameLine();
+
+				if (ImGui::Selectable(texName.c_str(), isSelected)) {
+					item.tex = texID;
+					logger.log("[Inspector] Changed texture to: " + texName);
+					pushUndoState("Change texture");
+				}
+
+				if (isSelected) {
+					ImGui::SetItemDefaultFocus();
+				}
+			}
+
+			ImGui::EndCombo();
+		}
+
+		// Remove texture button
+		if (item.tex != 0) {
+			if (ImGui::Button("Remove Texture")) {
+				item.tex = 0;
+				logger.log("[Inspector] Removed texture");
+				pushUndoState("Remove texture");
+			}
+		}
+	}
+
+	//-----------------AUDIO FIELD------------------------//
 	ImGui::Separator();
 	if (ImGui::CollapsingHeader("Audio", ImGuiTreeNodeFlags_DefaultOpen))
 	{
@@ -1130,6 +1146,10 @@ void ImGuiManager::showTransformUI(/* A reference to a vector of object list obj
 		}
 	}
 
+	//re-enable editing in edit mode
+	if (isPlayMode) {
+		ImGui::EndDisabled();
+	}
 
 	ImGui::End();
 }
