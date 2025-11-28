@@ -39,9 +39,9 @@ class ResourceManager;
 struct DrawItem {
     std::string name; std::string item_type;
     GLuint tex = 0;
-    float x = 0, y = 0, w = 0, h = 0, angle = 0; // normalized
-    float health_bar, hunger_bar, sanity_bar;
-    float slower_decreasing_rate, normal_decreasing_rate, faster_decreasing_rate, penalty_decreasing_rate;
+    //float x = 0, y = 0, w = 0, h = 0, angle = 0; // normalized
+    //float health_bar, hunger_bar, sanity_bar;
+    //float slower_decreasing_rate, normal_decreasing_rate, faster_decreasing_rate, penalty_decreasing_rate;
     bool still_alive, is_draggable, is_dragging;
 
     EntityID entityID = INVALID_ENTITY_ID;
@@ -176,7 +176,7 @@ private:
 
     std::function<void(const std::string&)> onSceneChanged;
    
-    void writeAllComponentsToJSON(EntityID id,rapidjson::Value& overridesObj,rapidjson::Document::AllocatorType& alloc);
+    void writeAllComponentsToJSONArray(EntityID id,rapidjson::Value& overridesObj,rapidjson::Document::AllocatorType& alloc);
 
 
     AnimationSystem animationSystem_;

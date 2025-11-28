@@ -4,43 +4,64 @@
         {
             "prefab": "button",
             "name": "btn_play",
-            "overrides": {}
+            "overrides": []
         },
         {
             "prefab": "button",
             "name": "btn_load",
-            "overrides": {}
+            "overrides": []
         },
         {
             "prefab": "button",
             "name": "btn_settings",
-            "overrides": {}
+            "overrides": []
         },
         {
             "prefab": "button",
             "name": "btn_quit",
-            "overrides": {}
+            "overrides": []
         },
         {
             "prefab": "audio_emitter_menu",
             "name": "menu_bgm_emitter",
-            "overrides": {
-                "type": "Transform",
-                "position": {
-                    "x": 0.0,
-                    "y": 0.0
+            "overrides": [
+                {
+                    "type": "AudioData",
+                    "audios": [
+                        {
+                            "resource_id": 5,
+                            "name": "BGM_Iris_Luminara_Loop_ROUGH",
+                            "loop": true,
+                            "to_play_at_start": true,
+                            "locality": false,
+                            "persist_on_entity_destruction": false,
+                            "persist_on_scene_change": true,
+                            "volume": 0.6000000238418579,
+                            "pitch": 1.0,
+                            "distance_mult": 1.0,
+                            "group": "Music"
+                        }
+                    ],
+                    "listener": false
                 },
-                "scale": {
-                    "x": 0.0,
-                    "y": 0.0
-                },
-                "rotation": 0.0,
-                "height": 0.0,
-                "space": "world",
-                "is_visible": false,
-                "rotatable": false,
-                "scalable": false
-            }
+                {
+                    "type": "Transform",
+                    "position": {
+                        "x": 0.0,
+                        "y": 0.0
+                    },
+                    "scale": {
+                        "x": 0.0,
+                        "y": 0.0
+                    },
+                    "rotation": 0.0,
+                    "height": 0.0,
+                    "space": "world",
+                    "is_visible": false,
+                    "rotatable": false,
+                    "scalable": false
+                }
+            ]
         }
     ]
 }

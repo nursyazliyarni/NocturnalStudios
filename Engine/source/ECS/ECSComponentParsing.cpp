@@ -97,7 +97,7 @@ void Collider::FromJSON(const rapidjson::Value& json){}
 void Collider::ToJSON(rapidjson::Value& json, rapidjson::Document::AllocatorType& allocator) const {}
 
 void RenderComponent::FromJSON(const rapidjson::Value& json) {
-	const char* members[]{ "opacity","is_visible","color_tint","color_to_add"};
+	const char* members[]{ "opacity","is_visible","color_tint","color_to_add","width","height"};
 	for (int i{};i<4;i++)
 	{
 		if (json.HasMember(members[i]))
@@ -154,6 +154,16 @@ void RenderComponent::FromJSON(const rapidjson::Value& json) {
 					if (json[members[i]].HasMember("a") && json[members[i]]["a"].IsFloat())colorToAdd.a() = json[members[i]]["a"].GetFloat();
 				}
 				break;
+			case 4://width
+				if (json[members[i]].IsFloat())
+				{
+					width = json[members[i]].GetFloat();
+				}
+			case 5://height
+				if (json[members[i]].IsFloat())
+				{
+					height = json[members[i]].GetFloat();
+				}
 			}
 		}
 	}
@@ -304,6 +314,8 @@ void Transform::FromJSON(const rapidjson::Value& json) {
 }
 
 void Transform::ToJSON(rapidjson::Value& json, rapidjson::Document::AllocatorType& allocator) const {
+	
+
 	json.SetObject();
 	rapidjson::Value typeVal;
 	typeVal.SetString("Transform", allocator);
@@ -454,22 +466,40 @@ void AnimalBehavior::FromJSON(const rapidjson::Value& json) {
 	const char* members[]{
 		"health_bar",//0
 		"hunger_bar",//1
-		"sanity_bar"//2
+		"sanity_bar",//2
+		"slower_decreasing_rate",//3
+		"normal_decreasing_rate",//4
+		"faster_decreasing_rate",//5
+		"penalty_decreasing_rate"//6
+
 	};
-	for (int i{}; i < 3; i++)
+	for (int i{}; i < 7; i++)
 	{
 		if (json.HasMember(members[i])&& json[members[i]].IsDouble())
 		{
+			double jvalue = json[members[i]].GetDouble();
 			switch (i)
 			{
 			case 0://health bar
-				health_bar = json[members[i]].GetDouble();
+				health_bar = jvalue;
 				break;
 			case 1://hunger
-				hunger_bar = json[members[i]].GetDouble();
+				hunger_bar = jvalue;
 				break;
 			case 2://sanity
-				sanity_bar = json[members[i]].GetDouble();
+				sanity_bar = jvalue;
+				break;
+			case 3: //slower dec rate
+				slower_decreasing_rate = jvalue;
+				break;
+			case 4: //normal dec rate
+				normal_decreasing_rate = jvalue;
+				break;
+			case 5: //faster dec rate
+				faster_decreasing_rate = jvalue;
+				break;
+			case 6: //penalty dec rate
+				penalty_decreasing_rate = jvalue;
 				break;
 			}
 		}
@@ -701,6 +731,7 @@ static const char* AudioGroupToString(AudioData::IndividualAudioData::Group grou
 }
 
 void AudioData::FromJSON(const rapidjson::Value& json) {
+
     audios.clear();
     listener = false;
 
@@ -754,6 +785,9 @@ void AudioData::FromJSON(const rapidjson::Value& json) {
 void AudioData::ToJSON(rapidjson::Value& json, rapidjson::Document::AllocatorType& alloc) const {
     json.SetObject();
 
+	rapidjson::Value typeVal;
+	typeVal.SetString("AudioData", alloc);
+	json.AddMember("type", typeVal, alloc);
     rapidjson::Value aud(rapidjson::kArrayType);
     for (const auto& a : audios) {
         rapidjson::Value item(rapidjson::kObjectType);

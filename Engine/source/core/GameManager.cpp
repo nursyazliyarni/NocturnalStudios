@@ -146,10 +146,11 @@ bool GameManager::saveScene( std::string scenename, const char* scenesJsonPath, 
                 nvs.SetString(i.name.c_str(), alloc);
                 entObj.AddMember("name", nvs, alloc);
                 //overrides
-                rapidjson::Value overrides(rapidjson::kObjectType);
+                rapidjson::Value overrides(rapidjson::kArrayType);
                 if (ecs_.findEntityByName(i.name)!=INVALID_ENTITY_ID&&!ecs_.getEntityComponents(ecs_.findEntityByName(i.name)).empty())
                 {
-                    writeAllComponentsToJSON(ecs_.findEntityByName(i.name), overrides, alloc);
+                    logger.log("Overrides for object: " + i.name+" found in ECS entity "+ std::to_string(ecs_.findEntityByName(i.name)));
+                    writeAllComponentsToJSONArray(ecs_.findEntityByName(i.name), overrides, alloc);
                 }
                 entObj.AddMember("overrides", overrides, alloc);
             }
@@ -168,6 +169,7 @@ bool GameManager::saveScene( std::string scenename, const char* scenesJsonPath, 
     fclose(fp);
     return true;
 }
+
 
 
 bool GameManager::load(const char* prefabsPath, const char* scenesPath, TextureStore& tex) {
@@ -247,76 +249,10 @@ bool GameManager::load(const char* prefabsPath, const char* scenesPath, TextureS
             for (const auto& e : jsS["entities"].GetArray()) {
                 if (!e.IsObject()) continue;
 
-                PrefabDef def;
-                DrawItem di{};
-                if (e.HasMember("prefab") && e["prefab"].IsString()) {
-                    auto itp = prefabDefaults.find(e["prefab"].GetString());
-                    if (itp != prefabDefaults.end()) def = itp->second;
-                    if (e.HasMember("prefab") && e["prefab"].IsString()) {
-                        di.item_type = e["prefab"].GetString();  // always safe
+                if (e.HasMember("prefab"))
+                {
 
-                        auto itp = prefabDefaults.find(di.item_type);
-                        if (itp != prefabDefaults.end()) {
-                            def = itp->second;
-                        }
-                        else {
-                            logger.log(std::string("[load] prefab not found in prefabs.json: ") + di.item_type);
-                        }
-                    }
                 }
-
-                di.w = def.w;
-                di.h = def.h;
-                di.angle = def.angle;
-
-                if (e.HasMember("overrides") && e["overrides"].IsObject()) {
-                    const auto& ov = e["overrides"];
-                    if (ov.HasMember("x") && ov["x"].IsNumber())      di.x = ov["x"].GetFloat();
-                    if (ov.HasMember("y") && ov["y"].IsNumber())      di.y = ov["y"].GetFloat();
-                    if (ov.HasMember("w") && ov["w"].IsNumber())      di.w = ov["w"].GetFloat();
-                    if (ov.HasMember("h") && ov["h"].IsNumber())      di.h = ov["h"].GetFloat();
-                    if (ov.HasMember("angle") && ov["angle"].IsNumber()) di.angle = ov["angle"].GetFloat();
-                    if (ov.HasMember("is_draggable") && ov["is_draggable"].IsBool()) di.is_draggable = ov["is_draggable"].GetBool();
-                    if (ov.HasMember("is_dragging") && ov["is_dragging"].IsBool()) di.is_dragging = ov["is_dragging"].GetBool();
-
-         
-
-                    if (ov.HasMember("sprite_path") && ov["sprite_path"].IsString()) {
-                        std::string sp = toAssetsPath(ov["sprite_path"].GetString());
-                        di.tex = tex.get(sp);
-                    }
-                }
-
-                if (e.HasMember("animal_properties") && e["animal_properties"].IsObject()) {
-                    const auto& animal = e["animal_properties"];
-                    if (animal.HasMember("health_bar") && animal["health_bar"].IsNumber()) di.health_bar = animal["health_bar"].GetFloat();
-                    if (animal.HasMember("hunger_bar") && animal["hunger_bar"].IsNumber()) di.hunger_bar = animal["hunger_bar"].GetFloat();
-                    if (animal.HasMember("sanity_bar") && animal["sanity_bar"].IsNumber()) di.sanity_bar = animal["sanity_bar"].GetFloat();
-
-                    if (animal.HasMember("slower_decreasing_rate") && animal["slower_decreasing_rate"].IsNumber()) di.slower_decreasing_rate = animal["slower_decreasing_rate"].GetFloat();
-                    if (animal.HasMember("normal_decreasing_rate") && animal["normal_decreasing_rate"].IsNumber()) di.normal_decreasing_rate = animal["normal_decreasing_rate"].GetFloat();
-                    if (animal.HasMember("faster_decreasing_rate") && animal["faster_decreasing_rate"].IsNumber()) di.faster_decreasing_rate = animal["faster_decreasing_rate"].GetFloat();
-                    if (animal.HasMember("penalty_decreasing_rate") && animal["penalty_decreasing_rate"].IsNumber()) di.penalty_decreasing_rate = animal["penalty_decreasing_rate"].GetFloat();
-                    di.still_alive = true;
-                }
-
-                if (e.HasMember("name") && e["name"].IsString())
-                    di.name = e["name"].GetString();
-
-
-                sc.items.push_back(di);
-
-                ClickRegion cr;
-                cr.x = di.x; cr.y = di.y; cr.w = di.w; cr.h = di.h;
-                cr.name = di.name;
-                if (e.HasMember("goto") && e["goto"].IsString()) cr.gotoScene = e["goto"].GetString();
-                if (e.HasMember("quit") && e["quit"].IsBool())   cr.quit = e["quit"].GetBool();
-                if (e.HasMember("start") && e["start"].IsBool())  cr.start = e["start"].GetBool();
-
-                // store the region if it does ANY action
-                if (cr.quit || cr.start || !cr.gotoScene.empty())
-                    sc.clicks.push_back(cr);
-
 
             }
         }
@@ -327,7 +263,7 @@ bool GameManager::load(const char* prefabsPath, const char* scenesPath, TextureS
     initialScenes_ = scenes;
 
 
-	//temp: add a flamingo entity with sprite animation to ECS
+    //temp: add a flamingo entity with sprite animation to ECS
     {
         EntityID flamingo = ecs_.createEntity();
 
@@ -500,7 +436,6 @@ void GameManager::render(Renderer& r, Input& input, GLFWwindow* window, int w, i
                 r.texturedTri(di.tex, px, py, pw, ph);
             }
         }
-
         else {
             Cam2D_Apply(currentScene, px, py, pw, ph, w, h);
             r.texturedTri(di.tex, px, py, pw, ph);
@@ -909,17 +844,59 @@ bool GameManager::reloadCurrentScene(TextureStore& tex) {
  * \param overridesObj
  * \param alloc
  */
-void GameManager::writeAllComponentsToJSON(EntityID id, rapidjson::Value& obj, rapidjson::Document::AllocatorType& alloc) {
+void GameManager::writeAllComponentsToJSONArray(EntityID id, rapidjson::Value& obj, rapidjson::Document::AllocatorType& alloc) {
 
-    if (ecs_.getComponent<AudioData>(id))ecs_.getComponent<AudioData>(id)->ToJSON(obj, alloc);
-    if (ecs_.getComponent<Transform>(id))ecs_.getComponent<Transform>(id)->ToJSON(obj, alloc);
-    if (ecs_.getComponent<ImageRenderer>(id))ecs_.getComponent<ImageRenderer>(id)->ToJSON(obj, alloc);
-    if (ecs_.getComponent<CircleRenderer>(id))ecs_.getComponent<CircleRenderer>(id)->ToJSON(obj, alloc);
-    if (ecs_.getComponent<RectRenderer>(id))ecs_.getComponent<RectRenderer>(id)->ToJSON(obj, alloc);
-    if (ecs_.getComponent<AnimalBehavior>(id))ecs_.getComponent<AnimalBehavior>(id)->ToJSON(obj, alloc);
-    if (ecs_.getComponent<PhysicsComponent>(id))ecs_.getComponent<PhysicsComponent>(id)->ToJSON(obj, alloc);
+    if (ecs_.getComponent<AudioData>(id)) { 
+        rapidjson::Value entObj(rapidjson::kObjectType);
+        ecs_.getComponent<AudioData>(id)->ToJSON(entObj, alloc); 
+        obj.PushBack(entObj, alloc);
+    }
 
-    if (ecs_.getComponent<AIComponent>(id))ecs_.getComponent<AIComponent>(id)->ToJSON(obj, alloc);
+    if (ecs_.getComponent<Transform>(id)) { 
+        rapidjson::Value entObj(rapidjson::kObjectType);
+        ecs_.getComponent<Transform>(id)->ToJSON(entObj, alloc);
+        obj.PushBack(entObj, alloc);
+    }
 
-    if (ecs_.getComponent<BoxCollider>(id))ecs_.getComponent<BoxCollider>(id)->ToJSON(obj, alloc);
+    if (ecs_.getComponent<ImageRenderer>(id)) { 
+        rapidjson::Value entObj(rapidjson::kObjectType);
+        ecs_.getComponent<ImageRenderer>(id)->ToJSON(entObj, alloc);
+        obj.PushBack(entObj, alloc);
+    }
+
+    if (ecs_.getComponent<CircleRenderer>(id)){
+        rapidjson::Value entObj(rapidjson::kObjectType);
+        ecs_.getComponent<CircleRenderer>(id)->ToJSON(entObj, alloc);
+        obj.PushBack(entObj, alloc);
+    }
+
+    if (ecs_.getComponent<RectRenderer>(id)) { 
+        rapidjson::Value entObj(rapidjson::kObjectType);
+        ecs_.getComponent<RectRenderer>(id)->ToJSON(entObj, alloc); 
+        obj.PushBack(entObj, alloc);
+    }
+
+    if (ecs_.getComponent<AnimalBehavior>(id)) { 
+        rapidjson::Value entObj(rapidjson::kObjectType);
+        ecs_.getComponent<AnimalBehavior>(id)->ToJSON(entObj, alloc); 
+        obj.PushBack(entObj, alloc);
+    }
+
+    if (ecs_.getComponent<PhysicsComponent>(id)) { 
+        rapidjson::Value entObj(rapidjson::kObjectType);
+        ecs_.getComponent<PhysicsComponent>(id)->ToJSON(entObj, alloc);
+        obj.PushBack(entObj, alloc);
+    }
+
+    if (ecs_.getComponent<AIComponent>(id)) {
+        rapidjson::Value entObj(rapidjson::kObjectType);
+        ecs_.getComponent<AIComponent>(id)->ToJSON(entObj, alloc);
+        obj.PushBack(entObj, alloc);
+    }
+
+    if (ecs_.getComponent<BoxCollider>(id)) { 
+        rapidjson::Value entObj(rapidjson::kObjectType);
+        ecs_.getComponent<BoxCollider>(id)->ToJSON(entObj, alloc); 
+        obj.PushBack(entObj, alloc);
+    }
 }
