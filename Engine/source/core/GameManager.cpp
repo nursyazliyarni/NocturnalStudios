@@ -457,7 +457,7 @@ void GameManager::render(Renderer& r, Input& input, GLFWwindow* window, int w, i
 
     auto it = scenes.find(currentScene);
     if (it == scenes.end()) {  return; }
-    const Scene& sc = it->second;
+    Scene& sc = it->second;
 
     // background (fullscreen) � NOTE uniform must be "bg_texture"
     if (it->first == "MainMenu") {
@@ -514,13 +514,20 @@ void GameManager::render(Renderer& r, Input& input, GLFWwindow* window, int w, i
 
     // entities (normalized ? pixels)
    // entities (normalized → pixels) — draw JSON **only** if there is NO ECS entity by the same name
-    for (const auto& di : sc.items) {
+    for (auto& di : sc.items) {
         // If an ECS entity with this name exists, we skip the JSON-drawn duplicate
         if (!di.name.empty()) {
             EntityID eid = ecs_.findEntityByName(di.name);
             if (eid != INVALID_ENTITY_ID) {
                 continue; // ECS is the source of truth for this sprite
             }
+        }
+
+        if (di.hasCollider && (di.colW <= 0.0f || di.colH <= 0.0f)) {
+            di.colOffsetX = 0.0f;
+            di.colOffsetY = 0.0f;
+            di.colW = di.w;   //same size as sprite
+            di.colH = di.h;
         }
 
         if (di.tex == 0) continue;
