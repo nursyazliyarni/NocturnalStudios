@@ -90,11 +90,11 @@ ImGuiManager::ImGuiManager(Window& w, Renderer& r,
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 	io.ConfigDockingWithShift = false;  // Dock without holding Shift
 
-	#ifdef IMGUI_SAVE_LAYOUT
-		io.IniFilename = "editor_layout.ini";  // Save layout
-	#else
-		io.IniFilename = nullptr;  // Don't save layout
-	#endif
+#ifdef IMGUI_SAVE_LAYOUT
+	io.IniFilename = "editor_layout.ini";  // Save layout
+#else
+	io.IniFilename = nullptr;  // Don't save layout
+#endif
 
 	ImGui_ImplGlfw_InitForOpenGL(mainWindow.handle(), /*install_callbacks=*/false);
 	ImGui_ImplOpenGL3_Init("#version 330");
@@ -312,18 +312,18 @@ void ImGuiManager::showViewportWindowUI() {
 	bool isPlayMode = (m_editorMode == EditorMode::PLAY);
 
 	// Logic timing (animal state update)
-	if (isPlayMode) {
-		logicTime = TimeUtils::MeasureSeconds([&]() {
-			logic.check_animal_status(gsm);
-			auto drag_value = logic.check_item_status(
-				gsm, get_mousePOS(true), input, mainWindow.handle());
-			logic.update_animal_ALLstate(gsm, getDeltaTime(deltaTime));
-			logic.drag_drop(gsm, get_mousePOS(true), input, mainWindow.handle(), drag_value);
-			});
-	}
-	else {
-		logicTime = 0.0;
-	}
+	//if (isPlayMode) {
+	//	logicTime = TimeUtils::MeasureSeconds([&]() {
+	//		logic.check_animal_status(gsm);
+	//		auto drag_value = logic.check_item_status(
+	//			gsm, get_mousePOS(true), input, mainWindow.handle());
+	//		logic.update_animal_ALLstate(gsm, getDeltaTime(deltaTime));
+	//		logic.drag_drop(gsm, get_mousePOS(true), input, mainWindow.handle(), drag_value);
+	//		});
+	//}
+	//else {
+	//	logicTime = 0.0;
+	//}
 
 	// Physics timing scope
 	if (isPlayMode) {
@@ -384,14 +384,41 @@ void ImGuiManager::showViewportWindowUI() {
 	);
 	ImVec2 imgMax = ImVec2(imgMin.x + vw, imgMin.y + vh);
 
+	// mouse in viewport-normalised coords [0,1]
+	ImVec2 mouseScreen = ImGui::GetMousePos();
+	ImVec2 mouseViewport{
+		(mouseScreen.x - imgMin.x) / static_cast<float>(vw),
+		(mouseScreen.y - imgMin.y) / static_cast<float>(vh)
+	};
+	mouseViewport.x = std::clamp(mouseViewport.x, 0.0f, 1.0f);
+	mouseViewport.y = std::clamp(mouseViewport.y, 0.0f, 1.0f);
+
+	isPlayMode = (m_editorMode == EditorMode::PLAY);
+
+	// Logic timing (animal state update) in PLAY mode only
+	if (isPlayMode) {
+		logicTime = TimeUtils::MeasureSeconds([&]() {
+			logic.check_animal_status(gsm);
+			auto drag_value = logic.check_item_status(
+				gsm, mouseViewport, input, mainWindow.handle());
+			logic.update_animal_ALLstate(gsm, deltaTime);
+			logic.drag_drop(
+				gsm, mouseViewport, input, mainWindow.handle(), drag_value);
+			});
+	}
+	else {
+		logicTime = 0.0;
+	}
+
 	//Store rect relative to the main window (you were already doing this)
 	vpMinWin = ImVec2(imgMin.x - windowTopLeft.x, imgMin.y - windowTopLeft.y);
 	vpMaxWin = ImVec2(imgMax.x - windowTopLeft.x, imgMax.y - windowTopLeft.y);
 
-	//handle click and drag picking on scene items
+	//handle click and drag picking on scene items (editor)
 	handleViewportPicking(imgMin, imgMax, vw, vh);
 
 	ImGui::End();
+
 }
 
 
@@ -727,6 +754,13 @@ void ImGuiManager::showEntityListUI(/* Maybe an enum of paramEntityType, Maybe a
 			EntityID e = ecs.createEntity();
 			newItem.entityID = e;
 
+			//default collider settings
+			newItem.hasCollider = true;
+			newItem.colOffsetX = 0.0f;
+			newItem.colOffsetY = 0.0f;
+			newItem.colW = newItem.w;
+			newItem.colH = newItem.h;
+
 			// Add it to the current scene
 			sceneMut->items.push_back(newItem);
 			selectedEntityType = static_cast<unsigned int>(sceneMut->items.size() - 1);
@@ -849,6 +883,26 @@ void ImGuiManager::showTransformUI(/* A reference to a vector of object list obj
 
 	if (isPlayMode) {
 		ImGui::EndDisabled();
+	}
+
+	//collision controls
+	ImGui::Separator();
+	ImGui::Text("Collision");
+
+	ImGui::Checkbox("Has Collider", &item.hasCollider);
+
+	if (item.hasCollider)
+	{
+		ImGui::DragFloat("Collider Offset X", &item.colOffsetX, 0.01f, -1.0f, 1.0f);
+		ImGui::DragFloat("Collider Offset Y", &item.colOffsetY, 0.01f, -1.0f, 1.0f);
+		ImGui::DragFloat("Collider Width", &item.colW, 0.01f, 0.0f, 2.0f);
+		ImGui::DragFloat("Collider Height", &item.colH, 0.01f, 0.0f, 2.0f);
+
+		if (ImGui::Button("Reset Collider to Sprite")) {
+			item.colOffsetX = item.colOffsetY = 0.0f;
+			item.colW = item.w;
+			item.colH = item.h;
+		}
 	}
 
 	/*if (changed)
@@ -2293,21 +2347,32 @@ void ImGuiManager::handleViewportPicking(const ImVec2& imgMin,
 	for (int i = static_cast<int>(items.size()) - 1; i >= 0; --i) {
 		const DrawItem& it = items[static_cast<size_t>(i)];
 
-		float halfW = it.w * 0.5f;
-		float halfH = it.h * 0.5f;
+		float minX, maxX, minY, maxY;
 
-		float minX = it.x - halfW;
-		float maxX = it.x + halfW;
-		float minY = it.y - halfH;
-		float maxY = it.y + halfH;
+		if (it.hasCollider && it.colW > 0.0f && it.colH > 0.0f) {
+			// collider is also top-left + size in normalized space
+			minX = it.x + it.colOffsetX;
+			minY = it.y + it.colOffsetY;
+			maxX = minX + it.colW;
+			maxY = minY + it.colH;
+		}
+		else {
+			// sprite rect: top-left (x,y) with width/height
+			minX = it.x;
+			minY = it.y;
+			maxX = it.x + it.w;
+			maxY = it.y + it.h;
+		}
 
 		if (localX >= minX && localX <= maxX &&
 			localY >= minY && localY <= maxY)
 		{
 			hitIndex = i;
-			break;  //first match from the end = top-most
+			break;
 		}
 	}
+
+
 
 	m_hoveredItem = hitIndex;
 
@@ -2353,5 +2418,54 @@ void ImGuiManager::handleViewportPicking(const ImVec2& imgMin,
 	if (!ImGui::IsMouseDown(ImGuiMouseButton_Left)) {
 		m_isDragging = false;
 		m_draggedItem = -1;
+	}
+}
+
+void ImGuiManager::handleExternalFileDrops()
+{
+	//get & clear any file paths dropped onto the GLFW window
+	auto files = mainWindow.consumeDroppedFiles();
+	if (files.empty())
+		return;
+
+	logger.log("[Drop] handleExternalFileDrops: got " + std::to_string(files.size()) + " file(s)");
+
+	for (const std::string& src : files)
+	{
+		try {
+			std::filesystem::path srcPath(src);
+
+			//only support images for now
+			std::string ext = srcPath.extension().string();
+			std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
+			if (ext != ".png" && ext != ".jpg" && ext != ".jpeg" && ext != ".bmp")
+			{
+				logger.warning("[Drop] Ignored non-image file: " + src);
+				continue;
+			}
+
+			// Copy into assets/textures
+			std::filesystem::path destFolder = "assets/textures";
+			std::filesystem::create_directories(destFolder);
+
+			std::filesystem::path dest = destFolder / srcPath.filename();
+			std::filesystem::copy_file(
+				srcPath, dest,
+				std::filesystem::copy_options::overwrite_existing
+			);
+
+			//register with ResourceManager so it appears in the thumbnail list
+			std::string key = dest.stem().string();
+			std::string fullPath = dest.string();
+
+			resourceManager.loadTexture(key, fullPath);
+			resourceManager.getGLTextureFromFile(fullPath); // create GL texture
+
+			logger.log("[Drop] Imported texture via OS drag-drop: " + fullPath);
+		}
+		catch (const std::exception& e)
+		{
+			logger.error(std::string("[Drop] Failed to import dropped file: ") + e.what());
+		}
 	}
 }
