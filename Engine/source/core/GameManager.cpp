@@ -501,9 +501,9 @@ void GameManager::render(Renderer& r, Input& input, GLFWwindow* window, int w, i
 
         if (di.name=="flamingo"||di.name=="seal"||di.name=="owl"||di.name=="horse") {
             if (di.still_alive) {
-                r.rect(w / 2, h / 2 - 200, di.health_bar * 4, 25, 1, 0, 0);
-                r.rect(w / 2, h / 2 - 150, di.hunger_bar * 4, 25, 0, 1, 0);
-                r.rect(w / 2, h / 2 - 100, di.sanity_bar * 4, 25, 0, 0, 1);
+                r.rect(w / 2 + 310, h / 2 - 101, di.health_bar * 3, 25, 1, 0, 0);
+                r.rect(w / 2 + 310, h / 2 - 51, di.hunger_bar * 3, 25, 0, 1, 0);
+                r.rect(w / 2 + 310, h / 2 - 1, di.sanity_bar * 3, 25, 0, 0, 1);
 
                 Cam2D_Apply(currentScene, px, py, pw, ph, w, h);
                 r.texturedTri(di.tex, px, py, pw, ph);
@@ -652,19 +652,30 @@ void GameManager::renderWithHUD(Renderer& r,
         const Font& f2 = resourceManager.getFont(*s_fontFPS);
 
         static double accumTime = 0.0;
+        static int    frameCount = 0;
         static double fpsDisplay = 0.0;
 
         // avoid division by zero
         if (dt <= 0.0) dt = 1e-6;
 
-        accumTime += dt;
+        // 🔹 IF your dt is in MILLISECONDS, convert to seconds here:
+        double dtSeconds = dt;
+        // if you know dt is in ms, UNCOMMENT this:
+        // dtSeconds = dt * 0.001;   // ms → s
+
+        accumTime += dtSeconds;
+        ++frameCount;
+
+        // Update FPS about once per second
         if (accumTime >= 1.0) {
-            fpsDisplay = 1.0 / dt;
+            fpsDisplay = static_cast<double>(frameCount) / accumTime; // avg FPS
             accumTime = 0.0;
+            frameCount = 0;
         }
 
         int fpsInt = static_cast<int>(std::round(fpsDisplay));
         std::string fpsText = "FPS: " + std::to_string(fpsInt);
+
 
         float marginX = 0.02f * w;
         float offsetY = compact ? 0.12f : 0.15f; // pull closer when small
@@ -683,6 +694,7 @@ void GameManager::renderWithHUD(Renderer& r,
         );
     }
 }
+
 
 
 void GameManager :: imGUIlessRender(Renderer& r, Input& input, GLFWwindow* window, int w, int h) {

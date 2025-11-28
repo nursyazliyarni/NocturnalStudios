@@ -352,7 +352,7 @@ void ImGuiManager::showViewportWindowUI() {
 			mainWindow.handle(),
 			vw,
 			vh,
-			isPlayMode ? deltaTime : 0.0,  // Pass 0 deltaTime in edit mode
+			deltaTime,  // Pass 0 deltaTime in edit mode
 			resourceManager,
 			m_showFPS
 		);
