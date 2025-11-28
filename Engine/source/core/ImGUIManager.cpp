@@ -835,7 +835,30 @@ void ImGuiManager::showTransformUI(/* A reference to a vector of object list obj
 
 	DrawItem& item = scene->items[selectedEntityType];
 
-	ImGui::Text("Editing: %s", item.name.empty() ? "(Unnamed)" : item.name.c_str());
+	// Editable Name Field
+	ImGui::Text("Name:");
+	ImGui::SameLine();
+
+	// Create a buffer for the name (ImGui needs a char array, not std::string directly)
+	static char nameBuffer[256] = "";
+	static unsigned int lastSelectedEntity = static_cast<unsigned int>(-1);
+
+	// If we switched to a different entity, update the buffer
+	if (lastSelectedEntity != selectedEntityType) {
+		strncpy(nameBuffer, item.name.c_str(), sizeof(nameBuffer) - 1);
+		nameBuffer[sizeof(nameBuffer) - 1] = '\0';  // Ensure null termination
+		lastSelectedEntity = selectedEntityType;
+	}
+
+	ImGui::PushItemWidth(-1);  // Make the input field fill the available width
+	if (ImGui::InputText("##EntityName", nameBuffer, sizeof(nameBuffer))) {
+		// User is editing the name
+		item.name = nameBuffer;
+		logger.log("[Inspector] Renamed object to: " + item.name);
+		pushUndoState("Rename object");
+	}
+	ImGui::PopItemWidth();
+
 	ImGui::Separator();
 
 	//disable editing in play mode
