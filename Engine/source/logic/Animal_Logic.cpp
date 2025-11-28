@@ -33,7 +33,6 @@ void Animal_Logic::update_animal_health(GameManager& gm, double deltaTime) {
 
 					else {
 						//health of flamingo decrease slowly when hungry bar is above normal standard
-						std::cout << animal.name << animal.hungry_threshold << "\n";
 						animal.health_bar -= animal.slower_decreasing_rate * deltaTime;
 					}
 				}

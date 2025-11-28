@@ -357,8 +357,8 @@ void Application::init() {
     });
 
 	prefabManager = std::make_unique<PrefabManager>(*ecs);
-	prefabManager->Load_Prefab(prefabTestPath.c_str());
-	//prefabManager->CreateEntityFromPrefab(prefabTestPath, "main_menu_button", "play_button");
+	prefabManager->Load_Prefab(scenePath.c_str());
+	//std::cout<<prefabManager->CreateEntityFromPrefab(scenePath, "Flamingo", "flamingo")<<"\n";
 	
     textShader = std::make_unique<Shader>(textShaderVertexPath.c_str(), textShaderFragmentPath.c_str());
 
@@ -414,6 +414,7 @@ int Application::run() {
 
     while (!m_window.shouldClose()) {
         m_window.poll();
+		std::cout << ecs->getAllEntities().size() << "\n";
 
 		double dt = gameLoop->calculate_DT();
 

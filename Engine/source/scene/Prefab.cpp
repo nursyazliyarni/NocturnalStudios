@@ -100,54 +100,71 @@ void PrefabManager::Load_Prefab(const std::string& filename_path) {
     prefab_map[filename_path] = document;
 }
 
-EntityID PrefabManager::CreateEntityFromPrefab(const std::string& json_path, const std::string& entity_type,
+EntityID PrefabManager::CreateEntityFromPrefab(const std::string& json_path,
+    const std::string& scene_name,
     const std::string& object_name)
 {
-    //1. Verify prefab file loaded
+    // 1. Verify JSON loaded
     auto it = prefab_map.find(json_path);
     if (it == prefab_map.end()) {
         logger.error("Prefab file not loaded: " + json_path);
         return INVALID_ENTITY_ID;
     }
-
-    // Get reference to the loaded document
     rapidjson::Document& doc = *(it->second);
 
-    //2. Check if the category (e.g., "animal", "food") exists
-    if (!doc.HasMember(entity_type.c_str()) || !doc[entity_type.c_str()].IsObject()) {
-        logger.error("Prefab category '" + entity_type + "' not found.");
+    // 2. Check scenes exist
+    if (!doc.HasMember("scenes") || !doc["scenes"].IsObject()) {
+        logger.error("No 'scenes' found in JSON.");
         return INVALID_ENTITY_ID;
     }
 
-    const auto& categoryObj = doc[entity_type.c_str()];
+    const auto& scenesObj = doc["scenes"];
 
-    //3. Check if the object (e.g., "flamingo", "seal_food") exists
-    if (!categoryObj.HasMember(object_name.c_str()) || !categoryObj[object_name.c_str()].IsObject()) {
-        logger.error("Prefab name '" + object_name + "' not found in category '" + entity_type + "'.");
+    // 3. Check scene exists
+    if (!scenesObj.HasMember(scene_name.c_str()) || !scenesObj[scene_name.c_str()].IsObject()) {
+        logger.error("Scene '" + scene_name + "' not found.");
         return INVALID_ENTITY_ID;
     }
 
-    const auto& prefabData = categoryObj[object_name.c_str()];
+    const auto& scene = scenesObj[scene_name.c_str()];
 
-    //4. Verify that components array exists
-    if (!prefabData.HasMember("components") || !prefabData["components"].IsArray()) {
-        logger.error("Prefab '" + object_name + "' missing components array.");
+    // 4. Check entities array exists
+    if (!scene.HasMember("entities") || !scene["entities"].IsArray()) {
+        logger.error("Scene '" + scene_name + "' missing entities array.");
         return INVALID_ENTITY_ID;
     }
 
-    // Create entity first
+    const auto& entities = scene["entities"].GetArray();
+
+    // 5. Find the entity by name
+    const rapidjson::Value* entityData = nullptr;
+    for (const auto& e : entities) {
+        if (e.HasMember("name") && std::string(e["name"].GetString()) == object_name) {
+            entityData = &e;
+            break;
+        }
+    }
+
+    if (!entityData) {
+        logger.error("Entity '" + object_name + "' not found in scene '" + scene_name + "'.");
+        return INVALID_ENTITY_ID;
+    }
+
+    // 6. Create entity
     EntityID entity = entity_component_based_system.createEntity();
-    Prefab_data prefab_data;
 
-    // Loop over components
-    for (const auto& comp : prefabData["components"].GetArray()) {
-        if (!comp.HasMember("type")) continue;
-        std::string type = comp["type"].GetString();
+    // 7. Determine prefab type and add components
+    if (entityData->HasMember("prefab")) {
+        std::string prefabType = (*entityData)["prefab"].GetString();
 
-        AddComponentFromJSON(entity, comp);
+        // Example: for animal, food, medicine, toy, etc.
+        // Here you can call a function like AddComponentFromPrefabType(entity, prefabType, *entityData);
+        AddComponentFromJSON(entity, *entityData); // your existing function can handle "components"/"overrides"
     }
+
     return entity;
 }
+
 
 
 bool PrefabManager::PrefabExists(const std::string& prefab_name) const {
@@ -255,23 +272,34 @@ EntityID PrefabManager::Instantiate(const std::string& prefab_name, EntityID spe
 }
 
 void PrefabManager::AddComponentFromJSON(EntityID entity, const rapidjson::Value& component_json) {
-    if (!component_json.HasMember("type") || !component_json["type"].IsString()) {
+    // Determine prefab type
+    if (!component_json.HasMember("prefab") || !component_json["prefab"].IsString()) {
         return;
     }
-    std::string component_type = component_json["type"].GetString();
-    
+
+    std::string prefab_type = component_json["prefab"].GetString();
+
     std::stringstream msg;
-    msg<<"Adding Component " << component_type << " to Entity " << entity;
+    msg << "Adding Prefab " << prefab_type << " to Entity " << entity;
     logger.log(msg.str());
-    if (ComponentFactory::CreateFromName(entity,component_type, component_json))
-    {
-        msg.str("");
-        msg.clear();
-        msg << component_type << " succsessfully added to Entity " << entity;
-        logger.log(msg.str());
+
+    // Handle overrides
+    if (component_json.HasMember("overrides") && component_json["overrides"].IsObject()) {
+        const auto& overrides = component_json["overrides"];
+        // Apply position, sprite, etc. here
     }
-    
+
+    // Handle animal_properties if prefab is "animal"
+    if (prefab_type == "animal" && component_json.HasMember("animal_properties")) {
+        const auto& props = component_json["animal_properties"];
+        // Apply health, hunger, etc.
+    }
+
+    // Finally, create components (like Transform, Sprite, Logic) based on prefab type
+    ComponentFactory::CreateFromName(entity, prefab_type, component_json);
+    std::cout << "ABC\n";
 }
+
 
 void PrefabManager::LoadScenes() {
     // Build key?scene map once (rebuilt if SetScenesJsonPath is called)
