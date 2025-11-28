@@ -323,6 +323,10 @@ bool GameManager::load(const char* prefabsPath, const char* scenesPath, TextureS
 
         scenes[sceneName] = std::move(sc);
     }
+
+    initialScenes_ = scenes;
+
+
 	//temp: add a flamingo entity with sprite animation to ECS
     {
         EntityID flamingo = ecs_.createEntity();
@@ -368,6 +372,20 @@ void GameManager::requestScene(const std::string& name) {
     currentScene = name;
     if (onSceneChanged) onSceneChanged(currentScene);
 }
+
+
+
+
+
+void GameManager::resetAllScenesToInitial()
+{
+    // If we have a snapshot, restore it
+    if (!initialScenes_.empty())
+    {
+        scenes = initialScenes_;
+    }
+}
+
 
 
 bool GameManager::switchToSceneForKey(int glfwKey) {
@@ -698,8 +716,16 @@ bool GameManager::handleClick(float nx, float ny) {
         // In Menu: only start:true does anything (exactly how 'start' works)
         if (app == AppState::Menu) {
             if (cr.start) {
+
+                // reset all scenes to the initial JSON values
+                resetAllScenesToInitial();
+
+                // enter Play mode
                 startGame();
-                if (!cr.gotoScene.empty()) requestScene(cr.gotoScene);
+
+                if (!cr.gotoScene.empty()) {
+                    requestScene(cr.gotoScene);
+                }
                 else {
                     auto it1 = keyMap.find(GLFW_KEY_1);
                     if (it1 != keyMap.end()) requestScene(it1->second);
@@ -707,6 +733,7 @@ bool GameManager::handleClick(float nx, float ny) {
             }
             return true;
         }
+
 
         // Playing: allow goto
         if (!cr.gotoScene.empty()) {
@@ -716,9 +743,35 @@ bool GameManager::handleClick(float nx, float ny) {
     }
     return false;
 }
+//void GameManager::startGame() {
+//    // enter play state
+//    app = AppState::Playing;
+//
+//    // every time a new game starts, reset ALL animals in ALL scenes
+//    for (auto& [name, scene] : scenes) {
+//        for (auto& item : scene.items) {
+//            if (item.item_type == "animal") {
+//                // reset bars
+//                item.health_bar        = 100.0f;
+//                item.hunger_bar        = 100.0f;
+//                item.sanity_bar        = 100.0f;
+//
+//                // reset timers
+//                item.acc_timer         = 0.0f;
+//                item.staring_countdown = 10.0f;
+//
+//                // reset status / drag flags
+//                item.still_alive       = true;
+//                item.is_dragging       = false;
+//            }
+//        }
+//    }
+//}
+
 void GameManager::startGame() {
     app = AppState::Playing;
-}
+}   
+
 
 void GameManager::goToMenu() {
     app = AppState::Menu;

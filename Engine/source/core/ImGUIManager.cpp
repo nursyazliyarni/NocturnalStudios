@@ -89,11 +89,11 @@ ImGuiManager::ImGuiManager(Window& w, Renderer& r,
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 	io.ConfigDockingWithShift = false;  // Dock without holding Shift
 
-	#ifdef IMGUI_SAVE_LAYOUT
-		io.IniFilename = "editor_layout.ini";  // Save layout
-	#else
-		io.IniFilename = nullptr;  // Don't save layout
-	#endif
+#ifdef IMGUI_SAVE_LAYOUT
+	io.IniFilename = "editor_layout.ini";  // Save layout
+#else
+	io.IniFilename = nullptr;  // Don't save layout
+#endif
 
 	ImGui_ImplGlfw_InitForOpenGL(mainWindow.handle(), /*install_callbacks=*/false);
 	ImGui_ImplOpenGL3_Init("#version 330");
@@ -311,18 +311,18 @@ void ImGuiManager::showViewportWindowUI() {
 	bool isPlayMode = (m_editorMode == EditorMode::PLAY);
 
 	// Logic timing (animal state update)
-	if (isPlayMode) {
-		logicTime = TimeUtils::MeasureSeconds([&]() {
-			logic.check_animal_status(gsm);
-			auto drag_value = logic.check_item_status(
-				gsm, get_mousePOS(true), input, mainWindow.handle());
-			logic.update_animal_ALLstate(gsm, getDeltaTime(deltaTime));
-			logic.drag_drop(gsm, get_mousePOS(true), input, mainWindow.handle(), drag_value);
-			});
-	}
-	else {
-		logicTime = 0.0;
-	}
+	//if (isPlayMode) {
+	//	logicTime = TimeUtils::MeasureSeconds([&]() {
+	//		logic.check_animal_status(gsm);
+	//		auto drag_value = logic.check_item_status(
+	//			gsm, get_mousePOS(true), input, mainWindow.handle());
+	//		logic.update_animal_ALLstate(gsm, getDeltaTime(deltaTime));
+	//		logic.drag_drop(gsm, get_mousePOS(true), input, mainWindow.handle(), drag_value);
+	//		});
+	//}
+	//else {
+	//	logicTime = 0.0;
+	//}
 
 	// Physics timing scope
 	if (isPlayMode) {
@@ -383,14 +383,41 @@ void ImGuiManager::showViewportWindowUI() {
 	);
 	ImVec2 imgMax = ImVec2(imgMin.x + vw, imgMin.y + vh);
 
+	// mouse in viewport-normalised coords [0,1]
+	ImVec2 mouseScreen = ImGui::GetMousePos();
+	ImVec2 mouseViewport{
+		(mouseScreen.x - imgMin.x) / static_cast<float>(vw),
+		(mouseScreen.y - imgMin.y) / static_cast<float>(vh)
+	};
+	mouseViewport.x = std::clamp(mouseViewport.x, 0.0f, 1.0f);
+	mouseViewport.y = std::clamp(mouseViewport.y, 0.0f, 1.0f);
+
+	isPlayMode = (m_editorMode == EditorMode::PLAY);
+
+	// Logic timing (animal state update) in PLAY mode only
+	if (isPlayMode) {
+		logicTime = TimeUtils::MeasureSeconds([&]() {
+			logic.check_animal_status(gsm);
+			auto drag_value = logic.check_item_status(
+				gsm, mouseViewport, input, mainWindow.handle());
+			logic.update_animal_ALLstate(gsm, deltaTime);
+			logic.drag_drop(
+				gsm, mouseViewport, input, mainWindow.handle(), drag_value);
+			});
+	}
+	else {
+		logicTime = 0.0;
+	}
+
 	//Store rect relative to the main window (you were already doing this)
 	vpMinWin = ImVec2(imgMin.x - windowTopLeft.x, imgMin.y - windowTopLeft.y);
 	vpMaxWin = ImVec2(imgMax.x - windowTopLeft.x, imgMax.y - windowTopLeft.y);
 
-	//handle click and drag picking on scene items
+	//handle click and drag picking on scene items (editor)
 	handleViewportPicking(imgMin, imgMax, vw, vh);
 
 	ImGui::End();
+
 }
 
 
@@ -726,6 +753,13 @@ void ImGuiManager::showEntityListUI(/* Maybe an enum of paramEntityType, Maybe a
 			EntityID e = ecs.createEntity();
 			newItem.entityID = e;
 
+			//default collider settings
+			newItem.hasCollider = true;
+			newItem.colOffsetX = 0.0f;
+			newItem.colOffsetY = 0.0f;
+			newItem.colW = newItem.w;
+			newItem.colH = newItem.h;
+
 			// Add it to the current scene
 			sceneMut->items.push_back(newItem);
 			selectedEntityType = static_cast<unsigned int>(sceneMut->items.size() - 1);
@@ -767,21 +801,11 @@ void ImGuiManager::showEntityListUI(/* Maybe an enum of paramEntityType, Maybe a
 }
 
 void ImGuiManager::showTransformUI(/* A reference to a vector of object list objectList */) {
-	// Fixed size for transform window
-	/*constexpr float width = 300.0f;
-	constexpr float height = 200.0f;*/
 
 	ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDecoration |
 		ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
 
-	// Position the overlay at the top-right corner of the window, below entity list overlay
-	/*ImVec2 windowTopRightPos = { windowBottomRight.x - width, windowTopLeft.y + 550.0f };
-	ImGui::SetNextWindowPos(windowTopRightPos);
-	ImGui::SetNextWindowBgAlpha(0.35f);
-	ImGui::SetNextWindowSize({ width, height });*/
-	/*ImGui::Begin("Transform", nullptr, windowFlags);
-	ImGui::Text("Transform Controls");*/
-
+	//-----------INSPECTOR HEADER-------------------//
 	ImGui::Begin("Inspector", nullptr, windowFlags);
 	ImGui::TextColored(ImVec4(0.8f, 0.9f, 1.0f, 1.0f), "In-Game Property Editor"); // section title
 	ImGui::Separator();
@@ -801,8 +825,29 @@ void ImGuiManager::showTransformUI(/* A reference to a vector of object list obj
 
 	DrawItem& item = scene->items[selectedEntityType];
 
-	ImGui::Text("Editing: %s", item.name.empty() ? "(Unnamed)" : item.name.c_str());
-	ImGui::Separator();
+	//---------NAME FIELD---------//
+	ImGui::Text("Name:");
+	ImGui::SameLine();
+
+	// Create a buffer for the name (ImGui needs a char array, not std::string directly)
+	static char nameBuffer[256] = "";
+	static unsigned int lastSelectedEntity = static_cast<unsigned int>(-1);
+
+	// If we switched to a different entity, update the buffer
+	if (lastSelectedEntity != selectedEntityType) {
+		strncpy(nameBuffer, item.name.c_str(), sizeof(nameBuffer) - 1);
+		nameBuffer[sizeof(nameBuffer) - 1] = '\0';  // Ensure null termination
+		lastSelectedEntity = selectedEntityType;
+	}
+
+	ImGui::PushItemWidth(-1);  // Make the input field fill the available width
+	if (ImGui::InputText("##EntityName", nameBuffer, sizeof(nameBuffer))) {
+		// User is editing the name
+		item.name = nameBuffer;
+		logger.log("[Inspector] Renamed object to: " + item.name);
+		pushUndoState("Rename object");
+	}
+	ImGui::PopItemWidth();
 
 	//disable editing in play mode
 	bool isPlayMode = (m_editorMode == EditorMode::PLAY);
@@ -810,70 +855,118 @@ void ImGuiManager::showTransformUI(/* A reference to a vector of object list obj
 		ImGui::BeginDisabled();
 	}
 
+	//--------------------TRANSFORM FIELD---------------------------//
+	ImGui::Separator();
+	if (ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_DefaultOpen))
+	{
+		// edits the game objects actual transform
+		bool changed = false;
+		changed |= ImGui::DragFloat("X", &item.x, 0.01f, 0.0f, 1.0f);
+		changed |= ImGui::DragFloat("Y", &item.y, 0.01f, 0.0f, 1.0f);
+		changed |= ImGui::DragFloat("Width", &item.w, 0.01f, 0.0f, 2.0f);
+		changed |= ImGui::DragFloat("Height", &item.h, 0.01f, 0.0f, 2.0f);
+		changed |= ImGui::DragFloat("Angle", &item.angle, 0.5f, -360.0f, 360.0f);
 
-	// edits the game objects actual transform
-	bool changed = false;
-	changed |= ImGui::DragFloat("X", &item.x, 0.01f, 0.0f, 1.0f);
-	changed |= ImGui::DragFloat("Y", &item.y, 0.01f, 0.0f, 1.0f);
-	changed |= ImGui::DragFloat("Width", &item.w, 0.01f, 0.0f, 2.0f);
-	changed |= ImGui::DragFloat("Height", &item.h, 0.01f, 0.0f, 2.0f);
-	changed |= ImGui::DragFloat("Angle", &item.angle, 0.5f, -360.0f, 360.0f);
+		if (changed) {
+			pushUndoState("Inspector transform change");
+		}
+	}
+	
+	//-----------COLLISION FIELD----------------//
+	ImGui::Separator();
+	if (ImGui::CollapsingHeader("Collision", ImGuiTreeNodeFlags_DefaultOpen))
+	{
+		ImGui::Checkbox("Has Collider", &item.hasCollider);
 
-	if (changed) {
-		pushUndoState("Inspector transform change");
+		if (item.hasCollider)
+		{
+			ImGui::DragFloat("Collider Offset X", &item.colOffsetX, 0.01f, -1.0f, 1.0f);
+			ImGui::DragFloat("Collider Offset Y", &item.colOffsetY, 0.01f, -1.0f, 1.0f);
+			ImGui::DragFloat("Collider Width", &item.colW, 0.01f, 0.0f, 2.0f);
+			ImGui::DragFloat("Collider Height", &item.colH, 0.01f, 0.0f, 2.0f);
+
+			if (ImGui::Button("Reset Collider to Sprite")) {
+				item.colOffsetX = item.colOffsetY = 0.0f;
+				item.colW = item.w;
+				item.colH = item.h;
+			}
+		}
 	}
 
-	if (isPlayMode) {
-		ImGui::EndDisabled();
+	//-----------------TEXTURE FIELD----------------------------//
+	ImGui::Separator();
+	if (ImGui::CollapsingHeader("Texture", ImGuiTreeNodeFlags_DefaultOpen))
+	{
+		// Display current texture
+		if (item.tex != 0) {
+			// Show texture preview thumbnail (64x64)
+			constexpr float previewSize = 64.0f;
+			ImGui::Image((ImTextureID)(intptr_t)item.tex, ImVec2(previewSize, previewSize));
+
+			// Find texture name from ResourceManager
+			std::string textureName = "Unknown";
+			auto& textures = resourceManager.getTextures();
+			for (auto& [id, texFile] : textures) {
+				GLuint texID = resourceManager.getGLTextureFromFile(texFile.getFilePath());
+				if (texID == item.tex) {
+					textureName = texFile.getKey();
+					break;
+				}
+			}
+
+			// Display info next to thumbnail
+			ImGui::SameLine();
+			ImGui::BeginGroup();
+			ImGui::Text("Name: %s", textureName.c_str());
+			ImGui::Text("ID: %u", item.tex);
+			ImGui::EndGroup();
+		}
+		else {
+			ImGui::TextDisabled("No texture assigned");
+		}
+
+		// Texture Selector Dropdown
+		if (ImGui::BeginCombo("Select Texture", "Change texture...")) {
+			auto& textures = resourceManager.getTextures();
+
+			for (auto& [id, texFile] : textures) {
+				const std::string& texName = texFile.getKey();
+				const std::string& texPath = texFile.getFilePath();
+				GLuint texID = resourceManager.getGLTextureFromFile(texPath);
+
+				if (texID == 0) continue;
+
+				bool isSelected = (item.tex == texID);
+
+				// Show small thumbnail in dropdown (24x24)
+				ImGui::Image((ImTextureID)(intptr_t)texID, ImVec2(24, 24));
+				ImGui::SameLine();
+
+				if (ImGui::Selectable(texName.c_str(), isSelected)) {
+					item.tex = texID;
+					logger.log("[Inspector] Changed texture to: " + texName);
+					pushUndoState("Change texture");
+				}
+
+				if (isSelected) {
+					ImGui::SetItemDefaultFocus();
+				}
+			}
+
+			ImGui::EndCombo();
+		}
+
+		// Remove texture button
+		if (item.tex != 0) {
+			if (ImGui::Button("Remove Texture")) {
+				item.tex = 0;
+				logger.log("[Inspector] Removed texture");
+				pushUndoState("Remove texture");
+			}
+		}
 	}
 
-	/*if (changed)
-	{
-		logger.log("[ImGui] Updated transform of " + item.name);
-	}*/
-	/*
-	// @Todo (axewhy): Change this with the selected entity transform. This is only a placeholder
-	static Vector2D position(0.f, 0.f);
-	static Matrix<3> rotationMatrix = Matrix<3>().Identity();
-	static Matrix<3> scaleMatrix = Matrix<3>().Identity();
-
-
-	// Position controls
-	ImGui::SliderFloat("Position X", &position.x(), -1000.0f, 1000.0f);
-	ImGui::SliderFloat("Position Y", &position.y(), -1000.0f, 1000.0f);
-
-	// Scaling controls
-	ImGui::SliderFloat("Scale X", &scaleMatrix[0][0], 0.1f, 10.0f);
-	ImGui::SliderFloat("Scale Y", &scaleMatrix[1][1], 0.1f, 10.0f);
-
-	// Rotation controls (in degrees)
-	static float rotationDegrees = 0.0f;
-	ImGui::SliderFloat("Rotation", &rotationDegrees, -180.0f, 180.0f);
-	*/
-
-	// Showing current game objects in scene
-	/*if (ImGui::CollapsingHeader("Scene Object Transform", ImGuiTreeNodeFlags_DefaultOpen))
-	{
-		Scene* scene = gsm.getCurrentScene();
-		if (scene && selectedEntityType < scene->items.size())
-		{
-			DrawItem& item = scene->items[selectedEntityType];
-			ImGui::Text("Editing: %s", item.name.empty() ? "(Unnamed)" : item.name.c_str());
-			ImGui::Separator();
-
-			ImGui::DragFloat("X", &item.x, 0.01f, 0.0f, 1.0f);
-			ImGui::DragFloat("Y", &item.y, 0.01f, 0.0f, 1.0f);
-			ImGui::DragFloat("Width", &item.w, 0.01f, 0.0f, 2.0f);
-			ImGui::DragFloat("Height", &item.h, 0.01f, 0.0f, 2.0f);
-			ImGui::DragFloat("Angle", &item.angle, 0.5f, -360.0f, 360.0f);
-		}
-		else
-		{
-			ImGui::TextDisabled("No object selected or invalid index.");
-		}
-	}*/
-
-	// --- Audio for this object -------------------------------------------------
+	//-----------------AUDIO FIELD------------------------//
 	ImGui::Separator();
 	if (ImGui::CollapsingHeader("Audio", ImGuiTreeNodeFlags_DefaultOpen))
 	{
@@ -1053,6 +1146,10 @@ void ImGuiManager::showTransformUI(/* A reference to a vector of object list obj
 		}
 	}
 
+	//re-enable editing in edit mode
+	if (isPlayMode) {
+		ImGui::EndDisabled();
+	}
 
 	ImGui::End();
 }
@@ -2207,21 +2304,32 @@ void ImGuiManager::handleViewportPicking(const ImVec2& imgMin,
 	for (int i = static_cast<int>(items.size()) - 1; i >= 0; --i) {
 		const DrawItem& it = items[static_cast<size_t>(i)];
 
-		float halfW = it.w * 0.5f;
-		float halfH = it.h * 0.5f;
+		float minX, maxX, minY, maxY;
 
-		float minX = it.x - halfW;
-		float maxX = it.x + halfW;
-		float minY = it.y - halfH;
-		float maxY = it.y + halfH;
+		if (it.hasCollider && it.colW > 0.0f && it.colH > 0.0f) {
+			// collider is also top-left + size in normalized space
+			minX = it.x + it.colOffsetX;
+			minY = it.y + it.colOffsetY;
+			maxX = minX + it.colW;
+			maxY = minY + it.colH;
+		}
+		else {
+			// sprite rect: top-left (x,y) with width/height
+			minX = it.x;
+			minY = it.y;
+			maxX = it.x + it.w;
+			maxY = it.y + it.h;
+		}
 
 		if (localX >= minX && localX <= maxX &&
 			localY >= minY && localY <= maxY)
 		{
 			hitIndex = i;
-			break;  //first match from the end = top-most
+			break;
 		}
 	}
+
+
 
 	m_hoveredItem = hitIndex;
 
@@ -2267,5 +2375,54 @@ void ImGuiManager::handleViewportPicking(const ImVec2& imgMin,
 	if (!ImGui::IsMouseDown(ImGuiMouseButton_Left)) {
 		m_isDragging = false;
 		m_draggedItem = -1;
+	}
+}
+
+void ImGuiManager::handleExternalFileDrops()
+{
+	//get & clear any file paths dropped onto the GLFW window
+	auto files = mainWindow.consumeDroppedFiles();
+	if (files.empty())
+		return;
+
+	logger.log("[Drop] handleExternalFileDrops: got " + std::to_string(files.size()) + " file(s)");
+
+	for (const std::string& src : files)
+	{
+		try {
+			std::filesystem::path srcPath(src);
+
+			//only support images for now
+			std::string ext = srcPath.extension().string();
+			std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
+			if (ext != ".png" && ext != ".jpg" && ext != ".jpeg" && ext != ".bmp")
+			{
+				logger.warning("[Drop] Ignored non-image file: " + src);
+				continue;
+			}
+
+			// Copy into assets/textures
+			std::filesystem::path destFolder = "assets/textures";
+			std::filesystem::create_directories(destFolder);
+
+			std::filesystem::path dest = destFolder / srcPath.filename();
+			std::filesystem::copy_file(
+				srcPath, dest,
+				std::filesystem::copy_options::overwrite_existing
+			);
+
+			//register with ResourceManager so it appears in the thumbnail list
+			std::string key = dest.stem().string();
+			std::string fullPath = dest.string();
+
+			resourceManager.loadTexture(key, fullPath);
+			resourceManager.getGLTextureFromFile(fullPath); // create GL texture
+
+			logger.log("[Drop] Imported texture via OS drag-drop: " + fullPath);
+		}
+		catch (const std::exception& e)
+		{
+			logger.error(std::string("[Drop] Failed to import dropped file: ") + e.what());
+		}
 	}
 }
