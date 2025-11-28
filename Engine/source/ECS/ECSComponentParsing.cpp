@@ -97,7 +97,7 @@ void Collider::FromJSON(const rapidjson::Value& json){}
 void Collider::ToJSON(rapidjson::Value& json, rapidjson::Document::AllocatorType& allocator) const {}
 
 void RenderComponent::FromJSON(const rapidjson::Value& json) {
-	const char* members[]{ "opacity","is_visible","color_tint","color_to_add","width","height"};
+	const char* members[]{ "opacity","is_visible","color_tint","color_to_add","width","height","angle"};
 	for (int i{};i<4;i++)
 	{
 		if (json.HasMember(members[i]))

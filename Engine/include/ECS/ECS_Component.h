@@ -66,7 +66,7 @@ struct Collider : public BaseComponent {
 
 //renderer base struct (renamed to avoid collision with graphics::Renderer)
 struct RenderComponent : public BaseComponent {
-	float width{1.f}, height{1.f}, opacity = 1.0f; // Default to fully opaque
+	float width{1.f}, height{1.f},angle{0.f}, opacity = 1.0f; // Default to fully opaque
 	bool isVisible = true;
 
 	Vector4D colorTint = { 1.0f, 1.0f, 1.0f, 1.0f };

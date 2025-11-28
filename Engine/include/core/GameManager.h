@@ -81,6 +81,9 @@ private:
 
 class GameManager {
 public:
+
+    bool checkForSceneChange();
+
     bool load(const char* prefabsJsonPath, const char* scenesJsonPath, TextureStore& tex);
     bool saveScene( std::string scenename, const char* scenesJsonPath, TextureStore& tex);
 
@@ -112,7 +115,7 @@ public:
     void goToMenu();
     // (optional) void pause(); void resume();
 
-    // Expose a safe key->scene helper if you don�t want Input.cpp touching keyMap directly:
+    // Expose a safe key->scene helper if you dont want Input.cpp touching keyMap directly:
     bool switchToSceneForKey(int glfwKey);
 
     GameManager(ECS& ecs) :ecs_{ ecs } {}
@@ -178,6 +181,7 @@ private:
    
     void writeAllComponentsToJSONArray(EntityID id,rapidjson::Value& overridesObj,rapidjson::Document::AllocatorType& alloc);
 
+    bool scene_changed_since_click{ false };
 
     AnimationSystem animationSystem_;
 

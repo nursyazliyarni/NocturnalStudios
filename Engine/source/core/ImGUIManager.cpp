@@ -2298,6 +2298,15 @@ void ImGuiManager::handleViewportPicking(const ImVec2& imgMin,
 		return;
 	}
 
+	//if scene changed, stop dragging until user has lifted up mb
+	if (gsm.checkForSceneChange()) {
+
+		m_isDragging = false;
+		m_draggedItem = -1;
+		m_hoveredItem = -1;
+
+	}
+
 	//--------hit-test items (from top-most to bottom)--------
 	int hitIndex = -1;
 
