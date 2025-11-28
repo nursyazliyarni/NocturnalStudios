@@ -715,30 +715,8 @@ bool GameManager::handleClick(float nx, float ny) {
     return false;
 }
 void GameManager::startGame() {
-    // enter play state
     app = AppState::Playing;
-
-    // every time a new game starts, reset ALL animals in ALL scenes
-    for (auto& [name, scene] : scenes) {
-        for (auto& item : scene.items) {
-            if (item.item_type == "animal") {
-                // reset bars
-                item.health_bar = 100.0f;
-                item.hunger_bar = 100.0f;
-                item.sanity_bar = 100.0f;
-
-                // reset timers
-                item.acc_timer = 0.0f;
-                item.staring_countdown = 10.0f;
-
-                // reset status / drag flags
-                item.still_alive = true;
-                item.is_dragging = false;
-            }
-        }
-    }
 }
-
 
 void GameManager::goToMenu() {
     app = AppState::Menu;
