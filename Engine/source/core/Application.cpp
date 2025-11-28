@@ -347,7 +347,7 @@ void Application::init() {
 
 	renderer = std::make_unique<Renderer>(shader_filePATH_list);
 	textShader = std::make_unique<Shader>(textShaderVertexPath.c_str(), textShaderFragmentPath.c_str());
-	logic = std::make_unique<Animal_Logic>();
+	logic = std::make_unique<Animal_Logic>(*ecs);
 
     // After textures is constructed and before any Instantiate()
     Prefab_SetTextureLookup([this](const std::string& p) -> int {
@@ -384,7 +384,7 @@ void Application::init() {
 
         // Clear all current entities.
         auto all = ecs->getAllEntities();
-        for (auto id : all) ecs->deleteEntity(id);
+        //for (auto id : all) ecs->deleteEntity(id);
 
         // Respawn from scenes.json.
         Prefab_SpawnEntitiesForScene(sceneName, *prefabManager);
@@ -414,7 +414,6 @@ int Application::run() {
 
     while (!m_window.shouldClose()) {
         m_window.poll();
-		std::cout << ecs->getAllEntities().size() << "\n";
 
 		double dt = gameLoop->calculate_DT();
 

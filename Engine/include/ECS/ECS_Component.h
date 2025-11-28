@@ -47,6 +47,35 @@ struct AIComponent;
 
 struct BoxCollider;
 
+struct RendererComponent;
+struct LogicComponent;
+struct ColliderComponent;
+
+struct RendererComponent {
+	std::string name; std::string item_type;
+	unsigned int tex = 0;
+	float x = 0, y = 0, w = 0, h = 0, angle = 0; // normalized
+	bool is_draggable, is_dragging;
+};
+
+struct LogicComponent {
+	float health_bar, hunger_bar, sanity_bar;
+	float slower_decreasing_rate, normal_decreasing_rate, faster_decreasing_rate, penalty_decreasing_rate;
+	bool still_alive; int hungry_threshold;
+
+	float acc_timer = 0.0f;              // For flamingo viewing timer
+	float staring_countdown = 10.0f;     // For seal staring countdown
+};
+
+struct ColliderComponent {
+	//collider info
+	bool  hasCollider = true;
+	float colOffsetX = 0.0f;
+	float colOffsetY = 0.0f;
+	float colW = 0.0f;
+	float colH = 0.0f;
+};
+
 //-------------------------- ECS Component Definitions --------------------------//
 
 struct BaseComponent {

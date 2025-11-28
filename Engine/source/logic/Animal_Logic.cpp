@@ -1,6 +1,6 @@
 #include "./logic/Animal_Logic.h"
 
-Animal_Logic::Animal_Logic() = default;
+Animal_Logic::Animal_Logic(ECS& ecs) :_ecs{ ecs } {};
 
 void Animal_Logic::update(float dt) {
 
@@ -17,6 +17,12 @@ std::string Animal_Logic::to_string(const Animal_type& type) {
 }
 
 void Animal_Logic::update_animal_ALLstate(GameManager& gm, double deltaTime) {
+	for (auto& data : _ecs.getAllEntities()) {
+		if (_ecs.get_transforms()[data].item_type == "animal") {
+			std::cout << _ecs.get_transforms()[data].name << "\n";
+		}
+	}
+
 	update_animal_health(gm, deltaTime);
 	update_animal_hunger(gm, deltaTime);
 	update_animal_sanity(gm, deltaTime);

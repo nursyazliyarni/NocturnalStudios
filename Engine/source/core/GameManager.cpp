@@ -245,8 +245,10 @@ bool GameManager::load(const char* prefabsPath, const char* scenesPath, TextureS
             for (const auto& e : jsS["entities"].GetArray()) {
                 if (!e.IsObject()) continue;
 
+       
                 PrefabDef def;
                 DrawItem di{};
+                EntityID entity = ecs_.createEntity();
                 if (e.HasMember("prefab") && e["prefab"].IsString()) {
                     auto itp = prefabDefaults.find(e["prefab"].GetString());
                     if (itp != prefabDefaults.end()) def = itp->second;
@@ -283,6 +285,13 @@ bool GameManager::load(const char* prefabsPath, const char* scenesPath, TextureS
                     }
                 }
 
+                if (e.HasMember("name") && e["name"].IsString()) {
+                    di.name = e["name"].GetString();
+                }
+
+                ecs_.get_transforms()[entity] = { di.name,di.item_type,di.tex,di.x,di.y,di.w,di.h,di.angle,
+                di.is_draggable,di.is_dragging};
+
                 if (e.HasMember("animal_properties") && e["animal_properties"].IsObject()) {
                     const auto& animal = e["animal_properties"];
                     if (animal.HasMember("health_bar") && animal["health_bar"].IsNumber()) di.health_bar = animal["health_bar"].GetFloat();
@@ -295,10 +304,10 @@ bool GameManager::load(const char* prefabsPath, const char* scenesPath, TextureS
                     if (animal.HasMember("penalty_decreasing_rate") && animal["penalty_decreasing_rate"].IsNumber()) di.penalty_decreasing_rate = animal["penalty_decreasing_rate"].GetFloat();
                     if (animal.HasMember("hungry_threshold") && animal["hungry_threshold"].IsNumber()) di.hungry_threshold = animal["hungry_threshold"].GetInt();
                     di.still_alive = true;
+                    ecs_.get_logic()[entity] = { di.health_bar,di.hunger_bar,di.sanity_bar,di.slower_decreasing_rate,
+                        di.normal_decreasing_rate,di.faster_decreasing_rate,di.penalty_decreasing_rate,di.still_alive,
+                        di.hungry_threshold };
                 }
-
-                if (e.HasMember("name") && e["name"].IsString())
-                    di.name = e["name"].GetString();
 
                 sc.items.push_back(di);
 

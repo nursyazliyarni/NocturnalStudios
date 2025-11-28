@@ -3,6 +3,7 @@
 #include "input/Input.h"
 #include "graphics/Window.h"
 #include "logic/Base_Logic.h"
+#include "ECS/ECS.h"
 
 enum class Animal_type {
 	Flamingo,
@@ -17,7 +18,7 @@ enum class Animal_state {
 
 class Animal_Logic : public Base_Logic  {
 public:
-	Animal_Logic();
+	Animal_Logic(ECS& ecs);
 
 	void update(float dt) override; //must be defined by child logic
 	void update_animal_ALLstate(GameManager &gm, double deltaTime);
@@ -32,6 +33,6 @@ public:
 
 private:
 	int accumulation_timer{ 0 };
-
+	ECS& _ecs;
 	std::string to_string(const Animal_type& type);
 };

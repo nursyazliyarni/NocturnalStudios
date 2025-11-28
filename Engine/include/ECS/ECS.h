@@ -250,7 +250,9 @@ public:
 	 */
 	const std::set<ComponentID>& getEntityComponents(EntityID);
 
-
+	std::unordered_map<EntityID, RendererComponent>& get_transforms();
+	std::unordered_map<EntityID, LogicComponent>& get_logic();
+	std::unordered_map<EntityID, ColliderComponent>& get_collider();
 
 
 	void emptyAllEntities();
@@ -288,6 +290,9 @@ private:
 	std::vector<EntityID> allEntities;
 
 	std::unordered_map<EntityID, EntityMetadata> entityMetadataMap;
+	std::unordered_map<EntityID, RendererComponent> transforms;
+	std::unordered_map<EntityID, LogicComponent> logic;
+	std::unordered_map<EntityID, ColliderComponent> collider;
 
 	std::unordered_map<ComponentID, std::unique_ptr<BaseComponentPool>> componentPools;
 	std::vector<ComponentData> componentMetadata;

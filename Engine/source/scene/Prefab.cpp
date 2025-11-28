@@ -297,7 +297,6 @@ void PrefabManager::AddComponentFromJSON(EntityID entity, const rapidjson::Value
 
     // Finally, create components (like Transform, Sprite, Logic) based on prefab type
     ComponentFactory::CreateFromName(entity, prefab_type, component_json);
-    std::cout << "ABC\n";
 }
 
 

@@ -165,6 +165,18 @@ EntityID ECS::createEntity(std::string name, EntityID entityID) {
 	return newID;
 }
 
+std::unordered_map<EntityID, RendererComponent>& ECS::get_transforms() {
+	return transforms;
+}
+
+std::unordered_map<EntityID, LogicComponent>& ECS::get_logic() {
+	return logic;
+}
+
+std::unordered_map<EntityID, ColliderComponent>& ECS::get_collider() {
+	return collider;
+}
+
 /**
  * @brief Clone an existing entity and copy its components.
  *
