@@ -756,43 +756,41 @@ bool GameManager::handleClick(float nx, float ny) {
     if (it == scenes.end()) return false;
     Scene& sc = it->second;
 
-    //--- Sync click regions from DrawItem colliders ---
+    // --- Sync click regions from DrawItem colliders ---
     for (auto& cr : sc.clicks)
     {
-        //find DrawItem whose name matches click region name
-        DrawItem* diPtr = nullptr;
+        if (cr.name.empty())
+            continue;
 
-        for (auto& item : sc.items)
-        {
-            if (item.name == cr.name)
-            {
-                diPtr = &item;
-                break;
-            }
-        }
+        //find DrawItem whose name matches the click region
+        auto diIt = std::find_if(
+            sc.items.begin(), sc.items.end(),
+            [&](const DrawItem& d) { return d.name == cr.name; });
 
-        //no matching DrawItem=skip
-        if (!diPtr) continue;
+        if (diIt == sc.items.end())
+            continue;
 
-        DrawItem& di = *diPtr;
-
+        const DrawItem& di = *diIt;
         if (!di.hasCollider)
             continue;
 
-        //collider center in normalized coordinates
-        float cx = di.x + di.colOffsetX;
-        float cy = di.y + di.colOffsetY;
+        //collider in normalised space
+        float wNorm = (di.colW > 0.0f ? di.colW : di.w);
+        float hNorm = (di.colH > 0.0f ? di.colH : di.h);
 
-        float w = di.colW;
-        float h = di.colH;
+        float cxNorm = di.x + di.colOffsetX;
+        float cyNorm = di.y + di.colOffsetY;
 
-        //convert collider to click region rect (top-left + size)
-        cr.w = w;
-        cr.h = h;
-        cr.x = cx - w * 0.5f;
-        cr.y = cy - h * 0.5f;
+        float left = cxNorm;
+        float bottom = cyNorm;
+
+        //write back into ClickRegion so hit-test uses the collider
+        cr.x = left;
+        cr.y = bottom;
+        cr.w = wNorm;
+        cr.h = hNorm;
     }
-    //--- end sync ---
+	//--- end sync click regions ---
 
     for (const auto& cr : sc.clicks) {
         bool hit = (nx >= cr.x && nx <= cr.x + cr.w && ny >= cr.y && ny <= cr.y + cr.h);
