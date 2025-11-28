@@ -160,158 +160,87 @@ void Animal_Logic::check_animal_status(GameManager& gm) {
 	}
 }
 
-std::optional<ImVec2> Animal_Logic::check_item_status(
-	GameManager& gm, ImVec2 mouse_pos, Input& input, GLFWwindow* window)
-{
-	if (!gm.isPlaying())
-		return std::nullopt;
-
-	Scene* scene = gm.getCurrentScene();
-	if (!scene)
-		return std::nullopt;
-
-	auto& items = scene->items;
-
-	// one shared offset while dragging
-	static float dragX = 0.0f;
-	static float dragY = 0.0f;
-
-	for (auto& item : items) {
-		if (!item.is_draggable)
-			continue;
-
-		// ---- SAME BOUNDING BOX AS EDITOR (top-left + size) ----
-		float minX, minY, maxX, maxY;
-
-		if (item.hasCollider && item.colW > 0.0f && item.colH > 0.0f) {
-			// collider is top-left (x + offset) with width/height
-			minX = item.x + item.colOffsetX;
-			minY = item.y + item.colOffsetY;
-			maxX = minX + item.colW;
-			maxY = minY + item.colH;
-		}
-		else {
-			// sprite rect: top-left (x,y) with width/height
-			minX = item.x;
-			minY = item.y;
-			maxX = item.x + item.w;
-			maxY = item.y + item.h;
-		}
-
-
-		bool inside =
-			mouse_pos.x >= minX && mouse_pos.x <= maxX &&
-			mouse_pos.y >= minY && mouse_pos.y <= maxY;
-
-		// ---- start drag ----
-		if (inside && input.isLeftMousePressed(window) && !item.is_dragging) {
-			item.is_dragging = true;
-			dragX = item.x - mouse_pos.x;
-			dragY = item.y - mouse_pos.y;
-			return ImVec2{ dragX, dragY };
-		}
-
-		// ---- continue drag ----
-		if (item.is_dragging && input.isLeftMousePressed(window)) {
-			return ImVec2{ dragX, dragY };
-		}
-
-		// ---- end drag ----
-		if (item.is_dragging && !input.isLeftMousePressed(window)) {
-			item.is_dragging = false;
-			// don’t early-return; just stop dragging
-		}
-	}
-
-	return std::nullopt;
-}
-
-
-void Animal_Logic::drag_drop(GameManager& gm,
-	ImVec2 mouse_pos,
-	Input& input,
-	GLFWwindow* window,
-	std::optional<ImVec2> drag_value)
-{
-	auto& item_data{ gm.get_duplicate_item() };
-
-	if (!gm.isPlaying())
-		return;
-
-	// If we are dragging a duplicated item, move it with the mouse
-	if (item_data && drag_value.has_value()) {
-		item_data->x = mouse_pos.x + drag_value.value().x;
-		item_data->y = mouse_pos.y + drag_value.value().y;
-
-		// --- centre-based bounds helper (same idea as editor) ---
-		auto getBounds = [](const DrawItem& it,
-			float& minX, float& minY,
-			float& maxX, float& maxY)
-			{
-				if (it.hasCollider && it.colW > 0.0f && it.colH > 0.0f) {
-					// collider: top-left + size
-					minX = it.x + it.colOffsetX;
-					minY = it.y + it.colOffsetY;
-					maxX = minX + it.colW;
-					maxY = minY + it.colH;
+std::optional<ImVec2> Animal_Logic::check_item_status(GameManager& gm, ImVec2 mouse_pos, Input& input, GLFWwindow* window) {
+	if (gm.isPlaying()) {
+		for (auto& item : gm.getCurrentScene()->items) {
+			if (item.is_draggable) {
+				static float dragX = 0.0f;
+				static float dragY = 0.0f;
+				if ((mouse_pos.x >= item.x) && (mouse_pos.x <= item.x + item.w)
+					&& mouse_pos.y >= item.y && mouse_pos.y <= item.y + item.h
+					&& input.isLeftMousePressed(window) && !item.is_dragging)
+				{
+					item.is_dragging = true;
+					dragX = item.x - mouse_pos.x;
+					dragY = item.y - mouse_pos.y;
+					return ImVec2{ dragX, dragY }; //return value
 				}
-				else {
-					// sprite: top-left + size
-					minX = it.x;
-					minY = it.y;
-					maxX = it.x + it.w;
-					maxY = it.y + it.h;
+
+				// The player is still dragging the item
+				if (item.is_dragging && input.isLeftMousePressed(window)) {
+					return ImVec2{ dragX, dragY };
 				}
-			};
 
-
-		auto overlapsCenter = [&](const DrawItem& a, const DrawItem& b) {
-			float aMinX, aMinY, aMaxX, aMaxY;
-			float bMinX, bMinY, bMaxX, bMaxY;
-
-			getBounds(a, aMinX, aMinY, aMaxX, aMaxY);
-			getBounds(b, bMinX, bMinY, bMaxX, bMaxY);
-
-			// standard AABB overlap
-			bool noOverlap =
-				(aMaxX < bMinX) || (aMinX > bMaxX) ||
-				(aMaxY < bMinY) || (aMinY > bMaxY);
-
-			return !noOverlap;
-			};
-
-		// --- check collision with all animals using centre-based AABB ---
-		for (auto& animal : gm.getCurrentScene()->items) {
-			if (!item_data) break; // item already consumed
-
-			if (animal.item_type == "animal" && animal.still_alive) {
-				if (!overlapsCenter(animal, *item_data))
-					continue;
-
-				if (item_data->item_type == "food") {
-					animal.hunger_bar += 20.0f;
-					if (animal.hunger_bar > 100.0f)
-						animal.hunger_bar = 100.0f;
-					item_data.reset();
-				}
-				else if (item_data && item_data->item_type == "medicine") {
-					animal.health_bar += 20.0f;
-					if (animal.health_bar > 100.0f)
-						animal.health_bar = 100.0f;
-					item_data.reset();
-				}
-				else if (item_data && item_data->item_type == "toy") {
-					animal.sanity_bar += 20.0f;
-					if (animal.sanity_bar > 100.0f)
-						animal.sanity_bar = 100.0f;
-					item_data.reset();
+				if (!input.isLeftMousePressed(window) && item.is_dragging) {
+					item.is_dragging = false;
+					return std::nullopt; //return no value
 				}
 			}
 		}
 	}
+	return std::nullopt; //return no value
+}
 
-	// When mouse released, drop/consume item (if still exists)
-	if (input.isLeftMouseReleased(window)) {
-		item_data.reset(); // releases ownership
+void Animal_Logic::drag_drop(GameManager& gm, ImVec2 mouse_pos, Input& input, GLFWwindow* window, std::optional<ImVec2> drag_value)
+{
+	auto& item_data{ gm.get_duplicate_item() };
+	//static bool feeding{ false };
+	if (gm.isPlaying()) { 
+		//if (item_data && drag_value.has_value() && !feeding ) {
+		if (item_data && drag_value.has_value()) {
+			item_data->x = mouse_pos.x + drag_value.value().x;
+			item_data->y = mouse_pos.y + drag_value.value().y;
+			for (auto& animal : gm.getCurrentScene()->items) {
+				if (animal.item_type == "animal" && animal.still_alive) {
+					if (checkCollision(animal.x, animal.y, animal.w, animal.h, item_data->x, item_data->y, item_data->w, item_data->h)
+						&&item_data->item_type == "food")
+					{
+						//feeding = true;
+						animal.hunger_bar += 20;
+						if (animal.hunger_bar >= 100) {
+							animal.hunger_bar = 100;
+						}
+						item_data.reset(); //The unique_ptr releases ownership
+					}
+
+					else if (checkCollision(animal.x, animal.y, animal.w, animal.h, item_data->x, item_data->y, item_data->w, item_data->h)
+						&& item_data->item_type == "medicine")
+					{
+						//feeding = true;
+						animal.health_bar += 20;
+						if (animal.health_bar >= 100) {
+							animal.health_bar = 100;
+						}
+						item_data.reset(); //The unique_ptr releases ownership
+					}
+
+					else if (checkCollision(animal.x, animal.y, animal.w, animal.h, item_data->x, item_data->y, item_data->w, item_data->h)
+						&& item_data->item_type == "toy")
+					{
+						//feeding = true;
+						animal.sanity_bar += 20;
+						if (animal.sanity_bar >= 100) {
+							animal.sanity_bar = 100;
+						}
+						item_data.reset(); //The unique_ptr releases ownership
+					}
+				}
+			}
+		}
+
+		if (input.isLeftMouseReleased(window)) {
+			//feeding = false;
+			item_data.reset(); //The unique_ptr releases ownership
+		}
 	}
 }

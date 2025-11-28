@@ -311,18 +311,18 @@ void ImGuiManager::showViewportWindowUI() {
 	bool isPlayMode = (m_editorMode == EditorMode::PLAY);
 
 	// Logic timing (animal state update)
-	//if (isPlayMode) {
-	//	logicTime = TimeUtils::MeasureSeconds([&]() {
-	//		logic.check_animal_status(gsm);
-	//		auto drag_value = logic.check_item_status(
-	//			gsm, get_mousePOS(true), input, mainWindow.handle());
-	//		logic.update_animal_ALLstate(gsm, getDeltaTime(deltaTime));
-	//		logic.drag_drop(gsm, get_mousePOS(true), input, mainWindow.handle(), drag_value);
-	//		});
-	//}
-	//else {
-	//	logicTime = 0.0;
-	//}
+	if (isPlayMode) {
+		logicTime = TimeUtils::MeasureSeconds([&]() {
+			logic.check_animal_status(gsm);
+			auto drag_value = logic.check_item_status(
+				gsm, get_mousePOS(true), input, mainWindow.handle());
+			logic.update_animal_ALLstate(gsm, getDeltaTime(deltaTime));
+			logic.drag_drop(gsm, get_mousePOS(true), input, mainWindow.handle(), drag_value);
+			});
+	}
+	else {
+		logicTime = 0.0;
+	}
 
 	// Physics timing scope
 	if (isPlayMode) {
@@ -383,41 +383,14 @@ void ImGuiManager::showViewportWindowUI() {
 	);
 	ImVec2 imgMax = ImVec2(imgMin.x + vw, imgMin.y + vh);
 
-	// mouse in viewport-normalised coords [0,1]
-	ImVec2 mouseScreen = ImGui::GetMousePos();
-	ImVec2 mouseViewport{
-		(mouseScreen.x - imgMin.x) / static_cast<float>(vw),
-		(mouseScreen.y - imgMin.y) / static_cast<float>(vh)
-	};
-	mouseViewport.x = std::clamp(mouseViewport.x, 0.0f, 1.0f);
-	mouseViewport.y = std::clamp(mouseViewport.y, 0.0f, 1.0f);
-
-	isPlayMode = (m_editorMode == EditorMode::PLAY);
-
-	// Logic timing (animal state update) in PLAY mode only
-	if (isPlayMode) {
-		logicTime = TimeUtils::MeasureSeconds([&]() {
-			logic.check_animal_status(gsm);
-			auto drag_value = logic.check_item_status(
-				gsm, mouseViewport, input, mainWindow.handle());
-			logic.update_animal_ALLstate(gsm, deltaTime);
-			logic.drag_drop(
-				gsm, mouseViewport, input, mainWindow.handle(), drag_value);
-			});
-	}
-	else {
-		logicTime = 0.0;
-	}
-
 	//Store rect relative to the main window (you were already doing this)
 	vpMinWin = ImVec2(imgMin.x - windowTopLeft.x, imgMin.y - windowTopLeft.y);
 	vpMaxWin = ImVec2(imgMax.x - windowTopLeft.x, imgMax.y - windowTopLeft.y);
 
-	//handle click and drag picking on scene items (editor)
+	//handle click and drag picking on scene items
 	handleViewportPicking(imgMin, imgMax, vw, vh);
 
 	ImGui::End();
-
 }
 
 
