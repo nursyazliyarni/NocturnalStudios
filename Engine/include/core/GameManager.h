@@ -138,6 +138,8 @@ public:
      */
     bool reloadCurrentScene(TextureStore& tex);
 
+    void resetAllScenesToInitial();
+
     // Camera controls (per scene)
     //void setCameraEnabled(const std::string& scene, bool on);
     //void setCameraCenter(const std::string& scene, float cx, float cy);
@@ -151,10 +153,14 @@ public:
 
     std::function<void()> quitCallback;
 
+
 private:
     std::unordered_map<std::string, Scene> scenes;
+    std::unordered_map<std::string, Scene> initialScenes_; // snapshot of JSON-loaded scenes
     std::unordered_map<int, std::string> keyMap; // GLFW_KEY_* to scene name
-    std::unique_ptr<DrawItem> duplicate_item{nullptr};
+    std::unique_ptr<DrawItem> duplicate_item{ nullptr };
+
+
     std::vector<std::string> animal_name;
     //std::string backKey = "MainMenu";
     //std::string currentScene;
