@@ -347,7 +347,7 @@ bool GameManager::load(const char* prefabsPath, const char* scenesPath, TextureS
         auto* img = ecs_.getComponent<ImageRenderer>(flamingo);
         auto* anim = ecs_.getComponent<SpriteAnimationComponent>(flamingo);
 
-        t->position = { 0.5f, 0.5f };
+        t->position = { 0.1f, 0.7f };
         t->scale = { 0.25f, 0.25f };
 
         img->isVisible = true;
