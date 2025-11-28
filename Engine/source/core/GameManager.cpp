@@ -130,6 +130,16 @@ static std::string toAssetsPath(const std::string& p) {
 struct PrefabDef { float w = 0.2f, h = 0.2f, angle = 0.0f; };
 
 //  GameManager 
+bool GameManager::checkForSceneChange() {
+    if (scene_changed_since_click)
+    {
+        scene_changed_since_click = false;
+        return true;
+    }
+    else return false;
+}
+
+
 bool GameManager::saveScene( std::string scenename, const char* scenesJsonPath, TextureStore& tex) {
     if (scenename == "___currscene___")scenename = currentScene;
 
@@ -348,6 +358,10 @@ bool GameManager::load(const char* prefabsPath, const char* scenesPath, TextureS
 
         scenes[sceneName] = std::move(sc);
     }
+
+    initialScenes_ = scenes;
+
+
 	//temp: add a flamingo entity with sprite animation to ECS
     {
         EntityID flamingo = ecs_.createEntity();
@@ -360,7 +374,7 @@ bool GameManager::load(const char* prefabsPath, const char* scenesPath, TextureS
         auto* img = ecs_.getComponent<ImageRenderer>(flamingo);
         auto* anim = ecs_.getComponent<SpriteAnimationComponent>(flamingo);
 
-        t->position = { 0.5f, 0.5f };
+        t->position = { 0.1f, 0.7f };
         t->scale = { 0.25f, 0.25f };
 
         img->isVisible = true;
@@ -391,8 +405,23 @@ bool GameManager::load(const char* prefabsPath, const char* scenesPath, TextureS
 void GameManager::requestScene(const std::string& name) {
     if (!scenes.count(name)) return;
     currentScene = name;
+    scene_changed_since_click = true;
     if (onSceneChanged) onSceneChanged(currentScene);
 }
+
+
+
+
+
+void GameManager::resetAllScenesToInitial()
+{
+    // If we have a snapshot, restore it
+    if (!initialScenes_.empty())
+    {
+        scenes = initialScenes_;
+    }
+}
+
 
 
 bool GameManager::switchToSceneForKey(int glfwKey) {
@@ -499,9 +528,9 @@ void GameManager::render(Renderer& r, Input& input, GLFWwindow* window, int w, i
 
         if (di.name=="flamingo"||di.name=="seal"||di.name=="owl"||di.name=="horse") {
             if (di.still_alive) {
-                r.rect(w / 2, h / 2 - 200, di.health_bar * 4, 25, 1, 0, 0);
-                r.rect(w / 2, h / 2 - 150, di.hunger_bar * 4, 25, 0, 1, 0);
-                r.rect(w / 2, h / 2 - 100, di.sanity_bar * 4, 25, 0, 0, 1);
+                r.rect(w / 2 + 310, h / 2 - 101, di.health_bar * 3, 25, 1, 0, 0);
+                r.rect(w / 2 + 310, h / 2 - 51, di.hunger_bar * 3, 25, 0, 1, 0);
+                r.rect(w / 2 + 310, h / 2 - 1, di.sanity_bar * 3, 25, 0, 0, 1);
 
                 Cam2D_Apply(currentScene, px, py, pw, ph, w, h);
                 r.texturedTri(di.tex, px, py, pw, ph);
@@ -657,19 +686,30 @@ void GameManager::renderWithHUD(Renderer& r,
         const Font& f2 = resourceManager.getFont(*s_fontFPS);
 
         static double accumTime = 0.0;
+        static int    frameCount = 0;
         static double fpsDisplay = 0.0;
 
         // avoid division by zero
         if (dt <= 0.0) dt = 1e-6;
 
-        accumTime += dt;
+        // 🔹 IF your dt is in MILLISECONDS, convert to seconds here:
+        double dtSeconds = dt;
+        // if you know dt is in ms, UNCOMMENT this:
+        // dtSeconds = dt * 0.001;   // ms → s
+
+        accumTime += dtSeconds;
+        ++frameCount;
+
+        // Update FPS about once per second
         if (accumTime >= 1.0) {
-            fpsDisplay = 1.0 / dt;
+            fpsDisplay = static_cast<double>(frameCount) / accumTime; // avg FPS
             accumTime = 0.0;
+            frameCount = 0;
         }
 
         int fpsInt = static_cast<int>(std::round(fpsDisplay));
         std::string fpsText = "FPS: " + std::to_string(fpsInt);
+
 
         float marginX = 0.02f * w;
         float offsetY = compact ? 0.12f : 0.15f; // pull closer when small
@@ -688,6 +728,7 @@ void GameManager::renderWithHUD(Renderer& r,
         );
     }
 }
+
 
 
 void GameManager :: imGUIlessRender(Renderer& r, Input& input, GLFWwindow* window, int w, int h) {
@@ -768,8 +809,16 @@ bool GameManager::handleClick(float nx, float ny) {
         // In Menu: only start:true does anything (exactly how 'start' works)
         if (app == AppState::Menu) {
             if (cr.start) {
+
+                // reset all scenes to the initial JSON values
+                resetAllScenesToInitial();
+
+                // enter Play mode
                 startGame();
-                if (!cr.gotoScene.empty()) requestScene(cr.gotoScene);
+
+                if (!cr.gotoScene.empty()) {
+                    requestScene(cr.gotoScene);
+                }
                 else {
                     auto it1 = keyMap.find(GLFW_KEY_1);
                     if (it1 != keyMap.end()) requestScene(it1->second);
@@ -777,6 +826,7 @@ bool GameManager::handleClick(float nx, float ny) {
             }
             return true;
         }
+
 
         // Playing: allow goto
         if (!cr.gotoScene.empty()) {
@@ -786,30 +836,34 @@ bool GameManager::handleClick(float nx, float ny) {
     }
     return false;
 }
+//void GameManager::startGame() {
+//    // enter play state
+//    app = AppState::Playing;
+//
+//    // every time a new game starts, reset ALL animals in ALL scenes
+//    for (auto& [name, scene] : scenes) {
+//        for (auto& item : scene.items) {
+//            if (item.item_type == "animal") {
+//                // reset bars
+//                item.health_bar        = 100.0f;
+//                item.hunger_bar        = 100.0f;
+//                item.sanity_bar        = 100.0f;
+//
+//                // reset timers
+//                item.acc_timer         = 0.0f;
+//                item.staring_countdown = 10.0f;
+//
+//                // reset status / drag flags
+//                item.still_alive       = true;
+//                item.is_dragging       = false;
+//            }
+//        }
+//    }
+//}
+
 void GameManager::startGame() {
-    // enter play state
     app = AppState::Playing;
-
-    // every time a new game starts, reset ALL animals in ALL scenes
-    for (auto& [name, scene] : scenes) {
-        for (auto& item : scene.items) {
-            if (item.item_type == "animal") {
-                // reset bars
-                item.health_bar = 100.0f;
-                item.hunger_bar = 100.0f;
-                item.sanity_bar = 100.0f;
-
-                // reset timers
-                item.acc_timer = 0.0f;
-                item.staring_countdown = 10.0f;
-
-                // reset status / drag flags
-                item.still_alive = true;
-                item.is_dragging = false;
-            }
-        }
-    }
-}
+}   
 
 
 void GameManager::goToMenu() {

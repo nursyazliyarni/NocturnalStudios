@@ -352,7 +352,7 @@ void ImGuiManager::showViewportWindowUI() {
 			mainWindow.handle(),
 			vw,
 			vh,
-			isPlayMode ? deltaTime : 0.0,  // Pass 0 deltaTime in edit mode
+			deltaTime,  // Pass 0 deltaTime in edit mode
 			resourceManager,
 			m_showFPS
 		);
@@ -2318,6 +2318,16 @@ void ImGuiManager::handleViewportPicking(const ImVec2& imgMin,
 		}
 		m_hoveredItem = -1;
 		return;
+	}
+
+	//if scene changed, stop dragging until user has lifted up mb
+	if (gsm.checkForSceneChange()) {
+
+		m_isDragging = false;
+		m_draggedItem = -1;
+
+		m_hoveredItem = -1;
+
 	}
 
 	//--------hit-test items (from top-most to bottom)--------
