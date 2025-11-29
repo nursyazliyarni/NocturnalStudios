@@ -29360,3 +29360,13 @@ EntityID: 18446744073709551615
 [29-11-2025] [17:23:05] [CRASH_MESSAGE] Could not find Prefab: audio_emitter_owl
 [29-11-2025] [17:23:05] [CRASH_MESSAGE] Parser: entity missing component: AnimalBehavior
 [29-11-2025] [17:23:06] [CRASH_MESSAGE] Could not find Prefab: audio_emitter_horse
+[29-11-2025] [17:28:53] [CRASH_MESSAGE] Failed to parse prefab file: assets/prefabs\testing_prefabs.json
+[29-11-2025] [17:28:53] [CRASH_MESSAGE] Could not find Prefab: audio_emitter_menu
+[29-11-2025] [17:28:53] [CRASH_MESSAGE] Parser: entity missing component: AnimalBehavior
+[29-11-2025] [17:28:53] [CRASH_MESSAGE] Could not find Prefab: audio_emitter_flamingo
+[29-11-2025] [17:28:53] [CRASH_MESSAGE] Parser: entity missing component: AnimalBehavior
+[29-11-2025] [17:28:54] [CRASH_MESSAGE] Could not find Prefab: audio_emitter_seal
+[29-11-2025] [17:28:54] [CRASH_MESSAGE] Parser: entity missing component: AnimalBehavior
+[29-11-2025] [17:28:54] [CRASH_MESSAGE] Could not find Prefab: audio_emitter_owl
+[29-11-2025] [17:28:54] [CRASH_MESSAGE] Parser: entity missing component: AnimalBehavior
+[29-11-2025] [17:28:55] [CRASH_MESSAGE] Could not find Prefab: audio_emitter_horse

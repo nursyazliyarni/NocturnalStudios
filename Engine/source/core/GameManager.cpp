@@ -523,56 +523,75 @@ void GameManager::render(Renderer& r, Input& input, GLFWwindow* window, int w, i
             }
             else {
                 Cam2D_Apply(currentScene, px, py, pw, ph, w, h);
-                r.texturedTri(img->textureID, px, py, pw, ph);
+                r.texturedTri(di.tex, px, py, pw, ph);
 
-                // --- COLLIDER VISUALIZATION ---
-                if (di.hasCollider)
+                // --- Collider outline (debug) ---
+                if (/*Debug::Drawer::Instance().IsActive() &&*/ di.hasCollider)
                 {
-                    float colX = t->position.x() * w + di.colOffsetX * w;
-                    float colY = t->position.y() * h + di.colOffsetY * h;
-                    float colW = di.colW * w;
-                    float colH = di.colH * h;
+                    //collider center in NORMALIZED coords (same as di.x/di.y)
+                    float cxNorm = t->position.x() + di.colOffsetX;
+                    float cyNorm = t->position.y() + di.colOffsetY;
 
-                    // convert collider location from center to top-left
-                    float cx = colX + colW * 0.5f;
-                    float cy = colY + colH * 0.5f;
+                    //collider size in NORMALIZED space
+                    float cwNorm = di.colW;
+                    float chNorm = di.colH;
 
-                    // green rectangle
-                    r.rect(cx, cy, colW, colH, 0.0f, 1.0f, 0.0f);
+                    //convert to pixels
+                    float cw = cwNorm * w;
+                    float ch = chNorm * h;
+                    float cx = cxNorm * w;
+                    float cy = cyNorm * h;
+
+                    //apply same camera transform as sprites
+                    Cam2D_Apply(currentScene, cx, cy, cw, ch, w, h);
+
+                    float left = cx;
+                    float bottom = cy;
+
+                    //draw a green outline rectangle
+                    glPushAttrib(GL_ALL_ATTRIB_BITS);
+                    glUseProgram(0);
+                    glDisable(GL_TEXTURE_2D);
+                    glDisable(GL_DEPTH_TEST);
+                    glEnable(GL_BLEND);
+                    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+                    glColor3f(0.0f, 1.0f, 0.0f);  // green
+                    glBegin(GL_LINE_LOOP);
+                    glVertex2f(left, bottom);
+                    glVertex2f(left + cw, bottom);
+                    glVertex2f(left + cw, bottom + ch);
+                    glVertex2f(left, bottom + ch);
+                    glEnd();
+
+                    glPopAttrib();
+                }
+                // --- end collider outline ---
+
+                if (di.is_dragging && !duplicate_item) {
+                    duplicate_item = std::make_unique<DrawItem>(di);
                 }
 
+                if (duplicate_item) {
+                    Transform* dt = ecs_.getComponent<Transform>(duplicate_item->entityID);
+                    ImageRenderer* dimg = ecs_.getComponent<ImageRenderer>(duplicate_item->entityID);
+                    r.texturedTri(duplicate_item->tex, dt->position.x()* w, dt->position.y()* h, dimg->width* w, dimg->height* h);
+                }
+
+                //if (!input.isLeftMousePressed(window)) {
+                //    duplicate_item.reset(); //The unique_ptr releases ownership
+                //}
+
+                /*if (Debug::Drawer::Instance().IsActive()) {
+                    AABB collider(Vector2D(px, py), Vector2D(pw, ph));
+                    Debug::Drawer::Instance().AddRect(
+                        collider.pos.x(), collider.pos.y(),
+                        collider.size.x(), collider.size.y(),
+                        0xFFFF00FF
+                    );
+                }*/
+                // --- Debug Draw Collider Box ---
             }
-        }
-        if (di.is_dragging && !duplicate_item) {
-            duplicate_item = std::make_unique<DrawItem>(di);
-        }
-
-        if (duplicate_item) {
-            Transform* dt = ecs_.getComponent<Transform>(duplicate_item->entityID);
-            ImageRenderer* dimg= ecs_.getComponent<ImageRenderer>(duplicate_item->entityID);
-            r.texturedTri(duplicate_item->tex, dt->position.x() * w, dt->position.y() * h, dimg->width * w, dimg->height * h);
-        }
-
-        // --- Debug Draw Collider Box ---
-        if (Debug::Drawer::Instance().IsActive() && di.hasCollider)
-        {
-            Transform* t = ecs_.getComponent<Transform>(di.entityID);
-            float cx = t->position.x() + di.colOffsetX;
-            float cy = t->position.y() + di.colOffsetY;
-
-            float px = cx * w;
-            float py = cy * h;
-
-            float cw = di.colW * w;
-            float ch = di.colH * h;
-
-            Debug::Drawer::Instance().AddRect(
-                px - cw * 0.5f,
-                py - ch * 0.5f,
-                cw,
-                ch,
-                0x00FF00FF //green box
-            );
         }
     }
 
