@@ -416,6 +416,50 @@ void ImGuiManager::showViewportWindowUI() {
 	//handle click and drag picking on scene items (editor)
 	handleViewportPicking(imgMin, imgMax, vw, vh);
 
+	// Game Over Overlay
+	if (gsm.isGameOver())
+	{
+		ImDrawList* dl = ImGui::GetWindowDrawList();
+
+		// Full-viewport rectangle
+		ImVec2 p0 = imgMin;               // top-left of viewport
+		ImVec2 p1 = imgMax;               // bottom-right of viewport
+		dl->AddRectFilled(p0, p1, IM_COL32(0, 0, 0, 180));  // dark overlay
+
+		// Centered UI block
+		ImVec2 size(300, 200);
+		ImVec2 center((p0.x + p1.x) * 0.5f, (p0.y + p1.y) * 0.5f);
+		ImVec2 uiMin(center.x - size.x * 0.5f, center.y - size.y * 0.5f);
+
+		// Position ImGui cursor into the viewport (no new window)
+		ImGui::SetCursorScreenPos(uiMin);
+		ImGui::BeginGroup();
+
+		ImGui::TextColored(ImVec4(1, 0.3f, 0.3f, 1), "GAME OVER");
+		ImGui::Spacing();
+		ImGui::Text("Two or more animals have died.");
+		ImGui::Spacing();
+
+		if (ImGui::Button("Restart", ImVec2(200, 35))) {
+			gsm.setGameOver(false);
+			gsm.requestScene(gsm.current());
+			gsm.startGame();
+		}
+
+		if (ImGui::Button("Main Menu", ImVec2(200, 35))) {
+			gsm.setGameOver(false);
+			gsm.requestScene("MainMenu");
+			gsm.goToMenu();
+		}
+
+		if (ImGui::Button("Quit", ImVec2(200, 35))) {
+			glfwSetWindowShouldClose(mainWindow.handle(), true);
+		}
+
+		ImGui::EndGroup();
+	}
+
+
 	ImGui::End();
 
 }

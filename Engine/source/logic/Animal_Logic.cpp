@@ -146,16 +146,34 @@ void Animal_Logic::update_animal_sanity(GameManager& gm, double deltaTime) {
 }
 
 void Animal_Logic::check_animal_status(GameManager& gm) {
-	if (gm.isPlaying()){
+	if (gm.isPlaying()) {
+		int deadAnimals = 0;  // Track how many are dead
+
 		for (auto& [scene, scene_data] : gm.get_scenes_map()) {
 			for (auto& animal : scene_data.items) {
 				if (animal.item_type == "animal")
 				{
+					// Check if animal should die
 					if (animal.health_bar <= 0 || animal.sanity_bar <= 0) {
-						animal.still_alive = false;
+						if (animal.still_alive) {
+							// Animal just died
+							animal.still_alive = false;
+							logger.log("[Animal] " + animal.name + " has died!");
+						}
+					}
+
+					// Count dead animals
+					if (!animal.still_alive) {
+						deadAnimals++;
 					}
 				}
 			}
+		}
+
+		// GAME OVER: If 2 or more animals are dead
+		if (deadAnimals >= 2) {
+			logger.log("[GAME OVER] " + std::to_string(deadAnimals) + " animals have died!");
+			gm.triggerGameOver();
 		}
 	}
 }

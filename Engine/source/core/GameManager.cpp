@@ -868,6 +868,7 @@ bool GameManager::handleClick(float nx, float ny) {
 
 void GameManager::startGame() {
     app = AppState::Playing;
+    m_isGameOver = false;
 }   
 
 
@@ -879,6 +880,36 @@ bool GameManager::popQuitRequested() {
     requestedQuit = false;
     return q;
 }
+
+void GameManager::triggerGameOver() {
+    logger.log("=== GAME OVER TRIGGERED ===");
+    m_isGameOver = true;
+    
+    // Go to MainMenu (or GameOver scene if you have one)
+    if (scenes.count("GameOver") > 0) {
+        requestScene("GameOver");
+    } else {
+        requestScene("MainMenu");
+    }
+    app = AppState::Menu;
+}
+
+/*
+void GameManager::triggerGameOver() {
+    logger.log("=== GAME OVER TRIGGERED ===");
+
+    // Option 1: Go to a GameOver scene (if you have one)
+    if (scenes.count("GameOver") > 0) {
+        requestScene("GameOver");
+        app = AppState::Menu;  // Set to menu state
+    }
+    // Option 2: Go back to main menu
+    else {
+        requestScene("MainMenu");
+        app = AppState::Menu;
+    }
+}
+*/
 
 // Function used for the level editor to show current game objects
 Scene* GameManager::getCurrentScene() {

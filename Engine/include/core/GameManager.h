@@ -155,6 +155,12 @@ public:
 
     std::function<void()> quitCallback;
 
+    //void triggerGameOver();
+
+    bool m_isGameOver = false;
+    void triggerGameOver();
+    bool isGameOver() const { return m_isGameOver; }
+    void setGameOver(bool gameOver) { m_isGameOver = gameOver; }
 
 private:
     std::unordered_map<std::string, Scene> scenes;
