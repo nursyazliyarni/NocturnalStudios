@@ -18,16 +18,21 @@
 #include "System/Audio_System.h"
 #include "ECS/ECS.h"
 
+//  Texture lookup hook for sprite_path, GL texture id 
+static std::function<int(const std::string&)> sTextureLookup;
 
-	//  Texture lookup hook for sprite_path, GL texture id 
-	static std::function<int(const std::string&)> sTextureLokup;
+// Safe fallback that compiles even if nobody sets sTextureLookup.
+static int ResolveTextureID(const char* p) {
+	if (!p || !*p) return 0;
+	if (sTextureLookup) return sTextureLookup(std::string{ p });
+	return 0; // not wired yet -> invisible sprite (isVisible=false)
+}
 
-	// Safe fallback that compiles even if nobody sets sTextureLookup.
-	static int ResolveTextureIDPser(const char* p) {
-		if (!p || !*p) return 0;
-		if (sTextureLokup) return sTextureLokup(std::string{ p });
-		return 0; // not wired yet -> invisible sprite (isVisible=false)
-	}
+// a simple setter to call once from  init code (e.g., Application.cpp)
+void Prefab_SetTextureLookup(std::function<int(const std::string&)> fn) {
+	sTextureLookup = std::move(fn);
+}
+
 
 	
 extern AudioSystem* gAudioSystem;
@@ -222,7 +227,7 @@ void Transform::FromJSON(const rapidjson::Value& json) {
 
 	//if any of these values is missing, its fine. checks for specific values first (HasMember())
 	//then it will also check for each param type
-	for (int i{}; i < 7; i++)
+	for (int i{}; i < 8; i++)
 	{
 		if (json.HasMember(members[i]))
 		{
@@ -381,7 +386,7 @@ void ImageRenderer::FromJSON(const rapidjson::Value& json) {
 				if (json[members[i]].IsString())
 				{
 					image_path = json[members[i]].GetString();
-					textureID = ResolveTextureIDPser(json[members[i]].GetString());
+					textureID = ResolveTextureID(json[members[i]].GetString());
 					isVisible = (textureID > 0);
 				}
 				break;
@@ -389,13 +394,14 @@ void ImageRenderer::FromJSON(const rapidjson::Value& json) {
 				if (json[members[i]].IsString())
 				{
 					image_path = json[members[i]].GetString();
-					textureID = ResolveTextureIDPser(json[members[i]].GetString());
+					textureID = ResolveTextureID(json[members[i]].GetString());
 					isVisible = (textureID > 0);
 				}
 				break;
 			}
 		}
 	}
+	logger.log("texture: " + std::to_string(textureID));
 }
 
 void ImageRenderer::ToJSON(rapidjson::Value& json, rapidjson::Document::AllocatorType& allocator) const {

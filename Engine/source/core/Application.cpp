@@ -338,18 +338,6 @@ void Application::init() {
     if (!scenePaths.empty()) scenePath = scenePaths.front();
 
 
-	prefabManager = std::make_unique<PrefabManager>(*ecs);
-	prefabManager->Load_Prefab(prefabTestPath.c_str());
-	prefabManager->Load_Prefab("assets/prefabs/prefabs.json");
-
-    gameLoop = std::make_unique<Game_Loop>(m_window.handle());
-    bus.Register(gameLoop.get());
-	logger.log("loading");
-	gsm = std::make_unique<GameManager>(*ecs);
-	gsm->loadAll(*prefabManager, scenePath.c_str(), textures);
-	logger.log("loading done");
-
-
 	// Wire prefab sprite_path -> GL texture id using your TextureStore API.
 // Must be set BEFORE any Prefab/Scene instantiation.
 	Prefab_SetTextureLookup([this](const std::string& p) -> int {
@@ -359,21 +347,33 @@ void Application::init() {
 		return static_cast<int>(textures.get(path));
 		});
 
-
 	renderer = std::make_unique<Renderer>(shader_filePATH_list);
 	textShader = std::make_unique<Shader>(textShaderVertexPath.c_str(), textShaderFragmentPath.c_str());
 	logic = std::make_unique<Animal_Logic>();
 
-    // After textures is constructed and before any Instantiate()
-    Prefab_SetTextureLookup([this](const std::string& p) -> int {
-        std::string path = p;
-        if (path.rfind("assets/", 0) != 0) path = "assets/" + path;
-        return static_cast<int>(textures.get(path));
-    });
+	// After textures is constructed and before any Instantiate()
+	Prefab_SetTextureLookup([this](const std::string& p) -> int {
+		std::string path = p;
+		if (path.rfind("assets/", 0) != 0) path = "assets/" + path;
+		return static_cast<int>(textures.get(path));
+		});
+
+	prefabManager = std::make_unique<PrefabManager>(*ecs);
+	prefabManager->Load_Prefab(prefabTestPath.c_str());
+	prefabManager->Load_Prefab("assets/prefabs/prefabs.json");
+
+    gameLoop = std::make_unique<Game_Loop>(m_window.handle());
+    bus.Register(gameLoop.get());
+;
+	gsm = std::make_unique<GameManager>(*ecs);
+	gsm->loadAll(*prefabManager, scenePath.c_str(), textures);
+
+
+
 
 
 	
-	logger.log("line372");
+	
     textShader = std::make_unique<Shader>(textShaderVertexPath.c_str(), textShaderFragmentPath.c_str());
 
     // Wire text shader into the renderer (renderer controls projection per-viewport)
@@ -397,8 +397,8 @@ void Application::init() {
         }
 
         // Clear all current entities.
-        auto all = ecs->getAllEntities();
-        for (auto id : all) ecs->deleteEntity(id);
+        //auto all = ecs->getAllEntities();
+        //for (auto id : all) ecs->deleteEntity(id);
 
         // Respawn from scenes.json.
 		gsm->populateScene(sceneName, *prefabManager);
@@ -484,9 +484,9 @@ int Application::run() {
         glDisable(GL_DEPTH_TEST);
         glClearColor(0.06f, 0.06f, 0.07f, 1.0f);
 
-        Prefab_SetTextureLookup([this](const std::string& p) -> int {
-            return static_cast<int>(textures.get(p));
-        });
+        //Prefab_SetTextureLookup([this](const std::string& p) -> int {
+            //return static_cast<int>(textures.get(p));
+        //});
 
         glClear(GL_COLOR_BUFFER_BIT);
 

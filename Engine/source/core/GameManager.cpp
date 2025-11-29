@@ -233,12 +233,16 @@ bool GameManager::loadAll(PrefabManager& prefabs, const char* scenesPath, Textur
         if (scn.HasMember("name") && scn["name"].IsString())scn_name = scn["name"].GetString();
         else {
             scn_name = "Scene_" + std::to_string(unnamd_scenes);
+            unnamd_scenes++;
         }
 
         Scene new_scene;
         if (scn.HasMember("background") && scn["background"].IsString())
         {
-            new_scene.background  =tex.get(scn["background"].GetString());
+            std::string path = scn["background"].GetString();
+            if (path.rfind("assets/", 0) != 0) path = "assets/" + path;
+            new_scene.background  =tex.get(path);
+            logger.log("bg: " + std::to_string(new_scene.background));
         }
 
         
@@ -279,7 +283,7 @@ bool GameManager::loadAll(PrefabManager& prefabs, const char* scenesPath, Textur
                 {
                     logger.log("Creating entity from prefab");
                     new_entity = prefabs.CreateEntityFromPrefab(ent["prefab"].GetString(), ent_name);
-                    logger.log("created");
+                    logger.log(ent_name+" created");
                     //process overrides (normal components)
                     //uses FromJson
                     if (ent.HasMember("overrides") && ent["overrides"].IsArray())
@@ -316,6 +320,7 @@ bool GameManager::loadAll(PrefabManager& prefabs, const char* scenesPath, Textur
                 if (ent.HasMember("is_dragging") && ent["is_dragging"].IsBool())di.is_dragging = ent["is_dragging"].GetBool();
 
                 new_scene.items.push_back(di);
+                logger.log("Entity " + di.name + " with ID " + std::to_string(di.entityID) + " added to "+scn_name);
 
                 //handle click regions now
                 ClickRegion cr;
@@ -436,7 +441,7 @@ void GameManager::render(Renderer& r, Input& input, GLFWwindow* window, int w, i
 
 
     auto it = scenes.find(currentScene);
-    if (it == scenes.end()) {  return; }
+    if (it == scenes.end()) { logger.log("scene not found");  return; }
     const Scene& sc = it->second;
 
     // background (fullscreen) NOTE uniform must be "bg_texture"
@@ -457,11 +462,16 @@ void GameManager::render(Renderer& r, Input& input, GLFWwindow* window, int w, i
     for (DrawItem di : sc.items) {
         if (di.entityID != INVALID_ENTITY_ID)
         {
-            Transform* t = ecs_.getComponent<Transform>(di.entityID);
-            ImageRenderer* img = ecs_.getComponent<ImageRenderer>(di.entityID);
+            //logger.log("drawing " + di.name+" "+std::to_string(ecs_.findEntityByName(di.name)));
+            Transform* t = ecs_.getComponent<Transform>(ecs_.findEntityByName(di.name));
+            ImageRenderer* img = ecs_.getComponent<ImageRenderer>(ecs_.findEntityByName(di.name));
 
+            if (t)logger.log(di.name + " Transform present");
+                if (img)logger.log(di.name + " imagerenderer present");
             if (!t || !img)continue;
+            
             if (!img->isVisible || img->textureID <= 0)continue;
+            logger.log(di.name+" texture: "+std::to_string(img->textureID));
 
             if (auto* anim = ecs_.getComponent<SpriteAnimationComponent>(di.entityID)) {
                 auto it = anim->animations.find(anim->currentAnim);
@@ -502,12 +512,12 @@ void GameManager::render(Renderer& r, Input& input, GLFWwindow* window, int w, i
                     r.rect(w / 2, h / 2 - 100, ab->sanity_bar * 4, 25, 0, 0, 1);
 
                     Cam2D_Apply(currentScene, px, py, pw, ph, w, h);
-                    r.texturedTri(di.tex, px, py, pw, ph);
+                    r.texturedTri(img->textureID, px, py, pw, ph);
                 }
             }
             else {
                 Cam2D_Apply(currentScene, px, py, pw, ph, w, h);
-                r.texturedTri(di.tex, px, py, pw, ph);
+                r.texturedTri(img->textureID, px, py, pw, ph);
 
                 // --- COLLIDER VISUALIZATION ---
                 if (di.hasCollider)

@@ -48,20 +48,6 @@ static std::string sScenesJsonPath = "assets/scenes/scenes.json";
 
 
 
-//  Texture lookup hook for sprite_path, GL texture id 
-static std::function<int(const std::string&)> sTextureLookup;
-
-// Safe fallback that compiles even if nobody sets sTextureLookup.
-static int ResolveTextureID(const char* p) {
-    if (!p || !*p) return 0;
-    if (sTextureLookup) return sTextureLookup(std::string{ p });
-    return 0; // not wired yet -> invisible sprite (isVisible=false)
-}
-
-// a simple setter to call once from  init code (e.g., Application.cpp)
-void Prefab_SetTextureLookup(std::function<int(const std::string&)> fn) {
-    sTextureLookup = std::move(fn);
-}
 
 
 
