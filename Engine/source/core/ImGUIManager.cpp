@@ -61,6 +61,7 @@ void Gui::updateImGuiManager(double& deltaTime, ImGuiManager& imGuiManager) {
 		imGuiManager.showPerformanceOverlayUI();
 		imGuiManager.showTransformUI();
 		imGuiManager.showEntityListUI();
+		imGuiManager.showScenesListUI();
 		//imGuiManager.showLogsOverlayUI();
 		imGuiManager.showBottomDockUI();
 		});
@@ -1263,6 +1264,39 @@ void ImGuiManager::showLogsOverlayUI() {
 
 }
 
+void ImGuiManager::showScenesListUI()
+{
+	ImGuiWindowFlags flags = ImGuiWindowFlags_NoSavedSettings |
+		ImGuiWindowFlags_NoFocusOnAppearing |
+		ImGuiWindowFlags_NoCollapse;
+
+	ImGui::Begin("Scenes", nullptr, flags);
+
+	auto& allScenes = gsm.getAllScenes();
+
+	if (allScenes.empty()) {
+		ImGui::TextDisabled("No scenes loaded.");
+		ImGui::End();
+		return;
+	}
+
+	ImGui::Text("All Scenes:");
+	ImGui::Separator();
+
+	for (auto& [sceneName, sceneObj] : allScenes) {
+		bool selected = (gsm.current() == sceneName);
+
+		if (ImGui::Selectable(sceneName.c_str(), selected)) {
+			// switch to this scene
+			gsm.requestScene(sceneName);
+			gsm.goToMenu();  // optional, depending on your design
+		}
+	}
+
+	ImGui::End();
+}
+
+
 void ImGuiManager::showAssetsBrowserUI() {
 	ImGui::TextColored(ImVec4(0.8f, 0.9f, 1.0f, 1.0f), "Assets Browser");
 	ImGui::Separator();
@@ -2002,6 +2036,7 @@ void ImGuiManager::setupInitialDockingLayout() {
 	// ---- Dock windows ----
 	ImGui::DockBuilderDockWindow("Viewport", dock_center);
 	ImGui::DockBuilderDockWindow("Entity Picker", dock_left);
+	ImGui::DockBuilderDockWindow("Scenes", dock_left);
 	ImGui::DockBuilderDockWindow("Inspector", dock_right);
 	ImGui::DockBuilderDockWindow("Overlay", dock_right);
 	ImGui::DockBuilderDockWindow("Performance", dock_right);

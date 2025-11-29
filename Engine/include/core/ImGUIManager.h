@@ -79,6 +79,7 @@ public:
 	// @Todo(axewhy): These functions are not fully implemented yet
 	void showPerformanceOverlayUI();
 	void showEntityListUI(/* An enum of entityType type, Maybe a reference to someArrayOrVectorType entityList */);
+	void showScenesListUI();
 	void showTransformUI(/* A reference to a vector of objects objectList */);
 
 	void getViewportRectWindow(ImVec2& outMin, ImVec2& outMax) const { outMin = vpMinWin; outMax = vpMaxWin; }
