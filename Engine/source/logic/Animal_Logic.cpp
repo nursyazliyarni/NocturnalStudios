@@ -162,7 +162,7 @@ void Animal_Logic::check_animal_status(GameManager& gm) {
 				if (animal.item_type == "animal")
 				{
 					// Check if animal should die
-					if (animalb->health_bar <= 0 || animal->sanity_bar <= 0) {
+					if (animalb->health_bar <= 0 || animalb->sanity_bar <= 0) {
 						if (animal.still_alive) {
 							// Animal just died
 							animal.still_alive = false;

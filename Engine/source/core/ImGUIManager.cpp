@@ -948,26 +948,30 @@ void ImGuiManager::showTransformUI(/* A reference to a vector of object list obj
 	if (ImGui::CollapsingHeader("Collision", ImGuiTreeNodeFlags_DefaultOpen))
 	{
 		if (isPlayMode) ImGui::BeginDisabled();
+
+		Transform* t = ECS::getECS().getComponent<Transform>(item.entityID);
+		ImageRenderer* ir = ECS::getECS().getComponent<ImageRenderer>(item.entityID);
+		
 		//if collider is enabled but has never been sized, auto-init to sprite
-		if (item.hasCollider && (item.colW == 0.0f || item.colH == 0.0f))
+		if (item.hasCollider && (item.colW == 0.0f || item.colH == 0.0f)&&ir)
 		{
 			item.colOffsetX = 0.0f;
 			item.colOffsetY = 0.0f;
-			item.colW = item.w;
-			item.colH = item.h;
+			item.colW = ir->width;
+			item.colH = ir->height;
 		}
 
 		//checkbox (can still turn collider on/off)
 		bool prevHasCollider = item.hasCollider;
-		if (ImGui::Checkbox("Has Collider", &item.hasCollider))
+		if (ImGui::Checkbox("Has Collider", &item.hasCollider)&&ir)
 		{
 			if (item.hasCollider && !prevHasCollider &&
 				(item.colW == 0.0f || item.colH == 0.0f))
 			{
 				item.colOffsetX = 0.0f;
 				item.colOffsetY = 0.0f;
-				item.colW = item.w;
-				item.colH = item.h;
+				item.colW = ir->width;
+				item.colH = ir->height;
 			}
 		}
 
@@ -2312,21 +2316,24 @@ void ImGuiManager::onStopButtonPressed() {
 				ab->health_bar = 100.0f;
 				ab->hunger_bar = 100.0f;
 				ab->sanity_bar = 100.0f;
-	// 1) Reset game-wide state back to initial JSON
-	gsm.setGameOver(false);          // make sure overlay is off (if you have this helper)
-	gsm.resetAllScenesToInitial();   // restore scenes from initialScenes_
+				// 1) Reset game-wide state back to initial JSON
+				gsm.setGameOver(false);          // make sure overlay is off (if you have this helper)
+				gsm.resetAllScenesToInitial();   // restore scenes from initialScenes_
 
-	// 2) Go back to main menu state
-	gsm.requestScene("MainMenu");    // show MainMenu scene
-	gsm.goToMenu();                  // set app state to Menu
+				// 2) Go back to main menu state
+				gsm.requestScene("MainMenu");    // show MainMenu scene
+				gsm.goToMenu();                  // set app state to Menu
 
-	// 3) Switch editor back to EDIT mode
-	m_editorMode = EditorMode::EDIT;
+				// 3) Switch editor back to EDIT mode
+				m_editorMode = EditorMode::EDIT;
 
-	// (Optional) clear editor undo history if you want a "fresh" level state
-	// m_undoStack.clear();
+				// (Optional) clear editor undo history if you want a "fresh" level state
+				// m_undoStack.clear();
 
-	logger.log("Edit mode restored - game reset to initial MainMenu state");
+				logger.log("Edit mode restored - game reset to initial MainMenu state");
+			}
+		}
+	}
 }
 
 void ImGuiManager::pushUndoState(const char* reason)

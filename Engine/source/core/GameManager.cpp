@@ -53,9 +53,12 @@ namespace {
             return AABB(Vector2D(0.f, 0.f), Vector2D(0.f, 0.f));
         }
 
+        Transform* t = ECS::getECS().getComponent<Transform>(di.entityID);
+        if (!t)return {};
+
         //center of collider in normalized coords
-        float cxNorm = di.x + di.colOffsetX;
-        float cyNorm = di.y + di.colOffsetY;
+        float cxNorm = t->position.x() + di.colOffsetX;
+        float cyNorm = t->position.y() + di.colOffsetY;
 
         //size in pixels
         float wPix = di.colW * screenW;
@@ -341,6 +344,8 @@ bool GameManager::loadAll(PrefabManager& prefabs, const char* scenesPath, Textur
                 
                 DrawItem di{};
                 updateDrawItem(di, new_entity);
+
+                if (ent.HasMember("prefab") && ent["prefab"].IsString())di.item_type = ent["prefab"].GetString();
 
                 //other overrides
                 if (ent.HasMember("is_draggable") && ent["is_draggable"].IsBool())di.is_draggable = ent["is_draggable"].GetBool();
@@ -803,12 +808,16 @@ bool GameManager::handleClick(float nx, float ny) {
         if (!di.hasCollider)
             continue;
 
-        //collider in normalised space
-        float wNorm = (di.colW > 0.0f ? di.colW : di.w);
-        float hNorm = (di.colH > 0.0f ? di.colH : di.h);
+        Transform* t = ecs_.getComponent<Transform>(di.entityID);
+        ImageRenderer* ir = ecs_.getComponent<ImageRenderer>(di.entityID);
+        if (!t||!ir)return false;
 
-        float cxNorm = di.x + di.colOffsetX;
-        float cyNorm = di.y + di.colOffsetY;
+        //collider in normalised space
+        float wNorm = (di.colW > 0.0f ? di.colW : ir->width);
+        float hNorm = (di.colH > 0.0f ? di.colH : ir->height);
+
+        float cxNorm = t->position.x() + di.colOffsetX;
+        float cyNorm = t->position.y() + di.colOffsetY;
 
         float left = cxNorm;
         float bottom = cyNorm;
