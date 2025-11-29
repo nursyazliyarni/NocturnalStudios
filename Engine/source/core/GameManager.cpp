@@ -500,6 +500,12 @@ void GameManager::render(Renderer& r, Input& input, GLFWwindow* window, int w, i
                 }
             }
 
+            if (di.hasCollider && (di.colW <= 0.0f || di.colH <= 0.0f)) {
+                di.colOffsetX = 0.0f;
+                di.colOffsetY = 0.0f;
+                di.colW = img->width;   //same size as sprite
+                di.colH = img->height;
+            }
             float px = t->position.x() * w, py = t->position.y() * h, pw = img->width * w, ph = img->height * h;
             if (di.name == "flamingo" || di.name == "seal" || di.name == "owl" || di.name == "horse") {
                 AnimalBehavior* ab = ecs_.getComponent<AnimalBehavior>(di.entityID);
