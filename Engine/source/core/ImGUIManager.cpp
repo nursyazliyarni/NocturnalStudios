@@ -895,14 +895,14 @@ void ImGuiManager::showTransformUI(/* A reference to a vector of object list obj
 
 	//disable editing in play mode
 	bool isPlayMode = (m_editorMode == EditorMode::PLAY);
-	if (isPlayMode) {
-		ImGui::BeginDisabled();
-	}
-
+	
+	
 	//--------------------TRANSFORM FIELD---------------------------//
 	ImGui::Separator();
+	
 	if (ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_DefaultOpen))
 	{
+		if (isPlayMode) ImGui::BeginDisabled();
 		// edits the game objects actual transform
 		bool changed = false;
 		changed |= ImGui::DragFloat("X", &item.x, 0.01f, 0.0f, 1.0f);
@@ -914,12 +914,15 @@ void ImGuiManager::showTransformUI(/* A reference to a vector of object list obj
 		if (changed) {
 			pushUndoState("Inspector transform change");
 		}
+		if (isPlayMode) ImGui::EndDisabled();
 	}
 	
 	//-----------COLLISION FIELD----------------//
 	ImGui::Separator();
+	
 	if (ImGui::CollapsingHeader("Collision", ImGuiTreeNodeFlags_DefaultOpen))
 	{
+		if (isPlayMode) ImGui::BeginDisabled();
 		//if collider is enabled but has never been sized, auto-init to sprite
 		if (item.hasCollider && (item.colW == 0.0f || item.colH == 0.0f))
 		{
@@ -957,12 +960,15 @@ void ImGuiManager::showTransformUI(/* A reference to a vector of object list obj
 				item.colH = item.h;
 			}
 		}
+		if (isPlayMode) ImGui::EndDisabled();
 	}
-
+	
 	//-----------------TEXTURE FIELD----------------------------//
 	ImGui::Separator();
+	
 	if (ImGui::CollapsingHeader("Texture", ImGuiTreeNodeFlags_DefaultOpen))
 	{
+		if (isPlayMode) ImGui::BeginDisabled();
 		// Display current texture
 		if (item.tex != 0) {
 			// Show texture preview thumbnail (64x64)
@@ -1030,12 +1036,15 @@ void ImGuiManager::showTransformUI(/* A reference to a vector of object list obj
 				pushUndoState("Remove texture");
 			}
 		}
+		if (isPlayMode) ImGui::EndDisabled();
 	}
-
+	
 	//-----------------AUDIO FIELD------------------------//
 	ImGui::Separator();
+	
 	if (ImGui::CollapsingHeader("Audio", ImGuiTreeNodeFlags_DefaultOpen))
 	{
+		if (isPlayMode) ImGui::BeginDisabled();
 		ECS& ecs = gsm.getECS();
 
 		// Get the ECS entity linked 
@@ -1066,6 +1075,7 @@ void ImGuiManager::showTransformUI(/* A reference to a vector of object list obj
 		{
 			// Could not add / still null
 			ImGui::Separator();
+			if (isPlayMode) ImGui::EndDisabled();
 			ImGui::End();
 			return;
 		}
@@ -1210,12 +1220,11 @@ void ImGuiManager::showTransformUI(/* A reference to a vector of object list obj
 				ImGui::PopID();
 			}
 		}
+		if (isPlayMode) ImGui::EndDisabled();
 	}
-
+	
 	//re-enable editing in edit mode
-	if (isPlayMode) {
-		ImGui::EndDisabled();
-	}
+	
 
 	ImGui::End();
 }
