@@ -969,6 +969,10 @@ void ImGuiManager::showTransformUI(/* A reference to a vector of object list obj
 
 				if (ImGui::Selectable(texName.c_str(), isSelected)) {
 					item.tex = texID;
+					if (ECS::getECS().getComponent<ImageRenderer>(item.entityID)) {
+						ECS::getECS().getComponent<ImageRenderer>(item.entityID)->textureID = texID;
+						ECS::getECS().getComponent<ImageRenderer>(item.entityID)->image_path = texPath;
+					}
 					logger.log("[Inspector] Changed texture to: " + texName);
 					pushUndoState("Change texture");
 				}
@@ -1377,6 +1381,10 @@ void ImGuiManager::showAssetsBrowserUI() {
 						if (scene && selectedEntityType < scene->items.size())
 						{
 							scene->items[selectedEntityType].tex = texID;
+							if (ECS::getECS().getComponent<ImageRenderer>(scene->items[selectedEntityType].entityID)) {
+								ECS::getECS().getComponent<ImageRenderer>(scene->items[selectedEntityType].entityID)->textureID = texID;
+								ECS::getECS().getComponent<ImageRenderer>(scene->items[selectedEntityType].entityID)->image_path = texPath;
+							}
 							logger.log("[ImGui] Applied texture: " + texName);
 						}
 					}
