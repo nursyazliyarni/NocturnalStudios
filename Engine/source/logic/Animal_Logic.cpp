@@ -22,23 +22,25 @@ void Animal_Logic::update_animal_health(GameManager& gm, double deltaTime) {
 	if (gm.isPlaying()){
 		for (auto& [scene, scene_data] : gm.get_scenes_map()) {
 			for (auto& animal : scene_data.items) {
+				AnimalBehavior* animalb = ECS::getECS().getComponent<AnimalBehavior>(animal.entityID);
+				if (!animalb) continue;
 				if (animal.name == to_string(Animal_type::Flamingo) && animal.still_alive) {
-					if (animal.hunger_bar <= animal.hunger_bar/3) { //health of flamingo decreases faster when hunger bar is low
-						animal.health_bar -= animal.penalty_decreasing_rate * deltaTime;
+					if (animalb->hunger_bar <= animalb->hunger_bar/3) { //health of flamingo decreases faster when hunger bar is low
+						animalb->health_bar -= animalb->penalty_decreasing_rate * deltaTime;
 					}
 
 					else {
 						//health of flamingo decrease slowly when hungry bar is above normal standard
-						animal.health_bar -= animal.slower_decreasing_rate * deltaTime;
+						animalb->health_bar -= animalb->slower_decreasing_rate * deltaTime;
 					}
 				}
 
 				else if (animal.name == to_string(Animal_type::Horse) && animal.still_alive) {
-					animal.health_bar -= animal.faster_decreasing_rate * deltaTime; //health of horse decrease faster
+					animalb->health_bar -= animalb->faster_decreasing_rate * deltaTime; //health of horse decrease faster
 				}
 
 				else if (animal.still_alive && (animal.name == to_string(Animal_type::Seal) || animal.name == to_string(Animal_type::Owl))) {
-					animal.health_bar -= animal.normal_decreasing_rate * deltaTime; //health of seal/owl decrease normally
+					animalb->health_bar -= animalb->normal_decreasing_rate * deltaTime; //health of seal/owl decrease normally
 				}
 			}
 		}
@@ -49,12 +51,14 @@ void Animal_Logic::update_animal_hunger(GameManager& gm, double deltaTime) {
 	if (gm.isPlaying()) {
 		for (auto& [scene, scene_data] : gm.get_scenes_map()) {
 			for (auto& animal : scene_data.items) {
+				AnimalBehavior* animalb = ECS::getECS().getComponent<AnimalBehavior>(animal.entityID);
+				if (!animalb) continue;
 				if (animal.still_alive && (animal.name == to_string(Animal_type::Flamingo) || animal.name == to_string(Animal_type::Owl))) {
-					animal.hunger_bar -= animal.normal_decreasing_rate * deltaTime; //hunger of flamingo/owl decrease normally
+					animalb->hunger_bar -= animalb->normal_decreasing_rate * deltaTime; //hunger of flamingo/owl decrease normally
 				}
 
 				else if (animal.still_alive && animal.name == to_string(Animal_type::Horse)) {
-					animal.hunger_bar -= animal.normal_decreasing_rate * deltaTime; //hunger of horse decrease normally
+					animalb->hunger_bar -= animalb->normal_decreasing_rate * deltaTime; //hunger of horse decrease normally
 					/*static bool is_horseHAPPY{ true };
 					if (accumulation_timer > 30) {
 						is_horseHAPPY = false;
@@ -62,7 +66,7 @@ void Animal_Logic::update_animal_hunger(GameManager& gm, double deltaTime) {
 				}
 
 				else if (animal.still_alive && animal.name == to_string(Animal_type::Seal)) {
-					animal.hunger_bar -= animal.normal_decreasing_rate * deltaTime; //hunger of seal decrease normally
+					animalb->hunger_bar -= animalb->normal_decreasing_rate * deltaTime; //hunger of seal decrease normally
 					//if (stats.action == Zookeeper_action::feeding) {
 					//	static bool is_sealHAPPY{ true };
 					//	if (accumulation_timer <= 15 && accumulation_timer >= 45) {
@@ -80,6 +84,8 @@ void Animal_Logic::update_animal_sanity(GameManager& gm, double deltaTime) {
 	if (gm.isPlaying()) {
 		for (auto& [scene, scene_data] : gm.get_scenes_map()) {
 			for (auto& animal : scene_data.items) {
+				AnimalBehavior* animalb = ECS::getECS().getComponent<AnimalBehavior>(animal.entityID);
+				if (!animalb) continue;
 				if (animal.still_alive && animal.name == to_string(Animal_type::Flamingo)) {
 					//static double acc_timer{ 0 };
 					//if (gm.current() != to_string(Animal_type::Flamingo)) {
@@ -104,25 +110,25 @@ void Animal_Logic::update_animal_sanity(GameManager& gm, double deltaTime) {
 					}
 
 					if (animal.acc_timer > 3) {  
-						animal.sanity_bar -= animal.penalty_decreasing_rate * deltaTime;
+						animalb->sanity_bar -= animalb->penalty_decreasing_rate * deltaTime;
 					}
 
 					else {
 						//sanity of flamingo decrease normally
-						animal.sanity_bar -= animal.normal_decreasing_rate * deltaTime;
+						animalb->sanity_bar -= animalb->normal_decreasing_rate * deltaTime;
 					}
 				}
 
 				else if (animal.still_alive && animal.name == to_string(Animal_type::Horse)) {
-					animal.sanity_bar -= animal.faster_decreasing_rate * deltaTime; //sanity of horse decrease faster
+					animalb->sanity_bar -= animalb->faster_decreasing_rate * deltaTime; //sanity of horse decrease faster
 				}
 
 				else if (animal.still_alive && animal.name == to_string(Animal_type::Owl)) {
-					animal.sanity_bar -= animal.normal_decreasing_rate * deltaTime; //sanity of owl decrease normally
+					animalb->sanity_bar -= animalb->normal_decreasing_rate * deltaTime; //sanity of owl decrease normally
 				}
 
 				else if (animal.still_alive && animal.name == to_string(Animal_type::Seal)) {
-					animal.sanity_bar -= animal.normal_decreasing_rate * deltaTime; //sanity of seal decrease normally
+					animalb->sanity_bar -= animalb->normal_decreasing_rate * deltaTime; //sanity of seal decrease normally
 					if (stats.action == Zookeeper_action::staring) {
 						//static double static_staring_countdown{ 10 };
 						//static_staring_countdown -= 0.5;
@@ -132,7 +138,7 @@ void Animal_Logic::update_animal_sanity(GameManager& gm, double deltaTime) {
 						//}
 						animal.staring_countdown -= 0.5;  // USE animal.staring_countdown
 						if (animal.staring_countdown <= 0) {  //USE animal.staring_countdown
-							animal.sanity_bar -= animal.penalty_decreasing_rate * deltaTime;
+							animalb->sanity_bar -= animalb->penalty_decreasing_rate * deltaTime;
 						}
 					}
 					else {
@@ -149,9 +155,11 @@ void Animal_Logic::check_animal_status(GameManager& gm) {
 	if (gm.isPlaying()){
 		for (auto& [scene, scene_data] : gm.get_scenes_map()) {
 			for (auto& animal : scene_data.items) {
+				AnimalBehavior* animalb = ECS::getECS().getComponent<AnimalBehavior>(animal.entityID);
+				if (!animalb) continue;
 				if (animal.item_type == "animal")
 				{
-					if (animal.health_bar <= 0 || animal.sanity_bar <= 0) {
+					if (animalb->health_bar <= 0 || animalb->sanity_bar <= 0) {
 						animal.still_alive = false;
 					}
 				}
@@ -182,20 +190,21 @@ std::optional<ImVec2> Animal_Logic::check_item_status(
 
 		// ---- SAME BOUNDING BOX AS EDITOR (top-left + size) ----
 		float minX, minY, maxX, maxY;
-
-		if (item.hasCollider && item.colW > 0.0f && item.colH > 0.0f) {
+		Transform* t = ECS::getECS().getComponent<Transform>(item.entityID);
+		ImageRenderer* ir = ECS::getECS().getComponent<ImageRenderer>(item.entityID);
+		if (item.hasCollider && item.colW > 0.0f && item.colH > 0.0f&&t) {
 			// collider is top-left (x + offset) with width/height
-			minX = item.x + item.colOffsetX;
-			minY = item.y + item.colOffsetY;
+			minX = t->position.x() + item.colOffsetX;
+			minY = t->position.y() + item.colOffsetY;
 			maxX = minX + item.colW;
 			maxY = minY + item.colH;
 		}
-		else {
+		else if(t&&ir) {
 			// sprite rect: top-left (x,y) with width/height
-			minX = item.x;
-			minY = item.y;
-			maxX = item.x + item.w;
-			maxY = item.y + item.h;
+			minX = t->position.x();
+			minY = t->position.y();
+			maxX = t->position.x() + ir->width;
+			maxY = t->position.y() + ir->height;
 		}
 
 
@@ -204,10 +213,10 @@ std::optional<ImVec2> Animal_Logic::check_item_status(
 			mouse_pos.y >= minY && mouse_pos.y <= maxY;
 
 		// ---- start drag ----
-		if (inside && input.isLeftMousePressed(window) && !item.is_dragging) {
+		if (inside && input.isLeftMousePressed(window) && !item.is_dragging&&t) {
 			item.is_dragging = true;
-			dragX = item.x - mouse_pos.x;
-			dragY = item.y - mouse_pos.y;
+			dragX = t->position.x() - mouse_pos.x;
+			dragY = t->position.y() - mouse_pos.y;
 			return ImVec2{ dragX, dragY };
 		}
 
@@ -240,27 +249,30 @@ void Animal_Logic::drag_drop(GameManager& gm,
 
 	// If we are dragging a duplicated item, move it with the mouse
 	if (item_data && drag_value.has_value()) {
-		item_data->x = mouse_pos.x + drag_value.value().x;
-		item_data->y = mouse_pos.y + drag_value.value().y;
+		Transform* t = ECS::getECS().getComponent<Transform>(item_data->entityID);
+		t->position.x() = mouse_pos.x + drag_value.value().x;
+		t->position.y() = mouse_pos.y + drag_value.value().y;
 
 		// --- centre-based bounds helper (same idea as editor) ---
 		auto getBounds = [](const DrawItem& it,
 			float& minX, float& minY,
 			float& maxX, float& maxY)
 			{
-				if (it.hasCollider && it.colW > 0.0f && it.colH > 0.0f) {
+				Transform* itt = ECS::getECS().getComponent<Transform>(it.entityID);
+				ImageRenderer* itir = ECS::getECS().getComponent<ImageRenderer>(it.entityID);
+				if (it.hasCollider && it.colW > 0.0f && it.colH > 0.0f&&itt) {
 					// collider: top-left + size
-					minX = it.x + it.colOffsetX;
-					minY = it.y + it.colOffsetY;
+					minX = itt->position.x() + it.colOffsetX;
+					minY = itt->position.y() + it.colOffsetY;
 					maxX = minX + it.colW;
 					maxY = minY + it.colH;
 				}
-				else {
+				else if(itir&&itt) {
 					// sprite: top-left + size
-					minX = it.x;
-					minY = it.y;
-					maxX = it.x + it.w;
-					maxY = it.y + it.h;
+					minX = itt->position.x();
+					minY = itt->position.y();
+					maxX = itt->position.x() + itir->width;
+					maxY = itt->position.y() + itir->height;
 				}
 			};
 
@@ -282,6 +294,8 @@ void Animal_Logic::drag_drop(GameManager& gm,
 
 		// --- check collision with all animals using centre-based AABB ---
 		for (auto& animal : gm.getCurrentScene()->items) {
+			AnimalBehavior* animalb = ECS::getECS().getComponent<AnimalBehavior>(animal.entityID);
+			if (!animalb) continue;
 			if (!item_data) break; // item already consumed
 
 			if (animal.item_type == "animal" && animal.still_alive) {
@@ -289,21 +303,21 @@ void Animal_Logic::drag_drop(GameManager& gm,
 					continue;
 
 				if (item_data->item_type == "food") {
-					animal.hunger_bar += 20.0f;
-					if (animal.hunger_bar > 100.0f)
-						animal.hunger_bar = 100.0f;
+					animalb->hunger_bar += 20.0f;
+					if (animalb->hunger_bar > 100.0f)
+						animalb->hunger_bar = 100.0f;
 					item_data.reset();
 				}
 				else if (item_data && item_data->item_type == "medicine") {
-					animal.health_bar += 20.0f;
-					if (animal.health_bar > 100.0f)
-						animal.health_bar = 100.0f;
+					animalb->health_bar += 20.0f;
+					if (animalb->health_bar > 100.0f)
+						animalb->health_bar = 100.0f;
 					item_data.reset();
 				}
 				else if (item_data && item_data->item_type == "toy") {
-					animal.sanity_bar += 20.0f;
-					if (animal.sanity_bar > 100.0f)
-						animal.sanity_bar = 100.0f;
+					animalb->sanity_bar += 20.0f;
+					if (animalb->sanity_bar > 100.0f)
+						animalb->sanity_bar = 100.0f;
 					item_data.reset();
 				}
 			}

@@ -28801,3 +28801,202 @@
 [26-11-2025] [17:42:01] [CRASH_MESSAGE] Attempted to get volume of non-existent audio instance with ID: 3
 [26-11-2025] [17:42:01] [CRASH_MESSAGE] Attempted to get volume of non-existent audio instance with ID: 3
 [28-11-2025] [19:34:08] [CRASH_MESSAGE] Program crash due to abort signal - std::abort() or failed assert()
+[29-11-2025] [10:19:34] [CRASH_MESSAGE] Program crash due to segmentation fault - Invalid memory access
+[29-11-2025] [10:57:38] [CRASH_MESSAGE] Failed to parse prefab file: assets/prefabs\testing_prefabs.json
+[29-11-2025] [10:57:38] [CRASH_MESSAGE] Failed to parse prefab file: assets/prefabs\prefabs.json
+[29-11-2025] [10:57:38] [CRASH_MESSAGE] Could not find Prefab: button
+[29-11-2025] [10:57:38] [CRASH_MESSAGE] Parser: entity missing component: Transform
+[29-11-2025] [10:57:38] [CRASH_MESSAGE] ComponentPool::addComponent - Attempting to add component to invalid entity ID
+[29-11-2025] [10:57:38] [CRASH_MESSAGE] ECS::addComponent - Failed to add component to entity
+EntityID: 18446744073709551615
+
+[29-11-2025] [11:01:19] [CRASH_MESSAGE] Failed to parse prefab file: assets/prefabs\testing_prefabs.json
+[29-11-2025] [11:01:19] [CRASH_MESSAGE] Failed to parse prefab file: assets/prefabs\prefabs.json
+[29-11-2025] [11:01:19] [CRASH_MESSAGE] Prefab file empty
+[29-11-2025] [11:01:19] [CRASH_MESSAGE] Parser: entity missing component: Transform
+[29-11-2025] [11:01:19] [CRASH_MESSAGE] ComponentPool::addComponent - Attempting to add component to invalid entity ID
+[29-11-2025] [11:01:19] [CRASH_MESSAGE] ECS::addComponent - Failed to add component to entity
+EntityID: 18446744073709551615
+
+[29-11-2025] [11:03:17] [CRASH_MESSAGE] Failed to parse prefab file: assets/prefabs\testing_prefabs.json
+[29-11-2025] [11:03:17] [CRASH_MESSAGE] Failed to parse prefab file: assets/prefabs/prefabs.json
+[29-11-2025] [11:03:17] [CRASH_MESSAGE] Prefab file empty
+[29-11-2025] [11:03:17] [CRASH_MESSAGE] Parser: entity missing component: Transform
+[29-11-2025] [11:03:17] [CRASH_MESSAGE] ComponentPool::addComponent - Attempting to add component to invalid entity ID
+[29-11-2025] [11:03:17] [CRASH_MESSAGE] ECS::addComponent - Failed to add component to entity
+EntityID: 18446744073709551615
+
+[29-11-2025] [11:05:28] [CRASH_MESSAGE] Program crash due to abort signal - std::abort() or failed assert()
+[29-11-2025] [11:06:09] [CRASH_MESSAGE] Failed to parse prefab file: assets/prefabs\testing_prefabs.json
+[29-11-2025] [11:07:30] [CRASH_MESSAGE] Failed to parse prefab file: assets/prefabs\testing_prefabs.json
+[29-11-2025] [11:10:54] [CRASH_MESSAGE] Failed to parse prefab file: assets/prefabs\testing_prefabs.json
+[29-11-2025] [11:10:54] [CRASH_MESSAGE] Could not find Prefab: audio_emitter_menu
+[29-11-2025] [11:10:54] [CRASH_MESSAGE] Parser: entity missing component: AnimalBehavior
+[29-11-2025] [11:10:54] [CRASH_MESSAGE] Could not find Prefab: audio_emitter_flamingo
+[29-11-2025] [11:10:54] [CRASH_MESSAGE] Parser: entity missing component: AnimalBehavior
+[29-11-2025] [11:10:54] [CRASH_MESSAGE] Could not find Prefab: audio_emitter_seal
+[29-11-2025] [11:10:54] [CRASH_MESSAGE] Parser: entity missing component: AnimalBehavior
+[29-11-2025] [11:10:54] [CRASH_MESSAGE] Could not find Prefab: audio_emitter_owl
+[29-11-2025] [11:10:54] [CRASH_MESSAGE] Parser: entity missing component: AnimalBehavior
+[29-11-2025] [11:10:54] [CRASH_MESSAGE] Could not find Prefab: audio_emitter_horse
+[29-11-2025] [11:12:19] [CRASH_MESSAGE] Failed to parse prefab file: assets/prefabs\testing_prefabs.json
+[29-11-2025] [11:12:19] [CRASH_MESSAGE] Could not find Prefab: audio_emitter_menu
+[29-11-2025] [11:12:19] [CRASH_MESSAGE] Parser: entity missing component: AnimalBehavior
+[29-11-2025] [11:12:19] [CRASH_MESSAGE] Could not find Prefab: audio_emitter_flamingo
+[29-11-2025] [11:12:19] [CRASH_MESSAGE] Parser: entity missing component: AnimalBehavior
+[29-11-2025] [11:12:19] [CRASH_MESSAGE] Could not find Prefab: audio_emitter_seal
+[29-11-2025] [11:12:19] [CRASH_MESSAGE] Parser: entity missing component: AnimalBehavior
+[29-11-2025] [11:12:19] [CRASH_MESSAGE] Could not find Prefab: audio_emitter_owl
+[29-11-2025] [11:12:19] [CRASH_MESSAGE] Parser: entity missing component: AnimalBehavior
+[29-11-2025] [11:12:19] [CRASH_MESSAGE] Could not find Prefab: audio_emitter_horse
+[29-11-2025] [11:16:14] [CRASH_MESSAGE] Failed to parse prefab file: assets/prefabs\testing_prefabs.json
+[29-11-2025] [11:16:14] [CRASH_MESSAGE] Could not find Prefab: audio_emitter_menu
+[29-11-2025] [11:16:14] [CRASH_MESSAGE] Parser: entity missing component: AnimalBehavior
+[29-11-2025] [11:16:14] [CRASH_MESSAGE] Could not find Prefab: audio_emitter_flamingo
+[29-11-2025] [11:16:14] [CRASH_MESSAGE] Parser: entity missing component: AnimalBehavior
+[29-11-2025] [11:16:14] [CRASH_MESSAGE] Could not find Prefab: audio_emitter_seal
+[29-11-2025] [11:16:14] [CRASH_MESSAGE] Parser: entity missing component: AnimalBehavior
+[29-11-2025] [11:16:14] [CRASH_MESSAGE] Could not find Prefab: audio_emitter_owl
+[29-11-2025] [11:16:14] [CRASH_MESSAGE] Parser: entity missing component: AnimalBehavior
+[29-11-2025] [11:16:14] [CRASH_MESSAGE] Could not find Prefab: audio_emitter_horse
+[29-11-2025] [11:16:46] [CRASH_MESSAGE] Program crash due to abort signal - std::abort() or failed assert()
+[29-11-2025] [11:19:19] [CRASH_MESSAGE] Failed to parse prefab file: assets/prefabs\testing_prefabs.json
+[29-11-2025] [11:19:19] [CRASH_MESSAGE] Could not find Prefab: audio_emitter_menu
+[29-11-2025] [11:19:19] [CRASH_MESSAGE] Parser: entity missing component: AnimalBehavior
+[29-11-2025] [11:19:19] [CRASH_MESSAGE] Could not find Prefab: audio_emitter_flamingo
+[29-11-2025] [11:19:19] [CRASH_MESSAGE] Parser: entity missing component: AnimalBehavior
+[29-11-2025] [11:19:19] [CRASH_MESSAGE] Could not find Prefab: audio_emitter_seal
+[29-11-2025] [11:19:19] [CRASH_MESSAGE] Parser: entity missing component: AnimalBehavior
+[29-11-2025] [11:19:19] [CRASH_MESSAGE] Could not find Prefab: audio_emitter_owl
+[29-11-2025] [11:19:19] [CRASH_MESSAGE] Parser: entity missing component: AnimalBehavior
+[29-11-2025] [11:19:19] [CRASH_MESSAGE] Could not find Prefab: audio_emitter_horse
+[29-11-2025] [11:22:44] [CRASH_MESSAGE] Failed to parse prefab file: assets/prefabs\testing_prefabs.json
+[29-11-2025] [11:22:44] [CRASH_MESSAGE] Could not find Prefab: audio_emitter_menu
+[29-11-2025] [11:22:44] [CRASH_MESSAGE] Parser: entity missing component: AnimalBehavior
+[29-11-2025] [11:22:44] [CRASH_MESSAGE] Could not find Prefab: audio_emitter_flamingo
+[29-11-2025] [11:22:44] [CRASH_MESSAGE] Parser: entity missing component: AnimalBehavior
+[29-11-2025] [11:22:44] [CRASH_MESSAGE] Could not find Prefab: audio_emitter_seal
+[29-11-2025] [11:22:44] [CRASH_MESSAGE] Parser: entity missing component: AnimalBehavior
+[29-11-2025] [11:22:44] [CRASH_MESSAGE] Could not find Prefab: audio_emitter_owl
+[29-11-2025] [11:22:44] [CRASH_MESSAGE] Parser: entity missing component: AnimalBehavior
+[29-11-2025] [11:22:44] [CRASH_MESSAGE] Could not find Prefab: audio_emitter_horse
+[29-11-2025] [11:27:00] [CRASH_MESSAGE] Failed to parse prefab file: assets/prefabs\testing_prefabs.json
+[29-11-2025] [11:27:00] [CRASH_MESSAGE] Could not find Prefab: audio_emitter_menu
+[29-11-2025] [11:27:00] [CRASH_MESSAGE] Parser: entity missing component: AnimalBehavior
+[29-11-2025] [11:27:00] [CRASH_MESSAGE] Could not find Prefab: audio_emitter_flamingo
+[29-11-2025] [11:27:00] [CRASH_MESSAGE] Parser: entity missing component: AnimalBehavior
+[29-11-2025] [11:27:00] [CRASH_MESSAGE] Could not find Prefab: audio_emitter_seal
+[29-11-2025] [11:27:00] [CRASH_MESSAGE] Parser: entity missing component: AnimalBehavior
+[29-11-2025] [11:27:00] [CRASH_MESSAGE] Could not find Prefab: audio_emitter_owl
+[29-11-2025] [11:27:00] [CRASH_MESSAGE] Parser: entity missing component: AnimalBehavior
+[29-11-2025] [11:27:00] [CRASH_MESSAGE] Could not find Prefab: audio_emitter_horse
+[29-11-2025] [11:32:39] [CRASH_MESSAGE] Failed to parse prefab file: assets/prefabs\testing_prefabs.json
+[29-11-2025] [11:32:39] [CRASH_MESSAGE] Could not find Prefab: audio_emitter_menu
+[29-11-2025] [11:32:39] [CRASH_MESSAGE] Parser: entity missing component: AnimalBehavior
+[29-11-2025] [11:32:39] [CRASH_MESSAGE] Could not find Prefab: audio_emitter_flamingo
+[29-11-2025] [11:32:39] [CRASH_MESSAGE] Parser: entity missing component: AnimalBehavior
+[29-11-2025] [11:32:39] [CRASH_MESSAGE] Could not find Prefab: audio_emitter_seal
+[29-11-2025] [11:32:39] [CRASH_MESSAGE] Parser: entity missing component: AnimalBehavior
+[29-11-2025] [11:32:39] [CRASH_MESSAGE] Could not find Prefab: audio_emitter_owl
+[29-11-2025] [11:32:39] [CRASH_MESSAGE] Parser: entity missing component: AnimalBehavior
+[29-11-2025] [11:32:39] [CRASH_MESSAGE] Could not find Prefab: audio_emitter_horse
+[29-11-2025] [11:36:45] [CRASH_MESSAGE] Failed to parse prefab file: assets/prefabs\testing_prefabs.json
+[29-11-2025] [11:36:45] [CRASH_MESSAGE] Could not find Prefab: audio_emitter_menu
+[29-11-2025] [11:36:45] [CRASH_MESSAGE] Parser: entity missing component: AnimalBehavior
+[29-11-2025] [11:36:45] [CRASH_MESSAGE] Could not find Prefab: audio_emitter_flamingo
+[29-11-2025] [11:36:45] [CRASH_MESSAGE] Parser: entity missing component: AnimalBehavior
+[29-11-2025] [11:36:45] [CRASH_MESSAGE] Could not find Prefab: audio_emitter_seal
+[29-11-2025] [11:36:45] [CRASH_MESSAGE] Parser: entity missing component: AnimalBehavior
+[29-11-2025] [11:36:45] [CRASH_MESSAGE] Could not find Prefab: audio_emitter_owl
+[29-11-2025] [11:36:45] [CRASH_MESSAGE] Parser: entity missing component: AnimalBehavior
+[29-11-2025] [11:36:45] [CRASH_MESSAGE] Could not find Prefab: audio_emitter_horse
+[29-11-2025] [11:38:32] [CRASH_MESSAGE] Failed to parse prefab file: assets/prefabs\testing_prefabs.json
+[29-11-2025] [11:38:32] [CRASH_MESSAGE] Could not find Prefab: audio_emitter_menu
+[29-11-2025] [11:38:32] [CRASH_MESSAGE] Parser: entity missing component: AnimalBehavior
+[29-11-2025] [11:38:32] [CRASH_MESSAGE] Could not find Prefab: audio_emitter_flamingo
+[29-11-2025] [11:38:32] [CRASH_MESSAGE] Parser: entity missing component: AnimalBehavior
+[29-11-2025] [11:38:32] [CRASH_MESSAGE] Could not find Prefab: audio_emitter_seal
+[29-11-2025] [11:38:32] [CRASH_MESSAGE] Parser: entity missing component: AnimalBehavior
+[29-11-2025] [11:38:32] [CRASH_MESSAGE] Could not find Prefab: audio_emitter_owl
+[29-11-2025] [11:38:32] [CRASH_MESSAGE] Parser: entity missing component: AnimalBehavior
+[29-11-2025] [11:38:32] [CRASH_MESSAGE] Could not find Prefab: audio_emitter_horse
+[29-11-2025] [11:42:18] [CRASH_MESSAGE] Failed to parse prefab file: assets/prefabs\testing_prefabs.json
+[29-11-2025] [11:42:18] [CRASH_MESSAGE] Could not find Prefab: audio_emitter_menu
+[29-11-2025] [11:42:18] [CRASH_MESSAGE] Parser: entity missing component: AnimalBehavior
+[29-11-2025] [11:42:18] [CRASH_MESSAGE] Could not find Prefab: audio_emitter_flamingo
+[29-11-2025] [11:42:18] [CRASH_MESSAGE] Parser: entity missing component: AnimalBehavior
+[29-11-2025] [11:42:18] [CRASH_MESSAGE] Could not find Prefab: audio_emitter_seal
+[29-11-2025] [11:42:18] [CRASH_MESSAGE] Parser: entity missing component: AnimalBehavior
+[29-11-2025] [11:42:18] [CRASH_MESSAGE] Could not find Prefab: audio_emitter_owl
+[29-11-2025] [11:42:18] [CRASH_MESSAGE] Parser: entity missing component: AnimalBehavior
+[29-11-2025] [11:42:18] [CRASH_MESSAGE] Could not find Prefab: audio_emitter_horse
+[29-11-2025] [11:46:22] [CRASH_MESSAGE] Failed to parse prefab file: assets/prefabs\testing_prefabs.json
+[29-11-2025] [11:46:22] [CRASH_MESSAGE] Could not find Prefab: audio_emitter_menu
+[29-11-2025] [11:46:22] [CRASH_MESSAGE] Parser: entity missing component: AnimalBehavior
+[29-11-2025] [11:46:22] [CRASH_MESSAGE] Could not find Prefab: audio_emitter_flamingo
+[29-11-2025] [11:46:22] [CRASH_MESSAGE] Parser: entity missing component: AnimalBehavior
+[29-11-2025] [11:46:22] [CRASH_MESSAGE] Could not find Prefab: audio_emitter_seal
+[29-11-2025] [11:46:22] [CRASH_MESSAGE] Parser: entity missing component: AnimalBehavior
+[29-11-2025] [11:46:22] [CRASH_MESSAGE] Could not find Prefab: audio_emitter_owl
+[29-11-2025] [11:46:22] [CRASH_MESSAGE] Parser: entity missing component: AnimalBehavior
+[29-11-2025] [11:46:22] [CRASH_MESSAGE] Could not find Prefab: audio_emitter_horse
+[29-11-2025] [11:50:54] [CRASH_MESSAGE] Failed to parse prefab file: assets/prefabs\testing_prefabs.json
+[29-11-2025] [11:50:54] [CRASH_MESSAGE] Could not find Prefab: audio_emitter_menu
+[29-11-2025] [11:50:54] [CRASH_MESSAGE] Parser: entity missing component: AnimalBehavior
+[29-11-2025] [11:50:54] [CRASH_MESSAGE] Could not find Prefab: audio_emitter_flamingo
+[29-11-2025] [11:50:54] [CRASH_MESSAGE] Parser: entity missing component: AnimalBehavior
+[29-11-2025] [11:50:54] [CRASH_MESSAGE] Could not find Prefab: audio_emitter_seal
+[29-11-2025] [11:50:54] [CRASH_MESSAGE] Parser: entity missing component: AnimalBehavior
+[29-11-2025] [11:50:54] [CRASH_MESSAGE] Could not find Prefab: audio_emitter_owl
+[29-11-2025] [11:50:54] [CRASH_MESSAGE] Parser: entity missing component: AnimalBehavior
+[29-11-2025] [11:50:54] [CRASH_MESSAGE] Could not find Prefab: audio_emitter_horse
+[29-11-2025] [11:54:20] [CRASH_MESSAGE] Failed to parse prefab file: assets/prefabs\testing_prefabs.json
+[29-11-2025] [11:54:20] [CRASH_MESSAGE] Could not find Prefab: audio_emitter_menu
+[29-11-2025] [11:54:20] [CRASH_MESSAGE] Parser: entity missing component: AnimalBehavior
+[29-11-2025] [11:54:20] [CRASH_MESSAGE] Could not find Prefab: audio_emitter_flamingo
+[29-11-2025] [11:54:20] [CRASH_MESSAGE] Parser: entity missing component: AnimalBehavior
+[29-11-2025] [11:54:20] [CRASH_MESSAGE] Could not find Prefab: audio_emitter_seal
+[29-11-2025] [11:54:20] [CRASH_MESSAGE] Parser: entity missing component: AnimalBehavior
+[29-11-2025] [11:54:20] [CRASH_MESSAGE] Could not find Prefab: audio_emitter_owl
+[29-11-2025] [11:54:20] [CRASH_MESSAGE] Parser: entity missing component: AnimalBehavior
+[29-11-2025] [11:54:20] [CRASH_MESSAGE] Could not find Prefab: audio_emitter_horse
+[29-11-2025] [11:58:10] [CRASH_MESSAGE] Failed to parse prefab file: assets/prefabs\testing_prefabs.json
+[29-11-2025] [11:58:10] [CRASH_MESSAGE] Could not find Prefab: audio_emitter_menu
+[29-11-2025] [11:58:10] [CRASH_MESSAGE] Parser: entity missing component: AnimalBehavior
+[29-11-2025] [11:58:10] [CRASH_MESSAGE] Could not find Prefab: audio_emitter_flamingo
+[29-11-2025] [11:58:10] [CRASH_MESSAGE] Parser: entity missing component: AnimalBehavior
+[29-11-2025] [11:58:10] [CRASH_MESSAGE] Could not find Prefab: audio_emitter_seal
+[29-11-2025] [11:58:10] [CRASH_MESSAGE] Parser: entity missing component: AnimalBehavior
+[29-11-2025] [11:58:10] [CRASH_MESSAGE] Could not find Prefab: audio_emitter_owl
+[29-11-2025] [11:58:10] [CRASH_MESSAGE] Parser: entity missing component: AnimalBehavior
+[29-11-2025] [11:58:10] [CRASH_MESSAGE] Could not find Prefab: audio_emitter_horse
+[29-11-2025] [12:00:22] [CRASH_MESSAGE] Failed to parse prefab file: assets/prefabs\testing_prefabs.json
+[29-11-2025] [12:00:22] [CRASH_MESSAGE] Could not find Prefab: audio_emitter_menu
+[29-11-2025] [12:00:22] [CRASH_MESSAGE] Parser: entity missing component: AnimalBehavior
+[29-11-2025] [12:00:22] [CRASH_MESSAGE] Could not find Prefab: audio_emitter_flamingo
+[29-11-2025] [12:00:22] [CRASH_MESSAGE] Parser: entity missing component: AnimalBehavior
+[29-11-2025] [12:00:22] [CRASH_MESSAGE] Could not find Prefab: audio_emitter_seal
+[29-11-2025] [12:00:22] [CRASH_MESSAGE] Parser: entity missing component: AnimalBehavior
+[29-11-2025] [12:00:22] [CRASH_MESSAGE] Could not find Prefab: audio_emitter_owl
+[29-11-2025] [12:00:22] [CRASH_MESSAGE] Parser: entity missing component: AnimalBehavior
+[29-11-2025] [12:00:22] [CRASH_MESSAGE] Could not find Prefab: audio_emitter_horse
+[29-11-2025] [12:02:46] [CRASH_MESSAGE] Failed to parse prefab file: assets/prefabs\testing_prefabs.json
+[29-11-2025] [12:02:46] [CRASH_MESSAGE] Could not find Prefab: audio_emitter_menu
+[29-11-2025] [12:02:46] [CRASH_MESSAGE] Parser: entity missing component: AnimalBehavior
+[29-11-2025] [12:02:46] [CRASH_MESSAGE] Could not find Prefab: audio_emitter_flamingo
+[29-11-2025] [12:02:46] [CRASH_MESSAGE] Parser: entity missing component: AnimalBehavior
+[29-11-2025] [12:02:46] [CRASH_MESSAGE] Could not find Prefab: audio_emitter_seal
+[29-11-2025] [12:02:46] [CRASH_MESSAGE] Parser: entity missing component: AnimalBehavior
+[29-11-2025] [12:02:46] [CRASH_MESSAGE] Could not find Prefab: audio_emitter_owl
+[29-11-2025] [12:02:46] [CRASH_MESSAGE] Parser: entity missing component: AnimalBehavior
+[29-11-2025] [12:02:46] [CRASH_MESSAGE] Could not find Prefab: audio_emitter_horse
+[29-11-2025] [12:06:10] [CRASH_MESSAGE] Failed to parse prefab file: assets/prefabs\testing_prefabs.json
+[29-11-2025] [12:06:11] [CRASH_MESSAGE] Could not find Prefab: audio_emitter_menu
+[29-11-2025] [12:06:11] [CRASH_MESSAGE] Parser: entity missing component: AnimalBehavior
+[29-11-2025] [12:06:11] [CRASH_MESSAGE] Could not find Prefab: audio_emitter_flamingo
+[29-11-2025] [12:06:11] [CRASH_MESSAGE] Parser: entity missing component: AnimalBehavior
+[29-11-2025] [12:06:11] [CRASH_MESSAGE] Could not find Prefab: audio_emitter_seal
+[29-11-2025] [12:06:11] [CRASH_MESSAGE] Parser: entity missing component: AnimalBehavior
+[29-11-2025] [12:06:11] [CRASH_MESSAGE] Could not find Prefab: audio_emitter_owl
+[29-11-2025] [12:06:11] [CRASH_MESSAGE] Parser: entity missing component: AnimalBehavior
+[29-11-2025] [12:06:11] [CRASH_MESSAGE] Could not find Prefab: audio_emitter_horse

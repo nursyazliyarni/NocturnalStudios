@@ -28,6 +28,7 @@
 #include "Animation/AnimationSystem.h"
 #include "input/Input.h"
 #include "physics/Collision.h"
+#include "scene/Prefab.h"
 
 #include <functional>
 
@@ -42,7 +43,7 @@ struct DrawItem {
     //float x = 0, y = 0, w = 0, h = 0, angle = 0; // normalized
     //float health_bar, hunger_bar, sanity_bar;
     //float slower_decreasing_rate, normal_decreasing_rate, faster_decreasing_rate, penalty_decreasing_rate;
-    bool still_alive, is_draggable, is_dragging;
+    bool still_alive{true}, is_draggable, is_dragging;
 
     EntityID entityID = INVALID_ENTITY_ID;
 	//collider info
@@ -68,6 +69,7 @@ struct Scene {
     GLuint background = 0;
     std::vector<DrawItem> items;
     std::vector<ClickRegion> clicks;
+    bool loaded{ false };
 };
 
 class TextureStore {
@@ -83,9 +85,11 @@ class GameManager {
 public:
     bool checkForSceneChange();
 
-    bool load(const char* prefabsJsonPath, const char* scenesJsonPath, TextureStore& tex);
+    bool loadAll(PrefabManager& prefabs, const char* scenesJsonPath, TextureStore& tex);
     bool saveScene( std::string scenename, const char* scenesJsonPath, TextureStore& tex);
+    bool saveAll(const char* saveJsonPath, TextureStore& tex);
 
+    bool populateScene(const std::string& sceneName, PrefabManager& pm);
     void requestScene(const std::string& name);
     const std::string& current() const { return currentScene; }
 
@@ -179,6 +183,9 @@ private:
     std::function<void(const std::string&)> onSceneChanged;
    
     void writeAllComponentsToJSONArray(EntityID id,rapidjson::Value& overridesObj,rapidjson::Document::AllocatorType& alloc);
+    void processComponentsFromJSON(EntityID, rapidjson::Value& obj, bool isOverride=false);
+
+    void updateDrawItem(DrawItem&, EntityID);
 
     bool scene_changed_since_click{ false };
 

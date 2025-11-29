@@ -23,6 +23,7 @@
 #include "core/GameManager.h"
 #include "stb_image.h"
 #include <rapidjson/document.h>
+#include <rapidjson/istreamwrapper.h>
 #include "rapidjson/writer.h"
 #include "rapidjson/prettywriter.h"
 #include "rapidjson/filewritestream.h"
@@ -112,6 +113,9 @@ bool GameManager::checkForSceneChange() {
     else return false;
 }
 
+bool GameManager::saveAll(const char* saveJsonPath, TextureStore& tex) {
+    return true;
+}
 
 bool GameManager::saveScene( std::string scenename, const char* scenesJsonPath, TextureStore& tex) {
     if (scenename == "___currscene___")scenename = currentScene;
@@ -182,7 +186,7 @@ bool GameManager::saveScene( std::string scenename, const char* scenesJsonPath, 
 
 
 
-bool GameManager::load(const char* prefabsPath, const char* scenesPath, TextureStore& tex) {
+bool GameManager::loadAll(PrefabManager& prefabs, const char* scenesPath, TextureStore& tex) {
 
     app = AppState::Menu;   // lock number keys until Play is pressed
     requestedQuit = false;  // (optional) clear quit flag at load
@@ -190,37 +194,17 @@ bool GameManager::load(const char* prefabsPath, const char* scenesPath, TextureS
     // Store paths for later reload
     scenesFilePath = scenesPath;
 
-    //  1) read prefab defaults (w,h,angle) 
-    std::unordered_map<std::string, PrefabDef> prefabDefaults;
-    {
-        std::string s;
-        if (readFile(prefabsPath, s)) {
-            rapidjson::Document d;
-            d.Parse(s.c_str());
-            if (!d.HasParseError() && d.IsObject() && d.HasMember("prefabs") && d["prefabs"].IsObject()) {
-                const auto& pf = d["prefabs"];
-                for (auto it = pf.MemberBegin(); it != pf.MemberEnd(); ++it) {
-                    PrefabDef def;
-                    const auto& val = it->value;
-                    if (val.HasMember("defaults") && val["defaults"].IsObject()) {
-                        const auto& jd = val["defaults"];
-                        if (jd.HasMember("w") && jd["w"].IsNumber())     def.w = jd["w"].GetFloat();
-                        if (jd.HasMember("h") && jd["h"].IsNumber())     def.h = jd["h"].GetFloat();
-                        if (jd.HasMember("angle") && jd["angle"].IsNumber()) def.angle = jd["angle"].GetFloat();
-                    }
-                    prefabDefaults[it->name.GetString()] = def;
-                }
-            }
-        }
-    }
+    //read file
+    std::ifstream f(scenesPath);
+    if (!f) return false;
 
-    // ---- 2) read scenes ----
-    std::string s;
-    if (!readFile(scenesPath, s)) return false;
+    rapidjson::IStreamWrapper isw(f);
+
     rapidjson::Document d;
-    d.Parse(s.c_str());
-    if (d.HasParseError() || !d.IsObject()) return false;
+    d.ParseStream(isw);
 
+    if (d.HasParseError() || !d.IsObject()) return false;
+    logger.log("file parsed");
     // states
     if (d.HasMember("states") && d["states"].IsObject()) {
         const auto& st = d["states"];
@@ -239,35 +223,120 @@ bool GameManager::load(const char* prefabsPath, const char* scenesPath, TextureS
     }
 
     // scenes
-    if (!d.HasMember("scenes") || !d["scenes"].IsObject()) return false;
-    const auto& jsScenes = d["scenes"];
-    for (auto it = jsScenes.MemberBegin(); it != jsScenes.MemberEnd(); ++it) {
-        const char* sceneName = it->name.GetString();
-        const auto& jsS = it->value;
-        if (!jsS.IsObject()) continue;
+    if (!d.HasMember("scenes") || !d["scenes"].IsArray()) return false;
 
-        Scene sc;
-
-        // background
-        if (jsS.HasMember("background") && jsS["background"].IsString()) {
-            std::string bg = toAssetsPath(jsS["background"].GetString());
-            sc.background = tex.get(bg);
+    unsigned int unnamd_scenes{},unnamed_entities{};
+    for (rapidjson::Value& scn:d["scenes"].GetArray())
+    {
+        logger.log("reading scene");
+        std::string scn_name{};
+        if (scn.HasMember("name") && scn["name"].IsString())scn_name = scn["name"].GetString();
+        else {
+            scn_name = "Scene_" + std::to_string(unnamd_scenes);
         }
 
-        // entities
-        if (jsS.HasMember("entities") && jsS["entities"].IsArray()) {
-            for (const auto& e : jsS["entities"].GetArray()) {
-                if (!e.IsObject()) continue;
+        Scene new_scene;
+        if (scn.HasMember("background") && scn["background"].IsString())
+        {
+            new_scene.background  =tex.get(scn["background"].GetString());
+        }
 
-                if (e.HasMember("prefab"))
+        
+        if (scn.HasMember("entities")&&scn["entities"].IsArray())
+        {
+            logger.log("adding entity");
+            for (rapidjson::Value& ent : scn["entities"].GetArray())
+            {
+                EntityID new_entity{ INVALID_ENTITY_ID };
+                std::string ent_name{};
+
+                if (ent.HasMember("name") && ent["name"].IsString()) {
+                    //check if already have an entity named that lmao
+                    std::string base = ent["name"].GetString();
+                    std::string check_name = base;
+                    unsigned int suffix = 0;
+                    while (ecs_.findEntityByName(check_name) != INVALID_ENTITY_ID) {
+                        check_name = base + "_" + std::to_string(suffix++);
+                    }
+                    ent_name = check_name;
+                }
+                else {
+                    //same for unnamed sntity
+                    std::string base = "Entity_" + std::to_string(unnamed_entities);
+                    std::string check_name = base;
+                    unsigned int suffix = 0;
+                    while (ecs_.findEntityByName(check_name) != INVALID_ENTITY_ID) {
+                        check_name = base + "_" + std::to_string(suffix++);
+                    }
+                    // ensure the global counter advances to avoid reusing base next time
+                    unnamed_entities++;
+                    ent_name = check_name;
+                }
+                //name resolved yay
+                logger.log("entity name: " +ent_name);
+
+                if (ent.HasMember("prefab")&&ent["prefab"].IsString())
                 {
+                    logger.log("Creating entity from prefab");
+                    new_entity = prefabs.CreateEntityFromPrefab(ent["prefab"].GetString(), ent_name);
+                    logger.log("created");
+                    //process overrides (normal components)
+                    //uses FromJson
+                    if (ent.HasMember("overrides") && ent["overrides"].IsArray())
+                    {
+                        logger.log("adding components");
+                        for (rapidjson::Value& ovr : ent["overrides"].GetArray()) {
+                            processComponentsFromJSON(new_entity, ovr,true);
+                        }
+                    }
 
+                    
+                }
+                else //entity not based on prefabs
+                {
+                    new_entity = ecs_.createEntity(ent_name);
+
+                    if (ent.HasMember("components") && ent["components"].IsArray())
+                    {
+                        logger.log("adding components");
+                        for (rapidjson::Value& cmp : ent["components"].GetArray()) {
+                            processComponentsFromJSON(new_entity, cmp);
+                        }
+                    }
                 }
 
+                if (new_entity == INVALID_ENTITY_ID) continue;
+                //components done
+                
+                DrawItem di{};
+                updateDrawItem(di, new_entity);
+
+                //other overrides
+                if (ent.HasMember("is_draggable") && ent["is_draggable"].IsBool())di.is_draggable = ent["is_draggable"].GetBool();
+                if (ent.HasMember("is_dragging") && ent["is_dragging"].IsBool())di.is_dragging = ent["is_dragging"].GetBool();
+
+                new_scene.items.push_back(di);
+
+                //handle click regions now
+                ClickRegion cr;
+                Transform *t = ecs_.getComponent<Transform>(new_entity);
+                ImageRenderer *ir= ecs_.getComponent<ImageRenderer>(new_entity); //will change to a new component called clickable
+                if (!t||!ir) continue;
+
+                cr.x = t->position.x(); cr.y = t->position.y(); cr.w = ir->width; cr.h = ir->height;
+                cr.name = di.name;
+                if (ent.HasMember("goto") && ent["goto"].IsString()) cr.gotoScene = ent["goto"].GetString();
+                if (ent.HasMember("quit") && ent["quit"].IsBool())   cr.quit = ent["quit"].GetBool();
+                if (ent.HasMember("start") && ent["start"].IsBool())  cr.start = ent["start"].GetBool();
+
+                // store the region if it does ANY action
+                if (cr.quit || cr.start || !cr.gotoScene.empty())
+                    logger.log("cr: " + std::to_string(cr.x)+" " + std::to_string(cr.y) + " " + std::to_string(cr.w) + " " + std::to_string(cr.h) + " " +cr.name);
+                    new_scene.clicks.push_back(cr);
             }
         }
-
-        scenes[sceneName] = std::move(sc);
+        logger.log("scene added");
+        scenes.emplace(scn_name, new_scene);
     }
 
     initialScenes_ = scenes;
@@ -370,11 +439,10 @@ void GameManager::render(Renderer& r, Input& input, GLFWwindow* window, int w, i
     if (it == scenes.end()) {  return; }
     const Scene& sc = it->second;
 
-    // background (fullscreen) � NOTE uniform must be "bg_texture"
+    // background (fullscreen) NOTE uniform must be "bg_texture"
     if (it->first == "MainMenu") {
         r.special_background_render(sc.background, "bgTexture", 1);
     }
-
     else {
         r.background_render(sc.background, "bg_texture", 0);
         // Draw background as a regular textured quad and apply camera to it too
@@ -383,117 +451,98 @@ void GameManager::render(Renderer& r, Input& input, GLFWwindow* window, int w, i
         r.texturedTri(sc.background, bx, by, bw, bh);
     }
 
-    constexpr EntityID MAX_SCAN = 5000;
-    for (EntityID e = 0; e < MAX_SCAN; ++e) {
-        if (auto* t = ecs_.getComponent<Transform>(e)) {
-            if (auto* img = ecs_.getComponent<ImageRenderer>(e)) {
-                if (!img->isVisible) continue;
-                if (img->textureID <= 0) continue;  // << guard: skip �white box� draws
-
-                if (auto* anim = ecs_.getComponent<SpriteAnimationComponent>(e)) {
-                    auto it = anim->animations.find(anim->currentAnim);
-                    if (it != anim->animations.end()) {
-                        const auto& def = it->second;
-
-                        int frameIndex = anim->currentFrame;
-                        int sheetColumns = anim->sheetColumns;
-                        int sheetRows = anim->sheetRows;
-
-                        float uPerFrame = 1.0f / float(sheetColumns);
-                        float vPerFrame = 1.0f / float(sheetRows);
-
-                        int col = frameIndex % sheetColumns;
-                        int row = frameIndex / sheetColumns;
-
-                        float u0 = col * uPerFrame;
-                        float v0 = row * vPerFrame;
-                        float u1 = u0 + uPerFrame;
-                        float v1 = v0 + vPerFrame;
-
-                        float px = t->position.x() * w;
-                        float py = t->position.y() * h;
-                        float pw = t->scale.x() * w;
-                        float ph = t->scale.y() * h;
-
-                        Cam2D_Apply(currentScene, px, py, pw, ph, w, h);
-                        r.drawSpriteUV(img->textureID, px, py, pw, ph, u0, v0, u1, v1);
-                    }
-                }
-            }
-        }
-    }
-
+    //render items in scene, BASED ON di
     // entities (normalized ? pixels)
    // entities (normalized → pixels) — draw JSON **only** if there is NO ECS entity by the same name
-    for (const auto& di : sc.items) {
-        // If an ECS entity with this name exists, we skip the JSON-drawn duplicate
-        if (!di.name.empty()) {
-            EntityID eid = ecs_.findEntityByName(di.name);
-            if (eid != INVALID_ENTITY_ID) {
-                continue; // ECS is the source of truth for this sprite
+    for (DrawItem di : sc.items) {
+        if (di.entityID != INVALID_ENTITY_ID)
+        {
+            Transform* t = ecs_.getComponent<Transform>(di.entityID);
+            ImageRenderer* img = ecs_.getComponent<ImageRenderer>(di.entityID);
+
+            if (!t || !img)continue;
+            if (!img->isVisible || img->textureID <= 0)continue;
+
+            if (auto* anim = ecs_.getComponent<SpriteAnimationComponent>(di.entityID)) {
+                auto it = anim->animations.find(anim->currentAnim);
+                if (it != anim->animations.end()) {
+                    const auto& def = it->second;
+
+                    int frameIndex = anim->currentFrame;
+                    int sheetColumns = anim->sheetColumns;
+                    int sheetRows = anim->sheetRows;
+
+                    float uPerFrame = 1.0f / float(sheetColumns);
+                    float vPerFrame = 1.0f / float(sheetRows);
+
+                    int col = frameIndex % sheetColumns;
+                    int row = frameIndex / sheetColumns;
+
+                    float u0 = col * uPerFrame;
+                    float v0 = row * vPerFrame;
+                    float u1 = u0 + uPerFrame;
+                    float v1 = v0 + vPerFrame;
+
+                    float px = t->position.x() * w;
+                    float py = t->position.y() * h;
+                    float pw = t->scale.x() * w;
+                    float ph = t->scale.y() * h;
+
+                    Cam2D_Apply(currentScene, px, py, pw, ph, w, h);
+                    r.drawSpriteUV(img->textureID, px, py, pw, ph, u0, v0, u1, v1);
+                }
             }
-        }
 
-        if (di.tex == 0) continue;
-        float px = di.x * w, py = di.y * h, pw = di.w * w, ph = di.h * h;
+            float px = t->position.x() * w, py = t->position.y() * h, pw = img->width * w, ph = img->height * h;
+            if (di.name == "flamingo" || di.name == "seal" || di.name == "owl" || di.name == "horse") {
+                AnimalBehavior* ab = ecs_.getComponent<AnimalBehavior>(di.entityID);
+                if (di.still_alive && ab) {
+                    r.rect(w / 2, h / 2 - 200, ab->health_bar * 4, 25, 1, 0, 0);
+                    r.rect(w / 2, h / 2 - 150, ab->hunger_bar * 4, 25, 0, 1, 0);
+                    r.rect(w / 2, h / 2 - 100, ab->sanity_bar * 4, 25, 0, 0, 1);
 
-        if (di.name=="flamingo"||di.name=="seal"||di.name=="owl"||di.name=="horse") {
-            if (di.still_alive) {
-                r.rect(w / 2, h / 2 - 200, di.health_bar * 4, 25, 1, 0, 0);
-                r.rect(w / 2, h / 2 - 150, di.hunger_bar * 4, 25, 0, 1, 0);
-                r.rect(w / 2, h / 2 - 100, di.sanity_bar * 4, 25, 0, 0, 1);
-
+                    Cam2D_Apply(currentScene, px, py, pw, ph, w, h);
+                    r.texturedTri(di.tex, px, py, pw, ph);
+                }
+            }
+            else {
                 Cam2D_Apply(currentScene, px, py, pw, ph, w, h);
                 r.texturedTri(di.tex, px, py, pw, ph);
+
+                // --- COLLIDER VISUALIZATION ---
+                if (di.hasCollider)
+                {
+                    float colX = t->position.x() * w + di.colOffsetX * w;
+                    float colY = t->position.y() * h + di.colOffsetY * h;
+                    float colW = di.colW * w;
+                    float colH = di.colH * h;
+
+                    // convert collider location from center to top-left
+                    float cx = colX + colW * 0.5f;
+                    float cy = colY + colH * 0.5f;
+
+                    // green rectangle
+                    r.rect(cx, cy, colW, colH, 0.0f, 1.0f, 0.0f);
+                }
+
             }
         }
-        else {
-            Cam2D_Apply(currentScene, px, py, pw, ph, w, h);
-            r.texturedTri(di.tex, px, py, pw, ph);
-
-            // --- COLLIDER VISUALIZATION ---
-            if (di.hasCollider)
-            {
-                float colX = di.x * w + di.colOffsetX * w;
-                float colY = di.y * h + di.colOffsetY * h;
-                float colW = di.colW * w;
-                float colH = di.colH * h;
-
-                // convert collider location from center to top-left
-                float cx = colX + colW * 0.5f;
-                float cy = colY + colH * 0.5f;
-
-                // green rectangle
-                r.rect(cx, cy, colW, colH, 0.0f, 1.0f, 0.0f);
-            }
-            // --------------------------------
-        }
-
         if (di.is_dragging && !duplicate_item) {
             duplicate_item = std::make_unique<DrawItem>(di);
         }
 
         if (duplicate_item) {
-            r.texturedTri(duplicate_item->tex, duplicate_item->x * w, duplicate_item->y * h, duplicate_item->w * w, duplicate_item->h * h);
+            Transform* dt = ecs_.getComponent<Transform>(duplicate_item->entityID);
+            ImageRenderer* dimg= ecs_.getComponent<ImageRenderer>(duplicate_item->entityID);
+            r.texturedTri(duplicate_item->tex, dt->position.x() * w, dt->position.y() * h, dimg->width * w, dimg->height * h);
         }
 
-        //if (!input.isLeftMousePressed(window)) {
-        //    duplicate_item.reset(); //The unique_ptr releases ownership
-        //}
-
-        /*if (Debug::Drawer::Instance().IsActive()) {
-            AABB collider(Vector2D(px, py), Vector2D(pw, ph));
-            Debug::Drawer::Instance().AddRect(
-                collider.pos.x(), collider.pos.y(),
-                collider.size.x(), collider.size.y(),
-                0xFFFF00FF
-            );
-        }*/
-		// --- Debug Draw Collider Box ---
+        // --- Debug Draw Collider Box ---
         if (Debug::Drawer::Instance().IsActive() && di.hasCollider)
         {
-            float cx = di.x + di.colOffsetX;
-            float cy = di.y + di.colOffsetY;
+            Transform* t = ecs_.getComponent<Transform>(di.entityID);
+            float cx = t->position.x() + di.colOffsetX;
+            float cy = t->position.y() + di.colOffsetY;
 
             float px = cx * w;
             float py = cy * h;
@@ -510,6 +559,12 @@ void GameManager::render(Renderer& r, Input& input, GLFWwindow* window, int w, i
             );
         }
     }
+
+    
+   
+
+        
+    
 }
 
 
@@ -640,6 +695,8 @@ bool GameManager::handleClick(float nx, float ny) {
     if (it == scenes.end()) return false;
     const Scene& sc = it->second;
 
+    logger.log("clicked at x: " + std::to_string(nx) + ", y: " + std::to_string(ny));
+
     for (const auto& cr : sc.clicks) {
         bool hit = (nx >= cr.x && nx <= cr.x + cr.w && ny >= cr.y && ny <= cr.y + cr.h);
         logger.log(std::string("hit-test ") + (cr.name.empty() ? "<noname>" : cr.name) +
@@ -769,6 +826,19 @@ void GameManager::resumeGame() {
     }
 }
 
+
+
+bool GameManager::populateScene(const std::string& sceneName, PrefabManager& pm) {
+    // check first if the scene has been populated
+    auto it = scenes.find(sceneName);
+    if (it == scenes.end())return false;
+
+    if (!it->second.loaded)
+    {
+        //load it!
+    }return true;
+}
+
 bool GameManager::reloadCurrentScene(TextureStore& tex) {
     if (currentScene.empty() || scenesFilePath.empty()) {
         logger.warning("[GameManager] Cannot reload: no current scene");
@@ -849,7 +919,7 @@ bool GameManager::reloadCurrentScene(TextureStore& tex) {
     return true;
 }
 /**
- * Current printing method for hamobjects components.
+ * Current printing method for objects components.
  *  it is incredibly lazy
  * \param id
  * \param overridesObj
@@ -910,4 +980,26 @@ void GameManager::writeAllComponentsToJSONArray(EntityID id, rapidjson::Value& o
         ecs_.getComponent<BoxCollider>(id)->ToJSON(entObj, alloc); 
         obj.PushBack(entObj, alloc);
     }
+}
+
+void GameManager::processComponentsFromJSON(EntityID id, rapidjson::Value& obj,bool isOverride){
+    if (!obj.HasMember("type") || !obj["type"].IsString())return;
+    
+    if (isOverride)
+    {
+    
+        ComponentFactory::ParseFromName(id, obj["type"].GetString(), obj);
+    }
+    else {
+        ComponentFactory::CreateFromName(id, obj["type"].GetString(), obj);
+    }
+    
+
+}
+void GameManager::updateDrawItem(DrawItem& d, EntityID e) {
+    d.name = ecs_.getEntityName(e);
+
+    if (ecs_.getComponent<ImageRenderer>(e))d.tex = ecs_.getComponent<ImageRenderer>(e)->textureID;
+
+    d.entityID = e;
 }

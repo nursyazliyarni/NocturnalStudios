@@ -71,7 +71,7 @@ bool ComponentFactory::CreateFromName(EntityID entity, const std::string& name, 
 	}
 	if (name == "AABBCollider")
 	{
-		ecs.addComponent<BoxCollider>(entity, std::any_cast<BoxCollider>(Create(name,j)));
+		ecs.addComponent<AABBCollider>(entity, std::any_cast<AABBCollider>(Create(name,j)));
 		return true;
 	}
 	if (name=="AIComponent")
@@ -93,12 +93,19 @@ bool ComponentFactory::CreateFromName(EntityID entity, const std::string& name, 
 
 	return false;
 }
+
+void ComponentFactory::ParseFromName(EntityID entity, const std::string& name, const Json& j) {
+	auto it = ParserMap().find(name);
+
+	if (it == ParserMap().end()) return;
+	else it->second(entity, j);
+}
 void Collider::FromJSON(const rapidjson::Value& json){}
 void Collider::ToJSON(rapidjson::Value& json, rapidjson::Document::AllocatorType& allocator) const {}
 
 void RenderComponent::FromJSON(const rapidjson::Value& json) {
 	const char* members[]{ "opacity","is_visible","color_tint","color_to_add","width","height","angle"};
-	for (int i{};i<4;i++)
+	for (int i{};i<7;i++)
 	{
 		if (json.HasMember(members[i]))
 		{
@@ -159,11 +166,13 @@ void RenderComponent::FromJSON(const rapidjson::Value& json) {
 				{
 					width = json[members[i]].GetFloat();
 				}
+				break;
 			case 5://height
 				if (json[members[i]].IsFloat())
 				{
 					height = json[members[i]].GetFloat();
 				}
+				break;
 			}
 		}
 	}
@@ -353,9 +362,10 @@ void ImageRenderer::FromJSON(const rapidjson::Value& json) {
 	const char* members[]{
 		"texture_id",//0
 		"image_path",//1
-		"sprite_path"
+		"sprite_path",
+		
 	};
-	for (int i{}; i < 2; i++)
+	for (int i{}; i < 3; i++)
 	{
 		if (json.HasMember(members[i]))
 		{

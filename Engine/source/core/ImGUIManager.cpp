@@ -742,23 +742,41 @@ void ImGuiManager::showEntityListUI(/* Maybe an enum of paramEntityType, Maybe a
 			// Create a simple new DrawItem
 			DrawItem newItem;
 			newItem.name = "NewObject_" + std::to_string(sceneMut->items.size());
-			newItem.w = 0.1f;     // default width
-			newItem.h = 0.1f;     // default height
-			newItem.x = 0.5f;     // start centered
-			newItem.y = 0.5f;
-			newItem.angle = 0.0f; // no rotation
+			// = 0.1f;     // default width
+			//float collider_height = 0.1f;     // default height
+			//newItem.x = 0.5f;     // start centered
+			//newItem.y = 0.5f;
+			//newItem.angle = 0.0f; // no rotation
 
 			// Create a matching ECS entity for this object
 			ECS& ecs = gsm.getECS();
 			EntityID e = ecs.createEntity();
 			newItem.entityID = e;
 
+			if (ecs.addComponent<Transform>(e, {  })&& ecs.addComponent<ImageRenderer>(e, {})&& ecs.addComponent<BoxCollider>(e, {}))
+			{
+				Transform* t = ecs.getComponent<Transform>(e);
+				ImageRenderer* ir = ecs.getComponent<ImageRenderer>(e);
+				BoxCollider* bc = ecs.getComponent<BoxCollider>(e);
+
+				t->position.x() = 0.5f;
+				t->position.y() = 0.5f;
+
+				ir->width = 0.1f;
+				ir->height = 0.1f;
+
+				bc->width = 0.1f;
+				bc->height = 0.1f;	
+
+				newItem.colW = ir->width;
+				newItem.colH = ir->height;
+			}
+
 			//default collider settings
 			newItem.hasCollider = true;
 			newItem.colOffsetX = 0.0f;
 			newItem.colOffsetY = 0.0f;
-			newItem.colW = newItem.w;
-			newItem.colH = newItem.h;
+
 
 			// Add it to the current scene
 			sceneMut->items.push_back(newItem);
@@ -859,13 +877,18 @@ void ImGuiManager::showTransformUI(/* A reference to a vector of object list obj
 	ImGui::Separator();
 	if (ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_DefaultOpen))
 	{
+		Transform* t = ECS::getECS().getComponent<Transform>(item.entityID);
+		if (!t)return;
 		// edits the game objects actual transform
 		bool changed = false;
-		changed |= ImGui::DragFloat("X", &item.x, 0.01f, 0.0f, 1.0f);
-		changed |= ImGui::DragFloat("Y", &item.y, 0.01f, 0.0f, 1.0f);
-		changed |= ImGui::DragFloat("Width", &item.w, 0.01f, 0.0f, 2.0f);
-		changed |= ImGui::DragFloat("Height", &item.h, 0.01f, 0.0f, 2.0f);
-		changed |= ImGui::DragFloat("Angle", &item.angle, 0.5f, -360.0f, 360.0f);
+		changed |= ImGui::DragFloat("X", &t->position.x(), 0.01f, 0.0f, 1.0f);
+		changed |= ImGui::DragFloat("Y", &t->position.y(), 0.01f, 0.0f, 1.0f);
+
+		ImageRenderer *ir = ECS::getECS().getComponent<ImageRenderer>(item.entityID);
+		if (!ir)return;
+		changed |= ImGui::DragFloat("Width", &ir->width, 0.01f, 0.0f, 2.0f);
+		changed |= ImGui::DragFloat("Height", &ir->height, 0.01f, 0.0f, 2.0f);
+		changed |= ImGui::DragFloat("Angle", &ir->angle, 0.5f, -360.0f, 360.0f);
 
 		if (changed) {
 			pushUndoState("Inspector transform change");
@@ -886,9 +909,11 @@ void ImGuiManager::showTransformUI(/* A reference to a vector of object list obj
 			ImGui::DragFloat("Collider Height", &item.colH, 0.01f, 0.0f, 2.0f);
 
 			if (ImGui::Button("Reset Collider to Sprite")) {
+				ImageRenderer* ir = ECS::getECS().getComponent<ImageRenderer>(item.entityID);
+				if (!ir)return;
 				item.colOffsetX = item.colOffsetY = 0.0f;
-				item.colW = item.w;
-				item.colH = item.h;
+				item.colW = ir->width;
+				item.colH = ir->height;
 			}
 		}
 	}
@@ -1952,8 +1977,10 @@ void ImGuiManager::saveSceneSnapshot() {
 		return;
 	}
 
+	
+		
 	// Create JSON string
-	m_savedSceneState = "[";
+	/*m_savedSceneState = "[";
 
 	for (size_t i = 0; i < scene->items.size(); ++i) {
 		const DrawItem& item = scene->items[i];
@@ -1983,7 +2010,7 @@ void ImGuiManager::saveSceneSnapshot() {
 		if (i < scene->items.size() - 1) m_savedSceneState += ",";
 	}
 
-	m_savedSceneState += "]";
+	m_savedSceneState += "]";*/
 
 	logger.log("Scene snapshot saved (" + std::to_string(scene->items.size()) + " items) with full animal state");
 }
@@ -1996,7 +2023,7 @@ void ImGuiManager::restoreSceneSnapshot() {
 
 	Scene* scene = gsm.getCurrentScene();
 	if (!scene) return;
-
+	/*
 	// store original data temporarily
 	std::vector<DrawItem> originalItems = scene->items;
 
@@ -2038,7 +2065,7 @@ void ImGuiManager::restoreSceneSnapshot() {
 			return value;
 			};
 		*/
-		auto getValue = [](const std::string& str, const std::string& key) -> std::string {
+		/*auto getValue = [](const std::string& str, const std::string& key) -> std::string {
 			size_t keyPos = str.find("\"" + key + "\":");
 			if (keyPos == std::string::npos) return "";
 
@@ -2124,7 +2151,7 @@ void ImGuiManager::restoreSceneSnapshot() {
 
 		scene->items.push_back(item);
 		pos = endPos + 1;
-	}
+	}*/
 
 	logger.log("Scene snapshot restored (" + std::to_string(scene->items.size()) + " items) with full animal state");
 	m_savedSceneState.clear();
@@ -2158,11 +2185,14 @@ void ImGuiManager::onStopButtonPressed() {
 	Scene* scene = gsm.getCurrentScene();
 	if (scene) {
 		for (auto& item : scene->items) {
-			if (item.item_type == "animal") {
+			ECS& ecss = ECS::getECS();
+			AnimalBehavior* ab = ecss.getComponent<AnimalBehavior>(item.entityID);
+			if (ab) {
+
 				// Reset bars to full
-				item.health_bar = 100.0f;
-				item.hunger_bar = 100.0f;
-				item.sanity_bar = 100.0f;
+				ab->health_bar = 100.0f;
+				ab->hunger_bar = 100.0f;
+				ab->sanity_bar = 100.0f;
 
 				// Reset timers
 				item.acc_timer = 0.0f;
@@ -2314,20 +2344,24 @@ void ImGuiManager::handleViewportPicking(const ImVec2& imgMin,
 		const DrawItem& it = items[static_cast<size_t>(i)];
 
 		float minX, maxX, minY, maxY;
+		Transform* t = ECS::getECS().getComponent<Transform>(it.entityID);
+		ImageRenderer* ir = ECS::getECS().getComponent<ImageRenderer>(it.entityID);
+
+		if (!t || !ir)continue;
 
 		if (it.hasCollider && it.colW > 0.0f && it.colH > 0.0f) {
 			// collider is also top-left + size in normalized space
-			minX = it.x + it.colOffsetX;
-			minY = it.y + it.colOffsetY;
+			minX = t->position.x() + it.colOffsetX;
+			minY = t->position.y() + it.colOffsetY;
 			maxX = minX + it.colW;
 			maxY = minY + it.colH;
 		}
 		else {
 			// sprite rect: top-left (x,y) with width/height
-			minX = it.x;
-			minY = it.y;
-			maxX = it.x + it.w;
-			maxY = it.y + it.h;
+			minX = t->position.x();
+			minY = t->position.y();
+			maxX = t->position.x() + ir->width;
+			maxY = t->position.y() + ir->height;
 		}
 
 		if (localX >= minX && localX <= maxX &&
@@ -2351,8 +2385,13 @@ void ImGuiManager::handleViewportPicking(const ImVec2& imgMin,
 		m_isDragging = true;
 
 		DrawItem& it = items[static_cast<size_t>(hitIndex)];
-		m_dragOffset.x = localX - it.x;
-		m_dragOffset.y = localY - it.y;
+		
+		Transform* t = ECS::getECS().getComponent<Transform>(it.entityID);
+		if (t) {
+			m_dragOffset.x = localX - t->position.x();
+			m_dragOffset.y = localY - t->position.y();
+		}
+		
 
 		logger.log("[ImGui] Selected item from viewport: " + it.name);
 	}
@@ -2371,8 +2410,11 @@ void ImGuiManager::handleViewportPicking(const ImVec2& imgMin,
 			newX = std::clamp(newX, 0.0f, 1.0f);
 			newY = std::clamp(newY, 0.0f, 1.0f);
 
-			it.x = newX;
-			it.y = newY;
+			Transform* t = ECS::getECS().getComponent<Transform>(it.entityID);
+			if (t) {
+				t->position.x()=newX;
+				t->position.y()=newY;
+			}
 		}
 		else {
 			//dragged item was removed

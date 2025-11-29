@@ -4,8 +4,8 @@
     "keymap": { "1":"Flamingo", "2":"Seal", "3":"Owl", "4":"Horse", "ESC":"MainMenu" }
   },
 
-  "scenes": {
-    "MainMenu": {
+  "scenes": [
+     {"name":"MainMenu",
       "background": "textures/menu_bg.png",
       "entities": [
         { "prefab":"button",
@@ -78,7 +78,7 @@
       ]
     },
 
-    "Flamingo": {
+    {"name":"Flamingo",
       "background":"textures/flamingo_bg.png",
       "camera": { "cx": 0.5, "cy": 0.5, "zoom": 1.0, "minZoom": 1.0, "maxZoom": 3.0 },
       "entities":[
@@ -110,15 +110,21 @@
                 ],
             "is_draggable":true, "is_dragging":false },
         { "prefab":"medicine","name":"flamingo_medicine",
-          "overrides": { "x":0.66,"y":0.50, "sprite_path":"textures/flamingo_medicine.png", "is_draggable":true, "is_dragging":false } },
+        "overrides": [
+                {"type": "Transform","position": {"x": 0.66,"y": 0.50}},
+                {"type":"ImageRenderer","sprite_path":"textures/flamingo_medicine.png" }
+                ],"is_draggable":true, "is_dragging":false },
         { "prefab":"toy","name":"flamingo_toy",
-          "overrides": { "x":0.40,"y":0.50, "w":0.14, "h":0.14, "sprite_path":"textures/flamingo_toy.png", 
-          "is_draggable":true,"is_dragging":false,"rotatable": false, "scalable": false } },
+        "overrides": [
+                {"type": "Transform","position": {"x": 0.40,"y": 0.50},"rotatable": false, "scalable": false },
+                {"type":"ImageRenderer","sprite_path":"textures/flamingo_toy.png","width":0.14,"height":0.14 }
+                ],
+          "is_draggable":true,"is_dragging":false},
         { "prefab": "audio_emitter_flamingo", "name": "flamingo_ambience_emitter" }
       ]
     },
 
-    "Seal": {
+    {"name":"Seal",
       "background":"textures/seal_bg.png",
       "entities":[
         { "prefab":"animal","name":"seal", "id": 2,
@@ -143,17 +149,26 @@
         },
 
         { "prefab":"food","name":"seal_food",
-          "overrides": { "x":0.52,"y":0.40, "sprite_path":"textures/seal_food.png", "is_draggable":true, "is_dragging":false } },
+        "overrides": [
+                {"type": "Transform","position": {"x": 0.52,"y": 0.40}},
+                {"type":"ImageRenderer","sprite_path":"textures/seal_food.png"}
+                ], "is_draggable":true, "is_dragging":false },
         { "prefab":"medicine","name":"seal_medicine",
-          "overrides": { "x":0.66,"y":0.50, "sprite_path":"textures/seal_medicine.png", "is_draggable":true, "is_dragging":false } },
+        "overrides": [
+                {"type": "Transform","position": {"x": 0.66,"y": 0.50}},
+                {"type":"ImageRenderer","sprite_path":"textures/seal_medicine.png"}
+                ], "is_draggable":true, "is_dragging":false },
         { "prefab":"toy","name":"seal_toy",
-          "overrides": { "x":0.40,"y":0.50, "w":0.14, "h":0.14, "sprite_path":"textures/seal_toy.png", 
-          "is_draggable":true,"is_dragging":false,"rotatable": false, "scalable": false } },
+        "overrides": [
+                {"type": "Transform","position": {"x": 0.40,"y": 0.50},"rotatable": false, "scalable": false },
+                {"type":"ImageRenderer","sprite_path":"textures/seal_toy.png","width":0.14,"height":0.14 }
+                ],
+          "is_draggable":true,"is_dragging":false},
         { "prefab": "audio_emitter_seal", "name": "seal_ambience_emitter" }
       ]
     },
 
-    "Owl": {
+    {"name":"Owl",
       "background":"textures/owl_bg.png",
       "entities":[
         { "prefab":"animal","name":"owl", "id": 3,
@@ -178,21 +193,33 @@
         },
 
         { "prefab":"food","name":"owl_food",
-          "overrides": { "x":0.52,"y":0.40, "sprite_path":"textures/owl_food.png", "is_draggable":true, "is_dragging":false } },
+        "overrides": [
+                {"type": "Transform","position": {"x": 0.52,"y": 0.40}},
+                {"type":"ImageRenderer","sprite_path":"textures/owl_food.png" }
+                ],"is_draggable":true, "is_dragging":false },
         { "prefab":"medicine","name":"owl_medicine",
-          "overrides": { "x":0.66,"y":0.50, "sprite_path":"textures/owl_medicine.png", "is_draggable":true, "is_dragging":false } },
+        "overrides": [
+                {"type": "Transform","position": {"x": 0.66,"y": 0.50}},
+                {"type":"ImageRenderer","sprite_path":"textures/owl_medicine.png" }
+                ],"is_draggable":true, "is_dragging":false },
         { "prefab":"toy","name":"owl_toy",
-          "overrides": { "x":0.40,"y":0.50, "w":0.14, "h":0.14, "sprite_path":"textures/owl_toy.png", 
-          "is_draggable":true,"is_dragging":false,"rotatable": false, "scalable": false } },
+        "overrides": [
+                {"type": "Transform","position": {"x": 0.40,"y": 0.50},"rotatable": false, "scalable": false },
+                {"type":"ImageRenderer","sprite_path":"textures/owl_toy.png","width":0.14,"height":0.14 }
+                ], 
+          "is_draggable":true,"is_dragging":false },
 
       { "prefab":"firefly","name":"firefly_1",
-        "overrides": { "x":0.66, "y":0.42, "w":0.05, "h":0.05, "sprite_path":"textures/firefly.png" }
+      "overrides": [
+                {"type": "Transform","position": {"x": 0.66,"y": 0.42}},
+                {"type":"ImageRenderer","sprite_path":"textures/firefly.png","width":0.05,"height":0.05 }
+                ]
       },
       { "prefab": "audio_emitter_owl", "name": "owl_ambience_emitter" }
       ]
     },
 
-    "Horse": {
+    {"name":"Horse",
       "background":"textures/horse_bg.png",
       "entities":[
         { "prefab":"animal","name":"horse", "id": 4,
@@ -217,16 +244,23 @@
         },
 
         { "prefab":"food","name":"horse_food",
-          "overrides": { "x":0.52,"y":0.50, "sprite_path":"textures/horse_food.png","is_draggable":true,"is_dragging":false,
-          "rotatable": false, "scalable": false } },
+        "overrides": [
+                {"type": "Transform","position": {"x": 0.52,"y": 0.50},"rotatable": false, "scalable": false },
+                {"type":"ImageRenderer","sprite_path":"textures/horse_food.png" }
+                ],"is_draggable":true,"is_dragging":false },
         { "prefab":"medicine","name":"horse_medicine",
-          "overrides": { "x":0.66,"y":0.50, "sprite_path":"textures/horse_medicine.png","is_draggable":true,"is_dragging":false,
-          "rotatable": false, "scalable": false } },
+        "overrides": [
+                {"type": "Transform","position": {"x": 0.66,"y": 0.50},"rotatable": false, "scalable": false },
+                {"type":"ImageRenderer","sprite_path":"textures/horse_medicine.png"}
+                ],"is_draggable":true,"is_dragging":false},
         { "prefab":"toy","name":"horse_toy",
-          "overrides": { "x":0.40,"y":0.50, "w":0.14, "h":0.14, "sprite_path":"textures/horse_toy.png",
-          "is_draggable":true,"is_dragging":false,"rotatable": true, "scalable": true } },
+        "overrides": [
+                {"type": "Transform","position": {"x": 0.40,"y": 0.50},"rotatable": true, "scalable": true },
+                {"type":"ImageRenderer","sprite_path":"textures/horse_toy.png","width":0.14,"height":0.14 }
+                ],
+          "is_draggable":true,"is_dragging":false},
         { "prefab": "audio_emitter_horse", "name": "horse_ambience_emitter" }
       ]
     }
-  }
+  ]
 }

@@ -337,11 +337,17 @@ void Application::init() {
     auto scenePaths = resourceManager->getFilePathsForKey<SceneFile>("scenes");
     if (!scenePaths.empty()) scenePath = scenePaths.front();
 
+
+	prefabManager = std::make_unique<PrefabManager>(*ecs);
+	prefabManager->Load_Prefab(prefabTestPath.c_str());
+	prefabManager->Load_Prefab("assets/prefabs/prefabs.json");
+
     gameLoop = std::make_unique<Game_Loop>(m_window.handle());
     bus.Register(gameLoop.get());
-
+	logger.log("loading");
 	gsm = std::make_unique<GameManager>(*ecs);
-	gsm->load(prefabPath.c_str(), scenePath.c_str(), textures);
+	gsm->loadAll(*prefabManager, scenePath.c_str(), textures);
+	logger.log("loading done");
 
 
 	// Wire prefab sprite_path -> GL texture id using your TextureStore API.
@@ -365,11 +371,9 @@ void Application::init() {
         return static_cast<int>(textures.get(path));
     });
 
-	prefabManager = std::make_unique<PrefabManager>(*ecs);
-	prefabManager->Load_Prefab(prefabTestPath.c_str());
 
 	
-	//logger.log("Created animal entity with ID: " + std::to_string(animal) + " and " + std::to_string(animal_2));
+	logger.log("line372");
     textShader = std::make_unique<Shader>(textShaderVertexPath.c_str(), textShaderFragmentPath.c_str());
 
     // Wire text shader into the renderer (renderer controls projection per-viewport)
@@ -379,7 +383,7 @@ void Application::init() {
 	{
 		const std::string initialScene = Scenes_GetInitialName();
 		if (!initialScene.empty()) {
-			Prefab_SpawnEntitiesForScene(initialScene, *prefabManager);
+			gsm->populateScene(initialScene, *prefabManager);
 			logger.log("[SceneSpawn] Initial scene spawned: " + initialScene);
 		}
 	}
@@ -397,7 +401,7 @@ void Application::init() {
         for (auto id : all) ecs->deleteEntity(id);
 
         // Respawn from scenes.json.
-        Prefab_SpawnEntitiesForScene(sceneName, *prefabManager);
+		gsm->populateScene(sceneName, *prefabManager);
         logger.log(std::string{ "[SceneSpawn] Activated -> " } + sceneName);
     });
 

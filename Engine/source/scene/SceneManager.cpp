@@ -28,7 +28,7 @@ void SceneManager::SceneManagerTest(PrefabManager& p) {
     if (curr_scene->layers[0].entities.size()<numbox)
     {
         
-        curr_scene->layers[0].entities.push_back(p.Instantiate("toy", "kms"));
+        //curr_scene->layers[0].entities.push_back(p.Instantiate("toy", "kms"));
     }
 }
 
@@ -42,8 +42,8 @@ void SceneManager::InitScene(SceneID id) {
 
             //  camera preset activation 
             {
-                const std::string& nm = Prefab_GetSceneName(id);
-                if (!nm.empty()) Cam2D_ActivatePreset(nm);
+                //const std::string& nm = Prefab_GetSceneName(id);
+                //if (!nm.empty()) Cam2D_ActivatePreset(nm);
             }
 
             return;
