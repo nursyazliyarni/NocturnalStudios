@@ -506,13 +506,14 @@ void GameManager::render(Renderer& r, Input& input, GLFWwindow* window, int w, i
                 //logger.log(di.name + " has animalbehavior: " + std::to_string(ab != nullptr));
                 if (di.still_alive && ab) {
                     //logger.log(di.name + " has animalbehavior: " + std::to_string(ab != nullptr));
-                    r.rect(w / 2 + 310, h / 2 - 101, ab->health_bar * 3, 25, 1, 0, 0);
-                    r.rect(w / 2 + 310, h / 2 - 51, ab->hunger_bar * 3, 25, 0, 1, 0);
-                    r.rect(w / 2 + 310, h / 2 - 1, ab->sanity_bar * 3, 25, 0, 0, 1);
+                    r.rect(w / 2 , h / 2 - 200, ab->health_bar * 4, 25, 1, 0, 0);
+                    r.rect(w / 2 , h / 2 - 150, ab->hunger_bar * 4, 25, 0, 1, 0);
+                    r.rect(w / 2 , h / 2 - 100, ab->sanity_bar * 4, 25, 0, 0, 1);
 
                     Cam2D_Apply(currentScene, px, py, pw, ph, w, h);
                     r.texturedTri(img->textureID, px, py, pw, ph);
                 }
+                
             }
             else {
                 Cam2D_Apply(currentScene, px, py, pw, ph, w, h);
