@@ -365,8 +365,7 @@ void Application::init() {
     gameLoop = std::make_unique<Game_Loop>(m_window.handle());
     bus.Register(gameLoop.get());
 ;
-	gsm = std::make_unique<GameManager>(*ecs);
-	gsm->loadAll(*prefabManager, scenePath.c_str(), textures);
+
 
 
 
@@ -378,7 +377,8 @@ void Application::init() {
 
     // Wire text shader into the renderer (renderer controls projection per-viewport)
     renderer->setTextShader(*textShader);
-
+	gsm = std::make_unique<GameManager>(*ecs);
+	gsm->loadAll(*prefabManager, scenePath.c_str(), textures);
 	// Spawn the initial scene (from scenes.json -> states.initial)
 	{
 		const std::string initialScene = Scenes_GetInitialName();
@@ -396,6 +396,7 @@ void Application::init() {
             audioSystem->deleteAllAudioInstances(false);
         }
 
+		gsm->reloadAllScene(textures);
         // Clear all current entities.
         //auto all = ecs->getAllEntities();
         //for (auto id : all) ecs->deleteEntity(id);

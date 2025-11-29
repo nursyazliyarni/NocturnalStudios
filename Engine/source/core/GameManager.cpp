@@ -468,6 +468,8 @@ void GameManager::render(Renderer& r, Input& input, GLFWwindow* window, int w, i
 
             if (!t || !img)continue;
             
+            
+
             if (!img->isVisible || img->textureID <= 0)continue;
 
             if (auto* anim = ecs_.getComponent<SpriteAnimationComponent>(di.entityID)) {
@@ -874,82 +876,34 @@ bool GameManager::populateScene(const std::string& sceneName, PrefabManager& pm)
     }return true;
 }
 
-bool GameManager::reloadCurrentScene(TextureStore& tex) {
-    if (currentScene.empty() || scenesFilePath.empty()) {
-        logger.warning("[GameManager] Cannot reload: no current scene");
+bool GameManager::reloadAllScene(TextureStore& tex) {
+    if (scenes.empty() || scenesFilePath.empty()) {
+        logger.warning("[GameManager] Cannot reload: no current scenes");
         return false;
     }
 
     std::string sceneToReload = currentScene;
 
     logger.log("[GameManager] Reloading scene: " + sceneToReload);
+    for (const auto& pair : scenes) {
+        const std::string& name = pair.first;  // the key
+        const Scene& scene = pair.second;      // the value
 
-    // Read the entire scenes file again
-    std::string jsonContent;
-    if (!readFile(scenesFilePath.c_str(), jsonContent)) {
-        logger.error("[GameManager] Failed to read scenes file for reload");
-        return false;
-    }
-
-    rapidjson::Document d;
-    d.Parse(jsonContent.c_str());
-    if (d.HasParseError() || !d.IsObject()) {
-        logger.error("[GameManager] Failed to parse scenes file for reload");
-        return false;
-    }
-
-    // Find the current scene in the JSON
-    if (!d.HasMember("scenes") || !d["scenes"].IsObject()) {
-        logger.error("[GameManager] No scenes object in JSON");
-        return false;
-    }
-
-    const auto& jsScenes = d["scenes"];
-    if (!jsScenes.HasMember(sceneToReload.c_str())) {
-        logger.error("[GameManager] Scene not found: " + sceneToReload);
-        return false;
-    }
-
-    const auto& jsS = jsScenes[sceneToReload.c_str()];
-    if (!jsS.IsObject()) {
-        logger.error("[GameManager] Invalid scene object");
-        return false;
-    }
-
-    // Load prefab defaults (same as in load() function)
-    std::unordered_map<std::string, PrefabDef> prefabDefaults;
-    // ... (copy the prefab loading code from load() function) ...
-
-    // Clear and rebuild the scene
-    Scene freshScene;
-
-    // Background
-    if (jsS.HasMember("background") && jsS["background"].IsString()) {
-        std::string bg = toAssetsPath(jsS["background"].GetString());
-        freshScene.background = tex.get(bg);
-    }
-
-    // Entities (same loading logic as in load() function)
-    if (jsS.HasMember("entities") && jsS["entities"].IsArray()) {
-        for (const auto& e : jsS["entities"].GetArray()) {
-            if (!e.IsObject()) continue;
-
-            PrefabDef def;
-            DrawItem di{};
-
-            // Copy the entity loading logic from load() function
-            // (lines 237-292 in the current load() function)
-            // ... entity loading code here ...
-
-            freshScene.items.push_back(di);
+        for (DrawItem di : pair.second.items)
+        {
+            ImageRenderer* img = ecs_.getComponent<ImageRenderer>(di.entityID);
+            if (!img)continue;
+            if (img->textureID <= 0 && !img->image_path.empty())
+            {
+                std::string path = img->image_path;
+                if (path.rfind("assets/", 0) != 0) path = "assets/" + path;
+                logger.log("Texture looking for " + path);
+                img->textureID = tex.get(path);
+                logger.log("Texture for " + di.name + " refreshed to " + std::to_string(img->textureID));
+            }
         }
     }
-
-    // Replace the current scene's items with the freshly loaded ones
-    scenes[sceneToReload] = freshScene;
-
-    logger.log("[GameManager] Scene reloaded successfully: " +
-        std::to_string(freshScene.items.size()) + " items");
+    
 
     return true;
 }

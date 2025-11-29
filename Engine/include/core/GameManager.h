@@ -142,7 +142,7 @@ public:
      * Reload the current scene from the JSON file
      * This resets all game state to initial values
      */
-    bool reloadCurrentScene(TextureStore& tex);
+    bool reloadAllScene(TextureStore& tex);
 
     void resetAllScenesToInitial();
 

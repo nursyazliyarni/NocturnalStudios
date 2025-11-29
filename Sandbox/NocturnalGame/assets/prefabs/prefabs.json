@@ -14,9 +14,8 @@
       
     },
     {"name":"medicine",
-      "components": [ { "type": "ImageRenderer", "sprite_path": "" },
-        { "type": "Transform",  "rotation": 0.0, "rotatable": false, "scalable": false} ],
-      "defaults": { "w": 0.12, "h": 0.18, "angle": 0.0, "rotatable": false, "scalable": false }
+      "components": [ { "type": "ImageRenderer", "sprite_path": "" ,"width": 0.12, "height": 0.18, "angle": 0.0},
+        { "type": "Transform",  "rotation": 0.0, "rotatable": false, "scalable": false} ]
     },
     {"name":"toy",
       "components": [ { "type": "ImageRenderer", "sprite_path": "" ,"width":0.14,"height":0.14,"angle":0.0},
