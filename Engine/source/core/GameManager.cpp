@@ -734,6 +734,20 @@ void GameManager::renderWithHUD(Renderer& r,
             glm::vec3(0.2f, 0.8f, 1.0f) // bluish
         );
     }
+
+    if (m_isGameOver) {
+        // draw a dark quad over the screen
+        r.rect(0, 0, (float)w, (float)h, 0, 0, 0.0f); // or semi-transparent if your rect supports it
+
+        // big “GAME OVER” in the middle
+        if (s_fontTitle) {
+            const Font& f = resourceManager.getFont(*s_fontTitle);
+            r.drawText(f, "GAME OVER", w * 0.35f, h * 0.6f, 1.5f,
+                glm::vec3(1.0f, 0.2f, 0.2f));
+        }
+
+        // you can also show “Press R to Restart” etc, handled with Input, not ImGui
+    }
 }
 
 
@@ -869,7 +883,8 @@ bool GameManager::handleClick(float nx, float ny) {
 void GameManager::startGame() {
     app = AppState::Playing;
     m_isGameOver = false;
-}   
+}
+ 
 
 
 void GameManager::goToMenu() {

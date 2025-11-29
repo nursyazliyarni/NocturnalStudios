@@ -417,6 +417,7 @@ void ImGuiManager::showViewportWindowUI() {
 	handleViewportPicking(imgMin, imgMax, vw, vh);
 
 	// Game Over Overlay
+	/*
 	if (gsm.isGameOver())
 	{
 		ImDrawList* dl = ImGui::GetWindowDrawList();
@@ -458,7 +459,7 @@ void ImGuiManager::showViewportWindowUI() {
 
 		ImGui::EndGroup();
 	}
-
+	*/
 
 	ImGui::End();
 
@@ -2225,41 +2226,26 @@ void ImGuiManager::onPlayButtonPressed() {
 }
 
 void ImGuiManager::onStopButtonPressed() {
-	if (m_editorMode == EditorMode::EDIT) return;
+	if (m_editorMode == EditorMode::EDIT)
+		return;
 
 	logger.log("=== EXITING PLAY MODE ===");
 
-	// Get current scene and reset all animal values to defaults
-	Scene* scene = gsm.getCurrentScene();
-	if (scene) {
-		for (auto& item : scene->items) {
-			if (item.item_type == "animal") {
-				// Reset bars to full
-				item.health_bar = 100.0f;
-				item.hunger_bar = 100.0f;
-				item.sanity_bar = 100.0f;
+	// 1) Reset game-wide state back to initial JSON
+	gsm.setGameOver(false);          // make sure overlay is off (if you have this helper)
+	gsm.resetAllScenesToInitial();   // restore scenes from initialScenes_
 
-				// Reset timers
-				item.acc_timer = 0.0f;
-				item.staring_countdown = 10.0f;
+	// 2) Go back to main menu state
+	gsm.requestScene("MainMenu");    // show MainMenu scene
+	gsm.goToMenu();                  // set app state to Menu
 
-				// Reset status
-				item.still_alive = true;
-				item.is_dragging = false;
-			}
-		}
-	}
-
-	// Switch back to the main menu scene
-	gsm.requestScene("MainMenu");
-
-	// Set app state to Menu (locks number keys, enables menu buttons)
-	gsm.goToMenu();
-
-	// Switch back to edit mode
+	// 3) Switch editor back to EDIT mode
 	m_editorMode = EditorMode::EDIT;
 
-	logger.log("Edit mode restored - returned to menu");
+	// (Optional) clear editor undo history if you want a "fresh" level state
+	// m_undoStack.clear();
+
+	logger.log("Edit mode restored - game reset to initial MainMenu state");
 }
 
 void ImGuiManager::pushUndoState(const char* reason)
