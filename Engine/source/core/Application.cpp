@@ -587,11 +587,59 @@ void Application::onFilesDropped(int count, const char** paths) {
             resourceManager->loadTexture(stem, full);
             ++loadedTex;
         }
-        // Accept audio
-        else if (ext == ".wav" || ext == ".ogg" || ext == ".mp3" || ext == ".flac" || ext == ".aiff" || ext == ".fsb") {
-            resourceManager->loadAudio(stem, full);
-            ++loadedAudio;
-        }
+		// Accept audio
+		else if (ext == ".wav" || ext == ".ogg" || ext == ".mp3" || ext == ".flac" || ext == ".aiff" || ext == ".fsb")
+		{
+			std::filesystem::path src = p;
+			std::string stem = src.stem().string();
+			std::string full = src.string();
+
+			//estimate file size to determine if BGM or SFX
+			std::uintmax_t bytes = 0;
+			try {
+				bytes = std::filesystem::file_size(src);
+			}
+			catch (...) {
+				//if can't get size, default to SFX
+				bytes = 0;
+			}
+
+			bool isBGM = (bytes > 1 * 1024 * 1024); //1MB threshold
+			//auto-detects BGM or SFX.
+			std::string key;
+			if (isBGM)
+				key = "BGM_" + stem;
+			else
+				key = "SFX_" + stem;
+			std::string pathToUse = full;
+			try {
+				std::filesystem::path destFolder = "assets/audio";
+				std::filesystem::create_directories(destFolder);
+
+				std::filesystem::path destPath = destFolder / src.filename();
+				std::filesystem::copy_file(
+					src, destPath,
+					std::filesystem::copy_options::overwrite_existing);
+
+				pathToUse = destPath.string();
+				logger.log("[DragDrop] Copied audio to " + pathToUse);
+			}
+			catch (const std::exception& e) {
+				logger.warning(std::string("[DragDrop] copy_file failed, using original audio path. Reason: ")
+					+ e.what());
+			}
+			try {
+				resourceManager->loadAudio(key, pathToUse);
+				++loadedAudio;
+				logger.log("[DragDrop] Loaded " +
+					std::string(isBGM ? "BGM" : "SFX") +
+					" audio '" + key + "' from " + pathToUse +
+					" (" + std::to_string(bytes / 1024) + " KB)");
+			}
+			catch (const std::exception& e) {
+				logger.error(std::string("[DragDrop] Failed to load audio resource: ") + e.what());
+			}
+		}
     }
     if (loadedTex || loadedAudio) {
         logger.log("[DragDrop] Added " + std::to_string(loadedTex) + " textures, " + std::to_string(loadedAudio) + " audio assets.");

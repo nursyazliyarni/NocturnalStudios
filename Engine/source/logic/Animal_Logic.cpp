@@ -152,18 +152,36 @@ void Animal_Logic::update_animal_sanity(GameManager& gm, double deltaTime) {
 }
 
 void Animal_Logic::check_animal_status(GameManager& gm) {
-	if (gm.isPlaying()){
+	if (gm.isPlaying()) {
+		int deadAnimals = 0;  // Track how many are dead
+
 		for (auto& [scene, scene_data] : gm.get_scenes_map()) {
 			for (auto& animal : scene_data.items) {
 				AnimalBehavior* animalb = ECS::getECS().getComponent<AnimalBehavior>(animal.entityID);
 				if (!animalb) continue;
 				if (animal.item_type == "animal")
 				{
-					if (animalb->health_bar <= 0 || animalb->sanity_bar <= 0) {
-						animal.still_alive = false;
+					// Check if animal should die
+					if (animalb->health_bar <= 0 || animal->sanity_bar <= 0) {
+						if (animal.still_alive) {
+							// Animal just died
+							animal.still_alive = false;
+							logger.log("[Animal] " + animal.name + " has died!");
+						}
+					}
+
+					// Count dead animals
+					if (!animal.still_alive) {
+						deadAnimals++;
 					}
 				}
 			}
+		}
+
+		// GAME OVER: If 2 or more animals are dead
+		if (deadAnimals >= 2) {
+			logger.log("[GAME OVER] " + std::to_string(deadAnimals) + " animals have died!");
+			gm.triggerGameOver();
 		}
 	}
 }
@@ -228,7 +246,7 @@ std::optional<ImVec2> Animal_Logic::check_item_status(
 		// ---- end drag ----
 		if (item.is_dragging && !input.isLeftMousePressed(window)) {
 			item.is_dragging = false;
-			// don’t early-return; just stop dragging
+			// donï¿½t early-return; just stop dragging
 		}
 	}
 

@@ -43,6 +43,33 @@
 
 #include <functional>
 
+
+namespace {
+    //build collider AABB in screen-pixel space from DrawItem
+    AABB BuildColliderAABB(const DrawItem& di, int screenW, int screenH)
+    {
+        if (!di.hasCollider) {
+            //zero-size box (won't be hit)
+            return AABB(Vector2D(0.f, 0.f), Vector2D(0.f, 0.f));
+        }
+
+        //center of collider in normalized coords
+        float cxNorm = di.x + di.colOffsetX;
+        float cyNorm = di.y + di.colOffsetY;
+
+        //size in pixels
+        float wPix = di.colW * screenW;
+        float hPix = di.colH * screenH;
+
+        //convert to pixel center
+        float cxPix = cxNorm * screenW;
+        float cyPix = cyNorm * screenH;
+        Vector2D pos(cxPix - wPix * 0.5f, cyPix - hPix * 0.5f);
+        Vector2D size(wPix, hPix);
+        return AABB(pos, size);
+    }
+}
+
 //  TextureStore 
 static GLuint loadGLTexture(const std::string& path) {
     int w, h, n;
@@ -359,7 +386,7 @@ bool GameManager::loadAll(PrefabManager& prefabs, const char* scenesPath, Textur
         auto* img = ecs_.getComponent<ImageRenderer>(flamingo);
         auto* anim = ecs_.getComponent<SpriteAnimationComponent>(flamingo);
 
-        t->position = { 0.5f, 0.5f };
+        t->position = { 0.1f, 0.7f };
         t->scale = { 0.25f, 0.25f };
 
         img->isVisible = true;
@@ -681,19 +708,30 @@ void GameManager::renderWithHUD(Renderer& r,
         const Font& f2 = resourceManager.getFont(*s_fontFPS);
 
         static double accumTime = 0.0;
+        static int    frameCount = 0;
         static double fpsDisplay = 0.0;
 
         // avoid division by zero
         if (dt <= 0.0) dt = 1e-6;
 
-        accumTime += dt;
+        // 🔹 IF your dt is in MILLISECONDS, convert to seconds here:
+        double dtSeconds = dt;
+        // if you know dt is in ms, UNCOMMENT this:
+        // dtSeconds = dt * 0.001;   // ms → s
+
+        accumTime += dtSeconds;
+        ++frameCount;
+
+        // Update FPS about once per second
         if (accumTime >= 1.0) {
-            fpsDisplay = 1.0 / dt;
+            fpsDisplay = static_cast<double>(frameCount) / accumTime; // avg FPS
             accumTime = 0.0;
+            frameCount = 0;
         }
 
         int fpsInt = static_cast<int>(std::round(fpsDisplay));
         std::string fpsText = "FPS: " + std::to_string(fpsInt);
+
 
         float marginX = 0.02f * w;
         float offsetY = compact ? 0.12f : 0.15f; // pull closer when small
@@ -711,7 +749,22 @@ void GameManager::renderWithHUD(Renderer& r,
             glm::vec3(0.2f, 0.8f, 1.0f) // bluish
         );
     }
+
+    if (m_isGameOver) {
+        // draw a dark quad over the screen
+        r.rect(0, 0, (float)w, (float)h, 0, 0, 0.0f); // or semi-transparent if your rect supports it
+
+        // big “GAME OVER” in the middle
+        if (s_fontTitle) {
+            const Font& f = resourceManager.getFont(*s_fontTitle);
+            r.drawText(f, "GAME OVER", w * 0.35f, h * 0.6f, 1.5f,
+                glm::vec3(1.0f, 0.2f, 0.2f));
+        }
+
+        // you can also show “Press R to Restart” etc, handled with Input, not ImGui
+    }
 }
+
 
 
 void GameManager :: imGUIlessRender(Renderer& r, Input& input, GLFWwindow* window, int w, int h) {
@@ -730,7 +783,43 @@ void GameManager :: imGUIlessRender(Renderer& r, Input& input, GLFWwindow* windo
 bool GameManager::handleClick(float nx, float ny) {
     auto it = scenes.find(currentScene);
     if (it == scenes.end()) return false;
-    const Scene& sc = it->second;
+    Scene& sc = it->second;
+
+    // --- Sync click regions from DrawItem colliders ---
+    for (auto& cr : sc.clicks)
+    {
+        if (cr.name.empty())
+            continue;
+
+        //find DrawItem whose name matches the click region
+        auto diIt = std::find_if(
+            sc.items.begin(), sc.items.end(),
+            [&](const DrawItem& d) { return d.name == cr.name; });
+
+        if (diIt == sc.items.end())
+            continue;
+
+        const DrawItem& di = *diIt;
+        if (!di.hasCollider)
+            continue;
+
+        //collider in normalised space
+        float wNorm = (di.colW > 0.0f ? di.colW : di.w);
+        float hNorm = (di.colH > 0.0f ? di.colH : di.h);
+
+        float cxNorm = di.x + di.colOffsetX;
+        float cyNorm = di.y + di.colOffsetY;
+
+        float left = cxNorm;
+        float bottom = cyNorm;
+
+        //write back into ClickRegion so hit-test uses the collider
+        cr.x = left;
+        cr.y = bottom;
+        cr.w = wNorm;
+        cr.h = hNorm;
+    }
+	//--- end sync click regions ---
 
     logger.log("clicked at x: " + std::to_string(nx) + ", y: " + std::to_string(ny));
 
@@ -810,7 +899,9 @@ bool GameManager::handleClick(float nx, float ny) {
 
 void GameManager::startGame() {
     app = AppState::Playing;
-}   
+    m_isGameOver = false;
+}
+ 
 
 
 void GameManager::goToMenu() {
@@ -821,6 +912,36 @@ bool GameManager::popQuitRequested() {
     requestedQuit = false;
     return q;
 }
+
+void GameManager::triggerGameOver() {
+    logger.log("=== GAME OVER TRIGGERED ===");
+    m_isGameOver = true;
+    
+    // Go to MainMenu (or GameOver scene if you have one)
+    if (scenes.count("GameOver") > 0) {
+        requestScene("GameOver");
+    } else {
+        requestScene("MainMenu");
+    }
+    app = AppState::Menu;
+}
+
+/*
+void GameManager::triggerGameOver() {
+    logger.log("=== GAME OVER TRIGGERED ===");
+
+    // Option 1: Go to a GameOver scene (if you have one)
+    if (scenes.count("GameOver") > 0) {
+        requestScene("GameOver");
+        app = AppState::Menu;  // Set to menu state
+    }
+    // Option 2: Go back to main menu
+    else {
+        requestScene("MainMenu");
+        app = AppState::Menu;
+    }
+}
+*/
 
 // Function used for the level editor to show current game objects
 Scene* GameManager::getCurrentScene() {

@@ -61,6 +61,7 @@ void Gui::updateImGuiManager(double& deltaTime, ImGuiManager& imGuiManager) {
 		imGuiManager.showPerformanceOverlayUI();
 		imGuiManager.showTransformUI();
 		imGuiManager.showEntityListUI();
+		imGuiManager.showScenesListUI();
 		//imGuiManager.showLogsOverlayUI();
 		imGuiManager.showBottomDockUI();
 		});
@@ -352,7 +353,7 @@ void ImGuiManager::showViewportWindowUI() {
 			mainWindow.handle(),
 			vw,
 			vh,
-			isPlayMode ? deltaTime : 0.0,  // Pass 0 deltaTime in edit mode
+			deltaTime,  // Pass 0 deltaTime in edit mode
 			resourceManager,
 			m_showFPS
 		);
@@ -415,6 +416,51 @@ void ImGuiManager::showViewportWindowUI() {
 
 	//handle click and drag picking on scene items (editor)
 	handleViewportPicking(imgMin, imgMax, vw, vh);
+
+	// Game Over Overlay
+	/*
+	if (gsm.isGameOver())
+	{
+		ImDrawList* dl = ImGui::GetWindowDrawList();
+
+		// Full-viewport rectangle
+		ImVec2 p0 = imgMin;               // top-left of viewport
+		ImVec2 p1 = imgMax;               // bottom-right of viewport
+		dl->AddRectFilled(p0, p1, IM_COL32(0, 0, 0, 180));  // dark overlay
+
+		// Centered UI block
+		ImVec2 size(300, 200);
+		ImVec2 center((p0.x + p1.x) * 0.5f, (p0.y + p1.y) * 0.5f);
+		ImVec2 uiMin(center.x - size.x * 0.5f, center.y - size.y * 0.5f);
+
+		// Position ImGui cursor into the viewport (no new window)
+		ImGui::SetCursorScreenPos(uiMin);
+		ImGui::BeginGroup();
+
+		ImGui::TextColored(ImVec4(1, 0.3f, 0.3f, 1), "GAME OVER");
+		ImGui::Spacing();
+		ImGui::Text("Two or more animals have died.");
+		ImGui::Spacing();
+
+		if (ImGui::Button("Restart", ImVec2(200, 35))) {
+			gsm.setGameOver(false);
+			gsm.requestScene(gsm.current());
+			gsm.startGame();
+		}
+
+		if (ImGui::Button("Main Menu", ImVec2(200, 35))) {
+			gsm.setGameOver(false);
+			gsm.requestScene("MainMenu");
+			gsm.goToMenu();
+		}
+
+		if (ImGui::Button("Quit", ImVec2(200, 35))) {
+			glfwSetWindowShouldClose(mainWindow.handle(), true);
+		}
+
+		ImGui::EndGroup();
+	}
+	*/
 
 	ImGui::End();
 
@@ -869,16 +915,16 @@ void ImGuiManager::showTransformUI(/* A reference to a vector of object list obj
 
 	//disable editing in play mode
 	bool isPlayMode = (m_editorMode == EditorMode::PLAY);
-	if (isPlayMode) {
-		ImGui::BeginDisabled();
-	}
-
+	
+	
 	//--------------------TRANSFORM FIELD---------------------------//
 	ImGui::Separator();
+	
 	if (ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_DefaultOpen))
 	{
 		Transform* t = ECS::getECS().getComponent<Transform>(item.entityID);
 		if (!t)return;
+		if (isPlayMode) ImGui::BeginDisabled();
 		// edits the game objects actual transform
 		bool changed = false;
 		changed |= ImGui::DragFloat("X", &t->position.x(), 0.01f, 0.0f, 1.0f);
@@ -893,13 +939,37 @@ void ImGuiManager::showTransformUI(/* A reference to a vector of object list obj
 		if (changed) {
 			pushUndoState("Inspector transform change");
 		}
+		if (isPlayMode) ImGui::EndDisabled();
 	}
 	
 	//-----------COLLISION FIELD----------------//
 	ImGui::Separator();
+	
 	if (ImGui::CollapsingHeader("Collision", ImGuiTreeNodeFlags_DefaultOpen))
 	{
-		ImGui::Checkbox("Has Collider", &item.hasCollider);
+		if (isPlayMode) ImGui::BeginDisabled();
+		//if collider is enabled but has never been sized, auto-init to sprite
+		if (item.hasCollider && (item.colW == 0.0f || item.colH == 0.0f))
+		{
+			item.colOffsetX = 0.0f;
+			item.colOffsetY = 0.0f;
+			item.colW = item.w;
+			item.colH = item.h;
+		}
+
+		//checkbox (can still turn collider on/off)
+		bool prevHasCollider = item.hasCollider;
+		if (ImGui::Checkbox("Has Collider", &item.hasCollider))
+		{
+			if (item.hasCollider && !prevHasCollider &&
+				(item.colW == 0.0f || item.colH == 0.0f))
+			{
+				item.colOffsetX = 0.0f;
+				item.colOffsetY = 0.0f;
+				item.colW = item.w;
+				item.colH = item.h;
+			}
+		}
 
 		if (item.hasCollider)
 		{
@@ -916,12 +986,15 @@ void ImGuiManager::showTransformUI(/* A reference to a vector of object list obj
 				item.colH = ir->height;
 			}
 		}
+		if (isPlayMode) ImGui::EndDisabled();
 	}
-
+	
 	//-----------------TEXTURE FIELD----------------------------//
 	ImGui::Separator();
+	
 	if (ImGui::CollapsingHeader("Texture", ImGuiTreeNodeFlags_DefaultOpen))
 	{
+		if (isPlayMode) ImGui::BeginDisabled();
 		// Display current texture
 		if (item.tex != 0) {
 			// Show texture preview thumbnail (64x64)
@@ -993,12 +1066,15 @@ void ImGuiManager::showTransformUI(/* A reference to a vector of object list obj
 				pushUndoState("Remove texture");
 			}
 		}
+		if (isPlayMode) ImGui::EndDisabled();
 	}
-
+	
 	//-----------------AUDIO FIELD------------------------//
 	ImGui::Separator();
+	
 	if (ImGui::CollapsingHeader("Audio", ImGuiTreeNodeFlags_DefaultOpen))
 	{
+		if (isPlayMode) ImGui::BeginDisabled();
 		ECS& ecs = gsm.getECS();
 
 		// Get the ECS entity linked 
@@ -1029,6 +1105,7 @@ void ImGuiManager::showTransformUI(/* A reference to a vector of object list obj
 		{
 			// Could not add / still null
 			ImGui::Separator();
+			if (isPlayMode) ImGui::EndDisabled();
 			ImGui::End();
 			return;
 		}
@@ -1173,12 +1250,11 @@ void ImGuiManager::showTransformUI(/* A reference to a vector of object list obj
 				ImGui::PopID();
 			}
 		}
+		if (isPlayMode) ImGui::EndDisabled();
 	}
-
+	
 	//re-enable editing in edit mode
-	if (isPlayMode) {
-		ImGui::EndDisabled();
-	}
+	
 
 	ImGui::End();
 }
@@ -1215,6 +1291,39 @@ void ImGuiManager::showLogsOverlayUI() {
 		ImGui::SetScrollHereY(1.0f);
 
 }
+
+void ImGuiManager::showScenesListUI()
+{
+	ImGuiWindowFlags flags = ImGuiWindowFlags_NoSavedSettings |
+		ImGuiWindowFlags_NoFocusOnAppearing |
+		ImGuiWindowFlags_NoCollapse;
+
+	ImGui::Begin("Scenes", nullptr, flags);
+
+	auto& allScenes = gsm.getAllScenes();
+
+	if (allScenes.empty()) {
+		ImGui::TextDisabled("No scenes loaded.");
+		ImGui::End();
+		return;
+	}
+
+	ImGui::Text("All Scenes:");
+	ImGui::Separator();
+
+	for (auto& [sceneName, sceneObj] : allScenes) {
+		bool selected = (gsm.current() == sceneName);
+
+		if (ImGui::Selectable(sceneName.c_str(), selected)) {
+			// switch to this scene
+			gsm.requestScene(sceneName);
+			gsm.goToMenu();  // optional, depending on your design
+		}
+	}
+
+	ImGui::End();
+}
+
 
 void ImGuiManager::showAssetsBrowserUI() {
 	ImGui::TextColored(ImVec4(0.8f, 0.9f, 1.0f, 1.0f), "Assets Browser");
@@ -1959,6 +2068,7 @@ void ImGuiManager::setupInitialDockingLayout() {
 	// ---- Dock windows ----
 	ImGui::DockBuilderDockWindow("Viewport", dock_center);
 	ImGui::DockBuilderDockWindow("Entity Picker", dock_left);
+	ImGui::DockBuilderDockWindow("Scenes", dock_left);
 	ImGui::DockBuilderDockWindow("Inspector", dock_right);
 	ImGui::DockBuilderDockWindow("Overlay", dock_right);
 	ImGui::DockBuilderDockWindow("Performance", dock_right);
@@ -2185,7 +2295,8 @@ void ImGuiManager::onPlayButtonPressed() {
 }
 
 void ImGuiManager::onStopButtonPressed() {
-	if (m_editorMode == EditorMode::EDIT) return;
+	if (m_editorMode == EditorMode::EDIT)
+		return;
 
 	logger.log("=== EXITING PLAY MODE ===");
 
@@ -2201,28 +2312,21 @@ void ImGuiManager::onStopButtonPressed() {
 				ab->health_bar = 100.0f;
 				ab->hunger_bar = 100.0f;
 				ab->sanity_bar = 100.0f;
+	// 1) Reset game-wide state back to initial JSON
+	gsm.setGameOver(false);          // make sure overlay is off (if you have this helper)
+	gsm.resetAllScenesToInitial();   // restore scenes from initialScenes_
 
-				// Reset timers
-				item.acc_timer = 0.0f;
-				item.staring_countdown = 10.0f;
+	// 2) Go back to main menu state
+	gsm.requestScene("MainMenu");    // show MainMenu scene
+	gsm.goToMenu();                  // set app state to Menu
 
-				// Reset status
-				item.still_alive = true;
-				item.is_dragging = false;
-			}
-		}
-	}
-
-	// Switch back to the main menu scene
-	gsm.requestScene("MainMenu");
-
-	// Set app state to Menu (locks number keys, enables menu buttons)
-	gsm.goToMenu();
-
-	// Switch back to edit mode
+	// 3) Switch editor back to EDIT mode
 	m_editorMode = EditorMode::EDIT;
 
-	logger.log("Edit mode restored - returned to menu");
+	// (Optional) clear editor undo history if you want a "fresh" level state
+	// m_undoStack.clear();
+
+	logger.log("Edit mode restored - game reset to initial MainMenu state");
 }
 
 void ImGuiManager::pushUndoState(const char* reason)

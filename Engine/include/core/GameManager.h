@@ -159,6 +159,16 @@ public:
 
     std::function<void()> quitCallback;
 
+    //void triggerGameOver();
+
+    bool m_isGameOver = false;
+    void triggerGameOver();
+    bool isGameOver() const { return m_isGameOver; }
+    void setGameOver(bool gameOver) { m_isGameOver = gameOver; }
+
+    const std::unordered_map<std::string, Scene>& getAllScenes() const {
+        return scenes;
+    }
 
 private:
     std::unordered_map<std::string, Scene> scenes;
@@ -191,5 +201,5 @@ private:
 
     AnimationSystem animationSystem_;
 
-
+    
 };
