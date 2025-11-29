@@ -170,7 +170,7 @@ struct RectRenderer : public RenderComponent {
 
 
 struct AnimalBehavior {
-	double health_bar, hunger_bar, sanity_bar, slower_decreasing_rate, normal_decreasing_rate, faster_decreasing_rate, penalty_decreasing_rate;
+	float health_bar, hunger_bar, sanity_bar, slower_decreasing_rate, normal_decreasing_rate, faster_decreasing_rate, penalty_decreasing_rate;
 	void FromJSON(const rapidjson::Value& json);
 	void ToJSON(rapidjson::Value& json, rapidjson::Document::AllocatorType& allocator) const;
 };

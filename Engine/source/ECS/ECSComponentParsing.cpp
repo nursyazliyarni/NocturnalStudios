@@ -491,9 +491,9 @@ void AnimalBehavior::FromJSON(const rapidjson::Value& json) {
 	};
 	for (int i{}; i < 7; i++)
 	{
-		if (json.HasMember(members[i])&& json[members[i]].IsDouble())
+		if (json.HasMember(members[i])&& json[members[i]].IsNumber())
 		{
-			double jvalue = json[members[i]].GetDouble();
+			float jvalue = json[members[i]].GetFloat();
 			switch (i)
 			{
 			case 0://health bar
