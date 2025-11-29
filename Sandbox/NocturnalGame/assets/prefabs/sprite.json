@@ -1,4 +1,0 @@
-{
-  "idle": { "frames": 5, "frameTime": 0.15, "loop": true },
-  "walk":  { "frames": [4, 5, 6, 7], "frameTime": 0.1 }
-}

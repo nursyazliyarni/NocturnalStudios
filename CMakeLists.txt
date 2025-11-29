@@ -9,6 +9,10 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 include(Utilities)
 include(ImportDependencies)
 
+if (MSVC)
+    add_compile_options(/W4 /MP)
+endif()
+
 add_subdirectory(Engine)
 add_subdirectory(Sandbox)
 

@@ -236,6 +236,23 @@ public:
 	T* getComponent(EntityID entityID);
 
 
+
+	/**
+	 * @brief Get list of all component ids for a specific entity
+	 *
+	 * Returns a const reference to a set of componentIDs
+	 *
+	 * @param entityID Target entity
+	 * @return const reference to a set of ComponentIDs
+	 *
+	 * Simple usage:
+	 *   
+	 */
+	const std::set<ComponentID>& getEntityComponents(EntityID);
+
+
+
+
 	void emptyAllEntities();
 
 private:
@@ -278,6 +295,10 @@ private:
 
 };
 
+template<typename T>
+bool isBaseComponent(T* ptr) {
+	return dynamic_cast<BaseComponent*>(ptr) != nullptr;
+}
 //********* ECS Class Template Implementation **********//
 
 template <typename T>
@@ -370,8 +391,6 @@ T* ECS::getComponent(EntityID entityID) {
 }
 
 
-
-
 // [====================*====================]
 //  Component Factory for Json Parsing
 // [====================*====================]
@@ -382,17 +401,38 @@ class ComponentFactory { //basically copied my component factory but modified it
 public:
 	using Json = rapidjson::Value;
 	using Creator = std::function<std::any(const Json&)>;
+	using Parser = std::function<void(EntityID, const Json&)>;
 
 	template<typename T>
 	static void Register(const std::string& name) {
 		Register(name, [](const Json& j) -> std::any {T comp{};
-			if (j.IsObject()) {
-				comp.FromJSON(j);  
+		if (j.IsObject()) {
+			comp.FromJSON(j);
+		}
+		return comp;
+			});
+
+		RegisterParser(name, [name](EntityID id, const Json& j) {
+			if (!j.IsObject()) return;
+
+			// Fetch existing T
+			T* comp = ECS::getECS().getComponent<T>(id);
+			if (!comp) {
+				logger.error("Parser: entity missing component: " + name);
+				
+				 ECS::getECS().addComponent<T>(id, {});
+				 comp = ECS::getECS().getComponent<T>(id);
 			}
-			return comp;
+
+			// Modify it using FromJSON
+			comp->FromJSON(j);
 			});
 	}
 
+	static void RegisterParser(const std::string& name, Parser parser)
+	{
+		ParserMap()[name] = std::move(parser);
+	}
 
 	static void Register(const std::string& name, Creator creator) {
 		GetMap()[name] = std::move(creator);
@@ -400,6 +440,7 @@ public:
 
 	static bool CreateFromName(EntityID entity, const std::string& name, const Json& j);
 
+	static void ParseFromName(EntityID entity, const std::string& name, const Json& j);
 
 	static std::any Create(const std::string& name, const Json& j) {
 		auto& map = GetMap();
@@ -414,5 +455,46 @@ private:
 		static std::unordered_map<std::string, Creator> map;
 		return map;
 	}
+	static std::unordered_map<std::string, Parser>& ParserMap() {
+		static std::unordered_map<std::string, Parser> mapp;
+		return mapp;
+	}
 };
+template<>
+inline bool ECS::addComponent<Transform>(EntityID entityID, Transform const& component) {
+	ComponentID type = Family::getID<Transform>();
+	if (componentPools.find(type) == componentPools.end()) registerComponent<Transform>();
+
+	BaseComponentPool* pool = componentPools.at(type).get();
+	ComponentPool<Transform>* specificPool = dynamic_cast<ComponentPool<Transform>*>(pool);
+	if (!specificPool) {
+		logger.error(std::string{ "ECS::addComponent - Failed to derive correct component pool\nComponentID: " } + std::to_string(type) + "\n");
+		return false;
+	}
+	if (!specificPool->addComponent(entityID, component)) {
+		logger.error(std::string{ "ECS::addComponent - Failed to add component to entity\nEntityID: " } + std::to_string(entityID) + "\n");
+		return false;
+	}
+
+	Transform* comp = getComponent<Transform>(entityID);
+	if (comp->randomPos)
+	{
+		comp->position = { Random_Range(-100.f,100.f),Random_Range(-50.f,50.f) };
+	}
+	if (comp->randomRot)
+	{
+		comp->rotation = Random_Range(0.f, 6.28319f);
+	}
+
+	auto componentData = getComponentData(type);
+	if (componentData == componentMetadata.end()) {
+		logger.error(std::string{ "ECS::addComponent - Failed to find component metadata\nComponentID: " } + std::to_string(type) + "\n");
+		return false;
+	}
+
+	componentData->size += 1;
+	entityMetadataMap[entityID].componentIDs.insert(type);
+	reUpdateMetadata();
+	return true;
+}
 #endif // ECS_H

@@ -17,6 +17,24 @@
 #include "ECS/ECS_Component.h"
 #include "System/Audio_System.h"
 #include "ECS/ECS.h"
+
+//  Texture lookup hook for sprite_path, GL texture id 
+static std::function<int(const std::string&)> sTextureLookup;
+
+// Safe fallback that compiles even if nobody sets sTextureLookup.
+static int ResolveTextureID(const char* p) {
+	if (!p || !*p) return 0;
+	if (sTextureLookup) return sTextureLookup(std::string{ p });
+	return 0; // not wired yet -> invisible sprite (isVisible=false)
+}
+
+// a simple setter to call once from  init code (e.g., Application.cpp)
+void Prefab_SetTextureLookup(std::function<int(const std::string&)> fn) {
+	sTextureLookup = std::move(fn);
+}
+
+
+	
 extern AudioSystem* gAudioSystem;
 
 bool ComponentFactory::CreateFromName(EntityID entity, const std::string& name, const Json& j) {
@@ -29,11 +47,6 @@ bool ComponentFactory::CreateFromName(EntityID entity, const std::string& name, 
 	if (name == "ImageRenderer")
 	{
 		ecs.addComponent(entity, std::any_cast<ImageRenderer>(Create(name,j)));
-		return true;
-	}
-	if (name == "SpriteRenderer")
-	{
-		ecs.addComponent(entity, std::any_cast<SpriteRenderer>(Create(name,j)));
 		return true;
 	}
 	if (name == "CircleRenderer")
@@ -85,12 +98,19 @@ bool ComponentFactory::CreateFromName(EntityID entity, const std::string& name, 
 
 	return false;
 }
+
+void ComponentFactory::ParseFromName(EntityID entity, const std::string& name, const Json& j) {
+	auto it = ParserMap().find(name);
+
+	if (it == ParserMap().end()) return;
+	else it->second(entity, j);
+}
 void Collider::FromJSON(const rapidjson::Value& json){}
 void Collider::ToJSON(rapidjson::Value& json, rapidjson::Document::AllocatorType& allocator) const {}
 
 void RenderComponent::FromJSON(const rapidjson::Value& json) {
-	const char* members[]{ "opacity","is_visible","color_tint","color_to_add"};
-	for (int i{};i<4;i++)
+	const char* members[]{ "opacity","is_visible","color_tint","color_to_add","width","height","angle"};
+	for (int i{};i<7;i++)
 	{
 		if (json.HasMember(members[i]))
 		{
@@ -120,6 +140,12 @@ void RenderComponent::FromJSON(const rapidjson::Value& json) {
 						}
 					}
 				}
+				else if(json[members[i]].IsObject()) {
+					if (json[members[i]].HasMember("r") && json[members[i]]["r"].IsFloat())colorTint.x() = json[members[i]]["r"].GetFloat();
+					if (json[members[i]].HasMember("g") && json[members[i]]["g"].IsFloat())colorTint.y() = json[members[i]]["g"].GetFloat();
+					if (json[members[i]].HasMember("b") && json[members[i]]["b"].IsFloat())colorTint.z() = json[members[i]]["b"].GetFloat();
+					if (json[members[i]].HasMember("a") && json[members[i]]["a"].IsFloat())colorTint.a() = json[members[i]]["a"].GetFloat();
+				}
 				break;
 			case 3://color_to_add
 				if (json[members[i]].IsArray())
@@ -133,6 +159,24 @@ void RenderComponent::FromJSON(const rapidjson::Value& json) {
 						}
 					}
 				}
+				else if (json[members[i]].IsObject()) {
+					if (json[members[i]].HasMember("r") && json[members[i]]["r"].IsFloat())colorToAdd.x() = json[members[i]]["r"].GetFloat();
+					if (json[members[i]].HasMember("g") && json[members[i]]["g"].IsFloat())colorToAdd.y() = json[members[i]]["g"].GetFloat();
+					if (json[members[i]].HasMember("b") && json[members[i]]["b"].IsFloat())colorToAdd.z() = json[members[i]]["b"].GetFloat();
+					if (json[members[i]].HasMember("a") && json[members[i]]["a"].IsFloat())colorToAdd.a() = json[members[i]]["a"].GetFloat();
+				}
+				break;
+			case 4://width
+				if (json[members[i]].IsFloat())
+				{
+					width = json[members[i]].GetFloat();
+				}
+				break;
+			case 5://height
+				if (json[members[i]].IsFloat())
+				{
+					height = json[members[i]].GetFloat();
+				}
 				break;
 			}
 		}
@@ -140,7 +184,34 @@ void RenderComponent::FromJSON(const rapidjson::Value& json) {
 	
 }
 
-void RenderComponent::ToJSON(rapidjson::Value& json, rapidjson::Document::AllocatorType& allocator) const {}
+void RenderComponent::ToJSON(rapidjson::Value& json, rapidjson::Document::AllocatorType& allocator) const {
+
+	if(opacity<=1.f)json.AddMember("opacity", opacity, allocator);
+
+	if (!isVisible)json.AddMember("is_visible", isVisible, allocator);
+
+	if (colorTint!=Vector4D{1.0f, 1.0f, 1.0f, 1.0f})
+	{
+		rapidjson::Value tint(rapidjson::kObjectType);
+		tint.AddMember("r", colorTint.x(), allocator);
+		tint.AddMember("g", colorTint.y(), allocator);
+		tint.AddMember("b", colorTint.z(), allocator);
+		tint.AddMember("a", colorTint.a(), allocator);
+		json.AddMember("color_tint", tint, allocator);
+	}
+
+
+	if (colorTint != Vector4D{ 0.0f, 0.0f, 0.0f, 0.0f })
+	{
+		rapidjson::Value addc(rapidjson::kObjectType);
+		addc.AddMember("r", colorToAdd.x(), allocator);
+		addc.AddMember("g", colorToAdd.y(), allocator);
+		addc.AddMember("b", colorToAdd.z(), allocator);
+		addc.AddMember("a", colorToAdd.a(), allocator);
+		json.AddMember("color_to_add", addc, allocator);
+	}
+
+}
 
 void Transform::FromJSON(const rapidjson::Value& json) {
 	const char* members[]{ 
@@ -156,7 +227,7 @@ void Transform::FromJSON(const rapidjson::Value& json) {
 
 	//if any of these values is missing, its fine. checks for specific values first (HasMember())
 	//then it will also check for each param type
-	for (int i{}; i < 7; i++)
+	for (int i{}; i < 8; i++)
 	{
 		if (json.HasMember(members[i]))
 		{
@@ -174,6 +245,14 @@ void Transform::FromJSON(const rapidjson::Value& json) {
 						}
 					}
 				}
+				else if (json[members[i]].IsObject()) {
+					if (json[members[i]].HasMember("x") && json[members[i]]["x"].IsFloat())position.x() = json[members[i]]["x"].GetFloat();
+					if (json[members[i]].HasMember("y") && json[members[i]]["y"].IsFloat())position.y() = json[members[i]]["y"].GetFloat();
+				}
+				else if (json[members[i]].IsString() && json[members[i]].GetString() == "random")
+				{
+					randomPos = true; 
+				}
 				break;
 			case 1://scale
 				if (json[members[i]].IsArray())
@@ -187,6 +266,10 @@ void Transform::FromJSON(const rapidjson::Value& json) {
 						}
 					}
 				}
+				else if (json[members[i]].IsObject()) {
+					if (json[members[i]].HasMember("x") && json[members[i]]["x"].IsFloat())scale.x() = json[members[i]]["x"].GetFloat();
+					if (json[members[i]].HasMember("y") && json[members[i]]["y"].IsFloat())scale.y() = json[members[i]]["y"].GetFloat();
+				}
 				else if (json[members[i]].IsFloat())
 				{
 					scale = { json[members[i]].GetFloat(),json[members[i]].GetFloat() };
@@ -196,6 +279,10 @@ void Transform::FromJSON(const rapidjson::Value& json) {
 				if (json[members[i]].IsFloat())
 				{
 					rotation = json[members[i]].GetFloat();
+				}
+				else if (json[members[i]].IsString()&& json[members[i]].GetString()=="random")
+				{
+					randomRot = true;
 				}
 				break;
 			case 3://height
@@ -240,15 +327,50 @@ void Transform::FromJSON(const rapidjson::Value& json) {
 	}
 }
 
-void Transform::ToJSON(rapidjson::Value& json, rapidjson::Document::AllocatorType& allocator) const {}
+void Transform::ToJSON(rapidjson::Value& json, rapidjson::Document::AllocatorType& allocator) const {
+	
+
+	json.SetObject();
+	rapidjson::Value typeVal;
+	typeVal.SetString("Transform", allocator);
+	json.AddMember("type", typeVal, allocator);
+
+	rapidjson::Value posobj(rapidjson::kObjectType);
+	posobj.AddMember("x", position.x(), allocator);
+	posobj.AddMember("y", position.y(), allocator);
+	json.AddMember("position", posobj, allocator);
+
+	rapidjson::Value scal(rapidjson::kObjectType);
+	scal.AddMember("x", scale.x(), allocator);
+	scal.AddMember("y", scale.y(), allocator);
+	json.AddMember("scale", scal, allocator);
+
+	json.AddMember("rotation", rotation, allocator);
+	
+	json.AddMember("height", height, allocator);
+
+	rapidjson::Value spaceVal;
+	if (space == CoordinateSpace::Viewport) spaceVal.SetString("viewport", allocator);
+	else spaceVal.SetString("world", allocator);
+	json.AddMember("space", spaceVal, allocator);
+
+	json.AddMember("is_visible", isVisible, allocator);
+
+	json.AddMember("rotatable", isRotatable, allocator);
+
+	json.AddMember("scalable", isScalable, allocator);
+
+}
 
 void ImageRenderer::FromJSON(const rapidjson::Value& json) {
 	RenderComponent::FromJSON(json);
 	const char* members[]{
 		"texture_id",//0
-		"image_path"//1
+		"image_path",//1
+		"sprite_path",
+		
 	};
-	for (int i{}; i < 2; i++)
+	for (int i{}; i < 3; i++)
 	{
 		if (json.HasMember(members[i]))
 		{
@@ -264,26 +386,39 @@ void ImageRenderer::FromJSON(const rapidjson::Value& json) {
 				if (json[members[i]].IsString())
 				{
 					image_path = json[members[i]].GetString();
+					textureID = ResolveTextureID(json[members[i]].GetString());
+					isVisible = (textureID > 0);
+				}
+				break;
+			case 2://isVisible
+				if (json[members[i]].IsString())
+				{
+					image_path = json[members[i]].GetString();
+					textureID = ResolveTextureID(json[members[i]].GetString());
+					isVisible = (textureID > 0);
 				}
 				break;
 			}
 		}
 	}
+	logger.log("texture: " + std::to_string(textureID));
 }
 
-void ImageRenderer::ToJSON(rapidjson::Value& json, rapidjson::Document::AllocatorType& allocator) const {}
+void ImageRenderer::ToJSON(rapidjson::Value& json, rapidjson::Document::AllocatorType& allocator) const {
+	json.SetObject();
 
-void SpriteRenderer::FromJSON(const rapidjson::Value& json) {
-	RenderComponent::FromJSON(json);
-	if (json.HasMember("sprite_path")&& json["sprite_path"].IsString())
-	{
-		
-			spritePath = json["sprite_path"].GetString();
-		
-	}
+	rapidjson::Value typeVal;
+	typeVal.SetString("ImageRenderer", allocator);
+	json.AddMember("type", typeVal, allocator);
+
+	RenderComponent::ToJSON(json, allocator);
+
+	rapidjson::Value spriteVal;
+	spriteVal.SetString(image_path.c_str(), static_cast<rapidjson::SizeType>(image_path.size()), allocator);
+	json.AddMember("sprite_path", spriteVal, allocator);
 }
 
-void SpriteRenderer::ToJSON(rapidjson::Value& json, rapidjson::Document::AllocatorType& allocator) const {}
+
 
 void CircleRenderer::FromJSON(const rapidjson::Value& json) {
 	RenderComponent::FromJSON(json);
@@ -295,7 +430,16 @@ void CircleRenderer::FromJSON(const rapidjson::Value& json) {
 	}
 }
 
-void CircleRenderer::ToJSON(rapidjson::Value& json, rapidjson::Document::AllocatorType& allocator) const {}
+void CircleRenderer::ToJSON(rapidjson::Value& json, rapidjson::Document::AllocatorType& allocator) const {
+	json.SetObject();
+	rapidjson::Value typeVal;
+	typeVal.SetString("CircleRenderer", allocator);
+	json.AddMember("type", typeVal, allocator);
+
+	RenderComponent::ToJSON(json, allocator);
+
+	json.AddMember("radius", radius, allocator);
+}
 
 void RectRenderer::FromJSON(const rapidjson::Value& json) {
 	RenderComponent::FromJSON(json);
@@ -320,35 +464,76 @@ void RectRenderer::FromJSON(const rapidjson::Value& json) {
 	}
 }
 
-void RectRenderer::ToJSON(rapidjson::Value& json, rapidjson::Document::AllocatorType& allocator) const {}
+void RectRenderer::ToJSON(rapidjson::Value& json, rapidjson::Document::AllocatorType& allocator) const {
+	json.SetObject();
+	rapidjson::Value typeVal;
+	typeVal.SetString("RectRenderer", allocator);
+	json.AddMember("type", typeVal, allocator);
+
+	RenderComponent::ToJSON(json, allocator);
+
+
+
+	json.AddMember("width", width, allocator);
+	json.AddMember("height", height, allocator);
+}
 
 void AnimalBehavior::FromJSON(const rapidjson::Value& json) {
 	const char* members[]{
 		"health_bar",//0
 		"hunger_bar",//1
-		"sanity_bar"//2
+		"sanity_bar",//2
+		"slower_decreasing_rate",//3
+		"normal_decreasing_rate",//4
+		"faster_decreasing_rate",//5
+		"penalty_decreasing_rate"//6
+
 	};
-	for (int i{}; i < 3; i++)
+	for (int i{}; i < 7; i++)
 	{
-		if (json.HasMember(members[i])&& json[members[i]].IsDouble())
+		if (json.HasMember(members[i])&& json[members[i]].IsNumber())
 		{
+			float jvalue = json[members[i]].GetFloat();
 			switch (i)
 			{
 			case 0://health bar
-				health_bar = json[members[i]].GetDouble();
+				health_bar = jvalue;
 				break;
 			case 1://hunger
-				hunger_bar = json[members[i]].GetDouble();
+				hunger_bar = jvalue;
 				break;
 			case 2://sanity
-				sanity_bar = json[members[i]].GetDouble();
+				sanity_bar = jvalue;
+				break;
+			case 3: //slower dec rate
+				slower_decreasing_rate = jvalue;
+				break;
+			case 4: //normal dec rate
+				normal_decreasing_rate = jvalue;
+				break;
+			case 5: //faster dec rate
+				faster_decreasing_rate = jvalue;
+				break;
+			case 6: //penalty dec rate
+				penalty_decreasing_rate = jvalue;
 				break;
 			}
 		}
 	}
 }
 
-void AnimalBehavior::ToJSON(rapidjson::Value& json, rapidjson::Document::AllocatorType& allocator) const {}
+void AnimalBehavior::ToJSON(rapidjson::Value& json, rapidjson::Document::AllocatorType& allocator) const {
+	json.SetObject();
+	rapidjson::Value typeVal;
+	typeVal.SetString("AnimalBehavior", allocator);
+	json.AddMember("type", typeVal, allocator);
+
+
+
+	json.AddMember("health_bar", health_bar, allocator);
+	json.AddMember("hunger_bar", hunger_bar, allocator);
+	json.AddMember("sanity_bar", sanity_bar, allocator);
+}
 
 void PhysicsComponent::FromJSON(const rapidjson::Value& json) {
 	const char* members[]{
@@ -360,39 +545,62 @@ void PhysicsComponent::FromJSON(const rapidjson::Value& json) {
 	size_t limit{};
 	for (int i{}; i < 3; i++)
 	{
-		if (json.HasMember(members[i]) && json[members[i]].IsDouble())
+		if (json.HasMember(members[i]))
 		{
 			switch (i)
 			{
 			case 0://position
-				limit = json[members[i]].Size() <= 2 ? json[members[i]].Size() : 2;
-				for (size_t j = 0; j < limit; j++)
+				if (json[members[i]].IsArray())
 				{
-					if (json[members[i]][j].IsFloat())
+					limit = json[members[i]].Size() <= 2 ? json[members[i]].Size() : 2;
+					for (size_t j = 0; j < limit; j++)
 					{
-						position[j] = json[members[i]][j].GetFloat();
+						if (json[members[i]][j].IsFloat())
+						{
+							position[j] = json[members[i]][j].GetFloat();
+						}
 					}
 				}
+				else if (json[members[i]].IsObject()) {
+					if (json[members[i]].HasMember("x") && json[members[i]]["x"].IsFloat())position.x() = json[members[i]]["x"].GetFloat();
+					if (json[members[i]].HasMember("y") && json[members[i]]["y"].IsFloat())position.y() = json[members[i]]["y"].GetFloat();
+				}
+				
 				break;
 			case 1://velocity
-				limit = json[members[i]].Size() <= 2 ? json[members[i]].Size() : 2;
-				for (size_t j = 0; j < limit; j++)
+				if (json[members[i]].IsArray())
 				{
-					if (json[members[i]][j].IsFloat())
+					limit = json[members[i]].Size() <= 2 ? json[members[i]].Size() : 2;
+					for (size_t j = 0; j < limit; j++)
 					{
-						velocity[j] = json[members[i]][j].GetFloat();
+						if (json[members[i]][j].IsFloat())
+						{
+							velocity[j] = json[members[i]][j].GetFloat();
+						}
 					}
+				}
+				else if (json[members[i]].IsObject()) {
+					if (json[members[i]].HasMember("x") && json[members[i]]["x"].IsFloat())velocity.x() = json[members[i]]["x"].GetFloat();
+					if (json[members[i]].HasMember("y") && json[members[i]]["y"].IsFloat())velocity.y() = json[members[i]]["y"].GetFloat();
 				}
 				break;
 			case 2://acceleration
-				limit = json[members[i]].Size() <= 2 ? json[members[i]].Size() : 2;
-				for (size_t j = 0; j < limit; j++)
+				if (json[members[i]].IsArray())
 				{
-					if (json[members[i]][j].IsFloat())
+					limit = json[members[i]].Size() <= 2 ? json[members[i]].Size() : 2;
+					for (size_t j = 0; j < limit; j++)
 					{
-						acceleration[j] = json[members[i]][j].GetFloat();
+						if (json[members[i]][j].IsFloat())
+						{
+							acceleration[j] = json[members[i]][j].GetFloat();
+						}
 					}
 				}
+				else if (json[members[i]].IsObject()) {
+					if (json[members[i]].HasMember("x") && json[members[i]]["x"].IsFloat())acceleration.x() = json[members[i]]["x"].GetFloat();
+					if (json[members[i]].HasMember("y") && json[members[i]]["y"].IsFloat())acceleration.y() = json[members[i]]["y"].GetFloat();
+				}
+
 				break;
 			case 3:
 				if (json[members[i]].IsBool())
@@ -405,7 +613,32 @@ void PhysicsComponent::FromJSON(const rapidjson::Value& json) {
 	}
 }
 
-void PhysicsComponent::ToJSON(rapidjson::Value& json, rapidjson::Document::AllocatorType& allocator) const {}
+void PhysicsComponent::ToJSON(rapidjson::Value& json, rapidjson::Document::AllocatorType& allocator) const {
+	json.SetObject();
+
+	rapidjson::Value typeVal;
+	typeVal.SetString("PhysicsComponent", allocator);
+	json.AddMember("type", typeVal, allocator);
+
+
+	rapidjson::Value posobj(rapidjson::kObjectType);
+	posobj.AddMember("x", position.x(),allocator);
+	posobj.AddMember("y", position.y(), allocator);
+	json.AddMember("position", posobj, allocator);
+	
+	rapidjson::Value velo(rapidjson::kObjectType);
+	velo.AddMember("x", velocity.x(), allocator);
+	velo.AddMember("y", velocity.y(), allocator);
+	json.AddMember("velocity", velo, allocator);
+
+	rapidjson::Value acce(rapidjson::kObjectType);
+	acce.AddMember("x", acceleration.x(), allocator);
+	acce.AddMember("y", acceleration.y(), allocator);
+	json.AddMember("acceleration", acce, allocator);
+
+	json.AddMember("gravity_enabled", gravityEnabled, allocator);
+	
+}
 
 void BoxCollider::FromJSON(const rapidjson::Value& json) {
 	const char* members[]{
@@ -427,9 +660,23 @@ void BoxCollider::FromJSON(const rapidjson::Value& json) {
 			}
 		}
 	}
+	if (json.HasMember("bounding_box_size") && json["bounding_box_size"].IsFloat())
+	{
+		width = height = json["bounding_box_size"].GetFloat();
+	}
 }
 
-void BoxCollider::ToJSON(rapidjson::Value& json, rapidjson::Document::AllocatorType& allocator) const {}
+void BoxCollider::ToJSON(rapidjson::Value& json, rapidjson::Document::AllocatorType& allocator) const {
+	json.SetObject();
+
+	rapidjson::Value typeVal;
+	typeVal.SetString("BoxCollider", allocator);
+	json.AddMember("type", typeVal, allocator);
+
+	json.AddMember("width", width, allocator);
+	json.AddMember("height", height, allocator);
+
+}
 
 void AIComponent::FromJSON(const rapidjson::Value& component_json) {
 	
@@ -452,7 +699,13 @@ void AIComponent::FromJSON(const rapidjson::Value& component_json) {
 			targetWeight = component_json["targetWeight"].GetFloat();
 }
 
-void AIComponent::ToJSON(rapidjson::Value& json, rapidjson::Document::AllocatorType& allocator) const {}
+void AIComponent::ToJSON(rapidjson::Value& json, rapidjson::Document::AllocatorType& allocator) const {
+	json.SetObject();
+
+	rapidjson::Value typeVal;
+	typeVal.SetString("AIComponent", allocator);
+	json.AddMember("type", typeVal, allocator);
+}
 
 void AABBCollider::FromJSON(const rapidjson::Value& json) {
 	if (json.HasMember("bounding_box_size") && json["bounding_box_size"].IsFloat())
@@ -461,7 +714,15 @@ void AABBCollider::FromJSON(const rapidjson::Value& json) {
 	}
 }
 
-void AABBCollider::ToJSON(rapidjson::Value& json, rapidjson::Document::AllocatorType& allocator) const {}
+void AABBCollider::ToJSON(rapidjson::Value& json, rapidjson::Document::AllocatorType& allocator) const {
+	json.SetObject();
+
+	rapidjson::Value typeVal;
+	typeVal.SetString("AABBCollider", allocator);
+	json.AddMember("type", typeVal, allocator);
+
+	json.AddMember("bounding_box_size", width, allocator);
+}
 
 static AudioData::IndividualAudioData::Group AudioGroupFromString(const std::string& str) {
 	std::string v = str;
@@ -486,6 +747,7 @@ static const char* AudioGroupToString(AudioData::IndividualAudioData::Group grou
 }
 
 void AudioData::FromJSON(const rapidjson::Value& json) {
+
     audios.clear();
     listener = false;
 
@@ -539,6 +801,9 @@ void AudioData::FromJSON(const rapidjson::Value& json) {
 void AudioData::ToJSON(rapidjson::Value& json, rapidjson::Document::AllocatorType& alloc) const {
     json.SetObject();
 
+	rapidjson::Value typeVal;
+	typeVal.SetString("AudioData", alloc);
+	json.AddMember("type", typeVal, alloc);
     rapidjson::Value aud(rapidjson::kArrayType);
     for (const auto& a : audios) {
         rapidjson::Value item(rapidjson::kObjectType);

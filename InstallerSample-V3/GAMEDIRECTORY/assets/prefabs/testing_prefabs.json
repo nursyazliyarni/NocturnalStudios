@@ -1,0 +1,184 @@
+{
+    "animal": {
+      "flamingo": {
+        "components": [
+          { "type": "Transform", "x": 0.10, "y": 0.44, "w": 0.26, "h": 0.50, "angle": 0.0 },
+          { "type": "SpriteRenderer", "sprite_path": "textures/flamingo.png" },
+          { "type": "AABBCollider", "bounding_box_size": 1.0 },
+          { "type": "AnimalProperties", "health_bar": 100, "hunger_bar": 100, "sanity_bar": 100 }
+        ]
+      },
+      
+      "seal":{
+        "components": [
+          { "type": "Transform", "x":0.10,"y":0.46,"w":0.34,"h":0.30, "angle": 0.0 },
+          { "type": "SpriteRenderer", "sprite_path": "textures/seal.png" },
+          { "type": "AABBCollider", "bounding_box_size": 1.0 },
+          { "type": "AnimalProperties", "health_bar":100,"hunger_bar":100, "sanity_bar":100 }
+        ]
+      },
+
+      "owl":{
+        "components": [
+          { "type": "Transform", "x":0.12,"y":0.40,"w":0.24,"h":0.34, "angle": 0.0 },
+          { "type": "SpriteRenderer", "sprite_path": "textures/owl.png" },
+          { "type": "AABBCollider", "bounding_box_size": 1.0 },
+          { "type": "AnimalProperties", "health_bar":100,"hunger_bar":100, "sanity_bar":100 }
+        ]
+      },
+
+      "horse": {
+        "components": [
+          { "type": "Transform", "x": 0.10, "y": 0.40, "w": 0.50, "h": 0.66, "angle": 0.0 },
+          { "type": "SpriteRenderer", "sprite_path": "textures/horse.png" },
+          { "type": "AABBCollider", "bounding_box_size": 1.0 },
+          { "type": "AnimalProperties", "health_bar": 100, "hunger_bar": 100, "sanity_bar": 100 }
+        ]
+      }
+    },
+
+    "food": {
+      "flamingo_food":{
+        "components": [
+          { "type": "Transform", "x":0.72,"y":0.60 },
+          { "type": "SpriteRenderer", "sprite_path":"textures/flamingo_food.png" }
+        ]
+      },
+
+      "seal_food":{
+        "components": [
+          { "type": "Transform", "x":0.72,"y":0.60 },
+          { "type": "SpriteRenderer", "sprite_path":"textures/seal_food.png" }
+        ]
+      },
+
+      "owl_food":{
+        "components": [
+          { "type": "Transform", "x":0.72,"y":0.60 },
+          { "type": "SpriteRenderer", "sprite_path":"textures/owl_food.png" }
+        ]
+      },
+
+      "horse_food":{
+        "components": [
+          { "type": "Transform", "x":0.72,"y":0.60 },
+          { "type": "SpriteRenderer", "sprite_path":"textures/horse_food.png" }
+        ]
+      }
+    },
+
+    "toy": {
+      "flamingo_toy":{
+        "components": [
+          { "type": "Transform", "x":0.52,"y":0.80 },
+          { "type": "SpriteRenderer", "sprite_path":"textures/flamingo_toy.png" }
+        ]
+      },
+
+      "seal_toy":{
+        "components": [
+          { "type": "Transform", "x":0.52,"y":0.80 },
+          { "type": "SpriteRenderer", "sprite_path":"textures/seal_toy.png" }
+        ]
+      },
+
+      "owl_toy":{
+        "components": [
+          { "type": "Transform", "x":0.52,"y":0.80 },
+          { "type": "SpriteRenderer", "sprite_path":"textures/owl_toy.png" }
+        ]
+      },
+
+      "horse_toy":{
+        "components": [
+          { "type": "Transform", "x":0.52,"y":0.80 },
+          { "type": "SpriteRenderer", "sprite_path":"textures/horse_toy.png" }
+        ]
+      }
+    },
+
+    "main_menu_button":{
+      "play_button":{
+        "components": [
+            { "type": "Transform", "x":0.38,"y":0.45,"w":0.26,"h":0.09 },
+            { "type": "SpriteRenderer", "sprite_path":"textures/menuPLAY_btn.png" }
+          ]
+        },
+
+      "load_button":{
+        "components": [
+            { "type": "Transform", "x":0.38,"y":0.60,"w":0.26,"h":0.09 },
+            { "type": "SpriteRenderer", "sprite_path":"textures/menuLOAD.png" }
+          ]
+        },
+
+      "setting_button":{
+        "components": [
+            { "type": "Transform", "x":0.38,"y":0.75,"w":0.26,"h":0.09 },
+            { "type": "SpriteRenderer", "sprite_path":"textures/menuSETTINGS_btn.png" }
+          ]
+        },
+
+      "quit_button":{
+        "components": [
+            { "type": "Transform", "x":0.38,"y":0.90,"w":0.26,"h":0.09 },
+            { "type": "SpriteRenderer", "sprite_path":"textures/menuQUIT.png" }
+          ]
+        }
+    },
+    
+    "prefabs": {
+      "audio_emitter_menu": {
+        "components": [
+          { "type": "Transform", "is_visible": false },
+          { "type": "AudioData",
+            "listener": false,
+            "audios": [
+              { "name": "BGM_Iris_Luminara_Loop_ROUGH", "loop": true, "to_play_at_start": true, "group": "Music", "volume": 0.6, "persist_on_scene_change": true }
+            ]
+          }
+        ]
+      },
+      "audio_emitter_flamingo": {
+        "components": [
+          { "type": "Transform", "is_visible": false },
+          { "type": "AudioData",
+            "audios": [
+              { "name": "BGM_Ambience_Flamingo_01", "loop": true, "to_play_at_start": true, "group": "SFX", "volume": 0.4, "persist_on_scene_change": false }
+            ]
+          }
+        ]
+      },
+      "audio_emitter_seal": {
+        "components": [
+          { "type": "Transform", "is_visible": false },
+          { "type": "AudioData",
+            "audios": [
+                { "name": "BGM_Ambience_Seal_01", "loop": true, "to_play_at_start": true, "group": "SFX", "volume": 0.4, "persist_on_scene_change": false}
+              ]
+          }
+        ]
+      },
+
+      "audio_emitter_owl": {
+        "components": [
+          { "type": "Transform", "is_visible": false },
+          { "type": "AudioData",
+            "audios": [
+              { "name": "BGM_Ambience_Owl_01", "loop": true, "to_play_at_start": true, "group": "SFX", "volume": 0.45, "persist_on_scene_change": false }
+            ]
+          }
+        ]
+      },
+      "audio_emitter_horse": {
+        "components": [
+          { "type": "Transform", "is_visible": false },
+          { "type": "AudioData",
+            "audios": [
+              { "name": "BGM_Ambience_Horse_01", "loop": true, "to_play_at_start": true, "group": "SFX", "volume": 0.5, "persist_on_scene_change": false }
+            ]
+          }
+        ]
+      }
+    }
+}

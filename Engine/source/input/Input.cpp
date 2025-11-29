@@ -352,7 +352,7 @@ void Input::ProcessHotkeys(GameManager& gsm) {
 		if (slow) { zoomStep *= 0.5f; panStepX *= 0.5f; panStepY *= 0.5f; }
 
 		// First zoom tap can optionally �snap focus� to flamingo; or comment this block out to keep purely neutral
-		if (!flamingoPrimed && WasPressed(GLFW_KEY_Z)) {
+		if (!flamingoPrimed && WasPressed(GLFW_KEY_EQUAL)) {
 			Cam2D_Set("Flamingo",
 				0.10f + 0.26f * 0.5f,
 				0.44f + 0.50f * 0.5f,
@@ -362,8 +362,8 @@ void Input::ProcessHotkeys(GameManager& gsm) {
 		}
 		else {
 			// Regular hold-to-zoom/pan
-			if (IsDown(GLFW_KEY_Z)) Cam2D_ZoomBy("Flamingo", +zoomStep);
-			if (IsDown(GLFW_KEY_X)) Cam2D_ZoomBy("Flamingo", -zoomStep);
+			if (IsDown(GLFW_KEY_EQUAL)) Cam2D_ZoomBy("Flamingo", +zoomStep);
+			if (IsDown(GLFW_KEY_MINUS)) Cam2D_ZoomBy("Flamingo", -zoomStep);
 
 			if (IsDown(GLFW_KEY_UP))    Cam2D_PanBy("Flamingo", 0.0f, -panStepY);
 			if (IsDown(GLFW_KEY_DOWN))  Cam2D_PanBy("Flamingo", 0.0f, +panStepY);

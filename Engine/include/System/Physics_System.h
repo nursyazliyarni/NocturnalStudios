@@ -1,3 +1,15 @@
-// Should update the physics (if any), position, forces and bounding boxes of all
-// entities (game objects) every frame if the game is running
-// Should skip the frame if the game is paused.
+/* !------------------------------------------------------------------------------------------------
+	File: Physics_System.h
+	Project : NocturnalStudio
+
+	This file contains ...
+
+	 Author :
+		Sarah/e.laycock(%)
+		- Brief
+
+	 Author :
+		Name(%) 
+
+All content(c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+* ------------------------------------------------------------------------------------------------ */

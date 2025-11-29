@@ -79,6 +79,7 @@ public:
 	// @Todo(axewhy): These functions are not fully implemented yet
 	void showPerformanceOverlayUI();
 	void showEntityListUI(/* An enum of entityType type, Maybe a reference to someArrayOrVectorType entityList */);
+	void showScenesListUI();
 	void showTransformUI(/* A reference to a vector of objects objectList */);
 
 	void getViewportRectWindow(ImVec2& outMin, ImVec2& outMax) const { outMin = vpMinWin; outMax = vpMaxWin; }
@@ -102,7 +103,11 @@ public:
 	void saveSceneSnapshot();
 	void restoreSceneSnapshot();
 
+	//handle external file drops into the window
+	void handleExternalFileDrops();
+
 private:
+	bool m_showFPS = false;
 	bool m_dockingLayoutInitialized = false;
 	Window& mainWindow;
 	Renderer& renderer;
@@ -132,7 +137,7 @@ private:
 
 	ImVec2 vpMinWin{}, vpMaxWin{};
 
-	EditorMode m_editorMode = EditorMode::EDIT;
+	EditorMode m_editorMode = EditorMode::PLAY;
 	std::string m_savedSceneState;
 
 	int  m_hoveredItem = -1;
@@ -140,8 +145,18 @@ private:
 	bool m_isDragging = false; //true while left mouse button held on an item
 	ImVec2 m_dragOffset = { 0, 0 }; //offset (normalised from item center to click point
 
+	std::vector<std::vector<DrawItem>> m_undoStack; //undo stack
+	static constexpr std::size_t kMaxUndoSteps = 20; //max undo steps
+
 	//helper to handle picking/dragging inside the viewport
 	void handleViewportPicking(const ImVec2& imgMin,const ImVec2& imgMax,int vpW, int vpH);
+
+	//undo helpers
+	void pushUndoState(const char* reason = nullptr);
+	void undoLastAction();
+
+	bool m_hasInitialState = false;
+	std::string m_initialSceneState;
 };
 
 
