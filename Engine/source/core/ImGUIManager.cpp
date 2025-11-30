@@ -868,17 +868,23 @@ void ImGuiManager::showEntityListUI(/* Maybe an enum of paramEntityType, Maybe a
 			EntityID e = ecs.createEntity();
 			newItem.entityID = e;
 
-			if (ecs.addComponent<Transform>(e, {  })&& ecs.addComponent<ImageRenderer>(e, {})&& ecs.addComponent<BoxCollider>(e, {}))
-			{
-				Transform* t = ecs.getComponent<Transform>(e);
-				ImageRenderer* ir = ecs.getComponent<ImageRenderer>(e);
-				BoxCollider* bc = ecs.getComponent<BoxCollider>(e);
 
+			ecs.addComponent<Transform>(e, {  });
+			ecs.addComponent<ImageRenderer>(e, {});
+			ecs.addComponent<BoxCollider>(e, {});
+			Transform* t = ecs.getComponent<Transform>(e);
+			ImageRenderer* ir = ecs.getComponent<ImageRenderer>(e);
+			BoxCollider* bc = ecs.getComponent<BoxCollider>(e);
+
+			if (t&&ir&&bc)
+			{
+				
 				t->position.x() = 0.5f;
 				t->position.y() = 0.5f;
 
 				ir->width = 0.1f;
 				ir->height = 0.1f;
+				//ir->isVisible = true;
 
 				bc->width = 0.1f;
 				bc->height = 0.1f;	
@@ -1118,9 +1124,11 @@ void ImGuiManager::showTransformUI(/* A reference to a vector of object list obj
 					if (ECS::getECS().getComponent<ImageRenderer>(item.entityID)) {
 						ECS::getECS().getComponent<ImageRenderer>(item.entityID)->textureID = texID;
 						ECS::getECS().getComponent<ImageRenderer>(item.entityID)->image_path = texPath;
+						ECS::getECS().getComponent<ImageRenderer>(item.entityID)->isVisible = true;
+						logger.log("[Inspector] Changed texture to: " + texName);
+						pushUndoState("Change texture");
 					}
-					logger.log("[Inspector] Changed texture to: " + texName);
-					pushUndoState("Change texture");
+					
 				}
 
 				if (isSelected) {
@@ -1586,8 +1594,10 @@ void ImGuiManager::showAssetsBrowserUI() {
 							if (ECS::getECS().getComponent<ImageRenderer>(scene->items[selectedEntityType].entityID)) {
 								ECS::getECS().getComponent<ImageRenderer>(scene->items[selectedEntityType].entityID)->textureID = texID;
 								ECS::getECS().getComponent<ImageRenderer>(scene->items[selectedEntityType].entityID)->image_path = texPath;
+								ECS::getECS().getComponent<ImageRenderer>(scene->items[selectedEntityType].entityID)->isVisible = true;
+								logger.log("[ImGui] Applied texture: " + texName);
 							}
-							logger.log("[ImGui] Applied texture: " + texName);
+							
 						}
 					}
 

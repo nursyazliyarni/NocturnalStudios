@@ -700,8 +700,8 @@ void GameManager::render(Renderer& r, Input& input, GLFWwindow* window, int w, i
         if (di.entityID != INVALID_ENTITY_ID)
         {
             //logger.log("drawing " + di.name+" "+std::to_string(ecs_.findEntityByName(di.name)));
-            Transform* t = ecs_.getComponent<Transform>(ecs_.findEntityByName(di.name));
-            ImageRenderer* img = ecs_.getComponent<ImageRenderer>(ecs_.findEntityByName(di.name));
+            Transform* t = ecs_.getComponent<Transform>(di.entityID);
+            ImageRenderer* img = ecs_.getComponent<ImageRenderer>(di.entityID);
 
             if (!t || !img)continue;
             
@@ -787,7 +787,8 @@ void GameManager::render(Renderer& r, Input& input, GLFWwindow* window, int w, i
 
             else {
                 Cam2D_Apply(currentScene, px, py, pw, ph, w, h);
-                r.texturedTri(di.tex, px, py, pw, ph);
+                
+                r.texturedTri(img->textureID, px, py, pw, ph);
 
                 // --- Collider outline (debug) ---
                 if (/*Debug::Drawer::Instance().IsActive() &&*/ di.hasCollider)

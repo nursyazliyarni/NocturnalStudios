@@ -1,5 +1,19 @@
 #pragma once
 
+/*!------------------------------------------------------------------------------------------------
+    File: Logic_Factory.h
+    Project: NocturnalStudio
+
+    This file contains the functions needed to register all the current available game logic for
+    our animal game objects.
+
+    Primary Author:
+        Yu Xuan
+        - Implemented functions to create Logic_Factory,add logic,create logic and get logic
+
+    All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
+
 /*
 Logic_Factory is responsible for:
 1)Knowing what logic scripts exist (FlamingoLogic, HorseLogic, OwlLogic, etc.)
