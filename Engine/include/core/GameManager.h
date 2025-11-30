@@ -70,6 +70,9 @@ struct Scene {
     std::vector<DrawItem> items;
     std::vector<ClickRegion> clicks;
     bool loaded{ false };
+
+    bool isClickReigion(DrawItem);
+    ClickRegion getClickReigion(DrawItem);
 };
 
 class TextureStore {
