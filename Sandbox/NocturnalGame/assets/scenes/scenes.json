@@ -133,8 +133,26 @@
                   "height":0.09
                 }
             ], "quit": true },
-        { "prefab": "audio_emitter_menu", "name": "menu_bgm_emitter" }
-       
+        { "prefab": "audio_emitter_menu", "name": "menu_bgm_emitter" },
+
+        {
+        "prefab": "button",
+        "name": "btn_howtoplay",
+        "overrides": [
+          {
+            "type": "Transform",
+            "position": { "x": 0.93, "y": 0.93  }  
+          },
+          {
+            "type": "ImageRenderer",
+            "sprite_path": "textures/howToPlayBtn.png",
+            "width": 0.06,
+            "height": 0.06
+          }
+        ],
+        "goto": "HowToPlay"
+        }
+      
       ]
       
     },
@@ -183,6 +201,29 @@
         }
       ],
       "goto": "MainMenu"
+      }
+    ]
+  },
+  {
+    "name": "HowToPlay",
+    "background": "textures/howToPlay.png",   
+    "entities": [
+      {
+        "prefab": "button",
+        "name": "btn_howtoplay_back",
+        "overrides": [
+          {
+            "type": "Transform",
+            "position": { "x": 0.38, "y": 0.90 }
+          },
+          {
+            "type": "ImageRenderer",
+            "sprite_path": "textures/menuBackBtn.png",
+            "width": 0.26,
+            "height": 0.09
+          }
+        ],
+        "goto": "MainMenu"
       }
     ]
   },
