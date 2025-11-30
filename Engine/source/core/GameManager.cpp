@@ -143,7 +143,167 @@ bool GameManager::checkForSceneChange() {
     else return false;
 }
 
+bool Scene::isClickReigion(DrawItem di) {
+    for (ClickRegion cr:clicks)
+    {
+        if (cr.name == di.name) return true;
+    }
+    return false;
+}
+
+ClickRegion Scene::getClickReigion(DrawItem di) {
+    for (ClickRegion cr : clicks)
+    {
+        if (cr.name == di.name) return cr;
+    }
+    ClickRegion invalid{};
+    invalid.name = "INVALID";
+    return invalid;
+}
+
 bool GameManager::saveAll(const char* saveJsonPath, TextureStore& tex) {
+    if (scenes.empty()) {
+        logger.error("No Scenes to save");
+        return false;
+    }
+
+    rapidjson::Document doc;
+    doc.SetObject();
+    auto& alloc = doc.GetAllocator();
+
+    //keymap currenly not saved as i need to chjeck how it works
+    rapidjson::Value statesObj(rapidjson::kObjectType);
+
+    // initial - currenly defaults to MainMenu
+    rapidjson::Value initial;
+    initial.SetString("MainMenu", alloc);
+    statesObj.AddMember("initial", initial, alloc);
+
+    //keymap
+    rapidjson::Value keymapObj(rapidjson::kObjectType);
+
+    for (const auto& [glfwKey, sceneName] : keyMap)
+    {
+        std::string keyString{};
+
+        switch (glfwKey)
+        {
+        case GLFW_KEY_ESCAPE: keyString = "ESC"; break;
+        default:
+            if (glfwKey>=GLFW_KEY_0&& glfwKey <= GLFW_KEY_9)
+            {
+                //0 to 9
+                keyString = std::to_string(glfwKey - 48);
+                break;
+            }
+            else continue; // ignore others
+        }
+
+        rapidjson::Value key;
+
+         key.SetString(sceneName.c_str(), alloc);
+
+        rapidjson::Value keyName(keyString.c_str(), alloc);
+        keymapObj.AddMember(keyName, key, alloc);
+       
+    }
+
+    rapidjson::Value blud;
+    blud.SetString(backKey.c_str(), alloc);
+    keymapObj.AddMember("ESC", blud, alloc);
+
+    // Attach keymap to states
+    statesObj.AddMember("keymap", keymapObj, alloc);
+
+
+    // Attach "states" to root
+    doc.AddMember("states", statesObj, alloc);
+
+    //Iterating through scenes
+    rapidjson::Value sceneArray(rapidjson::kArrayType);
+    for ( const auto& scenepair:scenes)
+    {
+        Scene scene = scenepair.second;
+        rapidjson::Value sceneObj(rapidjson::kObjectType);
+
+        if (scene.background) {
+            rapidjson::Value bgVal;
+            bgVal.SetString(tex.find(scene.background).c_str(), alloc);
+            sceneObj.AddMember("background", bgVal, alloc);
+
+        }
+
+        if (!scene.items.empty())
+        {
+            rapidjson::Value entityArray(rapidjson::kArrayType);
+
+            for (DrawItem i : scene.items) {
+                rapidjson::Value entObj(rapidjson::kObjectType);
+                if (i.item_type.empty()) //treat as a non prefab item
+                {
+                    rapidjson::Value nvs;
+                    nvs.SetString(i.name.c_str(), alloc);
+                    entObj.AddMember("name", nvs, alloc);
+
+                    rapidjson::Value components(rapidjson::kArrayType);
+                    if (ecs_.findEntityByName(i.name) != INVALID_ENTITY_ID && !ecs_.getEntityComponents(ecs_.findEntityByName(i.name)).empty())
+                    {
+                        logger.log("Components for object: " + i.name + " found in ECS entity " + std::to_string(ecs_.findEntityByName(i.name)));
+                        writeAllComponentsToJSONArray(ecs_.findEntityByName(i.name), components, alloc);
+                    }
+                    entObj.AddMember("components", components, alloc);
+                }
+                else {
+                    //prefab has 3 things: prefab, name, overrides
+                    rapidjson::Value pregabval;
+                    pregabval.SetString(i.item_type.c_str(), alloc);
+                    entObj.AddMember("prefab", pregabval, alloc);
+
+                    rapidjson::Value nvs; //name
+                    nvs.SetString(i.name.c_str(), alloc);
+                    entObj.AddMember("name", nvs, alloc);
+
+                    //overrides
+                    rapidjson::Value overrides(rapidjson::kArrayType);
+                    if (ecs_.findEntityByName(i.name) != INVALID_ENTITY_ID && !ecs_.getEntityComponents(ecs_.findEntityByName(i.name)).empty())
+                    {
+                        logger.log("Overrides for object: " + i.name + " found in ECS entity " + std::to_string(ecs_.findEntityByName(i.name)));
+                        writeAllComponentsToJSONArray(ecs_.findEntityByName(i.name), overrides, alloc);
+                    }
+                    entObj.AddMember("overrides", overrides, alloc);
+                }
+
+                if (scene.isClickReigion(i))
+                {
+                    ClickRegion clickr = scene.getClickReigion(i);
+
+                    if (clickr.start) entObj.AddMember("start", true, alloc);
+                    if (clickr.quit)entObj.AddMember("quit", true, alloc);
+                    if (!clickr.gotoScene.empty())
+                    {
+                        rapidjson::Value gotov;
+                        gotov.SetString(clickr.gotoScene.c_str(), alloc);
+                        entObj.AddMember("goto", gotov, alloc);
+                    }
+
+                }
+                entityArray.PushBack(entObj, alloc);
+            }
+            sceneObj.AddMember("entities", entityArray, alloc);
+        }
+
+        sceneArray.PushBack(sceneObj, alloc);
+    }
+    doc.AddMember("scenes", sceneArray, alloc);
+
+    FILE* fp = fopen(saveJsonPath, "wb");
+    if (!fp) return false;
+
+    char buffer[9920];
+    rapidjson::FileWriteStream os(fp, buffer, sizeof(buffer));
+    rapidjson::PrettyWriter<rapidjson::FileWriteStream> writer(os);
+    doc.Accept(writer);
+    fclose(fp);
     return true;
 }
 
@@ -178,7 +338,17 @@ bool GameManager::saveScene( std::string scenename, const char* scenesJsonPath, 
             rapidjson::Value entObj(rapidjson::kObjectType);
             if (i.item_type.empty()) //treat as a non prefab item
             {
+                rapidjson::Value nvs;
+                nvs.SetString(i.name.c_str(), alloc);
+                entObj.AddMember("name", nvs, alloc);
 
+                rapidjson::Value components(rapidjson::kArrayType);
+                if (ecs_.findEntityByName(i.name) != INVALID_ENTITY_ID && !ecs_.getEntityComponents(ecs_.findEntityByName(i.name)).empty())
+                {
+                    logger.log("Components for object: " + i.name + " found in ECS entity " + std::to_string(ecs_.findEntityByName(i.name)));
+                    writeAllComponentsToJSONArray(ecs_.findEntityByName(i.name), components, alloc);
+                }
+                entObj.AddMember("components", components, alloc);
             }
             else {
                 //prefab has 3 things: prefab, name, overrides
@@ -235,6 +405,7 @@ bool GameManager::loadAll(PrefabManager& prefabs, const char* scenesPath, Textur
 
     if (d.HasParseError() || !d.IsObject()) return false;
     logger.log("file parsed");
+    
     // states
     if (d.HasMember("states") && d["states"].IsObject()) {
         const auto& st = d["states"];
@@ -254,6 +425,14 @@ bool GameManager::loadAll(PrefabManager& prefabs, const char* scenesPath, Textur
 
     // scenes
     if (!d.HasMember("scenes") || !d["scenes"].IsArray()) return false;
+
+    logger.log("cleaning out scenes");
+    scenes.empty();
+    //clear all entities EXCEPT for prefabs
+    for (EntityID eid: ecs_.getAllEntities())
+    {
+        if (!prefabs.IsIDPrefab(eid))ecs_.deleteEntity(eid);
+    }
 
     unsigned int unnamd_scenes{},unnamed_entities{};
     for (rapidjson::Value& scn:d["scenes"].GetArray())

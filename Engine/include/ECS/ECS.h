@@ -334,7 +334,7 @@ void ECS::registerComponent() {
 	ComponentID type = Family::getID<T>();
 	auto [it, inserted] = componentPools.insert({ type, std::make_unique<ComponentPool<T>>() });
 	if (!inserted) {
-		logger.warning(std::string{ "ECS::registerComponent - Component already registered" });
+		logger.log(std::string{ "ECS::registerComponent - Component already registered" });
 		return;
 	}
 
