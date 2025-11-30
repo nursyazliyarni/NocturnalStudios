@@ -141,7 +141,7 @@ private: // window and context
     bool isInitialized{ false };
     std::string windowTitle;
 
-    bool autoMinimizeOnFocusLoss{ true };
+    bool autoMinimizeOnFocusLoss{ false };
     bool autoResumeOnFocusGain{ true };
 
     private: // core subsystem and resources kept alive across run()
