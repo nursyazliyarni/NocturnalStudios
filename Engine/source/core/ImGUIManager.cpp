@@ -396,7 +396,8 @@ void ImGuiManager::showViewportWindowUI() {
 	isPlayMode = (m_editorMode == EditorMode::PLAY);
 
 	// Logic timing (animal state update) in PLAY mode only
-	if (isPlayMode && !gsm.isGameOver()) {
+	//if (isPlayMode && !gsm.isGameOver()) {
+	if (isPlayMode) {
 		logicTime = TimeUtils::MeasureSeconds([&]() {
 			logic.check_animal_status(gsm);
 			auto drag_value = logic.check_item_status(
@@ -418,6 +419,7 @@ void ImGuiManager::showViewportWindowUI() {
 	handleViewportPicking(imgMin, imgMax, vw, vh);
 
 	// Game Over Overlay
+	/*
 	if (gsm.isGameOver())
 	{
 		ImDrawList* dl = ImGui::GetWindowDrawList();
@@ -474,6 +476,7 @@ void ImGuiManager::showViewportWindowUI() {
 
 		ImGui::EndGroup();
 	}
+	*/
 
 	ImGui::End();
 
@@ -2303,7 +2306,7 @@ void ImGuiManager::onPlayButtonPressed() {
 		m_initialSceneState = m_savedSceneState;  // Store as initial
 		m_hasInitialState = true;
 		logger.log("Initial scene state stored");
-	}
+	}	
 
 	// Switch to play mode
 	m_editorMode = EditorMode::PLAY;
@@ -2332,7 +2335,6 @@ void ImGuiManager::onStopButtonPressed() {
 		}
 	}
 
-	// 🚀 STOP LOGIC SHOULD BE OUTSIDE THE LOOP
 	gsm.setGameOver(false);
 	gsm.resetAllScenesToInitial();
 	gsm.requestScene("MainMenu");
