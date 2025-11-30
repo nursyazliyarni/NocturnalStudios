@@ -43,7 +43,7 @@ struct DrawItem {
     //float x = 0, y = 0, w = 0, h = 0, angle = 0; // normalized
     //float health_bar, hunger_bar, sanity_bar;
     //float slower_decreasing_rate, normal_decreasing_rate, faster_decreasing_rate, penalty_decreasing_rate;
-    bool still_alive{true}, is_draggable, is_dragging;
+    bool still_alive{true}, is_draggable{false}, is_dragging;
 
     EntityID entityID = INVALID_ENTITY_ID;
 	//collider info
