@@ -1262,6 +1262,8 @@ bool GameManager::handleClick(float nx, float ny) {
             return true;
         }
 
+   
+
         // Click missed the text buttons, but while Game Over we still
         // don't want underlying scene clicks to trigger.
         return true;
@@ -1338,25 +1340,32 @@ bool GameManager::handleClick(float nx, float ny) {
             
         }
 
-        // In Menu: only start:true does anything (exactly how 'start' works)
+        // In Menu: handle both Start and simple goto (Options, Credits, Back, etc.)
         if (app == AppState::Menu) {
             if (cr.start) {
-
-                // reset all scenes to the initial JSON values
+                // --- Start button: begin the game ---
                 resetAllScenesToInitial();
-
-                // enter Play mode
                 startGame();
 
                 if (!cr.gotoScene.empty()) {
-                    requestScene(cr.gotoScene);
+                    requestScene(cr.gotoScene);          // e.g. "Flamingo"
                 }
                 else {
-                    auto it1 = keyMap.find(GLFW_KEY_1);
-                    if (it1 != keyMap.end()) requestScene(it1->second);
+                    auto it1 = keyMap.find(GLFW_KEY_1);  // fallback to "1" -> "Flamingo"
+                    if (it1 != keyMap.end()) {
+                        requestScene(it1->second);
+                    }
                 }
+                return true;
             }
-            return true;
+            else if (!cr.gotoScene.empty()) {
+                // --- Non-start menu buttons: Options, Credits, Back ---
+                // stay in Menu state, just switch menu scene
+                requestScene(cr.gotoScene);              // "Options", "Credits", "MainMenu"
+                return true;
+            }
+
+            return true; // swallow click
         }
 
 
