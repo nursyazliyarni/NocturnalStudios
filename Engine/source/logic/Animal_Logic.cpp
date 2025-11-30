@@ -2,6 +2,10 @@
 
 Animal_Logic::Animal_Logic() = default;
 
+void Animal_Logic::update(float dt) {
+
+}
+
 std::string Animal_Logic::to_string(const Animal_type& type) {
 	switch (type) {
 	case Animal_type::Flamingo: return "flamingo";
@@ -129,22 +133,14 @@ void Animal_Logic::update_animal_sanity(GameManager& gm, double deltaTime) {
 
 				else if (animal.still_alive && animal.name == to_string(Animal_type::Seal)) {
 					animalb->sanity_bar -= animalb->normal_decreasing_rate * deltaTime; //sanity of seal decrease normally
-					if (stats.action == Zookeeper_action::staring) {
-						//static double static_staring_countdown{ 10 };
-						//static_staring_countdown -= 0.5;
-						//if (static_staring_countdown <= 0) {
-						//	//when players look at it for more than x seconds, bar goes down faster
-						//	animal.sanity_bar -= animal.penalty_decreasing_rate * deltaTime; //sanity of seal decrease faster
-						//}
-						animal.staring_countdown -= 0.5;  // USE animal.staring_countdown
-						if (animal.staring_countdown <= 0) {  //USE animal.staring_countdown
-							animalb->sanity_bar -= animalb->penalty_decreasing_rate * deltaTime;
-						}
-					}
-					else {
-						// Reset countdown when not staring
-						animal.staring_countdown = 10.0f;
-					}
+					//if (stats.action == Zookeeper_action::staring) {
+					//	static double static_staring_countdown{ 10 };
+					//	static_staring_countdown -= 0.5;
+					//	if (static_staring_countdown <= 0) {
+					//		//when players look at it for more than x seconds, bar goes down faster
+					//		animal.sanity_bar -= animal.penalty_decreasing_rate * deltaTime; //sanity of seal decrease faster
+					//	}
+					//}
 				}
 			}
 		}
@@ -324,18 +320,21 @@ void Animal_Logic::drag_drop(GameManager& gm,
 					animalb->hunger_bar += 20.0f;
 					if (animalb->hunger_bar > 100.0f)
 						animalb->hunger_bar = 100.0f;
+					if (item_data)item_data->DestroyDupe();
 					item_data.reset();
 				}
 				else if (item_data && item_data->item_type == "medicine") {
 					animalb->health_bar += 20.0f;
 					if (animalb->health_bar > 100.0f)
 						animalb->health_bar = 100.0f;
+					if (item_data)item_data->DestroyDupe();
 					item_data.reset();
 				}
 				else if (item_data && item_data->item_type == "toy") {
 					animalb->sanity_bar += 20.0f;
 					if (animalb->sanity_bar > 100.0f)
 						animalb->sanity_bar = 100.0f;
+					if (item_data)item_data->DestroyDupe();
 					item_data.reset();
 				}
 			}
@@ -344,6 +343,7 @@ void Animal_Logic::drag_drop(GameManager& gm,
 
 	// When mouse released, drop/consume item (if still exists)
 	if (input.isLeftMouseReleased(window)) {
+		if(item_data)item_data->DestroyDupe();
 		item_data.reset(); // releases ownership
 	}
 }

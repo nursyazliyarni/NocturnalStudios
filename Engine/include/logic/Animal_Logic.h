@@ -2,6 +2,7 @@
 #include "core/GameManager.h"
 #include "input/Input.h"
 #include "graphics/Window.h"
+#include "logic/Base_Logic.h"
 
 enum class Animal_type {
 	Flamingo,
@@ -14,14 +15,11 @@ enum class Animal_state {
 	alive,died,escape
 };
 
-enum class Zookeeper_action {
-	none,feeding,staring
-};
-
-class Animal_Logic {
+class Animal_Logic : public Base_Logic  {
 public:
 	Animal_Logic();
 
+	void update(float dt) override; //must be defined by child logic
 	void update_animal_ALLstate(GameManager &gm, double deltaTime);
 
 	void update_animal_health(GameManager &gm, double deltaTime);
@@ -33,12 +31,6 @@ public:
 	void drag_drop(GameManager& gm, ImVec2 mouse_pos, Input& input, GLFWwindow* window, std::optional<ImVec2> drag_value);
 
 private:
-	struct animal_stats {
-		bool IS_active;
-		Zookeeper_action action;
-
-		Animal_state current_state;
-	}stats;
 	int accumulation_timer{ 0 };
 
 	std::string to_string(const Animal_type& type);

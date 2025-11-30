@@ -27,6 +27,7 @@
 #include "../include/math/Matrix.h"
 #include "../include/math/Vector.h"
 #include "../include/math/Rand.h"
+#include "logic/Base_Logic.h"
 
 //-------------------------- Add new ECS component type here --------------------------//
 struct RenderComponent;
@@ -47,6 +48,11 @@ struct AIComponent;
 
 struct BoxCollider;
 struct AABBCollider;
+
+struct LogicComponent {
+	std::unique_ptr<Base_Logic> script; // owned script instance
+	std::string script_name;            // e.g. "FlamingoLogic" - useful for editor/serialization
+};
 
 //-------------------------- ECS Component Definitions --------------------------//
 

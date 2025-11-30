@@ -52,10 +52,7 @@
 
 #define UNUSED(x) (void)(x)  // To suppress unused variable warnings
 
-
-
 extern void Prefab_SetTextureLookup(std::function<int(const std::string&)>);
-
 
 // --- Very simple random drift for any entity with AI + Physics (no fancy RNG) ---
 static void UpdateRandomDrift(ECS& ecs, double dt) {
@@ -146,11 +143,6 @@ static void UpdateRandomDrift(ECS& ecs, double dt) {
 		t->position.y() = ny;
 	}
 }
-
-
-
-
-
 
 namespace {
 	constexpr float TWO_PI = 2.0f * glm::pi<float>();
@@ -365,13 +357,6 @@ void Application::init() {
     gameLoop = std::make_unique<Game_Loop>(m_window.handle());
     bus.Register(gameLoop.get());
 ;
-
-
-
-
-
-
-	
 	
     textShader = std::make_unique<Shader>(textShaderVertexPath.c_str(), textShaderFragmentPath.c_str());
 
@@ -414,6 +399,19 @@ void Application::init() {
 		*audioSystem, *resourceManager,
 		*gsm, *logic);
 
+	Logic_Factory::get_instance().add_logic("FlamingoLogic", []() {
+		return std::make_unique<FlamingoLogic>();
+	});
+
+	/*LogicRegistry::instance().register_logic("HorseLogic", []() {
+		return std::make_unique<HorseLogic>();
+		});
+	LogicRegistry::instance().register_logic("SealLogic", []() {
+		return std::make_unique<SealLogic>();
+		});
+	LogicRegistry::instance().register_logic("OwlLogic", []() {
+		return std::make_unique<OwlLogic>();*/
+
     isInitialized = true;
 }
 
@@ -441,15 +439,9 @@ int Application::run() {
 
 		if (ecs) UpdateRandomDrift(*ecs, dt);
 
-
-
-
 		// Debug: log firefly state twice per second to confirm it's updating
 		static double dbgAccum = 0.0;
 		dbgAccum += dt;
-
-
-
 
 		if (dbgAccum > 0.5 && ecs) {
 			dbgAccum = 0.0;
