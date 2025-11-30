@@ -748,17 +748,43 @@ void GameManager::render(Renderer& r, Input& input, GLFWwindow* window, int w, i
             float px = t->position.x() * w, py = t->position.y() * h, pw = img->width * w, ph = img->height * h;
             if (di.name == "flamingo" || di.name == "seal" || di.name == "owl" || di.name == "horse") {
                 AnimalBehavior* ab = ecs_.getComponent<AnimalBehavior>(di.entityID);
-                //logger.log(di.name + " has animalbehavior: " + std::to_string(ab != nullptr));
                 if (di.still_alive && ab) {
-                    //logger.log(di.name + " has animalbehavior: " + std::to_string(ab != nullptr));
-                    r.rect(w / 2 + 325 , h / 2 - 101, ab->health_bar * 3.5, 25, 1, 0, 0);
-                    r.rect(w / 2 + 325, h / 2 - 51, ab->hunger_bar * 3.5, 25, 0, 1, 0);
-                    r.rect(w / 2 + 325, h / 2 - 1, ab->sanity_bar * 3.5, 25, 0, 0, 1);
 
+                    //  UI scaling based on reference resolution 
+                    const float refW = 1280.0f;
+                    const float refH = 500.0f;
+
+                    float sx = static_cast<float>(w) / refW;
+                    float sy = static_cast<float>(h) / refH;
+                    float uiScale = std::min(sx, sy);
+
+                    // Position: top-right-ish as a *percentage* of screen
+                    float baseX = w * 0.685f; // 67% across the screen
+                    float baseY = h * 0.30f; // 30% up from bottom
+
+                    float barHeight = 25.0f * uiScale;
+                    float maxBarWidth = 300.0f * uiScale; // 100 * 3.5 from your old code
+                    float barGap = (barHeight + 20.0f * uiScale);
+
+                    auto drawBar = [&](float value, float offsetY, float rC, float gC, float bC)
+                        {
+                            // clamp 0–100 so width doesn’t go nuts
+                            float v = std::clamp(value, 0.0f, 100.0f);
+                            float width = (v / 100.0f) * maxBarWidth;
+                            r.rect(baseX, baseY + offsetY, width, barHeight, rC, gC, bC);
+                        };
+
+                    // Health / Hunger / Sanity stacked
+                    drawBar(ab->health_bar, 0.0f * barGap, 1, 0, 0);
+                    drawBar(ab->hunger_bar, 1.0f * barGap, 0, 1, 0);
+                    drawBar(ab->sanity_bar, 2.0f * barGap, 0, 0, 1);
+
+                    // Now draw the animal sprite (this one still uses camera)
                     Cam2D_Apply(currentScene, px, py, pw, ph, w, h);
                     r.texturedTri(img->textureID, px, py, pw, ph);
                 }
             }
+
             else {
                 Cam2D_Apply(currentScene, px, py, pw, ph, w, h);
                 r.texturedTri(di.tex, px, py, pw, ph);
