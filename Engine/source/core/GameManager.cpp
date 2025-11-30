@@ -161,6 +161,18 @@ ClickRegion Scene::getClickReigion(DrawItem di) {
     return invalid;
 }
 
+DrawItem DrawItem::CreateDupe() const {
+    DrawItem newdi{ *this };
+
+    newdi.entityID = ECS::getECS().cloneEntity(entityID);
+
+    return newdi;
+}
+
+void DrawItem::DestroyDupe() {
+    ECS::getECS().deleteEntity(entityID);
+}
+
 bool GameManager::saveAll(const char* saveJsonPath, TextureStore& tex) {
     if (scenes.empty()) {
         logger.error("No Scenes to save");
@@ -574,37 +586,37 @@ bool GameManager::loadAll(PrefabManager& prefabs, const char* scenesPath, Textur
 
     //temp: add a flamingo entity with sprite animation to ECS
     {
-        //EntityID flamingo = ecs_.createEntity();
+        EntityID flamingo = ecs_.createEntity();
 
-        //ecs_.addComponent<Transform>(flamingo, Transform{});
-        //ecs_.addComponent<ImageRenderer>(flamingo, ImageRenderer{});
-        //ecs_.addComponent<SpriteAnimationComponent>(flamingo, SpriteAnimationComponent{});
+        ecs_.addComponent<Transform>(flamingo, Transform{});
+        ecs_.addComponent<ImageRenderer>(flamingo, ImageRenderer{});
+        ecs_.addComponent<SpriteAnimationComponent>(flamingo, SpriteAnimationComponent{});
 
-        //auto* t = ecs_.getComponent<Transform>(flamingo);
-        //auto* img = ecs_.getComponent<ImageRenderer>(flamingo);
-        //auto* anim = ecs_.getComponent<SpriteAnimationComponent>(flamingo);
+        auto* t = ecs_.getComponent<Transform>(flamingo);
+        auto* img = ecs_.getComponent<ImageRenderer>(flamingo);
+        auto* anim = ecs_.getComponent<SpriteAnimationComponent>(flamingo);
 
-        //t->position = { 0.1f, 0.7f };
-        //t->scale = { 0.25f, 0.25f };
+        t->position = { 0.1f, 0.7f };
+        t->scale = { 0.25f, 0.25f };
 
-        //img->isVisible = true;
-        //img->textureID = tex.get("assets/textures/flamingo_spritesheet.png");
+        img->isVisible = true;
+        img->textureID = tex.get("assets/textures/flamingo_spritesheet.png");
 
-        ////Define an animation sequence
-        //SpriteAnimationComponent::Animation idle;
-        //idle.frames = 5;
-        //idle.frameTime = 0.12f;
-        //idle.loop = true;
-        //idle.spritePath = "assets/textures/flamingo_spritesheet.png";
-        //idle.sheetColumns = 5;
-        //idle.sheetRows = 1;
+        //Define an animation sequence
+        SpriteAnimationComponent::Animation idle;
+        idle.frames = 5;
+        idle.frameTime = 0.12f;
+        idle.loop = true;
+        idle.spritePath = "assets/textures/flamingo_spritesheet.png";
+        idle.sheetColumns = 5;
+        idle.sheetRows = 1;
 
-        //anim->animations["idle"] = idle;
-        //anim->currentAnim = "idle";
-        //anim->playing = true;
-        //anim->currentFrame = 0;
-        //anim->sheetColumns = 5;
-        //anim->sheetRows = 1;
+        anim->animations["idle"] = idle;
+        anim->currentAnim = "idle";
+        anim->playing = true;
+        anim->currentFrame = 0;
+        anim->sheetColumns = 5;
+        anim->sheetRows = 1;
     }
 
 
@@ -692,8 +704,8 @@ void GameManager::render(Renderer& r, Input& input, GLFWwindow* window, int w, i
             ImageRenderer* img = ecs_.getComponent<ImageRenderer>(ecs_.findEntityByName(di.name));
 
             if (!t || !img)continue;
-
-
+            
+            
 
             if (!img->isVisible || img->textureID <= 0)continue;
 
@@ -739,14 +751,14 @@ void GameManager::render(Renderer& r, Input& input, GLFWwindow* window, int w, i
                 //logger.log(di.name + " has animalbehavior: " + std::to_string(ab != nullptr));
                 if (di.still_alive && ab) {
                     //logger.log(di.name + " has animalbehavior: " + std::to_string(ab != nullptr));
-                    r.rect(w / 2, h / 2 - 200, ab->health_bar * 4, 25, 1, 0, 0);
-                    r.rect(w / 2, h / 2 - 150, ab->hunger_bar * 4, 25, 0, 1, 0);
-                    r.rect(w / 2, h / 2 - 100, ab->sanity_bar * 4, 25, 0, 0, 1);
+                    r.rect(w / 2 , h / 2 - 200, ab->health_bar * 4, 25, 1, 0, 0);
+                    r.rect(w / 2 , h / 2 - 150, ab->hunger_bar * 4, 25, 0, 1, 0);
+                    r.rect(w / 2 , h / 2 - 100, ab->sanity_bar * 4, 25, 0, 0, 1);
 
                     Cam2D_Apply(currentScene, px, py, pw, ph, w, h);
                     r.texturedTri(img->textureID, px, py, pw, ph);
                 }
-
+                
             }
             else {
                 Cam2D_Apply(currentScene, px, py, pw, ph, w, h);
@@ -796,13 +808,18 @@ void GameManager::render(Renderer& r, Input& input, GLFWwindow* window, int w, i
                 // --- end collider outline ---
 
                 if (di.is_dragging && !duplicate_item) {
-                    duplicate_item = std::make_unique<DrawItem>(di);
+                    duplicate_item = std::make_unique<DrawItem>(di.CreateDupe());
+                   
                 }
 
                 if (duplicate_item) {
                     Transform* dt = ecs_.getComponent<Transform>(duplicate_item->entityID);
                     ImageRenderer* dimg = ecs_.getComponent<ImageRenderer>(duplicate_item->entityID);
-                    r.texturedTri(duplicate_item->tex, dt->position.x() * w, dt->position.y() * h, dimg->width * w, dimg->height * h);
+                    if (dt&&dimg)
+                    {
+                        r.texturedTri(duplicate_item->tex, dt->position.x()* w, dt->position.y()* h, dimg->width* w, dimg->height* h);
+                    }
+                    
                 }
 
                 //if (!input.isLeftMousePressed(window)) {
@@ -821,6 +838,12 @@ void GameManager::render(Renderer& r, Input& input, GLFWwindow* window, int w, i
             }
         }
     }
+
+    
+   
+
+        
+    
 }
 
 

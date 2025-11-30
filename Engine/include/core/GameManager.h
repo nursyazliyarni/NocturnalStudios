@@ -55,6 +55,9 @@ struct DrawItem {
 
     float acc_timer = 0.0f;              // For flamingo viewing timer
     float staring_countdown = 10.0f;     // For seal staring countdown
+
+    DrawItem CreateDupe() const;
+    void DestroyDupe();
 };
 
 struct ClickRegion {

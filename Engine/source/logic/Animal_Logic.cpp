@@ -320,18 +320,21 @@ void Animal_Logic::drag_drop(GameManager& gm,
 					animalb->hunger_bar += 20.0f;
 					if (animalb->hunger_bar > 100.0f)
 						animalb->hunger_bar = 100.0f;
+					if (item_data)item_data->DestroyDupe();
 					item_data.reset();
 				}
 				else if (item_data && item_data->item_type == "medicine") {
 					animalb->health_bar += 20.0f;
 					if (animalb->health_bar > 100.0f)
 						animalb->health_bar = 100.0f;
+					if (item_data)item_data->DestroyDupe();
 					item_data.reset();
 				}
 				else if (item_data && item_data->item_type == "toy") {
 					animalb->sanity_bar += 20.0f;
 					if (animalb->sanity_bar > 100.0f)
 						animalb->sanity_bar = 100.0f;
+					if (item_data)item_data->DestroyDupe();
 					item_data.reset();
 				}
 			}
@@ -340,6 +343,7 @@ void Animal_Logic::drag_drop(GameManager& gm,
 
 	// When mouse released, drop/consume item (if still exists)
 	if (input.isLeftMouseReleased(window)) {
+		if(item_data)item_data->DestroyDupe();
 		item_data.reset(); // releases ownership
 	}
 }
