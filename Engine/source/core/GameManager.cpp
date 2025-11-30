@@ -173,11 +173,14 @@ void DrawItem::DestroyDupe() {
     ECS::getECS().deleteEntity(entityID);
 }
 
-bool GameManager::saveAll(const char* saveJsonPath, TextureStore& tex) {
+bool GameManager::saveAll(const char* saveJsonPath, TextureStore* tex) {
     if (scenes.empty()) {
         logger.error("No Scenes to save");
         return false;
     }
+
+    if (!tex)tex = textureCache;
+    if (!tex) return false;
 
     rapidjson::Document doc;
     doc.SetObject();
@@ -240,7 +243,7 @@ bool GameManager::saveAll(const char* saveJsonPath, TextureStore& tex) {
 
         if (scene.background) {
             rapidjson::Value bgVal;
-            bgVal.SetString(tex.find(scene.background).c_str(), alloc);
+            bgVal.SetString(tex->find(scene.background).c_str(), alloc);
             sceneObj.AddMember("background", bgVal, alloc);
 
         }
@@ -321,6 +324,7 @@ bool GameManager::saveAll(const char* saveJsonPath, TextureStore& tex) {
 
 bool GameManager::saveScene( std::string scenename, const char* scenesJsonPath, TextureStore& tex) {
     if (scenename == "___currscene___")scenename = currentScene;
+
 
     logger.log("Attempting to save scene: " + scenename);
 
@@ -414,9 +418,12 @@ bool GameManager::saveScene( std::string scenename, const char* scenesJsonPath, 
 
 bool GameManager::loadAll(PrefabManager& prefabs, const char* scenesPath, TextureStore& tex) {
 
+
     app = AppState::Menu;   // lock number keys until Play is pressed
     requestedQuit = false;  // (optional) clear quit flag at load
 
+    *textureCache = tex;
+    
     // Store paths for later reload
     scenesFilePath = scenesPath;
 
@@ -578,7 +585,8 @@ bool GameManager::loadAll(PrefabManager& prefabs, const char* scenesPath, Textur
             }
         }
         logger.log("scene added");
-        scenes.emplace(scn_name, new_scene);
+        if (scn_name == "pause")pauseScene = new_scene;
+        else scenes.emplace(scn_name, new_scene);
     }
 
     initialScenes_ = scenes;
@@ -869,20 +877,25 @@ void GameManager::render(Renderer& r, Input& input, GLFWwindow* window, int w, i
 
     if (app==AppState::Paused)
     {
-        for (DrawItem pdi : pauseScene) {
+        for (DrawItem pdi : pauseScene.items)
+        {
+
             Transform* t = ecs_.getComponent<Transform>(pdi.entityID);
             ImageRenderer* img = ecs_.getComponent<ImageRenderer>(pdi.entityID);
+
             if (!t || !img)continue;
 
+
+
+            if (!img->isVisible || img->textureID <= 0)continue;
             float px = t->position.x() * w, py = t->position.y() * h, pw = img->width * w, ph = img->height * h;
+
             Cam2D_Apply(currentScene, px, py, pw, ph, w, h);
 
             r.texturedTri(img->textureID, px, py, pw, ph);
+
         }
     }
-   
-
-        
     
 }
 

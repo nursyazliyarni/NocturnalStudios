@@ -93,7 +93,7 @@ public:
 
     bool loadAll(PrefabManager& prefabs, const char* scenesJsonPath, TextureStore& tex);
     bool saveScene( std::string scenename, const char* scenesJsonPath, TextureStore& tex);
-    bool saveAll(const char* saveJsonPath, TextureStore& tex);
+    bool saveAll(const char* saveJsonPath, TextureStore* tex = nullptr);
 
     bool populateScene(const std::string& sceneName, PrefabManager& pm);
     void requestScene(const std::string& name);
@@ -183,6 +183,9 @@ private:
     std::unordered_map<std::string, Scene> initialScenes_; // snapshot of JSON-loaded scenes
     std::unordered_map<int, std::string> keyMap; // GLFW_KEY_* to scene name
     std::unique_ptr<DrawItem> duplicate_item{ nullptr };
+    TextureStore* textureCache;
+
+    Scene pauseScene;
 
 
     std::vector<std::string> animal_name;

@@ -527,8 +527,7 @@ int Application::run() {
 
 		if (inputSystem->WasPressed(GLFW_KEY_P))
 		{
-			if (gsm->saveAll( "assets/scenes/test_save.json", textures))logger.log("All scene saved successfully");
-			else logger.log("Failed to save");
+			
 		}
         if (gsm->popQuitRequested()) {
             glfwSetWindowShouldClose(m_window.handle(), 1);
