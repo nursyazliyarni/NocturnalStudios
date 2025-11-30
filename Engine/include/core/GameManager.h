@@ -93,7 +93,7 @@ public:
 
     bool loadAll(PrefabManager& prefabs, const char* scenesJsonPath, TextureStore& tex);
     bool saveScene( std::string scenename, const char* scenesJsonPath, TextureStore& tex);
-    bool saveAll(const char* saveJsonPath, TextureStore& tex);
+    bool saveAll(const char* saveJsonPath);
 
     bool populateScene(const std::string& sceneName, PrefabManager& pm);
     void requestScene(const std::string& name);
@@ -127,7 +127,7 @@ public:
     // Expose a safe key->scene helper if you dont want Input.cpp touching keyMap directly:
     bool switchToSceneForKey(int glfwKey);
 
-    GameManager(ECS& ecs) :ecs_{ ecs } {}
+    GameManager(ECS& ecs, TextureStore& t, bool editoeEnabled=false) :ecs_{ ecs }, textureCache{ t }, editorEnabled{ editoeEnabled } {}
     void update(float dt,Renderer& renderer,TextureStore& tex);
 
 	ECS& getECS() { return ecs_; }
@@ -177,10 +177,15 @@ public:
     }
 
 private:
+    std::vector<DrawItem> pauseItems{};
+    std::vector<ClickRegion>pauseClick{};
     std::unordered_map<std::string, Scene> scenes;
     std::unordered_map<std::string, Scene> initialScenes_; // snapshot of JSON-loaded scenes
     std::unordered_map<int, std::string> keyMap; // GLFW_KEY_* to scene name
     std::unique_ptr<DrawItem> duplicate_item{ nullptr };
+    TextureStore& textureCache;
+
+    Scene pauseScene;
 
 
     std::vector<std::string> animal_name;
@@ -189,7 +194,7 @@ private:
 
     AppState app{ AppState::Menu };                              // current mode
     std::string backKey;                                         // ESC destination (from JSON)
-    bool requestedQuit{ false };                                  // quit flag
+    bool requestedQuit{ false }, editorEnabled{};                               // quit flag
     std::string currentScene;
     std::string scenesFilePath; // store path
 
@@ -197,6 +202,8 @@ private:
     //std::unordered_map<std::string, Camera2D> cameras_; // one camera per scene
 
     std::function<void(const std::string&)> onSceneChanged;
+    
+
    
     void writeAllComponentsToJSONArray(EntityID id,rapidjson::Value& overridesObj,rapidjson::Document::AllocatorType& alloc);
     void processComponentsFromJSON(EntityID, rapidjson::Value& obj, bool isOverride=false);

@@ -1410,8 +1410,8 @@ void ImGuiManager::showScenesListUI()
 
 	if (ImGui::Button("Save All Scenes"))
 	{
-		//gsm.saveAllScenes();       
-		//logger.log("[Scenes] All scenes saved.");
+		if (gsm.saveAll("assets/scenes/test_save.json"))logger.log("All scene saved successfully");
+		else logger.log("Failed to save");
 	}
 
 	ImGui::SameLine();

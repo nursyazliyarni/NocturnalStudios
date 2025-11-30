@@ -217,7 +217,7 @@ std::optional<ImVec2> Animal_Logic::check_item_status(
 	static float dragY = 0.0f;
 
 	for (auto& item : items) {
-		if (!item.is_draggable)
+		if (!item.is_draggable||item.item_type=="animal")
 			continue;
 
 		// ---- SAME BOUNDING BOX AS EDITOR (top-left + size) ----

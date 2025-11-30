@@ -173,11 +173,13 @@ void DrawItem::DestroyDupe() {
     ECS::getECS().deleteEntity(entityID);
 }
 
-bool GameManager::saveAll(const char* saveJsonPath, TextureStore& tex) {
+bool GameManager::saveAll(const char* saveJsonPath) {
     if (scenes.empty()) {
         logger.error("No Scenes to save");
         return false;
     }
+
+   
 
     rapidjson::Document doc;
     doc.SetObject();
@@ -240,7 +242,7 @@ bool GameManager::saveAll(const char* saveJsonPath, TextureStore& tex) {
 
         if (scene.background) {
             rapidjson::Value bgVal;
-            bgVal.SetString(tex.find(scene.background).c_str(), alloc);
+            bgVal.SetString(textureCache.find(scene.background).c_str(), alloc);
             sceneObj.AddMember("background", bgVal, alloc);
 
         }
@@ -321,6 +323,7 @@ bool GameManager::saveAll(const char* saveJsonPath, TextureStore& tex) {
 
 bool GameManager::saveScene( std::string scenename, const char* scenesJsonPath, TextureStore& tex) {
     if (scenename == "___currscene___")scenename = currentScene;
+
 
     logger.log("Attempting to save scene: " + scenename);
 
@@ -414,9 +417,10 @@ bool GameManager::saveScene( std::string scenename, const char* scenesJsonPath, 
 
 bool GameManager::loadAll(PrefabManager& prefabs, const char* scenesPath, TextureStore& tex) {
 
+
     app = AppState::Menu;   // lock number keys until Play is pressed
     requestedQuit = false;  // (optional) clear quit flag at load
-
+ 
     // Store paths for later reload
     scenesFilePath = scenesPath;
 
@@ -572,13 +576,17 @@ bool GameManager::loadAll(PrefabManager& prefabs, const char* scenesPath, Textur
                 if (ent.HasMember("start") && ent["start"].IsBool())  cr.start = ent["start"].GetBool();
 
                 // store the region if it does ANY action
-                if (cr.quit || cr.start || !cr.gotoScene.empty())
-                    logger.log("cr: " + std::to_string(cr.x)+" " + std::to_string(cr.y) + " " + std::to_string(cr.w) + " " + std::to_string(cr.h) + " " +cr.name);
+                if (cr.quit || cr.start || !cr.gotoScene.empty()){
+                    di.hasCollider = true;
+                    logger.log("cr: " + std::to_string(cr.x) + " " + std::to_string(cr.y) + " " + std::to_string(cr.w) + " " + std::to_string(cr.h) + " " + cr.name);
                     new_scene.clicks.push_back(cr);
+                }
+                    
             }
         }
         logger.log("scene added");
-        scenes.emplace(scn_name, new_scene);
+        if (scn_name == "pause")pauseScene = new_scene;
+        else scenes.emplace(scn_name, new_scene);
     }
 
     initialScenes_ = scenes;
@@ -657,8 +665,19 @@ bool GameManager::switchToSceneForKey(int glfwKey) {
 void GameManager::handleKeyPress(int key) {
     // ESC always returns to menu
     if (key == GLFW_KEY_ESCAPE) {
-        requestScene(backKey);
-        goToMenu(); // relock number keys
+        if (app==AppState::Menu)
+        {
+            if (quitCallback) {
+                quitCallback();
+            }
+            else {
+                requestedQuit = true;
+            }
+            return;
+        }
+        else {
+            app = AppState::Paused;
+        }
         return;
     }
 
@@ -680,6 +699,8 @@ void GameManager::render(Renderer& r, Input& input, GLFWwindow* window, int w, i
     auto it = scenes.find(currentScene);
     if (it == scenes.end()) { logger.log("scene not found");  return; }
     const Scene& sc = it->second;
+
+
 
     // background (fullscreen) NOTE uniform must be "bg_texture"
     if (it->first == "MainMenu") {
@@ -790,85 +811,138 @@ void GameManager::render(Renderer& r, Input& input, GLFWwindow* window, int w, i
                 
                 r.texturedTri(img->textureID, px, py, pw, ph);
 
-                // --- Collider outline (debug) ---
-                if (/*Debug::Drawer::Instance().IsActive() &&*/ di.hasCollider)
+
+            }
+            // --- Collider outline (debug) ---
+            if ( di.hasCollider&&editorEnabled)
+            {
+
+
+                //collider center in NORMALIZED coords (same as di.x/di.y)
+                float cxNorm = t->position.x() + di.colOffsetX;
+                float cyNorm = t->position.y() + di.colOffsetY;
+
+                //collider size in NORMALIZED space
+                float cwNorm = di.colW;
+                float chNorm = di.colH;
+
+                //convert to pixels
+                float cw = cwNorm * w;
+                float ch = chNorm * h;
+                float cx = cxNorm * w;
+                float cy = cyNorm * h;
+
+                //apply same camera transform as sprites
+                Cam2D_Apply(currentScene, cx, cy, cw, ch, w, h);
+
+                float left = cx;
+                float bottom = cy;
+
+                //draw a green outline rectangle
+                glPushAttrib(GL_ALL_ATTRIB_BITS);
+                glUseProgram(0);
+                glDisable(GL_TEXTURE_2D);
+                glDisable(GL_DEPTH_TEST);
+                glEnable(GL_BLEND);
+                glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+                glColor3f(0.0f, 1.0f, 0.0f);  // green
+                glBegin(GL_LINE_LOOP);
+                glVertex2f(left, bottom);
+                glVertex2f(left + cw, bottom);
+                glVertex2f(left + cw, bottom + ch);
+                glVertex2f(left, bottom + ch);
+                glEnd();
+
+                glPopAttrib();
+            }
+            // --- end collider outline ---
+
+            if (di.is_dragging && !duplicate_item) {
+                duplicate_item = std::make_unique<DrawItem>(di.CreateDupe());
+
+            }
+
+            if (duplicate_item) {
+                Transform* dt = ecs_.getComponent<Transform>(duplicate_item->entityID);
+                ImageRenderer* dimg = ecs_.getComponent<ImageRenderer>(duplicate_item->entityID);
+                if (dt && dimg)
                 {
-                    //collider center in NORMALIZED coords (same as di.x/di.y)
-                    float cxNorm = t->position.x() + di.colOffsetX;
-                    float cyNorm = t->position.y() + di.colOffsetY;
-
-                    //collider size in NORMALIZED space
-                    float cwNorm = di.colW;
-                    float chNorm = di.colH;
-
-                    //convert to pixels
-                    float cw = cwNorm * w;
-                    float ch = chNorm * h;
-                    float cx = cxNorm * w;
-                    float cy = cyNorm * h;
-
-                    //apply same camera transform as sprites
-                    Cam2D_Apply(currentScene, cx, cy, cw, ch, w, h);
-
-                    float left = cx;
-                    float bottom = cy;
-
-                    //draw a green outline rectangle
-                    glPushAttrib(GL_ALL_ATTRIB_BITS);
-                    glUseProgram(0);
-                    glDisable(GL_TEXTURE_2D);
-                    glDisable(GL_DEPTH_TEST);
-                    glEnable(GL_BLEND);
-                    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-                    glColor3f(0.0f, 1.0f, 0.0f);  // green
-                    glBegin(GL_LINE_LOOP);
-                    glVertex2f(left, bottom);
-                    glVertex2f(left + cw, bottom);
-                    glVertex2f(left + cw, bottom + ch);
-                    glVertex2f(left, bottom + ch);
-                    glEnd();
-
-                    glPopAttrib();
-                }
-                // --- end collider outline ---
-
-                if (di.is_dragging && !duplicate_item) {
-                    duplicate_item = std::make_unique<DrawItem>(di.CreateDupe());
-                   
+                    r.texturedTri(duplicate_item->tex, dt->position.x() * w, dt->position.y() * h, dimg->width * w, dimg->height * h);
                 }
 
-                if (duplicate_item) {
-                    Transform* dt = ecs_.getComponent<Transform>(duplicate_item->entityID);
-                    ImageRenderer* dimg = ecs_.getComponent<ImageRenderer>(duplicate_item->entityID);
-                    if (dt&&dimg)
-                    {
-                        r.texturedTri(duplicate_item->tex, dt->position.x()* w, dt->position.y()* h, dimg->width* w, dimg->height* h);
-                    }
-                    
-                }
-
-                //if (!input.isLeftMousePressed(window)) {
-                //    duplicate_item.reset(); //The unique_ptr releases ownership
-                //}
-
-                /*if (Debug::Drawer::Instance().IsActive()) {
-                    AABB collider(Vector2D(px, py), Vector2D(pw, ph));
-                    Debug::Drawer::Instance().AddRect(
-                        collider.pos.x(), collider.pos.y(),
-                        collider.size.x(), collider.size.y(),
-                        0xFFFF00FF
-                    );
-                }*/
-                // --- Debug Draw Collider Box ---
             }
         }
     }
 
-    
-   
+    if (app==AppState::Paused)
+    {
+        for (DrawItem pdi : pauseScene.items)
+        {
 
-        
+            Transform* t = ecs_.getComponent<Transform>(pdi.entityID);
+            ImageRenderer* img = ecs_.getComponent<ImageRenderer>(pdi.entityID);
+
+            if (!t || !img)continue;
+
+
+
+            if (!img->isVisible || img->textureID <= 0)continue;
+            float px = t->position.x() * w, py = t->position.y() * h, pw = img->width * w, ph = img->height * h;
+
+            Cam2D_Apply(currentScene, px, py, pw, ph, w, h);
+
+            r.texturedTri(img->textureID, px, py, pw, ph);
+
+
+            if (pdi.hasCollider && editorEnabled)
+            {
+                
+                    pdi.colW = img->width;   //same size as sprite
+                    pdi.colH = img->height;
+                
+                //collider center in NORMALIZED coords (same as di.x/di.y)
+                float cxNorm = t->position.x() + pdi.colOffsetX;
+                float cyNorm = t->position.y() + pdi.colOffsetY;
+
+                //collider size in NORMALIZED space
+                float cwNorm = pdi.colW;
+                float chNorm = pdi.colH;
+
+                //convert to pixels
+                float cw = cwNorm * w;
+                float ch = chNorm * h;
+                float cx = cxNorm * w;
+                float cy = cyNorm * h;
+
+                //apply same camera transform as sprites
+                Cam2D_Apply(currentScene, cx, cy, cw, ch, w, h);
+
+                float left = cx;
+                float bottom = cy;
+
+                //draw a green outline rectangle
+                glPushAttrib(GL_ALL_ATTRIB_BITS);
+                glUseProgram(0);
+                glDisable(GL_TEXTURE_2D);
+                glDisable(GL_DEPTH_TEST);
+                glEnable(GL_BLEND);
+                glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+                glColor3f(0.0f, 1.0f, 0.0f);  // green
+                glBegin(GL_LINE_LOOP);
+                glVertex2f(left, bottom);
+                glVertex2f(left + cw, bottom);
+                glVertex2f(left + cw, bottom + ch);
+                glVertex2f(left, bottom + ch);
+                glEnd();
+
+                glPopAttrib();
+            }
+            // --- end collider outline ---
+
+        }
+    }
     
 }
 
@@ -1195,8 +1269,7 @@ bool GameManager::handleClick(float nx, float ny) {
 
     auto it = scenes.find(currentScene);
     if (it == scenes.end()) return false;
-    Scene& sc = it->second;
-
+    Scene& sc = app == AppState::Paused ? pauseScene : it->second;
     // --- Sync click regions from DrawItem colliders ---
     for (auto& cr : sc.clicks)
     {
@@ -1252,10 +1325,17 @@ bool GameManager::handleClick(float nx, float ny) {
 
         // Quit first (works in Menu and Play)
         if (cr.quit) {
-            logger.log("[Quit] click region flagged quit=true");
-            if (quitCallback) quitCallback();
-            else requestedQuit = true;
-            return true;
+            if (app==AppState::Paused)
+            {
+                goToMenu();
+            }
+            else {
+                logger.log("[Quit] click region flagged quit=true");
+                if (quitCallback) quitCallback();
+                else requestedQuit = true;
+                return true;
+            }
+            
         }
 
         // In Menu: only start:true does anything (exactly how 'start' works)
@@ -1343,6 +1423,7 @@ void GameManager::startGame() {
 
 void GameManager::goToMenu() {
     app = AppState::Menu;
+    currentScene = backKey;
 }
 bool GameManager::popQuitRequested() {
     bool q = requestedQuit;

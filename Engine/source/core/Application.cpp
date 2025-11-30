@@ -362,7 +362,7 @@ void Application::init() {
 
     // Wire text shader into the renderer (renderer controls projection per-viewport)
     renderer->setTextShader(*textShader);
-	gsm = std::make_unique<GameManager>(*ecs);
+	gsm = std::make_unique<GameManager>(*ecs,textures, c.imgui_enabled);
 	gsm->loadAll(*prefabManager, scenePath.c_str(), textures);
 	// Spawn the initial scene (from scenes.json -> states.initial)
 	{
@@ -433,7 +433,7 @@ int Application::run() {
 		if (gsm && !gsm->isPaused()) {
 			gsm->update(static_cast<float>(dt), *renderer, textures);
 		}
-		Gui::updateImGuiManager(dt, *imGuiManager);
+		if (imGUIVisible)Gui::updateImGuiManager(dt, *imGuiManager);
 		gameLoop->display_FPS(m_window.handle(), windowTitle, dt);
 		inputSystem->update_mouse_pos(m_window.handle());
 
@@ -485,9 +485,22 @@ int Application::run() {
 
 		if (imGUIVisible)Gui::updateImGuiManager(dt, *imGuiManager);
 		else {
+
 			int winheight,winwidth;
 			m_window.getWindowSize(winwidth, winheight);
 			gsm->imGUIlessRender(*renderer, *inputSystem, m_window.handle(), winwidth,winheight);
+
+			double mouse_x, mouse_y;
+			glfwGetCursorPos(m_window.handle(), &mouse_x, &mouse_y);
+			
+			float nmouse_x{ static_cast<float>(mouse_x) / static_cast<float>(winwidth) }, nmouse_y{ static_cast<float>(mouse_y) / static_cast<float>(winheight) };
+		
+				logic->check_animal_status(*gsm);
+				
+				auto drag_value = logic->check_item_status(*gsm,{nmouse_x,nmouse_y},*inputSystem, m_window.handle());
+				logic->update_animal_ALLstate(*gsm, dt);
+				logic->drag_drop(*gsm, { nmouse_x,nmouse_y }, *inputSystem, m_window.handle(),drag_value);
+				
 		}
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -527,8 +540,7 @@ int Application::run() {
 
 		if (inputSystem->WasPressed(GLFW_KEY_P))
 		{
-			if (gsm->saveAll( "assets/scenes/test_save.json", textures))logger.log("All scene saved successfully");
-			else logger.log("Failed to save");
+			
 		}
         if (gsm->popQuitRequested()) {
             glfwSetWindowShouldClose(m_window.handle(), 1);

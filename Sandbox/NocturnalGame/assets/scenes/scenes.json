@@ -4,7 +4,61 @@
     "keymap": { "1":"Flamingo", "2":"Seal", "3":"Owl", "4":"Horse", "ESC":"MainMenu" }
   },
 
-  "scenes": [
+  "scenes": [{
+    "name":"pause",
+    "entities":[
+      {
+        "name":"pause_bg",
+        "components":[
+          {"type": "Transform",
+                  "position": {
+                      "x": 0.0,
+                      "y": 0.0
+                  }
+                },
+          {
+                  "type":"ImageRenderer",
+                  "sprite_path":"textures/pause_bg.png","width":1.0,
+                  "height":1.0}
+        ]
+
+      },{ "prefab":"button",
+          "name":"btn_resune",
+            "overrides": [
+                {"type": "Transform",
+                  "position": {
+                      "x": 0.38,
+                      "y": 0.45
+                  }
+                },
+                {
+                  "type":"ImageRenderer",
+                  "sprite_path":"textures/resume.png",
+                  "width":0.26,
+                  "height":0.09
+                }
+            ]
+          },
+        { "prefab":"button",
+          "name":"btn_mm",
+          "overrides": [
+                {"type": "Transform",
+                  "position": {
+                      "x": 0.38,
+                      "y": 0.60
+                  }
+                },
+                {
+                  "type":"ImageRenderer",
+                  "sprite_path":"textures/menuQUIT.png",
+                  "width":0.26,
+                  "height":0.09
+                }
+            ], 
+            "quit":true }
+
+    ]
+  },
      {"name":"MainMenu",
       "background": "textures/menu_bg.png",
       "entities": [
