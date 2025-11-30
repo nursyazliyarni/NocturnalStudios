@@ -105,8 +105,15 @@ void ComponentFactory::ParseFromName(EntityID entity, const std::string& name, c
 	if (it == ParserMap().end()) return;
 	else it->second(entity, j);
 }
-void Collider::FromJSON(const rapidjson::Value& json){}
-void Collider::ToJSON(rapidjson::Value& json, rapidjson::Document::AllocatorType& allocator) const {}
+void Collider::FromJSON(const rapidjson::Value& json){
+	if (json.HasMember("is_coliding")&&json["is_colliding"].IsBool())
+	{
+		isColliding = json["is_colliding"].GetBool();
+	}
+}
+void Collider::ToJSON(rapidjson::Value& json, rapidjson::Document::AllocatorType& allocator) const {
+	if (isColliding)json.AddMember("is_colliding", isColliding, allocator);
+}
 
 void RenderComponent::FromJSON(const rapidjson::Value& json) {
 	const char* members[]{ "opacity","is_visible","color_tint","color_to_add","width","height","angle"};
@@ -117,7 +124,7 @@ void RenderComponent::FromJSON(const rapidjson::Value& json) {
 			switch (i)
 			{
 			case 0://opacity
-				if (json[members[i]].IsFloat())
+				if (json[members[i]].IsNumber())
 				{
 					opacity = json[members[i]].GetFloat();
 				}
@@ -131,49 +138,49 @@ void RenderComponent::FromJSON(const rapidjson::Value& json) {
 			case 2://color_tint
 				if (json[members[i]].IsArray())
 				{
-					size_t limit = json[members[i]].Size() <= 4 ? json[members[i]].Size() : 4;
-					for (size_t j = 0; j < limit; j++)
+					rapidjson::SizeType limit = json[members[i]].Size() <= 4 ? json[members[i]].Size() : 4;
+					for (rapidjson::SizeType j = 0; j < limit; j++)
 					{
-						if (json[members[i]][j].IsFloat())
+						if (json[members[i]][j].IsNumber())
 						{
 							colorTint[j] = json[members[i]][j].GetFloat();
 						}
 					}
 				}
 				else if(json[members[i]].IsObject()) {
-					if (json[members[i]].HasMember("r") && json[members[i]]["r"].IsFloat())colorTint.x() = json[members[i]]["r"].GetFloat();
-					if (json[members[i]].HasMember("g") && json[members[i]]["g"].IsFloat())colorTint.y() = json[members[i]]["g"].GetFloat();
-					if (json[members[i]].HasMember("b") && json[members[i]]["b"].IsFloat())colorTint.z() = json[members[i]]["b"].GetFloat();
-					if (json[members[i]].HasMember("a") && json[members[i]]["a"].IsFloat())colorTint.a() = json[members[i]]["a"].GetFloat();
+					if (json[members[i]].HasMember("r") && json[members[i]]["r"].IsNumber())colorTint.x() = json[members[i]]["r"].GetFloat();
+					if (json[members[i]].HasMember("g") && json[members[i]]["g"].IsNumber())colorTint.y() = json[members[i]]["g"].GetFloat();
+					if (json[members[i]].HasMember("b") && json[members[i]]["b"].IsNumber())colorTint.z() = json[members[i]]["b"].GetFloat();
+					if (json[members[i]].HasMember("a") && json[members[i]]["a"].IsNumber())colorTint.a() = json[members[i]]["a"].GetFloat();
 				}
 				break;
 			case 3://color_to_add
 				if (json[members[i]].IsArray())
 				{
-					size_t limit = json[members[i]].Size() <= 4 ? json[members[i]].Size() : 4;
-					for (size_t j = 0; j < limit; j++)
+					rapidjson::SizeType limit = json[members[i]].Size() <= 4 ? json[members[i]].Size() : 4;
+					for (rapidjson::SizeType j = 0; j < limit; j++)
 					{
-						if (json[members[i]][j].IsFloat())
+						if (json[members[i]][j].IsNumber())
 						{
 							colorToAdd[j] = json[members[i]][j].GetFloat();
 						}
 					}
 				}
 				else if (json[members[i]].IsObject()) {
-					if (json[members[i]].HasMember("r") && json[members[i]]["r"].IsFloat())colorToAdd.x() = json[members[i]]["r"].GetFloat();
-					if (json[members[i]].HasMember("g") && json[members[i]]["g"].IsFloat())colorToAdd.y() = json[members[i]]["g"].GetFloat();
-					if (json[members[i]].HasMember("b") && json[members[i]]["b"].IsFloat())colorToAdd.z() = json[members[i]]["b"].GetFloat();
-					if (json[members[i]].HasMember("a") && json[members[i]]["a"].IsFloat())colorToAdd.a() = json[members[i]]["a"].GetFloat();
+					if (json[members[i]].HasMember("r") && json[members[i]]["r"].IsNumber())colorToAdd.x() = json[members[i]]["r"].GetFloat();
+					if (json[members[i]].HasMember("g") && json[members[i]]["g"].IsNumber())colorToAdd.y() = json[members[i]]["g"].GetFloat();
+					if (json[members[i]].HasMember("b") && json[members[i]]["b"].IsNumber())colorToAdd.z() = json[members[i]]["b"].GetFloat();
+					if (json[members[i]].HasMember("a") && json[members[i]]["a"].IsNumber())colorToAdd.a() = json[members[i]]["a"].GetFloat();
 				}
 				break;
 			case 4://width
-				if (json[members[i]].IsFloat())
+				if (json[members[i]].IsNumber())
 				{
 					width = json[members[i]].GetFloat();
 				}
 				break;
 			case 5://height
-				if (json[members[i]].IsFloat())
+				if (json[members[i]].IsNumber())
 				{
 					height = json[members[i]].GetFloat();
 				}
@@ -236,20 +243,20 @@ void Transform::FromJSON(const rapidjson::Value& json) {
 			case 0://position
 				if (json[members[i]].IsArray())
 				{
-					size_t limit = json[members[i]].Size() <= 2 ? json[members[i]].Size() : 2;
-					for (size_t j = 0; j < limit; j++)
+					rapidjson::SizeType limit = json[members[i]].Size() <= 2 ? json[members[i]].Size() : 2;
+					for (rapidjson::SizeType j = 0; j < limit; j++)
 					{
-						if (json[members[i]][j].IsFloat())
+						if (json[members[i]][j].IsNumber())
 						{
 							position[j] = json[members[i]][j].GetFloat();
 						}
 					}
 				}
 				else if (json[members[i]].IsObject()) {
-					if (json[members[i]].HasMember("x") && json[members[i]]["x"].IsFloat())position.x() = json[members[i]]["x"].GetFloat();
-					if (json[members[i]].HasMember("y") && json[members[i]]["y"].IsFloat())position.y() = json[members[i]]["y"].GetFloat();
+					if (json[members[i]].HasMember("x") && json[members[i]]["x"].IsNumber())position.x() = json[members[i]]["x"].GetFloat();
+					if (json[members[i]].HasMember("y") && json[members[i]]["y"].IsNumber())position.y() = json[members[i]]["y"].GetFloat();
 				}
-				else if (json[members[i]].IsString() && json[members[i]].GetString() == "random")
+				else if (json[members[i]].IsString() && std::string{ json[members[i]].GetString() } == "random")
 				{
 					randomPos = true; 
 				}
@@ -257,36 +264,36 @@ void Transform::FromJSON(const rapidjson::Value& json) {
 			case 1://scale
 				if (json[members[i]].IsArray())
 				{
-					size_t limit = json[members[i]].Size() <= 2 ? json[members[i]].Size() : 2;
-					for (size_t j = 0; j < limit; j++)
+					rapidjson::SizeType limit = json[members[i]].Size() <= 2 ? json[members[i]].Size() : 2;
+					for (rapidjson::SizeType j = 0; j < limit; j++)
 					{
-						if (json[members[i]][j].IsFloat())
+						if (json[members[i]][j].IsNumber())
 						{
 							scale[j] = json[members[i]][j].GetFloat();
 						}
 					}
 				}
 				else if (json[members[i]].IsObject()) {
-					if (json[members[i]].HasMember("x") && json[members[i]]["x"].IsFloat())scale.x() = json[members[i]]["x"].GetFloat();
-					if (json[members[i]].HasMember("y") && json[members[i]]["y"].IsFloat())scale.y() = json[members[i]]["y"].GetFloat();
+					if (json[members[i]].HasMember("x") && json[members[i]]["x"].IsNumber())scale.x() = json[members[i]]["x"].GetFloat();
+					if (json[members[i]].HasMember("y") && json[members[i]]["y"].IsNumber())scale.y() = json[members[i]]["y"].GetFloat();
 				}
-				else if (json[members[i]].IsFloat())
+				else if (json[members[i]].IsNumber())
 				{
 					scale = { json[members[i]].GetFloat(),json[members[i]].GetFloat() };
 				}
 				break;
 			case 2://rotation
-				if (json[members[i]].IsFloat())
+				if (json[members[i]].IsNumber())
 				{
 					rotation = json[members[i]].GetFloat();
 				}
-				else if (json[members[i]].IsString()&& json[members[i]].GetString()=="random")
+				else if (json[members[i]].IsString() && std::string{ json[members[i]].GetString() } == "random")
 				{
 					randomRot = true;
 				}
 				break;
 			case 3://height
-				if (json[members[i]].IsFloat())
+				if (json[members[i]].IsNumber())
 				{
 					height = json[members[i]].GetFloat();
 				}
@@ -422,7 +429,7 @@ void ImageRenderer::ToJSON(rapidjson::Value& json, rapidjson::Document::Allocato
 
 void CircleRenderer::FromJSON(const rapidjson::Value& json) {
 	RenderComponent::FromJSON(json);
-	if (json.HasMember("radius") && json["radius"].IsFloat())
+	if (json.HasMember("radius") && json["radius"].IsNumber())
 	{
 
 		radius = json["radius"].GetFloat();
@@ -449,7 +456,7 @@ void RectRenderer::FromJSON(const rapidjson::Value& json) {
 	};
 	for (int i{}; i < 2; i++)
 	{
-		if (json.HasMember(members[i])&& json[members[i]].IsFloat())
+		if (json.HasMember(members[i])&& json[members[i]].IsNumber())
 		{
 			switch (i)
 			{
@@ -542,7 +549,7 @@ void PhysicsComponent::FromJSON(const rapidjson::Value& json) {
 		"acceleration",//2
 		"gravity_enabled"//3
 	};
-	size_t limit{};
+	rapidjson::SizeType limit{};
 	for (int i{}; i < 3; i++)
 	{
 		if (json.HasMember(members[i]))
@@ -553,17 +560,17 @@ void PhysicsComponent::FromJSON(const rapidjson::Value& json) {
 				if (json[members[i]].IsArray())
 				{
 					limit = json[members[i]].Size() <= 2 ? json[members[i]].Size() : 2;
-					for (size_t j = 0; j < limit; j++)
+					for (rapidjson::SizeType j = 0; j < limit; j++)
 					{
-						if (json[members[i]][j].IsFloat())
+						if (json[members[i]][j].IsNumber())
 						{
 							position[j] = json[members[i]][j].GetFloat();
 						}
 					}
 				}
 				else if (json[members[i]].IsObject()) {
-					if (json[members[i]].HasMember("x") && json[members[i]]["x"].IsFloat())position.x() = json[members[i]]["x"].GetFloat();
-					if (json[members[i]].HasMember("y") && json[members[i]]["y"].IsFloat())position.y() = json[members[i]]["y"].GetFloat();
+					if (json[members[i]].HasMember("x") && json[members[i]]["x"].IsNumber())position.x() = json[members[i]]["x"].GetFloat();
+					if (json[members[i]].HasMember("y") && json[members[i]]["y"].IsNumber())position.y() = json[members[i]]["y"].GetFloat();
 				}
 				
 				break;
@@ -571,34 +578,34 @@ void PhysicsComponent::FromJSON(const rapidjson::Value& json) {
 				if (json[members[i]].IsArray())
 				{
 					limit = json[members[i]].Size() <= 2 ? json[members[i]].Size() : 2;
-					for (size_t j = 0; j < limit; j++)
+					for (rapidjson::SizeType j = 0; j < limit; j++)
 					{
-						if (json[members[i]][j].IsFloat())
+						if (json[members[i]][j].IsNumber())
 						{
 							velocity[j] = json[members[i]][j].GetFloat();
 						}
 					}
 				}
 				else if (json[members[i]].IsObject()) {
-					if (json[members[i]].HasMember("x") && json[members[i]]["x"].IsFloat())velocity.x() = json[members[i]]["x"].GetFloat();
-					if (json[members[i]].HasMember("y") && json[members[i]]["y"].IsFloat())velocity.y() = json[members[i]]["y"].GetFloat();
+					if (json[members[i]].HasMember("x") && json[members[i]]["x"].IsNumber())velocity.x() = json[members[i]]["x"].GetFloat();
+					if (json[members[i]].HasMember("y") && json[members[i]]["y"].IsNumber())velocity.y() = json[members[i]]["y"].GetFloat();
 				}
 				break;
 			case 2://acceleration
 				if (json[members[i]].IsArray())
 				{
 					limit = json[members[i]].Size() <= 2 ? json[members[i]].Size() : 2;
-					for (size_t j = 0; j < limit; j++)
+					for (rapidjson::SizeType j = 0; j < limit; j++)
 					{
-						if (json[members[i]][j].IsFloat())
+						if (json[members[i]][j].IsNumber())
 						{
 							acceleration[j] = json[members[i]][j].GetFloat();
 						}
 					}
 				}
 				else if (json[members[i]].IsObject()) {
-					if (json[members[i]].HasMember("x") && json[members[i]]["x"].IsFloat())acceleration.x() = json[members[i]]["x"].GetFloat();
-					if (json[members[i]].HasMember("y") && json[members[i]]["y"].IsFloat())acceleration.y() = json[members[i]]["y"].GetFloat();
+					if (json[members[i]].HasMember("x") && json[members[i]]["x"].IsNumber())acceleration.x() = json[members[i]]["x"].GetFloat();
+					if (json[members[i]].HasMember("y") && json[members[i]]["y"].IsNumber())acceleration.y() = json[members[i]]["y"].GetFloat();
 				}
 
 				break;
@@ -647,7 +654,7 @@ void BoxCollider::FromJSON(const rapidjson::Value& json) {
 	};
 	for (int i{}; i < 2; i++)
 	{
-		if (json.HasMember(members[i]) && json[members[i]].IsFloat())
+		if (json.HasMember(members[i]) && json[members[i]].IsNumber())
 		{
 			switch (i)
 			{
@@ -660,7 +667,7 @@ void BoxCollider::FromJSON(const rapidjson::Value& json) {
 			}
 		}
 	}
-	if (json.HasMember("bounding_box_size") && json["bounding_box_size"].IsFloat())
+	if (json.HasMember("bounding_box_size") && json["bounding_box_size"].IsNumber())
 	{
 		width = height = json["bounding_box_size"].GetFloat();
 	}
@@ -708,7 +715,7 @@ void AIComponent::ToJSON(rapidjson::Value& json, rapidjson::Document::AllocatorT
 }
 
 void AABBCollider::FromJSON(const rapidjson::Value& json) {
-	if (json.HasMember("bounding_box_size") && json["bounding_box_size"].IsFloat())
+	if (json.HasMember("bounding_box_size") && json["bounding_box_size"].IsNumber())
 	{
 		width = height = json["bounding_box_size"].GetFloat();
 	}
