@@ -328,99 +328,6 @@ void ImGuiManager::setInputTime(double time) {
 	inputTime = time;
 }
 
-//void ImGuiManager::showViewportWindowUI() {
-//	constexpr float overlayWidthOffset = 300.0f;
-//	constexpr float overlayHeightOffset = 200.0f;
-//
-//	ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoResize;
-//
-//	// Calculate the size of the viewport window
-//	float viewportWidth = windowBottomRight.x - windowTopLeft.x - overlayWidthOffset;
-//	float viewportHeight = windowBottomRight.y - windowTopLeft.y - overlayHeightOffset;
-//
-//	// Position the viewport window at the top-left corner of the main window
-//	ImGui::SetNextWindowPos(windowTopLeft);
-//	ImGui::SetNextWindowSize(ImVec2(viewportWidth, viewportHeight));
-//	ImGui::Begin("Viewport", nullptr, windowFlags);
-//
-//	// ?? ADD: actual drawable region (excludes title/padding)
-//	const ImVec2 avail = ImGui::GetContentRegionAvail();
-//	const int vw = (int)std::max(1.0f, avail.x);
-//	const int vh = (int)std::max(1.0f, avail.y);
-//
-//	 static int lastW = -1, lastH = -1;
-//    if (vw != lastW || vh != lastH) {        // recreate only when needed
-//        //renderer.initFBO(vw, vh);
-//        lastW = vw; lastH = vh;
-//    }
-//
-//	auto physicsStart = Clock::now();
-//
-//	physics.update_sprite_movement(renderer, input);
-//	physics.update_sprite_scaling(renderer, input);
-//	physics.update_sprite_rotation(renderer, input);
-//
-//	auto physicsEnd = Clock::now();
-//	double physicsTime = std::chrono::duration<double>(physicsEnd - physicsStart).count();
-//	setPhysicTime(physicsTime);
-//
-//	auto render_start = Clock::now();
-//
-//	// Initialize and bind FBO for rendering
-//	// renderer.initFBO(viewportHeight, viewportWidth);            // REMOVE this (args swapped)
-//	renderer.initFBO(vw, vh);                                      // ADD: correct (width, height)
-//	renderer.bindFBO();
-//
-//	// ?? ADD: set viewport + orthographic to pixel-space for the FBO
-//	renderer.resize(vw, vh);
-//
-//	// You can keep your clear (fine for 2D)
-//	renderer.clear(0.1f, 0.1f, 0.12f);
-//
-//	// @Todo (axewhy): Render the actual viewport content here, e.g., using a framebuffer texture
-//	// Render background to FBO
-//	renderer.background_render(texture.get_textureID(0), "bg_texture");
-//
-//	auto input_start = Clock::now();
-//
-//	input.updateRotations();
-//
-//	// behind-sprites pass (scaled)
-//	//renderer.drawAllSprites(texture, { 3,4 }, /*behindPass=*/true,  input.getSpriteScalesPtr());
-//	renderer.drawAllSprites(texture, { 3,4 ,5}, true,
-//		input.getSpriteScalesPtr(),
-//		input.getSpriteRotationsPtr(),
-//		vw, vh);
-//
-//	//draw all SHAPES from Renderer.cpp (keeps ImGui clean of GL) - rishika
-//	renderer.drawViewportShapes(vw, vh);
-//
-//	// front-sprites pass (scaled)
-//	//renderer.drawAllSprites(texture, { 3,4 }, /*behindPass=*/false, input.getSpriteScalesPtr());
-//	renderer.drawAllSprites(texture, { 3,4,5 }, false,
-//		input.getSpriteScalesPtr(),
-//		input.getSpriteRotationsPtr(),
-//		vw, vh);
-//
-//	renderer.unbindFBO();
-//	auto input_end = Clock::now();
-//	double inputTime = std::chrono::duration<double>(input_end - input_start).count();
-//	setInputTime(inputTime);
-//
-//	auto render_end = Clock::now();
-//	double renderTime = std::chrono::duration<double>(render_end - render_start).count();
-//	setRenderTime(renderTime);
-//
-//	// show FBO in the panel (use the content size so it matches exactly)
-//	// ImGui::Image((void*)(intptr_t)renderer.getFBOTexture(), ImVec2(viewportWidth, viewportHeight));
-//	// NEW: flip V when sampling the FBO in ImGui
-//	ImGui::Image((ImTextureID)(intptr_t)renderer.getFBOTexture(),
-//		ImVec2(viewportWidth, viewportHeight),
-//		ImVec2(0, 1), ImVec2(1, 0));
-//
-//	ImGui::End();
-//}
-
 
 void ImGuiManager::showViewportWindowUI() {
 	//constexpr float overlayW = 300.f, overlayH = 200.f;
@@ -1485,6 +1392,26 @@ void ImGuiManager::showScenesListUI()
 			gsm.requestScene(sceneName);
 			gsm.goToMenu();  // optional, depending on your design
 		}
+	}
+
+	// ------------------------------------------------------
+	// Save / Load all scenes buttons
+	// ------------------------------------------------------
+	ImGui::Separator();
+	ImGui::Spacing();
+
+	if (ImGui::Button("Save All Scenes"))
+	{
+		//gsm.saveAllScenes();       
+		//logger.log("[Scenes] All scenes saved.");
+	}
+
+	ImGui::SameLine();
+
+	if (ImGui::Button("Load All Scenes"))
+	{
+		//gsm.loadAllScenes();        
+		//logger.log("[Scenes] All scenes loaded.");
 	}
 
 	ImGui::End();
