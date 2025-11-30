@@ -146,7 +146,8 @@ private:
 	bool m_isDragging = false; //true while left mouse button held on an item
 	ImVec2 m_dragOffset = { 0, 0 }; //offset (normalised from item center to click point
 
-	std::vector<std::vector<DrawItem>> m_undoStack; //undo stack
+	//std::string m_lastSceneInUndoStack;
+	std::deque<std::pair<std::string,std::vector<EntityID>>> m_undoStack; //undo stack
 	static constexpr std::size_t kMaxUndoSteps = 20; //max undo steps
 
 	//helper to handle picking/dragging inside the viewport

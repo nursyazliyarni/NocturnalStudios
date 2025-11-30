@@ -2421,7 +2421,7 @@ void ImGuiManager::onStopButtonPressed() {
 	}
 
 	gsm.setGameOver(false);
-	gsm.resetAllScenesToInitial();
+	//gsm.resetAllScenesToInitial();
 	gsm.requestScene("MainMenu");
 	gsm.goToMenu();
 
@@ -2443,10 +2443,22 @@ void ImGuiManager::pushUndoState(const char* reason)
 	//keep up to kMaxUndoSteps snapshots
 	if (m_undoStack.size() >= kMaxUndoSteps) {
 		//drop the oldest
-		m_undoStack.erase(m_undoStack.begin());
+		for (EntityID delelee: m_undoStack.front().second)
+		{
+			if (!gsm.entityInScenes(delelee))ECS::getECS().deleteEntity(delelee);
+		}
+		m_undoStack.pop_front();
 	}
 
-	m_undoStack.emplace_back(scene->items);
+	std::vector<EntityID> savestate;
+	for (DrawItem thing:scene->items)
+	{
+		savestate.push_back(ECS::getECS().cloneEntity(thing.entityID));
+	}
+	
+	m_undoStack.push_back({ gsm.current(),savestate });
+
+	
 
 	if (reason) {
 		logger.log(std::string("[Undo] Saved state: ") + reason);
@@ -2455,21 +2467,37 @@ void ImGuiManager::pushUndoState(const char* reason)
 
 void ImGuiManager::undoLastAction()
 {
+	if (m_editorMode == EditorMode::PLAY)
+		return;
+	if (gsm.current() != m_undoStack.back().first)
+		return;
 	Scene* scene = gsm.getCurrentScene();
 	if (!scene)
 		return;
-
+	
 	//need at least 2 states, previous and current
 	if (m_undoStack.size() < 2) {
 		logger.warning("[Undo] No more undo steps available.");
 		return;
 	}
 
+	
+	size_t h{};
+	//restore previous
+	for (DrawItem &thing :scene->items)
+	{
+		EntityID swap{ thing.entityID };
+		thing.entityID = m_undoStack.back().second[h];
+		m_undoStack.back().second[h] = swap;
+		h++;
+	}
+
+	for (EntityID delelee : m_undoStack.back().second)
+	{
+		if (!gsm.entityInScenes(delelee))ECS::getECS().deleteEntity(delelee);
+	}
 	//remove current state
 	m_undoStack.pop_back();
-
-	//restore previous
-	scene->items = m_undoStack.back();
 
 	//fix selection index
 	if (selectedEntityType >= scene->items.size()) {

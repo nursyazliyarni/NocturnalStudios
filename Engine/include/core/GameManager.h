@@ -74,6 +74,7 @@ struct Scene {
     std::vector<ClickRegion> clicks;
     bool loaded{ false };
 
+    bool isInScene(EntityID);
     bool isClickReigion(DrawItem);
     ClickRegion getClickReigion(DrawItem);
 };
@@ -89,6 +90,7 @@ private:
 
 class GameManager {
 public:
+
     bool checkForSceneChange();
 
     bool loadAll(PrefabManager& prefabs, const char* scenesJsonPath, TextureStore& tex);
@@ -151,6 +153,8 @@ public:
     bool reloadAllScene(TextureStore& tex);
 
     void resetAllScenesToInitial();
+
+    bool entityInScenes(EntityID) const;
 
     // Camera controls (per scene)
     //void setCameraEnabled(const std::string& scene, bool on);

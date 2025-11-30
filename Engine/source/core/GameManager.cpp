@@ -640,7 +640,13 @@ void GameManager::requestScene(const std::string& name) {
 }
 
 
-
+bool Scene::isInScene(EntityID id) {
+    for (DrawItem i : items)
+    {
+        if (id == i.entityID)return true;
+    }
+    return false;
+}
 
 
 void GameManager::resetAllScenesToInitial()
@@ -947,7 +953,12 @@ void GameManager::render(Renderer& r, Input& input, GLFWwindow* window, int w, i
 }
 
 
-
+bool GameManager::entityInScenes(EntityID id ) const {
+    for ( auto pair : scenes) {
+        if (pair.second.isInScene(id)) return true;
+    }
+    return false;
+}
 
 void GameManager::renderWithHUD(Renderer& r,
     Input& input,
