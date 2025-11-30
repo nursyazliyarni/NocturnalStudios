@@ -893,7 +893,7 @@ void GameManager::render(Renderer& r, Input& input, GLFWwindow* window, int w, i
         }
     }
 
-    if (app==AppState::Paused)
+    if (app==AppState::Paused&&!m_isGameOver)
     {
         for (DrawItem pdi : pauseScene.items)
         {
