@@ -23,6 +23,7 @@
 #include "core/GameManager.h"
 #include "stb_image.h"
 #include <rapidjson/document.h>
+#include <rapidjson/istreamwrapper.h>
 #include "rapidjson/writer.h"
 #include "rapidjson/prettywriter.h"
 #include "rapidjson/filewritestream.h"
@@ -41,6 +42,36 @@
 #include "core/Application.h"
 
 #include <functional>
+
+
+namespace {
+    //build collider AABB in screen-pixel space from DrawItem
+    AABB BuildColliderAABB(const DrawItem& di, int screenW, int screenH)
+    {
+        if (!di.hasCollider) {
+            //zero-size box (won't be hit)
+            return AABB(Vector2D(0.f, 0.f), Vector2D(0.f, 0.f));
+        }
+
+        Transform* t = ECS::getECS().getComponent<Transform>(di.entityID);
+        if (!t)return {};
+
+        //center of collider in normalized coords
+        float cxNorm = t->position.x() + di.colOffsetX;
+        float cyNorm = t->position.y() + di.colOffsetY;
+
+        //size in pixels
+        float wPix = di.colW * screenW;
+        float hPix = di.colH * screenH;
+
+        //convert to pixel center
+        float cxPix = cxNorm * screenW;
+        float cyPix = cyNorm * screenH;
+        Vector2D pos(cxPix - wPix * 0.5f, cyPix - hPix * 0.5f);
+        Vector2D size(wPix, hPix);
+        return AABB(pos, size);
+    }
+}
 
 //  TextureStore 
 static GLuint loadGLTexture(const std::string& path) {
@@ -103,6 +134,191 @@ static std::string toAssetsPath(const std::string& p) {
 struct PrefabDef { float w = 0.2f, h = 0.2f, angle = 0.0f; };
 
 //  GameManager 
+bool GameManager::checkForSceneChange() {
+    if (scene_changed_since_click)
+    {
+        scene_changed_since_click = false;
+        return true;
+    }
+    else return false;
+}
+
+bool Scene::isClickReigion(DrawItem di) {
+    for (ClickRegion cr:clicks)
+    {
+        if (cr.name == di.name) return true;
+    }
+    return false;
+}
+
+ClickRegion Scene::getClickReigion(DrawItem di) {
+    for (ClickRegion cr : clicks)
+    {
+        if (cr.name == di.name) return cr;
+    }
+    ClickRegion invalid{};
+    invalid.name = "INVALID";
+    return invalid;
+}
+
+DrawItem DrawItem::CreateDupe() const {
+    DrawItem newdi{ *this };
+
+    newdi.entityID = ECS::getECS().cloneEntity(entityID);
+
+    return newdi;
+}
+
+void DrawItem::DestroyDupe() {
+    ECS::getECS().deleteEntity(entityID);
+}
+
+bool GameManager::saveAll(const char* saveJsonPath, TextureStore& tex) {
+    if (scenes.empty()) {
+        logger.error("No Scenes to save");
+        return false;
+    }
+
+    rapidjson::Document doc;
+    doc.SetObject();
+    auto& alloc = doc.GetAllocator();
+
+    //keymap currenly not saved as i need to chjeck how it works
+    rapidjson::Value statesObj(rapidjson::kObjectType);
+
+    // initial - currenly defaults to MainMenu
+    rapidjson::Value initial;
+    initial.SetString("MainMenu", alloc);
+    statesObj.AddMember("initial", initial, alloc);
+
+    //keymap
+    rapidjson::Value keymapObj(rapidjson::kObjectType);
+
+    for (const auto& [glfwKey, sceneName] : keyMap)
+    {
+        std::string keyString{};
+
+        switch (glfwKey)
+        {
+        case GLFW_KEY_ESCAPE: keyString = "ESC"; break;
+        default:
+            if (glfwKey>=GLFW_KEY_0&& glfwKey <= GLFW_KEY_9)
+            {
+                //0 to 9
+                keyString = std::to_string(glfwKey - 48);
+                break;
+            }
+            else continue; // ignore others
+        }
+
+        rapidjson::Value key;
+
+         key.SetString(sceneName.c_str(), alloc);
+
+        rapidjson::Value keyName(keyString.c_str(), alloc);
+        keymapObj.AddMember(keyName, key, alloc);
+       
+    }
+
+    rapidjson::Value blud;
+    blud.SetString(backKey.c_str(), alloc);
+    keymapObj.AddMember("ESC", blud, alloc);
+
+    // Attach keymap to states
+    statesObj.AddMember("keymap", keymapObj, alloc);
+
+
+    // Attach "states" to root
+    doc.AddMember("states", statesObj, alloc);
+
+    //Iterating through scenes
+    rapidjson::Value sceneArray(rapidjson::kArrayType);
+    for ( const auto& scenepair:scenes)
+    {
+        Scene scene = scenepair.second;
+        rapidjson::Value sceneObj(rapidjson::kObjectType);
+
+        if (scene.background) {
+            rapidjson::Value bgVal;
+            bgVal.SetString(tex.find(scene.background).c_str(), alloc);
+            sceneObj.AddMember("background", bgVal, alloc);
+
+        }
+
+        if (!scene.items.empty())
+        {
+            rapidjson::Value entityArray(rapidjson::kArrayType);
+
+            for (DrawItem i : scene.items) {
+                rapidjson::Value entObj(rapidjson::kObjectType);
+                if (i.item_type.empty()) //treat as a non prefab item
+                {
+                    rapidjson::Value nvs;
+                    nvs.SetString(i.name.c_str(), alloc);
+                    entObj.AddMember("name", nvs, alloc);
+
+                    rapidjson::Value components(rapidjson::kArrayType);
+                    if (ecs_.findEntityByName(i.name) != INVALID_ENTITY_ID && !ecs_.getEntityComponents(ecs_.findEntityByName(i.name)).empty())
+                    {
+                        logger.log("Components for object: " + i.name + " found in ECS entity " + std::to_string(ecs_.findEntityByName(i.name)));
+                        writeAllComponentsToJSONArray(ecs_.findEntityByName(i.name), components, alloc);
+                    }
+                    entObj.AddMember("components", components, alloc);
+                }
+                else {
+                    //prefab has 3 things: prefab, name, overrides
+                    rapidjson::Value pregabval;
+                    pregabval.SetString(i.item_type.c_str(), alloc);
+                    entObj.AddMember("prefab", pregabval, alloc);
+
+                    rapidjson::Value nvs; //name
+                    nvs.SetString(i.name.c_str(), alloc);
+                    entObj.AddMember("name", nvs, alloc);
+
+                    //overrides
+                    rapidjson::Value overrides(rapidjson::kArrayType);
+                    if (ecs_.findEntityByName(i.name) != INVALID_ENTITY_ID && !ecs_.getEntityComponents(ecs_.findEntityByName(i.name)).empty())
+                    {
+                        logger.log("Overrides for object: " + i.name + " found in ECS entity " + std::to_string(ecs_.findEntityByName(i.name)));
+                        writeAllComponentsToJSONArray(ecs_.findEntityByName(i.name), overrides, alloc);
+                    }
+                    entObj.AddMember("overrides", overrides, alloc);
+                }
+
+                if (scene.isClickReigion(i))
+                {
+                    ClickRegion clickr = scene.getClickReigion(i);
+
+                    if (clickr.start) entObj.AddMember("start", true, alloc);
+                    if (clickr.quit)entObj.AddMember("quit", true, alloc);
+                    if (!clickr.gotoScene.empty())
+                    {
+                        rapidjson::Value gotov;
+                        gotov.SetString(clickr.gotoScene.c_str(), alloc);
+                        entObj.AddMember("goto", gotov, alloc);
+                    }
+
+                }
+                entityArray.PushBack(entObj, alloc);
+            }
+            sceneObj.AddMember("entities", entityArray, alloc);
+        }
+
+        sceneArray.PushBack(sceneObj, alloc);
+    }
+    doc.AddMember("scenes", sceneArray, alloc);
+
+    FILE* fp = fopen(saveJsonPath, "wb");
+    if (!fp) return false;
+
+    char buffer[9920];
+    rapidjson::FileWriteStream os(fp, buffer, sizeof(buffer));
+    rapidjson::PrettyWriter<rapidjson::FileWriteStream> writer(os);
+    doc.Accept(writer);
+    fclose(fp);
+    return true;
+}
+
 bool GameManager::saveScene( std::string scenename, const char* scenesJsonPath, TextureStore& tex) {
     if (scenename == "___currscene___")scenename = currentScene;
 
@@ -134,7 +350,17 @@ bool GameManager::saveScene( std::string scenename, const char* scenesJsonPath, 
             rapidjson::Value entObj(rapidjson::kObjectType);
             if (i.item_type.empty()) //treat as a non prefab item
             {
+                rapidjson::Value nvs;
+                nvs.SetString(i.name.c_str(), alloc);
+                entObj.AddMember("name", nvs, alloc);
 
+                rapidjson::Value components(rapidjson::kArrayType);
+                if (ecs_.findEntityByName(i.name) != INVALID_ENTITY_ID && !ecs_.getEntityComponents(ecs_.findEntityByName(i.name)).empty())
+                {
+                    logger.log("Components for object: " + i.name + " found in ECS entity " + std::to_string(ecs_.findEntityByName(i.name)));
+                    writeAllComponentsToJSONArray(ecs_.findEntityByName(i.name), components, alloc);
+                }
+                entObj.AddMember("components", components, alloc);
             }
             else {
                 //prefab has 3 things: prefab, name, overrides
@@ -146,12 +372,27 @@ bool GameManager::saveScene( std::string scenename, const char* scenesJsonPath, 
                 nvs.SetString(i.name.c_str(), alloc);
                 entObj.AddMember("name", nvs, alloc);
                 //overrides
-                rapidjson::Value overrides(rapidjson::kObjectType);
+                rapidjson::Value overrides(rapidjson::kArrayType);
                 if (ecs_.findEntityByName(i.name)!=INVALID_ENTITY_ID&&!ecs_.getEntityComponents(ecs_.findEntityByName(i.name)).empty())
                 {
-                    writeAllComponentsToJSON(ecs_.findEntityByName(i.name), overrides, alloc);
+                    logger.log("Overrides for object: " + i.name+" found in ECS entity "+ std::to_string(ecs_.findEntityByName(i.name)));
+                    writeAllComponentsToJSONArray(ecs_.findEntityByName(i.name), overrides, alloc);
                 }
                 entObj.AddMember("overrides", overrides, alloc);
+            }
+            if (scene.isClickReigion(i))
+            {
+                ClickRegion clickr = scene.getClickReigion(i);
+
+                if (clickr.start) entObj.AddMember("start", true, alloc);
+                if (clickr.quit)entObj.AddMember("quit", true, alloc);
+                if (!clickr.gotoScene.empty())
+                {
+                    rapidjson::Value gotov;
+                    gotov.SetString(clickr.gotoScene.c_str(), alloc);
+                    entObj.AddMember("goto", gotov, alloc);
+                }
+
             }
             entityArray.PushBack(entObj, alloc);
         }
@@ -168,7 +409,10 @@ bool GameManager::saveScene( std::string scenename, const char* scenesJsonPath, 
     fclose(fp);
     return true;
 }
-bool GameManager::load(const char* prefabsPath, const char* scenesPath, TextureStore& tex) {
+
+
+
+bool GameManager::loadAll(PrefabManager& prefabs, const char* scenesPath, TextureStore& tex) {
 
     app = AppState::Menu;   // lock number keys until Play is pressed
     requestedQuit = false;  // (optional) clear quit flag at load
@@ -176,37 +420,18 @@ bool GameManager::load(const char* prefabsPath, const char* scenesPath, TextureS
     // Store paths for later reload
     scenesFilePath = scenesPath;
 
-    //  1) read prefab defaults (w,h,angle) 
-    std::unordered_map<std::string, PrefabDef> prefabDefaults;
-    {
-        std::string s;
-        if (readFile(prefabsPath, s)) {
-            rapidjson::Document d;
-            d.Parse(s.c_str());
-            if (!d.HasParseError() && d.IsObject() && d.HasMember("prefabs") && d["prefabs"].IsObject()) {
-                const auto& pf = d["prefabs"];
-                for (auto it = pf.MemberBegin(); it != pf.MemberEnd(); ++it) {
-                    PrefabDef def;
-                    const auto& val = it->value;
-                    if (val.HasMember("defaults") && val["defaults"].IsObject()) {
-                        const auto& jd = val["defaults"];
-                        if (jd.HasMember("w") && jd["w"].IsNumber())     def.w = jd["w"].GetFloat();
-                        if (jd.HasMember("h") && jd["h"].IsNumber())     def.h = jd["h"].GetFloat();
-                        if (jd.HasMember("angle") && jd["angle"].IsNumber()) def.angle = jd["angle"].GetFloat();
-                    }
-                    prefabDefaults[it->name.GetString()] = def;
-                }
-            }
-        }
-    }
+    //read file
+    std::ifstream f(scenesPath);
+    if (!f) return false;
 
-    // ---- 2) read scenes ----
-    std::string s;
-    if (!readFile(scenesPath, s)) return false;
+    rapidjson::IStreamWrapper isw(f);
+
     rapidjson::Document d;
-    d.Parse(s.c_str());
-    if (d.HasParseError() || !d.IsObject()) return false;
+    d.ParseStream(isw);
 
+    if (d.HasParseError() || !d.IsObject()) return false;
+    logger.log("file parsed");
+    
     // states
     if (d.HasMember("states") && d["states"].IsObject()) {
         const auto& st = d["states"];
@@ -225,103 +450,141 @@ bool GameManager::load(const char* prefabsPath, const char* scenesPath, TextureS
     }
 
     // scenes
-    if (!d.HasMember("scenes") || !d["scenes"].IsObject()) return false;
-    const auto& jsScenes = d["scenes"];
-    for (auto it = jsScenes.MemberBegin(); it != jsScenes.MemberEnd(); ++it) {
-        const char* sceneName = it->name.GetString();
-        const auto& jsS = it->value;
-        if (!jsS.IsObject()) continue;
+    if (!d.HasMember("scenes") || !d["scenes"].IsArray()) return false;
 
-        Scene sc;
+    logger.log("cleaning out scenes");
+    scenes.empty();
+    //clear all entities EXCEPT for prefabs
+    for (EntityID eid: ecs_.getAllEntities())
+    {
+        if (!prefabs.IsIDPrefab(eid))ecs_.deleteEntity(eid);
+    }
 
-        // background
-        if (jsS.HasMember("background") && jsS["background"].IsString()) {
-            std::string bg = toAssetsPath(jsS["background"].GetString());
-            sc.background = tex.get(bg);
+    unsigned int unnamd_scenes{},unnamed_entities{};
+    for (rapidjson::Value& scn:d["scenes"].GetArray())
+    {
+        logger.log("reading scene");
+        std::string scn_name{};
+        if (scn.HasMember("name") && scn["name"].IsString())scn_name = scn["name"].GetString();
+        else {
+            scn_name = "Scene_" + std::to_string(unnamd_scenes);
+            unnamd_scenes++;
         }
 
-        // entities
-        if (jsS.HasMember("entities") && jsS["entities"].IsArray()) {
-            for (const auto& e : jsS["entities"].GetArray()) {
-                if (!e.IsObject()) continue;
+        Scene new_scene;
+        if (scn.HasMember("background") && scn["background"].IsString())
+        {
+            std::string path = scn["background"].GetString();
+            if (path.rfind("assets/", 0) != 0) path = "assets/" + path;
+            new_scene.background  =tex.get(path);
+            logger.log("bg: " + std::to_string(new_scene.background));
+        }
 
-                PrefabDef def;
+        
+        if (scn.HasMember("entities")&&scn["entities"].IsArray())
+        {
+            logger.log("adding entity");
+            for (rapidjson::Value& ent : scn["entities"].GetArray())
+            {
+                EntityID new_entity{ INVALID_ENTITY_ID };
+                std::string ent_name{};
+
+                if (ent.HasMember("name") && ent["name"].IsString()) {
+                    //check if already have an entity named that lmao
+                    std::string base = ent["name"].GetString();
+                    std::string check_name = base;
+                    unsigned int suffix = 0;
+                    while (ecs_.findEntityByName(check_name) != INVALID_ENTITY_ID) {
+                        check_name = base + "_" + std::to_string(suffix++);
+                    }
+                    ent_name = check_name;
+                }
+                else {
+                    //same for unnamed sntity
+                    std::string base = "Entity_" + std::to_string(unnamed_entities);
+                    std::string check_name = base;
+                    unsigned int suffix = 0;
+                    while (ecs_.findEntityByName(check_name) != INVALID_ENTITY_ID) {
+                        check_name = base + "_" + std::to_string(suffix++);
+                    }
+                    // ensure the global counter advances to avoid reusing base next time
+                    unnamed_entities++;
+                    ent_name = check_name;
+                }
+                //name resolved yay
+                logger.log("entity name: " +ent_name);
+
+                if (ent.HasMember("prefab")&&ent["prefab"].IsString())
+                {
+                    logger.log("Creating entity from prefab");
+                    new_entity = prefabs.CreateEntityFromPrefab(ent["prefab"].GetString(), ent_name);
+                    logger.log(ent_name+" created");
+                    //process overrides (normal components)
+                    //uses FromJson
+                    if (ent.HasMember("overrides") && ent["overrides"].IsArray())
+                    {
+                        logger.log("adding components");
+                        for (rapidjson::Value& ovr : ent["overrides"].GetArray()) {
+                            processComponentsFromJSON(new_entity, ovr,true);
+                        }
+                    }
+
+                    
+                }
+                else //entity not based on prefabs
+                {
+                    new_entity = ecs_.createEntity(ent_name);
+
+                    if (ent.HasMember("components") && ent["components"].IsArray())
+                    {
+                        logger.log("adding components");
+                        for (rapidjson::Value& cmp : ent["components"].GetArray()) {
+                            processComponentsFromJSON(new_entity, cmp);
+                        }
+                    }
+                }
+
+                if (new_entity == INVALID_ENTITY_ID) continue;
+                //components done
+                
                 DrawItem di{};
-                if (e.HasMember("prefab") && e["prefab"].IsString()) {
-                    auto itp = prefabDefaults.find(e["prefab"].GetString());
-                    if (itp != prefabDefaults.end()) def = itp->second;
-                    if (e.HasMember("prefab") && e["prefab"].IsString()) {
-                        di.item_type = e["prefab"].GetString();  // always safe
+                updateDrawItem(di, new_entity);
 
-                        auto itp = prefabDefaults.find(di.item_type);
-                        if (itp != prefabDefaults.end()) {
-                            def = itp->second;
-                        }
-                        else {
-                            logger.log(std::string("[load] prefab not found in prefabs.json: ") + di.item_type);
-                        }
-                    }
-                }
+                if (ent.HasMember("prefab") && ent["prefab"].IsString())di.item_type = ent["prefab"].GetString();
 
-                di.w = def.w;
-                di.h = def.h;
-                di.angle = def.angle;
+                //other overrides
+                if (ent.HasMember("is_draggable") && ent["is_draggable"].IsBool())di.is_draggable = ent["is_draggable"].GetBool();
+                if (ent.HasMember("is_dragging") && ent["is_dragging"].IsBool())di.is_dragging = ent["is_dragging"].GetBool();
 
-                if (e.HasMember("overrides") && e["overrides"].IsObject()) {
-                    const auto& ov = e["overrides"];
-                    if (ov.HasMember("x") && ov["x"].IsNumber())      di.x = ov["x"].GetFloat();
-                    if (ov.HasMember("y") && ov["y"].IsNumber())      di.y = ov["y"].GetFloat();
-                    if (ov.HasMember("w") && ov["w"].IsNumber())      di.w = ov["w"].GetFloat();
-                    if (ov.HasMember("h") && ov["h"].IsNumber())      di.h = ov["h"].GetFloat();
-                    if (ov.HasMember("angle") && ov["angle"].IsNumber()) di.angle = ov["angle"].GetFloat();
-                    if (ov.HasMember("is_draggable") && ov["is_draggable"].IsBool()) di.is_draggable = ov["is_draggable"].GetBool();
-                    if (ov.HasMember("is_dragging") && ov["is_dragging"].IsBool()) di.is_dragging = ov["is_dragging"].GetBool();
+                new_scene.items.push_back(di);
+                logger.log("Entity " + di.name + " with ID " + std::to_string(di.entityID) + " added to "+scn_name);
 
-         
-
-                    if (ov.HasMember("sprite_path") && ov["sprite_path"].IsString()) {
-                        std::string sp = toAssetsPath(ov["sprite_path"].GetString());
-                        di.tex = tex.get(sp);
-                    }
-                }
-
-                if (e.HasMember("animal_properties") && e["animal_properties"].IsObject()) {
-                    const auto& animal = e["animal_properties"];
-                    if (animal.HasMember("health_bar") && animal["health_bar"].IsNumber()) di.health_bar = animal["health_bar"].GetFloat();
-                    if (animal.HasMember("hunger_bar") && animal["hunger_bar"].IsNumber()) di.hunger_bar = animal["hunger_bar"].GetFloat();
-                    if (animal.HasMember("sanity_bar") && animal["sanity_bar"].IsNumber()) di.sanity_bar = animal["sanity_bar"].GetFloat();
-
-                    if (animal.HasMember("slower_decreasing_rate") && animal["slower_decreasing_rate"].IsNumber()) di.slower_decreasing_rate = animal["slower_decreasing_rate"].GetFloat();
-                    if (animal.HasMember("normal_decreasing_rate") && animal["normal_decreasing_rate"].IsNumber()) di.normal_decreasing_rate = animal["normal_decreasing_rate"].GetFloat();
-                    if (animal.HasMember("faster_decreasing_rate") && animal["faster_decreasing_rate"].IsNumber()) di.faster_decreasing_rate = animal["faster_decreasing_rate"].GetFloat();
-                    if (animal.HasMember("penalty_decreasing_rate") && animal["penalty_decreasing_rate"].IsNumber()) di.penalty_decreasing_rate = animal["penalty_decreasing_rate"].GetFloat();
-                    di.still_alive = true;
-                }
-
-                if (e.HasMember("name") && e["name"].IsString())
-                    di.name = e["name"].GetString();
-
-
-                sc.items.push_back(di);
-
+                //handle click regions now
                 ClickRegion cr;
-                cr.x = di.x; cr.y = di.y; cr.w = di.w; cr.h = di.h;
+                Transform *t = ecs_.getComponent<Transform>(new_entity);
+                ImageRenderer *ir= ecs_.getComponent<ImageRenderer>(new_entity); //will change to a new component called clickable
+                if (!t||!ir) continue;
+
+                cr.x = t->position.x(); cr.y = t->position.y(); cr.w = ir->width; cr.h = ir->height;
                 cr.name = di.name;
-                if (e.HasMember("goto") && e["goto"].IsString()) cr.gotoScene = e["goto"].GetString();
-                if (e.HasMember("quit") && e["quit"].IsBool())   cr.quit = e["quit"].GetBool();
-                if (e.HasMember("start") && e["start"].IsBool())  cr.start = e["start"].GetBool();
+                if (ent.HasMember("goto") && ent["goto"].IsString()) cr.gotoScene = ent["goto"].GetString();
+                if (ent.HasMember("quit") && ent["quit"].IsBool())   cr.quit = ent["quit"].GetBool();
+                if (ent.HasMember("start") && ent["start"].IsBool())  cr.start = ent["start"].GetBool();
 
                 // store the region if it does ANY action
                 if (cr.quit || cr.start || !cr.gotoScene.empty())
-                    sc.clicks.push_back(cr);
-
-
+                    logger.log("cr: " + std::to_string(cr.x)+" " + std::to_string(cr.y) + " " + std::to_string(cr.w) + " " + std::to_string(cr.h) + " " +cr.name);
+                    new_scene.clicks.push_back(cr);
             }
         }
-
-        scenes[sceneName] = std::move(sc);
+        logger.log("scene added");
+        scenes.emplace(scn_name, new_scene);
     }
-	//temp: add a flamingo entity with sprite animation to ECS
+
+    initialScenes_ = scenes;
+
+
+    //temp: add a flamingo entity with sprite animation to ECS
     {
         EntityID flamingo = ecs_.createEntity();
 
@@ -333,7 +596,7 @@ bool GameManager::load(const char* prefabsPath, const char* scenesPath, TextureS
         auto* img = ecs_.getComponent<ImageRenderer>(flamingo);
         auto* anim = ecs_.getComponent<SpriteAnimationComponent>(flamingo);
 
-        t->position = { 0.5f, 0.5f };
+        t->position = { 0.1f, 0.7f };
         t->scale = { 0.25f, 0.25f };
 
         img->isVisible = true;
@@ -364,8 +627,23 @@ bool GameManager::load(const char* prefabsPath, const char* scenesPath, TextureS
 void GameManager::requestScene(const std::string& name) {
     if (!scenes.count(name)) return;
     currentScene = name;
+    scene_changed_since_click = true;
     if (onSceneChanged) onSceneChanged(currentScene);
 }
+
+
+
+
+
+void GameManager::resetAllScenesToInitial()
+{
+    // If we have a snapshot, restore it
+    if (!initialScenes_.empty())
+    {
+        scenes = initialScenes_;
+    }
+}
+
 
 
 bool GameManager::switchToSceneForKey(int glfwKey) {
@@ -400,14 +678,13 @@ void GameManager::render(Renderer& r, Input& input, GLFWwindow* window, int w, i
 
 
     auto it = scenes.find(currentScene);
-    if (it == scenes.end()) {  return; }
+    if (it == scenes.end()) { logger.log("scene not found");  return; }
     const Scene& sc = it->second;
 
-    // background (fullscreen) � NOTE uniform must be "bg_texture"
+    // background (fullscreen) NOTE uniform must be "bg_texture"
     if (it->first == "MainMenu") {
         r.special_background_render(sc.background, "bgTexture", 1);
     }
-
     else {
         r.background_render(sc.background, "bg_texture", 0);
         // Draw background as a regular textured quad and apply camera to it too
@@ -416,134 +693,157 @@ void GameManager::render(Renderer& r, Input& input, GLFWwindow* window, int w, i
         r.texturedTri(sc.background, bx, by, bw, bh);
     }
 
-    constexpr EntityID MAX_SCAN = 5000;
-    for (EntityID e = 0; e < MAX_SCAN; ++e) {
-        if (auto* t = ecs_.getComponent<Transform>(e)) {
-            if (auto* img = ecs_.getComponent<ImageRenderer>(e)) {
-                if (!img->isVisible) continue;
-                if (img->textureID <= 0) continue;  // << guard: skip �white box� draws
-
-                if (auto* anim = ecs_.getComponent<SpriteAnimationComponent>(e)) {
-                    auto it = anim->animations.find(anim->currentAnim);
-                    if (it != anim->animations.end()) {
-                        const auto& def = it->second;
-
-                        int frameIndex = anim->currentFrame;
-                        int sheetColumns = anim->sheetColumns;
-                        int sheetRows = anim->sheetRows;
-
-                        float uPerFrame = 1.0f / float(sheetColumns);
-                        float vPerFrame = 1.0f / float(sheetRows);
-
-                        int col = frameIndex % sheetColumns;
-                        int row = frameIndex / sheetColumns;
-
-                        float u0 = col * uPerFrame;
-                        float v0 = row * vPerFrame;
-                        float u1 = u0 + uPerFrame;
-                        float v1 = v0 + vPerFrame;
-
-                        float px = t->position.x() * w;
-                        float py = t->position.y() * h;
-                        float pw = t->scale.x() * w;
-                        float ph = t->scale.y() * h;
-
-                        Cam2D_Apply(currentScene, px, py, pw, ph, w, h);
-                        r.drawSpriteUV(img->textureID, px, py, pw, ph, u0, v0, u1, v1);
-                    }
-                }
-            }
-        }
-    }
-
+    //render items in scene, BASED ON di
     // entities (normalized ? pixels)
    // entities (normalized → pixels) — draw JSON **only** if there is NO ECS entity by the same name
-    for (const auto& di : sc.items) {
-        // If an ECS entity with this name exists, we skip the JSON-drawn duplicate
-        if (!di.name.empty()) {
-            EntityID eid = ecs_.findEntityByName(di.name);
-            if (eid != INVALID_ENTITY_ID) {
-                continue; // ECS is the source of truth for this sprite
+    for (DrawItem di : sc.items) {
+        if (di.entityID != INVALID_ENTITY_ID)
+        {
+            //logger.log("drawing " + di.name+" "+std::to_string(ecs_.findEntityByName(di.name)));
+            Transform* t = ecs_.getComponent<Transform>(ecs_.findEntityByName(di.name));
+            ImageRenderer* img = ecs_.getComponent<ImageRenderer>(ecs_.findEntityByName(di.name));
+
+            if (!t || !img)continue;
+            
+            
+
+            if (!img->isVisible || img->textureID <= 0)continue;
+
+            if (auto* anim = ecs_.getComponent<SpriteAnimationComponent>(di.entityID)) {
+                auto it = anim->animations.find(anim->currentAnim);
+                if (it != anim->animations.end()) {
+                    const auto& def = it->second;
+
+                    int frameIndex = anim->currentFrame;
+                    int sheetColumns = anim->sheetColumns;
+                    int sheetRows = anim->sheetRows;
+
+                    float uPerFrame = 1.0f / float(sheetColumns);
+                    float vPerFrame = 1.0f / float(sheetRows);
+
+                    int col = frameIndex % sheetColumns;
+                    int row = frameIndex / sheetColumns;
+
+                    float u0 = col * uPerFrame;
+                    float v0 = row * vPerFrame;
+                    float u1 = u0 + uPerFrame;
+                    float v1 = v0 + vPerFrame;
+
+                    float px = t->position.x() * w;
+                    float py = t->position.y() * h;
+                    float pw = t->scale.x() * w;
+                    float ph = t->scale.y() * h;
+
+                    Cam2D_Apply(currentScene, px, py, pw, ph, w, h);
+                    r.drawSpriteUV(img->textureID, px, py, pw, ph, u0, v0, u1, v1);
+                }
             }
-        }
 
-        if (di.tex == 0) continue;
-        float px = di.x * w, py = di.y * h, pw = di.w * w, ph = di.h * h;
+            if (di.hasCollider && (di.colW <= 0.0f || di.colH <= 0.0f)) {
+                di.colOffsetX = 0.0f;
+                di.colOffsetY = 0.0f;
+                di.colW = img->width;   //same size as sprite
+                di.colH = img->height;
+            }
+            float px = t->position.x() * w, py = t->position.y() * h, pw = img->width * w, ph = img->height * h;
+            if (di.name == "flamingo" || di.name == "seal" || di.name == "owl" || di.name == "horse") {
+                AnimalBehavior* ab = ecs_.getComponent<AnimalBehavior>(di.entityID);
+                //logger.log(di.name + " has animalbehavior: " + std::to_string(ab != nullptr));
+                if (di.still_alive && ab) {
+                    //logger.log(di.name + " has animalbehavior: " + std::to_string(ab != nullptr));
+                    r.rect(w / 2 , h / 2 - 200, ab->health_bar * 4, 25, 1, 0, 0);
+                    r.rect(w / 2 , h / 2 - 150, ab->hunger_bar * 4, 25, 0, 1, 0);
+                    r.rect(w / 2 , h / 2 - 100, ab->sanity_bar * 4, 25, 0, 0, 1);
 
-        if (di.name=="flamingo"||di.name=="seal"||di.name=="owl"||di.name=="horse") {
-            if (di.still_alive) {
-                r.rect(w / 2, h / 2 - 200, di.health_bar * 4, 25, 1, 0, 0);
-                r.rect(w / 2, h / 2 - 150, di.hunger_bar * 4, 25, 0, 1, 0);
-                r.rect(w / 2, h / 2 - 100, di.sanity_bar * 4, 25, 0, 0, 1);
-
+                    Cam2D_Apply(currentScene, px, py, pw, ph, w, h);
+                    r.texturedTri(img->textureID, px, py, pw, ph);
+                }
+                
+            }
+            else {
                 Cam2D_Apply(currentScene, px, py, pw, ph, w, h);
                 r.texturedTri(di.tex, px, py, pw, ph);
+
+                // --- Collider outline (debug) ---
+                if (/*Debug::Drawer::Instance().IsActive() &&*/ di.hasCollider)
+                {
+                    //collider center in NORMALIZED coords (same as di.x/di.y)
+                    float cxNorm = t->position.x() + di.colOffsetX;
+                    float cyNorm = t->position.y() + di.colOffsetY;
+
+                    //collider size in NORMALIZED space
+                    float cwNorm = di.colW;
+                    float chNorm = di.colH;
+
+                    //convert to pixels
+                    float cw = cwNorm * w;
+                    float ch = chNorm * h;
+                    float cx = cxNorm * w;
+                    float cy = cyNorm * h;
+
+                    //apply same camera transform as sprites
+                    Cam2D_Apply(currentScene, cx, cy, cw, ch, w, h);
+
+                    float left = cx;
+                    float bottom = cy;
+
+                    //draw a green outline rectangle
+                    glPushAttrib(GL_ALL_ATTRIB_BITS);
+                    glUseProgram(0);
+                    glDisable(GL_TEXTURE_2D);
+                    glDisable(GL_DEPTH_TEST);
+                    glEnable(GL_BLEND);
+                    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+                    glColor3f(0.0f, 1.0f, 0.0f);  // green
+                    glBegin(GL_LINE_LOOP);
+                    glVertex2f(left, bottom);
+                    glVertex2f(left + cw, bottom);
+                    glVertex2f(left + cw, bottom + ch);
+                    glVertex2f(left, bottom + ch);
+                    glEnd();
+
+                    glPopAttrib();
+                }
+                // --- end collider outline ---
+
+                if (di.is_dragging && !duplicate_item) {
+                    duplicate_item = std::make_unique<DrawItem>(di.CreateDupe());
+                   
+                }
+
+                if (duplicate_item) {
+                    Transform* dt = ecs_.getComponent<Transform>(duplicate_item->entityID);
+                    ImageRenderer* dimg = ecs_.getComponent<ImageRenderer>(duplicate_item->entityID);
+                    if (dt&&dimg)
+                    {
+                        r.texturedTri(duplicate_item->tex, dt->position.x()* w, dt->position.y()* h, dimg->width* w, dimg->height* h);
+                    }
+                    
+                }
+
+                //if (!input.isLeftMousePressed(window)) {
+                //    duplicate_item.reset(); //The unique_ptr releases ownership
+                //}
+
+                /*if (Debug::Drawer::Instance().IsActive()) {
+                    AABB collider(Vector2D(px, py), Vector2D(pw, ph));
+                    Debug::Drawer::Instance().AddRect(
+                        collider.pos.x(), collider.pos.y(),
+                        collider.size.x(), collider.size.y(),
+                        0xFFFF00FF
+                    );
+                }*/
+                // --- Debug Draw Collider Box ---
             }
-        }
-
-        else {
-            Cam2D_Apply(currentScene, px, py, pw, ph, w, h);
-            r.texturedTri(di.tex, px, py, pw, ph);
-
-            // --- COLLIDER VISUALIZATION ---
-            if (di.hasCollider)
-            {
-                float colX = di.x * w + di.colOffsetX * w;
-                float colY = di.y * h + di.colOffsetY * h;
-                float colW = di.colW * w;
-                float colH = di.colH * h;
-
-                // convert collider location from center to top-left
-                float cx = colX + colW * 0.5f;
-                float cy = colY + colH * 0.5f;
-
-                // green rectangle
-                r.rect(cx, cy, colW, colH, 0.0f, 1.0f, 0.0f);
-            }
-            // --------------------------------
-        }
-
-        if (di.is_dragging && !duplicate_item) {
-            duplicate_item = std::make_unique<DrawItem>(di);
-        }
-
-        if (duplicate_item) {
-            r.texturedTri(duplicate_item->tex, duplicate_item->x * w, duplicate_item->y * h, duplicate_item->w * w, duplicate_item->h * h);
-        }
-
-        //if (!input.isLeftMousePressed(window)) {
-        //    duplicate_item.reset(); //The unique_ptr releases ownership
-        //}
-
-        /*if (Debug::Drawer::Instance().IsActive()) {
-            AABB collider(Vector2D(px, py), Vector2D(pw, ph));
-            Debug::Drawer::Instance().AddRect(
-                collider.pos.x(), collider.pos.y(),
-                collider.size.x(), collider.size.y(),
-                0xFFFF00FF
-            );
-        }*/
-		// --- Debug Draw Collider Box ---
-        if (Debug::Drawer::Instance().IsActive() && di.hasCollider)
-        {
-            float cx = di.x + di.colOffsetX;
-            float cy = di.y + di.colOffsetY;
-
-            float px = cx * w;
-            float py = cy * h;
-
-            float cw = di.colW * w;
-            float ch = di.colH * h;
-
-            Debug::Drawer::Instance().AddRect(
-                px - cw * 0.5f,
-                py - ch * 0.5f,
-                cw,
-                ch,
-                0x00FF00FF //green box
-            );
         }
     }
+
+    
+   
+
+        
+    
 }
 
 
@@ -623,19 +923,30 @@ void GameManager::renderWithHUD(Renderer& r,
         const Font& f2 = resourceManager.getFont(*s_fontFPS);
 
         static double accumTime = 0.0;
+        static int    frameCount = 0;
         static double fpsDisplay = 0.0;
 
         // avoid division by zero
         if (dt <= 0.0) dt = 1e-6;
 
-        accumTime += dt;
+        // 🔹 IF your dt is in MILLISECONDS, convert to seconds here:
+        double dtSeconds = dt;
+        // if you know dt is in ms, UNCOMMENT this:
+        // dtSeconds = dt * 0.001;   // ms → s
+
+        accumTime += dtSeconds;
+        ++frameCount;
+
+        // Update FPS about once per second
         if (accumTime >= 1.0) {
-            fpsDisplay = 1.0 / dt;
+            fpsDisplay = static_cast<double>(frameCount) / accumTime; // avg FPS
             accumTime = 0.0;
+            frameCount = 0;
         }
 
         int fpsInt = static_cast<int>(std::round(fpsDisplay));
         std::string fpsText = "FPS: " + std::to_string(fpsInt);
+
 
         float marginX = 0.02f * w;
         float offsetY = compact ? 0.12f : 0.15f; // pull closer when small
@@ -653,7 +964,22 @@ void GameManager::renderWithHUD(Renderer& r,
             glm::vec3(0.2f, 0.8f, 1.0f) // bluish
         );
     }
+
+    if (m_isGameOver) {
+        // draw a dark quad over the screen
+        r.rect(0, 0, (float)w, (float)h, 0, 0, 0.0f); // or semi-transparent if your rect supports it
+
+        // big “GAME OVER” in the middle
+        if (s_fontTitle) {
+            const Font& f = resourceManager.getFont(*s_fontTitle);
+            r.drawText(f, "GAME OVER", w * 0.35f, h * 0.6f, 1.5f,
+                glm::vec3(1.0f, 0.2f, 0.2f));
+        }
+
+        // you can also show “Press R to Restart” etc, handled with Input, not ImGui
+    }
 }
+
 
 
 void GameManager :: imGUIlessRender(Renderer& r, Input& input, GLFWwindow* window, int w, int h) {
@@ -672,7 +998,49 @@ void GameManager :: imGUIlessRender(Renderer& r, Input& input, GLFWwindow* windo
 bool GameManager::handleClick(float nx, float ny) {
     auto it = scenes.find(currentScene);
     if (it == scenes.end()) return false;
-    const Scene& sc = it->second;
+    Scene& sc = it->second;
+
+    // --- Sync click regions from DrawItem colliders ---
+    for (auto& cr : sc.clicks)
+    {
+        if (cr.name.empty())
+            continue;
+
+        //find DrawItem whose name matches the click region
+        auto diIt = std::find_if(
+            sc.items.begin(), sc.items.end(),
+            [&](const DrawItem& d) { return d.name == cr.name; });
+
+        if (diIt == sc.items.end())
+            continue;
+
+        const DrawItem& di = *diIt;
+        if (!di.hasCollider)
+            continue;
+
+        Transform* t = ecs_.getComponent<Transform>(di.entityID);
+        ImageRenderer* ir = ecs_.getComponent<ImageRenderer>(di.entityID);
+        if (!t||!ir)return false;
+
+        //collider in normalised space
+        float wNorm = (di.colW > 0.0f ? di.colW : ir->width);
+        float hNorm = (di.colH > 0.0f ? di.colH : ir->height);
+
+        float cxNorm = t->position.x() + di.colOffsetX;
+        float cyNorm = t->position.y() + di.colOffsetY;
+
+        float left = cxNorm;
+        float bottom = cyNorm;
+
+        //write back into ClickRegion so hit-test uses the collider
+        cr.x = left;
+        cr.y = bottom;
+        cr.w = wNorm;
+        cr.h = hNorm;
+    }
+	//--- end sync click regions ---
+
+    logger.log("clicked at x: " + std::to_string(nx) + ", y: " + std::to_string(ny));
 
     for (const auto& cr : sc.clicks) {
         bool hit = (nx >= cr.x && nx <= cr.x + cr.w && ny >= cr.y && ny <= cr.y + cr.h);
@@ -696,8 +1064,16 @@ bool GameManager::handleClick(float nx, float ny) {
         // In Menu: only start:true does anything (exactly how 'start' works)
         if (app == AppState::Menu) {
             if (cr.start) {
+
+                // reset all scenes to the initial JSON values
+                resetAllScenesToInitial();
+
+                // enter Play mode
                 startGame();
-                if (!cr.gotoScene.empty()) requestScene(cr.gotoScene);
+
+                if (!cr.gotoScene.empty()) {
+                    requestScene(cr.gotoScene);
+                }
                 else {
                     auto it1 = keyMap.find(GLFW_KEY_1);
                     if (it1 != keyMap.end()) requestScene(it1->second);
@@ -705,6 +1081,7 @@ bool GameManager::handleClick(float nx, float ny) {
             }
             return true;
         }
+
 
         // Playing: allow goto
         if (!cr.gotoScene.empty()) {
@@ -714,9 +1091,37 @@ bool GameManager::handleClick(float nx, float ny) {
     }
     return false;
 }
+//void GameManager::startGame() {
+//    // enter play state
+//    app = AppState::Playing;
+//
+//    // every time a new game starts, reset ALL animals in ALL scenes
+//    for (auto& [name, scene] : scenes) {
+//        for (auto& item : scene.items) {
+//            if (item.item_type == "animal") {
+//                // reset bars
+//                item.health_bar        = 100.0f;
+//                item.hunger_bar        = 100.0f;
+//                item.sanity_bar        = 100.0f;
+//
+//                // reset timers
+//                item.acc_timer         = 0.0f;
+//                item.staring_countdown = 10.0f;
+//
+//                // reset status / drag flags
+//                item.still_alive       = true;
+//                item.is_dragging       = false;
+//            }
+//        }
+//    }
+//}
+
 void GameManager::startGame() {
     app = AppState::Playing;
+    m_isGameOver = false;
 }
+ 
+
 
 void GameManager::goToMenu() {
     app = AppState::Menu;
@@ -726,6 +1131,36 @@ bool GameManager::popQuitRequested() {
     requestedQuit = false;
     return q;
 }
+
+void GameManager::triggerGameOver() {
+    logger.log("=== GAME OVER TRIGGERED ===");
+    m_isGameOver = true;
+    
+    // Go to MainMenu (or GameOver scene if you have one)
+    if (scenes.count("GameOver") > 0) {
+        requestScene("GameOver");
+    } else {
+        requestScene("MainMenu");
+    }
+    app = AppState::Menu;
+}
+
+/*
+void GameManager::triggerGameOver() {
+    logger.log("=== GAME OVER TRIGGERED ===");
+
+    // Option 1: Go to a GameOver scene (if you have one)
+    if (scenes.count("GameOver") > 0) {
+        requestScene("GameOver");
+        app = AppState::Menu;  // Set to menu state
+    }
+    // Option 2: Go back to main menu
+    else {
+        requestScene("MainMenu");
+        app = AppState::Menu;
+    }
+}
+*/
 
 // Function used for the level editor to show current game objects
 Scene* GameManager::getCurrentScene() {
@@ -768,103 +1203,132 @@ void GameManager::resumeGame() {
     }
 }
 
-bool GameManager::reloadCurrentScene(TextureStore& tex) {
-    if (currentScene.empty() || scenesFilePath.empty()) {
-        logger.warning("[GameManager] Cannot reload: no current scene");
+
+
+bool GameManager::populateScene(const std::string& sceneName, PrefabManager& pm) {
+    // check first if the scene has been populated
+    auto it = scenes.find(sceneName);
+    if (it == scenes.end())return false;
+
+    if (!it->second.loaded)
+    {
+        //load it!
+    }return true;
+}
+
+bool GameManager::reloadAllScene(TextureStore& tex) {
+    if (scenes.empty() || scenesFilePath.empty()) {
+        logger.warning("[GameManager] Cannot reload: no current scenes");
         return false;
     }
 
     std::string sceneToReload = currentScene;
 
     logger.log("[GameManager] Reloading scene: " + sceneToReload);
+    for (const auto& pair : scenes) {
+        const std::string& name = pair.first;  // the key
+        const Scene& scene = pair.second;      // the value
 
-    // Read the entire scenes file again
-    std::string jsonContent;
-    if (!readFile(scenesFilePath.c_str(), jsonContent)) {
-        logger.error("[GameManager] Failed to read scenes file for reload");
-        return false;
-    }
-
-    rapidjson::Document d;
-    d.Parse(jsonContent.c_str());
-    if (d.HasParseError() || !d.IsObject()) {
-        logger.error("[GameManager] Failed to parse scenes file for reload");
-        return false;
-    }
-
-    // Find the current scene in the JSON
-    if (!d.HasMember("scenes") || !d["scenes"].IsObject()) {
-        logger.error("[GameManager] No scenes object in JSON");
-        return false;
-    }
-
-    const auto& jsScenes = d["scenes"];
-    if (!jsScenes.HasMember(sceneToReload.c_str())) {
-        logger.error("[GameManager] Scene not found: " + sceneToReload);
-        return false;
-    }
-
-    const auto& jsS = jsScenes[sceneToReload.c_str()];
-    if (!jsS.IsObject()) {
-        logger.error("[GameManager] Invalid scene object");
-        return false;
-    }
-
-    // Load prefab defaults (same as in load() function)
-    std::unordered_map<std::string, PrefabDef> prefabDefaults;
-    // ... (copy the prefab loading code from load() function) ...
-
-    // Clear and rebuild the scene
-    Scene freshScene;
-
-    // Background
-    if (jsS.HasMember("background") && jsS["background"].IsString()) {
-        std::string bg = toAssetsPath(jsS["background"].GetString());
-        freshScene.background = tex.get(bg);
-    }
-
-    // Entities (same loading logic as in load() function)
-    if (jsS.HasMember("entities") && jsS["entities"].IsArray()) {
-        for (const auto& e : jsS["entities"].GetArray()) {
-            if (!e.IsObject()) continue;
-
-            PrefabDef def;
-            DrawItem di{};
-
-            // Copy the entity loading logic from load() function
-            // (lines 237-292 in the current load() function)
-            // ... entity loading code here ...
-
-            freshScene.items.push_back(di);
+        for (DrawItem di : pair.second.items)
+        {
+            ImageRenderer* img = ecs_.getComponent<ImageRenderer>(di.entityID);
+            if (!img)continue;
+            if (img->textureID <= 0 && !img->image_path.empty())
+            {
+                std::string path = img->image_path;
+                if (path.rfind("assets/", 0) != 0) path = "assets/" + path;
+                logger.log("Texture looking for " + path);
+                img->textureID = tex.get(path);
+                logger.log("Texture for " + di.name + " refreshed to " + std::to_string(img->textureID));
+            }
         }
     }
-
-    // Replace the current scene's items with the freshly loaded ones
-    scenes[sceneToReload] = freshScene;
-
-    logger.log("[GameManager] Scene reloaded successfully: " +
-        std::to_string(freshScene.items.size()) + " items");
+    
 
     return true;
 }
 /**
- * Current printing method for hamobjects components.
+ * Current printing method for objects components.
  *  it is incredibly lazy
  * \param id
  * \param overridesObj
  * \param alloc
  */
-void GameManager::writeAllComponentsToJSON(EntityID id, rapidjson::Value& obj, rapidjson::Document::AllocatorType& alloc) {
+void GameManager::writeAllComponentsToJSONArray(EntityID id, rapidjson::Value& obj, rapidjson::Document::AllocatorType& alloc) {
 
-    if (ecs_.getComponent<AudioData>(id))ecs_.getComponent<AudioData>(id)->ToJSON(obj, alloc);
-    if (ecs_.getComponent<Transform>(id))ecs_.getComponent<Transform>(id)->ToJSON(obj, alloc);
-    if (ecs_.getComponent<ImageRenderer>(id))ecs_.getComponent<ImageRenderer>(id)->ToJSON(obj, alloc);
-    if (ecs_.getComponent<CircleRenderer>(id))ecs_.getComponent<CircleRenderer>(id)->ToJSON(obj, alloc);
-    if (ecs_.getComponent<RectRenderer>(id))ecs_.getComponent<RectRenderer>(id)->ToJSON(obj, alloc);
-    if (ecs_.getComponent<AnimalBehavior>(id))ecs_.getComponent<AnimalBehavior>(id)->ToJSON(obj, alloc);
-    if (ecs_.getComponent<PhysicsComponent>(id))ecs_.getComponent<PhysicsComponent>(id)->ToJSON(obj, alloc);
+    if (ecs_.getComponent<AudioData>(id)) { 
+        rapidjson::Value entObj(rapidjson::kObjectType);
+        ecs_.getComponent<AudioData>(id)->ToJSON(entObj, alloc); 
+        obj.PushBack(entObj, alloc);
+    }
 
-    if (ecs_.getComponent<AIComponent>(id))ecs_.getComponent<AIComponent>(id)->ToJSON(obj, alloc);
+    if (ecs_.getComponent<Transform>(id)) { 
+        rapidjson::Value entObj(rapidjson::kObjectType);
+        ecs_.getComponent<Transform>(id)->ToJSON(entObj, alloc);
+        obj.PushBack(entObj, alloc);
+    }
 
-    if (ecs_.getComponent<BoxCollider>(id))ecs_.getComponent<BoxCollider>(id)->ToJSON(obj, alloc);
+    if (ecs_.getComponent<ImageRenderer>(id)) { 
+        rapidjson::Value entObj(rapidjson::kObjectType);
+        ecs_.getComponent<ImageRenderer>(id)->ToJSON(entObj, alloc);
+        obj.PushBack(entObj, alloc);
+    }
+
+    if (ecs_.getComponent<CircleRenderer>(id)){
+        rapidjson::Value entObj(rapidjson::kObjectType);
+        ecs_.getComponent<CircleRenderer>(id)->ToJSON(entObj, alloc);
+        obj.PushBack(entObj, alloc);
+    }
+
+    if (ecs_.getComponent<RectRenderer>(id)) { 
+        rapidjson::Value entObj(rapidjson::kObjectType);
+        ecs_.getComponent<RectRenderer>(id)->ToJSON(entObj, alloc); 
+        obj.PushBack(entObj, alloc);
+    }
+
+    if (ecs_.getComponent<AnimalBehavior>(id)) { 
+        rapidjson::Value entObj(rapidjson::kObjectType);
+        ecs_.getComponent<AnimalBehavior>(id)->ToJSON(entObj, alloc); 
+        obj.PushBack(entObj, alloc);
+    }
+
+    if (ecs_.getComponent<PhysicsComponent>(id)) { 
+        rapidjson::Value entObj(rapidjson::kObjectType);
+        ecs_.getComponent<PhysicsComponent>(id)->ToJSON(entObj, alloc);
+        obj.PushBack(entObj, alloc);
+    }
+
+    if (ecs_.getComponent<AIComponent>(id)) {
+        rapidjson::Value entObj(rapidjson::kObjectType);
+        ecs_.getComponent<AIComponent>(id)->ToJSON(entObj, alloc);
+        obj.PushBack(entObj, alloc);
+    }
+
+    if (ecs_.getComponent<BoxCollider>(id)) { 
+        rapidjson::Value entObj(rapidjson::kObjectType);
+        ecs_.getComponent<BoxCollider>(id)->ToJSON(entObj, alloc); 
+        obj.PushBack(entObj, alloc);
+    }
+}
+
+void GameManager::processComponentsFromJSON(EntityID id, rapidjson::Value& obj,bool isOverride){
+    if (!obj.HasMember("type") || !obj["type"].IsString())return;
+    
+    if (isOverride)
+    {
+    
+        ComponentFactory::ParseFromName(id, obj["type"].GetString(), obj);
+    }
+    else {
+        ComponentFactory::CreateFromName(id, obj["type"].GetString(), obj);
+    }
+    
+
+}
+void GameManager::updateDrawItem(DrawItem& d, EntityID e) {
+    d.name = ecs_.getEntityName(e);
+
+    if (ecs_.getComponent<ImageRenderer>(e))d.tex = ecs_.getComponent<ImageRenderer>(e)->textureID;
+
+    d.entityID = e;
 }

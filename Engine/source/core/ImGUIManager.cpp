@@ -61,13 +61,160 @@ void Gui::updateImGuiManager(double& deltaTime, ImGuiManager& imGuiManager) {
 		imGuiManager.showPerformanceOverlayUI();
 		imGuiManager.showTransformUI();
 		imGuiManager.showEntityListUI();
-		//imGuiManager.showLogsOverlayUI();
+		imGuiManager.showScenesListUI();
+		imGuiManager.showLogicUI();
 		imGuiManager.showBottomDockUI();
 		});
 
 	// finish frame and record the exclusive ImGui time
 	imGuiManager.endFrame();
 	imGuiManager.setSystemTimings(imGuiSec);
+}
+
+void ImGuiManager::showLogicUI()
+{
+
+	ImGuiWindowFlags flags = ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoResize;
+
+	ImGui::Begin("Logic", nullptr, flags);
+
+	Scene* scene = gsm.getCurrentScene();
+	auto& items = scene->items;
+	if (!scene || scene->items.empty()) {
+		ImGui::TextDisabled("No scene or objects available.");
+		ImGui::End();
+		return;
+	}
+
+	if (selectedEntityType >= scene->items.size()) {
+		ImGui::TextDisabled("No object selected.");
+		ImGui::End();
+		return;
+	}
+
+	DrawItem& item = scene->items[selectedEntityType];
+
+	ImGui::Text("Editing: %s", item.name.empty() ? "(Unnamed)" : item.name.c_str());
+	ImGui::Separator();
+
+	// Check if we're in play mode
+	bool isPlayMode = (m_editorMode == EditorMode::PLAY);
+	if (isPlayMode) {
+		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.6f, 0.2f, 1.0f));
+		ImGui::Text("Logic editing disabled during play mode");
+		ImGui::PopStyleColor();
+		ImGui::Separator();
+		ImGui::BeginDisabled();
+	}
+
+	// Available logic scripts (you can expand this list)
+	static const char* logicScripts[] = {
+		"Flamingobehaviour",
+		"Sealbehaviour",
+		"Owlbehaviour",
+		"Horsebehaviour",
+	};
+
+	static int currentScript = 0; // This should ideally be stored per-object
+
+	// Get current script for this object (you'll need to store this in DrawItem)
+	// For now, we'll use a static variable - you should replace this with proper storage
+	static std::unordered_map<size_t, int> objectScripts; // Maps object index to script index
+
+	// Initialize if this object doesn't have a script assigned
+	if (objectScripts.find(selectedEntityType) == objectScripts.end()) {
+		objectScripts[selectedEntityType] = 0; // Default to "None"
+	}
+
+	int& currentScriptForObject = objectScripts[selectedEntityType];
+
+	// Script selection dropdown
+	ImGui::Text("Logic Script:");
+	if (ImGui::Combo("##ScriptSelect", &currentScriptForObject, logicScripts, IM_ARRAYSIZE(logicScripts))) {
+		// Script changed - save undo state
+		if (ImGui::IsItemActivated()) {
+			pushUndoState("Change logic script");
+		}
+
+		std::string scriptName = (currentScriptForObject == 0) ? "None" : logicScripts[currentScriptForObject];
+
+		// Here you would actually attach the script to the object
+		// For example: item.scriptType = currentScriptForObject;
+	}
+
+	ImGui::Spacing();
+	ImGui::Separator();
+	ImGui::Spacing();
+
+	// Show script-specific parameters based on selected script
+	if (currentScriptForObject >= 0) {
+		ImGui::Text("Script Parameters:"); 
+		ImGui::TextColored(ImVec4(0.8f, 0.8f, 0.8f, 1.0f), "Script: %s", logicScripts[currentScriptForObject]);
+
+		for (auto& item : items) {
+			AnimalBehavior* animalb = ECS::getECS().getComponent<AnimalBehavior>(item.entityID);
+			Transform* t = ECS::getECS().getComponent<Transform>(item.entityID);
+			// Example parameters for different script types
+			switch (currentScriptForObject) {
+			case 0: // Flamingo
+			{
+				if (item.name == "flamingo") {
+					ImGui::DragFloat("health", &animalb->health_bar, 0.0f, 0.1f, 100.0f);
+					ImGui::DragFloat("hunger", &animalb->hunger_bar, 0.0f, 0.1f, 100.0f);
+					ImGui::DragFloat("sanity", &animalb->sanity_bar, 0.0f, 0.1f, 100.0f);
+				
+				}
+			}
+			break;
+
+			case 1: // Seal
+			{
+				if (item.name == "seal") {
+					ImGui::DragFloat("health", &animalb->health_bar, 0.0f, 0.1f, 100.0f);
+					ImGui::DragFloat("hunger", &animalb->hunger_bar, 0.0f, 0.1f, 100.0f);
+					ImGui::DragFloat("sanity", &animalb->sanity_bar, 0.0f, 0.1f, 100.0f);
+				}
+			}
+			break;
+
+			case 2: // Owl
+			{
+				if (item.name == "owl") {
+					ImGui::DragFloat("health", &animalb->health_bar, 0.0f, 0.1f, 100.0f);
+					ImGui::DragFloat("hunger", &animalb->hunger_bar, 0.0f, 0.1f, 100.0f);
+					ImGui::DragFloat("sanity", &animalb->sanity_bar, 0.0f, 0.1f, 100.0f);
+				}
+			}
+			break;
+
+			case 3: // Horse
+			{
+				if (item.name == "horse") {
+					ImGui::DragFloat("health", &animalb->health_bar, 0.0f, 0.1f, 100.0f);
+					ImGui::DragFloat("hunger", &animalb->hunger_bar, 0.0f, 0.1f, 100.0f);
+					ImGui::DragFloat("sanity", &animalb->sanity_bar, 0.0f, 0.1f, 100.0f);
+				}
+			}
+			break;
+
+			default:
+				ImGui::TextDisabled("No specific parameters for this script.");
+				break;
+			}
+		}
+
+		ImGui::Spacing();
+		ImGui::Separator();
+
+		ImGui::SameLine();
+	}
+	ImGui::Spacing();
+	ImGui::Separator();
+
+	if (isPlayMode) {
+		ImGui::EndDisabled();
+	}
+	ImGui::End();
 }
 
 ImGuiManager::ImGuiManager(Window& w, Renderer& r,
@@ -89,11 +236,11 @@ ImGuiManager::ImGuiManager(Window& w, Renderer& r,
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 	io.ConfigDockingWithShift = false;  // Dock without holding Shift
 
-	#ifdef IMGUI_SAVE_LAYOUT
-		io.IniFilename = "editor_layout.ini";  // Save layout
-	#else
-		io.IniFilename = nullptr;  // Don't save layout
-	#endif
+#ifdef IMGUI_SAVE_LAYOUT
+	io.IniFilename = "editor_layout.ini";  // Save layout
+#else
+	io.IniFilename = nullptr;  // Don't save layout
+#endif
 
 	ImGui_ImplGlfw_InitForOpenGL(mainWindow.handle(), /*install_callbacks=*/false);
 	ImGui_ImplOpenGL3_Init("#version 330");
@@ -311,7 +458,7 @@ void ImGuiManager::showViewportWindowUI() {
 	bool isPlayMode = (m_editorMode == EditorMode::PLAY);
 
 	// Logic timing (animal state update)
-	if (isPlayMode) {
+	/*if (isPlayMode) {
 		logicTime = TimeUtils::MeasureSeconds([&]() {
 			logic.check_animal_status(gsm);
 			auto drag_value = logic.check_item_status(
@@ -322,7 +469,7 @@ void ImGuiManager::showViewportWindowUI() {
 	}
 	else {
 		logicTime = 0.0;
-	}
+	}*/
 
 	// Physics timing scope
 	if (isPlayMode) {
@@ -352,7 +499,7 @@ void ImGuiManager::showViewportWindowUI() {
 			mainWindow.handle(),
 			vw,
 			vh,
-			isPlayMode ? deltaTime : 0.0,  // Pass 0 deltaTime in edit mode
+			deltaTime,  // Pass 0 deltaTime in edit mode
 			resourceManager,
 			m_showFPS
 		);
@@ -383,14 +530,86 @@ void ImGuiManager::showViewportWindowUI() {
 	);
 	ImVec2 imgMax = ImVec2(imgMin.x + vw, imgMin.y + vh);
 
+	// mouse in viewport-normalised coords [0,1]
+	ImVec2 mouseScreen = ImGui::GetMousePos();
+	ImVec2 mouseViewport{
+		(mouseScreen.x - imgMin.x) / static_cast<float>(vw),
+		(mouseScreen.y - imgMin.y) / static_cast<float>(vh)
+	};
+	mouseViewport.x = std::clamp(mouseViewport.x, 0.0f, 1.0f);
+	mouseViewport.y = std::clamp(mouseViewport.y, 0.0f, 1.0f);
+
+	isPlayMode = (m_editorMode == EditorMode::PLAY);
+
+	// Logic timing (animal state update) in PLAY mode only
+	if (isPlayMode) {
+		logicTime = TimeUtils::MeasureSeconds([&]() {
+			logic.check_animal_status(gsm);
+			auto drag_value = logic.check_item_status(
+				gsm, mouseViewport, input, mainWindow.handle());
+			logic.update_animal_ALLstate(gsm, deltaTime);
+			logic.drag_drop(
+				gsm, mouseViewport, input, mainWindow.handle(), drag_value);
+			});
+	}
+	else {
+		logicTime = 0.0;
+	}
+
 	//Store rect relative to the main window (you were already doing this)
 	vpMinWin = ImVec2(imgMin.x - windowTopLeft.x, imgMin.y - windowTopLeft.y);
 	vpMaxWin = ImVec2(imgMax.x - windowTopLeft.x, imgMax.y - windowTopLeft.y);
 
-	//handle click and drag picking on scene items
+	//handle click and drag picking on scene items (editor)
 	handleViewportPicking(imgMin, imgMax, vw, vh);
 
+	// Game Over Overlay
+	/*
+	if (gsm.isGameOver())
+	{
+		ImDrawList* dl = ImGui::GetWindowDrawList();
+
+		// Full-viewport rectangle
+		ImVec2 p0 = imgMin;               // top-left of viewport
+		ImVec2 p1 = imgMax;               // bottom-right of viewport
+		dl->AddRectFilled(p0, p1, IM_COL32(0, 0, 0, 180));  // dark overlay
+
+		// Centered UI block
+		ImVec2 size(300, 200);
+		ImVec2 center((p0.x + p1.x) * 0.5f, (p0.y + p1.y) * 0.5f);
+		ImVec2 uiMin(center.x - size.x * 0.5f, center.y - size.y * 0.5f);
+
+		// Position ImGui cursor into the viewport (no new window)
+		ImGui::SetCursorScreenPos(uiMin);
+		ImGui::BeginGroup();
+
+		ImGui::TextColored(ImVec4(1, 0.3f, 0.3f, 1), "GAME OVER");
+		ImGui::Spacing();
+		ImGui::Text("Two or more animals have died.");
+		ImGui::Spacing();
+
+		if (ImGui::Button("Restart", ImVec2(200, 35))) {
+			gsm.setGameOver(false);
+			gsm.requestScene(gsm.current());
+			gsm.startGame();
+		}
+
+		if (ImGui::Button("Main Menu", ImVec2(200, 35))) {
+			gsm.setGameOver(false);
+			gsm.requestScene("MainMenu");
+			gsm.goToMenu();
+		}
+
+		if (ImGui::Button("Quit", ImVec2(200, 35))) {
+			glfwSetWindowShouldClose(mainWindow.handle(), true);
+		}
+
+		ImGui::EndGroup();
+	}
+	*/
+
 	ImGui::End();
+
 }
 
 
@@ -715,23 +934,41 @@ void ImGuiManager::showEntityListUI(/* Maybe an enum of paramEntityType, Maybe a
 			// Create a simple new DrawItem
 			DrawItem newItem;
 			newItem.name = "NewObject_" + std::to_string(sceneMut->items.size());
-			newItem.w = 0.1f;     // default width
-			newItem.h = 0.1f;     // default height
-			newItem.x = 0.5f;     // start centered
-			newItem.y = 0.5f;
-			newItem.angle = 0.0f; // no rotation
+			// = 0.1f;     // default width
+			//float collider_height = 0.1f;     // default height
+			//newItem.x = 0.5f;     // start centered
+			//newItem.y = 0.5f;
+			//newItem.angle = 0.0f; // no rotation
 
 			// Create a matching ECS entity for this object
 			ECS& ecs = gsm.getECS();
 			EntityID e = ecs.createEntity();
 			newItem.entityID = e;
 
+			if (ecs.addComponent<Transform>(e, {  })&& ecs.addComponent<ImageRenderer>(e, {})&& ecs.addComponent<BoxCollider>(e, {}))
+			{
+				Transform* t = ecs.getComponent<Transform>(e);
+				ImageRenderer* ir = ecs.getComponent<ImageRenderer>(e);
+				BoxCollider* bc = ecs.getComponent<BoxCollider>(e);
+
+				t->position.x() = 0.5f;
+				t->position.y() = 0.5f;
+
+				ir->width = 0.1f;
+				ir->height = 0.1f;
+
+				bc->width = 0.1f;
+				bc->height = 0.1f;	
+
+				newItem.colW = ir->width;
+				newItem.colH = ir->height;
+			}
+
 			//default collider settings
 			newItem.hasCollider = true;
 			newItem.colOffsetX = 0.0f;
 			newItem.colOffsetY = 0.0f;
-			newItem.colW = newItem.w;
-			newItem.colH = newItem.h;
+
 
 			// Add it to the current scene
 			sceneMut->items.push_back(newItem);
@@ -774,21 +1011,11 @@ void ImGuiManager::showEntityListUI(/* Maybe an enum of paramEntityType, Maybe a
 }
 
 void ImGuiManager::showTransformUI(/* A reference to a vector of object list objectList */) {
-	// Fixed size for transform window
-	/*constexpr float width = 300.0f;
-	constexpr float height = 200.0f;*/
 
 	ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDecoration |
 		ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
 
-	// Position the overlay at the top-right corner of the window, below entity list overlay
-	/*ImVec2 windowTopRightPos = { windowBottomRight.x - width, windowTopLeft.y + 550.0f };
-	ImGui::SetNextWindowPos(windowTopRightPos);
-	ImGui::SetNextWindowBgAlpha(0.35f);
-	ImGui::SetNextWindowSize({ width, height });*/
-	/*ImGui::Begin("Transform", nullptr, windowFlags);
-	ImGui::Text("Transform Controls");*/
-
+	//-----------INSPECTOR HEADER-------------------//
 	ImGui::Begin("Inspector", nullptr, windowFlags);
 	ImGui::TextColored(ImVec4(0.8f, 0.9f, 1.0f, 1.0f), "In-Game Property Editor"); // section title
 	ImGui::Separator();
@@ -808,102 +1035,196 @@ void ImGuiManager::showTransformUI(/* A reference to a vector of object list obj
 
 	DrawItem& item = scene->items[selectedEntityType];
 
-	ImGui::Text("Editing: %s", item.name.empty() ? "(Unnamed)" : item.name.c_str());
-	ImGui::Separator();
+	//---------NAME FIELD---------//
+	ImGui::Text("Name:");
+	ImGui::SameLine();
+
+	// Create a buffer for the name (ImGui needs a char array, not std::string directly)
+	static char nameBuffer[256] = "";
+	static unsigned int lastSelectedEntity = static_cast<unsigned int>(-1);
+
+	// If we switched to a different entity, update the buffer
+	if (lastSelectedEntity != selectedEntityType) {
+		strncpy(nameBuffer, item.name.c_str(), sizeof(nameBuffer) - 1);
+		nameBuffer[sizeof(nameBuffer) - 1] = '\0';  // Ensure null termination
+		lastSelectedEntity = selectedEntityType;
+	}
+
+	ImGui::PushItemWidth(-1);  // Make the input field fill the available width
+	if (ImGui::InputText("##EntityName", nameBuffer, sizeof(nameBuffer))) {
+		// User is editing the name
+		item.name = nameBuffer;
+		logger.log("[Inspector] Renamed object to: " + item.name);
+		pushUndoState("Rename object");
+	}
+	ImGui::PopItemWidth();
 
 	//disable editing in play mode
 	bool isPlayMode = (m_editorMode == EditorMode::PLAY);
-	if (isPlayMode) {
-		ImGui::BeginDisabled();
-	}
-
-
-	// edits the game objects actual transform
-	bool changed = false;
-	changed |= ImGui::DragFloat("X", &item.x, 0.01f, 0.0f, 1.0f);
-	changed |= ImGui::DragFloat("Y", &item.y, 0.01f, 0.0f, 1.0f);
-	changed |= ImGui::DragFloat("Width", &item.w, 0.01f, 0.0f, 2.0f);
-	changed |= ImGui::DragFloat("Height", &item.h, 0.01f, 0.0f, 2.0f);
-	changed |= ImGui::DragFloat("Angle", &item.angle, 0.5f, -360.0f, 360.0f);
-
-	if (changed) {
-		pushUndoState("Inspector transform change");
-	}
-
-	if (isPlayMode) {
-		ImGui::EndDisabled();
-	}
-
-	//collision controls
+	
+	
+	//--------------------TRANSFORM FIELD---------------------------//
 	ImGui::Separator();
-	ImGui::Text("Collision");
-
-	ImGui::Checkbox("Has Collider", &item.hasCollider);
-
-	if (item.hasCollider)
+	
+	if (ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_DefaultOpen))
 	{
-		ImGui::DragFloat("Collider Offset X", &item.colOffsetX, 0.01f, -1.0f, 1.0f);
-		ImGui::DragFloat("Collider Offset Y", &item.colOffsetY, 0.01f, -1.0f, 1.0f);
-		ImGui::DragFloat("Collider Width", &item.colW, 0.01f, 0.0f, 2.0f);
-		ImGui::DragFloat("Collider Height", &item.colH, 0.01f, 0.0f, 2.0f);
+		Transform* t = ECS::getECS().getComponent<Transform>(item.entityID);
+		if (!t)return;
+		if (isPlayMode) ImGui::BeginDisabled();
+		// edits the game objects actual transform
+		bool changed = false;
+		changed |= ImGui::DragFloat("X", &t->position.x(), 0.01f, 0.0f, 1.0f);
+		changed |= ImGui::DragFloat("Y", &t->position.y(), 0.01f, 0.0f, 1.0f);
 
-		if (ImGui::Button("Reset Collider to Sprite")) {
-			item.colOffsetX = item.colOffsetY = 0.0f;
-			item.colW = item.w;
-			item.colH = item.h;
+		ImageRenderer *ir = ECS::getECS().getComponent<ImageRenderer>(item.entityID);
+		if (!ir)return;
+		changed |= ImGui::DragFloat("Width", &ir->width, 0.01f, 0.0f, 2.0f);
+		changed |= ImGui::DragFloat("Height", &ir->height, 0.01f, 0.0f, 2.0f);
+		changed |= ImGui::DragFloat("Angle", &ir->angle, 0.5f, -360.0f, 360.0f);
+
+		if (changed) {
+			pushUndoState("Inspector transform change");
 		}
+		if (isPlayMode) ImGui::EndDisabled();
 	}
-
-	/*if (changed)
-	{
-		logger.log("[ImGui] Updated transform of " + item.name);
-	}*/
-	/*
-	// @Todo (axewhy): Change this with the selected entity transform. This is only a placeholder
-	static Vector2D position(0.f, 0.f);
-	static Matrix<3> rotationMatrix = Matrix<3>().Identity();
-	static Matrix<3> scaleMatrix = Matrix<3>().Identity();
-
-
-	// Position controls
-	ImGui::SliderFloat("Position X", &position.x(), -1000.0f, 1000.0f);
-	ImGui::SliderFloat("Position Y", &position.y(), -1000.0f, 1000.0f);
-
-	// Scaling controls
-	ImGui::SliderFloat("Scale X", &scaleMatrix[0][0], 0.1f, 10.0f);
-	ImGui::SliderFloat("Scale Y", &scaleMatrix[1][1], 0.1f, 10.0f);
-
-	// Rotation controls (in degrees)
-	static float rotationDegrees = 0.0f;
-	ImGui::SliderFloat("Rotation", &rotationDegrees, -180.0f, 180.0f);
-	*/
-
-	// Showing current game objects in scene
-	/*if (ImGui::CollapsingHeader("Scene Object Transform", ImGuiTreeNodeFlags_DefaultOpen))
-	{
-		Scene* scene = gsm.getCurrentScene();
-		if (scene && selectedEntityType < scene->items.size())
-		{
-			DrawItem& item = scene->items[selectedEntityType];
-			ImGui::Text("Editing: %s", item.name.empty() ? "(Unnamed)" : item.name.c_str());
-			ImGui::Separator();
-
-			ImGui::DragFloat("X", &item.x, 0.01f, 0.0f, 1.0f);
-			ImGui::DragFloat("Y", &item.y, 0.01f, 0.0f, 1.0f);
-			ImGui::DragFloat("Width", &item.w, 0.01f, 0.0f, 2.0f);
-			ImGui::DragFloat("Height", &item.h, 0.01f, 0.0f, 2.0f);
-			ImGui::DragFloat("Angle", &item.angle, 0.5f, -360.0f, 360.0f);
-		}
-		else
-		{
-			ImGui::TextDisabled("No object selected or invalid index.");
-		}
-	}*/
-
-	// --- Audio for this object -------------------------------------------------
+	
+	//-----------COLLISION FIELD----------------//
 	ImGui::Separator();
+	
+	if (ImGui::CollapsingHeader("Collision", ImGuiTreeNodeFlags_DefaultOpen))
+	{
+		if (isPlayMode) ImGui::BeginDisabled();
+
+		Transform* t = ECS::getECS().getComponent<Transform>(item.entityID);
+		ImageRenderer* ir = ECS::getECS().getComponent<ImageRenderer>(item.entityID);
+		
+		//if collider is enabled but has never been sized, auto-init to sprite
+		if (item.hasCollider && (item.colW == 0.0f || item.colH == 0.0f)&&ir)
+		{
+			item.colOffsetX = 0.0f;
+			item.colOffsetY = 0.0f;
+			item.colW = ir->width;
+			item.colH = ir->height;
+		}
+
+		//checkbox (can still turn collider on/off)
+		bool prevHasCollider = item.hasCollider;
+		if (ImGui::Checkbox("Has Collider", &item.hasCollider)&&ir)
+		{
+			if (item.hasCollider && !prevHasCollider &&
+				(item.colW == 0.0f || item.colH == 0.0f))
+			{
+				item.colOffsetX = 0.0f;
+				item.colOffsetY = 0.0f;
+				item.colW = ir->width;
+				item.colH = ir->height;
+			}
+		}
+
+		if (item.hasCollider)
+		{
+			ImGui::DragFloat("Collider Offset X", &item.colOffsetX, 0.01f, -1.0f, 1.0f);
+			ImGui::DragFloat("Collider Offset Y", &item.colOffsetY, 0.01f, -1.0f, 1.0f);
+			ImGui::DragFloat("Collider Width", &item.colW, 0.01f, 0.0f, 2.0f);
+			ImGui::DragFloat("Collider Height", &item.colH, 0.01f, 0.0f, 2.0f);
+
+			if (ImGui::Button("Reset Collider to Sprite")) {
+				ImageRenderer* ir = ECS::getECS().getComponent<ImageRenderer>(item.entityID);
+				if (!ir)return;
+				item.colOffsetX = item.colOffsetY = 0.0f;
+				item.colW = ir->width;
+				item.colH = ir->height;
+			}
+		}
+		if (isPlayMode) ImGui::EndDisabled();
+	}
+	
+	//-----------------TEXTURE FIELD----------------------------//
+	ImGui::Separator();
+	
+	if (ImGui::CollapsingHeader("Texture", ImGuiTreeNodeFlags_DefaultOpen))
+	{
+		if (isPlayMode) ImGui::BeginDisabled();
+		// Display current texture
+		if (item.tex != 0) {
+			// Show texture preview thumbnail (64x64)
+			constexpr float previewSize = 64.0f;
+			ImGui::Image((ImTextureID)(intptr_t)item.tex, ImVec2(previewSize, previewSize));
+
+			// Find texture name from ResourceManager
+			std::string textureName = "Unknown";
+			auto& textures = resourceManager.getTextures();
+			for (auto& [id, texFile] : textures) {
+				GLuint texID = resourceManager.getGLTextureFromFile(texFile.getFilePath());
+				if (texID == item.tex) {
+					textureName = texFile.getKey();
+					break;
+				}
+			}
+
+			// Display info next to thumbnail
+			ImGui::SameLine();
+			ImGui::BeginGroup();
+			ImGui::Text("Name: %s", textureName.c_str());
+			ImGui::Text("ID: %u", item.tex);
+			ImGui::EndGroup();
+		}
+		else {
+			ImGui::TextDisabled("No texture assigned");
+		}
+
+		// Texture Selector Dropdown
+		if (ImGui::BeginCombo("Select Texture", "Change texture...")) {
+			auto& textures = resourceManager.getTextures();
+
+			for (auto& [id, texFile] : textures) {
+				const std::string& texName = texFile.getKey();
+				const std::string& texPath = texFile.getFilePath();
+				GLuint texID = resourceManager.getGLTextureFromFile(texPath);
+
+				if (texID == 0) continue;
+
+				bool isSelected = (item.tex == texID);
+
+				// Show small thumbnail in dropdown (24x24)
+				ImGui::Image((ImTextureID)(intptr_t)texID, ImVec2(24, 24));
+				ImGui::SameLine();
+
+				if (ImGui::Selectable(texName.c_str(), isSelected)) {
+					item.tex = texID;
+					if (ECS::getECS().getComponent<ImageRenderer>(item.entityID)) {
+						ECS::getECS().getComponent<ImageRenderer>(item.entityID)->textureID = texID;
+						ECS::getECS().getComponent<ImageRenderer>(item.entityID)->image_path = texPath;
+					}
+					logger.log("[Inspector] Changed texture to: " + texName);
+					pushUndoState("Change texture");
+				}
+
+				if (isSelected) {
+					ImGui::SetItemDefaultFocus();
+				}
+			}
+
+			ImGui::EndCombo();
+		}
+
+		// Remove texture button
+		if (item.tex != 0) {
+			if (ImGui::Button("Remove Texture")) {
+				item.tex = 0;
+				logger.log("[Inspector] Removed texture");
+				pushUndoState("Remove texture");
+			}
+		}
+		if (isPlayMode) ImGui::EndDisabled();
+	}
+	
+	//-----------------AUDIO FIELD------------------------//
+	ImGui::Separator();
+	
 	if (ImGui::CollapsingHeader("Audio", ImGuiTreeNodeFlags_DefaultOpen))
 	{
+		if (isPlayMode) ImGui::BeginDisabled();
 		ECS& ecs = gsm.getECS();
 
 		// Get the ECS entity linked 
@@ -934,6 +1255,7 @@ void ImGuiManager::showTransformUI(/* A reference to a vector of object list obj
 		{
 			// Could not add / still null
 			ImGui::Separator();
+			if (isPlayMode) ImGui::EndDisabled();
 			ImGui::End();
 			return;
 		}
@@ -1078,8 +1400,11 @@ void ImGuiManager::showTransformUI(/* A reference to a vector of object list obj
 				ImGui::PopID();
 			}
 		}
+		if (isPlayMode) ImGui::EndDisabled();
 	}
-
+	
+	//re-enable editing in edit mode
+	
 
 	ImGui::End();
 }
@@ -1116,6 +1441,39 @@ void ImGuiManager::showLogsOverlayUI() {
 		ImGui::SetScrollHereY(1.0f);
 
 }
+
+void ImGuiManager::showScenesListUI()
+{
+	ImGuiWindowFlags flags = ImGuiWindowFlags_NoSavedSettings |
+		ImGuiWindowFlags_NoFocusOnAppearing |
+		ImGuiWindowFlags_NoCollapse;
+
+	ImGui::Begin("Scenes", nullptr, flags);
+
+	auto& allScenes = gsm.getAllScenes();
+
+	if (allScenes.empty()) {
+		ImGui::TextDisabled("No scenes loaded.");
+		ImGui::End();
+		return;
+	}
+
+	ImGui::Text("All Scenes:");
+	ImGui::Separator();
+
+	for (auto& [sceneName, sceneObj] : allScenes) {
+		bool selected = (gsm.current() == sceneName);
+
+		if (ImGui::Selectable(sceneName.c_str(), selected)) {
+			// switch to this scene
+			gsm.requestScene(sceneName);
+			gsm.goToMenu();  // optional, depending on your design
+		}
+	}
+
+	ImGui::End();
+}
+
 
 void ImGuiManager::showAssetsBrowserUI() {
 	ImGui::TextColored(ImVec4(0.8f, 0.9f, 1.0f, 1.0f), "Assets Browser");
@@ -1282,6 +1640,10 @@ void ImGuiManager::showAssetsBrowserUI() {
 						if (scene && selectedEntityType < scene->items.size())
 						{
 							scene->items[selectedEntityType].tex = texID;
+							if (ECS::getECS().getComponent<ImageRenderer>(scene->items[selectedEntityType].entityID)) {
+								ECS::getECS().getComponent<ImageRenderer>(scene->items[selectedEntityType].entityID)->textureID = texID;
+								ECS::getECS().getComponent<ImageRenderer>(scene->items[selectedEntityType].entityID)->image_path = texPath;
+							}
 							logger.log("[ImGui] Applied texture: " + texName);
 						}
 					}
@@ -1744,6 +2106,7 @@ void ImGuiManager::createDockspace() {
 			if (ImGui::MenuItem("Entity Picker")) {}
 			if (ImGui::MenuItem("Inspector")) {}
 			if (ImGui::MenuItem("Editor Dock")) {}
+			if (ImGui::MenuItem("Logic")) {}
 
 			ImGui::Separator();
 
@@ -1856,6 +2219,8 @@ void ImGuiManager::setupInitialDockingLayout() {
 	// ---- Dock windows ----
 	ImGui::DockBuilderDockWindow("Viewport", dock_center);
 	ImGui::DockBuilderDockWindow("Entity Picker", dock_left);
+	ImGui::DockBuilderDockWindow("Scenes", dock_left);
+	ImGui::DockBuilderDockWindow("Logic", dock_right);
 	ImGui::DockBuilderDockWindow("Inspector", dock_right);
 	ImGui::DockBuilderDockWindow("Overlay", dock_right);
 	ImGui::DockBuilderDockWindow("Performance", dock_right);
@@ -1882,8 +2247,10 @@ void ImGuiManager::saveSceneSnapshot() {
 		return;
 	}
 
+	
+		
 	// Create JSON string
-	m_savedSceneState = "[";
+	/*m_savedSceneState = "[";
 
 	for (size_t i = 0; i < scene->items.size(); ++i) {
 		const DrawItem& item = scene->items[i];
@@ -1913,7 +2280,7 @@ void ImGuiManager::saveSceneSnapshot() {
 		if (i < scene->items.size() - 1) m_savedSceneState += ",";
 	}
 
-	m_savedSceneState += "]";
+	m_savedSceneState += "]";*/
 
 	logger.log("Scene snapshot saved (" + std::to_string(scene->items.size()) + " items) with full animal state");
 }
@@ -1926,7 +2293,7 @@ void ImGuiManager::restoreSceneSnapshot() {
 
 	Scene* scene = gsm.getCurrentScene();
 	if (!scene) return;
-
+	/*
 	// store original data temporarily
 	std::vector<DrawItem> originalItems = scene->items;
 
@@ -1968,7 +2335,7 @@ void ImGuiManager::restoreSceneSnapshot() {
 			return value;
 			};
 		*/
-		auto getValue = [](const std::string& str, const std::string& key) -> std::string {
+		/*auto getValue = [](const std::string& str, const std::string& key) -> std::string {
 			size_t keyPos = str.find("\"" + key + "\":");
 			if (keyPos == std::string::npos) return "";
 
@@ -2054,7 +2421,7 @@ void ImGuiManager::restoreSceneSnapshot() {
 
 		scene->items.push_back(item);
 		pos = endPos + 1;
-	}
+	}*/
 
 	logger.log("Scene snapshot restored (" + std::to_string(scene->items.size()) + " items) with full animal state");
 	m_savedSceneState.clear();
@@ -2080,7 +2447,8 @@ void ImGuiManager::onPlayButtonPressed() {
 }
 
 void ImGuiManager::onStopButtonPressed() {
-	if (m_editorMode == EditorMode::EDIT) return;
+	if (m_editorMode == EditorMode::EDIT)
+		return;
 
 	logger.log("=== EXITING PLAY MODE ===");
 
@@ -2088,33 +2456,32 @@ void ImGuiManager::onStopButtonPressed() {
 	Scene* scene = gsm.getCurrentScene();
 	if (scene) {
 		for (auto& item : scene->items) {
-			if (item.item_type == "animal") {
+			ECS& ecss = ECS::getECS();
+			AnimalBehavior* ab = ecss.getComponent<AnimalBehavior>(item.entityID);
+			if (ab) {
+
 				// Reset bars to full
-				item.health_bar = 100.0f;
-				item.hunger_bar = 100.0f;
-				item.sanity_bar = 100.0f;
+				ab->health_bar = 100.0f;
+				ab->hunger_bar = 100.0f;
+				ab->sanity_bar = 100.0f;
+				// 1) Reset game-wide state back to initial JSON
+				gsm.setGameOver(false);          // make sure overlay is off (if you have this helper)
+				gsm.resetAllScenesToInitial();   // restore scenes from initialScenes_
 
-				// Reset timers
-				item.acc_timer = 0.0f;
-				item.staring_countdown = 10.0f;
+				// 2) Go back to main menu state
+				gsm.requestScene("MainMenu");    // show MainMenu scene
+				gsm.goToMenu();                  // set app state to Menu
 
-				// Reset status
-				item.still_alive = true;
-				item.is_dragging = false;
+				// 3) Switch editor back to EDIT mode
+				m_editorMode = EditorMode::EDIT;
+
+				// (Optional) clear editor undo history if you want a "fresh" level state
+				// m_undoStack.clear();
+
+				logger.log("Edit mode restored - game reset to initial MainMenu state");
 			}
 		}
 	}
-
-	// Switch back to the main menu scene
-	gsm.requestScene("MainMenu");
-
-	// Set app state to Menu (locks number keys, enables menu buttons)
-	gsm.goToMenu();
-
-	// Switch back to edit mode
-	m_editorMode = EditorMode::EDIT;
-
-	logger.log("Edit mode restored - returned to menu");
 }
 
 void ImGuiManager::pushUndoState(const char* reason)
@@ -2228,27 +2595,51 @@ void ImGuiManager::handleViewportPicking(const ImVec2& imgMin,
 		return;
 	}
 
+	//if scene changed, stop dragging until user has lifted up mb
+	if (gsm.checkForSceneChange()) {
+
+		m_isDragging = false;
+		m_draggedItem = -1;
+		m_hoveredItem = -1;
+
+	}
+
 	//--------hit-test items (from top-most to bottom)--------
 	int hitIndex = -1;
 
 	for (int i = static_cast<int>(items.size()) - 1; i >= 0; --i) {
 		const DrawItem& it = items[static_cast<size_t>(i)];
 
-		float halfW = it.w * 0.5f;
-		float halfH = it.h * 0.5f;
+		float minX, maxX, minY, maxY;
+		Transform* t = ECS::getECS().getComponent<Transform>(it.entityID);
+		ImageRenderer* ir = ECS::getECS().getComponent<ImageRenderer>(it.entityID);
 
-		float minX = it.x - halfW;
-		float maxX = it.x + halfW;
-		float minY = it.y - halfH;
-		float maxY = it.y + halfH;
+		if (!t || !ir)continue;
+
+		if (it.hasCollider && it.colW > 0.0f && it.colH > 0.0f) {
+			// collider is also top-left + size in normalized space
+			minX = t->position.x() + it.colOffsetX;
+			minY = t->position.y() + it.colOffsetY;
+			maxX = minX + it.colW;
+			maxY = minY + it.colH;
+		}
+		else {
+			// sprite rect: top-left (x,y) with width/height
+			minX = t->position.x();
+			minY = t->position.y();
+			maxX = t->position.x() + ir->width;
+			maxY = t->position.y() + ir->height;
+		}
 
 		if (localX >= minX && localX <= maxX &&
 			localY >= minY && localY <= maxY)
 		{
 			hitIndex = i;
-			break;  //first match from the end = top-most
+			break;
 		}
 	}
+
+
 
 	m_hoveredItem = hitIndex;
 
@@ -2261,8 +2652,13 @@ void ImGuiManager::handleViewportPicking(const ImVec2& imgMin,
 		m_isDragging = true;
 
 		DrawItem& it = items[static_cast<size_t>(hitIndex)];
-		m_dragOffset.x = localX - it.x;
-		m_dragOffset.y = localY - it.y;
+		
+		Transform* t = ECS::getECS().getComponent<Transform>(it.entityID);
+		if (t) {
+			m_dragOffset.x = localX - t->position.x();
+			m_dragOffset.y = localY - t->position.y();
+		}
+		
 
 		logger.log("[ImGui] Selected item from viewport: " + it.name);
 	}
@@ -2281,8 +2677,11 @@ void ImGuiManager::handleViewportPicking(const ImVec2& imgMin,
 			newX = std::clamp(newX, 0.0f, 1.0f);
 			newY = std::clamp(newY, 0.0f, 1.0f);
 
-			it.x = newX;
-			it.y = newY;
+			Transform* t = ECS::getECS().getComponent<Transform>(it.entityID);
+			if (t) {
+				t->position.x()=newX;
+				t->position.y()=newY;
+			}
 		}
 		else {
 			//dragged item was removed

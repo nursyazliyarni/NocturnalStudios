@@ -334,7 +334,7 @@ void ECS::registerComponent() {
 	ComponentID type = Family::getID<T>();
 	auto [it, inserted] = componentPools.insert({ type, std::make_unique<ComponentPool<T>>() });
 	if (!inserted) {
-		logger.warning(std::string{ "ECS::registerComponent - Component already registered" });
+		logger.log(std::string{ "ECS::registerComponent - Component already registered" });
 		return;
 	}
 
@@ -401,17 +401,38 @@ class ComponentFactory { //basically copied my component factory but modified it
 public:
 	using Json = rapidjson::Value;
 	using Creator = std::function<std::any(const Json&)>;
+	using Parser = std::function<void(EntityID, const Json&)>;
 
 	template<typename T>
 	static void Register(const std::string& name) {
 		Register(name, [](const Json& j) -> std::any {T comp{};
-			if (j.IsObject()) {
-				comp.FromJSON(j);  
+		if (j.IsObject()) {
+			comp.FromJSON(j);
+		}
+		return comp;
+			});
+
+		RegisterParser(name, [name](EntityID id, const Json& j) {
+			if (!j.IsObject()) return;
+
+			// Fetch existing T
+			T* comp = ECS::getECS().getComponent<T>(id);
+			if (!comp) {
+				logger.error("Parser: entity missing component: " + name);
+				
+				 ECS::getECS().addComponent<T>(id, {});
+				 comp = ECS::getECS().getComponent<T>(id);
 			}
-			return comp;
+
+			// Modify it using FromJSON
+			comp->FromJSON(j);
 			});
 	}
 
+	static void RegisterParser(const std::string& name, Parser parser)
+	{
+		ParserMap()[name] = std::move(parser);
+	}
 
 	static void Register(const std::string& name, Creator creator) {
 		GetMap()[name] = std::move(creator);
@@ -419,6 +440,7 @@ public:
 
 	static bool CreateFromName(EntityID entity, const std::string& name, const Json& j);
 
+	static void ParseFromName(EntityID entity, const std::string& name, const Json& j);
 
 	static std::any Create(const std::string& name, const Json& j) {
 		auto& map = GetMap();
@@ -432,6 +454,10 @@ private:
 	static std::unordered_map<std::string, Creator>& GetMap() {
 		static std::unordered_map<std::string, Creator> map;
 		return map;
+	}
+	static std::unordered_map<std::string, Parser>& ParserMap() {
+		static std::unordered_map<std::string, Parser> mapp;
+		return mapp;
 	}
 };
 template<>

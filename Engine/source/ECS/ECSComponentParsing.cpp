@@ -18,16 +18,21 @@
 #include "System/Audio_System.h"
 #include "ECS/ECS.h"
 
+//  Texture lookup hook for sprite_path, GL texture id 
+static std::function<int(const std::string&)> sTextureLookup;
 
-	//  Texture lookup hook for sprite_path, GL texture id 
-	static std::function<int(const std::string&)> sTextureLokup;
+// Safe fallback that compiles even if nobody sets sTextureLookup.
+static int ResolveTextureID(const char* p) {
+	if (!p || !*p) return 0;
+	if (sTextureLookup) return sTextureLookup(std::string{ p });
+	return 0; // not wired yet -> invisible sprite (isVisible=false)
+}
 
-	// Safe fallback that compiles even if nobody sets sTextureLookup.
-	static int ResolveTextureIDPser(const char* p) {
-		if (!p || !*p) return 0;
-		if (sTextureLokup) return sTextureLokup(std::string{ p });
-		return 0; // not wired yet -> invisible sprite (isVisible=false)
-	}
+// a simple setter to call once from  init code (e.g., Application.cpp)
+void Prefab_SetTextureLookup(std::function<int(const std::string&)> fn) {
+	sTextureLookup = std::move(fn);
+}
+
 
 	
 extern AudioSystem* gAudioSystem;
@@ -71,7 +76,7 @@ bool ComponentFactory::CreateFromName(EntityID entity, const std::string& name, 
 	}
 	if (name == "AABBCollider")
 	{
-		ecs.addComponent<BoxCollider>(entity, std::any_cast<BoxCollider>(Create(name,j)));
+		ecs.addComponent<AABBCollider>(entity, std::any_cast<AABBCollider>(Create(name,j)));
 		return true;
 	}
 	if (name=="AIComponent")
@@ -93,12 +98,19 @@ bool ComponentFactory::CreateFromName(EntityID entity, const std::string& name, 
 
 	return false;
 }
+
+void ComponentFactory::ParseFromName(EntityID entity, const std::string& name, const Json& j) {
+	auto it = ParserMap().find(name);
+
+	if (it == ParserMap().end()) return;
+	else it->second(entity, j);
+}
 void Collider::FromJSON(const rapidjson::Value& json){}
 void Collider::ToJSON(rapidjson::Value& json, rapidjson::Document::AllocatorType& allocator) const {}
 
 void RenderComponent::FromJSON(const rapidjson::Value& json) {
-	const char* members[]{ "opacity","is_visible","color_tint","color_to_add"};
-	for (int i{};i<4;i++)
+	const char* members[]{ "opacity","is_visible","color_tint","color_to_add","width","height","angle"};
+	for (int i{};i<7;i++)
 	{
 		if (json.HasMember(members[i]))
 		{
@@ -154,6 +166,18 @@ void RenderComponent::FromJSON(const rapidjson::Value& json) {
 					if (json[members[i]].HasMember("a") && json[members[i]]["a"].IsFloat())colorToAdd.a() = json[members[i]]["a"].GetFloat();
 				}
 				break;
+			case 4://width
+				if (json[members[i]].IsFloat())
+				{
+					width = json[members[i]].GetFloat();
+				}
+				break;
+			case 5://height
+				if (json[members[i]].IsFloat())
+				{
+					height = json[members[i]].GetFloat();
+				}
+				break;
 			}
 		}
 	}
@@ -203,7 +227,7 @@ void Transform::FromJSON(const rapidjson::Value& json) {
 
 	//if any of these values is missing, its fine. checks for specific values first (HasMember())
 	//then it will also check for each param type
-	for (int i{}; i < 7; i++)
+	for (int i{}; i < 8; i++)
 	{
 		if (json.HasMember(members[i]))
 		{
@@ -304,6 +328,8 @@ void Transform::FromJSON(const rapidjson::Value& json) {
 }
 
 void Transform::ToJSON(rapidjson::Value& json, rapidjson::Document::AllocatorType& allocator) const {
+	
+
 	json.SetObject();
 	rapidjson::Value typeVal;
 	typeVal.SetString("Transform", allocator);
@@ -341,9 +367,10 @@ void ImageRenderer::FromJSON(const rapidjson::Value& json) {
 	const char* members[]{
 		"texture_id",//0
 		"image_path",//1
-		"sprite_path"
+		"sprite_path",
+		
 	};
-	for (int i{}; i < 2; i++)
+	for (int i{}; i < 3; i++)
 	{
 		if (json.HasMember(members[i]))
 		{
@@ -359,7 +386,7 @@ void ImageRenderer::FromJSON(const rapidjson::Value& json) {
 				if (json[members[i]].IsString())
 				{
 					image_path = json[members[i]].GetString();
-					textureID = ResolveTextureIDPser(json[members[i]].GetString());
+					textureID = ResolveTextureID(json[members[i]].GetString());
 					isVisible = (textureID > 0);
 				}
 				break;
@@ -367,13 +394,14 @@ void ImageRenderer::FromJSON(const rapidjson::Value& json) {
 				if (json[members[i]].IsString())
 				{
 					image_path = json[members[i]].GetString();
-					textureID = ResolveTextureIDPser(json[members[i]].GetString());
+					textureID = ResolveTextureID(json[members[i]].GetString());
 					isVisible = (textureID > 0);
 				}
 				break;
 			}
 		}
 	}
+	logger.log("texture: " + std::to_string(textureID));
 }
 
 void ImageRenderer::ToJSON(rapidjson::Value& json, rapidjson::Document::AllocatorType& allocator) const {
@@ -454,22 +482,40 @@ void AnimalBehavior::FromJSON(const rapidjson::Value& json) {
 	const char* members[]{
 		"health_bar",//0
 		"hunger_bar",//1
-		"sanity_bar"//2
+		"sanity_bar",//2
+		"slower_decreasing_rate",//3
+		"normal_decreasing_rate",//4
+		"faster_decreasing_rate",//5
+		"penalty_decreasing_rate"//6
+
 	};
-	for (int i{}; i < 3; i++)
+	for (int i{}; i < 7; i++)
 	{
-		if (json.HasMember(members[i])&& json[members[i]].IsDouble())
+		if (json.HasMember(members[i])&& json[members[i]].IsNumber())
 		{
+			float jvalue = json[members[i]].GetFloat();
 			switch (i)
 			{
 			case 0://health bar
-				health_bar = json[members[i]].GetDouble();
+				health_bar = jvalue;
 				break;
 			case 1://hunger
-				hunger_bar = json[members[i]].GetDouble();
+				hunger_bar = jvalue;
 				break;
 			case 2://sanity
-				sanity_bar = json[members[i]].GetDouble();
+				sanity_bar = jvalue;
+				break;
+			case 3: //slower dec rate
+				slower_decreasing_rate = jvalue;
+				break;
+			case 4: //normal dec rate
+				normal_decreasing_rate = jvalue;
+				break;
+			case 5: //faster dec rate
+				faster_decreasing_rate = jvalue;
+				break;
+			case 6: //penalty dec rate
+				penalty_decreasing_rate = jvalue;
 				break;
 			}
 		}
@@ -701,6 +747,7 @@ static const char* AudioGroupToString(AudioData::IndividualAudioData::Group grou
 }
 
 void AudioData::FromJSON(const rapidjson::Value& json) {
+
     audios.clear();
     listener = false;
 
@@ -754,6 +801,9 @@ void AudioData::FromJSON(const rapidjson::Value& json) {
 void AudioData::ToJSON(rapidjson::Value& json, rapidjson::Document::AllocatorType& alloc) const {
     json.SetObject();
 
+	rapidjson::Value typeVal;
+	typeVal.SetString("AudioData", alloc);
+	json.AddMember("type", typeVal, alloc);
     rapidjson::Value aud(rapidjson::kArrayType);
     for (const auto& a : audios) {
         rapidjson::Value item(rapidjson::kObjectType);

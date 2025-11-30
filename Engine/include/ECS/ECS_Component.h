@@ -27,6 +27,7 @@
 #include "../include/math/Matrix.h"
 #include "../include/math/Vector.h"
 #include "../include/math/Rand.h"
+#include "logic/Base_Logic.h"
 
 //-------------------------- Add new ECS component type here --------------------------//
 struct RenderComponent;
@@ -46,6 +47,12 @@ struct PhysicsComponent;
 struct AIComponent;
 
 struct BoxCollider;
+struct AABBCollider;
+
+struct LogicComponent {
+	std::unique_ptr<Base_Logic> script; // owned script instance
+	std::string script_name;            // e.g. "FlamingoLogic" - useful for editor/serialization
+};
 
 //-------------------------- ECS Component Definitions --------------------------//
 
@@ -66,7 +73,7 @@ struct Collider : public BaseComponent {
 
 //renderer base struct (renamed to avoid collision with graphics::Renderer)
 struct RenderComponent : public BaseComponent {
-	float opacity = 1.0f; // Default to fully opaque
+	float width{0.f}, height{0.f},angle{0.f}, opacity = 1.0f; // Default to fully opaque
 	bool isVisible = true;
 
 	Vector4D colorTint = { 1.0f, 1.0f, 1.0f, 1.0f };
@@ -169,7 +176,7 @@ struct RectRenderer : public RenderComponent {
 
 
 struct AnimalBehavior {
-	double health_bar, hunger_bar, sanity_bar;
+	float health_bar, hunger_bar, sanity_bar, slower_decreasing_rate, normal_decreasing_rate, faster_decreasing_rate, penalty_decreasing_rate;
 	void FromJSON(const rapidjson::Value& json);
 	void ToJSON(rapidjson::Value& json, rapidjson::Document::AllocatorType& allocator) const;
 };
@@ -236,6 +243,7 @@ struct AIComponent : public BaseComponent {
 
 struct BoxCollider :public Collider {
 	float width{ 0.f }, height{ 0.f };
+	Vector2D offset{};
 	void FromJSON(const rapidjson::Value& json);
 	void ToJSON(rapidjson::Value& json, rapidjson::Document::AllocatorType& allocator) const override;
 };
