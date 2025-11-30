@@ -391,8 +391,8 @@ bool GameManager::loadAll(PrefabManager& prefabs, const char* scenesPath, Textur
         //auto* img = ecs_.getComponent<ImageRenderer>(flamingo);
         //auto* anim = ecs_.getComponent<SpriteAnimationComponent>(flamingo);
 
-        t->position = { 0.1f, 0.7f };
-        t->scale = { 0.25f, 0.25f };
+        //t->position = { 0.1f, 0.7f };
+        //t->scale = { 0.25f, 0.25f };
 
         //img->isVisible = true;
         //img->textureID = tex.get("assets/textures/flamingo_spritesheet.png");
@@ -499,8 +499,8 @@ void GameManager::render(Renderer& r, Input& input, GLFWwindow* window, int w, i
             ImageRenderer* img = ecs_.getComponent<ImageRenderer>(ecs_.findEntityByName(di.name));
 
             if (!t || !img)continue;
-            
-            
+
+
 
             if (!img->isVisible || img->textureID <= 0)continue;
 
@@ -546,14 +546,14 @@ void GameManager::render(Renderer& r, Input& input, GLFWwindow* window, int w, i
                 //logger.log(di.name + " has animalbehavior: " + std::to_string(ab != nullptr));
                 if (di.still_alive && ab) {
                     //logger.log(di.name + " has animalbehavior: " + std::to_string(ab != nullptr));
-                    r.rect(w / 2 , h / 2 - 200, ab->health_bar * 4, 25, 1, 0, 0);
-                    r.rect(w / 2 , h / 2 - 150, ab->hunger_bar * 4, 25, 0, 1, 0);
-                    r.rect(w / 2 , h / 2 - 100, ab->sanity_bar * 4, 25, 0, 0, 1);
+                    r.rect(w / 2, h / 2 - 200, ab->health_bar * 4, 25, 1, 0, 0);
+                    r.rect(w / 2, h / 2 - 150, ab->hunger_bar * 4, 25, 0, 1, 0);
+                    r.rect(w / 2, h / 2 - 100, ab->sanity_bar * 4, 25, 0, 0, 1);
 
                     Cam2D_Apply(currentScene, px, py, pw, ph, w, h);
                     r.texturedTri(img->textureID, px, py, pw, ph);
                 }
-                
+
             }
             else {
                 Cam2D_Apply(currentScene, px, py, pw, ph, w, h);
@@ -609,7 +609,7 @@ void GameManager::render(Renderer& r, Input& input, GLFWwindow* window, int w, i
                 if (duplicate_item) {
                     Transform* dt = ecs_.getComponent<Transform>(duplicate_item->entityID);
                     ImageRenderer* dimg = ecs_.getComponent<ImageRenderer>(duplicate_item->entityID);
-                    r.texturedTri(duplicate_item->tex, dt->position.x()* w, dt->position.y()* h, dimg->width* w, dimg->height* h);
+                    r.texturedTri(duplicate_item->tex, dt->position.x() * w, dt->position.y() * h, dimg->width * w, dimg->height * h);
                 }
 
                 //if (!input.isLeftMousePressed(window)) {
@@ -628,12 +628,6 @@ void GameManager::render(Renderer& r, Input& input, GLFWwindow* window, int w, i
             }
         }
     }
-
-    
-   
-
-        
-    
 }
 
 

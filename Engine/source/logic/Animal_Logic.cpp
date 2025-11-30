@@ -132,7 +132,7 @@ void Animal_Logic::update_animal_sanity(GameManager& gm, double deltaTime) {
 				}
 
 				else if (animal.still_alive && animal.name == to_string(Animal_type::Seal)) {
-					animal.sanity_bar -= animal.normal_decreasing_rate * deltaTime; //sanity of seal decrease normally
+					animalb->sanity_bar -= animalb->normal_decreasing_rate * deltaTime; //sanity of seal decrease normally
 					//if (stats.action == Zookeeper_action::staring) {
 					//	static double static_staring_countdown{ 10 };
 					//	static_staring_countdown -= 0.5;

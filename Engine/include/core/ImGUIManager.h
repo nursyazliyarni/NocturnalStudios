@@ -86,6 +86,7 @@ public:
 
 	void showAssetsBrowserUI();
 	void showBottomDockUI();
+	void showLogicUI();
 	void showAnimationEditorUI();   
 
 	//dockspace

@@ -62,13 +62,159 @@ void Gui::updateImGuiManager(double& deltaTime, ImGuiManager& imGuiManager) {
 		imGuiManager.showTransformUI();
 		imGuiManager.showEntityListUI();
 		imGuiManager.showScenesListUI();
-		//imGuiManager.showLogsOverlayUI();
+		imGuiManager.showLogicUI();
 		imGuiManager.showBottomDockUI();
 		});
 
 	// finish frame and record the exclusive ImGui time
 	imGuiManager.endFrame();
 	imGuiManager.setSystemTimings(imGuiSec);
+}
+
+void ImGuiManager::showLogicUI()
+{
+
+	ImGuiWindowFlags flags = ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoResize;
+
+	ImGui::Begin("Logic", nullptr, flags);
+
+	Scene* scene = gsm.getCurrentScene();
+	auto& items = scene->items;
+	if (!scene || scene->items.empty()) {
+		ImGui::TextDisabled("No scene or objects available.");
+		ImGui::End();
+		return;
+	}
+
+	if (selectedEntityType >= scene->items.size()) {
+		ImGui::TextDisabled("No object selected.");
+		ImGui::End();
+		return;
+	}
+
+	DrawItem& item = scene->items[selectedEntityType];
+
+	ImGui::Text("Editing: %s", item.name.empty() ? "(Unnamed)" : item.name.c_str());
+	ImGui::Separator();
+
+	// Check if we're in play mode
+	bool isPlayMode = (m_editorMode == EditorMode::PLAY);
+	if (isPlayMode) {
+		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.6f, 0.2f, 1.0f));
+		ImGui::Text("Logic editing disabled during play mode");
+		ImGui::PopStyleColor();
+		ImGui::Separator();
+		ImGui::BeginDisabled();
+	}
+
+	// Available logic scripts (you can expand this list)
+	static const char* logicScripts[] = {
+		"Flamingobehaviour",
+		"Sealbehaviour",
+		"Owlbehaviour",
+		"Horsebehaviour",
+	};
+
+	static int currentScript = 0; // This should ideally be stored per-object
+
+	// Get current script for this object (you'll need to store this in DrawItem)
+	// For now, we'll use a static variable - you should replace this with proper storage
+	static std::unordered_map<size_t, int> objectScripts; // Maps object index to script index
+
+	// Initialize if this object doesn't have a script assigned
+	if (objectScripts.find(selectedEntityType) == objectScripts.end()) {
+		objectScripts[selectedEntityType] = 0; // Default to "None"
+	}
+
+	int& currentScriptForObject = objectScripts[selectedEntityType];
+
+	// Script selection dropdown
+	ImGui::Text("Logic Script:");
+	if (ImGui::Combo("##ScriptSelect", &currentScriptForObject, logicScripts, IM_ARRAYSIZE(logicScripts))) {
+		// Script changed - save undo state
+		if (ImGui::IsItemActivated()) {
+			pushUndoState("Change logic script");
+		}
+
+		std::string scriptName = (currentScriptForObject == 0) ? "None" : logicScripts[currentScriptForObject];
+
+		// Here you would actually attach the script to the object
+		// For example: item.scriptType = currentScriptForObject;
+	}
+
+	ImGui::Spacing();
+	ImGui::Separator();
+	ImGui::Spacing();
+
+	// Show script-specific parameters based on selected script
+	if (currentScriptForObject >= 0) {
+		ImGui::Text("Script Parameters:"); 
+		ImGui::TextColored(ImVec4(0.8f, 0.8f, 0.8f, 1.0f), "Script: %s", logicScripts[currentScriptForObject]);
+
+		for (auto& item : items) {
+			AnimalBehavior* animalb = ECS::getECS().getComponent<AnimalBehavior>(item.entityID);
+			Transform* t = ECS::getECS().getComponent<Transform>(item.entityID);
+			// Example parameters for different script types
+			switch (currentScriptForObject) {
+			case 0: // Flamingo
+			{
+				if (item.name == "flamingo") {
+					ImGui::DragFloat("health", &animalb->health_bar, 0.0f, 0.1f, 100.0f);
+					ImGui::DragFloat("hunger", &animalb->hunger_bar, 0.0f, 0.1f, 100.0f);
+					ImGui::DragFloat("sanity", &animalb->sanity_bar, 0.0f, 0.1f, 100.0f);
+				
+				}
+			}
+			break;
+
+			case 1: // Seal
+			{
+				if (item.name == "seal") {
+					ImGui::DragFloat("health", &animalb->health_bar, 0.0f, 0.1f, 100.0f);
+					ImGui::DragFloat("hunger", &animalb->hunger_bar, 0.0f, 0.1f, 100.0f);
+					ImGui::DragFloat("sanity", &animalb->sanity_bar, 0.0f, 0.1f, 100.0f);
+				}
+			}
+			break;
+
+			case 2: // Owl
+			{
+				if (item.name == "owl") {
+					ImGui::DragFloat("health", &animalb->health_bar, 0.0f, 0.1f, 100.0f);
+					ImGui::DragFloat("hunger", &animalb->hunger_bar, 0.0f, 0.1f, 100.0f);
+					ImGui::DragFloat("sanity", &animalb->sanity_bar, 0.0f, 0.1f, 100.0f);
+				}
+			}
+			break;
+
+			case 3: // Horse
+			{
+				if (item.name == "horse") {
+					ImGui::DragFloat("health", &animalb->health_bar, 0.0f, 0.1f, 100.0f);
+					ImGui::DragFloat("hunger", &animalb->hunger_bar, 0.0f, 0.1f, 100.0f);
+					ImGui::DragFloat("sanity", &animalb->sanity_bar, 0.0f, 0.1f, 100.0f);
+				}
+			}
+			break;
+
+			default:
+				ImGui::TextDisabled("No specific parameters for this script.");
+				break;
+			}
+		}
+
+		ImGui::Spacing();
+		ImGui::Separator();
+
+		ImGui::SameLine();
+	}
+	ImGui::Spacing();
+	ImGui::Separator();
+
+	if (isPlayMode) {
+		ImGui::EndDisabled();
+	}
+	ImGui::End();
 }
 
 ImGuiManager::ImGuiManager(Window& w, Renderer& r,
@@ -312,18 +458,18 @@ void ImGuiManager::showViewportWindowUI() {
 	bool isPlayMode = (m_editorMode == EditorMode::PLAY);
 
 	// Logic timing (animal state update)
-	//if (isPlayMode) {
-	//	logicTime = TimeUtils::MeasureSeconds([&]() {
-	//		logic.check_animal_status(gsm);
-	//		auto drag_value = logic.check_item_status(
-	//			gsm, get_mousePOS(true), input, mainWindow.handle());
-	//		logic.update_animal_ALLstate(gsm, getDeltaTime(deltaTime));
-	//		logic.drag_drop(gsm, get_mousePOS(true), input, mainWindow.handle(), drag_value);
-	//		});
-	//}
-	//else {
-	//	logicTime = 0.0;
-	//}
+	/*if (isPlayMode) {
+		logicTime = TimeUtils::MeasureSeconds([&]() {
+			logic.check_animal_status(gsm);
+			auto drag_value = logic.check_item_status(
+				gsm, get_mousePOS(true), input, mainWindow.handle());
+			logic.update_animal_ALLstate(gsm, getDeltaTime(deltaTime));
+			logic.drag_drop(gsm, get_mousePOS(true), input, mainWindow.handle(), drag_value);
+			});
+	}
+	else {
+		logicTime = 0.0;
+	}*/
 
 	// Physics timing scope
 	if (isPlayMode) {
@@ -1960,6 +2106,7 @@ void ImGuiManager::createDockspace() {
 			if (ImGui::MenuItem("Entity Picker")) {}
 			if (ImGui::MenuItem("Inspector")) {}
 			if (ImGui::MenuItem("Editor Dock")) {}
+			if (ImGui::MenuItem("Logic")) {}
 
 			ImGui::Separator();
 
@@ -2073,6 +2220,7 @@ void ImGuiManager::setupInitialDockingLayout() {
 	ImGui::DockBuilderDockWindow("Viewport", dock_center);
 	ImGui::DockBuilderDockWindow("Entity Picker", dock_left);
 	ImGui::DockBuilderDockWindow("Scenes", dock_left);
+	ImGui::DockBuilderDockWindow("Logic", dock_right);
 	ImGui::DockBuilderDockWindow("Inspector", dock_right);
 	ImGui::DockBuilderDockWindow("Overlay", dock_right);
 	ImGui::DockBuilderDockWindow("Performance", dock_right);

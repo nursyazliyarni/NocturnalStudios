@@ -16,7 +16,7 @@ public:
     //LogicCreator is a function type that takes no arguments and returns std::unique_ptr<Base_Logic>()
     using LogicCreator = std::function<std::unique_ptr<Base_Logic>()>;
 
-    const static Logic_Factory& get_instance(); //ONLY 1 logic factory which is accessible everywhere
+    static Logic_Factory& get_instance(); //ONLY 1 logic factory which is accessible everywhere
     void add_logic(const std::string& name, const LogicCreator& creator); //adds a new logic type to the logic factory
 
     const std::unique_ptr<Base_Logic>& create_logic(const std::string& name); //creates logic object

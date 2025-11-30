@@ -357,13 +357,6 @@ void Application::init() {
     gameLoop = std::make_unique<Game_Loop>(m_window.handle());
     bus.Register(gameLoop.get());
 ;
-
-
-
-
-
-
-	
 	
     textShader = std::make_unique<Shader>(textShaderVertexPath.c_str(), textShaderFragmentPath.c_str());
 
@@ -405,6 +398,19 @@ void Application::init() {
 		*inputSystem, physicsSystem,
 		*audioSystem, *resourceManager,
 		*gsm, *logic);
+
+	Logic_Factory::get_instance().add_logic("FlamingoLogic", []() {
+		return std::make_unique<FlamingoLogic>();
+	});
+
+	/*LogicRegistry::instance().register_logic("HorseLogic", []() {
+		return std::make_unique<HorseLogic>();
+		});
+	LogicRegistry::instance().register_logic("SealLogic", []() {
+		return std::make_unique<SealLogic>();
+		});
+	LogicRegistry::instance().register_logic("OwlLogic", []() {
+		return std::make_unique<OwlLogic>();*/
 
     isInitialized = true;
 }

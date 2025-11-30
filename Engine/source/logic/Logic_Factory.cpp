@@ -1,6 +1,6 @@
 #include "logic/Logic_Factory.h"
 
-const Logic_Factory& Logic_Factory::get_instance(){
+Logic_Factory& Logic_Factory::get_instance(){
     static Logic_Factory logic_factory;
     return logic_factory;
 }
