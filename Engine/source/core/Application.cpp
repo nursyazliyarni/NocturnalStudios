@@ -469,6 +469,7 @@ int Application::run() {
 
 			if (inputSystem->WasPressed(GLFW_KEY_F11)) 
 				m_window.toggleFullscreen();
+			    glfwSetInputMode(m_window.handle(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 
         	inputSystem->ProcessHotkeys(*gsm);
         	TransformSystem::TransformInput(*inputSystem, dt);
