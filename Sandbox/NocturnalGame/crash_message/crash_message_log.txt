@@ -30009,3 +30009,7 @@ EntityID: 18446744073709551615
 [01-12-2025] [05:42:22] [CRASH_MESSAGE] Parser: entity missing component: AnimalBehavior
 [01-12-2025] [05:42:22] [CRASH_MESSAGE] Parser: entity missing component: AnimalBehavior
 [01-12-2025] [05:42:22] [CRASH_MESSAGE] Parser: entity missing component: AnimalBehavior
+[01-12-2025] [05:49:03] [CRASH_MESSAGE] Parser: entity missing component: AnimalBehavior
+[01-12-2025] [05:49:03] [CRASH_MESSAGE] Parser: entity missing component: AnimalBehavior
+[01-12-2025] [05:49:04] [CRASH_MESSAGE] Parser: entity missing component: AnimalBehavior
+[01-12-2025] [05:49:04] [CRASH_MESSAGE] Parser: entity missing component: AnimalBehavior
