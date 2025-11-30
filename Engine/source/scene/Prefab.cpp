@@ -188,7 +188,16 @@ void PrefabManager::AddComponentFromJSON(EntityID entity, const rapidjson::Value
     
 }
 
-
+bool PrefabManager::IsIDPrefab(EntityID id) {
+    for (const auto& bweh:prefab_map)
+    {
+        if (bweh.second==id)
+        {
+            return true;
+        }
+    }
+    return false;
+}
 
 std::string Scenes_GetInitialName() {
     rapidjson::Document d;

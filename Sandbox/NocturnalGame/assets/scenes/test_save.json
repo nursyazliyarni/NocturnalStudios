@@ -1,0 +1,1075 @@
+{
+    "states": {
+        "initial": "MainMenu",
+        "keymap": {
+            "1": "Flamingo",
+            "2": "Seal",
+            "3": "Owl",
+            "4": "Horse",
+            "ESC": "MainMenu"
+        }
+    },
+    "scenes": [
+        {
+            "background": "assets/textures/menu_bg.png",
+            "entities": [
+                {
+                    "prefab": "button",
+                    "name": "btn_play",
+                    "overrides": [
+                        {
+                            "type": "Transform",
+                            "position": {
+                                "x": 0.3799999952316284,
+                                "y": 0.44999998807907107
+                            },
+                            "scale": {
+                                "x": 0.0,
+                                "y": 0.0
+                            },
+                            "rotation": 0.0,
+                            "height": 0.0,
+                            "space": "world",
+                            "is_visible": true,
+                            "rotatable": false,
+                            "scalable": false
+                        },
+                        {
+                            "type": "ImageRenderer",
+                            "opacity": 1.0,
+                            "color_to_add": {
+                                "r": 0.0,
+                                "g": 0.0,
+                                "b": 0.0,
+                                "a": 0.0
+                            },
+                            "sprite_path": "assets/textures\\anima_placeholder.png"
+                        }
+                    ],
+                    "start": true,
+                    "goto": "Flamingo"
+                },
+                {
+                    "prefab": "button",
+                    "name": "btn_load",
+                    "overrides": [
+                        {
+                            "type": "Transform",
+                            "position": {
+                                "x": 0.3799999952316284,
+                                "y": 0.6000000238418579
+                            },
+                            "scale": {
+                                "x": 0.0,
+                                "y": 0.0
+                            },
+                            "rotation": 0.0,
+                            "height": 0.0,
+                            "space": "world",
+                            "is_visible": true,
+                            "rotatable": false,
+                            "scalable": false
+                        },
+                        {
+                            "type": "ImageRenderer",
+                            "opacity": 1.0,
+                            "color_to_add": {
+                                "r": 0.0,
+                                "g": 0.0,
+                                "b": 0.0,
+                                "a": 0.0
+                            },
+                            "sprite_path": "assets/textures\\anima_placeholder.png"
+                        }
+                    ],
+                    "goto": "Flamingo"
+                },
+                {
+                    "prefab": "button",
+                    "name": "btn_settings",
+                    "overrides": [
+                        {
+                            "type": "Transform",
+                            "position": {
+                                "x": 0.3799999952316284,
+                                "y": 0.75
+                            },
+                            "scale": {
+                                "x": 0.0,
+                                "y": 0.0
+                            },
+                            "rotation": 0.0,
+                            "height": 0.0,
+                            "space": "world",
+                            "is_visible": true,
+                            "rotatable": false,
+                            "scalable": false
+                        },
+                        {
+                            "type": "ImageRenderer",
+                            "opacity": 1.0,
+                            "color_to_add": {
+                                "r": 0.0,
+                                "g": 0.0,
+                                "b": 0.0,
+                                "a": 0.0
+                            },
+                            "sprite_path": "assets/textures\\anima_placeholder.png"
+                        }
+                    ]
+                },
+                {
+                    "prefab": "button",
+                    "name": "btn_quit",
+                    "overrides": [
+                        {
+                            "type": "Transform",
+                            "position": {
+                                "x": 0.3799999952316284,
+                                "y": 0.8999999761581421
+                            },
+                            "scale": {
+                                "x": 0.0,
+                                "y": 0.0
+                            },
+                            "rotation": 0.0,
+                            "height": 0.0,
+                            "space": "world",
+                            "is_visible": true,
+                            "rotatable": false,
+                            "scalable": false
+                        },
+                        {
+                            "type": "ImageRenderer",
+                            "opacity": 1.0,
+                            "color_to_add": {
+                                "r": 0.0,
+                                "g": 0.0,
+                                "b": 0.0,
+                                "a": 0.0
+                            },
+                            "sprite_path": "assets/textures\\anima_placeholder.png"
+                        }
+                    ],
+                    "quit": true
+                },
+                {
+                    "prefab": "audio_emitter_menu",
+                    "name": "menu_bgm_emitter",
+                    "overrides": [
+                        {
+                            "type": "AudioData",
+                            "audios": [
+                                {
+                                    "resource_id": 5,
+                                    "name": "BGM_Iris_Luminara_Loop_ROUGH",
+                                    "loop": true,
+                                    "to_play_at_start": true,
+                                    "locality": false,
+                                    "persist_on_entity_destruction": false,
+                                    "persist_on_scene_change": true,
+                                    "volume": 0.6000000238418579,
+                                    "pitch": 1.0,
+                                    "distance_mult": 1.0,
+                                    "group": "Music"
+                                }
+                            ],
+                            "listener": false
+                        },
+                        {
+                            "type": "Transform",
+                            "position": {
+                                "x": 0.0,
+                                "y": 0.0
+                            },
+                            "scale": {
+                                "x": 0.0,
+                                "y": 0.0
+                            },
+                            "rotation": 0.0,
+                            "height": 0.0,
+                            "space": "world",
+                            "is_visible": false,
+                            "rotatable": false,
+                            "scalable": false
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "background": "assets/textures/flamingo_bg.png",
+            "entities": [
+                {
+                    "prefab": "animal",
+                    "name": "flamingo",
+                    "overrides": [
+                        {
+                            "type": "Transform",
+                            "position": {
+                                "x": 0.10000000149011612,
+                                "y": 0.4399999976158142
+                            },
+                            "scale": {
+                                "x": 0.0,
+                                "y": 0.0
+                            },
+                            "rotation": 0.0,
+                            "height": 0.0,
+                            "space": "world",
+                            "is_visible": true,
+                            "rotatable": false,
+                            "scalable": false
+                        },
+                        {
+                            "type": "ImageRenderer",
+                            "opacity": 1.0,
+                            "color_to_add": {
+                                "r": 0.0,
+                                "g": 0.0,
+                                "b": 0.0,
+                                "a": 0.0
+                            },
+                            "sprite_path": "textures/flamingo.png"
+                        },
+                        {
+                            "type": "AnimalBehavior",
+                            "health_bar": 100.0,
+                            "hunger_bar": 100.0,
+                            "sanity_bar": 100.0
+                        },
+                        {
+                            "type": "PhysicsComponent",
+                            "position": {
+                                "x": 0.0,
+                                "y": 0.0
+                            },
+                            "velocity": {
+                                "x": 0.0,
+                                "y": 0.0
+                            },
+                            "acceleration": {
+                                "x": 0.0,
+                                "y": 0.0
+                            },
+                            "gravity_enabled": true
+                        }
+                    ]
+                },
+                {
+                    "prefab": "food",
+                    "name": "flamingo_food",
+                    "overrides": [
+                        {
+                            "type": "Transform",
+                            "position": {
+                                "x": 0.3718850910663605,
+                                "y": 0.1768542230129242
+                            },
+                            "scale": {
+                                "x": 0.0,
+                                "y": 0.0
+                            },
+                            "rotation": 0.0,
+                            "height": 0.0,
+                            "space": "world",
+                            "is_visible": true,
+                            "rotatable": false,
+                            "scalable": false
+                        },
+                        {
+                            "type": "ImageRenderer",
+                            "opacity": 1.0,
+                            "color_to_add": {
+                                "r": 0.0,
+                                "g": 0.0,
+                                "b": 0.0,
+                                "a": 0.0
+                            },
+                            "sprite_path": "textures/flamingo_food.png"
+                        }
+                    ]
+                },
+                {
+                    "prefab": "medicine",
+                    "name": "flamingo_medicine",
+                    "overrides": [
+                        {
+                            "type": "Transform",
+                            "position": {
+                                "x": 0.4203231930732727,
+                                "y": 0.45076727867126467
+                            },
+                            "scale": {
+                                "x": 0.0,
+                                "y": 0.0
+                            },
+                            "rotation": 0.0,
+                            "height": 0.0,
+                            "space": "world",
+                            "is_visible": true,
+                            "rotatable": false,
+                            "scalable": false
+                        },
+                        {
+                            "type": "ImageRenderer",
+                            "opacity": 1.0,
+                            "color_to_add": {
+                                "r": 0.0,
+                                "g": 0.0,
+                                "b": 0.0,
+                                "a": 0.0
+                            },
+                            "sprite_path": "textures/flamingo_medicine.png"
+                        }
+                    ]
+                },
+                {
+                    "prefab": "toy",
+                    "name": "flamingo_toy",
+                    "overrides": [
+                        {
+                            "type": "Transform",
+                            "position": {
+                                "x": 0.25008976459503176,
+                                "y": 0.2563938796520233
+                            },
+                            "scale": {
+                                "x": 0.0,
+                                "y": 0.0
+                            },
+                            "rotation": 0.0,
+                            "height": 0.0,
+                            "space": "world",
+                            "is_visible": true,
+                            "rotatable": false,
+                            "scalable": false
+                        },
+                        {
+                            "type": "ImageRenderer",
+                            "opacity": 1.0,
+                            "color_to_add": {
+                                "r": 0.0,
+                                "g": 0.0,
+                                "b": 0.0,
+                                "a": 0.0
+                            },
+                            "sprite_path": "textures/flamingo_toy.png"
+                        }
+                    ]
+                },
+                {
+                    "prefab": "audio_emitter_flamingo",
+                    "name": "flamingo_ambience_emitter",
+                    "overrides": [
+                        {
+                            "type": "AudioData",
+                            "audios": [
+                                {
+                                    "resource_id": 1,
+                                    "name": "BGM_Ambience_Flamingo_01",
+                                    "loop": true,
+                                    "to_play_at_start": true,
+                                    "locality": false,
+                                    "persist_on_entity_destruction": false,
+                                    "persist_on_scene_change": false,
+                                    "volume": 0.4000000059604645,
+                                    "pitch": 1.0,
+                                    "distance_mult": 1.0,
+                                    "group": "SFX"
+                                }
+                            ],
+                            "listener": false
+                        },
+                        {
+                            "type": "Transform",
+                            "position": {
+                                "x": 0.0,
+                                "y": 0.0
+                            },
+                            "scale": {
+                                "x": 0.0,
+                                "y": 0.0
+                            },
+                            "rotation": 0.0,
+                            "height": 0.0,
+                            "space": "world",
+                            "is_visible": false,
+                            "rotatable": false,
+                            "scalable": false
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "background": "assets/textures/seal_bg.png",
+            "entities": [
+                {
+                    "prefab": "animal",
+                    "name": "seal",
+                    "overrides": [
+                        {
+                            "type": "Transform",
+                            "position": {
+                                "x": 0.10000000149011612,
+                                "y": 0.46000000834465029
+                            },
+                            "scale": {
+                                "x": 0.0,
+                                "y": 0.0
+                            },
+                            "rotation": 0.0,
+                            "height": 0.0,
+                            "space": "world",
+                            "is_visible": true,
+                            "rotatable": false,
+                            "scalable": false
+                        },
+                        {
+                            "type": "ImageRenderer",
+                            "opacity": 1.0,
+                            "color_to_add": {
+                                "r": 0.0,
+                                "g": 0.0,
+                                "b": 0.0,
+                                "a": 0.0
+                            },
+                            "sprite_path": "textures/seal.png"
+                        },
+                        {
+                            "type": "AnimalBehavior",
+                            "health_bar": 100.0,
+                            "hunger_bar": 100.0,
+                            "sanity_bar": 100.0
+                        },
+                        {
+                            "type": "PhysicsComponent",
+                            "position": {
+                                "x": 0.0,
+                                "y": 0.0
+                            },
+                            "velocity": {
+                                "x": 0.0,
+                                "y": 0.0
+                            },
+                            "acceleration": {
+                                "x": 0.0,
+                                "y": 0.0
+                            },
+                            "gravity_enabled": true
+                        }
+                    ]
+                },
+                {
+                    "prefab": "food",
+                    "name": "seal_food",
+                    "overrides": [
+                        {
+                            "type": "Transform",
+                            "position": {
+                                "x": 0.5199999809265137,
+                                "y": 0.4000000059604645
+                            },
+                            "scale": {
+                                "x": 0.0,
+                                "y": 0.0
+                            },
+                            "rotation": 0.0,
+                            "height": 0.0,
+                            "space": "world",
+                            "is_visible": true,
+                            "rotatable": false,
+                            "scalable": false
+                        },
+                        {
+                            "type": "ImageRenderer",
+                            "opacity": 1.0,
+                            "is_visible": false,
+                            "color_to_add": {
+                                "r": 0.0,
+                                "g": 0.0,
+                                "b": 0.0,
+                                "a": 0.0
+                            },
+                            "sprite_path": "textures/seal_food.png"
+                        }
+                    ]
+                },
+                {
+                    "prefab": "medicine",
+                    "name": "seal_medicine",
+                    "overrides": [
+                        {
+                            "type": "Transform",
+                            "position": {
+                                "x": 0.6600000262260437,
+                                "y": 0.5
+                            },
+                            "scale": {
+                                "x": 0.0,
+                                "y": 0.0
+                            },
+                            "rotation": 0.0,
+                            "height": 0.0,
+                            "space": "world",
+                            "is_visible": true,
+                            "rotatable": false,
+                            "scalable": false
+                        },
+                        {
+                            "type": "ImageRenderer",
+                            "opacity": 1.0,
+                            "color_to_add": {
+                                "r": 0.0,
+                                "g": 0.0,
+                                "b": 0.0,
+                                "a": 0.0
+                            },
+                            "sprite_path": "textures/seal_medicine.png"
+                        }
+                    ]
+                },
+                {
+                    "prefab": "toy",
+                    "name": "seal_toy",
+                    "overrides": [
+                        {
+                            "type": "Transform",
+                            "position": {
+                                "x": 0.4000000059604645,
+                                "y": 0.5
+                            },
+                            "scale": {
+                                "x": 0.0,
+                                "y": 0.0
+                            },
+                            "rotation": 0.0,
+                            "height": 0.0,
+                            "space": "world",
+                            "is_visible": true,
+                            "rotatable": false,
+                            "scalable": false
+                        },
+                        {
+                            "type": "ImageRenderer",
+                            "opacity": 1.0,
+                            "color_to_add": {
+                                "r": 0.0,
+                                "g": 0.0,
+                                "b": 0.0,
+                                "a": 0.0
+                            },
+                            "sprite_path": "textures/seal_toy.png"
+                        }
+                    ]
+                },
+                {
+                    "prefab": "audio_emitter_seal",
+                    "name": "seal_ambience_emitter",
+                    "overrides": [
+                        {
+                            "type": "AudioData",
+                            "audios": [
+                                {
+                                    "resource_id": 4,
+                                    "name": "BGM_Ambience_Seal_01",
+                                    "loop": true,
+                                    "to_play_at_start": true,
+                                    "locality": false,
+                                    "persist_on_entity_destruction": false,
+                                    "persist_on_scene_change": false,
+                                    "volume": 0.4000000059604645,
+                                    "pitch": 1.0,
+                                    "distance_mult": 1.0,
+                                    "group": "SFX"
+                                }
+                            ],
+                            "listener": false
+                        },
+                        {
+                            "type": "Transform",
+                            "position": {
+                                "x": 0.0,
+                                "y": 0.0
+                            },
+                            "scale": {
+                                "x": 0.0,
+                                "y": 0.0
+                            },
+                            "rotation": 0.0,
+                            "height": 0.0,
+                            "space": "world",
+                            "is_visible": false,
+                            "rotatable": false,
+                            "scalable": false
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "background": "assets/textures/owl_bg.png",
+            "entities": [
+                {
+                    "prefab": "animal",
+                    "name": "owl",
+                    "overrides": [
+                        {
+                            "type": "Transform",
+                            "position": {
+                                "x": 0.11999999731779099,
+                                "y": 0.4000000059604645
+                            },
+                            "scale": {
+                                "x": 0.0,
+                                "y": 0.0
+                            },
+                            "rotation": 0.0,
+                            "height": 0.0,
+                            "space": "world",
+                            "is_visible": true,
+                            "rotatable": false,
+                            "scalable": false
+                        },
+                        {
+                            "type": "ImageRenderer",
+                            "opacity": 1.0,
+                            "color_to_add": {
+                                "r": 0.0,
+                                "g": 0.0,
+                                "b": 0.0,
+                                "a": 0.0
+                            },
+                            "sprite_path": "textures/owl.png"
+                        },
+                        {
+                            "type": "AnimalBehavior",
+                            "health_bar": 100.0,
+                            "hunger_bar": 100.0,
+                            "sanity_bar": 100.0
+                        },
+                        {
+                            "type": "PhysicsComponent",
+                            "position": {
+                                "x": 0.0,
+                                "y": 0.0
+                            },
+                            "velocity": {
+                                "x": 0.0,
+                                "y": 0.0
+                            },
+                            "acceleration": {
+                                "x": 0.0,
+                                "y": 0.0
+                            },
+                            "gravity_enabled": true
+                        }
+                    ]
+                },
+                {
+                    "prefab": "food",
+                    "name": "owl_food",
+                    "overrides": [
+                        {
+                            "type": "Transform",
+                            "position": {
+                                "x": 0.5199999809265137,
+                                "y": 0.4000000059604645
+                            },
+                            "scale": {
+                                "x": 0.0,
+                                "y": 0.0
+                            },
+                            "rotation": 0.0,
+                            "height": 0.0,
+                            "space": "world",
+                            "is_visible": true,
+                            "rotatable": false,
+                            "scalable": false
+                        },
+                        {
+                            "type": "ImageRenderer",
+                            "opacity": 1.0,
+                            "color_to_add": {
+                                "r": 0.0,
+                                "g": 0.0,
+                                "b": 0.0,
+                                "a": 0.0
+                            },
+                            "sprite_path": "textures/owl_food.png"
+                        }
+                    ]
+                },
+                {
+                    "prefab": "medicine",
+                    "name": "owl_medicine",
+                    "overrides": [
+                        {
+                            "type": "Transform",
+                            "position": {
+                                "x": 0.6600000262260437,
+                                "y": 0.5
+                            },
+                            "scale": {
+                                "x": 0.0,
+                                "y": 0.0
+                            },
+                            "rotation": 0.0,
+                            "height": 0.0,
+                            "space": "world",
+                            "is_visible": true,
+                            "rotatable": false,
+                            "scalable": false
+                        },
+                        {
+                            "type": "ImageRenderer",
+                            "opacity": 1.0,
+                            "color_to_add": {
+                                "r": 0.0,
+                                "g": 0.0,
+                                "b": 0.0,
+                                "a": 0.0
+                            },
+                            "sprite_path": "textures/owl_medicine.png"
+                        }
+                    ]
+                },
+                {
+                    "prefab": "toy",
+                    "name": "owl_toy",
+                    "overrides": [
+                        {
+                            "type": "Transform",
+                            "position": {
+                                "x": 0.4000000059604645,
+                                "y": 0.5
+                            },
+                            "scale": {
+                                "x": 0.0,
+                                "y": 0.0
+                            },
+                            "rotation": 0.0,
+                            "height": 0.0,
+                            "space": "world",
+                            "is_visible": true,
+                            "rotatable": false,
+                            "scalable": false
+                        },
+                        {
+                            "type": "ImageRenderer",
+                            "opacity": 1.0,
+                            "color_to_add": {
+                                "r": 0.0,
+                                "g": 0.0,
+                                "b": 0.0,
+                                "a": 0.0
+                            },
+                            "sprite_path": "textures/owl_toy.png"
+                        }
+                    ]
+                },
+                {
+                    "prefab": "firefly",
+                    "name": "firefly_1",
+                    "overrides": [
+                        {
+                            "type": "Transform",
+                            "position": {
+                                "x": 0.7042499780654907,
+                                "y": 0.4811893403530121
+                            },
+                            "scale": {
+                                "x": 0.0,
+                                "y": 0.0
+                            },
+                            "rotation": 0.0,
+                            "height": 0.0,
+                            "space": "world",
+                            "is_visible": true,
+                            "rotatable": false,
+                            "scalable": false
+                        },
+                        {
+                            "type": "ImageRenderer",
+                            "opacity": 1.0,
+                            "color_to_add": {
+                                "r": 0.0,
+                                "g": 0.0,
+                                "b": 0.0,
+                                "a": 0.0
+                            },
+                            "sprite_path": "textures/firefly.png"
+                        },
+                        {
+                            "type": "PhysicsComponent",
+                            "position": {
+                                "x": 0.0,
+                                "y": 0.0
+                            },
+                            "velocity": {
+                                "x": -0.2999526560306549,
+                                "y": -0.005329545587301254
+                            },
+                            "acceleration": {
+                                "x": 0.0,
+                                "y": 0.0
+                            },
+                            "gravity_enabled": true
+                        },
+                        {
+                            "type": "AIComponent"
+                        }
+                    ]
+                },
+                {
+                    "prefab": "audio_emitter_owl",
+                    "name": "owl_ambience_emitter",
+                    "overrides": [
+                        {
+                            "type": "AudioData",
+                            "audios": [
+                                {
+                                    "resource_id": 3,
+                                    "name": "BGM_Ambience_Owl_01",
+                                    "loop": true,
+                                    "to_play_at_start": true,
+                                    "locality": false,
+                                    "persist_on_entity_destruction": false,
+                                    "persist_on_scene_change": false,
+                                    "volume": 0.44999998807907107,
+                                    "pitch": 1.0,
+                                    "distance_mult": 1.0,
+                                    "group": "SFX"
+                                }
+                            ],
+                            "listener": false
+                        },
+                        {
+                            "type": "Transform",
+                            "position": {
+                                "x": 0.0,
+                                "y": 0.0
+                            },
+                            "scale": {
+                                "x": 0.0,
+                                "y": 0.0
+                            },
+                            "rotation": 0.0,
+                            "height": 0.0,
+                            "space": "world",
+                            "is_visible": false,
+                            "rotatable": false,
+                            "scalable": false
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "background": "assets/textures/horse_bg.png",
+            "entities": [
+                {
+                    "prefab": "animal",
+                    "name": "horse",
+                    "overrides": [
+                        {
+                            "type": "Transform",
+                            "position": {
+                                "x": 0.10000000149011612,
+                                "y": 0.4000000059604645
+                            },
+                            "scale": {
+                                "x": 0.0,
+                                "y": 0.0
+                            },
+                            "rotation": 0.0,
+                            "height": 0.0,
+                            "space": "world",
+                            "is_visible": true,
+                            "rotatable": false,
+                            "scalable": false
+                        },
+                        {
+                            "type": "ImageRenderer",
+                            "opacity": 1.0,
+                            "color_to_add": {
+                                "r": 0.0,
+                                "g": 0.0,
+                                "b": 0.0,
+                                "a": 0.0
+                            },
+                            "sprite_path": "textures/horse.png"
+                        },
+                        {
+                            "type": "AnimalBehavior",
+                            "health_bar": 100.0,
+                            "hunger_bar": 100.0,
+                            "sanity_bar": 100.0
+                        },
+                        {
+                            "type": "PhysicsComponent",
+                            "position": {
+                                "x": 0.0,
+                                "y": 0.0
+                            },
+                            "velocity": {
+                                "x": 0.0,
+                                "y": 0.0
+                            },
+                            "acceleration": {
+                                "x": 0.0,
+                                "y": 0.0
+                            },
+                            "gravity_enabled": true
+                        }
+                    ]
+                },
+                {
+                    "prefab": "food",
+                    "name": "horse_food",
+                    "overrides": [
+                        {
+                            "type": "Transform",
+                            "position": {
+                                "x": 0.5199999809265137,
+                                "y": 0.5
+                            },
+                            "scale": {
+                                "x": 0.0,
+                                "y": 0.0
+                            },
+                            "rotation": 0.0,
+                            "height": 0.0,
+                            "space": "world",
+                            "is_visible": true,
+                            "rotatable": false,
+                            "scalable": false
+                        },
+                        {
+                            "type": "ImageRenderer",
+                            "opacity": 1.0,
+                            "color_to_add": {
+                                "r": 0.0,
+                                "g": 0.0,
+                                "b": 0.0,
+                                "a": 0.0
+                            },
+                            "sprite_path": "textures/horse_food.png"
+                        }
+                    ]
+                },
+                {
+                    "prefab": "medicine",
+                    "name": "horse_medicine",
+                    "overrides": [
+                        {
+                            "type": "Transform",
+                            "position": {
+                                "x": 0.6600000262260437,
+                                "y": 0.5
+                            },
+                            "scale": {
+                                "x": 0.0,
+                                "y": 0.0
+                            },
+                            "rotation": 0.0,
+                            "height": 0.0,
+                            "space": "world",
+                            "is_visible": true,
+                            "rotatable": false,
+                            "scalable": false
+                        },
+                        {
+                            "type": "ImageRenderer",
+                            "opacity": 1.0,
+                            "color_to_add": {
+                                "r": 0.0,
+                                "g": 0.0,
+                                "b": 0.0,
+                                "a": 0.0
+                            },
+                            "sprite_path": "textures/horse_medicine.png"
+                        }
+                    ]
+                },
+                {
+                    "prefab": "toy",
+                    "name": "horse_toy",
+                    "overrides": [
+                        {
+                            "type": "Transform",
+                            "position": {
+                                "x": 0.4000000059604645,
+                                "y": 0.5
+                            },
+                            "scale": {
+                                "x": 0.0,
+                                "y": 0.0
+                            },
+                            "rotation": 0.0,
+                            "height": 0.0,
+                            "space": "world",
+                            "is_visible": true,
+                            "rotatable": true,
+                            "scalable": true
+                        },
+                        {
+                            "type": "ImageRenderer",
+                            "opacity": 1.0,
+                            "color_to_add": {
+                                "r": 0.0,
+                                "g": 0.0,
+                                "b": 0.0,
+                                "a": 0.0
+                            },
+                            "sprite_path": "textures/horse_toy.png"
+                        }
+                    ]
+                },
+                {
+                    "prefab": "audio_emitter_horse",
+                    "name": "horse_ambience_emitter",
+                    "overrides": [
+                        {
+                            "type": "AudioData",
+                            "audios": [
+                                {
+                                    "resource_id": 2,
+                                    "name": "BGM_Ambience_Horse_01",
+                                    "loop": true,
+                                    "to_play_at_start": true,
+                                    "locality": false,
+                                    "persist_on_entity_destruction": false,
+                                    "persist_on_scene_change": false,
+                                    "volume": 0.5,
+                                    "pitch": 1.0,
+                                    "distance_mult": 1.0,
+                                    "group": "SFX"
+                                }
+                            ],
+                            "listener": false
+                        },
+                        {
+                            "type": "Transform",
+                            "position": {
+                                "x": 0.0,
+                                "y": 0.0
+                            },
+                            "scale": {
+                                "x": 0.0,
+                                "y": 0.0
+                            },
+                            "rotation": 0.0,
+                            "height": 0.0,
+                            "space": "world",
+                            "is_visible": false,
+                            "rotatable": false,
+                            "scalable": false
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

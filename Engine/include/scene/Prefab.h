@@ -40,13 +40,14 @@ public:
     //  or
     //  B) [ { "name":"...", "components":[...] }, ... ]
     void Load_Prefab(const std::string& filename_path);
+
     EntityID CreateEntityFromPrefab(const std::string& prefab_name, const std::string& object_name = "");
 
     bool PrefabExists(const std::string& prefab_name) const;
 
     void AddComponentFromJSON(EntityID entity, const rapidjson::Value& component_json);
 
-
+    bool IsIDPrefab(EntityID id);
 
 //private:
 //    void ApplyComponentDefaults(EntityID entity, const rapidjson::Value& defaults);
