@@ -965,18 +965,116 @@ void GameManager::renderWithHUD(Renderer& r,
     }
 
     if (m_isGameOver) {
-        // draw a dark quad over the screen
-        r.rect(0, 0, (float)w, (float)h, 0, 0, 0.0f); // or semi-transparent if your rect supports it
+        // --- 1) Semi-transparent fullscreen overlay ---
+        glPushAttrib(GL_ALL_ATTRIB_BITS);
+        glUseProgram(0);
+        glDisable(GL_TEXTURE_2D);
+        glDisable(GL_DEPTH_TEST);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-        // big “GAME OVER” in the middle
-        if (s_fontTitle) {
-            const Font& f = resourceManager.getFont(*s_fontTitle);
-            r.drawText(f, "GAME OVER", w * 0.35f, h * 0.6f, 1.5f,
-                glm::vec3(1.0f, 0.2f, 0.2f));
-        }
+        glBegin(GL_QUADS);
+        glColor4f(0.0f, 0.0f, 0.0f, 0.6f);
+        glVertex2f(0, 0);
+        glVertex2f((float)w, 0);
+        glVertex2f((float)w, (float)h);
+        glVertex2f(0, (float)h);
+        glEnd();
+        glPopAttrib();
 
-        // you can also show “Press R to Restart” etc, handled with Input, not ImGui
+        // --- 2) Layout values ---
+        float centerX = w * 0.5f;
+        float textGap = 60.0f * textScale;  // vertical spacing
+        float baseY = h * 0.45f;          // middle of menu
+
+        const Font* fnt = nullptr;
+        if (s_fontTitle)
+            fnt = &resourceManager.getFont(*s_fontTitle);
+
+        if (!fnt) return;
+
+        struct TextButton {
+            std::string label;
+            float x, y;
+            float w, h;
+        };
+
+        auto measure = [&](const std::string& t) {
+            // approximate bounding box using font scale
+            float wEst = t.length() * 22.0f * textScale;
+            float hEst = 35.0f * textScale;
+            return std::pair<float, float>(wEst, hEst);
+            };
+
+        // --- Create buttons (text only) ---
+        TextButton restart{ "Restart",   0, baseY + textGap };
+        TextButton menu{ "Main Menu", 0, baseY };
+        TextButton quit{ "Quit",      0, baseY - textGap };
+
+        // center each text horizontally
+        auto centerTextButton = [&](TextButton& b) {
+            auto [tw, th] = measure(b.label);
+            b.x = centerX - tw * 0.5f;
+            b.w = tw;
+            b.h = th;
+            };
+
+        centerTextButton(restart);
+        centerTextButton(menu);
+        centerTextButton(quit);
+
+        // --- 3) Draw GAME OVER title ---
+        float titleScale = textScale * 1.8f;
+        float titleWidthEstimate = 350.0f * textScale;
+        float titleX = centerX - titleWidthEstimate * 0.5f;
+        float titleY = restart.y + 110.0f * textScale;
+
+        r.drawText(*fnt, "GAME OVER", titleX, titleY, titleScale,
+            glm::vec3(1.0f, 0.25f, 0.25f));
+
+        // --- 4) Draw text-only buttons ---
+        auto drawTextButton = [&](const TextButton& b) {
+            r.drawText(*fnt, b.label,
+                b.x, b.y + b.h * 0.7f,
+                textScale,
+                glm::vec3(1.0f, 1.0f, 1.0f));
+            };
+
+        drawTextButton(restart);
+        drawTextButton(menu);
+        drawTextButton(quit);
+
+        // --- 5) Click detection using the text bounding boxes ---
+        /*Vector2D mouseNorm = input.GET_mouse_pos(true, w, h);
+        float mx = mouseNorm.x() * w;
+        float my = mouseNorm.y() * h;
+
+        auto contains = [&](const TextButton& b) {
+            return (mx >= b.x && mx <= b.x + b.w &&
+                my >= b.y && my <= b.y + b.h);
+            };
+
+        if (input.isLeftMousePressed(window)) {
+            if (contains(restart)) {
+                resetAllScenesToInitial();
+                startGame();
+            }
+            else if (contains(menu)) {
+                m_isGameOver = false;
+                resetAllScenesToInitial();
+                requestScene("MainMenu");
+                goToMenu();
+            }
+            else if (contains(quit)) {
+                if (quitCallback) quitCallback();
+                else requestedQuit = true;
+            }
+        }*/
+
+        return;
+ 
     }
+
 }
 
 
@@ -995,6 +1093,79 @@ void GameManager :: imGUIlessRender(Renderer& r, Input& input, GLFWwindow* windo
 }
 
 bool GameManager::handleClick(float nx, float ny) {
+
+    // If we are in Game Over state, use the overlay buttons instead of scene clicks
+    if (m_isGameOver) {
+        // ImGui gives us nx,ny with origin at TOP-LEFT.
+        // Our HUD text uses BOTTOM-LEFT origin, so flip Y.
+        float x = nx;
+        float y = 1.0f - ny;
+
+        // These match the layout used in renderWithHUD:
+        //  centerX = 0.5 * width
+        //  baseY   = 0.45 * height
+        //  textGap = 60px on a 720px reference height
+        const float centerXNorm = 0.5f;                     // horizontal center
+        const float baseYNorm = 0.45f;                    // middle row
+        const float gapNorm = 60.0f / 720.0f;           // vertical spacing
+        const float halfWNorm = (260.0f * 0.5f) / 1280.0f; // half of 260px on 1280
+        const float halfHNorm = (35.0f * 0.5f) / 720.0f;  // half of 35px on 720
+
+        struct Btn {
+            float cx, cy;
+        };
+
+        // Same vertical ordering as in renderWithHUD:
+        // Restart (top), Main Menu (middle), Quit (bottom)
+        Btn restartBtn{ centerXNorm, baseYNorm + gapNorm };
+        Btn menuBtn{ centerXNorm, baseYNorm };
+        Btn quitBtn{ centerXNorm, baseYNorm - gapNorm };
+
+        auto hit = [&](const Btn& b) {
+            return (x >= b.cx - halfWNorm && x <= b.cx + halfWNorm &&
+                y >= b.cy - halfHNorm && y <= b.cy + halfHNorm);
+            };
+
+        // Restart → full game restart, go to first level (like "Start" in Menu)
+        if (hit(restartBtn)) {
+            m_isGameOver = false;
+            resetAllScenesToInitial();
+            startGame();
+
+            // Jump to first mapped scene (same logic as Menu "Start")
+            auto it1 = keyMap.find(GLFW_KEY_1);
+            if (it1 != keyMap.end()) {
+                requestScene(it1->second);
+            }
+
+            return true;
+        }
+
+        // Main Menu → go back to MainMenu scene
+        if (hit(menuBtn)) {
+            m_isGameOver = false;
+            resetAllScenesToInitial();
+            requestScene("MainMenu");
+            goToMenu();
+            return true;
+        }
+
+        // Quit → exit game
+        if (hit(quitBtn)) {
+            if (quitCallback) {
+                quitCallback();
+            }
+            else {
+                requestedQuit = true;
+            }
+            return true;
+        }
+
+        // Click missed the text buttons, but while Game Over we still
+        // don't want underlying scene clicks to trigger.
+        return true;
+    }
+
     auto it = scenes.find(currentScene);
     if (it == scenes.end()) return false;
     Scene& sc = it->second;
@@ -1118,6 +1289,27 @@ bool GameManager::handleClick(float nx, float ny) {
 void GameManager::startGame() {
     app = AppState::Playing;
     m_isGameOver = false;
+
+    // Reset all gameplay state that can cause Game Over
+    ECS& ecss = ECS::getECS();
+
+    for (auto& [sceneName, scene] : scenes) {
+        for (auto& di : scene.items) {
+            // If this DrawItem has an AnimalBehavior, reset its bars and flags
+            if (AnimalBehavior* ab = ecss.getComponent<AnimalBehavior>(di.entityID)) {
+                ab->health_bar = 100.0f;
+                ab->hunger_bar = 100.0f;
+                ab->sanity_bar = 100.0f;
+
+                di.still_alive = true;
+
+                // If you have extra timers/flags in AnimalBehavior, reset them here too
+                // e.g.:
+                // ab->acc_timer = 0.0f;
+                // ab->staring_countdown = 10.0f;
+            }
+        }
+    }
 }
  
 
@@ -1133,15 +1325,12 @@ bool GameManager::popQuitRequested() {
 
 void GameManager::triggerGameOver() {
     logger.log("=== GAME OVER TRIGGERED ===");
+
+    // Stay on the current scene, just mark Game Over.
     m_isGameOver = true;
-    
-    // Go to MainMenu (or GameOver scene if you have one)
-    if (scenes.count("GameOver") > 0) {
-        requestScene("GameOver");
-    } else {
-        requestScene("MainMenu");
-    }
-    app = AppState::Menu;
+
+    // Optionally freeze gameplay via state:
+    app = AppState::Paused;  // or keep Playing if your update logic checks isGameOver()
 }
 
 /*

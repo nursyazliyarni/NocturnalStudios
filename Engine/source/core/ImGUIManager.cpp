@@ -542,6 +542,7 @@ void ImGuiManager::showViewportWindowUI() {
 	isPlayMode = (m_editorMode == EditorMode::PLAY);
 
 	// Logic timing (animal state update) in PLAY mode only
+	//if (isPlayMode && !gsm.isGameOver()) {
 	if (isPlayMode) {
 		logicTime = TimeUtils::MeasureSeconds([&]() {
 			logic.check_animal_status(gsm);
@@ -569,7 +570,7 @@ void ImGuiManager::showViewportWindowUI() {
 	{
 		ImDrawList* dl = ImGui::GetWindowDrawList();
 
-		// Full-viewport rectangle
+		// Full-viewport rectangle (darken whole game view)
 		ImVec2 p0 = imgMin;               // top-left of viewport
 		ImVec2 p1 = imgMax;               // bottom-right of viewport
 		dl->AddRectFilled(p0, p1, IM_COL32(0, 0, 0, 180));  // dark overlay
@@ -588,19 +589,34 @@ void ImGuiManager::showViewportWindowUI() {
 		ImGui::Text("Two or more animals have died.");
 		ImGui::Spacing();
 
-		if (ImGui::Button("Restart", ImVec2(200, 35))) {
+		float buttonWidth = 200.0f;
+		ImVec2 btnSize(buttonWidth, 35.0f);
+
+		// Restart button
+		ImGui::SetCursorPosX((ImGui::GetWindowWidth() - buttonWidth) * 0.5f);
+		if (ImGui::Button("Restart", btnSize)) {
 			gsm.setGameOver(false);
-			gsm.requestScene(gsm.current());
+			// optional, if you have it:
+			gsm.resetAllScenesToInitial();
 			gsm.startGame();
+			// choose a starting scene:
+			// gsm.requestScene("Level1"); or keep current:
+			// gsm.requestScene(gsm.current());
 		}
 
-		if (ImGui::Button("Main Menu", ImVec2(200, 35))) {
+		// Main Menu button
+		ImGui::SetCursorPosX((ImGui::GetWindowWidth() - buttonWidth) * 0.5f);
+		if (ImGui::Button("Main Menu", btnSize)) {
 			gsm.setGameOver(false);
+			// optional reset:
+			gsm.resetAllScenesToInitial();
 			gsm.requestScene("MainMenu");
 			gsm.goToMenu();
 		}
 
-		if (ImGui::Button("Quit", ImVec2(200, 35))) {
+		// Quit button
+		ImGui::SetCursorPosX((ImGui::GetWindowWidth() - buttonWidth) * 0.5f);
+		if (ImGui::Button("Quit", btnSize)) {
 			glfwSetWindowShouldClose(mainWindow.handle(), true);
 		}
 
@@ -2438,7 +2454,7 @@ void ImGuiManager::onPlayButtonPressed() {
 		m_initialSceneState = m_savedSceneState;  // Store as initial
 		m_hasInitialState = true;
 		logger.log("Initial scene state stored");
-	}
+	}	
 
 	// Switch to play mode
 	m_editorMode = EditorMode::PLAY;
@@ -2452,37 +2468,31 @@ void ImGuiManager::onStopButtonPressed() {
 
 	logger.log("=== EXITING PLAY MODE ===");
 
-	// Get current scene and reset all animal values to defaults
 	Scene* scene = gsm.getCurrentScene();
 	if (scene) {
+
+		// Reset animal components ONLY
+		ECS& ecss = ECS::getECS();
 		for (auto& item : scene->items) {
-			ECS& ecss = ECS::getECS();
 			AnimalBehavior* ab = ecss.getComponent<AnimalBehavior>(item.entityID);
 			if (ab) {
-
-				// Reset bars to full
 				ab->health_bar = 100.0f;
 				ab->hunger_bar = 100.0f;
 				ab->sanity_bar = 100.0f;
-				// 1) Reset game-wide state back to initial JSON
-				gsm.setGameOver(false);          // make sure overlay is off (if you have this helper)
-				gsm.resetAllScenesToInitial();   // restore scenes from initialScenes_
-
-				// 2) Go back to main menu state
-				gsm.requestScene("MainMenu");    // show MainMenu scene
-				gsm.goToMenu();                  // set app state to Menu
-
-				// 3) Switch editor back to EDIT mode
-				m_editorMode = EditorMode::EDIT;
-
-				// (Optional) clear editor undo history if you want a "fresh" level state
-				// m_undoStack.clear();
-
-				logger.log("Edit mode restored - game reset to initial MainMenu state");
 			}
 		}
 	}
+
+	gsm.setGameOver(false);
+	gsm.resetAllScenesToInitial();
+	gsm.requestScene("MainMenu");
+	gsm.goToMenu();
+
+	m_editorMode = EditorMode::EDIT;
+
+	logger.log("Edit mode restored - game reset to initial MainMenu state");
 }
+
 
 void ImGuiManager::pushUndoState(const char* reason)
 {
