@@ -681,6 +681,8 @@ void GameManager::render(Renderer& r, Input& input, GLFWwindow* window, int w, i
     if (it == scenes.end()) { logger.log("scene not found");  return; }
     const Scene& sc = it->second;
 
+
+
     // background (fullscreen) NOTE uniform must be "bg_texture"
     if (it->first == "MainMenu") {
         r.special_background_render(sc.background, "bgTexture", 1);
@@ -865,7 +867,19 @@ void GameManager::render(Renderer& r, Input& input, GLFWwindow* window, int w, i
         }
     }
 
-    
+    if (app==AppState::Paused)
+    {
+        for (DrawItem pdi : pauseScene) {
+            Transform* t = ecs_.getComponent<Transform>(pdi.entityID);
+            ImageRenderer* img = ecs_.getComponent<ImageRenderer>(pdi.entityID);
+            if (!t || !img)continue;
+
+            float px = t->position.x() * w, py = t->position.y() * h, pw = img->width * w, ph = img->height * h;
+            Cam2D_Apply(currentScene, px, py, pw, ph, w, h);
+
+            r.texturedTri(img->textureID, px, py, pw, ph);
+        }
+    }
    
 
         

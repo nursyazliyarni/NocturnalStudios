@@ -5,6 +5,43 @@
   },
 
   "scenes": [
+    {"name":"pause",
+      "entities":[
+        { "prefab":"button",
+          "name":"btn_resume",
+            "overrides": [
+                {"type": "Transform",
+                  "position": {
+                      "x": 0.38,
+                      "y": 0.45
+                  }
+                },
+                {
+                  "type":"ImageRenderer",
+                  "sprite_path":"textures/resume.png",
+                  "width":0.26,
+                  "height":0.09
+                },
+                
+                ],
+                { "prefab":"button",
+                  "name":"btn_main_menu",
+                    "overrides": [
+                {"type": "Transform",
+                  "position": {
+                      "x": 0.38,
+                      "y": 0.60
+                  }
+                },
+                {
+                  "type":"ImageRenderer",
+                  "sprite_path":"textures/menuQUIT.png",
+                  "width":0.26,
+                  "height":0.09
+                }
+            ], "goto":"MainMenu" }
+            
+              },
      {"name":"MainMenu",
       "background": "textures/menu_bg.png",
       "entities": [
