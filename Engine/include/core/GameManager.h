@@ -65,6 +65,8 @@ struct ClickRegion {
     std::string gotoScene;     // empty if not a goto
     bool quit = false;         // quit app?
     bool  start{ false };
+    bool resume{ false };
+
     std::string name;
 };
 
@@ -112,7 +114,7 @@ public:
         ResourceManager& resourceManager,
         bool showFPS);
 
-    void imGUIlessRender(Renderer& r, Input& input, GLFWwindow* window, int w, int h);
+    void imGUIlessRender(Renderer& r, Input& input, GLFWwindow* window, int w, int h, double dt, ResourceManager& rm);
 
     bool handleClick(float nx, float ny);  // mouse click in normalized coords
     bool popQuitRequested();               // returns & clears quit flag
@@ -198,7 +200,7 @@ private:
 
     AppState app{ AppState::Menu };                              // current mode
     std::string backKey;                                         // ESC destination (from JSON)
-    bool requestedQuit{ false }, editorEnabled{};                               // quit flag
+    bool requestedQuit{ false }, editorEnabled{}, show_fps{ false };                               // quit flag
     std::string currentScene;
     std::string scenesFilePath; // store path
 

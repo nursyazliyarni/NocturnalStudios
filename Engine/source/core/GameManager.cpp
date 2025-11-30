@@ -290,7 +290,7 @@ bool GameManager::saveAll(const char* saveJsonPath) {
                 if (scene.isClickReigion(i))
                 {
                     ClickRegion clickr = scene.getClickReigion(i);
-
+                    if (clickr.resume) entObj.AddMember("resume", true, alloc);
                     if (clickr.start) entObj.AddMember("start", true, alloc);
                     if (clickr.quit)entObj.AddMember("quit", true, alloc);
                     if (!clickr.gotoScene.empty())
@@ -386,7 +386,7 @@ bool GameManager::saveScene( std::string scenename, const char* scenesJsonPath, 
             if (scene.isClickReigion(i))
             {
                 ClickRegion clickr = scene.getClickReigion(i);
-
+                if (clickr.resume) entObj.AddMember("resume", true, alloc);
                 if (clickr.start) entObj.AddMember("start", true, alloc);
                 if (clickr.quit)entObj.AddMember("quit", true, alloc);
                 if (!clickr.gotoScene.empty())
@@ -580,9 +580,10 @@ bool GameManager::loadAll(PrefabManager& prefabs, const char* scenesPath, Textur
                 if (ent.HasMember("goto") && ent["goto"].IsString()) cr.gotoScene = ent["goto"].GetString();
                 if (ent.HasMember("quit") && ent["quit"].IsBool())   cr.quit = ent["quit"].GetBool();
                 if (ent.HasMember("start") && ent["start"].IsBool())  cr.start = ent["start"].GetBool();
+                if (ent.HasMember("resume") && ent["resume"].IsBool())  cr.resume = ent["resume"].GetBool();
 
                 // store the region if it does ANY action
-                if (cr.quit || cr.start || !cr.gotoScene.empty()){
+                if (cr.quit || cr.start || !cr.gotoScene.empty()||cr.resume){
                     di.hasCollider = true;
                     logger.log("cr: " + std::to_string(cr.x) + " " + std::to_string(cr.y) + " " + std::to_string(cr.w) + " " + std::to_string(cr.h) + " " + cr.name);
                     new_scene.clicks.push_back(cr);
@@ -693,6 +694,11 @@ void GameManager::handleKeyPress(int key) {
         return;
     }
 
+    if (key==GLFW_KEY_F)
+    {
+        show_fps = !show_fps;
+        return;
+    }
     // If we're still in Menu, ignore number keys 1..9 entirely
     if (app == AppState::Menu) {
         return;
@@ -1197,12 +1203,14 @@ void GameManager::renderWithHUD(Renderer& r,
 
 
 
-void GameManager :: imGUIlessRender(Renderer& r, Input& input, GLFWwindow* window, int w, int h) {
+void GameManager :: imGUIlessRender(Renderer& r, Input& input, GLFWwindow* window, int w, int h,double dt,ResourceManager& rm) {
     r.initFBO(w, h);
     r.bindFBO();
     r.resize(w, h);
     r.clear(0.06f, 0.06f, 0.07f);
-    render(r, input, window, w, h);
+    renderWithHUD(r, input, window, w, h,dt,rm, show_fps);
+    
+    //render(r, input, window, w, h);
     r.setTextProjection(w, h);
 
     r.unbindFBO();
@@ -1356,7 +1364,13 @@ bool GameManager::handleClick(float nx, float ny) {
             }
             
         }
-
+        if (cr.resume)
+        {
+            if (app==AppState::Paused)
+            {
+                app = AppState::Playing;
+            }
+        }
         // In Menu: handle both Start and simple goto (Options, Credits, Back, etc.)
         if (app == AppState::Menu) {
             if (cr.start) {

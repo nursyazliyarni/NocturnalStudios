@@ -461,6 +461,9 @@ int Application::run() {
             	if (inputSystem->WasPressed(k))
                 	gsm->switchToSceneForKey(k); // respects AppState::Playing
 
+			if (inputSystem->WasPressed(GLFW_KEY_F))
+				gsm->handleKeyPress(GLFW_KEY_F);
+
         	if (inputSystem->WasPressed(GLFW_KEY_ESCAPE))
             	gsm->handleKeyPress(GLFW_KEY_ESCAPE);
 
@@ -488,7 +491,7 @@ int Application::run() {
 
 			int winheight,winwidth;
 			m_window.getWindowSize(winwidth, winheight);
-			gsm->imGUIlessRender(*renderer, *inputSystem, m_window.handle(), winwidth,winheight);
+			gsm->imGUIlessRender(*renderer, *inputSystem, m_window.handle(), winwidth,winheight,dt,*resourceManager);
 
 			double mouse_x, mouse_y;
 			glfwGetCursorPos(m_window.handle(), &mouse_x, &mouse_y);
