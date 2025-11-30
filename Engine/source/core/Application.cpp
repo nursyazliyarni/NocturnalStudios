@@ -488,7 +488,7 @@ int Application::run() {
 
 			int winheight,winwidth;
 			m_window.getWindowSize(winwidth, winheight);
-			gsm->imGUIlessRender(*renderer, *inputSystem, m_window.handle(), winwidth,winheight);
+			gsm->imGUIlessRender(*renderer, *inputSystem, m_window.handle(), winwidth,winheight,dt,*resourceManager);
 
 			double mouse_x, mouse_y;
 			glfwGetCursorPos(m_window.handle(), &mouse_x, &mouse_y);
