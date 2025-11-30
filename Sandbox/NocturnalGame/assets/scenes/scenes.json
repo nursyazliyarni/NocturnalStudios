@@ -12,8 +12,8 @@
         "components":[
           {"type": "Transform",
                   "position": {
-                      "x": 0.5,
-                      "y": 0.5
+                      "x": 0.0,
+                      "y": 0.0
                   }
                 },
           {
@@ -23,7 +23,7 @@
         ]
 
       },{ "prefab":"button",
-          "name":"btn_return",
+          "name":"btn_resune",
             "overrides": [
                 {"type": "Transform",
                   "position": {
@@ -40,7 +40,7 @@
             ]
           },
         { "prefab":"button",
-          "name":"btn_load",
+          "name":"btn_mm",
           "overrides": [
                 {"type": "Transform",
                   "position": {
@@ -55,7 +55,7 @@
                   "height":0.09
                 }
             ], 
-            "goto":"MainMenu" }
+            "quit":true }
 
     ]
   },
