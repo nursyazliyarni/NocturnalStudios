@@ -461,6 +461,9 @@ int Application::run() {
             	if (inputSystem->WasPressed(k))
                 	gsm->switchToSceneForKey(k); // respects AppState::Playing
 
+			if (inputSystem->WasPressed(GLFW_KEY_F))
+				gsm->handleKeyPress(GLFW_KEY_F);
+
         	if (inputSystem->WasPressed(GLFW_KEY_ESCAPE))
             	gsm->handleKeyPress(GLFW_KEY_ESCAPE);
 

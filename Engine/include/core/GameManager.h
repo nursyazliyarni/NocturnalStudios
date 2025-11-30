@@ -200,7 +200,7 @@ private:
 
     AppState app{ AppState::Menu };                              // current mode
     std::string backKey;                                         // ESC destination (from JSON)
-    bool requestedQuit{ false }, editorEnabled{},show_fps;                               // quit flag
+    bool requestedQuit{ false }, editorEnabled{}, show_fps{ false };                               // quit flag
     std::string currentScene;
     std::string scenesFilePath; // store path
 

@@ -697,6 +697,7 @@ void GameManager::handleKeyPress(int key) {
     if (key==GLFW_KEY_F)
     {
         show_fps = !show_fps;
+        return;
     }
     // If we're still in Menu, ignore number keys 1..9 entirely
     if (app == AppState::Menu) {
@@ -1209,7 +1210,7 @@ void GameManager :: imGUIlessRender(Renderer& r, Input& input, GLFWwindow* windo
     r.clear(0.06f, 0.06f, 0.07f);
     renderWithHUD(r, input, window, w, h,dt,rm, show_fps);
     
-    render(r, input, window, w, h);
+    //render(r, input, window, w, h);
     r.setTextProjection(w, h);
 
     r.unbindFBO();
