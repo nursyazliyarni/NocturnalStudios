@@ -161,6 +161,18 @@ ClickRegion Scene::getClickReigion(DrawItem di) {
     return invalid;
 }
 
+DrawItem DrawItem::CreateDupe() const {
+    DrawItem newdi{ *this };
+
+    newdi.entityID = ECS::getECS().cloneEntity(entityID);
+
+    return newdi;
+}
+
+void DrawItem::DestroyDupe() {
+    ECS::getECS().deleteEntity(entityID);
+}
+
 bool GameManager::saveAll(const char* saveJsonPath, TextureStore& tex) {
     if (scenes.empty()) {
         logger.error("No Scenes to save");
@@ -796,13 +808,18 @@ void GameManager::render(Renderer& r, Input& input, GLFWwindow* window, int w, i
                 // --- end collider outline ---
 
                 if (di.is_dragging && !duplicate_item) {
-                    duplicate_item = std::make_unique<DrawItem>(di);
+                    duplicate_item = std::make_unique<DrawItem>(di.CreateDupe());
+                   
                 }
 
                 if (duplicate_item) {
                     Transform* dt = ecs_.getComponent<Transform>(duplicate_item->entityID);
                     ImageRenderer* dimg = ecs_.getComponent<ImageRenderer>(duplicate_item->entityID);
-                    r.texturedTri(duplicate_item->tex, dt->position.x()* w, dt->position.y()* h, dimg->width* w, dimg->height* h);
+                    if (dt&&dimg)
+                    {
+                        r.texturedTri(duplicate_item->tex, dt->position.x()* w, dt->position.y()* h, dimg->width* w, dimg->height* h);
+                    }
+                    
                 }
 
                 //if (!input.isLeftMousePressed(window)) {
