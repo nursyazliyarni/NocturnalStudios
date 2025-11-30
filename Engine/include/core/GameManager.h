@@ -90,7 +90,7 @@ private:
 
 class GameManager {
 public:
-
+    void UpdateTexture(EntityID);
     bool checkForSceneChange();
 
     bool loadAll(PrefabManager& prefabs, const char* scenesJsonPath, TextureStore& tex);

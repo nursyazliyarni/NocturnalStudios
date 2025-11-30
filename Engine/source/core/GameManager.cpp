@@ -413,7 +413,13 @@ bool GameManager::saveScene( std::string scenename, const char* scenesJsonPath, 
     return true;
 }
 
+void GameManager::UpdateTexture(EntityID id) {
+    ImageRenderer* img = ecs_.getComponent<ImageRenderer>(id);
+    if (!img)return;
 
+    img->image_path = textureCache.find(img->textureID);
+
+}
 
 bool GameManager::loadAll(PrefabManager& prefabs, const char* scenesPath, TextureStore& tex) {
 

@@ -38,6 +38,27 @@ namespace {
 	using Clock = std::chrono::high_resolution_clock;
 }
 
+void ImGuiManager::recordFirstUndoState() {
+	const char* freaky = "\n$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$'               `$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n"
+		"$$$$$$$$$$$$$$$$$$$$$$$$$$$$'                   `$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n"
+		"$$$'`$$$$$$$$$$$$$'`$$$$$$!                       !$$$$$$'`$$$$$$$$$$$$$'`$$$\n"
+		"$$$$  $$$$$$$$$$$  $$$$$$$                         $$$$$$$  $$$$$$$$$$$  $$$$\n"
+		"$$$$. `$' \\  $`  $$$$$$$!                         !$$$$$$$  '$ / `/ `$' .$$$$\n"
+		"$$$$$. !\\  i  i .$$$$$$$$                           $$$$$$$$. i  i  /! .$$$$$\n"
+		"$$$$$$   `--`--.$$$$$$$$$                           $$$$$$$$$.--'--'   $$$$$$\n"
+		"$$$$$$L        `$$$$$^^$$                           $$^^$$$$$'        J$$$$$$\n"
+		"$$$$$$$.   .'   \"\"~   $$$    $.                 .$  $$$   ~\"\"   `.   .$$$$$$$\n"
+		"$$$$$$$$.  ;      .e$$$$$!    $$.             .$$  !$$$$$e,      ;  .$$$$$$$$\n"
+		"$$$$$$$$$   `.$$$$$$$$$$$$     $$$.         .$$$   $$$$$$$$$$$$.'   $$$$$$$$$\n"
+		"$$$$$$$$    .$$$$$$$$$$$$$!     $$`$$$$$$$$'$$    !$$$$$$$$$$$$$.    $$$$$$$$\n"
+		"$JT&yd$     $$$$$$$$$$$$$$$$.    $    $$    $   .$$$$$$$$$$$$$$$$     $by&TL$\n"
+		"                                 $    $$    $\n"
+		"                                 $.   $$   .$\n"
+		"                                 `$        $'\n"
+		"                                  `$$$$$$$$'\n";
+	pushUndoState(freaky);
+}
+
 void Gui::updateImGuiManager(double& deltaTime, ImGuiManager& imGuiManager) {
 	// update delta/window info
 	imGuiManager.updateDeltaTime(deltaTime);
@@ -818,10 +839,19 @@ void ImGuiManager::showEntityListUI(/* Maybe an enum of paramEntityType, Maybe a
 				{
 					if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ASSET_TEXTURE"))
 					{
+						pushUndoState("Change texture");
 						IM_ASSERT(payload->DataSize == sizeof(GLuint));
 						GLuint droppedTex = *reinterpret_cast<const GLuint*>(payload->Data);
 
 						item.tex = droppedTex;
+						if (ECS::getECS().getComponent<ImageRenderer>(item.entityID)) {
+							ECS::getECS().getComponent<ImageRenderer>(item.entityID)->textureID = droppedTex;
+							gsm.UpdateTexture(item.entityID);
+							ECS::getECS().getComponent<ImageRenderer>(item.entityID)->isVisible = true;
+							logger.log("[Inspector] Changed texture to: " + label);
+							
+						}
+
 						logger.log("[ImGui] Applied texture via drag-drop to object: " + label);
 					}
 					ImGui::EndDragDropTarget();
@@ -1605,6 +1635,7 @@ void ImGuiManager::showAssetsBrowserUI() {
 					if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID))
 					{
 						ImGui::SetDragDropPayload("ASSET_TEXTURE", &texID, sizeof(GLuint));
+
 						ImGui::Text("Texture: %s", texName.c_str());
 						ImGui::EndDragDropSource();
 					}

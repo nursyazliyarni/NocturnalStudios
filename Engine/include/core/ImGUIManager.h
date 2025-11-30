@@ -49,6 +49,7 @@ public:
 		PLAY
 	};
 
+	void recordFirstUndoState();
 	// Accept lists of resource IDs for quick audio testing.
 	ImGuiManager(Window& window, Renderer& renderer,  Input& input, 
 		Physics& physics, AudioSystem& audio, ResourceManager& resourceManager, GameManager& gsm, Animal_Logic& logic);

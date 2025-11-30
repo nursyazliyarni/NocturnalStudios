@@ -424,7 +424,7 @@ int Application::run() {
         logger.error("Application not initialized. Exiting run().");
         return -1;
     }
-
+	if (imGUIVisible)imGuiManager->recordFirstUndoState();
     while (!m_window.shouldClose()) {
         m_window.poll();
 
