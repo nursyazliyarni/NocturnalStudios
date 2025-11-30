@@ -1,0 +1,8 @@
+[01-12-2025] [01:01:46] [CRASH_MESSAGE] Parser: entity missing component: AnimalBehavior
+[01-12-2025] [01:01:47] [CRASH_MESSAGE] Parser: entity missing component: AnimalBehavior
+[01-12-2025] [01:01:47] [CRASH_MESSAGE] Parser: entity missing component: AnimalBehavior
+[01-12-2025] [01:01:48] [CRASH_MESSAGE] Parser: entity missing component: AnimalBehavior
+[01-12-2025] [01:10:09] [CRASH_MESSAGE] Parser: entity missing component: AnimalBehavior
+[01-12-2025] [01:10:10] [CRASH_MESSAGE] Parser: entity missing component: AnimalBehavior
+[01-12-2025] [01:10:11] [CRASH_MESSAGE] Parser: entity missing component: AnimalBehavior
+[01-12-2025] [01:10:12] [CRASH_MESSAGE] Parser: entity missing component: AnimalBehavior
