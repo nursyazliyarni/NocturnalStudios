@@ -3,8 +3,63 @@
     "initial": "MainMenu",
     "keymap": { "1":"Flamingo", "2":"Seal", "3":"Owl", "4":"Horse", "ESC":"MainMenu" }
   },
+  
 
-  "scenes": [
+  "scenes": [{
+    "name":"pause",
+    "entities":[
+      {
+        "name":"pause_bg",
+        "components":[
+          {"type": "Transform",
+                  "position": {
+                      "x": 0.0,
+                      "y": 0.0
+                  }
+                },
+          {
+                  "type":"ImageRenderer",
+                  "sprite_path":"textures/pause_bg.png","width":1.0,
+                  "height":1.0}
+        ]
+
+      },{ "prefab":"button",
+          "name":"btn_resune",
+            "overrides": [
+                {"type": "Transform",
+                  "position": {
+                      "x": 0.38,
+                      "y": 0.45
+                  }
+                },
+                {
+                  "type":"ImageRenderer",
+                  "sprite_path":"textures/resume.png",
+                  "width":0.26,
+                  "height":0.09
+                }
+            ]
+          },
+        { "prefab":"button",
+          "name":"btn_mm",
+          "overrides": [
+                {"type": "Transform",
+                  "position": {
+                      "x": 0.38,
+                      "y": 0.60
+                  }
+                },
+                {
+                  "type":"ImageRenderer",
+                  "sprite_path":"textures/menuQUIT.png",
+                  "width":0.26,
+                  "height":0.09
+                }
+            ], 
+            "quit":true }
+
+    ]
+  },
      {"name":"MainMenu",
       "background": "textures/menu_bg.png",
       "entities": [
@@ -27,38 +82,42 @@
             "start": true,
             "goto": "Flamingo"
           },
-        { "prefab":"button",
-          "name":"btn_load",
+           {
+        "prefab": "button",
+        "name": "btn_credits",
+        "overrides": [
+          {
+            "type": "Transform",
+            "position": { "x": 0.38, "y": 0.60 }  
+          },
+          {
+            "type": "ImageRenderer",
+            "sprite_path": "textures/menuLOAD.png",
+            "width": 0.26,
+            "height": 0.09
+          }
+        ],
+        "goto": "Credits"
+        },
+
+        {
+          "prefab":"button",
+          "name":"btn_settings",
           "overrides": [
-                {"type": "Transform",
-                  "position": {
-                      "x": 0.38,
-                      "y": 0.60
-                  }
-                },
-                {
-                  "type":"ImageRenderer",
-                  "sprite_path":"textures/menuLOAD.png",
-                  "width":0.26,
-                  "height":0.09
-                }
-            ], 
-            "goto":"Flamingo" },
-        { "prefab":"button","name":"btn_settings",
-          "overrides": [
-                {"type": "Transform",
-                  "position": {
-                      "x": 0.38,
-                      "y": 0.75
-                  }
-                },
-                {
-                  "type":"ImageRenderer",
-                  "sprite_path":"textures/menuSETTINGS_btn.png",
-                  "width":0.26,
-                  "height":0.09
-                }
-            ] },
+            {
+              "type": "Transform",
+              "position": { "x": 0.38, "y": 0.75 }
+            },
+            {
+              "type":"ImageRenderer",
+              "sprite_path":"textures/menuSETTINGS_btn.png",
+              "width":0.26,
+              "height":0.09
+            }
+          ],
+          "goto": "Options"
+        },
+
         { "prefab":"button","name":"btn_quit",
           "overrides": [
                 {"type": "Transform",
@@ -74,9 +133,101 @@
                   "height":0.09
                 }
             ], "quit": true },
-        { "prefab": "audio_emitter_menu", "name": "menu_bgm_emitter" }
+        { "prefab": "audio_emitter_menu", "name": "menu_bgm_emitter" },
+
+        {
+        "prefab": "button",
+        "name": "btn_howtoplay",
+        "overrides": [
+          {
+            "type": "Transform",
+            "position": { "x": 0.93, "y": 0.93  }  
+          },
+          {
+            "type": "ImageRenderer",
+            "sprite_path": "textures/howToPlayBtn.png",
+            "width": 0.06,
+            "height": 0.06
+          }
+        ],
+        "goto": "HowToPlay"
+        }
+      
       ]
+      
     },
+
+  {
+    "name": "Options",
+    "background": "textures/settingsScene.png",  
+    "entities": [
+      {
+        "prefab": "button",
+        "name": "btn_options_back",
+        "overrides": [
+          {
+            "type": "Transform",
+            "position": { "x": 0.38, "y": 0.90 }
+          },
+          {
+            "type": "ImageRenderer",
+            "sprite_path": "textures/menuBackBtn.png",
+            "width": 0.26,
+            "height": 0.09
+          }
+        ],
+        "goto": "MainMenu"
+      }
+    ]
+  },
+
+  {
+  "name": "Credits",
+  "background": "textures/creditsScene.png",
+  "entities": [
+    {
+      "prefab": "button",
+      "name": "btn_credits_back",
+      "overrides": [
+        {
+          "type": "Transform",
+          "position": { "x": 0.38, "y": 0.90 }
+        },
+        {
+          "type": "ImageRenderer",
+          "sprite_path": "textures/menuBackBtn.png",
+          "width": 0.26,
+          "height": 0.09
+        }
+      ],
+      "goto": "MainMenu"
+      }
+    ]
+  },
+  {
+    "name": "HowToPlay",
+    "background": "textures/howToPlay.png",   
+    "entities": [
+      {
+        "prefab": "button",
+        "name": "btn_howtoplay_back",
+        "overrides": [
+          {
+            "type": "Transform",
+            "position": { "x": 0.38, "y": 0.90 }
+          },
+          {
+            "type": "ImageRenderer",
+            "sprite_path": "textures/menuBackBtn.png",
+            "width": 0.26,
+            "height": 0.09
+          }
+        ],
+        "goto": "MainMenu"
+      }
+    ]
+  },
+
 
     {"name":"Flamingo",
       "background":"textures/flamingo_bg.png",
