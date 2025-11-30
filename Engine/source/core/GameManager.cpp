@@ -368,6 +368,20 @@ bool GameManager::saveScene( std::string scenename, const char* scenesJsonPath, 
                 }
                 entObj.AddMember("overrides", overrides, alloc);
             }
+            if (scene.isClickReigion(i))
+            {
+                ClickRegion clickr = scene.getClickReigion(i);
+
+                if (clickr.start) entObj.AddMember("start", true, alloc);
+                if (clickr.quit)entObj.AddMember("quit", true, alloc);
+                if (!clickr.gotoScene.empty())
+                {
+                    rapidjson::Value gotov;
+                    gotov.SetString(clickr.gotoScene.c_str(), alloc);
+                    entObj.AddMember("goto", gotov, alloc);
+                }
+
+            }
             entityArray.PushBack(entObj, alloc);
         }
         doc.AddMember("entities", entityArray, alloc);
