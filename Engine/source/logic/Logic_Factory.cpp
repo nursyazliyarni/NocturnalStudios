@@ -1,3 +1,17 @@
+/*!------------------------------------------------------------------------------------------------
+    File: Logic_Factory.cpp
+    Project: NocturnalStudio
+
+    This file contains the functions needed to register all the current available game logic for
+    our animal game objects.
+
+    Primary Author:
+        Yu Xuan
+        - Implemented functions to create Logic_Factory,add logic,create logic and get logic
+
+    All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
+
 #include "logic/Logic_Factory.h"
 
 Logic_Factory& Logic_Factory::get_instance(){

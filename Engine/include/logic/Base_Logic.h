@@ -1,3 +1,16 @@
+/*!------------------------------------------------------------------------------------------------
+	File: Base_Logic.h
+	Project: NocturnalStudio
+
+	This file contains the base implementation of our base logic
+
+	Primary Author:
+		Yu Xuan
+		- Implemented base function of logic class
+
+	All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
+
 #pragma once
 
 #include <string>

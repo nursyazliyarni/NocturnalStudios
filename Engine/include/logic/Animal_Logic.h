@@ -1,3 +1,21 @@
+/*!------------------------------------------------------------------------------------------------
+	File: Animal_Logic.h
+	Project: NocturnalStudio
+
+	This file contains the functions needed for our game logic for our animal game objects
+
+	Primary Author:
+		Yu Xuan
+		- Implemented update healthbar, hunger bar, sanity bar functions for each animal
+		game objects
+
+	Secondary Author:
+		Sarag
+		-  Modify some of the functions
+
+	All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
+
 #pragma once
 #include "core/GameManager.h"
 #include "input/Input.h"
