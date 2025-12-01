@@ -1,510 +1,749 @@
-/*!------------------------------------------------------------------------------------------------
-    File: Renderer.cpp
-    Project: NocturnalStudio
 
-    This file contains ...
-
-     Primary Author:
-         Rishika Bimal Attodi
-        -  Implemented sprite init/draw (excluding background), per-sprite rotation & scaling, 
-        and front/behind passes.
-     
-    Secondary Author:
-         Lau Xiang Yang
-         - Implemented FBO
-
-    Secondary Author
-        Nur Syazliyarni (5%)
-        - Added the debugging lines for drawAllSprites
-
-    Secondary Author:
-         Chang Qi Xuan Celest
-        -Function to draw text controlled by Renderer class.
-
-
-    All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
-*------------------------------------------------------------------------------------------------*/
-
-// OpenGL draw API (clear, drawSprite, debug lines)
-
-#include "graphics/Renderer.h"
-#include <GLFW/glfw3.h>   // brings gl.h on Windows
-#include <cmath>
-#include <glm/gtc/constants.hpp>
+#include "pch.h"
+#include "Graphics/Renderer.h"
+#include "Math/Math.h"
 #include <glm/gtc/matrix_transform.hpp>
-#include "graphics/DebugDraw.h"
-#include "resources/Font.h"
+namespace NocturnalEngine {
+	Singleton<Renderer::SceneData> Renderer::s_SceneData = CreateSingleton<Renderer::SceneData>();
 
-namespace {
-    constexpr float TWO_PI = 2.0f * glm::pi<float>();
+	//whats inside a quad
+	struct QuadVertex
+	{
+		Vec3 Position;
+		Vec4 Color;
+		vec2D TexCoord;
+		float TextureIndex{0.0f};
+	};
+	//whats inside a line
+	struct LineVertex
+	{
+		Vec3 Position;
+		Vec4 Color;
+	};
 
-    // helper used only inside this file: filled circle via triangle fan
-    inline void filledCircle(float cx, float cy, float r, int segments = 64) {
-        glBegin(GL_TRIANGLE_FAN);
-        glVertex2f(cx, cy);
-        for (int i = 0; i <= segments; ++i) {
-            float a = (i * TWO_PI) / static_cast<float>(segments);
-            glVertex2f(cx + r * std::cos(a), cy + r * std::sin(a));
-        }
-        glEnd();
-    }
+	//whats inside a quad with color only
+	struct BoxVertex
+	{
+		Vec3 Position;
+		Vec4 Color;
+	};
+
+	struct ImpactVertex
+	{
+		Vec3 Position;
+		Vec4 Color;
+	};
+	
+	//whats inside a circle
+	struct CircleVertex
+	{
+		Vec3 Wposition; //world position
+		Vec3 Lposition; //Local position
+		Vec4 color;
+		float depth{0.0f};		// the thickness
+		float decline{0.0f};		// fade
+	};
+	struct RendererData
+	{
+			   Vec4 QuadVertexPosition[4] = { { -0.5f, -0.5f, 0.0f, 1.0f },
+											{  0.5f, -0.5f, 0.0f, 1.0f },
+											{  0.5f,  0.5f, 0.0f, 1.0f },
+											{ -0.5f,  0.5f, 0.0f, 1.0f } };
+
+		static const unsigned int MaxQuads = 40000;			//max number of square or triangles can be adjust
+		static const unsigned int MaxVertices = MaxQuads * 4;	//since one quard have 4 vertices we multi by 4
+		static const unsigned int MaxIndices = MaxQuads * 6;	//{0, 1, 2, 2, 3, 0} 6 indices per quad
+
+		//for impact
+		MultiRefs<VertexArray> ImpactVertexArray;
+		MultiRefs<VertexBuffer> ImpactVertexBuffer;
+		MultiRefs<Shader> ImpactShader;
+
+		unsigned int ImpactIndexCount = 0;
+		ImpactVertex* ImpactVertexBufferBase = nullptr;
+		ImpactVertex* ImpactVertexBufferPtr = nullptr;
+
+		//for boxes without texture
+		MultiRefs<VertexArray> BoxVertexArray;
+		MultiRefs<VertexBuffer> BoxVertexBuffer;
+		MultiRefs<Shader> BoxShader;
+
+		unsigned int BoxIndexCount = 0;
+		BoxVertex* BoxVertexBufferBase = nullptr;
+		BoxVertex* BoxVertexBufferPtr = nullptr;
+
+		//for lines
+		MultiRefs<VertexArray> LineVertexArray;
+		MultiRefs<VertexBuffer> LineVertexBuffer;
+		MultiRefs<Shader> LineShader;
+
+		unsigned int LineVertexCount = 0;
+		LineVertex* LineVertexBufferBase = nullptr;
+		LineVertex* LineVertexBufferPtr = nullptr;
+
+		//for quads
+		MultiRefs<VertexArray> QuadVertexArray;
+		MultiRefs<VertexBuffer> QuadVertexBuffer;
+		MultiRefs<Texture> BlankTexture;
+		MultiRefs<Shader> QuadShader;
+
+		unsigned int QuadIndexCount = 0; //keep track of how many indices need to draw when flushes down
+		QuadVertex* QuadVertexBufferBase = nullptr;
+		QuadVertex* QuadVertexBufferPtr = nullptr;
+
+		//for circle
+		MultiRefs<VertexArray> CircleVertexArray;
+		MultiRefs<VertexBuffer> CircleVertexBuffer;
+		MultiRefs<Shader> CircleShader;
+
+		unsigned int CircleIndexCount = 0;
+		CircleVertex* CircleVertexBufferBase = nullptr;
+		CircleVertex* CircleVertexBufferPtr = nullptr;
+
+		//contain an array of texture
+		std::array<MultiRefs<Texture>, 32> TextureUnits;
+		unsigned int TextureUnitIndex = 1; // 0 = blank texture. Index to keep track of the texture
+
+		Renderer::Information Infos;
+
+	}static r_Data;
+
+	/*!*************************************************************************
+	Set Clear Color
+	****************************************************************************/
+	void Renderer::SetClearColor(const Vec4& color)
+	{
+		glClearColor(color.x, color.y, color.z, color.w);
+	}
+
+	/*!*************************************************************************
+	Clear buffer
+	****************************************************************************/
+	void Renderer::Clear()
+	{
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	}
+
+	/*!*************************************************************************
+	Init loop of Renderer
+	****************************************************************************/
+	void Renderer::Init()
+	{
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		//FOR QUADS
+		r_Data.QuadVertexArray = VertexArray::Create();
+
+		r_Data.QuadVertexBuffer = VertexBuffer::Create(r_Data.MaxVertices * sizeof(QuadVertex));
+		r_Data.QuadVertexBuffer->SetLayout({ { ShaderDataType::Float3, "position" },
+											{ ShaderDataType::Float4, "a_Color" },
+											{ ShaderDataType::Float2, "a_TexCoord" },
+											{ ShaderDataType::Float, "a_TextureIndex"}
+									  });
+		r_Data.QuadVertexArray->AddVertexBuffer(r_Data.QuadVertexBuffer);
+		
+		r_Data.QuadVertexBufferBase = new QuadVertex[r_Data.MaxVertices];
+
+		unsigned int* QuadIndices = new unsigned int[r_Data.MaxIndices];
+
+		unsigned int offset = 0;
+		for (int i = 0; i < r_Data.MaxIndices; i += 6)
+		{
+			QuadIndices[i + 0] = offset + 0;
+			QuadIndices[i + 1] = offset + 1;
+			QuadIndices[i + 2] = offset + 2;
+
+			QuadIndices[i + 3] = offset + 2;
+			QuadIndices[i + 4] = offset + 3;
+			QuadIndices[i + 5] = offset + 0;
+
+			offset += 4;
+		}
+
+		MultiRefs<IndexBuffer> QuadIndexBuffer = IndexBuffer::Create(QuadIndices, r_Data.MaxIndices);
+		r_Data.QuadVertexArray->SetIndexBuffer(QuadIndexBuffer);
+		delete[] QuadIndices;
+
+
+		//setting empty texture in unit 0
+		r_Data.BlankTexture = ResourceManager::GenTexture(1, 1);
+		unsigned int BlankTextureData = 0xffffffff;
+		r_Data.BlankTexture->SetTextureData(&BlankTextureData, sizeof(unsigned int));
+
+
+		//Shader
+		r_Data.QuadShader = ResourceManager::GetShader("QuadShader");
+		int TextureSamplers[32];
+		for (int i = 0; i < 32; i++)
+			TextureSamplers[i] = i;
+		r_Data.QuadShader->Bind();
+		r_Data.QuadShader->SetUniform("u_Texture", TextureSamplers, 32);
+
+		//set first texture unit 0 to be blanktexture
+		r_Data.TextureUnits[0] = r_Data.BlankTexture;
+		
+
+
+		//FOR drawing LINE and also debug drawing
+		r_Data.LineVertexArray = VertexArray::Create();
+		r_Data.LineVertexBuffer = VertexBuffer::Create(r_Data.MaxVertices * sizeof(LineVertex));
+		r_Data.LineVertexBuffer->SetLayout({ 
+			{ ShaderDataType::Float3, "position" },
+			{ ShaderDataType::Float4, "a_Color"}
+			});
+
+		r_Data.LineVertexArray->AddVertexBuffer(r_Data.LineVertexBuffer);
+		r_Data.LineVertexBufferBase = new LineVertex[r_Data.MaxVertices];
+
+		r_Data.LineShader = ResourceManager::GetShader("LineShader");
+
+		//For boxes without texture
+		r_Data.BoxVertexArray = VertexArray::Create();
+
+		r_Data.BoxVertexBuffer = VertexBuffer::Create(r_Data.MaxVertices * sizeof(BoxVertex));
+		r_Data.BoxVertexBuffer->SetLayout({ { ShaderDataType::Float3, "position" },
+											{ ShaderDataType::Float4, "a_Color" },
+			});
+		r_Data.BoxVertexArray->AddVertexBuffer(r_Data.BoxVertexBuffer);
+
+		r_Data.BoxVertexBufferBase = new BoxVertex[r_Data.MaxVertices];
+
+		unsigned int* BoxIndices = new unsigned int[r_Data.MaxIndices];
+
+		unsigned int offsetBox = 0;
+		for (int i = 0; i < r_Data.MaxIndices; i += 6)
+		{
+			BoxIndices[i + 0] = offsetBox + 0;
+			BoxIndices[i + 1] = offsetBox + 1;
+			BoxIndices[i + 2] = offsetBox + 2;
+
+			BoxIndices[i + 3] = offsetBox + 2;
+			BoxIndices[i + 4] = offsetBox + 3;
+			BoxIndices[i + 5] = offsetBox + 0;
+
+			offsetBox += 4;
+		}
+
+		MultiRefs<IndexBuffer> BoxIndexBuffer = IndexBuffer::Create(BoxIndices, r_Data.MaxIndices);
+		r_Data.BoxVertexArray->SetIndexBuffer(BoxIndexBuffer);
+		delete[] BoxIndices;
+		//box shader
+		r_Data.BoxShader = ResourceManager::GetShader("LineShader");
+
+		//For impact
+		r_Data.ImpactVertexArray = VertexArray::Create();
+
+		r_Data.ImpactVertexBuffer = VertexBuffer::Create(r_Data.MaxVertices * sizeof(ImpactVertex));
+		r_Data.ImpactVertexBuffer->SetLayout({ { ShaderDataType::Float3, "position" },
+												{ ShaderDataType::Float4, "a_Color" },
+			});
+		r_Data.ImpactVertexArray->AddVertexBuffer(r_Data.ImpactVertexBuffer);
+		r_Data.ImpactVertexBufferBase = new ImpactVertex[r_Data.MaxVertices];
+
+		unsigned int* ImpactIndices = new unsigned int[r_Data.MaxIndices];
+
+		unsigned int offsetImpact = 0;
+		for (int i = 0; i < r_Data.MaxIndices; i += 6)
+		{
+			ImpactIndices[i + 0] = offsetImpact + 0;
+			ImpactIndices[i + 1] = offsetImpact + 1;
+			ImpactIndices[i + 2] = offsetImpact + 2;
+
+			ImpactIndices[i + 3] = offsetImpact + 2;
+			ImpactIndices[i + 4] = offsetImpact + 3;
+			ImpactIndices[i + 5] = offsetImpact + 0;
+
+			offsetImpact += 4;
+		}
+
+		MultiRefs<IndexBuffer> ImpactIndexBuffer = IndexBuffer::Create(ImpactIndices, r_Data.MaxIndices);
+		r_Data.ImpactVertexArray->SetIndexBuffer(ImpactIndexBuffer);
+		delete[] ImpactIndices;
+		//impact shader
+		r_Data.ImpactShader = ResourceManager::GetShader("ImpactShader");
+
+
+
+		//For Circle
+		r_Data.CircleVertexArray = VertexArray::Create();
+
+		r_Data.CircleVertexBuffer = VertexBuffer::Create(r_Data.MaxVertices * sizeof(CircleVertex));
+		r_Data.CircleVertexBuffer->SetLayout({ { ShaderDataType::Float3, "a_WorldPosition" },
+			{ ShaderDataType::Float3, "a_LocalPosition" },
+			{ ShaderDataType::Float4, "a_Color"         },
+			{ ShaderDataType::Float,  "a_Depth"     },
+			{ ShaderDataType::Float,  "a_Decline"  },
+			});
+		r_Data.CircleVertexArray->AddVertexBuffer(r_Data.CircleVertexBuffer);
+		r_Data.CircleVertexArray->SetIndexBuffer(QuadIndexBuffer);  //use quad index
+		r_Data.CircleVertexBufferBase = new CircleVertex[r_Data.MaxVertices];
+		r_Data.CircleShader = ResourceManager::GetShader("CircleShader");
+	}
+
+	/*!*************************************************************************
+	Start rendering
+	****************************************************************************/
+	void Renderer::Begin(Camera2D& camera)
+	{
+		s_SceneData->ViewProjectionMatrix = basemtx_adapterC(camera.GetViewProjectionMatrix());
+		
+
+		StartBatch();
+	
+	}
+
+	/*!*************************************************************************
+	End loop of Renderer
+	****************************************************************************/
+	void Renderer::End()
+	{
+		Flush();
+	}
+
+	/*!*************************************************************************
+	Start batch rendering
+	****************************************************************************/
+	void Renderer::StartBatch()
+	{
+		//quad
+		r_Data.QuadIndexCount = 0;
+		r_Data.QuadVertexBufferPtr = r_Data.QuadVertexBufferBase; //keep track of the buffer 
+		r_Data.TextureUnitIndex = 1;
+
+		//Line
+		r_Data.LineVertexCount = 0;
+		r_Data.LineVertexBufferPtr = r_Data.LineVertexBufferBase;
+
+		//Box
+		r_Data.BoxIndexCount = 0;
+		r_Data.BoxVertexBufferPtr = r_Data.BoxVertexBufferBase;
+
+		//Circle
+		r_Data.CircleIndexCount = 0;
+		r_Data.CircleVertexBufferPtr = r_Data.CircleVertexBufferBase;
+
+		//impact
+		r_Data.ImpactIndexCount = 0;
+		r_Data.ImpactVertexBufferPtr = r_Data.ImpactVertexBufferBase;
+		
+	}
+
+	/*!*************************************************************************
+	Flush is like pushing all the set buffer data into the GPU
+	****************************************************************************/
+	void Renderer::Flush()
+	{
+		//Quads
+		if (r_Data.QuadIndexCount)
+		{
+			unsigned int  QuadsDataSize = (unsigned int)((uint8_t*)r_Data.QuadVertexBufferPtr - (uint8_t*)r_Data.QuadVertexBufferBase);
+			r_Data.QuadVertexBuffer->SetBufferData(r_Data.QuadVertexBufferBase, QuadsDataSize);
+
+			//Bind All Textures
+			for (unsigned int i = 0; i < r_Data.TextureUnitIndex; i++)
+				r_Data.TextureUnits[i]->Bind(i);
+
+			//reset count
+			r_Data.QuadShader->Bind();
+			r_Data.QuadShader->SetUniform("u_ViewProjection", mtx_adapter(s_SceneData->ViewProjectionMatrix));
+			Renderer::DrawIndexed(r_Data.QuadVertexArray, r_Data.QuadIndexCount);
+			r_Data.Infos.n_DrawCalls++;
+		}
+		//Line
+		if (r_Data.LineVertexCount)
+		{
+			unsigned int LineDataSize = (unsigned int)((uint8_t*)r_Data.LineVertexBufferPtr - (uint8_t*)r_Data.LineVertexBufferBase);
+			r_Data.LineVertexBuffer->SetBufferData(r_Data.LineVertexBufferBase, LineDataSize);
+
+			r_Data.LineShader->Bind();
+			r_Data.LineShader->SetUniform("u_ViewProjection", mtx_adapter(s_SceneData->ViewProjectionMatrix));
+			glLineWidth(1.0f);
+			Renderer::DrawForLine(r_Data.LineVertexArray, r_Data.LineVertexCount);
+			r_Data.Infos.n_DrawCalls++;
+		}
+		//Box
+		if (r_Data.BoxIndexCount)
+		{
+			unsigned int  BoxDataSize = (unsigned int)((uint8_t*)r_Data.BoxVertexBufferPtr - (uint8_t*)r_Data.BoxVertexBufferBase);
+			r_Data.BoxVertexBuffer->SetBufferData(r_Data.BoxVertexBufferBase, BoxDataSize);
+
+			//reset count
+			r_Data.BoxShader->Bind();
+			r_Data.BoxShader->SetUniform("u_ViewProjection", mtx_adapter(s_SceneData->ViewProjectionMatrix));
+			Renderer::DrawIndexed(r_Data.BoxVertexArray, r_Data.BoxIndexCount);
+			r_Data.Infos.n_DrawCalls++;
+		}
+		if (r_Data.CircleIndexCount)
+		{
+			unsigned int  CircleDataSize = (unsigned int)((uint8_t*)r_Data.CircleVertexBufferPtr - (uint8_t*)r_Data.CircleVertexBufferBase);
+			r_Data.CircleVertexBuffer->SetBufferData(r_Data.CircleVertexBufferBase, CircleDataSize);
+
+			//reset count
+			r_Data.CircleShader->Bind();
+			r_Data.CircleShader->SetUniform("u_ViewProjection", mtx_adapter(s_SceneData->ViewProjectionMatrix));
+			Renderer::DrawIndexed(r_Data.CircleVertexArray, r_Data.CircleIndexCount);
+			r_Data.Infos.n_DrawCalls++;
+		}
+		//impact
+		if (r_Data.ImpactIndexCount)
+		{
+			unsigned int  ImpactDataSize = (unsigned int)((uint8_t*)r_Data.ImpactVertexBufferPtr - (uint8_t*)r_Data.ImpactVertexBufferBase);
+			r_Data.ImpactVertexBuffer->SetBufferData(r_Data.ImpactVertexBufferBase, ImpactDataSize);
+
+			//reset count
+			r_Data.ImpactShader->Bind();
+			r_Data.ImpactShader->SetUniform("u_ViewProjection", mtx_adapter(s_SceneData->ViewProjectionMatrix));
+			Renderer::DrawIndexed(r_Data.ImpactVertexArray, r_Data.ImpactIndexCount);
+			r_Data.Infos.n_DrawCalls++;
+		}
+	}
+
+	/*!*************************************************************************
+	When the set max amount of buffer exceed the max limit, next batch will be called
+	****************************************************************************/
+	void Renderer::NextBatch()
+	{
+		Flush();
+		StartBatch();
+	}
+
+	/*!*************************************************************************
+	Release the buffer set in the gpu
+	****************************************************************************/
+	void Renderer::ShutDown()
+	{
+		delete[] r_Data.QuadVertexBufferBase;
+		delete[] r_Data.BoxVertexBufferBase;
+		delete[] r_Data.ImpactVertexBufferBase;
+		delete[] r_Data.CircleVertexBufferBase;
+		delete[] r_Data.LineVertexBufferBase;
+	}
+	/*!*************************************************************************
+	Set and bind the vertexarray to tell the gpu how to draw the  quad obj
+	****************************************************************************/
+	void Renderer::DrawIndexed(const MultiRefs<VertexArray>& vertexarray, unsigned int IndexCount)
+	{
+		vertexarray->Bind();
+		unsigned int count = IndexCount ? IndexCount : vertexarray->GetIndexBuffer()->GetCount();
+		glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, nullptr);
+	}
+	/*!*************************************************************************
+	Set and bind the vertexarray to tell the gpu how to draw the line obj
+	****************************************************************************/
+	void Renderer::DrawForLine(const MultiRefs<VertexArray>& vertexarray, unsigned int vertexCount)
+	{
+		vertexarray->Bind();
+		glDrawArrays(GL_LINES, 0, vertexCount);
+	}
+	/*!*************************************************************************
+	Overload function for Draw Quad using vec2 position with no texture just shader
+	****************************************************************************/
+	void Renderer::DrawQuad(const vec2D& position, const vec2D& size, const Vec4& color)
+	{
+		DrawQuad({ position.x, position.y, 0.0f }, size, color);
+	}
+	/*!*************************************************************************
+	Overload function for Draw Quad using vec3 position with no texture just shader
+	****************************************************************************/
+	void Renderer::DrawQuad(const Vec3& position, const vec2D& size, const Vec4& color )
+	{
+		Mat4x4 transform(1.0f);	
+		Mat4x4 translate(1.0f);
+		Mat4x4 scale(1.0f);
+		Translate4x4(translate, position.x, position.y, position.z);
+		Scale4x4(scale, size.x, size.y, 1.0f);
+		transform = translate * scale;
+		DrawQuad(transform, color);
+	}
+	/*!*************************************************************************
+	Overload function for Draw Quad using transform with no texture just shader
+	****************************************************************************/
+	void Renderer::DrawQuad(const Mat4x4& transform, const Vec4& color)
+		 
+	{
+		constexpr size_t BoxCount = 4;
+
+		if (r_Data.BoxIndexCount >= RendererData::MaxIndices)
+			NextBatch();
+
+		for (size_t i = 0; i < BoxCount; i++)
+		{
+			r_Data.BoxVertexBufferPtr->Position = transform * r_Data.QuadVertexPosition[i];		
+			r_Data.BoxVertexBufferPtr->Color = color;
+			r_Data.BoxVertexBufferPtr++;
+		}	
+
+		r_Data.BoxIndexCount += 6;
+
+		r_Data.Infos.n_Quad++;
+	}
+
+	void Renderer::DrawQuadImpact(const Vec3& position, const vec2D& size, const Vec4& color)
+	{
+		Mat4x4 transform(1.0f);
+		Mat4x4 translate(1.0f);
+		Mat4x4 scale(1.0f);
+		Translate4x4(translate, position.x, position.y, position.z);
+		Scale4x4(scale, size.x, size.y, 1.0f);
+		transform = translate * scale;
+	
+		
+		constexpr size_t ImpactCount = 4;
+
+		if (r_Data.ImpactIndexCount >= RendererData::MaxIndices)
+			NextBatch();
+
+		for (size_t i = 0; i < ImpactCount; i++)
+		{
+			r_Data.ImpactVertexBufferPtr->Position = transform * r_Data.QuadVertexPosition[i];
+			r_Data.ImpactVertexBufferPtr->Color = color;
+			r_Data.ImpactVertexBufferPtr++;
+		}
+
+		r_Data.ImpactIndexCount += 6;
+
+		r_Data.Infos.n_Quad++;
+	}
+	/*!*************************************************************************
+	Overload function for Draw Quad using vec2 position with texture
+	****************************************************************************/
+	void Renderer:: DrawQuad(const vec2D& position, const vec2D& size, const MultiRefs<Texture>& texture)
+	{
+		DrawQuad({ position.x, position.y, 0.0f }, size, texture);
+	}
+	
+	/*!*************************************************************************
+Overload function for Draw Quad using vec3 position with texture
+****************************************************************************/
+	void Renderer::DrawQuad(const Vec3& position, const vec2D& size, const MultiRefs<Texture>& texture)
+	{
+		Mat4x4 transform(1.0f);
+		Mat4x4 translate(1.0f);
+		Mat4x4 scale(1.0f);
+		Translate4x4(translate, position.x, position.y, position.z);
+		Scale4x4(scale, size.x, size.y, 1.0f);
+		transform = translate * scale;
+
+		DrawQuad(transform, texture);
+	}
+
+	/*!*************************************************************************
+	Overload function for Draw Quad using transform with texture
+	****************************************************************************/
+	void Renderer::DrawQuad(const Mat4x4& transform, const MultiRefs<Texture>& texture)
+	{
+
+		float textureIndex = 0.0f;
+		for (unsigned int i = 1; i < r_Data.TextureUnitIndex; i++)
+		{
+			if (*r_Data.TextureUnits[i] == *texture)
+			{
+				textureIndex = (float)i;
+				break;
+			}
+		}
+
+		if (textureIndex == 0.0f)
+		{
+			if (r_Data.TextureUnitIndex >= 32)
+				NextBatch();
+
+			textureIndex = (float)r_Data.TextureUnitIndex;
+			r_Data.TextureUnits[r_Data.TextureUnitIndex] = texture;
+			r_Data.TextureUnitIndex++;
+		}
+		constexpr glm::vec2 textureCoors[] = { { 0.0f , 0.0f }, { 1.f, 0.0f }, { 1.f, 1.0f },{ 0.f,1.0f} };
+		constexpr size_t quadCount = 4;
+		for (size_t i = 0; i < quadCount; i++)
+		{
+			r_Data.QuadVertexBufferPtr->Position = transform * r_Data.QuadVertexPosition[i];
+			r_Data.QuadVertexBufferPtr->Color = { 1.0f, 1.0f, 1.0f, 1.0f };
+			r_Data.QuadVertexBufferPtr->TexCoord = NocturnalEngine::vec2D(textureCoors[i].x, textureCoors[i].y);
+			r_Data.QuadVertexBufferPtr->TextureIndex = textureIndex;
+			r_Data.QuadVertexBufferPtr++;
+		}
+		r_Data.QuadIndexCount += 6;
+
+		r_Data.Infos.n_Quad++;
+	}
+	/*!*************************************************************************
+	Overload function for Draw Quad using vec2 position with no texture just shader and rotation 
+	****************************************************************************/
+	void Renderer::DrawQuad(const vec2D& position, const vec2D& size, float rotation, const Vec4& color)
+	{
+		DrawQuad({ position.x, position.y, 0.0f }, size, rotation, color);
+	}
+
+	/*!*************************************************************************
+	Overload function for Draw Quad using vec3 position with no texture just shader and rotation
+	****************************************************************************/
+	void Renderer::DrawQuad(const Vec3& position, const vec2D& size, float rotation, const Vec4& color)
+	{
+		Mat4x4 transform(1.0f);
+		Mat4x4 translate(1.0f);
+		Mat4x4 scale(1.0f);
+		Mat4x4 rot(1.0f);
+
+		Translate4x4(translate, position.x, position.y, position.z);
+		Scale4x4(scale, size.x, size.y, 1.0f);
+		RotDeg4x4(rot, rotation, { 0.0f, 0.0f, 1.0f });
+		transform = translate * rot* scale;
+
+
+
+		DrawQuad(transform, color);
+	}
+
+	/*!*************************************************************************
+	Overload function for Draw Quad using vec2 position with rotation and texture
+	****************************************************************************/
+	void Renderer::DrawQuad(const vec2D& position, const vec2D& size, float rotation, const MultiRefs<Texture>& texture)
+	{
+		DrawQuad({ position.x, position.y, 0.0f }, size, rotation, texture);
+	}
+
+	/*!*************************************************************************
+	Overload function for Draw Quad using vec3 position with rotation and texture
+	****************************************************************************/
+	void Renderer::DrawQuad(const Vec3& position, const vec2D& size, float rotation, const MultiRefs<Texture>& texture)
+	{
+		Mat4x4 transform(1.0f);
+		Mat4x4 translate(1.0f);
+		Mat4x4 scale(1.0f);
+		Mat4x4 rot(1.0f);
+		Mat4x4 temp(1.0f);
+		Translate4x4(translate, position.x, position.y, position.z);
+		Scale4x4(scale, size.x, size.y, 1.0f);
+		RotRad4x4(rot, rotation, { 0.0f, 0.0f, 1.0f });
+		transform = translate* scale * rot ;
+		DrawQuad(transform, texture);
+	}
+	/*!*************************************************************************
+	Overload function for Draw Quad using vec2 position with rotation and spritesheet
+	****************************************************************************/
+	void Renderer::DrawSprite(const vec2D& position, const vec2D& size, const float& rotation, const MultiRefs<SpriteRender>& sprite)
+	{
+		DrawSprite({ position.x, position.y, 0.0f }, size, rotation, sprite);
+	}
+
+	/*!*************************************************************************
+	Overload function for Draw Quad using vec3 position with rotation and spritesheet
+	****************************************************************************/
+	void Renderer::DrawSprite(const Vec3& position, const vec2D& size, const float& rotation, const MultiRefs<SpriteRender>& sprite)
+	{
+		Mat4x4 transform(1.0f);
+		Mat4x4 translate(1.0f);
+		Mat4x4 scale(1.0f);
+		Mat4x4 rot(1.0f);
+		Translate4x4(translate, position.x, position.y, position.z);
+		Scale4x4(scale, size.x, size.y, 1.0f);
+		RotRad4x4(rot, rotation, { 0.0f, 0.0f, 1.0f });
+		transform = translate * rot * scale;
+		DrawSprite(transform, sprite);
+	}
+	/*!*************************************************************************
+	Overload function for Draw Quad using mat4 transform with rotation and spritesheet
+	****************************************************************************/
+	void Renderer::DrawSprite(const Mat4x4& transform, const MultiRefs<SpriteRender>& sprite)
+	{
+		float textureIndex = 0.0f;
+		for (unsigned int i = 1; i < r_Data.TextureUnitIndex; i++)
+		{
+			if (*r_Data.TextureUnits[i] == *sprite->GetTexture())
+			{
+				textureIndex = (float)i;
+				break;
+			}
+		}
+
+		if (textureIndex == 0.0f)
+		{
+			if (r_Data.TextureUnitIndex >= 32)
+				NextBatch();
+
+			textureIndex = (float)r_Data.TextureUnitIndex;
+			r_Data.TextureUnits[r_Data.TextureUnitIndex] = sprite->GetTexture();
+			r_Data.TextureUnitIndex++;
+		}
+		
+		const glm::vec2* textureCoors = sprite->GetTexCoords();
+		constexpr size_t quadCount = 4;
+
+		for (size_t i = 0; i < quadCount; i++)
+		{
+			r_Data.QuadVertexBufferPtr->Position =  transform * r_Data.QuadVertexPosition[i];
+			r_Data.QuadVertexBufferPtr->Color = { 1.0f, 1.0f, 1.0f, 1.0f };
+			r_Data.QuadVertexBufferPtr->TexCoord = basevec2_adapter(textureCoors[i]);
+			r_Data.QuadVertexBufferPtr->TextureIndex = textureIndex;
+			r_Data.QuadVertexBufferPtr++;
+		}
+		
+		r_Data.QuadIndexCount += 6;
+		r_Data.Infos.n_Quad++;
+	}
+	/*!*************************************************************************
+	This function draw line using shaders
+	****************************************************************************/
+	void Renderer::DrawLine(const Vec3& position0, const Vec3& position1, const Vec4& color)
+	{
+		r_Data.LineVertexBufferPtr->Position = position0;
+		r_Data.LineVertexBufferPtr->Color = color;
+		r_Data.LineVertexBufferPtr++;
+
+		r_Data.LineVertexBufferPtr->Position = position1;
+		r_Data.LineVertexBufferPtr->Color = color;
+		r_Data.LineVertexBufferPtr++;
+
+		r_Data.LineVertexCount += 2;
+	}
+	/*!*************************************************************************
+	This function draw rect using draw line 4 times
+	****************************************************************************/
+	void Renderer::DrawRect(const Vec3& position, const vec2D& size, const Vec4& color)
+	{
+		Vec3 p0 = Vec3(position.x - size.x * 0.5f, position.y - size.y * 0.5f, position.z);
+		Vec3 p1 = Vec3(position.x + size.x * 0.5f, position.y - size.y * 0.5f, position.z);
+		Vec3 p2 = Vec3(position.x + size.x * 0.5f, position.y + size.y * 0.5f, position.z);
+		Vec3 p3 = Vec3(position.x - size.x * 0.5f, position.y + size.y * 0.5f, position.z);
+
+		DrawLine(p0, p1, color);
+		DrawLine(p1, p2, color);
+		DrawLine(p2, p3, color);
+		DrawLine(p3, p0, color);
+	}
+	/*!*************************************************************************
+	This function draw circle using shader
+	****************************************************************************/
+	void Renderer::DrawCircle(const Mat4x4& transform, const Vec4& color, float depth, float decline)
+	{
+		for (size_t i = 0; i < 4; i++)
+		{
+			r_Data.CircleVertexBufferPtr->Wposition = transform * r_Data.QuadVertexPosition[i];
+			r_Data.CircleVertexBufferPtr->Lposition = r_Data.QuadVertexPosition[i] * 2.0f;
+			r_Data.CircleVertexBufferPtr->color = color;
+			r_Data.CircleVertexBufferPtr->depth = depth;
+			r_Data.CircleVertexBufferPtr->decline= decline;
+			r_Data.CircleVertexBufferPtr++; 
+		}
+
+		r_Data.CircleIndexCount += 6;
+
+		r_Data.Infos.n_Quad++;
+	}
+	/*!*************************************************************************
+	Reset the drawing information such as draw call, index used , buffer used.
+	****************************************************************************/
+	void Renderer::ResetInfo()
+	{
+		memset(&r_Data.Infos, 0, sizeof(Information));
+	}
+	/*!*************************************************************************
+	Get the drawing information such as draw call, index used , buffer used.
+	****************************************************************************/
+	Renderer::Information Renderer::GetInfo()
+	{
+		return r_Data.Infos;
+	}
+
+
 }
-
-Renderer::Renderer(std::vector<std::pair<std::string, std::string>> shader_filePATH_list):render_shader(shader_filePATH_list) {
-    //vertex position->where to render on screen(-1.0 to +1.0)
-    //texture UV->how to render texture(0.0 to 1.0)
-    float vertices[] = {
-        -1.0f,  1.0f,            0.0f, 0.0f,
-        -1.0f, -1.0f,            0.0f, 1.0f,
-         1.0f,  1.0f,            1.0f, 0.0f,
-         1.0f, -1.0f,            1.0f, 1.0f
-    };
-
-    glGenVertexArrays(1, &VAO_arr);
-    glBindVertexArray(VAO_arr);
-
-    glGenBuffers(1, &VBO_arr);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO_arr);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
-    glEnableVertexAttribArray(1);
-    glBindVertexArray(0);
-}
-
-void Renderer::background_render(GLuint texture_ID, const GLchar* uniform_VARNAME, unsigned int vector_index)
-{
-    render_shader.user_Shader_program(vector_index); //use this shader program for rendering background image
-    glActiveTexture(GL_TEXTURE0); //specifies which texture unit to make active
-    glBindTexture(GL_TEXTURE_2D, texture_ID); //bind this current texture to texturing target
-    //glGetUniformLocation takes in ID of shader program object AND uniform_VARNAME
-    //to return the location of a uniform variable
-    //glUniform1i takes in location of a uniform variable and 0(this means texture unit is GL_TEXTURE0)
-    render_shader.SET_uniform_variable(uniform_VARNAME, 0, vector_index);
-
-    glBindVertexArray(VAO_arr); //Bind Vertex Array Object to background mesh
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4); //Render rectangle(4 vertices = 2 triangles)
-    glBindVertexArray(0); //unbinds the currently bound VAO
-    glUseProgram(0); //unbind the currently active shader program and go back to fixed-function pipeline mode
-}
-
-void Renderer::special_background_render(GLuint texture_ID, const GLchar* uniform_VARNAME, unsigned int vector_index)
-{
-    render_shader.user_Shader_program(vector_index); //use this shader program for rendering background image
-    glActiveTexture(GL_TEXTURE0); //specifies which texture unit to make active
-    glBindTexture(GL_TEXTURE_2D, texture_ID); //bind this current texture to texturing target
-    //glGetUniformLocation takes in ID of shader program object AND uniform_VARNAME
-    //to return the location of a uniform variable
-    //glUniform1i takes in location of a uniform variable and 0(this means texture unit is GL_TEXTURE0)
-    render_shader.SET_uniform_variable(uniform_VARNAME, 0, vector_index);
-
-    float time = (float)glfwGetTime();
-    glUniform1f(glGetUniformLocation(render_shader.get_programID(vector_index), "time"), time);
-    glUniform1f(glGetUniformLocation(render_shader.get_programID(vector_index), "parallaxFactor"), 1.0f);
-
-    glBindVertexArray(VAO_arr); //Bind Vertex Array Object to background mesh
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4); //Render rectangle(4 vertices = 2 triangles)
-    glBindVertexArray(0); //unbinds the currently bound VAO
-    glUseProgram(0); //unbind the currently active shader program and go back to fixed-function pipeline mode
-}
-
-void Renderer::init2D(int w, int h) {
-    resize(w, h);
-    glDisable(GL_DEPTH_TEST);
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-}
-
-void Renderer::resize(int w, int h) {
-    glViewport(0, 0, w, h);
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    glOrtho(0, w, h, 0, -1, 1);   // top-left origin for fixed pipeline draws
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-}
-
-void Renderer::clear(float r, float g, float b) {
-    glClearColor(r, g, b, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
-}
-
-void Renderer::tri(float x1, float y1, float x2, float y2, float x3, float y3) {
-    glLoadIdentity();
-    glBegin(GL_TRIANGLES);
-    glColor3f(1.f, 0.f, 0.f); glVertex2f(x1, y1);
-    glColor3f(0.f, 1.f, 0.f); glVertex2f(x2, y2);
-    glColor3f(0.f, 0.f, 1.f); glVertex2f(x3, y3);
-    glEnd();
-}
-
-void Renderer::rect(float x, float y, float w, float h, float r, float g, float b) {
-    glLoadIdentity();
-    glBegin(GL_TRIANGLES);
-    glColor4f(r, g, b, 1.0f);
-    glVertex2f(x, y); glVertex2f(x + w, y); glVertex2f(x + w, y + h);
-    glVertex2f(x, y); glVertex2f(x + w, y + h); glVertex2f(x, y + h);
-    glEnd();
-    glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-}
-
-void Renderer::line(float x1, float y1, float x2, float y2) {
-    glLoadIdentity();
-    glBegin(GL_LINES);
-    glColor3f(1.f, 1.f, 1.f);
-    glVertex2f(x1, y1); glVertex2f(x2, y2);
-    glEnd();
-}
-
-void Renderer::rectOutline(float x, float y, float w, float h) {
-    glLoadIdentity();
-    glBegin(GL_LINE_LOOP);
-    glColor3f(1.f, 1.f, 1.f);
-    glVertex2f(x, y);
-    glVertex2f(x + w, y);
-    glVertex2f(x + w, y + h);
-    glVertex2f(x, y + h);
-    glEnd();
-}
-
-void Renderer::circle(float cx, float cy, float r, int segments) {
-    glLoadIdentity();
-    glBegin(GL_LINE_LOOP);
-    glColor3f(1.f, 1.f, 1.f);
-    for (int i = 0; i < segments; ++i) {
-        float a = (i * TWO_PI) / static_cast<float>(segments);
-        glVertex2f(cx + r * std::cos(a), cy + r * std::sin(a));
-    }
-    glEnd();
-}
-
-void Renderer::texturedTri(GLuint tex, float x, float y, float w, float h) {
-    glUseProgram(0);
-    glDisable(GL_DEPTH_TEST);
-
-    glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, tex);
-
-    glBegin(GL_TRIANGLES);
-    glTexCoord2f(0.f, 0.f); glVertex2f(x, y);
-    glTexCoord2f(1.f, 0.f); glVertex2f(x + w, y);
-    glTexCoord2f(1.f, 1.f); glVertex2f(x + w, y + h);
-
-    glTexCoord2f(0.f, 0.f); glVertex2f(x, y);
-    glTexCoord2f(1.f, 1.f); glVertex2f(x + w, y + h);
-    glTexCoord2f(0.f, 1.f); glVertex2f(x, y + h);
-    glEnd();
-
-    glBindTexture(GL_TEXTURE_2D, 0);
-    glDisable(GL_TEXTURE_2D);
-}
-
-void Renderer::initFBO(int width, int height) {
-    fboWidth = width;
-    fboHeight = height;
-
-    if (viewportFBO)     glDeleteFramebuffers(1, &viewportFBO);
-    if (viewportTexture) glDeleteTextures(1, &viewportTexture);
-
-    glGenFramebuffers(1, &viewportFBO);
-    glGenTextures(1, &viewportTexture);
-
-    glBindTexture(GL_TEXTURE_2D, viewportTexture);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, fboWidth, fboHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-    glBindFramebuffer(GL_FRAMEBUFFER, viewportFBO);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, viewportTexture, 0);
-
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-}
-
-void Renderer::bindFBO() const {
-    glBindFramebuffer(GL_FRAMEBUFFER, viewportFBO);
-    glViewport(0, 0, fboWidth, fboHeight);
-}
-void Renderer::unbindFBO() const {
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-}
-
-GLuint Renderer::getFBOTexture() const {
-    return viewportTexture;
-}
-
-void Renderer::drawViewportShapes(int w, int h) {
-    resize(w, h);
-    glUseProgram(0);
-    glDisable(GL_DEPTH_TEST);
-
-    float scale = 0.8f;
-    float cx = w * 0.5f;
-    float cy = h * 0.5f;
-
-    tri(
-        cx + (w * 0.50f - cx) * scale, cy + (h * 0.20f - cy) * scale,
-        cx + (w * 0.20f - cx) * scale, cy + (h * 0.80f - cy) * scale,
-        cx + (w * 0.80f - cx) * scale, cy + (h * 0.80f - cy) * scale
-    );
-
-    {
-        float r = h * 0.10f;
-        float margin = w * 0.05f;
-        float cx_ = w - (r + margin);
-        if (cx_ < r) cx_ = r;
-        float cy_ = h * 0.20f;
-
-        glColor3f(0.f, 0.5f, 1.f);
-        filledCircle(cx_, cy_, r, 64);
-    }
-
-    {
-        float pad = w * 0.01f;
-        float bw = w * 0.35f;
-        float bh = h * 0.5f;
-        rectOutline(pad, pad, bw, bh);
-    }
-}
-
-void Renderer::drawAllSprites(Texture& tex,
-    const std::vector<int>& frontIdxs,
-    bool behindPass,
-    int viewportW, int viewportH)
-{
-    drawAllSprites(tex, frontIdxs, behindPass, /*scales*/ nullptr, /*rotations*/ nullptr, viewportW, viewportH);
-}
-
-void Renderer::initAllSprites() {
-    sprite_vector.push_back({ 1, 0.01f, 0.10f, 0.15f, 0.25f, 0.0f });
-    sprite_vector.push_back({ 2, 0.15f, 0.10f, 0.15f, 0.25f, 0.0f });
-    sprite_vector.push_back({ 3, 0.40f, 0.35f, 0.25f, 0.30f, 0.0f });
-    sprite_vector.push_back({ 4, 0.70f, 0.25f, 0.25f, 0.30f, 0.0f });
-}
-
-void Renderer::drawAllSprites(Texture& tex,
-    const std::vector<int>& frontIdxs,
-    bool behindPass,
-    const float* /*scales*/,
-    const float* /*rotations*/,
-    int viewportW, int viewportH)
-{
-    glUseProgram(0);
-    glDisable(GL_DEPTH_TEST);
-
-    for (int i = 0; i < (int)sprite_vector.size(); ++i) {
-        bool isFront = std::find(frontIdxs.begin(), frontIdxs.end(), sprite_vector[i].idx) != frontIdxs.end();
-        if (behindPass && isFront)   continue;
-        if (!behindPass && !isFront) continue;
-
-        float s = 1.0f;
-
-        float x = sprite_vector[i].x * viewportW;
-        float y = sprite_vector[i].y * viewportH;
-        float w = sprite_vector[i].w * viewportW * s;
-        float h = sprite_vector[i].h * viewportH * s;
-
-        float cx = x + w * 0.5f;
-        float cy = y + h * 0.5f;
-
-        float cosA = std::cos(sprite_vector[i].angle);
-        float sinA = std::sin(sprite_vector[i].angle);
-
-        float x0, y0, x1, y1, x2, y2, x3, y3;
-
-        float dx = x - cx;
-        float dy = y - cy;
-        x0 = cx + dx * cosA - dy * sinA;
-        y0 = cy + dx * sinA + dy * cosA;
-
-        dx = (x + w) - cx;
-        dy = y - cy;
-        x1 = cx + dx * cosA - dy * sinA;
-        y1 = cy + dx * sinA + dy * cosA;
-
-        dx = (x + w) - cx;
-        dy = (y + h) - cy;
-        x2 = cx + dx * cosA - dy * sinA;
-        y2 = cy + dx * sinA + dy * cosA;
-
-        dx = x - cx;
-        dy = (y + h) - cy;
-        x3 = cx + dx * cosA - dy * sinA;
-        y3 = cy + dx * sinA + dy * cosA;
-
-        GLuint t = tex.get_textureID((size_t)sprite_vector[i].idx);
-
-        glEnable(GL_TEXTURE_2D);
-        glBindTexture(GL_TEXTURE_2D, t);
-
-        glBegin(GL_TRIANGLES);
-        glTexCoord2f(0.f, 0.f); glVertex2f(x0, y0);
-        glTexCoord2f(1.f, 0.f); glVertex2f(x1, y1);
-        glTexCoord2f(1.f, 1.f); glVertex2f(x2, y2);
-        glTexCoord2f(0.f, 0.f); glVertex2f(x0, y0);
-        glTexCoord2f(1.f, 1.f); glVertex2f(x2, y2);
-        glTexCoord2f(0.f, 1.f); glVertex2f(x3, y3);
-        glEnd();
-
-        glBindTexture(GL_TEXTURE_2D, 0);
-        glDisable(GL_TEXTURE_2D);
-
-        if (Debug::Drawer::Instance().IsActive())
-        {
-            Debug::Drawer::Instance().AddLine(x0, y0, x1, y1, 0xFF00FFFF);
-            Debug::Drawer::Instance().AddLine(x1, y1, x2, y2, 0xFF00FFFF);
-            Debug::Drawer::Instance().AddLine(x2, y2, x3, y3, 0xFF00FFFF);
-            Debug::Drawer::Instance().AddLine(x3, y3, x0, y0, 0xFF00FFFF);
-        }
-
-        Debug::Drawer::Instance().Render(Matrix<3>().Identity());
-    }
-}
-
-std::vector<Renderer::sprite>& Renderer::get_sprite_vector() {
-    return sprite_vector;
-}
-
-// --------- Text rendering controlled by Renderer ---------
-/**
-* @brief Assigns the active shader used for text rendering.
-* Initializes the text shader by binding it once and setting its texture sampler
-* uniform (`text`) to texture unit 0. The shader is then unbound to avoid
-* affecting other rendering stages.
-* @param shader Reference to the Shader object used for text rendering.
-* @see Renderer::setTextProjection()
-* @see Renderer::drawText()
-*/
-void Renderer::setTextShader(Shader& shader) {
-    text_shader = &shader;
-    text_shader->user_Shader_program(0);
-    text_shader->SET_uniform_variable("text", 0, 0); // sampler binding
-    glUseProgram(0);
-}
-
-/**
-* @brief Configures the orthographic projection matrix for text rendering.
-* This projection uses the bottom-left corner as the origin (0,0) and matches
-* the window or framebuffer dimensions. It ensures consistent text positioning
-* when rendering 2D overlay text.
-* @param w The width of the rendering viewport in pixels.
-* @param h The height of the rendering viewport in pixels.
-* @note The text shader must be set using `setTextShader()` before calling this function.
-* @see Renderer::setTextShader()
-*/
-void Renderer::setTextProjection(int w, int h) {
-    if (!text_shader) return;
-    glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(w),
-                                      0.0f, static_cast<float>(h));
-    text_shader->user_Shader_program(0);
-    glUniformMatrix4fv(
-        glGetUniformLocation(text_shader->get_programID(0), "projection"),
-        1, GL_FALSE, &projection[0][0]
-    );
-    glUseProgram(0);
-}
-
-/**
-* @brief Renders text strings using the assigned text shader and specified font.
-* Iterates through each character in the input string and draws textured quads
-* representing glyphs. Uses per-character metrics from the Font resource
-* (size, bearing, and advance) to calculate screen positions.
-* @param font Font resource containing glyph textures and layout metrics.
-* @param text The text string to render.
-* @param x X position (in pixels, bottom-left origin).
-* @param y Y position (in pixels, bottom-left origin).
-* @param scale Scale factor applied to glyph size.
-* @param color Text color (RGB).
-* @note Requires that `setTextShader()` and `setTextProjection()` have been called.
-* @see Font::GetCharacters()
-* @see Shader::SET_uniform_variable()
-*/
-void Renderer::drawText(const Font& font, const std::string& text, float x, float y, float scale, const glm::vec3& color) {
-    if (!text_shader) return;
-
-    // text shader uses its own projection (bottom-left origin)
-    text_shader->user_Shader_program(0);
-    text_shader->SET_uniform_variable("textColor", color.x, color.y, color.z, 0);
-
-    glActiveTexture(GL_TEXTURE0);
-    glBindVertexArray(font.GetVAO());
-
-    const auto& chars = font.GetCharacters();
-
-    for (char c : text) {
-        auto it = chars.find(c);
-        if (it == chars.end()) continue;
-
-        const Character& ch = it->second;
-
-        float xpos = x + ch.Bearing.x * scale;
-        float ypos = y - (ch.Size.y - ch.Bearing.y) * scale;
-
-        float w = ch.Size.x * scale;
-        float h = ch.Size.y * scale;
-
-        const float vertices[6][4] = {
-            { xpos,     ypos + h,   0.0f, 0.0f },
-            { xpos,     ypos,       0.0f, 1.0f },
-            { xpos + w, ypos,       1.0f, 1.0f },
-
-            { xpos,     ypos + h,   0.0f, 0.0f },
-            { xpos + w, ypos,       1.0f, 1.0f },
-            { xpos + w, ypos + h,   1.0f, 0.0f }
-        };
-
-        glBindTexture(GL_TEXTURE_2D, ch.TextureID);
-        glBindBuffer(GL_ARRAY_BUFFER, font.GetVBO());
-        glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
-        glDrawArrays(GL_TRIANGLES, 0, 6);
-        x += (ch.Advance >> 6) * scale;
-    }
-
-    glBindVertexArray(0);
-    glBindTexture(GL_TEXTURE_2D, 0);
-    glUseProgram(0);
-}
-
-/**
-* @brief Draws a textured rectangle (sprite) with custom UV coordinates.
-* This function renders a 2D sprite at the specified position and size,
-* using a portion of the texture defined by UV coordinates. It uses
-* immediate-mode OpenGL (`glBegin/glEnd`) for simple sprite rendering.
-* @param tex OpenGL texture ID to render.
-* @param x X position of the sprite's bottom-left corner (screen space).
-* @param y Y position of the sprite's bottom-left corner (screen space).
-* @param w Width of the sprite in pixels.
-* @param h Height of the sprite in pixels.
-* @param u0 Left (minimum) U coordinate in texture space (0.0–1.0).
-* @param v0 Bottom (minimum) V coordinate in texture space (0.0–1.0).
-* @param u1 Right (maximum) U coordinate in texture space (0.0–1.0).
-* @param v1 Top (maximum) V coordinate in texture space (0.0–1.0).
-* @note Depth testing is disabled for this draw call.
-*       Immediate-mode OpenGL is used, which is suitable for simple or debug rendering
-*       but not recommended for performance-critical production code.
-* @see Renderer::drawText() for text rendering using sprites/glyphs.
-*/
-void Renderer::drawSpriteUV(GLuint tex, float x, float y, float w, float h, float u0, float v0, float u1, float v1)
-{
-    glUseProgram(0);
-    glDisable(GL_DEPTH_TEST);
-
-    glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, tex);
-
-    glBegin(GL_TRIANGLES);
-    glTexCoord2f(u0, v0); glVertex2f(x, y);
-    glTexCoord2f(u1, v0); glVertex2f(x + w, y);
-    glTexCoord2f(u1, v1); glVertex2f(x + w, y + h);
-
-    glTexCoord2f(u0, v0); glVertex2f(x, y);
-    glTexCoord2f(u1, v1); glVertex2f(x + w, y + h);
-    glTexCoord2f(u0, v1); glVertex2f(x, y + h);
-    glEnd();
-
-    glBindTexture(GL_TEXTURE_2D, 0);
-    glDisable(GL_TEXTURE_2D);
-}
-

@@ -11,13 +11,13 @@ file(GLOB_RECURSE ENGINE_HDR CONFIGURE_DEPENDS
 
 add_library(Engine STATIC ${ENGINE_SRC} ${ENGINE_HDR})
 
-# Enable ImGui layout saving only in Debug builds
-target_compile_definitions(Engine PRIVATE
-  $<$<CONFIG:Debug>:IMGUI_SAVE_LAYOUT>
-)
-
 target_include_directories(Engine PUBLIC
   ${CMAKE_CURRENT_SOURCE_DIR}/include
+)
+
+target_compile_definitions(Engine PUBLIC
+  $<$<CONFIG:Debug>:NOCTURNAL_PLATFORM_WINDOWS;NOCTURNAL_BUILD_DLL;_WINDLL;DEBUG>
+  $<$<CONFIG:Release>:NOCTURNAL_PLATFORM_WINDOWS;NOCTURNAL_BUILD_DLL;_WINDLL>
 )
 
 if (MSVC)
@@ -58,8 +58,16 @@ if (MSVC)
 endif()
 
 
+if (NS_HAVE_SPDLOG)
+  target_link_libraries(Engine PUBLIC spdlog)
+endif()
+
 if (NS_HAVE_IMGUI)
   target_link_libraries(Engine PUBLIC imgui)
+endif()
+
+if (NS_HAVE_IMGUZMO)
+  target_link_libraries(Engine PUBLIC ImGuizmo)
 endif()
 
 if (NS_HAVE_STB)

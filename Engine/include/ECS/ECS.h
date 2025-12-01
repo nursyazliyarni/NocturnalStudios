@@ -1,500 +1,302 @@
-#ifndef ECS_H
-#define ECS_H
-
-/*!------------------------------------------------------------------------------------------------
-	File: ECS.h
-	Project: NocturnalStudio
-
-	This file contains the class definition for the Entity Component System (ECS). ECS is a game
-	object manager that employs the Entity-Component-System design pattern.
-
-	ECS also manages scenes, layers and prefabs (if needed), providing users the interface to edit
-	the game objects in the scene.
-
-	Primary Author:
-		Lau Xiang Yang (100%) (141 lns as of 20/10/2025)
-		- Created the file and implemented the ECS class member functions
 
 
-	All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
-*------------------------------------------------------------------------------------------------*/
+#pragma once
 
+#include "ComponentManager.h"
+#include "EntityManager.h"
+#include "System/SystemManager.h"
+#include "Types.h"
+#include "pch.h"
 
-#include <vector>
-#include <memory>
-#include <list>
-#include <queue>
-#include <unordered_map>
-#include <unordered_set>
-#include <set>
-#include <map>
-#include <optional>
-#include <any>
-#include <functional>
+#define p_ecs NocturnalEngine::ECS::GetInstance()
 
-#include <rapidjson/document.h>
-#include "../include/ECS/ECS_Component.h"
-#include "../include/ECS/ECS_ComponentPool.h"
-#include "../include/ECS/ECS_Def.h"
+namespace NocturnalEngine
+{
+	class ECS
+	{
+	public:
 
-
-
-class ECS {
-public:
-	/**
-	 * singleton ECS caller.
-	 *
-	 * \return
-	 */
-	static ECS& getECS() {
-		static ECS dis;
-		return dis;
-	}
-
-	/**
-	 * @brief Create a new entity.
-	 *
-	 * Creates a new entity and registers it in the ECS. If a non-zero valid
-	 * EntityID is provided it will attempt to use that ID (useful when loading
-	 * or restoring saved scenes). The provided name is stored in the entity's metadata.
-	 *
-	 * @param name Optional human-readable name for the entity.
-	 * @param entityID Optional explicit EntityID to assign. Pass INVALID_ENTITY_ID
-	 *                 (default) to auto-allocate a new ID.
-	 * @return The created entity's EntityID, or INVALID_ENTITY_ID on failure.
-	 *
-	 * Simple usage:
-	 *   EntityID player = ecs.createEntity("Player");
-	 *   EntityID copy  = ecs.createEntity("ClonedPlayer", suggestedId);
-	 */
-	EntityID createEntity(std::string name = "", EntityID entityID = INVALID_ENTITY_ID);
-
-	/**
-	 * @brief Clone an existing entity.
-	 *
-	 * Creates a new entity and copies all components from the source entity.
-	 * Component copying is delegated to the component pools' clone routines.
-	 *
-	 * @param entityID The source entity to clone.
-	 * @return The new entity's ID, or INVALID_ENTITY_ID on failure.
-	 *
-	 * Simple usage:
-	 *   EntityID enemy = ecs.createEntity("Enemy");
-	 *   // ... add components to 'enemy'
-	 *   EntityID enemyCopy = ecs.cloneEntity(enemy);
-	 */
-	EntityID cloneEntity(EntityID entityID);
-
-	/**
-	 * @brief Delete an entity and remove its components.
-	 *
-	 * Marks the entity for deletion, removes components and frees its metadata.
-	 * Returns true on success.
-	 *
-	 * @param entityID The entity to delete.
-	 * @return true if the entity was successfully deleted; false otherwise.
-	 *
-	 * Simple usage:
-	 *   if (!ecs.deleteEntity(playerId)) { /* handle error *\/ }
-	 */
-	bool deleteEntity(EntityID entityID);
-
-	/**
-	 * @brief Get the name assigned to an entity.
-	 *
-	 * Returns a reference to the stored name. Behavior is undefined if the
-	 * entity does not exist — check existence before calling if uncertain.
-	 *
-	 * @param entityID The entity to query.
-	 * @return Reference to the entity name string.
-	 *
-	 * Simple usage:
-	 *   std::string& name = ecs.getEntityName(playerId);
-	 *   std::cout << "Name: " << name << '\n';
-	 */
-	std::string& getEntityName(EntityID entityID);
-
-	/**
-	 * @brief Find an entity by its stored name.
-	 *
-	 * Returns the EntityID for the first matching entity name or INVALID_ENTITY_ID
-	 * if no entity matches.
-	 *
-	 * @param name The name to search for.
-	 * @return Matching EntityID or INVALID_ENTITY_ID.
-	 *
-	 * Simple usage:
-	 *   EntityID id = ecs.findEntityByName("Player");
-	 *   if (id != INVALID_ENTITY_ID) { /* found *\/ }
-	 */
-	EntityID findEntityByName(const std::string& name) const;
-
-	/**
-	 * @brief Retrieve the list of all active entity IDs.
-	 *
-	 * Returns a const reference to the internal vector of entity IDs. Do not modify
-	 * the returned vector directly.
-	 *
-	 * @return const reference to vector of EntityID
-	 *
-	 * Simple usage:
-	 *   for (EntityID id : ecs.getAllEntities()) { /* iterate entities *\/ }
-	 */
-	std::vector<EntityID> const& getAllEntities() const;
-
-	/**
-	 * @brief Attach a component of type T to an entity.
-	 *
-	 * If the component pool for T is not registered it will be registered
-	 * automatically. Returns true on success.
-	 *
-	 * @tparam T Component type (a POD/struct representing component data)
-	 * @param entityID Target entity
-	 * @param component The component instance to copy into the pool
-	 * @return true on success; false on failure
-	 *
-	 * Simple usage:
-	 *   Transform t{ ... };
-	 *   ecs.addComponent<Transform>(playerId, t);
-	 */
-	template <typename T>
-	bool addComponent(EntityID entityID, T const& component);
-
-	/**
-	 * @brief Register a component type T with the ECS.
-	 *
-	 * Creates an internal ComponentPool for T and registers metadata. This
-	 * is done automatically by addComponent if needed, but you can call it
-	 * early to ensure pools exist before loading data.
-	 *
-	 * @tparam T Component type
-	 *
-	 * Simple usage:
-	 *   ecs.registerComponent<Transform>();
-	 */
-	template <typename T>
-	void registerComponent();
-
-	/**
-	 * @brief Query whether an entity has a component of type T.
-	 *
-	 * @tparam T Component type
-	 * @param entityID Entity to query
-	 * @return true if entity has component T; false otherwise
-	 *
-	 * Simple usage:
-	 *   if (ecs.hasComponent<Health>(enemyId)) { /* has health *\/ }
-	 */
-	template <typename T>
-	bool hasComponent(EntityID entityID) const;
-
-	/**
-	 * @brief Remove component of type T from an entity.
-	 *
-	 * @tparam T Component type
-	 * @param entityID Target entity
-	 * @return true on success; false on failure
-	 *
-	 * Simple usage:
-	 *   ecs.removeComponent<Weapon>(playerId);
-	 */
-	template <typename T>
-	bool removeComponent(EntityID entityID);
-
-	/**
-	 * @brief Remove a component from an entity by component ID.
-	 *
-	 * Non-templated API variant that uses a ComponentID, useful for editors
-	 * or serialized systems where only numeric IDs are known at runtime.
-	 *
-	 * @param entityID Target entity
-	 * @param componentID ComponentID (use Family::getID<T>() to obtain)
-	 * @return true on success; false on failure
-	 *
-	 * Simple usage:
-	 *   ComponentID cid = Family::getID<Health>();
-	 *   ecs.removeComponent(playerId, cid);
-	 */
-	bool removeComponent(EntityID entityID, ComponentID componentID);
-
-	/**
-	 * @brief Get pointer to component T for an entity.
-	 *
-	 * Returns a pointer to the component stored in the pool or nullptr if the
-	 * entity does not have that component or the pool is not registered.
-	 *
-	 * @tparam T Component type
-	 * @param entityID Target entity
-	 * @return Pointer to component instance or nullptr
-	 *
-	 * Simple usage:
-	 *   if (auto* h = ecs.getComponent<Health>(playerId)) {
-	 *       h->hp -= 10;
-	 *   }
-	 */
-	template <typename T>
-	T* getComponent(EntityID entityID);
-
-
-
-	/**
-	 * @brief Get list of all component ids for a specific entity
-	 *
-	 * Returns a const reference to a set of componentIDs
-	 *
-	 * @param entityID Target entity
-	 * @return const reference to a set of ComponentIDs
-	 *
-	 * Simple usage:
-	 *   
-	 */
-	const std::set<ComponentID>& getEntityComponents(EntityID);
-
-
-
-
-	void emptyAllEntities();
-
-private:
-	/**
-	 * @brief Find the ComponentData entry for a component ID (const).
-	 *
-	 * Returns an iterator to the matching entry in componentMetadata or
-	 * componentMetadata.end() if not found.
-	 */
-	std::vector<ComponentData>::const_iterator getComponentData(ComponentID componentID) const;
-	std::vector<ComponentData>::iterator getComponentData(ComponentID componentID);
-
-	/**
-	 * @brief Recompute any cached metadata that depends on components/entities.
-	 *
-	 * This function is called internally when components are added/removed.
-	 * It should be considered implementation detail and is not intended for
-	 * public use.
-	 */
-	void reUpdateMetadata();
-
-
-	ECS(); //singleton, constructor is private.
-
-	ECS(const ECS&) = delete;
-	ECS& operator=(const ECS&) = delete;
-
-	ECS(ECS&&) = delete;
-	ECS& operator=(ECS&&) = delete;
-
-	EntityID totalEntityID = 0;
-	std::list<EntityID> deletedEntities;
-	std::vector<EntityID> allEntities;
-
-	std::unordered_map<EntityID, EntityMetadata> entityMetadataMap;
-
-	std::unordered_map<ComponentID, std::unique_ptr<BaseComponentPool>> componentPools;
-	std::vector<ComponentData> componentMetadata;
-	std::unordered_map<std::string, ComponentID> componentNameToIDMap;
-
-};
-
-template<typename T>
-bool isBaseComponent(T* ptr) {
-	return dynamic_cast<BaseComponent*>(ptr) != nullptr;
-}
-//********* ECS Class Template Implementation **********//
-
-template <typename T>
-bool ECS::addComponent(EntityID entityID, T const& component) {
-	ComponentID type = Family::getID<T>();
-	if (componentPools.find(type) == componentPools.end()) registerComponent<T>();
-
-	BaseComponentPool* pool = componentPools.at(type).get();
-	ComponentPool<T>* specificPool = dynamic_cast<ComponentPool<T>*>(pool);
-	if (!specificPool) {
-		logger.error(std::string{ "ECS::addComponent - Failed to derive correct component pool\nComponentID: " } + std::to_string(type) + "\n");
-		return false;
-	}
-	if (!specificPool->addComponent(entityID, component)) {
-		logger.error(std::string{ "ECS::addComponent - Failed to add component to entity\nEntityID: " } + std::to_string(entityID) + "\n");
-		return false;
-	}
-
-	auto componentData = getComponentData(type);
-	if (componentData == componentMetadata.end()) {
-		logger.error(std::string{ "ECS::addComponent - Failed to find component metadata\nComponentID: " } + std::to_string(type) + "\n");
-		return false;
-	}
-
-	componentData->size += 1;
-	entityMetadataMap[entityID].componentIDs.insert(type);
-	reUpdateMetadata();
-	return true;
-}
-
-template <typename T>
-void ECS::registerComponent() {
-	ComponentID type = Family::getID<T>();
-	auto [it, inserted] = componentPools.insert({ type, std::make_unique<ComponentPool<T>>() });
-	if (!inserted) {
-		logger.log(std::string{ "ECS::registerComponent - Component already registered" });
-		return;
-	}
-
-	componentMetadata.push_back({ type, 0 });
-
-	// TODO: May require a static name member in every component for readable names
-	componentNameToIDMap.insert({ typeid(T).name(), type });
-}
-
-template <typename T>
-bool ECS::removeComponent(EntityID entityID) {
-	ComponentID type = Family::getID<T>();
-	BaseComponentPool* pool;
-	if (componentPools.find(type) == componentPools.end()) {
-		logger.error(std::string{ "ECS::removeComponent - Failed to find component pool" });
-		return false;
-	}
-
-	pool = componentPools[type].get();
-	ComponentPool<T>* specificPool = dynamic_cast<ComponentPool<T>*>(pool);
-	assert(specificPool != nullptr);
-
-	if (!specificPool->removeComponent(entityID)) {
-		logger.error(std::string{ "ECS::removeComponent - Failed to remove component from entity\nEntityID: " } + std::to_string(entityID) + "\n");
-		return false;
-	}
-
-	auto componentData = getComponentData(type);
-	if (componentData == componentMetadata.end()) {
-		logger.error(std::string{ "ECS::removeComponent - Failed to find component metadata\nComponentID: " } + std::to_string(type) + "\n");
-		return false;
-	}
-
-	componentData->size -= 1;
-	entityMetadataMap[entityID].componentIDs.erase(type);
-	reUpdateMetadata();
-	return true;
-}
-
-template <typename T>
-T* ECS::getComponent(EntityID entityID) {
-	ComponentID type = Family::getID<T>();
-	if (componentPools.find(type) == componentPools.end()) {
-		logger.error(std::string{ "ECS::getComponent - Failed to find component pool\nComponentID: " } + std::to_string(type) + "\n");
-		return nullptr;
-	}
-	BaseComponentPool* pool = componentPools[type].get();
-	ComponentPool<T>* specificPool = dynamic_cast<ComponentPool<T>*>(pool);
-	if (!specificPool) {
-		logger.error(std::string{ "ECS::getComponent - Failed to derive correct component pool\nComponentID: " } + std::to_string(type) + "\n");
-		return nullptr;
-	}
-	return specificPool->getComponent(entityID);
-}
-
-
-// [====================*====================]
-//  Component Factory for Json Parsing
-// [====================*====================]
-
-//check compatability with the register component function
-//if this section causes any problems, comment it out
-class ComponentFactory { //basically copied my component factory but modified it for structs, I need to check how to do the loading afterwards
-public:
-	using Json = rapidjson::Value;
-	using Creator = std::function<std::any(const Json&)>;
-	using Parser = std::function<void(EntityID, const Json&)>;
-
-	template<typename T>
-	static void Register(const std::string& name) {
-		Register(name, [](const Json& j) -> std::any {T comp{};
-		if (j.IsObject()) {
-			comp.FromJSON(j);
+		/*!*************************************************************************
+		Returns an instance of the ECS
+		****************************************************************************/
+		static ECS& GetInstance()
+		{
+			static ECS instance;
+			return instance;
 		}
-		return comp;
-			});
 
-		RegisterParser(name, [name](EntityID id, const Json& j) {
-			if (!j.IsObject()) return;
+		/*!*************************************************************************
+		Initializes Unique pointers to the different systems for communications
+		****************************************************************************/
+		void Init()
+		{
+			mComponentManager = std::make_unique<ComponentManager>();
+			mEntityManager = std::make_unique<EntityManager>();
+			mSystemManager = std::make_unique<SystemManager>();
+		}
 
-			// Fetch existing T
-			T* comp = ECS::getECS().getComponent<T>(id);
-			if (!comp) {
-				logger.error("Parser: entity missing component: " + name);
-				
-				 ECS::getECS().addComponent<T>(id, {});
-				 comp = ECS::getECS().getComponent<T>(id);
+		// Entity methods
+
+		/*!*************************************************************************
+		Pulls a new entity ID from queue and return it
+		****************************************************************************/
+		Entity CreateEntity()
+		{
+			return mEntityManager->CreateEntity();
+		}
+
+		/*!*************************************************************************
+		Destroys the Entity ID and push it back into the back of the queue
+		****************************************************************************/
+		void DestroyEntity(Entity entity)
+		{
+			mEntityManager->DestroyEntity(entity);
+			mComponentManager->EntityDestroyed(entity);
+			mSystemManager->EntityDestroyed(entity);
+		}
+
+		/*!*************************************************************************
+		Clears all component data from all component arrays
+		****************************************************************************/
+		void ClearAllComponents()
+		{
+			mComponentManager->ClearAllComponents();
+		}
+
+		/*!*************************************************************************
+		Clones the Entity and all its available components
+		****************************************************************************/
+		Entity CloneEntity(Entity entity)
+		{
+			Entity newEntity = mEntityManager->CreateEntity();
+			mEntityManager->SetSignature(newEntity, GetEntitySignature(entity));
+			for (ComponentType i = 0; i < GetTotalRegisteredComponents(); ++i)
+			{
+				if (GetEntitySignature(newEntity).test(i))
+				{
+					mComponentManager->GetComponentArrayFromType(i)->CopyComponent(entity, newEntity);
+				}
 			}
+			auto signature = mEntityManager->GetSignature(newEntity);
+			mSystemManager->EntitySignatureChanged(newEntity, signature);
 
-			// Modify it using FromJSON
-			comp->FromJSON(j);
-			});
-	}
+			return newEntity;
+		}
 
-	static void RegisterParser(const std::string& name, Parser parser)
-	{
-		ParserMap()[name] = std::move(parser);
-	}
+		/*!*************************************************************************
+		Retrieves the entity's signature
+		****************************************************************************/
+		Signature GetEntitySignature(Entity entity)
+		{
+			return mEntityManager->GetSignature(entity);
+		}
 
-	static void Register(const std::string& name, Creator creator) {
-		GetMap()[name] = std::move(creator);
-	}
+		/*!*************************************************************************
+		Sets the Entity's signature for cloning
+		****************************************************************************/
+		void SetEntitySignature(Entity entity, Signature signature)
+		{
+			mEntityManager->SetSignature(entity, signature);
+		}
 
-	static bool CreateFromName(EntityID entity, const std::string& name, const Json& j);
+		/*!*************************************************************************
+		Returns the number of live entities
+		****************************************************************************/
+		Entity GetTotalEntities()
+		{
+			return mEntityManager->GetTotalEntities();
+		}
 
-	static void ParseFromName(EntityID entity, const std::string& name, const Json& j);
+		/*!*************************************************************************
+		Returns the number of live entities
+		****************************************************************************/
+		Entity GetAliveEntities()
+		{
+			return static_cast<Entity>(mEntityManager->GetAliveEntities().size());
+		}
 
-	static std::any Create(const std::string& name, const Json& j) {
-		auto& map = GetMap();
-		auto it = map.find(name);
-		if (it != map.end()) return it->second(j);
-		logger.error("ComponentFactory::Create - Unknown component type: " + name);
-		throw std::runtime_error("Unknown component type: " + name);
-	}
+		std::set<Entity> GetAliveEntitiesSet()
+		{
+			return mEntityManager->GetAliveEntities();
+		}
 
-private:
-	static std::unordered_map<std::string, Creator>& GetMap() {
-		static std::unordered_map<std::string, Creator> map;
-		return map;
-	}
-	static std::unordered_map<std::string, Parser>& ParserMap() {
-		static std::unordered_map<std::string, Parser> mapp;
-		return mapp;
-	}
-};
-template<>
-inline bool ECS::addComponent<Transform>(EntityID entityID, Transform const& component) {
-	ComponentID type = Family::getID<Transform>();
-	if (componentPools.find(type) == componentPools.end()) registerComponent<Transform>();
+		/*!*************************************************************************
+		Sets the total entities for Scene build 
+		****************************************************************************/
+		void SetTotalEntitiesForWorldBuild(Entity entity)
+		{
+			mEntityManager->SetTotalEntitiesForWorld(entity);
+		}
 
-	BaseComponentPool* pool = componentPools.at(type).get();
-	ComponentPool<Transform>* specificPool = dynamic_cast<ComponentPool<Transform>*>(pool);
-	if (!specificPool) {
-		logger.error(std::string{ "ECS::addComponent - Failed to derive correct component pool\nComponentID: " } + std::to_string(type) + "\n");
-		return false;
-	}
-	if (!specificPool->addComponent(entityID, component)) {
-		logger.error(std::string{ "ECS::addComponent - Failed to add component to entity\nEntityID: " } + std::to_string(entityID) + "\n");
-		return false;
-	}
+		/*!*************************************************************************
+		Resets all the entities for Scene build
+		****************************************************************************/
+		void ResetEntities()
+		{
+			auto aliveset = mEntityManager->GetAliveEntities();
+			
+			for (const auto& iter : aliveset)
+			{
+				DestroyEntity(iter);
+			}
+			
+		}
 
-	Transform* comp = getComponent<Transform>(entityID);
-	if (comp->randomPos)
-	{
-		comp->position = { Random_Range(-100.f,100.f),Random_Range(-50.f,50.f) };
-	}
-	if (comp->randomRot)
-	{
-		comp->rotation = Random_Range(0.f, 6.28319f);
-	}
+		void ResetAllEntitySignatures()
+		{
+			mEntityManager->ResetAllEntitySignatures();
+		}
 
-	auto componentData = getComponentData(type);
-	if (componentData == componentMetadata.end()) {
-		logger.error(std::string{ "ECS::addComponent - Failed to find component metadata\nComponentID: " } + std::to_string(type) + "\n");
-		return false;
-	}
+		// Component methods
+		/*!*************************************************************************
+		Registers Component for use in ECS
+		****************************************************************************/
+		template<typename T>
+		void RegisterComponent()
+		{
+			mComponentManager->RegisterComponent<T>();
+		}
 
-	componentData->size += 1;
-	entityMetadataMap[entityID].componentIDs.insert(type);
-	reUpdateMetadata();
-	return true;
+		/*!*************************************************************************
+		Adds Component to Component Array with the assigned Entity
+		****************************************************************************/
+		template<typename T>
+		void AddComponent(Entity entity, T component)
+		{
+			component.SetComponentEntityID(entity);
+			mComponentManager->AddComponent<T>(entity, component);
+			auto signature = mEntityManager->GetSignature(entity);
+			signature.set(mComponentManager->GetComponentType<T>(), true);
+			mEntityManager->SetSignature(entity, signature);
+			mSystemManager->EntitySignatureChanged(entity, signature);
+		}
+
+		/*!*************************************************************************
+		Remove Component and data from selected entity
+		****************************************************************************/
+		template<typename T>
+		void RemoveComponent(Entity entity)
+		{
+			mComponentManager->RemoveComponent<T>(entity);
+
+			auto signature = mEntityManager->GetSignature(entity);
+			signature.set(mComponentManager->GetComponentType<T>(), false);
+			mEntityManager->SetSignature(entity, signature);
+
+			mSystemManager->EntitySignatureChanged(entity, signature);
+		}
+
+		/*!*************************************************************************
+		Retrieve Component Data from the following component and selected entity
+		****************************************************************************/
+		template<typename T>
+		T& GetComponent(Entity entity)
+		{
+			return mComponentManager->GetComponent<T>(entity);
+		}
+
+		/*!*************************************************************************
+		Retrieves Component signature type
+		****************************************************************************/
+		template<typename T>
+		ComponentType GetComponentType()
+		{
+			return mComponentManager->GetComponentType<T>();
+		}
+
+		/*!*************************************************************************
+		Get name of component based on component type
+		****************************************************************************/
+		std::string GetComponentTypeName(ComponentType Type)
+		{
+			return mComponentManager->GetComponentTypeName(Type);
+		}
+
+		/*!*************************************************************************
+		Checks if component exist
+		****************************************************************************/
+		template<typename T>
+		bool HaveComponent(Entity entity)
+		{
+			return mComponentManager->HaveComponent<T>(entity);
+		}
+
+		/*!*************************************************************************
+		Returns array containing the EntityToIndexMap
+		****************************************************************************/
+		std::array<size_t, MAX_ENTITIES>& GetEntityToIndexMapECS(ComponentType Type)
+		{
+			return mComponentManager->GetEntityToIndexMap(Type);
+		}
+
+		/*!*************************************************************************
+		Returns array containing the IndexToEntityMap
+		****************************************************************************/
+		std::array<Entity, MAX_ENTITIES>& GetIndexToEntityMapECS(ComponentType Type)
+		{
+			return mComponentManager->GetIndexToEntityMap(Type);
+		}
+
+		/*!*************************************************************************
+		Returns total number of Components registered in the ECS
+		****************************************************************************/
+		const ComponentType GetTotalRegisteredComponents()
+		{
+			return mComponentManager->GetTotalRegisteredComponents();
+		}
+
+		/*!*************************************************************************
+		Returns the size of Array based on ComponentType
+		****************************************************************************/
+		const size_t GetEntitySize(ComponentType Type)
+		{
+			return mComponentManager->GetEntitySize(Type);
+		}
+
+		/*!*************************************************************************
+		Clears the Mappings for Scene Build
+		****************************************************************************/
+		void ClearArrayForWorldBuild(ComponentType Type)
+		{
+			mComponentManager->ClearArrayForWorldBuild(Type);
+		}
+
+		/*!*************************************************************************
+		Returns ComponentArray Based on ComponentType
+		****************************************************************************/
+		std::shared_ptr<IComponentArray> GetComponentArrayFromType(ComponentType Type)
+		{
+			return mComponentManager->GetComponentArrayFromType(Type);
+		}
+
+
+		// System methods
+		/*!*************************************************************************
+		Registers the System for use in the ECS
+		****************************************************************************/
+		template<typename T>
+		std::shared_ptr<T> RegisterSystem()
+		{
+			return mSystemManager->RegisterSystem<T>();
+		}
+
+		/*!*************************************************************************
+		Sets the System signature for which component the system shall look out for
+		****************************************************************************/
+		template<typename T>
+		void SetSystemSignature(Signature signature)
+		{
+			mSystemManager->SetSignature<T>(signature);
+		}
+
+	private:
+		// Unique Pointer to ComponentManager
+		std::unique_ptr<ComponentManager> mComponentManager;
+		// Unique Pointer to EntityManager
+		std::unique_ptr<EntityManager> mEntityManager;
+		// Unique Pointer to SystemManager
+		std::unique_ptr<SystemManager> mSystemManager;
+		// Unique Pointer to ECS instance
+		inline static std::unique_ptr<ECS> m_instance;
+	};
 }
-#endif // ECS_H

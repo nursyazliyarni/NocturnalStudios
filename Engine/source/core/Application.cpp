@@ -1,657 +1,207 @@
-/*!------------------------------------------------------------------------------------------------
-	File: Application.cpp
-	Project: NocturnalStudio
 
-	This file contains the main application loop that initializes the window creation, OpenGL initialization,
-	sprite rendering, input handling, drag and drop interations, frame updates, ImGui systems.
-
-	Primary Author:
-
-		- Brief
-
-	Primary Author:
-		Rishika Bimal Attodi
-		- Implemented main loop scaffolding: window creation, OpenGL setup,
-		sprite batching
-
-	Secondary Author:
-		Yu Xuan
-		-  Background
-
-	Secondary Authod
-		Xiang Yang
-		- Full Screen mode toggle
-
-	Secondary Author:
-		Chang Qi Xuan Celest (35%)
-		- Integrated drag and drop functionality for sprites.
-
-	All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
-*------------------------------------------------------------------------------------------------*/
-
-#include "core/Application.h"
-
-#include <vector>
-
-#include <algorithm>
-#include <cmath>
-
-#include "scene/Prefab.h"
-
-#include <cmath>
-#include <algorithm>
+#include "pch.h"
+#include "Core/Application.h"
+#include "Core/Log.h"
+#include "Window/Window.h"
+#include "LevelEditor/LevelEditor.h"
+#include "Graphics/Graphics.h"
+#include "Physics/CollisionSystem.h"
+#include "Physics/PhysicsSystem.h"
+#include "ECS/Components/Components.h"
+#include "Timer/Time.h"
+#include "Timer/Fps.h"
 #include "ECS/ECS.h"
-#include "ECS/ECS_Component.h"
-#include "ECS/ECS_DEF.h"
-#include "resources/ResourceManager.h"
-#include "scene/Prefab.h" // Prefab_SetTextureLookup, Scenes_GetInitialName, Prefab_SpawnEntitiesForScene
+#include "ECS/SceneManager.h"
+#include "Audio/AudioEngine.h"
+#include "Scripts/ButtonResponse.h"
+#include "Scripts/ScenerioScript.h"
+#include "Scripts/SliderScript.h"
+#include "Scripts/AudioManager.h"
+#include "Logic/LogicSystem.h"
+#include "Scripts/PauseMenu.h"
+#include "GUI/GUI.h"
+#include "Scripts/DialogueManager.h"
+#include <stdlib.h>
 
-#include <unordered_map>
-#include <cstdlib>
-#include <ctime>
+namespace NocturnalEngine {
+	bool end_state{ false }; //placeholder
 
-#define UNUSED(x) (void)(x)  // To suppress unused variable warnings
-
-extern void Prefab_SetTextureLookup(std::function<int(const std::string&)>);
-
-// --- Very simple random drift for any entity with AI + Physics (no fancy RNG) ---
-static void UpdateRandomDrift(ECS& ecs, double dt) {
-	if (dt <= 0.0) return;
-
-	// Seed std::rand once
-	static bool s_seeded = false;
-	if (!s_seeded) { std::srand(static_cast<unsigned>(std::time(nullptr))); s_seeded = true; }
-
-	// Per-entity drift state (heading + timer for next small turn)
-	struct DriftState { float heading = 0.0f; float nextTurn = 0.0f; };
-	static std::unordered_map<EntityID, DriftState> s_state;
-
-	auto frand = [](float a, float b) -> float {
-		return a + (b - a) * (static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX));
-		};
-
-	constexpr EntityID MAX_SCAN = 5000;
-
-	for (EntityID e = 0; e < MAX_SCAN; ++e) {
-		auto* ai = ecs.getComponent<AIComponent>(e);
-		auto* pc = ecs.getComponent<PhysicsComponent>(e);
-		if (!ai || !pc) continue;
-
-		auto* t = ecs.getComponent<Transform>(e);
-		if (!t) { Transform nt{}; ecs.addComponent<Transform>(e, nt); t = ecs.getComponent<Transform>(e); if (!t) continue; }
-
-		// Init per-entity state if needed
-		DriftState& st = s_state[e];
-		if (st.nextTurn <= 0.0f && st.heading == 0.0f) {
-			st.heading = frand(0.0f, 6.2831853f);   // random angle in [0, 2?)
-			st.nextTurn = frand(0.6f, 1.8f);        // seconds until next turn
-		}
-
-		// Count down & occasionally change heading slightly
-		st.nextTurn -= static_cast<float>(dt);
-		if (st.nextTurn <= 0.0f) {
-			st.heading += frand(-0.9f, 0.9f);       // small random turn
-			if (st.heading > 6.2831853f) st.heading -= 6.2831853f;
-			if (st.heading < 0.0f)       st.heading += 6.2831853f;
-			st.nextTurn = frand(0.6f, 1.8f);
-		}
-
-		// Desired velocity points along the heading at maxSpeed
-		float desiredVx = std::cos(st.heading) * ai->maxSpeed;
-		float desiredVy = std::sin(st.heading) * ai->maxSpeed;
-
-		// Accel toward desired vel, limited by ai->accel * dt
-		float ax = desiredVx - pc->velocity.x();
-		float ay = desiredVy - pc->velocity.y();
-		float aLen2 = ax * ax + ay * ay;
-		float maxA = ai->accel * static_cast<float>(dt);
-		if (aLen2 > maxA * maxA && aLen2 > 0.0f) {
-			float s = maxA / std::sqrt(aLen2);
-			ax *= s; ay *= s;
-		}
-		pc->velocity.x() += ax;
-		pc->velocity.y() += ay;
-
-		// Clamp speed to maxSpeed
-		float v2 = pc->velocity.x() * pc->velocity.x() + pc->velocity.y() * pc->velocity.y();
-		float ms = ai->maxSpeed;
-		if (v2 > ms * ms && v2 > 0.0f) {
-			float k = ms / std::sqrt(v2);
-			pc->velocity.x() *= k; pc->velocity.y() *= k;
-		}
-
-		// Integrate position in normalized [0..1] space, bounce at edges
-		float nx = t->position.x() + pc->velocity.x() * static_cast<float>(dt);
-		float ny = t->position.y() + pc->velocity.y() * static_cast<float>(dt);
-		bool bounceX = false, bounceY = false;
-
-		if (nx < 0.0f) { nx = 0.0f; bounceX = true; }
-		if (nx > 1.0f) { nx = 1.0f; bounceX = true; }
-		if (ny < 0.0f) { ny = 0.0f; bounceY = true; }
-		if (ny > 1.0f) { ny = 1.0f; bounceY = true; }
-
-		if (bounceX) {
-			pc->velocity.x() = -pc->velocity.x();
-			st.heading = std::atan2(pc->velocity.y(), pc->velocity.x());
-		}
-		if (bounceY) {
-			pc->velocity.y() = -pc->velocity.y();
-			st.heading = std::atan2(pc->velocity.y(), pc->velocity.x());
-		}
-
-		t->position.x() = nx;
-		t->position.y() = ny;
-	}
-}
-
-namespace {
-	constexpr float TWO_PI = 2.0f * glm::pi<float>();
-	constexpr int   CIRCLE_SEGMENTS = 64;
-	using Clock = std::chrono::high_resolution_clock;
-
-	bool isDragging = false; //is a sprite being dragged
-	int draggedSpriteIndex = -1; //index into sprite_vector
-	int duplicateIndex = -1; //where clone is in the vector
-	Vector2D dragOffset(0.0f, 0.0f); //mouse offset from top-left of sprite
-
-	static Application* s_App = nullptr;
-	static void App_OnGlfwFocus(GLFWwindow* window, int focused) {
-		UNUSED(window);
-		if (s_App) s_App->onFocusChanged(focused == GLFW_TRUE);
-	}
-
-	static void App_OnGlfwIconify(GLFWwindow* window, int iconified) {
-		UNUSED(window);
-		if (s_App) s_App->onIconifyChanged(iconified == GLFW_TRUE);
-	}
-	static void App_OnGlfwDrop(GLFWwindow* window, int count, const char** paths) {
-		UNUSED(window);
-		if (s_App) s_App->onFilesDropped(count, paths);
-	}
-}
-
-//Application::Application() = default;
-Application::Application() {
-	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF); //enable memory leak check at program exit
-}
-
-void Application::onFocusChanged(bool focused) {
-	if (!focused) {
-		if (autoMinimizeOnFocusLoss) glfwIconifyWindow(m_window.handle());
-
-		if (audioSystem) {
-			audioSystem->pauseAllSFX();
-			audioSystem->pauseAllBGM();
-		}
-
-		if (gsm) gsm->pauseGame();
-		if (inputSystem) inputSystem->clearAllStates();
-	}
-	else {
-		if (glfwGetWindowAttrib(m_window.handle(), GLFW_ICONIFIED)) 
-			glfwRestoreWindow(m_window.handle());
-
-		if (autoResumeOnFocusGain) {
-			if (audioSystem) {
-				audioSystem->resumeAllSFX();
-				audioSystem->resumeAllBGM();
-			}
-			if (gsm && gsm->isPaused()) gsm->resumeGame();
-		}
-
-		if (inputSystem) inputSystem->EndFrame();
-	}
-}
-
-void Application::onIconifyChanged(bool iconified) {
-	if (iconified) {
-		if (audioSystem) {
-			audioSystem->pauseAllSFX();
-			audioSystem->pauseAllBGM();
-		}
-
-		if (gsm) gsm->pauseGame();
-		if (inputSystem) inputSystem->clearAllStates();
-	}
-	else {
-		if (autoResumeOnFocusGain) {
-			if (audioSystem) {
-				audioSystem->resumeAllSFX();
-				audioSystem->resumeAllBGM();
-			}
-			if (gsm && gsm->isPaused()) gsm->resumeGame();
-		}
-
-		if (inputSystem) inputSystem->EndFrame();
-	}
-}
-
-
-void Application::init() {
-	logger.setup_crash_handler();
-	const GameConfig c = loadConfig("assets/config.json");
-	windowTitle = c.window.title;
-	imGUIVisible = c.imgui_enabled;
-
-    WindowDesc wd;
-    wd.width = c.window.width;
-    wd.height = c.window.height;
-    wd.title = c.window.title;
-    wd.vsync = c.window.vsync;
-	wd.fullscreen = true;
-
-    if (!m_window.create(wd)) {
-        logger.error("Failed to create window");
-        isInitialized = false;
-        return;
-    }
-
-	s_App = this;
-	glfwSetWindowFocusCallback(m_window.handle(), App_OnGlfwFocus);
-	glfwSetWindowIconifyCallback(m_window.handle(), App_OnGlfwIconify);
-	glfwSetDropCallback(m_window.handle(), App_OnGlfwDrop);
-
-    glViewport(0, 0, wd.width, wd.height);
-    glDisable(GL_DEPTH_TEST);
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glClearColor(0.06f, 0.06f, 0.07f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
-    m_window.swap();
-
-    int currW = wd.width, currH = wd.height;
-    glfwGetFramebufferSize(m_window.handle(), &currW, &currH);
-    glViewport(0, 0, currW, currH);
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    glOrtho(0, currW, currH, 0, -1, 1);
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-
-    glDisable(GL_DEPTH_TEST);
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-    inputSystem = std::make_unique<Input>(m_window.handle());
-    inputSystem->SetMessageBus(&bus);
-
-    ecs = &ECS::getECS();
-    resourceManager = std::make_unique<ResourceManager>(*ecs);
-    audioSystem = std::make_unique<AudioSystem>("AudioSystem", *ecs, *resourceManager);
-    resourceManager->setAudioSystem(audioSystem.get());
-
-    resourceManager->loadResources("audio");
-    resourceManager->loadResources("shaders");
-    resourceManager->loadResources("textures");
-    resourceManager->loadResources("fonts");
-    resourceManager->loadResources("prefabs");
-    resourceManager->loadResources("scenes");
-
-	std::vector<std::pair<std::string, std::string>> shader_filePATH_list;
-	std::string vertexPath,
-		fragmentPath,
-		prefabPath, prefabTestPath,
-		textShaderVertexPath, textShaderFragmentPath,
-		scenePath;
-
-	auto shaderPath_1 = resourceManager->getFilePathsForKey<ShaderFile>("background");
-	for (auto const& path : shaderPath_1) {
-		std::filesystem::path p{ path };
-		auto ext = p.extension().string();
-		if (ext == ".vert") vertexPath = p.string();
-		else if (ext == ".frag") fragmentPath = p.string();
-	}
-	shader_filePATH_list.push_back({ vertexPath, fragmentPath });
-
-	auto shaderPath_2 = resourceManager->getFilePathsForKey<ShaderFile>("special_background");
-	for (auto const& path : shaderPath_2) {
-		std::filesystem::path p{ path };
-		auto ext = p.extension().string();
-		if (ext == ".vert") vertexPath = p.string();
-		else if (ext == ".frag") fragmentPath = p.string();
-	}
-	shader_filePATH_list.push_back({ vertexPath, fragmentPath });
-
-    auto textShaderPaths = resourceManager->getFilePathsForKey<ShaderFile>("text");
-    for (auto const& path : textShaderPaths) {
-        std::filesystem::path p{ path };
-        auto ext = p.extension().string();
-        if (ext == ".vert") textShaderVertexPath = p.string();
-        else if (ext == ".frag") textShaderFragmentPath = p.string();
-    }
-
-    auto prefabPaths = resourceManager->getFilePathsForKey<PrefabFile>("prefabs");
-    if (!prefabPaths.empty()) prefabPath = prefabPaths.front();
-
-    auto testingPrefabPaths = resourceManager->getFilePathsForKey<PrefabFile>("testing_prefabs");
-    if (!testingPrefabPaths.empty()) prefabTestPath = testingPrefabPaths.front();
-
-    auto scenePaths = resourceManager->getFilePathsForKey<SceneFile>("scenes");
-    if (!scenePaths.empty()) scenePath = scenePaths.front();
-
-
-	// Wire prefab sprite_path -> GL texture id using your TextureStore API.
-// Must be set BEFORE any Prefab/Scene instantiation.
-	Prefab_SetTextureLookup([this](const std::string& p) -> int {
-		// robust to presence/absence of "assets/"
-		std::string path = p;
-		if (path.rfind("assets/", 0) != 0) path = "assets/" + path;
-		return static_cast<int>(textures.get(path));
-		});
-
-	renderer = std::make_unique<Renderer>(shader_filePATH_list);
-	textShader = std::make_unique<Shader>(textShaderVertexPath.c_str(), textShaderFragmentPath.c_str());
-	logic = std::make_unique<Animal_Logic>();
-
-	// After textures is constructed and before any Instantiate()
-	Prefab_SetTextureLookup([this](const std::string& p) -> int {
-		std::string path = p;
-		if (path.rfind("assets/", 0) != 0) path = "assets/" + path;
-		return static_cast<int>(textures.get(path));
-		});
-
-	prefabManager = std::make_unique<PrefabManager>(*ecs);
-	prefabManager->Load_Prefab(prefabTestPath.c_str());
-	prefabManager->Load_Prefab("assets/prefabs/prefabs.json");
-
-    gameLoop = std::make_unique<Game_Loop>(m_window.handle());
-    bus.Register(gameLoop.get());
-;
-	
-    textShader = std::make_unique<Shader>(textShaderVertexPath.c_str(), textShaderFragmentPath.c_str());
-
-    // Wire text shader into the renderer (renderer controls projection per-viewport)
-    renderer->setTextShader(*textShader);
-	gsm = std::make_unique<GameManager>(*ecs,textures, c.imgui_enabled);
-	gsm->loadAll(*prefabManager, scenePath.c_str(), textures);
-	// Spawn the initial scene (from scenes.json -> states.initial)
+/*!*************************************************************************
+Application constructor
+****************************************************************************/
+	Application::Application()
 	{
-		const std::string initialScene = Scenes_GetInitialName();
-		if (!initialScene.empty()) {
-			gsm->populateScene(initialScene, *prefabManager);
-			logger.log("[SceneSpawn] Initial scene spawned: " + initialScene);
-		}
+		_set_abort_behavior(0, _CALL_REPORTFAULT);
+		p_ecs.Init();
+		p_Scene->Init();
+		FramePerSec::GetInstance().InitFrame();
 	}
 
-	// When GameManager activates a new scene (keyboard or button 'goto'), respawn from JSON
-	gsm->setSceneChangedCallback([this](const std::string& sceneName) {
-        // Stop non-persistent audio before wiping entities.
-        if (audioSystem) {
-            // false => keep sounds with persist_on_scene_change == true
-            audioSystem->deleteAllAudioInstances(false);
-        }
+	/*!*************************************************************************
+	Application destructor
+	****************************************************************************/
+	Application::~Application()
+	{
+	}
 
-		gsm->reloadAllScene(textures);
-        // Clear all current entities.
-        //auto all = ecs->getAllEntities();
-        //for (auto id : all) ecs->deleteEntity(id);
+	/*!*************************************************************************
+	System input
+	****************************************************************************/
+	void Application::SystemInput(System* system)
+	{
+		(void)system;
+	}
 
-        // Respawn from scenes.json.
-		gsm->populateScene(sceneName, *prefabManager);
-        logger.log(std::string{ "[SceneSpawn] Activated -> " } + sceneName);
-    });
-
-	if (!imGUIVisible)renderer->initFBO(wd.width, wd.height);
-
-	imGuiManager = std::make_unique<ImGuiManager>(
-		m_window, *renderer,
-		*inputSystem, physicsSystem,
-		*audioSystem, *resourceManager,
-		*gsm, *logic);
-
-	Logic_Factory::get_instance().add_logic("FlamingoLogic", []() {
-		return std::make_unique<FlamingoLogic>();
-	});
-
-	/*LogicRegistry::instance().register_logic("HorseLogic", []() {
-		return std::make_unique<HorseLogic>();
-		});
-	LogicRegistry::instance().register_logic("SealLogic", []() {
-		return std::make_unique<SealLogic>();
-		});
-	LogicRegistry::instance().register_logic("OwlLogic", []() {
-		return std::make_unique<OwlLogic>();*/
-
-    isInitialized = true;
-}
-
-int Application::run() {
-    if (!isInitialized) {
-        init();
-    }
-
-    if (!isInitialized) {
-        logger.error("Application not initialized. Exiting run().");
-        return -1;
-    }
-	if (imGUIVisible)imGuiManager->recordFirstUndoState();
-    while (!m_window.shouldClose()) {
-        m_window.poll();
-
-		double dt = gameLoop->calculate_DT();
-
-		if (gsm && !gsm->isPaused()) {
-			gsm->update(static_cast<float>(dt), *renderer, textures);
-		}
-		if (imGUIVisible)Gui::updateImGuiManager(dt, *imGuiManager);
-		gameLoop->display_FPS(m_window.handle(), windowTitle, dt);
-		inputSystem->update_mouse_pos(m_window.handle());
-
-		if (ecs) UpdateRandomDrift(*ecs, dt);
-
-		// Debug: log firefly state twice per second to confirm it's updating
-		static double dbgAccum = 0.0;
-		dbgAccum += dt;
-
-		if (dbgAccum > 0.5 && ecs) {
-			dbgAccum = 0.0;
-			if (EntityID ff = ecs->findEntityByName("firefly_1"); ff != INVALID_ENTITY_ID) {
-				if (auto* t = ecs->getComponent<Transform>(ff)) {
-					if (auto* pc = ecs->getComponent<PhysicsComponent>(ff)) {
-						logger.log("FF pos=(" + std::to_string(t->position.x()) + "," + std::to_string(t->position.y()) + ")" +
-							" vel=(" + std::to_string(pc->velocity.x()) + "," + std::to_string(pc->velocity.y()) + ")");
-					}
-				}
-			}
-			// else: stay quiet when not in Owl scene
-		}
-
-		if (!gsm || !gsm->isPaused()) {
-			for (int k = GLFW_KEY_1; k <= GLFW_KEY_9; ++k)
-            	if (inputSystem->WasPressed(k))
-                	gsm->switchToSceneForKey(k); // respects AppState::Playing
-
-			if (inputSystem->WasPressed(GLFW_KEY_F))
-				gsm->handleKeyPress(GLFW_KEY_F);
-
-        	if (inputSystem->WasPressed(GLFW_KEY_ESCAPE))
-            	gsm->handleKeyPress(GLFW_KEY_ESCAPE);
-
-			if (inputSystem->WasPressed(GLFW_KEY_F11)) 
-				m_window.toggleFullscreen();
-			    glfwSetInputMode(m_window.handle(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-
-        	inputSystem->ProcessHotkeys(*gsm);
-        	TransformSystem::TransformInput(*inputSystem, dt);
-		}
-
-        int fbw = 0, fbh = 0; glfwGetFramebufferSize(m_window.handle(), &fbw, &fbh);
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
-        glViewport(0, 0, fbw, fbh);
-        glDisable(GL_DEPTH_TEST);
-        glClearColor(0.06f, 0.06f, 0.07f, 1.0f);
-
-        //Prefab_SetTextureLookup([this](const std::string& p) -> int {
-            //return static_cast<int>(textures.get(p));
-        //});
-
-        glClear(GL_COLOR_BUFFER_BIT);
-
-		if (imGUIVisible)Gui::updateImGuiManager(dt, *imGuiManager);
-		else {
-
-			int winheight,winwidth;
-			m_window.getWindowSize(winwidth, winheight);
-			gsm->imGUIlessRender(*renderer, *inputSystem, m_window.handle(), winwidth,winheight,dt,*resourceManager);
-
-			double mouse_x, mouse_y;
-			glfwGetCursorPos(m_window.handle(), &mouse_x, &mouse_y);
-			
-			float nmouse_x{ static_cast<float>(mouse_x) / static_cast<float>(winwidth) }, nmouse_y{ static_cast<float>(mouse_y) / static_cast<float>(winheight) };
+	/*!*************************************************************************
+	Run loop for application
+	****************************************************************************/
+	void Application::Run()
+	{
+		Timer::GetInstance().GlobalTimeStarter();
 		
-				logic->check_animal_status(*gsm);
-				
-				auto drag_value = logic->check_item_status(*gsm,{nmouse_x,nmouse_y},*inputSystem, m_window.handle());
-				logic->update_animal_ALLstate(*gsm, dt);
-				logic->drag_drop(*gsm, { nmouse_x,nmouse_y }, *inputSystem, m_window.handle(),drag_value);
-				
+		Window* m_window = new Window;
+		m_window->Init();
+		p_Audio->Init();
+		p_Editor->Init(m_window);
+
+		auto mGraphics = p_ecs.RegisterSystem<Graphic>();
+		{
+			Signature signature;
+			signature.set(p_ecs.GetComponentType<Transform>());
+			signature.set(p_ecs.GetComponentType<Sprite>());
+			p_ecs.SetSystemSignature<Graphic>(signature);
 		}
+		mGraphics->Init();
 
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
-        glViewport(0, 0, fbw, fbh);
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		auto mLogic = p_ecs.RegisterSystem<LogicSystem>();
+		{
+			Signature signature;
+			signature.set(p_ecs.GetComponentType<Logic>());
+			p_ecs.SetSystemSignature<LogicSystem>(signature);
+		}
+		mLogic->Init();
 
-        // Text overlay is now rendered by Renderer inside the viewport FBO (see ImGuiManager)
+		auto mCollision = p_ecs.RegisterSystem<CollisionSystem>();
+		{
+			Signature signature;
+			signature.set(p_ecs.GetComponentType<Transform>());
+			signature.set(p_ecs.GetComponentType<RigidBody>());
+			signature.set(p_ecs.GetComponentType<Collider>());
+			p_ecs.SetSystemSignature<CollisionSystem>(signature);
+		}
+		mCollision->Init();
 
-        if (inputSystem->WasMousePressed(GLFW_MOUSE_BUTTON_LEFT)) {
-			ImVec2 rmin{}, rmax;
+		auto mPosUpdate = p_ecs.RegisterSystem<PhysicsSystem>();
+		{
+			Signature signature;
+			signature.set(p_ecs.GetComponentType<Transform>());
+			signature.set(p_ecs.GetComponentType<RigidBody>());
+			p_ecs.SetSystemSignature<PhysicsSystem>(signature);
+		}
+		mPosUpdate->Init();
+#if !DEBUG
+		// p_Scene->setSceneToLoad("Assets/Scene/SplashScreen.json");
+		p_Scene->setSceneToLoad("Assets/Scene/Menu.json");
+#endif
+		
+		while (!glfwWindowShouldClose(m_window->GetWindow()) && end_state == false) //game loop
+		{
+			FramePerSec::GetInstance().StartFrameCount();
+			Timer::GetInstance().Start(Systems::API);
+			Timer::GetInstance().GetDT(Systems::API);
 
-			if (imGUIVisible)imGuiManager->getViewportRectWindow(rmin, rmax);
-			else { //uses window size to dtermine click coords
-				int maxx, maxy;
-				m_window.getWindowSize(maxx, maxy);
-				rmax={ static_cast<float>(maxx) ,static_cast<float>(maxy) };
+			//p_Editor->Update();
+
+			if (p_Editor->is_ShowWindow)
+			{
+				p_Editor->Update();
+				p_Editor->Draw();
 			}
 			
-			Vector2D mp = inputSystem->GET_mouse_pos(false, 0, 0);
-			if (mp.x() >= rmin.x && mp.x() <= rmax.x &&
-				mp.y() >= rmin.y && mp.y() <= rmax.y) {
-				float nx = float((mp.x() - rmin.x) / (rmax.x - rmin.x));
-				float ny = float((mp.y() - rmin.y) / (rmax.y - rmin.y));
+			p_Scene->checkForSceneToLoad();
 
-				//ny = 1.0f - ny;
-				gsm->handleClick(nx, ny);
+			if (p_Scene->isGameplay == true)
+				glfwSetInputMode(m_window->GetWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+			else
+				glfwSetInputMode(m_window->GetWindow(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+			if (!m_window->isWindowNotFocus)
+			{
+//#if !DEBUG
+				mLogic->Update(Timer::GetInstance().GetGlobalDT());
+//#endif
+			}
+			mCollision->Update(Timer::GetInstance().GetGlobalDT());
+			mPosUpdate->Update();
 
-				if (gsm->popQuitRequested()) {
-					glfwSetWindowShouldClose(m_window.handle(), GLFW_TRUE);
-					break;
+			
+			p_Audio->Update();
+			
+			if (p_Input->KeyPressed(GLFW_KEY_F3))
+			{
+				for (Entity i = 0; i < p_ecs.GetTotalEntities(); ++i)
+				{
+
+				
+					if (p_ecs.HaveComponent<Logic>(i) && p_ecs.GetComponent<Logic>(i).GetScriptByName("DialogueManager") != nullptr)
+					{
+						p_ecs.GetComponent<Logic>(i).GetScriptByName("DialogueManager")->mScriptPause = true;
+					}
+
 				}
 			}
-            
-        }
-		TransformSystem::TransformUpdate();
+			for (Entity entity = 0; entity < p_ecs.GetTotalEntities(); entity++)
+			{
+				if (p_ecs.HaveComponent<NameTag>(entity) && p_ecs.GetComponent<NameTag>(entity).GetNameTag() == "Splash Screen")
+				{
+					if (p_ecs.GetComponent<Transform>(entity).GetScale().x > 3.5f)
+						p_Scene->setSceneToLoad("Assets/Scene/Menu.json");
+				}
+			}
+			end_state = p_GUI->Update(m_window);
 
-		if (inputSystem->WasPressed(GLFW_KEY_P))
-		{
+			// test menu script
+
+			p_Input->ResetPressedKey();//to fix the buggy error from glfwpollevent
+			p_Input->ResetPressedMouse();
+
+
+			m_window->Update(Timer::GetInstance().GetGlobalDT());
+			mGraphics->Update(Timer::GetInstance().GetGlobalDT());
 			
+#if !DEBUG
+			p_Editor->is_ShowWindow = false;
+#endif 
+			FramePerSec::GetInstance().EndFrameCount();
+			Timer::GetInstance().Update(Systems::API);
 		}
-        if (gsm->popQuitRequested()) {
-            glfwSetWindowShouldClose(m_window.handle(), 1);
-        }
+		mLogic->End();
 
-        inputSystem->EndFrame();
-        m_window.swap();
-    }
+		mGraphics->End();
+		mCollision->End();
+		mPosUpdate->End();
 
-    shutdown();
-    return 0;
-}
+		End();
 
-void Application::shutdown() {
-	if (resourceManager) {
-		for (auto& [id, font] : resourceManager->getFonts()) {
-			font.Cleanup();
-		}
+		delete m_window;
+		m_window = nullptr;
+
+		glfwTerminate();
 	}
 
-	imGuiManager.reset();
-	textShader.reset();
-	renderer.reset();
-	audioSystem.reset();
-	resourceManager.reset();
-	prefabManager.reset();
-	gsm.reset();
-	gameLoop.reset();
-	inputSystem.reset();
+	/*!*************************************************************************
+	End loop for application
+	****************************************************************************/
+	void Application::End()
+	{
+		p_Editor->End();
+		p_Audio->Release();
+	}
 
-	m_window.destroy();
-	isInitialized = false;
-}
-
-void Application::onFilesDropped(int count, const char** paths) {
-    if (!resourceManager) return;
-    int loadedAudio = 0;
-    int loadedTex = 0;
-    for (int i = 0; i < count; ++i) {
-        std::filesystem::path p{ paths[i] };
-        if (!p.has_extension()) continue;
-        std::string ext = p.extension().string();
-        std::transform(ext.begin(), ext.end(), ext.begin(), [](unsigned char c){ return static_cast<char>(std::tolower(c)); });
-        std::string stem = p.stem().string();
-        std::string full = p.string();
-        // Accept textures
-        if (ext == ".png" || ext == ".jpg" || ext == ".jpeg" || ext == ".bmp" || ext == ".tga" || ext == ".gif" || ext == ".hdr" || ext == ".psd") {
-            resourceManager->loadTexture(stem, full);
-            ++loadedTex;
-        }
-		// Accept audio
-		else if (ext == ".wav" || ext == ".ogg" || ext == ".mp3" || ext == ".flac" || ext == ".aiff" || ext == ".fsb")
-		{
-			std::filesystem::path src = p;
-			std::string stem = src.stem().string();
-			std::string full = src.string();
-
-			//estimate file size to determine if BGM or SFX
-			std::uintmax_t bytes = 0;
-			try {
-				bytes = std::filesystem::file_size(src);
-			}
-			catch (...) {
-				//if can't get size, default to SFX
-				bytes = 0;
-			}
-
-			bool isBGM = (bytes > 1 * 1024 * 1024); //1MB threshold
-			//auto-detects BGM or SFX.
-			std::string key;
-			if (isBGM)
-				key = "BGM_" + stem;
-			else
-				key = "SFX_" + stem;
-			std::string pathToUse = full;
-			try {
-				std::filesystem::path destFolder = "assets/audio";
-				std::filesystem::create_directories(destFolder);
-
-				std::filesystem::path destPath = destFolder / src.filename();
-				std::filesystem::copy_file(
-					src, destPath,
-					std::filesystem::copy_options::overwrite_existing);
-
-				pathToUse = destPath.string();
-				logger.log("[DragDrop] Copied audio to " + pathToUse);
-			}
-			catch (const std::exception& e) {
-				logger.warning(std::string("[DragDrop] copy_file failed, using original audio path. Reason: ")
-					+ e.what());
-			}
-			try {
-				resourceManager->loadAudio(key, pathToUse);
-				++loadedAudio;
-				logger.log("[DragDrop] Loaded " +
-					std::string(isBGM ? "BGM" : "SFX") +
-					" audio '" + key + "' from " + pathToUse +
-					" (" + std::to_string(bytes / 1024) + " KB)");
-			}
-			catch (const std::exception& e) {
-				logger.error(std::string("[DragDrop] Failed to load audio resource: ") + e.what());
-			}
-		}
-    }
-    if (loadedTex || loadedAudio) {
-        logger.log("[DragDrop] Added " + std::to_string(loadedTex) + " textures, " + std::to_string(loadedAudio) + " audio assets.");
-    } else {
-        logger.warning("[DragDrop] No supported assets dropped.");
-    }
+	/*!*************************************************************************
+	Create application
+	****************************************************************************/
+	Application* CreateApplication()
+	{
+		return new Application();
+	}
 }
