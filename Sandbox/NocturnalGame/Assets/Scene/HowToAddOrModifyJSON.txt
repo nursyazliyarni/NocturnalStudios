@@ -1,0 +1,24 @@
+Since you can't comment in .JSON, please take a few moments to read this note 
+before you start.
+
+Component array layout (index → component)
+current Init order, the array indices are:
+0: Transform
+1: RigidBody
+2: Collider
+3: NameTag
+4: Sprite
+5: Logic
+6: Tag
+7: Audio
+8: HUDComponent
+
+In the .json file, each entity’s “Components” array must have one entry per registered component
+in exactly this order. If the entity doesn’t have that component, the entry should be an empty object {}.
+The loader will only read entries whose bit is set in the signature.
+
+What “EntitySignatures” mean
+
+It’s a bitset string for each entity, written by Serialize and read back during Deserialize via NocturnalEngine::ECS::SetEntitySignature.
+Bit position = component index (as listed above). The rightmost character is bit 0 (Transform), then moving left increases the index.
+Example: …11111101 means bits 0,2,3,4,5,6,7 are set → Transform, Collider, NameTag, Sprite, Logic, Tag, Audio present; RigidBody (1) and HUD (8) are not.

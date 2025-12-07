@@ -1,3 +1,4 @@
+#if 0
 //#include <GL/glew.h>
 //#include <GLFW/glfw3.h>
 //#include <chrono>
@@ -95,13 +96,47 @@
 //    return 0;
 //}
 
-#include "core/Application.h"
+//#include "core/Application.h"
+
+//Logger logger;
+//int main() {
+//    Application app;
+//    return app.run();
+//}
+#endif
 
 
+#pragma comment(linker, "/SUBSYSTEM:windows /ENTRY:mainCRTStartup")
+#include "Core/Application.h"
+
+//NocturnalEngine::Application* NocturnalEngine::CreateApplication()
+//{
+//	return new NocturnalEngine::Application();
+//}
+
+#ifdef NOCTURNAL_PLATFORM_WINDOWS
+
+//extern NocturnalEngine::Application* NocturnalEngine::CreateApplication();
+
+int main(int argc, char* argv[])
+{
+	(void)argc;
+	(void)argv;
+	//Mermory leak check
+	int tmpDbgFlag = _CrtSetDbgFlag(_CRTDBG_REPORT_FLAG);
+	tmpDbgFlag |= _CRTDBG_LEAK_CHECK_DF;
+	_CrtSetDbgFlag(tmpDbgFlag);
+	HWND hWnd = GetConsoleWindow();
+	ShowWindow(hWnd, SW_NORMAL);
+
+	// temporary memory leak check to set break point on specific allocation
+	//_CrtSetBreakAlloc();
 
 
-Logger logger;
-int main() {
-    Application app;
-    return app.run();
+	NocturnalEngine::Log::Init();
+	auto app = NocturnalEngine::CreateApplication();
+	app->Run();
+	delete app;
+
 }
+#endif

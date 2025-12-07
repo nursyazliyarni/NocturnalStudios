@@ -1,189 +1,52 @@
-//input.h
 
-/*!------------------------------------------------------------------------------------------------
-	File: Input.h
-	Project: NocturnalStudio
-
-	This header declares the engine�s input layer. It wraps GLFW (with ImGui forwarding) to:
-	- Capture keyboard and mouse events
-	- Track mouse position/delta (normalized & unnormalized)
-	- Register and query action states (movement, scaling, rotation, reset, toggle-collision)
-	- Broadcast input via the MessageBus (Key/Mouse messages)
-	- Manage per-sprite helpers for selection/deselection, scaling, and rotation
-	used for later physics and logic.
-
-	Primary Author:
-		 Ang Yu Xuan (54%)
-		-implement functions for captures user keyboard input and mouse input and the respective
-		callback functions. The callback functions will update the input action accordingly.
-
-	Secondary Author:
-		 Nur Syazliyarni (15%)
-		-Created the messaging system for input
-
-		 Rishika Bimal Attodi  (35%)
-		-Added sprite selection/deselection logic and the scaling/rotation key handling,
-		plus per-sprite transform helpers (init/get pointers, rotation updates)
-
-		Lau Xiang Yang (1%)
-		- Implemented clearAllStates to reset input states
-
-	All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
-*------------------------------------------------------------------------------------------------*/
-
-// IsKeyDown/WasPressed, mouse, scroll (GLFW wrappe r)
 #pragma once
+#include "Core/Core.h"
 
-#define GLFW_INCLUDE_NONE 
-#include "GLFW/glfw3.h"
-#include "math/Vector.h"
-#include "../imgui.h"
-#include "../imgui/backends/imgui_impl_glfw.h"
-#include "../messaging/MessageBus.h"
-#include "../messaging/InputMessage.h"
+#define p_Input NocturnalEngine::InputSystem::GetInstance()
 
-#include <unordered_set>
+namespace NocturnalEngine {
 
-#define UNREFERENCED_PARAMETER(P) (void)(P)
+	template class NOCTURNAL_ENGINE_API std::vector <int, std::allocator<int>>;
+	template class NOCTURNAL_ENGINE_API std::unordered_map<int, int, std::hash<int>, std::equal_to<int>, std::allocator<std::pair<const int, int>>>;
 
-class GameManager;
-
-enum class Input_action {
-	no_action, take_control,
-	move_up, move_down, move_left, move_right,
-	magnify, minify, rotate_clockwise, rotate_anticlockwise, reset_transform, toggle_collision
-};
-
-class Input {
-public:
-	//RULE OF ZERO APPLY
-	Input(GLFWwindow* window);
-
-	void update_mouse_pos(GLFWwindow* window);
-	Vector2D GET_mouse_pos(bool want_normalize, int window_width, int window_height);
-	Vector2D GET_mouse_delta();
-	std::vector<std::tuple<int, int, Input_action>>& GET_keyboard();
-
-	void detect_keyboard_event(GLFWwindow* window, int key, int event_action);
-	void detect_mouse_event(GLFWwindow* window, int mouse, int event_action);
-	bool isLeftMousePressed(GLFWwindow* window);
-	bool isLeftMouseReleased(GLFWwindow* window);
-
-	// initialize per-sprite scales to 1.0f for all textures
-	// void initSpriteScales(size_t textureCount);
-	// pointer for renderer (nullptr if no sprites)
-
-	// void initSpriteRotations(size_t count);
-
-	// expose raw pointers for Renderer
-	const float* getSpriteScalesPtr() const {
-		if (spriteScales.empty()) return nullptr;
-		return spriteScales.data();
-	}
-	const float* getSpriteRotationsPtr() const;
-
-	//update rotations every frame
-	void updateRotations();
-
-	// selection: -1 = NONE, 0 = ALL, 1=spriteCount = specific sprite
-	int selectedSprite = -1;
-	bool isDragging = false; //true if we are dragging a sprite with the mouse
+	using keystatus = int;
+	using keycode = int;
+	using mousestatus = int;
+	using mousecode = int;
 
 
-	//  per-frame edge helpers 
-	bool WasPressed(int glfwKey) const;                // keyboard edge
-	bool WasMousePressed(int glfwMouseButton) const;   // mouse edge
-	static void char_input_callback(GLFWwindow* window, unsigned int c); //for imgui input
-	void EndFrame();                                   // clear edges each frame
-
-	// Returns: -1 = none, 0 = ESC, 1..9 = digit pressed (edge-triggered)
-	int ConsumeSceneKey() const;
-
-	void ProcessHotkeys(GameManager& gsm);
-	void SetMessageBus(Messaging::MessageBus* bus) { messageBus = bus; }
-
-	bool IsDown(int key) const;
-
-	void clearAllStates();
-
-private:
-	//Non-static member functions need an object to call it
-	//So declare this function as static to avoid this issue
-	//However the function belongs to the class instead
-	static void keyboard_input_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
-	static void mouse_input_callback(GLFWwindow* window, int button, int action, int mods);
-
-	// number of sprites that can be scaled (we skip index 0 = background)
-	size_t spriteCount = 0;
-
-	// per-sprite scale values, sized dynamically to textureCount
-	std::vector<float> spriteScales;
-
-	std::vector<float> spriteRotations;  // per-sprite rotation angles (in degrees), current angle in degrees
-
-	// toggles for continuous rotation
-	std::vector<bool> spriteRotatingCW;     // clockwise
-	std::vector<bool> spriteRotatingCCW;    // counter-clockwise
-
-	Messaging::MessageBus* messageBus = nullptr;
-
-private:
-	//private data member
-	//mouse_pos[0] is previous mouse position, mouse_pos[1] is current mouse_position
-	Vector2D mouse_pos[2];
-	static std::vector<std::tuple<int, int, Input_action>> keyboard_action;
-	static std::vector<std::tuple<int, int, Input_action>> mouse_action;
-
-	GLFWwindow* m_window = nullptr;
-	std::unordered_set<int> m_keysDown;
-};
-
-/*
-//Messaging namespace implemented for input system here
-namespace Messaging
-{
-	class InputSystemMessaging
+	class NOCTURNAL_ENGINE_API InputSystem
 	{
 	public:
-		InputSystemMessaging(MessageBus& bus, GLFWwindow* window)
-			: bus(bus), window(window)
-		{
-			glfwSetWindowUserPointer(window, this);
-			glfwSetKeyCallback(window, KeyCallback);
-			//glfwSetCursorPosCallback(window, MouseMoveCallback);
-			glfwSetMouseButtonCallback(window, MouseButtonCallback);
-		}
+		//Pointer to input system
+		static std::unique_ptr<InputSystem>& GetInstance();
 
-	private:
-		MessageBus& bus;
-		GLFWwindow* window;
+		// key inputs 
+		bool KeyPressed(const int& key);
+		bool KeyHold(const int& key);
+		bool KeyReleased(const int& key);
 
-		static void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
-			auto* self = static_cast<InputSystemMessaging*>(glfwGetWindowUserPointer(window));
-			if (!self) return;
+		void SetKeyStatus(keycode key, keystatus status);
+		void ResetPressedKey();
 
-			auto msg = std::make_unique<KeyMessage>(key, action);
-			self->bus.Broadcast(std::move(msg));
-		}
+		//mouse inputs
+		bool MousePressed(const int& key);
+		bool MouseHold(const int& key);
+		bool MouseIsReleased(const int& key);
 
-		/*static void MouseMoveCallback(GLFWwindow* window, double xpos, double ypos) {
-			auto* self = static_cast<InputSystemMessaging*>(glfwGetWindowUserPointer(window));
-			if (!self) return;
+		void SetMouseStatus(mousecode key, mousestatus status);
+		void ResetPressedMouse();
 
-			auto msg = std::make_unique<MovingMouseMessage>((float)xpos, (float)ypos);
-			self->bus.Broadcast(std::move(msg));
-		}
+		bool isKeyPressed(keycode key);
 
-		static void MouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
-			auto* self = static_cast<InputSystemMessaging*>(glfwGetWindowUserPointer(window));
-			if (!self) return;
+	public:
+		//data
+		std::unordered_map<keycode, keystatus> mKeyStatus;
+		std::unordered_map<mousecode, mousestatus> mMouseStatus;
+		std::vector<keycode> mReset;
+		std::vector<mousecode> mouseReset;
 
-			double xpos, ypos;
-			glfwGetCursorPos(window, &xpos, &ypos);
+		double mMouseScrollStatus = 0.0f;
 
-			bool pressed = (action == GLFW_PRESS);
-			auto msg = std::make_unique<ClickedMouseMessage>(button, pressed, (float)xpos, (float)ypos);
-			self->bus.Broadcast(std::move(msg));
-		}
-    };
-} */
+	};
+}
