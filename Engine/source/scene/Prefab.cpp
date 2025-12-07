@@ -88,11 +88,11 @@ void PrefabManager::Load_Prefab(const std::string& filename_path) {
      //prefab file contains an array of prefabs which have 
     //name and an array of components
     unsigned int unnamed_prefab_count{};
-    for (rapidjson::Value& obj:document.GetArray())
+    for (rapidjson::Value& objs:document.GetArray())
     {
         std::string prefab_name{};
-        if (obj.HasMember("name")&&obj["name"].IsString())
-            prefab_name = obj["name"].GetString();
+        if (objs.HasMember("name")&&objs["name"].IsString())
+            prefab_name = objs["name"].GetString();
         else
         {
             prefab_name = "Prefab_" + std::to_string(unnamed_prefab_count);
@@ -103,9 +103,9 @@ void PrefabManager::Load_Prefab(const std::string& filename_path) {
         if (prefabID == INVALID_ENTITY_ID) continue;
 
         //next, attach components
-        if (obj.HasMember("components")&&obj["components"].IsArray())
+        if (objs.HasMember("components")&&objs["components"].IsArray())
         {
-            for (rapidjson::Value& comp : obj["components"].GetArray()) 
+            for (rapidjson::Value& comp : objs["components"].GetArray()) 
             {
                 AddComponentFromJSON(prefabID, comp);
             }

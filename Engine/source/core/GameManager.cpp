@@ -45,24 +45,25 @@
 
 
 namespace {
-    //build collider AABB in screen-pixel space from DrawItem
-    AABB BuildColliderAABB(const DrawItem& di, int screenW, int screenH)
+    //build collider AABB in screen-pixel space from SceneItem
+    AABB BuildColliderAABB(const SceneItem& di, int screenW, int screenH)
     {
-        if (!di.hasCollider) {
+        Transform* t = ECS::getECS().getComponent<Transform>(di.entityID);
+        BoxCollider* bc = ECS::getECS().getComponent<AABBCollider>(di.entityID) ? ECS::getECS().getComponent<AABBCollider>(di.entityID) : ECS::getECS().getComponent<BoxCollider>(di.entityID);
+        if (!bc||!t) {
             //zero-size box (won't be hit)
             return AABB(Vector2D(0.f, 0.f), Vector2D(0.f, 0.f));
         }
 
-        Transform* t = ECS::getECS().getComponent<Transform>(di.entityID);
-        if (!t)return {};
+        Vector2D centre = t->GetCenter({ bc->width,bc->height });
 
         //center of collider in normalized coords
-        float cxNorm = t->position.x() + di.colOffsetX;
-        float cyNorm = t->position.y() + di.colOffsetY;
+        float cxNorm = centre.x() + (bc->offset.x()*t->scale.x());
+        float cyNorm = centre.y() + (bc->offset.y() * t->scale.y());
 
         //size in pixels
-        float wPix = di.colW * screenW;
-        float hPix = di.colH * screenH;
+        float wPix = (bc->width*t->scale.x()) * screenW;
+        float hPix = (bc->height * t->scale.y()) * screenH;
 
         //convert to pixel center
         float cxPix = cxNorm * screenW;
@@ -70,6 +71,14 @@ namespace {
         Vector2D pos(cxPix - wPix * 0.5f, cyPix - hPix * 0.5f);
         Vector2D size(wPix, hPix);
         return AABB(pos, size);
+    }
+
+    void UpdateBoxCollider(BoxCollider *bbc,ImageRenderer *imr) {
+        if (bbc->width <= 0.0f || bbc->height <= 0.0f) {
+            bbc->offset = Vector2D{ 0.f,0.f };
+            bbc->width = imr->width;   //same size as sprite
+            bbc->height = imr->height;
+        }
     }
 }
 
@@ -122,7 +131,7 @@ static bool readFile(const char* p, std::string& out) {
     return true;
 }
 
-std::unique_ptr<DrawItem>& GameManager::get_duplicate_item() {
+std::unique_ptr<SceneItem>& GameManager::get_duplicate_item() {
     return duplicate_item;
 }
 
@@ -143,7 +152,7 @@ bool GameManager::checkForSceneChange() {
     else return false;
 }
 
-bool Scene::isClickReigion(DrawItem di) {
+bool Scene::isClickReigion(SceneItem di) {
     for (ClickRegion cr:clicks)
     {
         if (cr.name == di.name) return true;
@@ -151,7 +160,7 @@ bool Scene::isClickReigion(DrawItem di) {
     return false;
 }
 
-ClickRegion Scene::getClickReigion(DrawItem di) {
+ClickRegion Scene::getClickReigion(SceneItem di) {
     for (ClickRegion cr : clicks)
     {
         if (cr.name == di.name) return cr;
@@ -161,15 +170,15 @@ ClickRegion Scene::getClickReigion(DrawItem di) {
     return invalid;
 }
 
-DrawItem DrawItem::CreateDupe() const {
-    DrawItem newdi{ *this };
+SceneItem SceneItem::CreateDupe() const {
+    SceneItem newdi{ *this };
 
     newdi.entityID = ECS::getECS().cloneEntity(entityID);
 
     return newdi;
 }
 
-void DrawItem::DestroyDupe() {
+void SceneItem::DestroyDupe() {
     ECS::getECS().deleteEntity(entityID);
 }
 
@@ -251,7 +260,7 @@ bool GameManager::saveAll(const char* saveJsonPath) {
         {
             rapidjson::Value entityArray(rapidjson::kArrayType);
 
-            for (DrawItem i : scene.items) {
+            for (SceneItem i : scene.items) {
                 rapidjson::Value entObj(rapidjson::kObjectType);
                 if (i.item_type.empty()) //treat as a non prefab item
                 {
@@ -349,7 +358,7 @@ bool GameManager::saveScene( std::string scenename, const char* scenesJsonPath, 
     {
         rapidjson::Value entityArray(rapidjson::kArrayType);
 
-        for (DrawItem i: scene.items){
+        for (SceneItem i: scene.items){
             rapidjson::Value entObj(rapidjson::kObjectType);
             if (i.item_type.empty()) //treat as a non prefab item
             {
@@ -557,14 +566,14 @@ bool GameManager::loadAll(PrefabManager& prefabs, const char* scenesPath, Textur
                 if (new_entity == INVALID_ENTITY_ID) continue;
                 //components done
                 
-                DrawItem di{};
+                SceneItem di{};
                 updateDrawItem(di, new_entity);
 
                 if (ent.HasMember("prefab") && ent["prefab"].IsString())di.item_type = ent["prefab"].GetString();
 
                 //other overrides
-                if (ent.HasMember("is_draggable") && ent["is_draggable"].IsBool())di.is_draggable = ent["is_draggable"].GetBool();
-                if (ent.HasMember("is_dragging") && ent["is_dragging"].IsBool())di.is_dragging = ent["is_dragging"].GetBool();
+                //if (ent.HasMember("is_draggable") && ent["is_draggable"].IsBool())di.is_draggable = ent["is_draggable"].GetBool();
+                //if (ent.HasMember("is_dragging") && ent["is_dragging"].IsBool())di.is_dragging = ent["is_dragging"].GetBool();
 
                 new_scene.items.push_back(di);
                 logger.log("Entity " + di.name + " with ID " + std::to_string(di.entityID) + " added to "+scn_name);
@@ -584,7 +593,7 @@ bool GameManager::loadAll(PrefabManager& prefabs, const char* scenesPath, Textur
 
                 // store the region if it does ANY action
                 if (cr.quit || cr.start || !cr.gotoScene.empty()||cr.resume){
-                    di.hasCollider = true;
+                    //di.hasCollider = true;
                     logger.log("cr: " + std::to_string(cr.x) + " " + std::to_string(cr.y) + " " + std::to_string(cr.w) + " " + std::to_string(cr.h) + " " + cr.name);
                     new_scene.clicks.push_back(cr);
                 }
@@ -648,7 +657,7 @@ void GameManager::requestScene(const std::string& name) {
 
 
 bool Scene::isInScene(EntityID id) {
-    for (DrawItem i : items)
+    for (SceneItem i : items)
     {
         if (id == i.entityID)return true;
     }
@@ -735,7 +744,7 @@ void GameManager::render(Renderer& r, Input& input, GLFWwindow* window, int w, i
     //render items in scene, BASED ON di
     // entities (normalized ? pixels)
    // entities (normalized → pixels) — draw JSON **only** if there is NO ECS entity by the same name
-    for (DrawItem di : sc.items) {
+    for (SceneItem di : sc.items) {
         if (di.entityID != INVALID_ENTITY_ID)
         {
             //logger.log("drawing " + di.name+" "+std::to_string(ecs_.findEntityByName(di.name)));
@@ -777,17 +786,17 @@ void GameManager::render(Renderer& r, Input& input, GLFWwindow* window, int w, i
                     r.drawSpriteUV(img->textureID, px, py, pw, ph, u0, v0, u1, v1);
                 }
             }
-
-            if (di.hasCollider && (di.colW <= 0.0f || di.colH <= 0.0f)) {
-                di.colOffsetX = 0.0f;
-                di.colOffsetY = 0.0f;
-                di.colW = img->width;   //same size as sprite
-                di.colH = img->height;
+            BoxCollider* bc = ECS::getECS().getComponent<AABBCollider>(di.entityID) ? ECS::getECS().getComponent<AABBCollider>(di.entityID) : ECS::getECS().getComponent<BoxCollider>(di.entityID);
+            if (bc)
+            {
+                UpdateBoxCollider(bc, img);
             }
+
+
             float px = t->position.x() * w, py = t->position.y() * h, pw = img->width * w, ph = img->height * h;
             if (di.name == "flamingo" || di.name == "seal" || di.name == "owl" || di.name == "horse") {
                 AnimalBehavior* ab = ecs_.getComponent<AnimalBehavior>(di.entityID);
-                if (di.still_alive && ab) {
+                if (ab->still_alive && ab) {
 
                     //  UI scaling based on reference resolution 
                     const float refW = 1280.0f;
@@ -828,21 +837,19 @@ void GameManager::render(Renderer& r, Input& input, GLFWwindow* window, int w, i
                 Cam2D_Apply(currentScene, px, py, pw, ph, w, h);
                 
                 r.texturedTri(img->textureID, px, py, pw, ph);
-
-
             }
             // --- Collider outline (debug) ---
-            if ( di.hasCollider&&editorEnabled)
+            if ( bc&&editorEnabled)
             {
-
+                Vector2D topLeft{ t->GetTopLeft({bc->width,bc->height}) };
 
                 //collider center in NORMALIZED coords (same as di.x/di.y)
-                float cxNorm = t->position.x() + di.colOffsetX;
-                float cyNorm = t->position.y() + di.colOffsetY;
+                float cxNorm = topLeft.x() + bc->offset.x();
+                float cyNorm = topLeft.y() + bc->offset.y();
 
                 //collider size in NORMALIZED space
-                float cwNorm = di.colW;
-                float chNorm = di.colH;
+                float cwNorm = bc->width*t->scale.x();
+                float chNorm = bc->height * t->scale.y();
 
                 //convert to pixels
                 float cw = cwNorm * w;
@@ -876,9 +883,10 @@ void GameManager::render(Renderer& r, Input& input, GLFWwindow* window, int w, i
             }
             // --- end collider outline ---
 
-            if (di.is_dragging && !duplicate_item) {
-                duplicate_item = std::make_unique<DrawItem>(di.CreateDupe());
 
+            Draggable* dragg = ecs_.getComponent<Draggable>(di.entityID);
+            if (dragg&&dragg->is_dragging && !duplicate_item) {
+                duplicate_item = std::make_unique<SceneItem>(di.CreateDupe());
             }
 
             if (duplicate_item) {
@@ -895,7 +903,7 @@ void GameManager::render(Renderer& r, Input& input, GLFWwindow* window, int w, i
 
     if (app==AppState::Paused&&!m_isGameOver)
     {
-        for (DrawItem pdi : pauseScene.items)
+        for (SceneItem pdi : pauseScene.items)
         {
 
             Transform* t = ecs_.getComponent<Transform>(pdi.entityID);
@@ -912,20 +920,18 @@ void GameManager::render(Renderer& r, Input& input, GLFWwindow* window, int w, i
 
             r.texturedTri(img->textureID, px, py, pw, ph);
 
-
-            if (pdi.hasCollider && editorEnabled)
+            BoxCollider* bc = ECS::getECS().getComponent<AABBCollider>(pdi.entityID) ? ECS::getECS().getComponent<AABBCollider>(pdi.entityID) : ECS::getECS().getComponent<BoxCollider>(pdi.entityID);
+            if (bc && editorEnabled)
             {
-                
-                    pdi.colW = img->width;   //same size as sprite
-                    pdi.colH = img->height;
-                
+                Vector2D topLeft{ t->GetTopLeft({bc->width,bc->height}) };
+
                 //collider center in NORMALIZED coords (same as di.x/di.y)
-                float cxNorm = t->position.x() + pdi.colOffsetX;
-                float cyNorm = t->position.y() + pdi.colOffsetY;
+                float cxNorm = topLeft.x() + bc->offset.x();
+                float cyNorm = topLeft.y() + bc->offset.y();
 
                 //collider size in NORMALIZED space
-                float cwNorm = pdi.colW;
-                float chNorm = pdi.colH;
+                float cwNorm = bc->width * t->scale.x();
+                float chNorm = bc->height * t->scale.y();
 
                 //convert to pixels
                 float cw = cwNorm * w;
@@ -1297,61 +1303,76 @@ bool GameManager::handleClick(float nx, float ny) {
     auto it = scenes.find(currentScene);
     if (it == scenes.end()) return false;
     Scene& sc = app == AppState::Paused ? pauseScene : it->second;
-    // --- Sync click regions from DrawItem colliders ---
-    for (auto& cr : sc.clicks)
+    // --- Sync click regions from SceneItem colliders ---
+    for (ClickRegion& cr : sc.clicks)
     {
         if (cr.name.empty())
             continue;
 
-        //find DrawItem whose name matches the click region
+        //find SceneItem whose name matches the click region
         auto diIt = std::find_if(
             sc.items.begin(), sc.items.end(),
-            [&](const DrawItem& d) { return d.name == cr.name; });
+            [&](const SceneItem& d) { return d.name == cr.name; });
 
         if (diIt == sc.items.end())
             continue;
 
-        const DrawItem& di = *diIt;
-        if (!di.hasCollider)
+        const SceneItem& di = *diIt;
+
+        cr.linkedEntity = di.entityID;
+
+        Clickable* clickabl = ecs_.getComponent<Clickable>(di.entityID) ? ecs_.getComponent<Clickable>(di.entityID) : ecs_.getComponent<Draggable>(di.entityID);
+        BoxCollider* bc = ecs_.getComponent<AABBCollider>(di.entityID) ? ecs_.getComponent<AABBCollider>(di.entityID) : ecs_.getComponent<BoxCollider>(di.entityID);
+        if (!clickabl||!bc)
             continue;
 
-        Transform* t = ecs_.getComponent<Transform>(di.entityID);
-        ImageRenderer* ir = ecs_.getComponent<ImageRenderer>(di.entityID);
-        if (!t||!ir)return false;
 
-        //collider in normalised space
-        float wNorm = (di.colW > 0.0f ? di.colW : ir->width);
-        float hNorm = (di.colH > 0.0f ? di.colH : ir->height);
+        if (clickabl->syncRegionToCollider)
+        {
+            Transform* t = ecs_.getComponent<Transform>(di.entityID);
+            ImageRenderer* ir = ecs_.getComponent<ImageRenderer>(di.entityID);
+            if (!t)continue;
 
-        float cxNorm = t->position.x() + di.colOffsetX;
-        float cyNorm = t->position.y() + di.colOffsetY;
+            //collider in normalised space
+            float wNorm = (bc->width > 0.0f ? bc->width : ir->width) * t->scale.x();
+            float hNorm = (bc->height > 0.0f ? bc->height : ir->height) * t->scale.y();
 
-        float left = cxNorm;
-        float bottom = cyNorm;
+            Vector2D topLeft{ t->GetTopLeft({wNorm / t->scale.x(),hNorm / t->scale.y() }) };
 
-        //write back into ClickRegion so hit-test uses the collider
-        cr.x = left;
-        cr.y = bottom;
-        cr.w = wNorm;
-        cr.h = hNorm;
+            float cxNorm = topLeft.x() + (clickabl->clickRegionOffset.x() * t->scale.x());
+            float cyNorm = topLeft.y() + (clickabl->clickRegionOffset.y() * t->scale.y());
+
+            float left = cxNorm;
+            float bottom = cyNorm;
+
+            //write back into ClickRegion so hit-test uses the collider
+            clickabl->clickRegionMin = Vector2D{ left,bottom };
+            clickabl->clickRegionSize = Vector2D{ wNorm,hNorm };
+            clickabl->clickRegionMax = Vector2D{ left + wNorm, bottom + hNorm };
+        }
+        
     }
 	//--- end sync click regions ---
 
     logger.log("clicked at x: " + std::to_string(nx) + ", y: " + std::to_string(ny));
 
     for (const auto& cr : sc.clicks) {
-        bool hit = (nx >= cr.x && nx <= cr.x + cr.w && ny >= cr.y && ny <= cr.y + cr.h);
+        Clickable* clickabl = ecs_.getComponent<Clickable>(cr.linkedEntity) ? ecs_.getComponent<Clickable>(cr.linkedEntity) : ecs_.getComponent<Draggable>(cr.linkedEntity);
+        bool hit = (nx >= clickabl->clickRegionMin.x() && nx <= clickabl->clickRegionMax.x() && ny >= clickabl->clickRegionMin.y() && ny <= clickabl->clickRegionMax.y());
         logger.log(std::string("hit-test ") + (cr.name.empty() ? "<noname>" : cr.name) +
             (hit ? " 1" : " 0"));
 
         if (!hit) continue;
 
-        logger.log("Click hit: start=" + std::to_string(cr.start) +
-            " quit=" + std::to_string(cr.quit) +
-            " goto='" + cr.gotoScene + "'");
+        Button* button = ecs_.getComponent<Button>(cr.linkedEntity);
+        if (!button)continue;
+
+        logger.log("Click hit: start=" + std::to_string(button->actionFlag & Button::Actions::START) +
+            " quit=" + std::to_string(button->actionFlag & Button::Actions::QUIT) +
+            " goto='" + button->gotoScene + "'");
 
         // Quit first (works in Menu and Play)
-        if (cr.quit) {
+        if (button->actionFlag & Button::Actions::QUIT) {
             if (app==AppState::Paused)
             {
                 goToMenu();
@@ -1364,7 +1385,7 @@ bool GameManager::handleClick(float nx, float ny) {
             }
             
         }
-        if (cr.resume)
+        if (button->actionFlag & Button::Actions::RESUME)
         {
             if (app==AppState::Paused)
             {
@@ -1373,13 +1394,13 @@ bool GameManager::handleClick(float nx, float ny) {
         }
         // In Menu: handle both Start and simple goto (Options, Credits, Back, etc.)
         if (app == AppState::Menu) {
-            if (cr.start) {
+            if (button->actionFlag & Button::Actions::START) {
                 // --- Start button: begin the game ---
                 resetAllScenesToInitial();
                 startGame();
 
-                if (!cr.gotoScene.empty()) {
-                    requestScene(cr.gotoScene);          // e.g. "Flamingo"
+                if (!button->gotoScene.empty()) {
+                    requestScene(button->gotoScene);          // e.g. "Flamingo"
                 }
                 else {
                     auto it1 = keyMap.find(GLFW_KEY_1);  // fallback to "1" -> "Flamingo"
@@ -1389,10 +1410,10 @@ bool GameManager::handleClick(float nx, float ny) {
                 }
                 return true;
             }
-            else if (!cr.gotoScene.empty()) {
+            else if (!button->gotoScene.empty()) {
                 // --- Non-start menu buttons: Options, Credits, Back ---
                 // stay in Menu state, just switch menu scene
-                requestScene(cr.gotoScene);              // "Options", "Credits", "MainMenu"
+                requestScene(button->gotoScene);              // "Options", "Credits", "MainMenu"
                 return true;
             }
 
@@ -1401,37 +1422,13 @@ bool GameManager::handleClick(float nx, float ny) {
 
 
         // Playing: allow goto
-        if (!cr.gotoScene.empty()) {
-            requestScene(cr.gotoScene);
+        if (!button->gotoScene.empty()) {
+            requestScene(button->gotoScene);
         }
         return true;
     }
     return false;
 }
-//void GameManager::startGame() {
-//    // enter play state
-//    app = AppState::Playing;
-//
-//    // every time a new game starts, reset ALL animals in ALL scenes
-//    for (auto& [name, scene] : scenes) {
-//        for (auto& item : scene.items) {
-//            if (item.item_type == "animal") {
-//                // reset bars
-//                item.health_bar        = 100.0f;
-//                item.hunger_bar        = 100.0f;
-//                item.sanity_bar        = 100.0f;
-//
-//                // reset timers
-//                item.acc_timer         = 0.0f;
-//                item.staring_countdown = 10.0f;
-//
-//                // reset status / drag flags
-//                item.still_alive       = true;
-//                item.is_dragging       = false;
-//            }
-//        }
-//    }
-//}
 
 void GameManager::startGame() {
     app = AppState::Playing;
@@ -1442,13 +1439,13 @@ void GameManager::startGame() {
 
     for (auto& [sceneName, scene] : scenes) {
         for (auto& di : scene.items) {
-            // If this DrawItem has an AnimalBehavior, reset its bars and flags
+            // If this SceneItem has an AnimalBehavior, reset its bars and flags
             if (AnimalBehavior* ab = ecss.getComponent<AnimalBehavior>(di.entityID)) {
                 ab->health_bar = 100.0f;
                 ab->hunger_bar = 100.0f;
                 ab->sanity_bar = 100.0f;
 
-                di.still_alive = true;
+                ab->still_alive = true;
 
                 // If you have extra timers/flags in AnimalBehavior, reset them here too
                 // e.g.:
@@ -1565,7 +1562,7 @@ bool GameManager::reloadAllScene(TextureStore& tex) {
         const std::string& name = pair.first;  // the key
         const Scene& scene = pair.second;      // the value
 
-        for (DrawItem di : pair.second.items)
+        for (SceneItem di : pair.second.items)
         {
             ImageRenderer* img = ecs_.getComponent<ImageRenderer>(di.entityID);
             if (!img)continue;
@@ -1661,7 +1658,7 @@ void GameManager::processComponentsFromJSON(EntityID id, rapidjson::Value& obj,b
     
 
 }
-void GameManager::updateDrawItem(DrawItem& d, EntityID e) {
+void GameManager::updateDrawItem(SceneItem& d, EntityID e) {
     d.name = ecs_.getEntityName(e);
 
     if (ecs_.getComponent<ImageRenderer>(e))d.tex = ecs_.getComponent<ImageRenderer>(e)->textureID;

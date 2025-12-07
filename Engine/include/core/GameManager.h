@@ -37,48 +37,46 @@ class ECS;
 class Animal_Logic;
 class ResourceManager;
 
-struct DrawItem {
+struct SceneItem {
     std::string name; std::string item_type;
     GLuint tex = 0;
-    //float x = 0, y = 0, w = 0, h = 0, angle = 0; // normalized
-    //float health_bar, hunger_bar, sanity_bar;
-    //float slower_decreasing_rate, normal_decreasing_rate, faster_decreasing_rate, penalty_decreasing_rate;
-    bool still_alive{true}, is_draggable{false}, is_dragging;
+    
+    //bool still_alive{true}, is_draggable{false}, is_dragging;
 
     EntityID entityID = INVALID_ENTITY_ID;
 	//collider info
-    bool  hasCollider = true;
-    float colOffsetX = 0.0f;
-    float colOffsetY = 0.0f;
-    float colW = 0.0f;
-    float colH = 0.0f;
+    //bool  hasCollider = true;
+    //float colOffsetX = 0.0f;
+    //float colOffsetY = 0.0f;
+    //float colW = 0.0f;
+    //float colH = 0.0f;
 
-    float acc_timer = 0.0f;              // For flamingo viewing timer
-    float staring_countdown = 10.0f;     // For seal staring countdown
+    //float acc_timer = 0.0f;              // For flamingo viewing timer
+    //float staring_countdown = 10.0f;     // For seal staring countdown
 
-    DrawItem CreateDupe() const;
+    SceneItem CreateDupe() const;
     void DestroyDupe();
 };
 
 struct ClickRegion {
-    float x, y, w, h;          // normalized rect
-    std::string gotoScene;     // empty if not a goto
-    bool quit = false;         // quit app?
-    bool  start{ false };
-    bool resume{ false };
-
+    //float x, y, w, h;          // normalized rect
+    //std::string gotoScene;     // empty if not a goto
+    //bool quit = false;         // quit app?
+    //bool  start{ false };
+    //bool resume{ false };
+    EntityID linkedEntity = INVALID_ENTITY_ID;
     std::string name;
 };
 
 struct Scene {
     GLuint background = 0;
-    std::vector<DrawItem> items;
+    std::vector<SceneItem> items;
     std::vector<ClickRegion> clicks;
     bool loaded{ false };
 
     bool isInScene(EntityID);
-    bool isClickReigion(DrawItem);
-    ClickRegion getClickReigion(DrawItem);
+    bool isClickReigion(SceneItem);
+    ClickRegion getClickReigion(SceneItem);
 };
 
 class TextureStore {
@@ -135,7 +133,7 @@ public:
     void update(float dt,Renderer& renderer,TextureStore& tex);
 
 	ECS& getECS() { return ecs_; }
-    std::unique_ptr<DrawItem>& get_duplicate_item();
+    std::unique_ptr<SceneItem>& get_duplicate_item();
     /**
      * @brief Pauses the game, changing the application state to Paused.
      * 
@@ -183,12 +181,12 @@ public:
     }
 
 private:
-    std::vector<DrawItem> pauseItems{};
+    std::vector<SceneItem> pauseItems{};
     std::vector<ClickRegion>pauseClick{};
     std::unordered_map<std::string, Scene> scenes;
     std::unordered_map<std::string, Scene> initialScenes_; // snapshot of JSON-loaded scenes
     std::unordered_map<int, std::string> keyMap; // GLFW_KEY_* to scene name
-    std::unique_ptr<DrawItem> duplicate_item{ nullptr };
+    std::unique_ptr<SceneItem> duplicate_item{ nullptr };
     TextureStore& textureCache;
 
     Scene pauseScene;
@@ -214,7 +212,7 @@ private:
     void writeAllComponentsToJSONArray(EntityID id,rapidjson::Value& overridesObj,rapidjson::Document::AllocatorType& alloc);
     void processComponentsFromJSON(EntityID, rapidjson::Value& obj, bool isOverride=false);
 
-    void updateDrawItem(DrawItem&, EntityID);
+    void updateDrawItem(SceneItem&, EntityID);
 
     bool scene_changed_since_click{ false };
 

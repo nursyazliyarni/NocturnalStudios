@@ -18,6 +18,79 @@
 
 #include "./logic/Animal_Logic.h"
 
+
+namespace { //helper fns, they shouldnt be put in lambdas?
+	// Get bounds using ONLY ECS components
+
+	bool getBounds(EntityID entityID, float& minX, float& minY, float& maxX, float& maxY);
+	bool getBounds(EntityID entityID, float& minX, float& minY, float& maxX, float& maxY)
+	{
+		Transform* t = ECS::getECS().getComponent<Transform>(entityID);
+		if (!t) return false;
+
+		// Try box collider first
+		if (BoxCollider* bc = ECS::getECS().getComponent<BoxCollider>(entityID)) {
+			if (bc->width > 0.0f && bc->height > 0.0f) {
+				Vector2D baseSize = { bc->width, bc->height };
+				Vector2D scaledSize = { bc->width * t->scale.x(), bc->height * t->scale.y() };
+				Vector2D topLeft = t->GetTopLeft(baseSize) + bc->offset;
+
+				minX = topLeft.x();
+				minY = topLeft.y();
+				maxX = topLeft.x() + scaledSize.x();
+				maxY = topLeft.y() + scaledSize.y();
+				return true;
+			}
+		}
+
+		// Try circle collider (convert to bounding box)
+		if (CircleCollider* cc = ECS::getECS().getComponent<CircleCollider>(entityID)) {
+			if (cc->radius > 0.0f) {
+				float diameter = cc->radius * 2.0f;
+				Vector2D center = t->GetCenter({ diameter, diameter }) + cc->offset;
+				float actualRadius = cc->radius * ((t->scale.x() + t->scale.y()) * 0.5f);
+
+				minX = center.x() - actualRadius;
+				minY = center.y() - actualRadius;
+				maxX = center.x() + actualRadius;
+				maxY = center.y() + actualRadius;
+				return true;
+			}
+		}
+
+		// Fallback to renderer bounds
+		if (ImageRenderer* ir = ECS::getECS().getComponent<ImageRenderer>(entityID)) {
+			Vector2D baseSize = { ir->width, ir->height };
+			Vector2D scaledSize = { ir->width * t->scale.x(), ir->height * t->scale.y() };
+			Vector2D topLeft = t->GetTopLeft(baseSize);
+
+			minX = topLeft.x();
+			minY = topLeft.y();
+			maxX = topLeft.x() + scaledSize.x();
+			maxY = topLeft.y() + scaledSize.y();
+			return true;
+		}
+
+		return false;  // No valid bounds found
+	}
+
+	bool overlapsCenter(const SceneItem& a, const SceneItem& b);
+	bool overlapsCenter(const SceneItem& a, const SceneItem& b)
+	{
+		float aMinX, aMinY, aMaxX, aMaxY; float bMinX, bMinY, bMaxX, bMaxY;
+
+		getBounds(a.entityID, aMinX, aMinY, aMaxX, aMaxY);
+		getBounds(b.entityID, bMinX, bMinY, bMaxX, bMaxY);
+
+		// standard AABB overlap
+		bool noOverlap =
+			(aMaxX < bMinX) || (aMinX > bMaxX) ||
+			(aMaxY < bMinY) || (aMinY > bMaxY);
+
+		return !noOverlap;
+	}
+}
+
 Animal_Logic::Animal_Logic() = default;
 
 void Animal_Logic::update(float dt) {
@@ -41,13 +114,13 @@ void Animal_Logic::update_animal_ALLstate(GameManager& gm, double deltaTime) {
 }
 
 void Animal_Logic::update_animal_health(GameManager& gm, double deltaTime) {
-	if (gm.isPlaying()){
+	if (gm.isPlaying()) {
 		for (auto& [scene, scene_data] : gm.get_scenes_map()) {
 			for (auto& animal : scene_data.items) {
 				AnimalBehavior* animalb = ECS::getECS().getComponent<AnimalBehavior>(animal.entityID);
 				if (!animalb) continue;
-				if (animal.name == to_string(Animal_type::Flamingo) && animal.still_alive) {
-					if (animalb->hunger_bar <= animalb->hunger_bar/3) { //health of flamingo decreases faster when hunger bar is low
+				if (animal.name == to_string(Animal_type::Flamingo) && animalb->still_alive) {
+					if (animalb->hunger_bar <= animalb->hunger_bar / 3) { //health of flamingo decreases faster when hunger bar is low
 						animalb->health_bar -= animalb->penalty_decreasing_rate * deltaTime;
 					}
 
@@ -57,11 +130,11 @@ void Animal_Logic::update_animal_health(GameManager& gm, double deltaTime) {
 					}
 				}
 
-				else if (animal.name == to_string(Animal_type::Horse) && animal.still_alive) {
+				else if (animal.name == to_string(Animal_type::Horse) && animalb->still_alive) {
 					animalb->health_bar -= animalb->faster_decreasing_rate * deltaTime; //health of horse decrease faster
 				}
 
-				else if (animal.still_alive && (animal.name == to_string(Animal_type::Seal) || animal.name == to_string(Animal_type::Owl))) {
+				else if (animalb->still_alive && (animal.name == to_string(Animal_type::Seal) || animal.name == to_string(Animal_type::Owl))) {
 					animalb->health_bar -= animalb->normal_decreasing_rate * deltaTime; //health of seal/owl decrease normally
 				}
 			}
@@ -75,11 +148,11 @@ void Animal_Logic::update_animal_hunger(GameManager& gm, double deltaTime) {
 			for (auto& animal : scene_data.items) {
 				AnimalBehavior* animalb = ECS::getECS().getComponent<AnimalBehavior>(animal.entityID);
 				if (!animalb) continue;
-				if (animal.still_alive && (animal.name == to_string(Animal_type::Flamingo) || animal.name == to_string(Animal_type::Owl))) {
+				if (animalb->still_alive && (animal.name == to_string(Animal_type::Flamingo) || animal.name == to_string(Animal_type::Owl))) {
 					animalb->hunger_bar -= animalb->normal_decreasing_rate * deltaTime; //hunger of flamingo/owl decrease normally
 				}
 
-				else if (animal.still_alive && animal.name == to_string(Animal_type::Horse)) {
+				else if (animalb->still_alive && animal.name == to_string(Animal_type::Horse)) {
 					animalb->hunger_bar -= animalb->normal_decreasing_rate * deltaTime; //hunger of horse decrease normally
 					/*static bool is_horseHAPPY{ true };
 					if (accumulation_timer > 30) {
@@ -87,7 +160,7 @@ void Animal_Logic::update_animal_hunger(GameManager& gm, double deltaTime) {
 					}*/
 				}
 
-				else if (animal.still_alive && animal.name == to_string(Animal_type::Seal)) {
+				else if (animalb->still_alive && animal.name == to_string(Animal_type::Seal)) {
 					animalb->hunger_bar -= animalb->normal_decreasing_rate * deltaTime; //hunger of seal decrease normally
 					//if (stats.action == Zookeeper_action::feeding) {
 					//	static bool is_sealHAPPY{ true };
@@ -108,7 +181,7 @@ void Animal_Logic::update_animal_sanity(GameManager& gm, double deltaTime) {
 			for (auto& animal : scene_data.items) {
 				AnimalBehavior* animalb = ECS::getECS().getComponent<AnimalBehavior>(animal.entityID);
 				if (!animalb) continue;
-				if (animal.still_alive && animal.name == to_string(Animal_type::Flamingo)) {
+				if (animalb->still_alive && animal.name == to_string(Animal_type::Flamingo)) {
 					//static double acc_timer{ 0 };
 					//if (gm.current() != to_string(Animal_type::Flamingo)) {
 					//	//acc_timer is to calculate the time player is not viewing it in the cameras
@@ -125,13 +198,13 @@ void Animal_Logic::update_animal_sanity(GameManager& gm, double deltaTime) {
 					//	//logger.log("warning: please view the flamingo in the camera");
 					//}
 					if (gm.current() != to_string(Animal_type::Flamingo)) {
-						animal.acc_timer += deltaTime;  
+						animalb->acc_timer += deltaTime;
 					}
 					else {
-						animal.acc_timer = 0;  
+						animalb->acc_timer = 0;
 					}
 
-					if (animal.acc_timer > 3) {  
+					if (animalb->acc_timer > 3) {
 						animalb->sanity_bar -= animalb->penalty_decreasing_rate * deltaTime;
 					}
 
@@ -141,15 +214,15 @@ void Animal_Logic::update_animal_sanity(GameManager& gm, double deltaTime) {
 					}
 				}
 
-				else if (animal.still_alive && animal.name == to_string(Animal_type::Horse)) {
+				else if (animalb->still_alive && animal.name == to_string(Animal_type::Horse)) {
 					animalb->sanity_bar -= animalb->faster_decreasing_rate * deltaTime; //sanity of horse decrease faster
 				}
 
-				else if (animal.still_alive && animal.name == to_string(Animal_type::Owl)) {
+				else if (animalb->still_alive && animal.name == to_string(Animal_type::Owl)) {
 					animalb->sanity_bar -= animalb->normal_decreasing_rate * deltaTime; //sanity of owl decrease normally
 				}
 
-				else if (animal.still_alive && animal.name == to_string(Animal_type::Seal)) {
+				else if (animalb->still_alive && animal.name == to_string(Animal_type::Seal)) {
 					animalb->sanity_bar -= animalb->normal_decreasing_rate * deltaTime; //sanity of seal decrease normally
 					//if (stats.action == Zookeeper_action::staring) {
 					//	static double static_staring_countdown{ 10 };
@@ -177,15 +250,15 @@ void Animal_Logic::check_animal_status(GameManager& gm) {
 				{
 					// Check if animal should die
 					if (animalb->health_bar <= 0 || animalb->sanity_bar <= 0) {
-						if (animal.still_alive) {
+						if (animalb->still_alive) {
 							// Animal just died
-							animal.still_alive = false;
+							animalb->still_alive = false;
 							logger.log("[Animal] " + animal.name + " has died!");
 						}
 					}
 
 					// Count dead animals
-					if (!animal.still_alive) {
+					if (!animalb->still_alive) {
 						deadAnimals++;
 					}
 				}
@@ -217,49 +290,89 @@ std::optional<ImVec2> Animal_Logic::check_item_status(
 	static float dragY = 0.0f;
 
 	for (auto& item : items) {
-		if (!item.is_draggable||item.item_type=="animal")
+
+		Draggable* d = ECS::getECS().getComponent<Draggable>(item.entityID);
+
+		if (d == nullptr || item.item_type == "animal")
 			continue;
 
-		// ---- SAME BOUNDING BOX AS EDITOR (top-left + size) ----
-		float minX, minY, maxX, maxY;
+		bool inside{ false };
+		BoxCollider* bc = ECS::getECS().getComponent<BoxCollider>(item.entityID);
+		CircleCollider* cc = ECS::getECS().getComponent<CircleCollider>(item.entityID);
+
 		Transform* t = ECS::getECS().getComponent<Transform>(item.entityID);
-		ImageRenderer* ir = ECS::getECS().getComponent<ImageRenderer>(item.entityID);
-		if (item.hasCollider && item.colW > 0.0f && item.colH > 0.0f&&t) {
-			// collider is top-left (x + offset) with width/height
-			minX = t->position.x() + item.colOffsetX;
-			minY = t->position.y() + item.colOffsetY;
-			maxX = minX + item.colW;
-			maxY = minY + item.colH;
-		}
-		else if(t&&ir) {
-			// sprite rect: top-left (x,y) with width/height
-			minX = t->position.x();
-			minY = t->position.y();
-			maxX = t->position.x() + ir->width;
-			maxY = t->position.y() + ir->height;
-		}
+
+		if (!t || (!bc && !cc)) continue;
+
+		if (bc)
+		{
+			// ---- SAME BOUNDING BOX AS EDITOR (top-left + size) ----
+			float minX{}, minY{}, maxX{}, maxY{};
+			ImageRenderer* ir = ECS::getECS().getComponent<ImageRenderer>(item.entityID);
+
+			Vector2D topLeft{};
+
+			if (bc->width > 0.0f && bc->height > 0.0f && t) {
+				topLeft = t->GetTopLeft({ bc->width,bc->height });
+				// collider is top-left (x + offset) with width/height
+				minX = topLeft.x() + bc->offset.x();
+				minY = topLeft.y() + bc->offset.y();
+				maxX = minX + (bc->width * t->scale.x());
+				maxY = minY + (bc->height * t->scale.y());
+			}
+			else if (t && ir) {
+				topLeft = t->GetTopLeft({ ir->width,ir->height });
+				// sprite rect: top-left (x,y) with width/height
+				minX = topLeft.x();
+				minY = topLeft.y();
+				maxX = topLeft.x() + (ir->width * t->scale.x());
+				maxY = topLeft.y() + (ir->height * t->scale.y());
+			}
 
 
-		bool inside =
-			mouse_pos.x >= minX && mouse_pos.x <= maxX &&
-			mouse_pos.y >= minY && mouse_pos.y <= maxY;
+			inside =
+				mouse_pos.x >= minX && mouse_pos.x <= maxX &&
+				mouse_pos.y >= minY && mouse_pos.y <= maxY;
+		}
+		else if (cc) {
+
+			if (cc->radius > 0.f)
+			{
+				// Get circle center in world space
+				float diameter = cc->radius * 2.0f;
+				Vector2D center = t->GetCenter({ diameter, diameter });
+
+				center += cc->offset;
+
+				// Get actual scaled radius
+				float actualRadius = cc->radius * ((t->scale.x() + t->scale.y()) * 0.5f);
+
+				// Distance squared check (faster - avoids sqrt)
+				Vector2D diff = Vector2D{ mouse_pos.x,mouse_pos.y } - center;
+				float distSq = diff.x() * diff.x() + diff.y() * diff.y();
+				float radiusSq = actualRadius * actualRadius;
+
+				inside = distSq <= radiusSq;
+			}
+		}
+
 
 		// ---- start drag ----
-		if (inside && input.isLeftMousePressed(window) && !item.is_dragging&&t) {
-			item.is_dragging = true;
+		if (inside && input.isLeftMousePressed(window) && !d->is_dragging && t) {
+			d->is_dragging = true;
 			dragX = t->position.x() - mouse_pos.x;
 			dragY = t->position.y() - mouse_pos.y;
 			return ImVec2{ dragX, dragY };
 		}
 
 		// ---- continue drag ----
-		if (item.is_dragging && input.isLeftMousePressed(window)) {
+		if (d->is_dragging && input.isLeftMousePressed(window)) {
 			return ImVec2{ dragX, dragY };
 		}
 
 		// ---- end drag ----
-		if (item.is_dragging && !input.isLeftMousePressed(window)) {
-			item.is_dragging = false;
+		if (d->is_dragging && !input.isLeftMousePressed(window)) {
+			d->is_dragging = false;
 			// don�t early-return; just stop dragging
 		}
 	}
@@ -285,52 +398,13 @@ void Animal_Logic::drag_drop(GameManager& gm,
 		t->position.x() = mouse_pos.x + drag_value.value().x;
 		t->position.y() = mouse_pos.y + drag_value.value().y;
 
-		// --- centre-based bounds helper (same idea as editor) ---
-		auto getBounds = [](const DrawItem& it,
-			float& minX, float& minY,
-			float& maxX, float& maxY)
-			{
-				Transform* itt = ECS::getECS().getComponent<Transform>(it.entityID);
-				ImageRenderer* itir = ECS::getECS().getComponent<ImageRenderer>(it.entityID);
-				if (it.hasCollider && it.colW > 0.0f && it.colH > 0.0f&&itt) {
-					// collider: top-left + size
-					minX = itt->position.x() + it.colOffsetX;
-					minY = itt->position.y() + it.colOffsetY;
-					maxX = minX + it.colW;
-					maxY = minY + it.colH;
-				}
-				else if(itir&&itt) {
-					// sprite: top-left + size
-					minX = itt->position.x();
-					minY = itt->position.y();
-					maxX = itt->position.x() + itir->width;
-					maxY = itt->position.y() + itir->height;
-				}
-			};
-
-
-		auto overlapsCenter = [&](const DrawItem& a, const DrawItem& b) {
-			float aMinX, aMinY, aMaxX, aMaxY;
-			float bMinX, bMinY, bMaxX, bMaxY;
-
-			getBounds(a, aMinX, aMinY, aMaxX, aMaxY);
-			getBounds(b, bMinX, bMinY, bMaxX, bMaxY);
-
-			// standard AABB overlap
-			bool noOverlap =
-				(aMaxX < bMinX) || (aMinX > bMaxX) ||
-				(aMaxY < bMinY) || (aMinY > bMaxY);
-
-			return !noOverlap;
-			};
-
 		// --- check collision with all animals using centre-based AABB ---
 		for (auto& animal : gm.getCurrentScene()->items) {
 			AnimalBehavior* animalb = ECS::getECS().getComponent<AnimalBehavior>(animal.entityID);
 			if (!animalb) continue;
 			if (!item_data) break; // item already consumed
 
-			if (animal.item_type == "animal" && animal.still_alive) {
+			if (animal.item_type == "animal" && animalb->still_alive) {
 				if (!overlapsCenter(animal, *item_data))
 					continue;
 
@@ -361,7 +435,7 @@ void Animal_Logic::drag_drop(GameManager& gm,
 
 	// When mouse released, drop/consume item (if still exists)
 	if (input.isLeftMouseReleased(window)) {
-		if(item_data)item_data->DestroyDupe();
+		if (item_data)item_data->DestroyDupe();
 		item_data.reset(); // releases ownership
 	}
 }

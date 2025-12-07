@@ -113,7 +113,7 @@ void ImGuiManager::showLogicUI()
 		return;
 	}
 
-	DrawItem& item = scene->items[selectedEntityType];
+	SceneItem& item = scene->items[selectedEntityType];
 
 	ImGui::Text("Editing: %s", item.name.empty() ? "(Unnamed)" : item.name.c_str());
 	ImGui::Separator();
@@ -138,7 +138,7 @@ void ImGuiManager::showLogicUI()
 
 	static int currentScript = 0; // This should ideally be stored per-object
 
-	// Get current script for this object (you'll need to store this in DrawItem)
+	// Get current script for this object (you'll need to store this in SceneItem)
 	// For now, we'll use a static variable - you should replace this with proper storage
 	static std::unordered_map<size_t, int> objectScripts; // Maps object index to script index
 
@@ -813,7 +813,7 @@ void ImGuiManager::showEntityListUI(/* Maybe an enum of paramEntityType, Maybe a
 
 			for (size_t i = 0; i < scene->items.size(); ++i)
 			{
-				//const DrawItem& item = scene->items[i];
+				//const SceneItem& item = scene->items[i];
 				//bool selected = (selectedEntityType == i); // check if obj is current selected one
 
 				//// labels obj as Entity if it has no name
@@ -824,7 +824,7 @@ void ImGuiManager::showEntityListUI(/* Maybe an enum of paramEntityType, Maybe a
 				//if (ImGui::Selectable(label.c_str(), selected)) // selectable list
 				//	selectedEntityType = static_cast<unsigned int>(i);
 
-				DrawItem& item = scene->items[i];
+				SceneItem& item = scene->items[i];
 				bool selected = (selectedEntityType == i);
 
 				std::string label = item.name.empty()
@@ -884,8 +884,8 @@ void ImGuiManager::showEntityListUI(/* Maybe an enum of paramEntityType, Maybe a
 			//save state for undo
 			pushUndoState("Add New Object");
 
-			// Create a simple new DrawItem
-			DrawItem newItem;
+			// Create a simple new SceneItem
+			SceneItem newItem;
 			newItem.name = "NewObject_" + std::to_string(sceneMut->items.size());
 			// = 0.1f;     // default width
 			//float collider_height = 0.1f;     // default height
@@ -992,7 +992,7 @@ void ImGuiManager::showTransformUI(/* A reference to a vector of object list obj
 		return;
 	}
 
-	DrawItem& item = scene->items[selectedEntityType];
+	SceneItem& item = scene->items[selectedEntityType];
 
 	//---------NAME FIELD---------//
 	ImGui::Text("Name:");
@@ -2237,7 +2237,7 @@ void ImGuiManager::saveSceneSnapshot() {
 	/*m_savedSceneState = "[";
 
 	for (size_t i = 0; i < scene->items.size(); ++i) {
-		const DrawItem& item = scene->items[i];
+		const SceneItem& item = scene->items[i];
 
 		m_savedSceneState += "{";
 		m_savedSceneState += "\"name\":\"" + item.name + "\",";
@@ -2279,7 +2279,7 @@ void ImGuiManager::restoreSceneSnapshot() {
 	if (!scene) return;
 	/*
 	// store original data temporarily
-	std::vector<DrawItem> originalItems = scene->items;
+	std::vector<SceneItem> originalItems = scene->items;
 
 	// clear current items
 	scene->items.clear();
@@ -2294,7 +2294,7 @@ void ImGuiManager::restoreSceneSnapshot() {
 		if (endPos == std::string::npos) break;
 
 		std::string objStr = json.substr(pos, endPos - pos + 1);
-		DrawItem item{};
+		SceneItem item{};
 
 		// Explicitly set critical values to known defaults
 		item.health_bar = 0.0f;
@@ -2482,7 +2482,7 @@ void ImGuiManager::pushUndoState(const char* reason)
 	}
 
 	std::vector<EntityID> savestate;
-	for (DrawItem thing:scene->items)
+	for (SceneItem thing:scene->items)
 	{
 		savestate.push_back(ECS::getECS().cloneEntity(thing.entityID));
 	}
@@ -2515,7 +2515,7 @@ void ImGuiManager::undoLastAction()
 	
 	size_t h{};
 	//restore previous
-	for (DrawItem &thing :scene->items)
+	for (SceneItem &thing :scene->items)
 	{
 		EntityID swap{ thing.entityID };
 		thing.entityID = m_undoStack.back().second[h];
@@ -2614,7 +2614,7 @@ void ImGuiManager::handleViewportPicking(const ImVec2& imgMin,
 	int hitIndex = -1;
 
 	for (int i = static_cast<int>(items.size()) - 1; i >= 0; --i) {
-		const DrawItem& it = items[static_cast<size_t>(i)];
+		const SceneItem& it = items[static_cast<size_t>(i)];
 
 		float minX, maxX, minY, maxY;
 		Transform* t = ECS::getECS().getComponent<Transform>(it.entityID);
@@ -2657,7 +2657,7 @@ void ImGuiManager::handleViewportPicking(const ImVec2& imgMin,
 		m_draggedItem = hitIndex;
 		m_isDragging = true;
 
-		DrawItem& it = items[static_cast<size_t>(hitIndex)];
+		SceneItem& it = items[static_cast<size_t>(hitIndex)];
 		
 		Transform* t = ECS::getECS().getComponent<Transform>(it.entityID);
 		if (t) {
@@ -2674,7 +2674,7 @@ void ImGuiManager::handleViewportPicking(const ImVec2& imgMin,
 		ImGui::IsMouseDown(ImGuiMouseButton_Left))
 	{
 		if (m_draggedItem < static_cast<int>(items.size())) {
-			DrawItem& it = items[static_cast<size_t>(m_draggedItem)];
+			SceneItem& it = items[static_cast<size_t>(m_draggedItem)];
 
 			float newX = localX - m_dragOffset.x;
 			float newY = localY - m_dragOffset.y;

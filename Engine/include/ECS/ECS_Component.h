@@ -67,6 +67,7 @@ struct BaseComponent {
 //collider base struct
 struct Collider : public BaseComponent {
 	bool isColliding{ false };
+	Vector2D offset{};
 	void FromJSON(const rapidjson::Value& json);
 	void ToJSON(rapidjson::Value& json, rapidjson::Document::AllocatorType& allocator) const override;	
 };
@@ -86,9 +87,9 @@ struct RenderComponent : public BaseComponent {
 
 struct Transform : public BaseComponent {
 	Vector2D position;
-	Vector2D scale;
+	Vector2D scale{ 1.f,1.f };
 	Vector2D lastPosition = {};
-	Vector2D lastScale = {};
+	Vector2D lastScale { 1.f,1.f };
 
 	float rotation;
 	float height;
@@ -100,8 +101,24 @@ struct Transform : public BaseComponent {
 		Viewport
 	};
 
-	CoordinateSpace space = CoordinateSpace::World;
+	CoordinateSpace space{ CoordinateSpace::World };
 	bool isVisible{ true }, isRotatable{ false }, isScalable{ false }, randomPos{ false }, randomRot{ false };
+
+	enum class Origin {
+		TopLeft,
+		TopCenter,
+		TopRight,
+		CenterLeft,
+		Center,
+		CenterRight,
+		BottomLeft,
+		BottomCenter,
+		BottomRight,
+		Custom  // Use originOffset for arbitrary values
+	};
+
+	Origin origin{ Origin::Center };
+	Vector2D originOffset{ 0.5f, 0.5f };  // Actual values used (0-1 normalized)
 
 	Transform():position{}, scale{}, rotation{}, height{}{
 		if (randomPos)
@@ -148,6 +165,14 @@ struct Transform : public BaseComponent {
 	 */
 	Vector2D Scale(float x, float y);
 
+	void SetOrigin(const Origin newOrigin);
+	void SetCustomOrigin(const Vector2D& originPos);
+
+	Vector2D GetTopLeft(Vector2D baseSize) const;
+	Vector2D GetCenter(Vector2D baseSize) const;
+
+	Vector2D GetCenterFromRadius(float baseRadius) const;
+
 	void FromJSON(const rapidjson::Value& json);
 	void ToJSON(rapidjson::Value& json, rapidjson::Document::AllocatorType& allocator) const override;	
 };
@@ -176,7 +201,11 @@ struct RectRenderer : public RenderComponent {
 
 
 struct AnimalBehavior {
+	bool still_alive{ true };
 	float health_bar, hunger_bar, sanity_bar, slower_decreasing_rate, normal_decreasing_rate, faster_decreasing_rate, penalty_decreasing_rate;
+
+	float acc_timer{}, staring_countdown{};
+
 	void FromJSON(const rapidjson::Value& json);
 	void ToJSON(rapidjson::Value& json, rapidjson::Document::AllocatorType& allocator) const;
 };
@@ -243,7 +272,14 @@ struct AIComponent : public BaseComponent {
 
 struct BoxCollider :public Collider {
 	float width{ 0.f }, height{ 0.f };
-	Vector2D offset{};
+
+	void FromJSON(const rapidjson::Value& json);
+	void ToJSON(rapidjson::Value& json, rapidjson::Document::AllocatorType& allocator) const override;
+};
+
+struct CircleCollider :public Collider {
+	float radius{ 0.f };
+
 	void FromJSON(const rapidjson::Value& json);
 	void ToJSON(rapidjson::Value& json, rapidjson::Document::AllocatorType& allocator) const override;
 };
@@ -252,4 +288,43 @@ struct AABBCollider :public BoxCollider {
 	void FromJSON(const rapidjson::Value& json);
 	void ToJSON(rapidjson::Value& json, rapidjson::Document::AllocatorType& allocator) const override;
 };
+
+struct Clickable :public BaseComponent {
+	void FromJSON(const rapidjson::Value& json);
+	void ToJSON(rapidjson::Value& json, rapidjson::Document::AllocatorType& allocator) const override;
+
+	Vector2D clickRegionOffset{},clickRegionMin{}, clickRegionMax{}, clickRegionSize{};
+
+	bool isHovered{ false }, isPressed{ false }, syncRegionToCollider{ true };
+};
+
+struct Draggable : public Clickable {
+	void FromJSON(const rapidjson::Value& json);
+	void ToJSON(rapidjson::Value& json, rapidjson::Document::AllocatorType& allocator) const override;
+
+	bool is_dragging{ false };
+	Vector2D dragOffset{};  // offset from entity position to cursor grab point
+
+	// Optional drag constraints
+	bool constrainToViewport{false};
+	Vector2D minBounds{};  // if constrained
+	Vector2D maxBounds{};
+};
+
+struct Button {
+	void FromJSON(const rapidjson::Value& json);
+	void ToJSON(rapidjson::Value& json, rapidjson::Document::AllocatorType& allocator) const override;
+
+	enum Actions {
+		START	=	1,	//0001
+		GOTO	=	2,	//0010
+		QUIT	=	4,	//0100
+		RESUME	=	8	//1000
+	};
+
+	int actionFlag{};
+	std::string gotoScene{};
+
+};
+
 #endif // ECS_COMPONENT_H

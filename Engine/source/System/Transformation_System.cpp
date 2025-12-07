@@ -80,6 +80,45 @@ Vector2D Transform::Scale(float x, float y) {
 }
 
 
+void Transform::SetOrigin(Origin newOrigin) {
+	origin = newOrigin;
+	switch (origin) {
+	case Origin::TopLeft:      originOffset = { 0.0f, 0.0f }; break;
+	case Origin::TopCenter:    originOffset = { 0.5f, 0.0f }; break;
+	case Origin::TopRight:     originOffset = { 1.0f, 0.0f }; break;
+	case Origin::CenterLeft:   originOffset = { 0.0f, 0.5f }; break;
+	case Origin::Center:       originOffset = { 0.5f, 0.5f }; break;
+	case Origin::CenterRight:  originOffset = { 1.0f, 0.5f }; break;
+	case Origin::BottomLeft:   originOffset = { 0.0f, 1.0f }; break;
+	case Origin::BottomCenter: originOffset = { 0.5f, 1.0f }; break;
+	case Origin::BottomRight:  originOffset = { 1.0f, 1.0f }; break;
+	case Origin::Custom:       /* originOffset stays as-is */ break;
+	}
+}
+
+void Transform::SetCustomOrigin(const Vector2D& originPos) {
+	SetOrigin(Origin::Custom);
+
+	originOffset = originPos;
+}
+
+Vector2D Transform::GetTopLeft(Vector2D baseSize) const {
+	Vector2D actualSize = { baseSize.x() * scale.x(), baseSize.y() * scale.y()};
+	return position - Vector2D{actualSize.x()* originOffset.x(), actualSize.y()* originOffset.y()};
+}
+
+Vector2D Transform::GetCenter(Vector2D baseSize) const {
+	Vector2D actualSize  { baseSize.x() * scale.x(), baseSize.y() * scale.y()};
+	Vector2D adjustSize{ 0.5f - originOffset.x(),0.5f - originOffset.y() };
+	return position + Vector2D{actualSize.x()*adjustSize.x(), actualSize.y()* adjustSize.y()};
+}
+
+Vector2D Transform::GetCenterFromRadius(float baseRadius) const {
+	float diameter = baseRadius * 2.0f;
+	return GetCenter({ diameter, diameter });
+}
+
+
 void TransformSystem::TransformUpdate() {
 	//ECS& ecs = ECS::getECS();
 	std::vector<EntityID> ectities = ecs.getAllEntities();

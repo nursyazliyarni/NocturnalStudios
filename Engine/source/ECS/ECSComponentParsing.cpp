@@ -714,6 +714,14 @@ void AIComponent::ToJSON(rapidjson::Value& json, rapidjson::Document::AllocatorT
 	json.AddMember("type", typeVal, allocator);
 }
 
+void CircleCollider::FromJSON(const rapidjson::Value& json) {
+
+}
+
+void CircleCollider::ToJSON(rapidjson::Value& json, rapidjson::Document::AllocatorType& allocator) const {
+
+}
+
 void AABBCollider::FromJSON(const rapidjson::Value& json) {
 	if (json.HasMember("bounding_box_size") && json["bounding_box_size"].IsNumber())
 	{
@@ -843,3 +851,24 @@ void AudioData::ToJSON(rapidjson::Value& json, rapidjson::Document::AllocatorTyp
     json.AddMember("listener", listener, alloc);
 }
 
+void Clickable ::FromJSON(const rapidjson::Value& json) {
+
+}
+void Clickable::ToJSON(rapidjson::Value& json, rapidjson::Document::AllocatorType& allocator) const {
+
+}
+
+
+void Draggable::FromJSON(const rapidjson::Value& json) {
+
+}
+void Draggable::ToJSON(rapidjson::Value& json, rapidjson::Document::AllocatorType& allocator) const {
+
+}
+
+void Button::FromJSON(const rapidjson::Value& json) {
+
+}
+void Button::ToJSON(rapidjson::Value& json, rapidjson::Document::AllocatorType& allocator) const {
+
+}
