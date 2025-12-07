@@ -1,33 +1,3 @@
-# Prequisites
-*.d
-
-# Comiled Object files
-*.slo
-*.lo
-*.o
-*.obj
-
-# Precompiled Headers
-*.gch
-*.pch
-
-# Compiled Dynamic libraries
-*.so
-*.dylib
-
-# Fortran module files
-*.mod
-*.smod
-
-# Compiled Static libraries
-*.lai
-*.la
-*.a
-
-# Executables
-*.exe
-*.out
-*.app
 /build/
 /.vs/
 *.sln
@@ -38,6 +8,3 @@ Debug/
 Release/
 Sandbox/NocturnalGame/crash_message/crash_message_log.txt
 Sandbox/NocturnalGame/crash_message/crash_message_log.txt
-*.log
-*.iobj
-*.tlog

@@ -1,37 +1,49 @@
+/*!------------------------------------------------------------------------------------------------
+	File: Texture.h
+	Project: NocturnalStudio
 
+	This file contains ...
+
+	Primary Author:
+		 Name (%)
+		-Brief
+
+	Secondary Author:
+		 Name (%)
+		-Brief
+
+	All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
 
 #pragma once
+#include <GL/glew.h>
+#include <iostream>
+#include <vector>
+#include "core/Logger.h"
 
-namespace NocturnalEngine {
+extern Logger logger;
 
-	class Texture
-	{
-	public:
-		Texture();
-		~Texture();
-		void Bind(unsigned int slot = 0) const; //  specify the slot to bind texture to
-		void UnBind() const;
-		void GenTexture(const std::string& path);
-		void GenTexture(unsigned int width, unsigned int height);
-		/* accessor functions for the width, height, bpp */
+class Texture {
+public:
+	Texture(std::vector<char const*>& image_path_v);
+	~Texture();
 
-		void SetTextureData(void* data, unsigned int size);
+	//size_t get_totalTexture() const; //How many textures are loaded (used to size the scale array)
+	//const GLuint& get_textureID(size_t input_index) const;
+	//const int& get_texture_width(size_t input_index) const;
+	//const int& get_texture_height(size_t input_index) const;
 
-		inline unsigned int GetWidth() const { return mWidth; }
-		inline unsigned int GetHeight() const { return mHeight; }
-		inline unsigned int GetRendererID() const { return mRendererID; }
+	size_t get_totalTexture() const;
+	GLuint get_textureID(size_t) const;     
+	int get_texture_width(size_t) const; 
+	int get_texture_height(size_t) const;
 
-		bool operator==(const Texture& other) const
-		{
-			return mRendererID == other.GetRendererID();
-		}
-		void setInternalFormat(unsigned int interformat) { mInnerFormat = interformat; }
-		void setImageFormat(unsigned int imageformat) { mImageFormat = imageformat; }
-	private:
-		unsigned int mRendererID = 0;		//ID of the texture object
-		unsigned int mWidth, mHeight;	//width and height of the loaded image in pixels
-		unsigned int mWrapS, mWrapT;	// wrapping mode on S and T axis
-		unsigned int mFilterMin, mFilterMax; // filtering mode if texture pixels > or < screen pixels( 1648 by 720 )
-		unsigned int mInnerFormat, mImageFormat;
+private:
+	struct Texture_Info {
+		GLuint textureID_storage; //texture ID
+		std::pair<int, int> image_dimension; //pair.first==width,pair.second==height
 	};
-}
+
+	//use vector to store Texture_Info
+	std::vector<Texture_Info> texture_info_vector;
+};

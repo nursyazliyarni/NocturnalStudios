@@ -1,0 +1,1 @@
+// structs for a few events (e.g., SpawnObject)

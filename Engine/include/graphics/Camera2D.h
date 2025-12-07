@@ -1,50 +1,48 @@
-
-
+//(view/projection)
+// (view/projection)
 #pragma once
-#include "glm/glm.hpp" //for ortho, perspective and other matrices
-#include "Window/Window.h"
-#include "Timer/Time.h"
-namespace NocturnalEngine {
+#include <string>
 
-	class Camera2D
-	{
-	public:
-		Camera2D(float left, float right, float bottom, float top);//left, right, bottom and top
+// Enable/disable per scene
+void Cam2D_Enable(const std::string& scene, bool on);
 
-		void SetProjection(float left, float right, float bottom, float top);
+// Set normalized center [0..1] per scene
+void Cam2D_SetCenter(const std::string& scene, float cx, float cy);
 
-		const glm::vec3& GetPosition() const { return mPosition; }
-		void SetPosition(const glm::vec3& position) { mPosition = position; RecalculateMatrix(); }
-		void SetPositionSmooth(const float x, const float y, const float speed = 2.5f);
-		void Follow(glm::vec2 pos);
-		float GetRotation() const { return mRotation; }
-		void SetRotation(float rotation) { mRotation = rotation; RecalculateMatrix(); }
+// 1.0 = no zoom, >1 zoom in, <1 zoom out (clamped to [0.1, 5.0])
+void Cam2D_SetZoom(const std::string& scene, float z);
 
-		const glm::mat4& GetProjectionMatrix() const { return mProjectionMatrix; }
-		const glm::mat4& GetViewMatrix() const{ return mViewMatrix; }
-		const glm::mat4& GetViewProjectionMatrix() const { return mViewProjectionMatrix; }
-		
-		float GetZoomLevel()const { return mZoomLevel; }
-		void SetZoomLevel(float level) { mZoomLevel = level; }
-		void resetZoomLevel();
+// Convenience: set center + zoom in one call
+void Cam2D_Set(const std::string& scene, float cx, float cy, float zoom);
 
-		bool MouseScrolling();
+// Relative zoom: +0.10f = +10%, -0.10f = -10%
+void Cam2D_ZoomBy(const std::string& scene, float dz);
 
-		void Resize(float width, float height);
-	private:
+// Relative pan in normalized units (e.g., dx = ±0.02f)
+void Cam2D_PanBy(const std::string& scene, float dx, float dy);
 
-		glm::mat4 mProjectionMatrix ;
-		glm::mat4 mViewMatrix;
-		glm::mat4 mViewProjectionMatrix;
-		glm::vec3 mPosition;
-		
-		float mRotation = 0.0f;
-		unsigned int mViewportWidth, mViewportHeight;
-		float mAspectRatio = 0.0f;
-		float mZoomLevel = 1.0f;
-		Window mWindow;
+// Apply to a pixel-rect (px,py,pw,ph) for the given scene
+// screenW/screenH are the framebuffer size (pixels)
+void Cam2D_Apply(const std::string& scene,
+    float& px, float& py, float& pw, float& ph,
+    int screenW, int screenH);
 
-	private:
-		void RecalculateMatrix();
-	};
-}
+// --- Camera presets & active-edit API (added) ---
+
+struct Cam2D_Params {
+    float cx = 0.5f;
+    float cy = 0.5f;
+    float zoom = 1.0f;
+    float minZoom = 1.0f;
+    float maxZoom = 3.0f;
+};
+
+// Register/overwrite a preset by scene key (scene name)
+void Cam2D_RegisterPreset(const std::string& scene, const Cam2D_Params& p);
+
+// Make a preset the active camera (copies preset -> live)
+void Cam2D_ActivatePreset(const std::string& scene);
+
+// Read/Write the currently active camera params (ImGui authoring)
+Cam2D_Params Cam2D_GetActiveParams();
+void Cam2D_SetActiveParams(const Cam2D_Params& p);

@@ -1,0 +1,47 @@
+[
+     {"name":"animal",
+      "components": [
+        {"type": "Transform",  "rotation": 0.0, "rotatable": false, "scalable": false},
+        { "type": "PhysicsComponent", "velocity": { "x": 0.0, "y": 0.0 }, "gravityEnabled": false },
+	      { "type": "SpriteAnimationComponent", "anim_path": "assets/sprite.json", "currentAnim": "idle", "sheetColumns": 5, "sheetRows": 1},
+        { "type": "AABBCollider",  "bounding_box_size": 0.00 },
+        { "type": "ImageRenderer", "sprite_path": "" ,"width":0.0,"height":0.0}
+      ]
+    },
+    {"name":"food",
+      "components": [ { "type": "ImageRenderer", "sprite_path": "" ,"width":0.16,"height":0.18},
+        { "type": "Transform",  "rotation": 0.0, "rotatable": false, "scalable": false} ]
+      
+    },
+    {"name":"medicine",
+      "components": [ { "type": "ImageRenderer", "sprite_path": "" ,"width": 0.12, "height": 0.18, "angle": 0.0},
+        { "type": "Transform",  "rotation": 0.0, "rotatable": false, "scalable": false} ]
+    },
+    {"name":"toy",
+      "components": [ { "type": "ImageRenderer", "sprite_path": "" ,"width":0.14,"height":0.14,"angle":0.0},
+        { "type": "Transform",  "rotation": 0.0, "rotatable": true, "scalable": true} ]
+    },
+    {"name":"button",
+      "components": [ { "type": "ImageRenderer", "sprite_path": "" ,"width":0.40,"height":0.09,"angle":0.0},
+        { "type": "Transform",  "rotation": 0.0, "rotatable": false, "scalable": false} ]
+    },
+    {"name":"firefly",
+  "components": [
+    { "type": "Transform","position":{"x":0.50,"y":0.50} },
+    { "type": "ImageRenderer", "sprite_path": "textures/firefly.png" ,"width":0.05,"height":0.05},
+    { "type": "PhysicsComponent", "velocity": [0.0, 0.0], "gravityEnabled": false },
+    { "type": "AIComponent",
+      "state": "Wander",
+      "maxSpeed": 0.30,
+      "accel": 3.5,
+      "wanderJitter": 3.0,
+      "avoidRadius": 0.07
+    }
+  ]
+}
+]
+
+
+
+
+

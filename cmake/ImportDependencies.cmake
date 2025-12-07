@@ -39,28 +39,11 @@ if (EXISTS ${CMAKE_SOURCE_DIR}/lib/imgui/CMakeLists.txt)
   set(NS_HAVE_IMGUI ON)
 endif()
 
-# ImGuizmo
-if (EXISTS ${CMAKE_SOURCE_DIR}/lib/imguizmo/ImGuizmo.h)
-  add_library(ImGuizmo STATIC
-    ${CMAKE_SOURCE_DIR}/lib/imguizmo/ImGuizmo.cpp
-  )
-  target_include_directories(ImGuizmo PUBLIC ${CMAKE_SOURCE_DIR}/lib/imguizmo)
-  target_link_libraries(ImGuizmo PUBLIC imgui)
-  set(NS_HAVE_IMGUZMO ON)
-endif()
-
 # stb (header-only)
 if (EXISTS ${CMAKE_SOURCE_DIR}/lib/stb/stb_image.h)
   add_library(stb INTERFACE)
   target_include_directories(stb INTERFACE ${CMAKE_SOURCE_DIR}/lib/stb)
   set(NS_HAVE_STB ON)
-endif()
-
-# spdlog
-if (EXISTS ${CMAKE_SOURCE_DIR}/lib/spdlog/include/spdlog)
-  add_library(spdlog INTERFACE)
-  target_include_directories(spdlog INTERFACE ${CMAKE_SOURCE_DIR}/lib/spdlog/include)
-  set(NS_HAVE_SPDLOG ON)
 endif()
 
 # fmod
