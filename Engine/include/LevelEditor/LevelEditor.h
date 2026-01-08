@@ -26,6 +26,7 @@ namespace NocturnalEngine {
 		void Profiler();
 		void Hierarchy();
 		void Inspector();
+		void LogicSelector();
 
 		//for audio loading from files
 		void LoadAudioFromFile();

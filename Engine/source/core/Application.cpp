@@ -112,6 +112,7 @@ Application constructor
 
 			//p_Editor->Update();
 
+			std::cout << "123abc"<<p_Editor->is_ShowWindow << "\n";
 			if (p_Editor->is_ShowWindow)
 			{
 				p_Editor->Update();
