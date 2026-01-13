@@ -448,6 +448,15 @@ namespace NocturnalEngine {
                 selectedEntity = 0;
           
         }
+
+        if (ImGui::IsKeyPressed(ImGuiKey_Delete, false))
+        {
+            if (selectedEntity >= 0 && selectedEntity < MAX_ENTITIES)
+            {
+                p_ecs.DestroyEntity(selectedEntity);
+                selectedEntity = {};
+            }
+        }
     }
 
     /*!*************************************************************************
