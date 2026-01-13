@@ -791,7 +791,7 @@ void GameManager::render(Renderer& r, Input& input, GLFWwindow* window, int w, i
                 r.texturedTri(img->textureID, px, py, pw, ph);
 
                 // --- Collider outline (debug) ---
-                if (/*Debug::Drawer::Instance().IsActive() &&*/ di.hasCollider)
+                if (!isPlaying() &&  di.hasCollider)
                 {
                     //collider center in NORMALIZED coords (same as di.x/di.y)
                     float cxNorm = t->position.x() + di.colOffsetX;

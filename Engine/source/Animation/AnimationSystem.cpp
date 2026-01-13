@@ -49,7 +49,6 @@ void AnimationSystem::Update(float dt, ECS& ecs, Renderer& renderer, TextureStor
         auto& current = it->second;
         anim->timer += dt;
 
-        anim->timer += dt;
         if (anim->timer >= current.frameTime) {
             anim->timer -= current.frameTime;
             anim->currentFrame++;

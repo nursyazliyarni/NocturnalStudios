@@ -97,6 +97,13 @@
                   "height":0.50
                 },
                 {
+                  "type": "SpriteAnimationComponent",
+                  "anim_path": "assets/animations/flamingo_anim.json",
+                  "currentAnim": "idle",
+                  "sheetColumns": 5,
+                  "sheetRows": 1
+                },
+                {
                   "type":"AnimalBehavior","health_bar":100,"hunger_bar":100, "sanity_bar":100,
                   "slower_decreasing_rate":2.3,"normal_decreasing_rate":2.5,"faster_decreasing_rate":2.7,"penalty_decreasing_rate":3
                 }

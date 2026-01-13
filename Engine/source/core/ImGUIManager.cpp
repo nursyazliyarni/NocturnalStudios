@@ -1026,19 +1026,19 @@ void ImGuiManager::showTransformUI(/* A reference to a vector of object list obj
 
 		Transform* t = ECS::getECS().getComponent<Transform>(item.entityID);
 		ImageRenderer* ir = ECS::getECS().getComponent<ImageRenderer>(item.entityID);
-		
-		//if collider is enabled but has never been sized, auto-init to sprite
-		if (item.hasCollider && (item.colW == 0.0f || item.colH == 0.0f)&&ir)
-		{
-			item.colOffsetX = 0.0f;
-			item.colOffsetY = 0.0f;
-			item.colW = ir->width;
-			item.colH = ir->height;
-		}
+		if (!isPlaying()){
+			//if collider is enabled but has never been sized, auto-init to sprite
+			if (item.hasCollider && (item.colW == 0.0f || item.colH == 0.0f) && ir)
+			{
+				item.colOffsetX = 0.0f;
+				item.colOffsetY = 0.0f;
+				item.colW = ir->width;
+				item.colH = ir->height;
+			}
 
 		//checkbox (can still turn collider on/off)
 		bool prevHasCollider = item.hasCollider;
-		if (ImGui::Checkbox("Has Collider", &item.hasCollider)&&ir)
+		if (ImGui::Checkbox("Has Collider", &item.hasCollider) && ir)
 		{
 			if (item.hasCollider && !prevHasCollider &&
 				(item.colW == 0.0f || item.colH == 0.0f))
@@ -1065,6 +1065,7 @@ void ImGuiManager::showTransformUI(/* A reference to a vector of object list obj
 				item.colH = ir->height;
 			}
 		}
+	}
 		if (isPlayMode) ImGui::EndDisabled();
 	}
 	
