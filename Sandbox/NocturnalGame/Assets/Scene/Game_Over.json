@@ -69,6 +69,8 @@
                 "SFX Volume": 1.0,
                 "Master Volume": 1.0
             },
+            {},
+            {},
             {}
         ],
         "1": [
@@ -137,6 +139,8 @@
                 "SFX Volume": 1.0,
                 "Master Volume": 1.0
             },
+            {},
+            {},
             {}
         ],
         "2": [
@@ -205,6 +209,8 @@
                 "SFX Volume": 1.0,
                 "Master Volume": 1.0
             },
+            {},
+            {},
             {}
         ]
     }
