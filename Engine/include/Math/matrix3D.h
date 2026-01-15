@@ -1,5 +1,16 @@
+/*!------------------------------------------------------------------------------------------------
+    File: matrix3D.h
+    Project: NocturnalStudio
 
+	Brief:
+		Matrix 3D utility and definitions for the engine.
+		
+    Primary Author:
+         LAU XIANG YANG (100%)
+		- Created the matrix3D.h file and its function specification.
 
+    All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
 
 #pragma once
 #include "Vmath.h"

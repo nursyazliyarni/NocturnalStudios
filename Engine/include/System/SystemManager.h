@@ -1,4 +1,18 @@
+/*!------------------------------------------------------------------------------------------------
+    File: SystemManager.h
+    Project: NocturnalStudio
 
+	Brief:
+		This file contains a general implementation of a System Manager in
+		place of the ECS which is not integrated with the rest of the solution. 
+		It stores a vector of systems registered during runtime
+
+    Primary Author:
+         LAU XIANG YANG (100%)
+		- Created the SystemManager.h file and its function specification.
+
+    All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
 
 #pragma once
 #include "Core/Core.h"

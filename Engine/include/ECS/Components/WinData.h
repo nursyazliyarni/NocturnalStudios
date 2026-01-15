@@ -1,4 +1,17 @@
+/*!------------------------------------------------------------------------------------------------
+    File: WinData.h
+    Project: NocturnalStudio
 
+	Brief:
+		Window Component used to stored data regarding the window such as
+		height and width of the window
+		
+    Primary Author:
+         LAU XIANG YANG (100%)
+		- Created the WinData.h file and its function specification.
+
+    All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
 
 #pragma once
 #include "IComponent.h"

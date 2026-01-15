@@ -1,3 +1,17 @@
+/*!------------------------------------------------------------------------------------------------
+    File: Transform.h
+    Project: NocturnalStudio
+
+	Brief:
+		Transform component used to set the pos, scale and rot of the
+		entity and used for various systems such as graphics to render images
+		
+    Primary Author:
+         LAU XIANG YANG (100%)
+		- Created the Transform.h file and its function specification.
+
+    All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
 
 #pragma once
 #include "Math/Vmath.h"

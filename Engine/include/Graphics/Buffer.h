@@ -1,3 +1,18 @@
+/*!------------------------------------------------------------------------------------------------
+    File: Buffer.h
+    Project: NocturnalStudio
+
+	Brief:
+		This file contain all the helper function needed for buffer
+		optimatization so that it will be easier to handle the buffer
+		data
+		
+    Primary Author:
+         LAU XIANG YANG (100%)
+		- Created the Buffer.h file and its function specification.
+
+    All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
 
 #pragma once
 #include <GL/glew.h>

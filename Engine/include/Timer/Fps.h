@@ -1,3 +1,17 @@
+/*!------------------------------------------------------------------------------------------------
+    File: Fps.h
+    Project: NocturnalStudio
+
+	Brief:
+		This file contains a general implementation of a Frame Per Second (FPS) counter
+		which helps in measuring and controlling the frame rate of the application.
+
+    Primary Author:
+         LAU XIANG YANG (100%)
+		- Created the Fps.h file and its function specification.
+
+    All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
 
 #pragma once
 #include <GLFW/glfw3.h>

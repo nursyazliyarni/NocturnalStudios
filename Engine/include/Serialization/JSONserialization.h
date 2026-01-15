@@ -1,3 +1,17 @@
+/*!------------------------------------------------------------------------------------------------
+    File: JSONserialization.h
+    Project: NocturnalStudio
+
+	Brief:
+		 This file contains the JSONserialization class declaration
+		 which provides functionalities for serializing and deserializing objects to and from JSON format.
+
+    Primary Author:
+         LAU XIANG YANG (100%)
+		- Created the JSONserialization.h file and its function specification.
+
+    All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
 
 #pragma once
 #include "JSONincludes.h"

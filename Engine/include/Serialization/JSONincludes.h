@@ -1,3 +1,18 @@
+/*!------------------------------------------------------------------------------------------------
+    File: JSONincludes.h
+    Project: NocturnalStudio
+
+	Brief:
+		 This file contains the JSONincludes class declaration
+		 which includes all necessary RapidJSON headers for JSON serialization and deserialization.
+
+    Primary Author:
+         LAU XIANG YANG (100%)
+		- Created the JSONincludes.h file and its function specification.
+
+    All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
+
 #pragma once
 //All include files for rapidJSON
 

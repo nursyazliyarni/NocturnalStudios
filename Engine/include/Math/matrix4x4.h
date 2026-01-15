@@ -1,3 +1,16 @@
+/*!------------------------------------------------------------------------------------------------
+    File: matrix4x4.h
+    Project: NocturnalStudio
+
+	Brief:
+		Matrix 4x4 utility and definitions for the engine.
+		
+    Primary Author:
+         LAU XIANG YANG (100%)
+		- Created the matrix4x4.h file and its function specification.
+
+    All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
 
 #pragma once
 #include "Vmath.h"
