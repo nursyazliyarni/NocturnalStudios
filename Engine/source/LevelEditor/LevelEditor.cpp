@@ -91,8 +91,24 @@ namespace NocturnalEngine {
 #if DEBUG
         if (p_Input->KeyPressed(GLFW_KEY_F1))
         {
-            is_ShowWindow = !is_ShowWindow;
-            std::cout << "123abc" << p_Editor->is_ShowWindow << "\n";
+            if (is_ShowWindow) {
+                is_ShowWindow = !is_ShowWindow;
+            }
+        }
+
+        ImGuiIO& io = ImGui::GetIO();
+        //press F2 to switch mouse control from imgui to game
+        if (p_Input->KeyPressed(GLFW_KEY_F2)&&imgui_mouse_control)
+        {
+            io.ConfigFlags |= ImGuiConfigFlags_NoMouse; //the game own the mouse control
+            imgui_mouse_control = false;
+            ImGuizmo::Enable(false);
+        }
+        //press F2 to switch mouse control from game to imgui
+        else if (p_Input->KeyPressed(GLFW_KEY_F2) && !imgui_mouse_control) {
+            io.ConfigFlags &= ~ImGuiConfigFlags_NoMouse; //imgui own the mouse control
+            imgui_mouse_control = true;
+            ImGuizmo::Enable(true);
         }
 #endif
         if (is_ShowWindow)

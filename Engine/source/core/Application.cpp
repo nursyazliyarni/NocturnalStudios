@@ -110,13 +110,12 @@ Application constructor
 			Timer::GetInstance().Start(Systems::API);
 			Timer::GetInstance().GetDT(Systems::API);
 
-			//p_Editor->Update();
-
-			std::cout << "123abc"<<p_Editor->is_ShowWindow << "\n";
 			if (p_Editor->is_ShowWindow)
 			{
 				p_Editor->Update();
-				p_Editor->Draw();
+				if (p_Editor->is_ShowWindow) {
+					p_Editor->Draw();
+				}
 			}
 			
 			p_Scene->checkForSceneToLoad();

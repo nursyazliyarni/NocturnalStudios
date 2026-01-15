@@ -39,7 +39,7 @@ namespace NocturnalEngine {
 		
 		LoadIconsTexture("Assets/Text/Icons.txt");
 		std::string path = {"Assets/Textures/"};
-		std::string folderpath[] = {"Characters", "Environment", "UI", "CutScene", "Dialogues"};
+		std::string folderpath[] = {"Characters", "Environment", "UI", "CutScene", "Dialogues", "Play"};
 		
 		for (const auto& i : folderpath)
 		{
