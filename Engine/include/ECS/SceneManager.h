@@ -1,4 +1,18 @@
+/*!------------------------------------------------------------------------------------------------
+    File: SceneManager.h
+    Project: NocturnalStudio
 
+	Brief:
+		This file contains all the functions for loading and unloading the
+		level data into a JSON file. Currently on application end the ecs will be
+		saved into a json file for future loading
+		
+    Primary Author:
+         LAU XIANG YANG (100%)
+		- Created the SceneManager class and its function specification.
+
+    All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
 
 #pragma once
 #include "ECS.h"

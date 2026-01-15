@@ -1,3 +1,18 @@
+/*!------------------------------------------------------------------------------------------------
+    File: ComponentArray.h
+    Project: NocturnalStudio
+
+	Brief:
+		This file contains a templated class for storing an array of components based on the type. 
+		This templated class is used for an ECS to map each entity to index and each index to entity 
+		to ensure a packed array of components
+		
+    Primary Author:
+         LAU XIANG YANG (100%)
+		- Created the component array class and its function specification.
+
+    All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
 
 #pragma once
 #include "ECS/Types.h"

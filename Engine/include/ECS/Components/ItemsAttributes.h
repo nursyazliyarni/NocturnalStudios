@@ -1,3 +1,17 @@
+/*!------------------------------------------------------------------------------------------------
+    File: ItemsAttributes.h
+    Project: NocturnalStudio
+
+	Brief:
+		This file contains the Items Attributes component to all the item related attributes
+		used in the ECS
+		
+    Primary Author:
+         LAU XIANG YANG (100%)
+		- Created the ItemsAttributes.h file and its function specification.
+
+    All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
 
 #pragma once
 #include "IComponent.h"
