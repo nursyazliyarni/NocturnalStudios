@@ -1,3 +1,17 @@
+/*!------------------------------------------------------------------------------------------------
+    File: Picker.cpp
+    Project: NocturnalStudio
+
+	Brief:
+		This file contain function that will set the selectentity with a AABB boundering box around it
+		so that it takes the transform of the entity
+	
+    Primary Author:
+         LAU XIANG YANG (100%)
+		- Created the Picker class and its function specification.
+
+    All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
 
 #include "pch.h"
 #include "LevelEditor/Picker.h"

@@ -1,3 +1,18 @@
+/*!------------------------------------------------------------------------------------------------
+    File: ResourceManager.cpp
+    Project: NocturnalStudio
+
+	Brief:
+		This file contain the defintion for ResourceManager class.
+		Resource manager can load textures, shader, fonts, icons
+		and audios.
+	
+    Primary Author:
+         LAU XIANG YANG (100%)
+		- Created the ResourceManager class and its function specification.
+
+    All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
 
 #include "pch.h"
 #include "ResourceManager/ResourceManager.h"

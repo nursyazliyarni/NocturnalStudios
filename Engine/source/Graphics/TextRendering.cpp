@@ -1,3 +1,16 @@
+/*!------------------------------------------------------------------------------------------------
+    File: TextRendering.cpp
+    Project: NocturnalStudio
+
+	Brief:
+		This file render text using texture atlas and glm
+	
+    Primary Author:
+         LAU XIANG YANG (100%)
+		- Created the text rendering class and its function specification.
+        
+    All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
 
 #include "pch.h"
 
