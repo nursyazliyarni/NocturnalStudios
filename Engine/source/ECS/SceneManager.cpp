@@ -35,6 +35,8 @@ namespace NocturnalEngine
 		p_ecs.RegisterComponent<Tag>();
 		p_ecs.RegisterComponent<Audio>();
 		p_ecs.RegisterComponent<HUDComponent>();
+		p_ecs.RegisterComponent<AnimalAttributes>();
+		p_ecs.RegisterComponent<ItemsAttributes>();
 		sceneToLoad = "";
 	}
 
@@ -145,6 +147,24 @@ namespace NocturnalEngine
 							p_ecs.AddComponent<HUDComponent>(j, mHUD);
 						}
 					}
+					if (p_ecs.GetComponentTypeName(CompID) == "AnimalAttributes")
+					{
+						AnimalAttributes animalAttr;
+						animalAttr.SetComponentEntityID(j);
+						if (animalAttr.Deserialize(obj["Components"][std::to_string(j).c_str()][static_cast<int>(CompID)].GetObj()))
+						{
+							p_ecs.AddComponent<AnimalAttributes>(j, animalAttr);
+						}
+					}
+					if (p_ecs.GetComponentTypeName(CompID) == "ItemsAttributes")
+					{
+						ItemsAttributes itemAttr;
+						itemAttr.SetComponentEntityID(j);
+						if (itemAttr.Deserialize(obj["Components"][std::to_string(j).c_str()][static_cast<int>(CompID)].GetObj()))
+						{
+							p_ecs.AddComponent<ItemsAttributes>(j, itemAttr);
+						}
+					}
 				}
 			}
 			++j;
@@ -248,6 +268,14 @@ namespace NocturnalEngine
 						if (p_ecs.GetComponentTypeName(compID) == "HUDComponent")
 						{
 							p_ecs.GetComponent<HUDComponent>(j).Serialize(writer);
+						}
+						if (p_ecs.GetComponentTypeName(compID) == "AnimalAttributes")
+						{
+							p_ecs.GetComponent<AnimalAttributes>(j).Serialize(writer);
+						}
+						if (p_ecs.GetComponentTypeName(compID) == "ItemsAttributes")
+						{
+							p_ecs.GetComponent<ItemsAttributes>(j).Serialize(writer);
 						}
 					}
 				}
