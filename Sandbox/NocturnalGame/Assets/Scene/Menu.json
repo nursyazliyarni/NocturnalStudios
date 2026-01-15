@@ -71,8 +71,6 @@
                 "SFX Volume": 0.75,
                 "Master Volume": 0.75
             },
-            {},
-            {},
             {}
         ],
         "1": [
@@ -141,8 +139,6 @@
                 "SFX Volume": 0.75,
                 "Master Volume": 0.75
             },
-            {},
-            {},
             {}
         ],
         "2": [
@@ -211,8 +207,6 @@
                 "SFX Volume": 0.75,
                 "Master Volume": 0.75
             },
-            {},
-            {},
             {}
         ],
         "3": [
@@ -281,8 +275,6 @@
                 "SFX Volume": 0.75,
                 "Master Volume": 0.75
             },
-            {},
-            {},
             {}
         ],
         "4": [
@@ -351,8 +343,6 @@
                 "SFX Volume": 0.75,
                 "Master Volume": 0.75
             },
-            {},
-            {},
             {}
         ]
     }
