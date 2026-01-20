@@ -12,6 +12,8 @@ current Init order, the array indices are:
 6: Tag
 7: Audio
 8: HUDComponent
+9: AnimalAttributes
+10: ItemsAttributes
 
 In the .json file, each entity’s “Components” array must have one entry per registered component
 in exactly this order. If the entity doesn’t have that component, the entry should be an empty object {}.
@@ -21,4 +23,49 @@ What “EntitySignatures” mean
 
 It’s a bitset string for each entity, written by Serialize and read back during Deserialize via NocturnalEngine::ECS::SetEntitySignature.
 Bit position = component index (as listed above). The rightmost character is bit 0 (Transform), then moving left increases the index.
-Example: …11111101 means bits 0,2,3,4,5,6,7 are set → Transform, Collider, NameTag, Sprite, Logic, Tag, Audio present; RigidBody (1) and HUD (8) are not.
+Example: …0011111101 means bits 0,2,3,4,5,6,7 are set → Transform, Collider, NameTag, Sprite, Logic, Tag, Audio present; RigidBody (1), HUD (8), Animal (9) and Items Attributes (10) are not.
+
+For animation here is a sample for how it should be:
+
+      {
+        "NameTag": "player_test"
+      },
+      {
+        "TextureName": "Idle",
+        "Index_X": 0,
+        "Index_Y": 0,
+        "Ucoordinates": 512.0,
+        "Vcoordinates": 512.0,
+        "IsSpriteSheet": true,
+        "IsAnimated": true,
+        "MaxIndex": 28,
+        "DisplayTime 0": 0.018,
+        "DisplayTime 1": 0.018,
+        "DisplayTime 2": 0.018,
+        "DisplayTime 3": 0.018,
+        "DisplayTime 4": 0.018,
+        "DisplayTime 5": 0.018,
+        "DisplayTime 6": 0.018,
+        "DisplayTime 7": 0.018,
+        "DisplayTime 8": 0.018,
+        "DisplayTime 9": 0.018,
+        "DisplayTime 10": 0.018,
+        "DisplayTime 11": 0.018,
+        "DisplayTime 12": 0.018,
+        "DisplayTime 13": 0.018,
+        "DisplayTime 14": 0.018,
+        "DisplayTime 15": 0.018,
+        "DisplayTime 16": 0.018,
+        "DisplayTime 17": 0.018,
+        "DisplayTime 18": 0.018,
+        "DisplayTime 19": 0.018,
+        "DisplayTime 20": 0.018,
+        "DisplayTime 21": 0.018,
+        "DisplayTime 22": 0.018,
+        "DisplayTime 23": 0.018,
+        "DisplayTime 24": 0.018,
+        "DisplayTime 25": 0.018,
+        "DisplayTime 26": 0.018,
+        "DisplayTime 27": 0.018,
+        "LayeringOrder": 3
+      },

@@ -1,3 +1,17 @@
+/*!------------------------------------------------------------------------------------------------
+    File: Vec4.h
+    Project: NocturnalStudio
+
+	Brief:
+		4D vector utility and definitions for the engine.
+		
+    Primary Author:
+         LAU XIANG YANG (100%)
+		- Created the Vec4.h file and its function specification.
+
+    All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
+
 #pragma once
 
 #include <iostream>

@@ -1,3 +1,16 @@
+/*!------------------------------------------------------------------------------------------------
+    File: Transform.cpp
+    Project: NocturnalStudio
+
+	Brief:
+		This file is used to serialize and deserialize transform components for ECS.
+	
+    Primary Author:
+         LAU XIANG YANG (100%)
+		- Created the transform class and its function specification.
+		
+    All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
 
 #include "pch.h"
 #include "ECS/Components/Transform.h"

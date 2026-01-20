@@ -1,4 +1,17 @@
+/*!------------------------------------------------------------------------------------------------
+    File: Tag.h
+    Project: NocturnalStudio
 
+	Brief:
+		A Component used for scripting purposes, such as tagging the
+		camera to the player component or pathfinding nodes to each other.
+		
+    Primary Author:
+         LAU XIANG YANG (100%)
+		- Created the Tag.h file and its function specification.
+
+    All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
 
 #pragma once
 #include "IComponent.h"

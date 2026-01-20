@@ -1,3 +1,17 @@
+/*!------------------------------------------------------------------------------------------------
+    File: JSONserialization.cpp
+    Project: NocturnalStudio
+
+	Brief:
+        This file contains the implementation of the JSONserialization script class which is responsible 
+        for managing JSON serialization within the engine.
+	
+    Primary Author:
+         LAU XIANG YANG (100%)
+		- Created the JSONserialization class and its function specification.
+		
+    All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
 
 #include "pch.h"
 #include "Serialization/JSONserialization.h"

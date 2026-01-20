@@ -1,3 +1,18 @@
+/*!------------------------------------------------------------------------------------------------
+    File: Renderer.cpp
+    Project: NocturnalStudio
+
+	Brief:
+		This file contain all the require draw call function definition
+		for the graphic. There batch rendering doing in here too.
+		To maintain as less draw call as possible
+	
+    Primary Author:
+         LAU XIANG YANG (100%)
+		- Created the renderer class and its function specification.
+
+    All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
 
 #include "pch.h"
 #include "Graphics/Renderer.h"

@@ -1,3 +1,17 @@
+/*!------------------------------------------------------------------------------------------------
+    File: RigidBody.h
+    Project: NocturnalStudio
+
+	Brief:
+		RigidBody Component to describe material of object and the forces
+		acting on said object.
+
+    Primary Author:
+         LAU XIANG YANG (100%)
+		- Created the RigidBody.h file and its function specification.
+
+    All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
 
 #pragma once
 #include "Math/Vmath.h"

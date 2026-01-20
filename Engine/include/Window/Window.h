@@ -1,3 +1,18 @@
+/*!------------------------------------------------------------------------------------------------
+    File: Window.h
+    Project: NocturnalStudio
+
+	Brief:
+		This file contains the Window class declaration which provides the implementation
+		for creating and managing a window using GLFW and OpenGL. It includes functionality
+		for handling window properties, input events, and integrating with ImGui for GUI rendering.
+
+    Primary Author:
+         LAU XIANG YANG (100%)
+		- Created the Window.h file and its function specification.
+
+    All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
 
 #pragma once
 #include "Engine.h"

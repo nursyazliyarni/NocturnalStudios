@@ -1,3 +1,19 @@
+/*!------------------------------------------------------------------------------------------------
+    File: Time.h
+    Project: NocturnalStudio
+
+	Brief:
+		This file contain the declare for time which uses chrono
+		to create a timer and use it as a tracker for our system
+		during runtime. It also have a deltatime for update and other
+		math implementation.
+
+    Primary Author:
+         LAU XIANG YANG (100%)
+		- Created the Time.h file and its function specification.
+
+    All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
 
 #pragma once
 namespace NocturnalEngine {

@@ -1,3 +1,17 @@
+/*!------------------------------------------------------------------------------------------------
+    File: ScenerioScript.h
+    Project: NocturnalStudio
+
+	Brief:
+		 This file contains the ScenerioScript class declaration
+		 which act as the Game scene manager when the game is being played
+
+    Primary Author:
+         LAU XIANG YANG (100%)
+		- Created the ScenerioScript.h file and its function specification.
+
+    All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
 
 #include "pch.h"
 #include "Scripts/IScript.h"

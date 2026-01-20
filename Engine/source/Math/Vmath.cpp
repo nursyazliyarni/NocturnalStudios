@@ -1,3 +1,17 @@
+/*!------------------------------------------------------------------------------------------------
+    File: Vmath.cpp
+    Project: NocturnalStudio
+
+	Brief:
+		This file contains the implementation of the Vmath class which is responsible for handling
+		2D vector operations for 2D transformations.
+	
+    Primary Author:
+         LAU XIANG YANG (100%)
+		- Created the Vmath class and its function specification.
+
+    All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
 
 #include "pch.h"
 #include "Math/Vmath.h"

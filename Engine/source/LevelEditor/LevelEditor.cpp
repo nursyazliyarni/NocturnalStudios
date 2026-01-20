@@ -1,4 +1,18 @@
+/*!------------------------------------------------------------------------------------------------
+    File: LevelEditor.cpp
+    Project: NocturnalStudio
 
+	Brief:
+        The level editor utilises Dear ImGui and OpenGL to create a editor interface
+        to allow us to edit object, create entities and modify the
+        properties of the components and save them accordingly.
+	
+    Primary Author:
+         LAU XIANG YANG (100%)
+		- Created the LevelEditor class and its function specification.
+
+    All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
 
 #include "pch.h"
 #define IMGUI_DEFINE_MATH_OPERATORS
@@ -449,6 +463,15 @@ namespace NocturnalEngine {
             else
                 selectedEntity = 0;
           
+        }
+
+        if (ImGui::IsKeyPressed(ImGuiKey_Delete, false))
+        {
+            if (selectedEntity >= 0 && selectedEntity < MAX_ENTITIES)
+            {
+                p_ecs.DestroyEntity(selectedEntity);
+                selectedEntity = {};
+            }
         }
     }
 

@@ -1,3 +1,17 @@
+/*!------------------------------------------------------------------------------------------------
+    File: VertexBuffer.h
+    Project: NocturnalStudio
+
+	Brief:
+		This file contain the neccesary declaration functions for class vertexbuffer,
+		vertexarray, index array and buffer element and layout.
+		
+    Primary Author:
+         LAU XIANG YANG (100%)
+		- Created the VertexBuffer.h file and its function specification.
+
+    All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
 
 #pragma once
 #include "Buffer.h"

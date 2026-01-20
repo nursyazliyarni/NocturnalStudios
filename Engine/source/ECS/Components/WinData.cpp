@@ -1,3 +1,16 @@
+/*!------------------------------------------------------------------------------------------------
+    File: WinData.cpp
+    Project: NocturnalStudio
+
+	Brief:
+		This file is used to serialize and deserialize window data components for ECS.
+	
+    Primary Author:
+         LAU XIANG YANG (100%)
+		- Created the window data class and its function specification.
+
+    All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
 
 #include "pch.h"
 #include "ECS/Components/WinData.h"

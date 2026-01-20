@@ -1,3 +1,16 @@
+/*!------------------------------------------------------------------------------------------------
+    File: CameraComponent.h
+    Project: NocturnalStudio
+
+	Brief:
+		Contains the component related to camera in the ECS
+		
+    Primary Author:
+         LAU XIANG YANG (100%)
+		- Created the CameraComponent.h file and its function specification.
+
+    All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
 
 #pragma once
 #include "IComponent.h"

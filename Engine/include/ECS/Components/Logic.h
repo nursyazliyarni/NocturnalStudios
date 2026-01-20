@@ -1,3 +1,18 @@
+/*!------------------------------------------------------------------------------------------------
+    File: Logic.h
+    Project: NocturnalStudio
+
+	Brief:
+		Logic Component for all the scripts being used by each entity.
+		Contains a vector for scripts which is looped and calls each scripts update
+		function
+		
+    Primary Author:
+         LAU XIANG YANG (100%)
+		- Created the Logic.h file and its function specification.
+
+    All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
 
 #pragma once
 #include "IComponent.h"

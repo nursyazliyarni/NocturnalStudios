@@ -1,3 +1,17 @@
+/*!------------------------------------------------------------------------------------------------
+    File: VertexBuffer.cpp
+    Project: NocturnalStudio
+
+	Brief:
+		This file contain the necessary functions for vertex buffer object
+		and index buffer object. It will bind the buffer to the GPU memory.
+	
+    Primary Author:
+         LAU XIANG YANG (100%)
+		- Created the vertex buffer class and its function specification.
+
+    All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
 
 #include "pch.h"
 #include "Graphics/VertexBuffer.h"

@@ -1,3 +1,17 @@
+/*!------------------------------------------------------------------------------------------------
+    File: LevelEditor.h
+    Project: NocturnalStudio
+
+	Brief:
+		This file contain the main function for the level editor
+		and the functions of the editor windows.
+		
+    Primary Author:
+         LAU XIANG YANG (100%)
+		- Created the LevelEditor.h file and its function specification.
+
+    All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
 
 #pragma once
 #include "Window/Window.h"

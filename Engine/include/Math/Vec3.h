@@ -1,4 +1,16 @@
+/*!------------------------------------------------------------------------------------------------
+    File: Vec3.h
+    Project: NocturnalStudio
 
+	Brief:
+		3D vector utility and definitions for the engine.
+		
+    Primary Author:
+         LAU XIANG YANG (100%)
+		- Created the Vec3.h file and its function specification.
+
+    All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
 
 #pragma once
 

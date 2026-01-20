@@ -1,3 +1,17 @@
+/*!------------------------------------------------------------------------------------------------
+    File: Log.h
+    Project: NocturnalStudio
+
+	Brief:
+		This file contains the declaration of Log class. This file holds the assert system for
+		the project
+		
+    Primary Author:
+         LAU XIANG YANG (100%)
+		- Created the log class and its function specification.
+
+    All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
 
 #pragma once
 #include "core.h"

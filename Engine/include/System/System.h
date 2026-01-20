@@ -1,3 +1,18 @@
+/*!------------------------------------------------------------------------------------------------
+    File: System.h
+    Project: NocturnalStudio
+
+	Brief:
+		This file contains the System class declaration
+		which provides the base class for all systems within the engine.
+		It is an interface class for Systems to be used to create additional systems
+
+    Primary Author:
+         LAU XIANG YANG (100%)
+		- Created the System.h file and its function specification.
+
+    All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
 
 #pragma once
 #include "Core/Core.h"

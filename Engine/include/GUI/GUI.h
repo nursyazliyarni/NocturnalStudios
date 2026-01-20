@@ -1,3 +1,17 @@
+/*!------------------------------------------------------------------------------------------------
+    File: GUI.h
+    Project: NocturnalStudio
+
+	Brief:
+		This file contain the main function for the pause menu
+		and the functions of the buttons. 
+		
+    Primary Author:
+         LAU XIANG YANG (100%)
+		- Created the GUI.h file and its function specification.
+
+    All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
 
 #pragma once
 #include "pch.h"

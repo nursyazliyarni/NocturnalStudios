@@ -1,3 +1,17 @@
+/*!------------------------------------------------------------------------------------------------
+    File: VertexArray.h
+    Project: NocturnalStudio
+
+	Brief:
+		This file contain VertexBuffer binding and unbind set the buffer layout
+		to the vertex array needed for gpu rendering.
+		
+    Primary Author:
+         LAU XIANG YANG (100%)
+		- Created the VertexArray.h file and its function specification.
+
+    All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
 
 #pragma once
 #include "Buffer.h"

@@ -1,4 +1,16 @@
+/*!------------------------------------------------------------------------------------------------
+    File: Types.h
+    Project: NocturnalStudio
 
+	Brief:
+		Typedefs for various data types to be used in the ECS
+		
+    Primary Author:
+         LAU XIANG YANG (100%)
+		- Created the Types.h file and its function specification.
+
+    All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
 
 #pragma once
 #include "pch.h"
