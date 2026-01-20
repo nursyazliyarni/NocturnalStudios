@@ -151,7 +151,7 @@ namespace NocturnalEngine {
 
     void LevelEditor::Draw()
     {
-       if (!ImGui::GetCurrentContext())
+       if (!ImGui::GetCurrentContext() || !is_ShowWindow)
            return;
 
         ImGui::Render();
