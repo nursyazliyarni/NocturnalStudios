@@ -131,7 +131,12 @@ Application constructor
 				p_Editor->Update();
 				p_Editor->Draw();
 			}
-			
+#if DEBUG			
+			if (p_Editor->is_ShowWindow == false && p_Input->KeyPressed(GLFW_KEY_0))
+			{
+				p_Editor->is_ShowWindow = true;
+			}
+#endif
 			p_Scene->checkForSceneToLoad();
 
 			if (p_Scene->isGameplay == true)
