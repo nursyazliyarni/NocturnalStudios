@@ -122,4 +122,11 @@ namespace NocturnalEngine {
         return false;
     }
 
+    bool InputSystem::detect_draggable_item(mousecode mouse)
+    {
+        if (MousePressed(mouse)) {
+
+        }
+    }
+
 }

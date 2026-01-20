@@ -38,6 +38,7 @@ namespace NocturnalEngine {
 		void ResetPressedMouse();
 
 		bool isKeyPressed(keycode key);
+		bool detect_draggable_item(keycode key);
 
 	public:
 		//data
