@@ -1,3 +1,17 @@
+/*!------------------------------------------------------------------------------------------------
+    File: FrameBuffer.cpp
+    Project: NocturnalStudio
+
+	Brief:
+		This file binds the framebuffer and gets the pixel coordinate
+		and can be used in it in level editor
+	
+    Primary Author:
+         LAU XIANG YANG (100%)
+		- Created the frameBuffer class and its function specification.
+
+    All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
 
 #include "pch.h"
 #include "Graphics/FrameBuffer.h"

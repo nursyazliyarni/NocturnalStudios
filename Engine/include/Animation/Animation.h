@@ -1,3 +1,16 @@
+/*!------------------------------------------------------------------------------------------------
+    File: Animation.h
+    Project: NocturnalStudio
+
+	Brief:
+		This file contains the declaration of Animation class.
+	
+    Primary Author:
+         LAU XIANG YANG (100%)
+		- Created the animation class and its function specification.
+
+    All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
 
 #pragma once
 #include "Graphics/Renderer.h"

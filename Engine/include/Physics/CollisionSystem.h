@@ -1,3 +1,18 @@
+/*!------------------------------------------------------------------------------------------------
+    File: CollisionSystem.h
+    Project: NocturnalStudio
+
+	Brief:
+		This file contains the system declaration for the collision system to
+        detect collision between two entities and calculate the appropriate physics
+        response.
+		
+    Primary Author:
+         LAU XIANG YANG (100%)
+		- Created the CollisionSystem.h file and its function specification.
+
+    All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
 
 #pragma once
 #include "Math/Physics.h"

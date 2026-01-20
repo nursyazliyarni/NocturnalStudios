@@ -1,3 +1,17 @@
+/*!------------------------------------------------------------------------------------------------
+    File: Renderer.h
+    Project: NocturnalStudio
+
+	Brief:
+		This file contain the declaration for Renderer which contains all necessary draw functions
+		for the engine.
+		
+    Primary Author:
+         LAU XIANG YANG (100%)
+		- Created the Renderer.h file and its function specification.
+
+    All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
 
 #pragma once
 #include <glm/glm.hpp>

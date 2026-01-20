@@ -1,3 +1,17 @@
+/*!------------------------------------------------------------------------------------------------
+    File: PhysicsSystem.cpp
+    Project: NocturnalStudio
+
+	Brief:
+		This file contains the implementation of the PhysicsSystem class which is responsible for handling
+		physics calculations and updates within the NocturnalStudio project.
+	
+    Primary Author:
+         LAU XIANG YANG (100%)
+		- Created the PhysicsSystem class and its function specification.
+
+    All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
 
 #include "pch.h"
 #include "Physics/PhysicsSystem.h"

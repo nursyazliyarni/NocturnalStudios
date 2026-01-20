@@ -1,3 +1,18 @@
+/*!------------------------------------------------------------------------------------------------
+    File: Core.h
+    Project: NocturnalStudio
+
+	Brief:
+		This file contains the declaration of Core class. This file contains the neccessary 
+		Marco that compile important system to dll.
+
+    Primary Author:
+         LAU XIANG YANG (100%)
+		- Created the core class and its function specification.
+
+    All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
+
 
 #pragma once
 #include <memory>

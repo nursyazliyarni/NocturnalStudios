@@ -1,3 +1,16 @@
+/*!------------------------------------------------------------------------------------------------
+    File: physics.h
+    Project: NocturnalStudio
+
+	Brief:
+		Physics utility and definitions for the engine.
+		
+    Primary Author:
+         LAU XIANG YANG (100%)
+		- Created the physics.h file and its function specification.
+
+    All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
 
 #pragma once
 

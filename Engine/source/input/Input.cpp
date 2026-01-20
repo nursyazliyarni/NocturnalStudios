@@ -1,3 +1,19 @@
+/*!------------------------------------------------------------------------------------------------
+    File: Input.cpp
+    Project: NocturnalStudio
+
+	Brief:
+		This file contain the input manager which is responsible for retrieving keyboard and mouse input.
+        The input systems provides us with a way to fetch information on inputs in a simple
+        and effective manner. Allowing the user to view whether the keys or mouse are pressed,
+        released or being held.
+	
+    Primary Author:
+         LAU XIANG YANG (100%)
+		- Created the InputSystem class and its function specification.
+
+    All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
 
 #include "pch.h"
 #include "Input/Input.h"

@@ -1,3 +1,16 @@
+/*!------------------------------------------------------------------------------------------------
+    File: HUDComponent.h
+    Project: NocturnalStudio
+
+	Brief:
+		This file contains class and functions used by the HUD component
+		
+    Primary Author:
+         LAU XIANG YANG (100%)
+		- Created the HUDComponent.h file and its function specification.
+
+    All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
 
 #pragma once
 #include "IComponent.h"

@@ -1,4 +1,18 @@
+/*!------------------------------------------------------------------------------------------------
+    File: LogicSystem.h
+    Project: NocturnalStudio
 
+	Brief:
+		Logic System used for iterating through each entity with a logic
+		component, grabbing the vector of scripts from the logic components and
+		iterating through each script to call its update functions
+		
+    Primary Author:
+         LAU XIANG YANG (100%)
+		- Created the LogicSystem.h file and its function specification.
+
+    All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
 
 #pragma once
 #include "System/System.h"

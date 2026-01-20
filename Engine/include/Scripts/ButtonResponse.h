@@ -1,3 +1,18 @@
+/*!------------------------------------------------------------------------------------------------
+    File: ButtonResponse.h
+    Project: NocturnalStudio
+
+	Brief:
+		 This file contains the ButtonResponse class declaration
+		 which is responsible for handling button interactions and responses within the engine 
+		 for the button components.
+
+    Primary Author:
+         LAU XIANG YANG (100%)
+		- Created the ButtonResponse.h file and its function specification.
+
+    All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
 
 #pragma once
 #include "pch.h"

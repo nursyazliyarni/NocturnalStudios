@@ -1,3 +1,18 @@
+/*!------------------------------------------------------------------------------------------------
+    File: Buffer.cpp
+    Project: NocturnalStudio
+
+	Brief:
+		This file contain all the helper function needed for buffer
+		optimatization so that it will be easier to handle the buffer
+		data
+	
+    Primary Author:
+         LAU XIANG YANG (100%)
+		- Created the buffer class and its function specification.
+
+    All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
 
 #include "pch.h"
 #include "Graphics/Buffer.h"

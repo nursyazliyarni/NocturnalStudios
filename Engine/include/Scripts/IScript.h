@@ -1,4 +1,18 @@
+/*!------------------------------------------------------------------------------------------------
+    File: IScript.h
+    Project: NocturnalStudio
 
+	Brief:
+		This file contains the abstract IScript class declaration
+		which is responsible for defining the interface for all scripts
+		within the engine.
+
+    Primary Author:
+         LAU XIANG YANG (100%)
+		- Created the IScript.h file and its function specification.
+
+    All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
 
 #pragma once
 #include "ECS/Types.h"

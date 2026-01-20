@@ -1,3 +1,19 @@
+/*!------------------------------------------------------------------------------------------------
+    File: DialogueManager.h
+    Project: NocturnalStudio
+
+	Brief:
+		 This file contains the DialogueManager class declaration
+		 which is responsible for managing dialogue functionalities within the engine 
+		 for the dialogue components.
+
+    Primary Author:
+         LAU XIANG YANG (100%)
+		- Created the DialogueManager.h file and its function specification.
+
+    All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
+
 
 #pragma once
 #include "IScript.h"

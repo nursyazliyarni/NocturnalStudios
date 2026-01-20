@@ -1,4 +1,16 @@
+/*!------------------------------------------------------------------------------------------------
+    File: IComponent.h
+    Project: NocturnalStudio
 
+	Brief:
+		This file contains the abstract class for IComponent
+		
+    Primary Author:
+         LAU XIANG YANG (100%)
+		- Created the IComponent.h file and its function specification.
+
+    All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
 
 #pragma once
 #include "Serialization/JSONserialization.h"

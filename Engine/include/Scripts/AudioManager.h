@@ -1,3 +1,18 @@
+/*!------------------------------------------------------------------------------------------------
+    File: AudioManager.h
+    Project: NocturnalStudio
+
+	Brief:
+		This file contains the AudioManager class declaration
+		which is responsible for managing audio-related functionalities
+		such as background music and sound effects within the engine.
+
+    Primary Author:
+         LAU XIANG YANG (100%)
+		- Created the AudioManager.h file and its function specification.
+
+    All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
 
 #pragma once
 #include "IScript.h"

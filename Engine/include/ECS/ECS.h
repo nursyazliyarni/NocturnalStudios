@@ -1,4 +1,18 @@
+/*!------------------------------------------------------------------------------------------------
+    File: ECS.h
+    Project: NocturnalStudio
 
+	Brief:
+		This file contains the coordinator for the three systems in place
+		that manages the ECS, the component, entity and system manager communicates
+		with each other using this class
+		
+    Primary Author:
+         LAU XIANG YANG (100%)
+		- Created the ECS class and its function specification.
+
+    All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
 
 #pragma once
 

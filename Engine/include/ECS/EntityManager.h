@@ -1,4 +1,18 @@
+/*!------------------------------------------------------------------------------------------------
+    File: EntityManager.h
+    Project: NocturnalStudio
 
+	Brief:
+		This file contains all the functions for distributing unique IDs to
+		all entities created, it does this using a container(queue) to store all
+		available entities allowed for the game engine to use
+		
+    Primary Author:
+         LAU XIANG YANG (100%)
+		- Created the EntityManager class and its function specification.
+
+    All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
 
 #pragma once
 

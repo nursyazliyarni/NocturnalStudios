@@ -1,3 +1,18 @@
+/*!------------------------------------------------------------------------------------------------
+    File: CutScene.h
+    Project: NocturnalStudio
+
+	Brief:
+		 This file contains the CutScene class declaration
+		 which is responsible for managing cutscene functionalities within the engine 
+		 for the cutscene components.
+
+    Primary Author:
+         LAU XIANG YANG (100%)
+		- Created the CutScene.h file and its function specification.
+
+    All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
 
 #pragma once
 #include "IScript.h"

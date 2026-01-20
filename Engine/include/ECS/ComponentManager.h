@@ -1,4 +1,20 @@
+/*!------------------------------------------------------------------------------------------------
+    File: ComponentManager.h
+    Project: NocturnalStudio
 
+	Brief:
+		This file contains a templated class for communicating with all
+		Component Arrays and allowing for different components to be registered to
+		the ECS. Registered components can then be added to various systems and
+		entities within the ECS. The system will then have a unique signature based
+		on components added and will update all components belonging to the system
+		
+    Primary Author:
+         LAU XIANG YANG (100%)
+		- Created the component manager class and its function specification.
+
+    All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
 
 #pragma once
 #include "ComponentArray.h"

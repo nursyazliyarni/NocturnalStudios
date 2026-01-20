@@ -1,3 +1,17 @@
+/*!------------------------------------------------------------------------------------------------
+    File: VertexArray.cpp
+    Project: NocturnalStudio
+
+	Brief:
+		This file contain the necessary functions for vertex array object
+		it will bind the vertex buffer and index buffer to the vertex array object.
+	
+    Primary Author:
+         LAU XIANG YANG (100%)
+		- Created the vertex array class and its function specification.
+
+    All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
 
 #include "pch.h"
 #include "Graphics/VertexArray.h"

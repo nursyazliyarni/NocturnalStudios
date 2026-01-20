@@ -1,3 +1,17 @@
+/*!------------------------------------------------------------------------------------------------
+    File: Collider.h
+    Project: NocturnalStudio
+
+	Brief:
+		This file contains the component declaration as well as member function
+		definitions for the collider component of the game engine.
+		
+    Primary Author:
+         LAU XIANG YANG (100%)
+		- Created the Collider.h file and its function specification.
+
+    All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
 
 #pragma once
 #include "IComponent.h"
@@ -19,7 +33,7 @@ namespace NocturnalEngine
 			line, //---------LineSegment
 			rect, //---------AABB
 			box, //----------Playable area box
-			bossball,
+			bossball, //-----Just something for fun
 			button,
 			dashCirc
 		};
