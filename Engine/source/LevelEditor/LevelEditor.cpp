@@ -125,11 +125,12 @@ namespace NocturnalEngine {
             ImGuizmo::Enable(true);
         }
 #endif
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
+
         if (is_ShowWindow)
-        {
-            ImGui_ImplOpenGL3_NewFrame();
-            ImGui_ImplGlfw_NewFrame();
-            ImGui::NewFrame(); 
+        { 
             Docking();
             MainMenuBar();
             LoadSaveScene();
@@ -151,7 +152,7 @@ namespace NocturnalEngine {
 
     void LevelEditor::Draw()
     {
-       if (!ImGui::GetCurrentContext() || !is_ShowWindow)
+       if (!ImGui::GetCurrentContext())
            return;
 
         ImGui::Render();

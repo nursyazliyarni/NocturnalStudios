@@ -124,14 +124,11 @@ Application constructor
 			Timer::GetInstance().Start(Systems::API);
 			Timer::GetInstance().GetDT(Systems::API);
 
-			if (p_Editor->is_ShowWindow)
-			{
-				p_Editor->Update();
-				if (p_Editor->is_ShowWindow) {
-					p_Editor->Draw();
-				}
-			}
-#if DEBUG			
+			
+#if DEBUG	
+			p_Editor->Update();
+			p_Editor->Draw();
+
 			if (p_Editor->is_ShowWindow == false && p_Input->KeyPressed(GLFW_KEY_0))
 			{
 				p_Editor->is_ShowWindow = true;
