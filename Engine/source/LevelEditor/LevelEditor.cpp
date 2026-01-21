@@ -279,23 +279,22 @@ namespace NocturnalEngine {
     {
         if (ImGui::BeginMainMenuBar())
         {
-            if (ImGui::BeginMenu("Editor Control/Play-Stop Toggle"))
+            if (is_ShowWindow)
             {
-                if (ImGui::MenuItem("Open/Stop"))
+                if (ImGui::Button("Close Editor/Play"))
+                {
+				    is_ShowWindow = false;
+                }
+            }
+            else
+            {
+                if (ImGui::Button("Open Editor/Stop"))
                 {
                     is_ShowWindow = true;
                 }
-
-                ImGui::Separator();
-
-                if (ImGui::MenuItem("Close/Play"))
-                {
-                    is_ShowWindow = false;
-                }
-                ImGui::EndMenu();
             }
-            ImGui::EndMainMenuBar();
         }
+		ImGui::EndMainMenuBar();
     }
 
     /*!*************************************************************************
