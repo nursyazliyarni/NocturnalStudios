@@ -128,11 +128,12 @@ namespace NocturnalEngine {
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
+        MainMenuBar();
 
         if (is_ShowWindow)
         { 
             Docking();
-            MainMenuBar();
+            /*MainMenuBar();*/
             LoadSaveScene();
             Profiler();
             ContentBrowser();
@@ -278,16 +279,16 @@ namespace NocturnalEngine {
     {
         if (ImGui::BeginMainMenuBar())
         {
-            if (ImGui::BeginMenu("Editor Control"))
+            if (ImGui::BeginMenu("Editor Control/Play-Stop Toggle"))
             {
-                if (ImGui::MenuItem("Open"))
+                if (ImGui::MenuItem("Open/Stop"))
                 {
                     is_ShowWindow = true;
                 }
 
                 ImGui::Separator();
 
-                if (ImGui::MenuItem("Close"))
+                if (ImGui::MenuItem("Close/Play"))
                 {
                     is_ShowWindow = false;
                 }
