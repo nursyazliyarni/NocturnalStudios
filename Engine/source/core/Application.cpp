@@ -35,6 +35,7 @@
 #include "Scripts/PauseMenu.h"
 #include "GUI/GUI.h"
 #include "Scripts/DialogueManager.h"
+#include "Core/MemoryManager.h"
 #include <stdlib.h>
 
 namespace NocturnalEngine {
@@ -135,6 +136,13 @@ Application constructor
 			}
 #endif
 			p_Scene->checkForSceneToLoad();
+
+			if (p_Input->KeyPressed(GLFW_KEY_F9))
+			{
+				p_MemoryManager.Shutdown();
+				p_MemoryManager.Enable(!p_MemoryManager.IsEnabled());
+				NOCTURNAL_ENGINE_INFO("Memory Manager Enabled: {}", p_MemoryManager.IsEnabled());
+			}
 
 			if (p_Scene->isGameplay == true)
 				glfwSetInputMode(m_window->GetWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);

@@ -34,6 +34,7 @@
 
 #include "ECS/Components/Components.h"
 #include "ECS/SceneManager.h"
+#include "Core/MemoryManager.h"
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/quaternion.hpp>
 
@@ -772,10 +773,41 @@ namespace NocturnalEngine {
             ImGui::Text("API");
             ImGui::SameLine(80);
             ImGui::ProgressBar(mSystemRunTime[4], ImVec2(-1.0f, 0.0f));
+            ImGui::Text("\n");
 
+			// Custom Memory Manager Info
+			ImGui::Text("Memory Manager Info");
+			ImGui::Text("Memory Manager is %s", p_MemoryManager.IsEnabled() ? "Enabled" : "Disabled");
+            ImGui::Text("Memory Block Size");
+            ImGui::SameLine();
+            ImGui::DragInt("##BlockSize", (int*)&mMemoryBlock, 1.0f, 1, 256);
+            ImGui::Text("Memory Blocks per Page");
+            ImGui::SameLine();
+            ImGui::DragInt("##BlocksPerPage", (int*)&mMemoryPage, 1.0f, 1, 128);
+
+            if (p_MemoryManager.IsEnabled()) 
+            {
+                if (ImGui::Button("Apply##MemorySettings"))
+                {
+					mMemoryBlock = mMemoryBlock < 1 ? kDefaultBlockSize : mMemoryBlock > kDefaultBlockSize ? kDefaultBlockSize : mMemoryBlock;
+					mMemoryPage = mMemoryPage < 1 ? kDefaultBlocksPerPage : mMemoryPage > kDefaultBlocksPerPage ? kDefaultBlocksPerPage : mMemoryPage;
+
+                    p_MemoryManager.SetBlockSize(static_cast<size_t>(mMemoryBlock));
+                    p_MemoryManager.SetBlocksPerPage(static_cast<size_t>(mMemoryPage));
+                    p_MemoryManager.Configure(p_MemoryManager.GetBlockSize(), p_MemoryManager.GetBlocksPerPage());
+                }
+                ImGui::Text("Memory Block Size: %zu bytes", p_MemoryManager.GetBlockSize());
+                ImGui::Text("Memory Blocks per Page: %zu", p_MemoryManager.GetBlocksPerPage());
+			    ImGui::Text("Total Memory Allocated: %zu bytes", p_MemoryManager.GetTotalMemoryAllocated());
+			    ImGui::Text("Total Memory Used: %zu bytes", p_MemoryManager.GetTotalMemoryUsed());
+				ImGui::ProgressBar(static_cast<float>(p_MemoryManager.GetTotalMemoryUsed()) / static_cast<float>(p_MemoryManager.GetTotalMemoryAllocated()), ImVec2(-1.0f, 0.0f));
+				ImGui::Text("Free Block Count: %zu", p_MemoryManager.GetFreeBlocks());
+            }
+            else
+            {
+				ImGui::Text("Press F9 to enable Custom Memory Manager");
+            }
             ImGui::End();
-
-
         }
     }
 

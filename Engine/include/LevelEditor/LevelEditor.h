@@ -96,9 +96,11 @@ namespace NocturnalEngine {
 		float mSceneRuntime = 0.0f;
 		float mUpdateTimer = 0.0f;
 		std::array<float, 5> mSystemRunTime = { 0.0f,0.0f,0.0f,0.0f };
+
+		// memory manager
+		std::size_t mMemoryBlock;
+		std::size_t mMemoryPage;
 		
-		
-	
 		//Content Browser
 		std::filesystem::path mAssetsPath= "Assets";
 		std::filesystem::path mCurrentDirectory = mAssetsPath;
