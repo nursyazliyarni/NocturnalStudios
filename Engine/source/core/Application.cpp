@@ -137,9 +137,14 @@ Application constructor
 #endif
 			p_Scene->checkForSceneToLoad();
 
-			if (p_Input->KeyPressed(GLFW_KEY_F9))
+			if (p_Input->KeyPressed(GLFW_KEY_F9) && p_MemoryManager.IsEnabled())
 			{
 				p_MemoryManager.Shutdown();
+				p_MemoryManager.Enable(!p_MemoryManager.IsEnabled());
+				NOCTURNAL_ENGINE_INFO("Memory Manager Enabled: {}", p_MemoryManager.IsEnabled());
+			}
+			else if (p_Input->KeyPressed(GLFW_KEY_F9) && !p_MemoryManager.IsEnabled())
+			{
 				p_MemoryManager.Enable(!p_MemoryManager.IsEnabled());
 				NOCTURNAL_ENGINE_INFO("Memory Manager Enabled: {}", p_MemoryManager.IsEnabled());
 			}
