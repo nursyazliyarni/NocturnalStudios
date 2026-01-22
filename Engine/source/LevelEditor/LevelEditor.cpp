@@ -105,17 +105,35 @@ namespace NocturnalEngine {
 #if DEBUG
         if (p_Input->KeyPressed(GLFW_KEY_F1))
         {
-            is_ShowWindow = !is_ShowWindow;
-            std::cout << "123abc" << p_Editor->is_ShowWindow << "\n";
+            if (is_ShowWindow) {
+                is_ShowWindow = !is_ShowWindow;
+            }
+        }
+
+        ImGuiIO& io = ImGui::GetIO();
+        //press F2 to switch mouse control from imgui to game
+        if (p_Input->KeyPressed(GLFW_KEY_F2)&&imgui_mouse_control)
+        {
+            io.ConfigFlags |= ImGuiConfigFlags_NoMouse; //the game own the mouse control
+            imgui_mouse_control = false;
+            ImGuizmo::Enable(false);
+        }
+        //press F2 to switch mouse control from game to imgui
+        else if (p_Input->KeyPressed(GLFW_KEY_F2) && !imgui_mouse_control) {
+            io.ConfigFlags &= ~ImGuiConfigFlags_NoMouse; //imgui own the mouse control
+            imgui_mouse_control = true;
+            ImGuizmo::Enable(true);
         }
 #endif
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
+        MainMenuBar();
+
         if (is_ShowWindow)
-        {
-            ImGui_ImplOpenGL3_NewFrame();
-            ImGui_ImplGlfw_NewFrame();
-            ImGui::NewFrame(); 
+        { 
             Docking();
-            MainMenuBar();
+            /*MainMenuBar();*/
             LoadSaveScene();
             Profiler();
             ContentBrowser();
@@ -261,23 +279,22 @@ namespace NocturnalEngine {
     {
         if (ImGui::BeginMainMenuBar())
         {
-            if (ImGui::BeginMenu("Editor Control"))
+            if (is_ShowWindow)
             {
-                if (ImGui::MenuItem("Open"))
+                if (ImGui::Button("Close Editor/Play"))
+                {
+				    is_ShowWindow = false;
+                }
+            }
+            else
+            {
+                if (ImGui::Button("Open Editor/Stop"))
                 {
                     is_ShowWindow = true;
                 }
-
-                ImGui::Separator();
-
-                if (ImGui::MenuItem("Close"))
-                {
-                    is_ShowWindow = false;
-                }
-                ImGui::EndMenu();
             }
-            ImGui::EndMainMenuBar();
         }
+		ImGui::EndMainMenuBar();
     }
 
     /*!*************************************************************************

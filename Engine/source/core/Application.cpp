@@ -124,15 +124,16 @@ Application constructor
 			Timer::GetInstance().Start(Systems::API);
 			Timer::GetInstance().GetDT(Systems::API);
 
-			//p_Editor->Update();
-
-			std::cout << "123abc"<<p_Editor->is_ShowWindow << "\n";
-			if (p_Editor->is_ShowWindow)
-			{
-				p_Editor->Update();
-				p_Editor->Draw();
-			}
 			
+#if DEBUG	
+			p_Editor->Update();
+			p_Editor->Draw();
+
+			if (p_Editor->is_ShowWindow == false && p_Input->KeyPressed(GLFW_KEY_0))
+			{
+				p_Editor->is_ShowWindow = true;
+			}
+#endif
 			p_Scene->checkForSceneToLoad();
 
 			if (p_Scene->isGameplay == true)

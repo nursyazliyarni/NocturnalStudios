@@ -123,7 +123,7 @@ namespace NocturnalEngine
 				{
 
 					Graphic::mcamera->SetZoomLevel(0.25f);
-					p_Scene->setSceneToLoad("Assets/Scene/CutScene.json");// go to the cutscene
+					p_Scene->setSceneToLoad("Assets/Scene/Game.json");
 				}
 
 				if (ID_tag.GetTag() == "Restart")
@@ -266,7 +266,7 @@ namespace NocturnalEngine
 
 			if (ID_tag.GetTag() == "Start")
 			{
-				spt.SetTexture("Start_Idle");
+				spt.SetTexture("menuPLAY_btn");
 			}
 
 			if (ID_tag.GetTag() == "Quit")

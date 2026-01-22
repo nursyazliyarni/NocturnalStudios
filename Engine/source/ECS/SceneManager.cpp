@@ -320,8 +320,9 @@ void NocturnalEngine::SceneManager::checkForSceneToLoad()
 
 		if (sceneToLoad == "Assets/Scene/Game.json")
 		{
-			isGameplay = true;
-			Graphic::camera.SetZoomLevel(0.25f);
+			isGameplay = false;
+			Graphic::camera.SetZoomLevel(1.0f);
+			Graphic::camera.SetPosition({ 0.0f,0.0f,0.0f });
 		}
 
 		if (sceneToLoad == "Assets/Scene/Menu.json")

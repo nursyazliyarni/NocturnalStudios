@@ -43,7 +43,7 @@
                 "NameTag": "Main Menu BackGround"
             },
             {
-                "TextureName": "Main_Background",
+                "TextureName": "menu_bg",
                 "Index_X": 0,
                 "Index_Y": 0,
                 "Ucoordinates": 512.0,
@@ -108,7 +108,7 @@
                 "NameTag": "Start"
             },
             {
-                "TextureName": "Start_Idle",
+                "TextureName": "menuPLAY_btn",
                 "Index_X": 0,
                 "Index_Y": 0,
                 "Ucoordinates": 512.0,
@@ -390,8 +390,8 @@
         ],
         "6": [
             {
-                "posX": 0.0,
-                "posY": 0.0,
+                "posX": -1.070643663406372,
+                "posY": -0.36734700202941895,
                 "scaleX": 1.0,
                 "scaleY": 1.0,
                 "Rot": 0.0
@@ -403,7 +403,7 @@
             },
             {
                 "TextureName": "flamingo_spritesheet",
-                "Index_X": 0,
+                "Index_X": 4,
                 "Index_Y": 0,
                 "Ucoordinates": 528.0,
                 "Vcoordinates": 528.0,

@@ -279,7 +279,7 @@ namespace NocturnalEngine
 
 			if (ID_tag.GetTag() == "Start")
 			{
-				spt.SetTexture("Start_Idle");
+				spt.SetTexture("menuPLAY_btn");
 			}
 
 			if (ID_tag.GetTag() == "Quit")

@@ -58,6 +58,7 @@ namespace NocturnalEngine {
 	public:
 
 		bool is_ShowWindow = true;
+		bool imgui_mouse_control = true;
 
 		static std::unique_ptr<LevelEditor>& GetInstance();
 
