@@ -509,6 +509,13 @@ namespace NocturnalEngine {
                 }
             }
 
+            float padding{ 16.0f }, thumbnailSize{ 128.0f }, cellBaseSize{ thumbnailSize + padding }, panelWidth{ ImGui::GetContentRegionAvail().x };
+            int columnCount = (int)(panelWidth / cellBaseSize);
+            if (columnCount < 1)
+                columnCount = 1;
+
+
+
             for (auto& Directory : std::filesystem::directory_iterator(mCurrentDirectory))
             {
                 const auto& directorypath = Directory.path(); //the path for folders in Assets(assets/fonts)
@@ -520,7 +527,7 @@ namespace NocturnalEngine {
                 if (Directory.is_directory())
                 {
                     ImGui::ImageButton("FolderIcon", (ImTextureID)(intptr_t)ResourceManager::GetIcon("FolderIcon")->GetRendererID(),
-                        ImVec2(128.f, 128.f), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
+                        ImVec2(64.f, 64.f), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
                 }
 
                 //Press into the folder

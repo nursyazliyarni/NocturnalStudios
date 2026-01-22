@@ -102,6 +102,8 @@ namespace NocturnalEngine {
 		//Content Browser
 		std::filesystem::path mAssetsPath= "Assets";
 		std::filesystem::path mCurrentDirectory = mAssetsPath;
+		std::filesystem::path mSelectedAsset;
+		std::filesystem::path mHoveredAsset;
 		
 		//Scene/guizmo
 		int mGizmoType = -1;
