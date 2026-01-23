@@ -271,11 +271,11 @@ namespace NocturnalEngine
 
 			if (ID_tag.GetTag() == "Quit")
 			{
-				spt.SetTexture("Quit_Idle");
+				spt.SetTexture("quitBtn");
 			}
 			if (ID_tag.GetTag() == "Options")
 			{
-				spt.SetTexture("Options_Idle");
+				spt.SetTexture("optionsBtn");
 			}
 
 			if (ID_tag.GetTag() == "MainMenu")
