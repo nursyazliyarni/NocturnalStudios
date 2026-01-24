@@ -4,8 +4,8 @@
     },
     "EntitySignatures": [
         "00000000000000000000000011111101",
-        "00000000000000000000000000011001",
-        "00000000000000000000000000011001"
+        "00000000000000000000000001111101",
+        "00000000000000000000000001111101"
     ],
     "Components": {
         "0": [
@@ -82,7 +82,24 @@
                 "Rot": 0.0
             },
             {},
-            {},
+            {
+                "ColliderType1": 4,
+                "ColliderType2": 0,
+                "minX1": 0.0,
+                "minX2": 0.0,
+                "minY1": 0.0,
+                "minY2": 0.0,
+                "maxX1": 0.0,
+                "maxX2": 0.0,
+                "maxY1": 0.0,
+                "maxY2": 0.0,
+                "offsetX1": 0.0,
+                "offsetX2": 0.0,
+                "offsetY1": 0.0,
+                "offsetY2": 0.0,
+                "radius1": 0.0,
+                "radius2": 0.0
+            },
             {
                 "NameTag": "Owl"
             },
@@ -97,8 +114,13 @@
                 "MaxIndex": 0,
                 "LayeringOrder": 0
             },
-            {},
-            {},
+            {
+                "ScriptCount": 0
+            },
+            {
+                "Tag": "Owl",
+                "TargetTag": ""
+            },
             {},
             {},
             {},
@@ -113,7 +135,24 @@
                 "Rot": 0.0
             },
             {},
-            {},
+            {
+                "ColliderType1": 4,
+                "ColliderType2": 0,
+                "minX1": -1.0,
+                "minX2": 0.0,
+                "minY1": -0.6600000262260437,
+                "minY2": 0.0,
+                "maxX1": 1.0,
+                "maxX2": 0.0,
+                "maxY1": 0.6600000262260437,
+                "maxY2": 0.0,
+                "offsetX1": 0.0,
+                "offsetX2": 0.0,
+                "offsetY1": 0.0,
+                "offsetY2": 0.0,
+                "radius1": 0.0,
+                "radius2": 0.0
+            },
             {
                 "NameTag": "Button"
             },
@@ -128,8 +167,14 @@
                 "MaxIndex": 0,
                 "LayeringOrder": 0
             },
-            {},
-            {},
+            {
+                "0": "ButtonResponse",
+                "ScriptCount": 1
+            },
+            {
+                "Tag": "Button",
+                "TargetTag": ""
+            },
             {},
             {},
             {},

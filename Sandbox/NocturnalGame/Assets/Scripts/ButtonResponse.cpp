@@ -180,6 +180,10 @@ namespace NocturnalEngine
 					p_GUI->toggle_script();// tell the system to end the game 
 				}
 
+				if (ID_tag.GetTag() == "Button")
+				{
+					p_Scene->setSceneToLoad("Assets/Scene/Game.json");//reset the game level in game over
+				}
 
 
 			}
