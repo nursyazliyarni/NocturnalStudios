@@ -531,9 +531,9 @@ namespace NocturnalEngine {
                 // Render breadcrumbs
                 std::filesystem::path accumulated;
 
-                for (size_t i = 1; i < segments.size(); ++i)
+                for (size_t i{ 1 }; i < segments.size(); ++i)
                 {
-                    
+          
                     if (i > 1)
                     {
                         ImGui::SameLine();
@@ -556,12 +556,10 @@ namespace NocturnalEngine {
                 ImGui::Separator();
             }
             
-
-            
             //END back button & breadcrumb section
 
 
-            float padding{ 16.0f }, thumbnailSize{ 64.0f }, cellBaseSize{ thumbnailSize + padding }, panelWidth{ ImGui::GetContentRegionAvail().x };
+            float padding{ 16.0f }, thumbnailSize{ 128.0f }, cellBaseSize{ thumbnailSize + padding }, panelWidth{ ImGui::GetContentRegionAvail().x };
             int columnCount = panelWidth / cellBaseSize < 1.f ? 1 : (int)(panelWidth / cellBaseSize), colPos{ 0 };
 
 
@@ -574,11 +572,88 @@ namespace NocturnalEngine {
                 ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
 
                 ImGui::BeginGroup();
+                //check what type the directory is
                 if (Directory.is_directory())
                 {
                     ImGui::ImageButton("FolderIcon", (ImTextureID)(intptr_t)ResourceManager::GetIcon("FolderIcon")->GetRendererID(),
                         ImVec2(thumbnailSize,thumbnailSize), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
                 }
+
+                //dealing w diff filenames
+                auto ext = directorypath.extension().string();
+                std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower); // lowercase for safety
+                if (ext == ".png")
+                {
+                    std::string texName = filename;
+                    texName.erase(filename.find_last_of('.'));
+
+                    auto tex = ResourceManager::GetTexture(texName);
+                    if (tex)
+                    {
+                        
+                        // Scale to fit thumbnail
+                        float w{ static_cast<float>(tex->GetWidth()) }, h{ static_cast<float>(tex->GetHeight()) };
+                        float scale = thumbnailSize / std::max(w, h);
+                        ImVec2 imgSize(w * scale, h * scale);
+
+                        // --- Fixed-size thumbnail box with bottom-left alignment ---
+                        ImGui::BeginGroup(); // box container
+                        ImGui::Dummy(ImVec2(thumbnailSize - imgSize.x, 0.0f)); // horizontal padding
+                        ImGui::SameLine();
+                        ImGui::BeginGroup();
+                        ImGui::Dummy(ImVec2(0, thumbnailSize - imgSize.y)); // vertical padding above image
+                        ImGui::Image((ImTextureID)(intptr_t)tex->GetRendererID(), imgSize,ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
+                        ImGui::EndGroup();
+                        ImGui::EndGroup();
+
+                        if (ImGui::IsItemHovered())
+                        {
+                            ImGui::BeginTooltip();
+                            std::string str = texName + " " + "(" + std::to_string(tex->GetWidth()) + "x" +
+                                std::to_string(tex->GetHeight()) + ")";
+                            ImGui::Text(str.c_str());
+                            ImGui::EndTooltip();
+                        }
+
+                        if (mCurrentDirectory.filename() != "Icons"&&ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID))
+                        {
+                            std::string payloadStr = texName;
+                            ImGui::SetDragDropPayload("CONTENT_BROWSER_ITEM", payloadStr.c_str(), payloadStr.size() + 1);
+
+                            ImGui::Image((ImTextureID)(intptr_t)tex->GetRendererID(),
+                                ImVec2(thumbnailSize * static_cast<float>(tex->GetWidth()) / static_cast<float>(tex->GetHeight()), thumbnailSize),
+                                ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
+                            ImGui::EndDragDropSource();
+                        }
+                    }
+                }
+                else if (ext==".json") {
+                    ImGui::ImageButton("SceneButton",(ImTextureID)(intptr_t)ResourceManager::GetIcon("TextIcon")->GetRendererID(),
+                        ImVec2(thumbnailSize, thumbnailSize), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
+                    if (ImGui::IsItemHovered())
+                    {
+                        ImGui::BeginTooltip();
+                        std::string jsnName = filename;
+                        jsnName.erase(filename.find_last_of('.'));
+
+                        std::string str{};
+
+                        if (mCurrentDirectory.filename() == "Scene") {
+                            str += "Scene: ";
+                        }
+                        str += jsnName;
+
+                        ImGui::Text(str.c_str());
+                        ImGui::EndTooltip();
+
+                        if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left)) {
+                           //to add: autosaves the previous scene if any
+                            p_Scene->DeserializeFromFile(mCurrentDirectory.string()+'/' + filename);
+                        }
+                    }
+                    
+                }
+                
 
                 //Press into the folder
                 ImGui::PopStyleColor();
@@ -588,7 +663,17 @@ namespace NocturnalEngine {
                         mCurrentDirectory /= directorypath.filename();
                 }
 
-                ImGui::TextWrapped(filename.c_str());
+
+                std::string displayName = filename;
+                while (ImGui::CalcTextSize(displayName.c_str()).x > thumbnailSize-3 && !displayName.empty()) {
+                    displayName.pop_back();
+                    
+                }
+                if (displayName!=filename&&ImGui::CalcTextSize(displayName.c_str()).x <=thumbnailSize - 3)displayName += "...";
+
+                ImGui::TextUnformatted(displayName.c_str());
+
+
                 ImGui::EndGroup(); //indicate the folder name
                 ImGui::PopID();
 
@@ -604,59 +689,7 @@ namespace NocturnalEngine {
 
             ImGui::End();
             
-            std::string windowTitle{ mCurrentDirectory.filename().string() == "Assets" ? "Content Browser" : mCurrentDirectory.filename().string() };
-
-            ImGui::Begin(windowTitle.c_str(), (bool*)0, ImGuiWindowFlags_HorizontalScrollbar);
-            if (mCurrentDirectory.filename() == "Textures")
-            {
-                for (auto& [name, texObj] : ResourceManager::textures)
-                {
-                    ImGui::Image((ImTextureID)(intptr_t)texObj->GetRendererID(),
-                        ImVec2(128 * static_cast<float>(texObj->GetWidth()) / static_cast<float>(texObj->GetHeight()), 128),
-                        ImVec2(0.0f, 1.0f),
-                        ImVec2(1.0f, 0.0f));
-
-                    if (ImGui::IsItemHovered())
-                    {
-                        ImGui::BeginTooltip();
-                        std::string str = name + " " + "(" + std::to_string(texObj->GetWidth()) + "x" +
-                            std::to_string(texObj->GetHeight()) + ")";
-                        ImGui::Text(str.c_str());
-                        ImGui::EndTooltip();
-                    }
-
-                    if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID))
-                    {
-                        ImGui::SetDragDropPayload("Textures", &name, sizeof(name));
-                        ImGui::Image((ImTextureID)(intptr_t)texObj->GetRendererID(),
-                            ImVec2(128 * static_cast<float>(texObj->GetWidth()) / static_cast<float>(texObj->GetHeight()), 128),
-                            ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
-                        ImGui::EndDragDropSource();
-                    }
-                }
-            }
-            else if (mCurrentDirectory.filename() == "Icons")
-            {
-                for (auto& [name, texObj] : ResourceManager::Icons)
-                {
-                    ImGui::SameLine();
-                    ImGui::Image((ImTextureID)(intptr_t)texObj->GetRendererID(),
-                        ImVec2(128 * static_cast<float>(texObj->GetWidth()) / static_cast<float>(texObj->GetHeight()), 128),
-                        ImVec2(0.0f, 1.0f),
-                        ImVec2(1.0f, 0.0f));
-
-                    if (ImGui::IsItemHovered())
-                    {
-                        ImGui::BeginTooltip();
-                        std::string str = name + " " + "(" + std::to_string(texObj->GetWidth()) + "x" +
-                            std::to_string(texObj->GetHeight()) + ")";
-                        ImGui::Text(str.c_str());
-                        ImGui::EndTooltip();
-                    }
-                }
-
-            }
-            ImGui::End();
+           
         }
 
     }
