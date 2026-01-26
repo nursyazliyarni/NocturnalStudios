@@ -588,6 +588,8 @@ namespace NocturnalEngine {
                     texName.erase(filename.find_last_of('.'));
 
                     auto tex = ResourceManager::GetTexture(texName);
+                    if (!tex) tex = ResourceManager::GetIcon(texName);
+
                     if (tex)
                     {
                         
@@ -653,6 +655,47 @@ namespace NocturnalEngine {
                     }
                     
                 }
+                else if (ext == ".wav"|| ext == ".ogg"|| ext == ".mp3") {
+                    std::string sndName = filename;
+                    sndName.erase(filename.find_last_of('.'));
+
+                    ImGui::ImageButton("SoundButton", (ImTextureID)(intptr_t)ResourceManager::GetIcon("SoundIcon")->GetRendererID(),
+                        ImVec2(thumbnailSize, thumbnailSize), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
+                    if (ImGui::IsItemHovered())
+                    {
+                        ImGui::BeginTooltip();
+                        
+
+                        std::string str = sndName;
+
+                        ImGui::Text(str.c_str());
+                        ImGui::EndTooltip();
+
+                        
+                    }
+                    if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID))
+                    {
+                        std::string payloadStr = sndName;
+                        ImGui::SetDragDropPayload("CONTENT_BROWSER_ITEM", payloadStr.c_str(), payloadStr.size() + 1);
+
+                        ImGui::Image((ImTextureID)(intptr_t)ResourceManager::GetIcon("SoundIcon")->GetRendererID(),
+                            ImVec2(thumbnailSize, thumbnailSize), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
+                        ImGui::EndDragDropSource();
+                    }
+
+                }
+                else if (ext == ".cpp" || ext == ".hpp" || ext == ".h"||ext==".c") {
+                    ImGui::Image( (ImTextureID)(intptr_t)ResourceManager::GetIcon("TextIcon")->GetRendererID(),
+                        ImVec2(thumbnailSize, thumbnailSize), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
+                }
+                else if (ext == ".ttf"||ext==".otf") {
+                    ImGui::Image((ImTextureID)(intptr_t)ResourceManager::GetIcon("FontIcon")->GetRendererID(),
+                        ImVec2(thumbnailSize, thumbnailSize), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
+                }
+                else if (ext == ".shader") {
+                    ImGui::Image((ImTextureID)(intptr_t)ResourceManager::GetIcon("ShaderIcon")->GetRendererID(),
+                        ImVec2(thumbnailSize, thumbnailSize), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
+                }
                 
 
                 //Press into the folder
@@ -689,7 +732,9 @@ namespace NocturnalEngine {
 
             ImGui::End();
             
-           
+            
+
+
         }
 
     }
