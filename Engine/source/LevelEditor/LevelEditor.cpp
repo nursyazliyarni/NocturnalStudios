@@ -500,20 +500,69 @@ namespace NocturnalEngine {
         if (is_ShowWindow)
         {
             ImGui::Begin("Content Browser");
+
+
+            //START back button & and breadcrumbsection
+            
             if (mCurrentDirectory != std::filesystem::path(mAssetsPath))
             {
+                ImGui::BeginGroup();
                 if(ImGui::ImageButton("BackButton", (ImTextureID)(intptr_t)ResourceManager::GetIcon("BackIcon")->GetRendererID(),
                     ImVec2(25.f, 25.f), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f)))
                 {
                     mCurrentDirectory = mCurrentDirectory.parent_path();
                 }
+                ImGui::SameLine();
+                ImGui::Dummy(ImVec2(ImGui::GetStyle().ItemSpacing.x, 0.0f));
+                ImGui::SameLine();
+
+                std::filesystem::path curPath = mCurrentDirectory;
+                std::vector<std::filesystem::path> segments;
+                
+                // Build segments
+                while (curPath != curPath.root_path())
+                {
+                    segments.push_back(curPath.filename());
+                    curPath = curPath.parent_path();
+                }
+                segments.push_back(curPath); // root
+                std::reverse(segments.begin(), segments.end());
+
+                // Render breadcrumbs
+                std::filesystem::path accumulated;
+
+                for (size_t i = 1; i < segments.size(); ++i)
+                {
+                    
+                    if (i > 1)
+                    {
+                        ImGui::SameLine();
+                        ImGui::Text("/");
+                        ImGui::SameLine();
+                    }
+
+                    accumulated /= segments[i];
+
+                    ImGui::PushID(i);
+                    if (ImGui::SmallButton(segments[i].string().c_str()))
+                    {
+                        mCurrentDirectory = accumulated;
+                    }
+                    ImGui::PopID();
+
+                    ImGui::SameLine();
+                }
+                ImGui::EndGroup();
+                ImGui::Separator();
             }
+            
 
-            float padding{ 16.0f }, thumbnailSize{ 128.0f }, cellBaseSize{ thumbnailSize + padding }, panelWidth{ ImGui::GetContentRegionAvail().x };
-            int columnCount = (int)(panelWidth / cellBaseSize);
-            if (columnCount < 1)
-                columnCount = 1;
+            
+            //END back button & breadcrumb section
 
+
+            float padding{ 16.0f }, thumbnailSize{ 64.0f }, cellBaseSize{ thumbnailSize + padding }, panelWidth{ ImGui::GetContentRegionAvail().x };
+            int columnCount = panelWidth / cellBaseSize < 1.f ? 1 : (int)(panelWidth / cellBaseSize), colPos{ 0 };
 
 
             for (auto& Directory : std::filesystem::directory_iterator(mCurrentDirectory))
@@ -524,10 +573,11 @@ namespace NocturnalEngine {
                 ImGui::PushID(filename.c_str());
                 ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
 
+                ImGui::BeginGroup();
                 if (Directory.is_directory())
                 {
                     ImGui::ImageButton("FolderIcon", (ImTextureID)(intptr_t)ResourceManager::GetIcon("FolderIcon")->GetRendererID(),
-                        ImVec2(64.f, 64.f), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
+                        ImVec2(thumbnailSize,thumbnailSize), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
                 }
 
                 //Press into the folder
@@ -538,13 +588,25 @@ namespace NocturnalEngine {
                         mCurrentDirectory /= directorypath.filename();
                 }
 
-                ImGui::TextWrapped(filename.c_str()); ImGui::NextColumn(); //indicate the folder name
+                ImGui::TextWrapped(filename.c_str());
+                ImGui::EndGroup(); //indicate the folder name
                 ImGui::PopID();
+
+                ++colPos;
+                if (colPos<columnCount)
+                {
+                    ImGui::SameLine();
+                }
+                else {
+                    colPos = 0;
+                }
             }
 
             ImGui::End();
+            
+            std::string windowTitle{ mCurrentDirectory.filename().string() == "Assets" ? "Content Browser" : mCurrentDirectory.filename().string() };
 
-            ImGui::Begin(mCurrentDirectory.filename().string().c_str(), (bool*)0, ImGuiWindowFlags_HorizontalScrollbar);
+            ImGui::Begin(windowTitle.c_str(), (bool*)0, ImGuiWindowFlags_HorizontalScrollbar);
             if (mCurrentDirectory.filename() == "Textures")
             {
                 for (auto& [name, texObj] : ResourceManager::textures)
