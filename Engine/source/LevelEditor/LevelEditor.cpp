@@ -637,8 +637,10 @@ namespace NocturnalEngine {
 
                         if (mCurrentDirectory.filename() != "Icons"&&ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID))
                         {
-                            std::string payloadStr = texName;
-                            ImGui::SetDragDropPayload("CONTENT_BROWSER_ITEM", payloadStr.c_str(), payloadStr.size() + 1);
+                            auto it = ResourceManager::textures.find(texName);
+                            auto& addN = it->first;
+                            ImGui::SetDragDropPayload("Textures",&addN,sizeof(addN));
+                            //std::cout << payloadStr;
 
                             ImGui::Image((ImTextureID)(intptr_t)tex->GetRendererID(),
                                 ImVec2(thumbnailSize * static_cast<float>(tex->GetWidth()) / static_cast<float>(tex->GetHeight()), thumbnailSize),
