@@ -302,39 +302,56 @@ namespace NocturnalEngine {
    ****************************************************************************/
     void LevelEditor::LoadSaveScene()
     {
-        std::vector<const char*> filenames;
-        const size_t arrSize = 100;
-        const char* fileList[arrSize];
         std::string path = "Assets/Scene/";
-        for (auto& item : mScenefile)
-        {
-            filenames.push_back(item.c_str());
-        }
+        ImGui::Begin("Save Scene");
+        // --- Input text for filename ---
+        ImGui::InputText("Scene Name", mSceneInputBuffer, sizeof(mSceneInputBuffer));
 
-        std::copy(filenames.begin(), filenames.end(), fileList);
+        ImGui::Spacing();
+        // --- Save button ---
+        if (ImGui::Button("SAVE"))
+        {
+            std::string filename = mSceneInputBuffer;
 
-        for (size_t i = filenames.size(); i < arrSize; i++)
-        {
-            fileList[i] = "EMPTY";
-        }
+            if (filename.empty())
+            {
+                std::cout << "Cannot save: filename is empty.\n";
+            }
+            else if(mLastSaveTime < 0.f)
+            {
+                // Ensure extension
+                if (filename.find(".json") == std::string::npos)
+                    filename += ".json";
 
-        ImGui::Begin("Save / Load");
-        ImGui::Combo("##LoadFile", &mSelectedFile, fileList, static_cast<int>(filenames.size()), static_cast<int>(filenames.size()));
-        if (mSelectedFile < 0)
-        {
-            ImGui::End();
-            return;
+
+                std::string fullPath = path + filename;
+
+                // Save scene
+                
+                if (p_Scene->SerializeToFile(fullPath))
+                {
+                    mLastSavedScene = filename;
+                    mLastSaveTime = ImGui::GetTime();
+                }
+
+                //std::cout << "Saved scene: " << fullPath << "\n";
+
+                
+            }
         }
-        if (ImGui::Button("LOAD"))
-        {
-            p_Scene->DeserializeFromFile(path + mFileList[mSelectedFile].path().filename().string());
-        }
+        // Same line as Save button
         ImGui::SameLine();
-        ImGui::Button("SAVE");
-        if (ImGui::IsItemClicked())
+
+        // Show message if recently saved
+        if (mLastSaveTime > 0.0f && ImGui::GetTime() - mLastSaveTime < mSaveMessageDuration)
         {
-            p_Scene->SerializeToFile(path + mFileList[mSelectedFile].path().filename().string());
+            std::string saveMessage = mLastSavedScene + " has been saved in "+path+"!";
+            ImGui::TextColored(ImVec4(1.f,1.f,1.f,  ((mLastSaveTime+mSaveMessageDuration)- ImGui::GetTime())/mSaveMessageDuration), saveMessage.c_str());
+            
         }
+        if (mLastSaveTime > 0.0f && ImGui::GetTime() - mLastSaveTime > mSaveMessageDuration)mLastSaveTime = -1.f;
+
+        
         
         
         ImGui::End();
