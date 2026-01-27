@@ -28,7 +28,7 @@ namespace NocturnalEngine {
 	using mousestatus = int;
 	using mousecode = int;
 
-	class Window;
+	class gui_system;
 
 	class NOCTURNAL_ENGINE_API InputSystem
 	{
@@ -53,7 +53,7 @@ namespace NocturnalEngine {
 		void ResetPressedMouse();
 
 		bool isKeyPressed(keycode key);
-		bool detect_draggable_item(mousecode mouse, Window *wd);
+		bool detect_draggable_item();
 
 	public:
 		//data
