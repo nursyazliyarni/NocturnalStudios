@@ -34,6 +34,7 @@
 
 #include "ECS/Components/Components.h"
 #include "ECS/SceneManager.h"
+#include "Core/MemoryManager.h"
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/quaternion.hpp>
 
@@ -302,39 +303,57 @@ namespace NocturnalEngine {
    ****************************************************************************/
     void LevelEditor::LoadSaveScene()
     {
-        std::vector<const char*> filenames;
-        const size_t arrSize = 100;
-        const char* fileList[arrSize];
         std::string path = "Assets/Scene/";
-        for (auto& item : mScenefile)
-        {
-            filenames.push_back(item.c_str());
-        }
+        ImGui::Begin("Save Scene");
+        // --- Input text for filename ---
+        ImGui::InputText("Scene Name", mSceneInputBuffer, sizeof(mSceneInputBuffer));
 
-        std::copy(filenames.begin(), filenames.end(), fileList);
+        ImGui::Spacing();
+        // --- Save button ---
+        if (ImGui::Button("SAVE"))
+        {
+            std::string filename = mSceneInputBuffer;
 
-        for (size_t i = filenames.size(); i < arrSize; i++)
-        {
-            fileList[i] = "EMPTY";
-        }
+            if (filename.empty())
+            {
+                std::cout << "Cannot save: filename is empty.\n";
+            }
+            else if(mLastSaveTime < 0.f)
+            {
+                // Ensure extension
+                if (filename.find(".json") == std::string::npos)
+                    filename += ".json";
 
-        ImGui::Begin("Save / Load");
-        ImGui::Combo("##LoadFile", &mSelectedFile, fileList, static_cast<int>(filenames.size()), static_cast<int>(filenames.size()));
-        if (mSelectedFile < 0)
-        {
-            ImGui::End();
-            return;
+
+                std::string fullPath = path + filename;
+
+                // Save scene
+                
+                if (p_Scene->SerializeToFile(fullPath))
+                {
+                    mLastSavedScene = filename;
+                    mCurrentScene = filename;
+                    mLastSaveTime = ImGui::GetTime();
+                }
+
+                //std::cout << "Saved scene: " << fullPath << "\n";
+
+                
+            }
         }
-        if (ImGui::Button("LOAD"))
-        {
-            p_Scene->DeserializeFromFile(path + mFileList[mSelectedFile].path().filename().string());
-        }
+        // Same line as Save button
         ImGui::SameLine();
-        ImGui::Button("SAVE");
-        if (ImGui::IsItemClicked())
+
+        // Show message if recently saved
+        if (mLastSaveTime > 0.0f && ImGui::GetTime() - mLastSaveTime < mSaveMessageDuration)
         {
-            p_Scene->SerializeToFile(path + mFileList[mSelectedFile].path().filename().string());
+            std::string saveMessage = mLastSavedScene + " has been saved in "+path+"!";
+            ImGui::TextColored(ImVec4(1.f,1.f,1.f,  static_cast<float>(((mLastSaveTime+mSaveMessageDuration)- ImGui::GetTime())/mSaveMessageDuration)), saveMessage.c_str());
+            
         }
+        if (mLastSaveTime > 0.0f && ImGui::GetTime() - mLastSaveTime > mSaveMessageDuration)mLastSaveTime = -1.f;
+
+        
         
         
         ImGui::End();
@@ -500,14 +519,68 @@ namespace NocturnalEngine {
         if (is_ShowWindow)
         {
             ImGui::Begin("Content Browser");
+
+
+            //START back button & and breadcrumbsection
+            
             if (mCurrentDirectory != std::filesystem::path(mAssetsPath))
             {
+                ImGui::BeginGroup();
                 if(ImGui::ImageButton("BackButton", (ImTextureID)(intptr_t)ResourceManager::GetIcon("BackIcon")->GetRendererID(),
                     ImVec2(25.f, 25.f), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f)))
                 {
                     mCurrentDirectory = mCurrentDirectory.parent_path();
                 }
+                ImGui::SameLine();
+                ImGui::Dummy(ImVec2(ImGui::GetStyle().ItemSpacing.x, 0.0f));
+                ImGui::SameLine();
+
+                std::filesystem::path curPath = mCurrentDirectory;
+                std::vector<std::filesystem::path> segments;
+                
+                // Build segments
+                while (curPath != curPath.root_path())
+                {
+                    segments.push_back(curPath.filename());
+                    curPath = curPath.parent_path();
+                }
+                segments.push_back(curPath); // root
+                std::reverse(segments.begin(), segments.end());
+
+                // Render breadcrumbs
+                std::filesystem::path accumulated;
+
+                for (int i{ 1 }; i < segments.size(); ++i)
+                {
+          
+                    if (i > 1)
+                    {
+                        ImGui::SameLine();
+                        ImGui::Text("/");
+                        ImGui::SameLine();
+                    }
+
+                    accumulated /= segments[i];
+
+                    ImGui::PushID(i);
+                    if (ImGui::SmallButton(segments[i].string().c_str()))
+                    {
+                        mCurrentDirectory = accumulated;
+                    }
+                    ImGui::PopID();
+
+                    ImGui::SameLine();
+                }
+                ImGui::EndGroup();
+                ImGui::Separator();
             }
+            
+            //END back button & breadcrumb section
+
+
+            float padding{ 16.0f }, thumbnailSize{ 128.0f }, cellBaseSize{ thumbnailSize + padding }, panelWidth{ ImGui::GetContentRegionAvail().x };
+            int columnCount = panelWidth / cellBaseSize < 1.f ? 1 : (int)(panelWidth / cellBaseSize), colPos{ 0 };
+
 
             for (auto& Directory : std::filesystem::directory_iterator(mCurrentDirectory))
             {
@@ -517,11 +590,143 @@ namespace NocturnalEngine {
                 ImGui::PushID(filename.c_str());
                 ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
 
+                ImGui::BeginGroup();
+                //check what type the directory is
                 if (Directory.is_directory())
                 {
                     ImGui::ImageButton("FolderIcon", (ImTextureID)(intptr_t)ResourceManager::GetIcon("FolderIcon")->GetRendererID(),
-                        ImVec2(128.f, 128.f), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
+                        ImVec2(thumbnailSize,thumbnailSize), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
                 }
+
+                //dealing w diff filenames
+                auto ext = directorypath.extension().string();
+                std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower); // lowercase for safety
+                if (ext == ".png")
+                {
+                    std::string texName = filename;
+                    texName.erase(filename.find_last_of('.'));
+
+                    auto tex = ResourceManager::GetTexture(texName);
+                    if (!tex) tex = ResourceManager::GetIcon(texName);
+
+                    if (tex)
+                    {
+                        
+                        // Scale to fit thumbnail
+                        float w{ static_cast<float>(tex->GetWidth()) }, h{ static_cast<float>(tex->GetHeight()) };
+                        float scale = thumbnailSize / std::max(w, h);
+                        ImVec2 imgSize(w * scale, h * scale);
+
+                        // --- Fixed-size thumbnail box with bottom-left alignment ---
+                        ImGui::BeginGroup(); // box container
+                        ImGui::Dummy(ImVec2(thumbnailSize - imgSize.x, 0.0f)); // horizontal padding
+                        ImGui::SameLine();
+                        ImGui::BeginGroup();
+                        ImGui::Dummy(ImVec2(0, thumbnailSize - imgSize.y)); // vertical padding above image
+                        ImGui::Image((ImTextureID)(intptr_t)tex->GetRendererID(), imgSize,ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
+                        ImGui::EndGroup();
+                        ImGui::EndGroup();
+
+                        if (ImGui::IsItemHovered())
+                        {
+                            ImGui::BeginTooltip();
+                            std::string str = texName + " " + "(" + std::to_string(tex->GetWidth()) + "x" +
+                                std::to_string(tex->GetHeight()) + ")";
+                            ImGui::Text(str.c_str());
+                            ImGui::EndTooltip();
+                        }
+
+                        if (mCurrentDirectory.filename() != "Icons"&&ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID))
+                        {
+                            auto it = ResourceManager::textures.find(texName);
+                            auto& addN = it->first;
+                            ImGui::SetDragDropPayload("Textures",&addN,sizeof(addN));
+                            //std::cout << payloadStr;
+
+                            ImGui::Image((ImTextureID)(intptr_t)tex->GetRendererID(),
+                                ImVec2(thumbnailSize * static_cast<float>(tex->GetWidth()) / static_cast<float>(tex->GetHeight()), thumbnailSize),
+                                ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
+                            ImGui::EndDragDropSource();
+                        }
+                    }
+                }
+                else if (ext==".json") {
+                    ImGui::ImageButton("SceneButton",(ImTextureID)(intptr_t)ResourceManager::GetIcon("TextIcon")->GetRendererID(),
+                        ImVec2(thumbnailSize, thumbnailSize), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
+                    if (ImGui::IsItemHovered())
+                    {
+                        ImGui::BeginTooltip();
+                        std::string jsnName = filename;
+                        jsnName.erase(filename.find_last_of('.'));
+
+                        std::string str{};
+
+                        if (mCurrentDirectory.filename() == "Scene") {
+                            str += "Scene: ";
+                        }
+                        str += jsnName;
+
+                        ImGui::Text(str.c_str());
+                        ImGui::EndTooltip();
+
+                        if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left)) {
+
+                            if (scene_autobackup&&!mCurrentScene.empty()&&mCurrentScene!=filename&&mLastSavedScene!=mCurrentScene)
+                            {
+                                std::string backupScene = mCurrentScene;
+                                backupScene.erase(mCurrentScene.find_last_of('.'));
+                                p_Scene->SerializeToFile(mCurrentDirectory.string() + '/' + backupScene + "_AutoBackup.json");
+                                mLastSavedScene = mCurrentScene;
+                            }
+                            p_Scene->DeserializeFromFile(mCurrentDirectory.string()+'/' + filename);
+                            mCurrentScene = filename;
+                            
+                        }
+                    }
+                    
+                }
+                else if (ext == ".wav"|| ext == ".ogg"|| ext == ".mp3") {
+                    std::string sndName = filename;
+                    sndName.erase(filename.find_last_of('.'));
+
+                    ImGui::ImageButton("SoundButton", (ImTextureID)(intptr_t)ResourceManager::GetIcon("SoundIcon")->GetRendererID(),
+                        ImVec2(thumbnailSize, thumbnailSize), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
+                    if (ImGui::IsItemHovered())
+                    {
+                        ImGui::BeginTooltip();
+                        
+
+                        std::string str = sndName;
+
+                        ImGui::Text(str.c_str());
+                        ImGui::EndTooltip();
+
+                        
+                    }
+                    if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID))
+                    {
+                        std::string payloadStr = sndName;
+                        ImGui::SetDragDropPayload("CONTENT_BROWSER_ITEM", payloadStr.c_str(), payloadStr.size() + 1);
+
+                        ImGui::Image((ImTextureID)(intptr_t)ResourceManager::GetIcon("SoundIcon")->GetRendererID(),
+                            ImVec2(thumbnailSize, thumbnailSize), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
+                        ImGui::EndDragDropSource();
+                    }
+
+                }
+                else if (ext == ".cpp" || ext == ".hpp" || ext == ".h"||ext==".c") {
+                    ImGui::Image( (ImTextureID)(intptr_t)ResourceManager::GetIcon("TextIcon")->GetRendererID(),
+                        ImVec2(thumbnailSize, thumbnailSize), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
+                }
+                else if (ext == ".ttf"||ext==".otf") {
+                    ImGui::Image((ImTextureID)(intptr_t)ResourceManager::GetIcon("FontIcon")->GetRendererID(),
+                        ImVec2(thumbnailSize, thumbnailSize), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
+                }
+                else if (ext == ".shader") {
+                    ImGui::Image((ImTextureID)(intptr_t)ResourceManager::GetIcon("ShaderIcon")->GetRendererID(),
+                        ImVec2(thumbnailSize, thumbnailSize), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
+                }
+                
 
                 //Press into the folder
                 ImGui::PopStyleColor();
@@ -531,63 +736,35 @@ namespace NocturnalEngine {
                         mCurrentDirectory /= directorypath.filename();
                 }
 
-                ImGui::TextWrapped(filename.c_str()); ImGui::NextColumn(); //indicate the folder name
-                ImGui::PopID();
-            }
 
-            ImGui::End();
-
-            ImGui::Begin(mCurrentDirectory.filename().string().c_str(), (bool*)0, ImGuiWindowFlags_HorizontalScrollbar);
-            if (mCurrentDirectory.filename() == "Textures")
-            {
-                for (auto& [name, texObj] : ResourceManager::textures)
-                {
-                    ImGui::Image((ImTextureID)(intptr_t)texObj->GetRendererID(),
-                        ImVec2(128 * static_cast<float>(texObj->GetWidth()) / static_cast<float>(texObj->GetHeight()), 128),
-                        ImVec2(0.0f, 1.0f),
-                        ImVec2(1.0f, 0.0f));
-
-                    if (ImGui::IsItemHovered())
-                    {
-                        ImGui::BeginTooltip();
-                        std::string str = name + " " + "(" + std::to_string(texObj->GetWidth()) + "x" +
-                            std::to_string(texObj->GetHeight()) + ")";
-                        ImGui::Text(str.c_str());
-                        ImGui::EndTooltip();
-                    }
-
-                    if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID))
-                    {
-                        ImGui::SetDragDropPayload("Textures", &name, sizeof(name));
-                        ImGui::Image((ImTextureID)(intptr_t)texObj->GetRendererID(),
-                            ImVec2(128 * static_cast<float>(texObj->GetWidth()) / static_cast<float>(texObj->GetHeight()), 128),
-                            ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
-                        ImGui::EndDragDropSource();
-                    }
+                std::string displayName = filename;
+                while (ImGui::CalcTextSize(displayName.c_str()).x > thumbnailSize-3 && !displayName.empty()) {
+                    displayName.pop_back();
+                    
                 }
-            }
-            else if (mCurrentDirectory.filename() == "Icons")
-            {
-                for (auto& [name, texObj] : ResourceManager::Icons)
+                if (displayName!=filename&&ImGui::CalcTextSize(displayName.c_str()).x <=thumbnailSize - 3)displayName += "...";
+
+                ImGui::TextUnformatted(displayName.c_str());
+
+
+                ImGui::EndGroup(); //indicate the folder name
+                ImGui::PopID();
+
+                ++colPos;
+                if (colPos<columnCount)
                 {
                     ImGui::SameLine();
-                    ImGui::Image((ImTextureID)(intptr_t)texObj->GetRendererID(),
-                        ImVec2(128 * static_cast<float>(texObj->GetWidth()) / static_cast<float>(texObj->GetHeight()), 128),
-                        ImVec2(0.0f, 1.0f),
-                        ImVec2(1.0f, 0.0f));
-
-                    if (ImGui::IsItemHovered())
-                    {
-                        ImGui::BeginTooltip();
-                        std::string str = name + " " + "(" + std::to_string(texObj->GetWidth()) + "x" +
-                            std::to_string(texObj->GetHeight()) + ")";
-                        ImGui::Text(str.c_str());
-                        ImGui::EndTooltip();
-                    }
                 }
-
+                else {
+                    colPos = 0;
+                }
             }
+
             ImGui::End();
+            
+            
+
+
         }
 
     }
@@ -772,10 +949,41 @@ namespace NocturnalEngine {
             ImGui::Text("API");
             ImGui::SameLine(80);
             ImGui::ProgressBar(mSystemRunTime[4], ImVec2(-1.0f, 0.0f));
+            ImGui::Text("\n");
 
+			// Custom Memory Manager Info
+			ImGui::Text("Memory Manager Info");
+			ImGui::Text("Memory Manager is %s", p_MemoryManager.IsEnabled() ? "Enabled" : "Disabled");
+            ImGui::Text("Memory Block Size");
+            ImGui::SameLine();
+            ImGui::DragInt("##BlockSize", (int*)&mMemoryBlock, 1.0f, 1, 256);
+            ImGui::Text("Memory Blocks per Page");
+            ImGui::SameLine();
+            ImGui::DragInt("##BlocksPerPage", (int*)&mMemoryPage, 1.0f, 1, 128);
+
+            if (p_MemoryManager.IsEnabled()) 
+            {
+                if (ImGui::Button("Apply##MemorySettings"))
+                {
+					mMemoryBlock = mMemoryBlock < 1 ? kDefaultBlockSize : mMemoryBlock > kDefaultBlockSize ? kDefaultBlockSize : mMemoryBlock;
+					mMemoryPage = mMemoryPage < 1 ? kDefaultBlocksPerPage : mMemoryPage > kDefaultBlocksPerPage ? kDefaultBlocksPerPage : mMemoryPage;
+
+                    p_MemoryManager.SetBlockSize(static_cast<size_t>(mMemoryBlock));
+                    p_MemoryManager.SetBlocksPerPage(static_cast<size_t>(mMemoryPage));
+                    p_MemoryManager.Configure(p_MemoryManager.GetBlockSize(), p_MemoryManager.GetBlocksPerPage());
+                }
+                ImGui::Text("Memory Block Size: %zu bytes", p_MemoryManager.GetBlockSize());
+                ImGui::Text("Memory Blocks per Page: %zu", p_MemoryManager.GetBlocksPerPage());
+			    ImGui::Text("Total Memory Allocated: %zu bytes", p_MemoryManager.GetTotalMemoryAllocated());
+			    ImGui::Text("Total Memory Used: %zu bytes", p_MemoryManager.GetTotalMemoryUsed());
+				ImGui::ProgressBar(static_cast<float>(p_MemoryManager.GetTotalMemoryUsed()) / static_cast<float>(p_MemoryManager.GetTotalMemoryAllocated()), ImVec2(-1.0f, 0.0f));
+				ImGui::Text("Free Block Count: %zu", p_MemoryManager.GetFreeBlocks());
+            }
+            else
+            {
+				ImGui::Text("Press F9 to enable Custom Memory Manager");
+            }
             ImGui::End();
-
-
         }
     }
 

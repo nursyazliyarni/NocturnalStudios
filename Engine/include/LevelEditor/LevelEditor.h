@@ -59,6 +59,7 @@ namespace NocturnalEngine {
 
 		bool is_ShowWindow = true;
 		bool imgui_mouse_control = true;
+		bool scene_autobackup = false;
 
 		static std::unique_ptr<LevelEditor>& GetInstance();
 
@@ -96,21 +97,34 @@ namespace NocturnalEngine {
 		float mSceneRuntime = 0.0f;
 		float mUpdateTimer = 0.0f;
 		std::array<float, 5> mSystemRunTime = { 0.0f,0.0f,0.0f,0.0f };
+
+		// memory manager
+		std::size_t mMemoryBlock;
+		std::size_t mMemoryPage;
 		
-		
-	
 		//Content Browser
 		std::filesystem::path mAssetsPath= "Assets";
 		std::filesystem::path mCurrentDirectory = mAssetsPath;
+		std::filesystem::path mSelectedAsset;
+		std::filesystem::path mHoveredAsset;
 		
 		//Scene/guizmo
 		int mGizmoType = -1;
 
+
 		//For loading of scene usage
 		std::vector<std::string> mScenefile; //json file
+		char mSceneInputBuffer[128] = "";
 		// To keep track of the files
 		int mSelectedFile = -1;
 		std::vector<std::filesystem::directory_entry> mFileList;
+		// For save confirmation
+		std::string mLastSavedScene{};
+		double mLastSaveTime = -1.0;  // store ImGui::GetTime() when saved
+		double mSaveMessageDuration = 2.0; // seconds
+
+		//To track scene editor is on (for saving purposes)
+		std::string mCurrentScene{};
 
 		//load audio from file
 		std::vector<std::string> mAudioFile;

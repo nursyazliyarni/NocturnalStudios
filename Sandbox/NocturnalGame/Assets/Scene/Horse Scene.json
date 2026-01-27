@@ -1,0 +1,107 @@
+{
+    "Number of Entities": {
+        "Entities": 2
+    },
+    "EntitySignatures": [
+        "00000000000000000000000011111101",
+        "00000000000000000000000000011001"
+    ],
+    "Components": {
+        "0": [
+            {
+                "posX": 0.0,
+                "posY": 0.0,
+                "scaleX": 3.6449999809265137,
+                "scaleY": 1.9999960660934448,
+                "Rot": 0.0
+            },
+            {},
+            {
+                "ColliderType1": 4,
+                "ColliderType2": 0,
+                "minX1": 0.0,
+                "minX2": 0.0,
+                "minY1": 0.0,
+                "minY2": 0.0,
+                "maxX1": 0.0,
+                "maxX2": 0.0,
+                "maxY1": 0.0,
+                "maxY2": 0.0,
+                "offsetX1": 0.0,
+                "offsetX2": 0.0,
+                "offsetY1": 0.0,
+                "offsetY2": 0.0,
+                "radius1": 0.0,
+                "radius2": 0.0
+            },
+            {
+                "NameTag": "Horse Background"
+            },
+            {
+                "TextureName": "horseScene",
+                "Index_X": 0,
+                "Index_Y": 0,
+                "Ucoordinates": 512.0,
+                "Vcoordinates": 512.0,
+                "IsSpriteSheet": false,
+                "IsAnimated": false,
+                "MaxIndex": 0,
+                "LayeringOrder": 0
+            },
+            {
+                "0": "AudioManager",
+                "1": "BackgroundAudio",
+                "ScriptCount": 2
+            },
+            {
+                "Tag": "Untagged",
+                "TargetTag": ""
+            },
+            {
+                "0": {
+                    "AudioPath": "BGM_Iris_Luminara_Loop.wav",
+                    "Channel": 2,
+                    "IsLooping": true
+                },
+                "AudioArrCount": 1,
+                "BGM Volume": 0.75,
+                "SFX Volume": 0.75,
+                "Master Volume": 0.75
+            },
+            {},
+            {},
+            {}
+        ],
+        "1": [
+            {
+                "posX": -1.0009006261825562,
+                "posY": 0.11122691631317139,
+                "scaleX": 1.0,
+                "scaleY": 1.0,
+                "Rot": 0.0
+            },
+            {},
+            {},
+            {
+                "NameTag": "Horse"
+            },
+            {
+                "TextureName": "horse",
+                "Index_X": 0,
+                "Index_Y": 0,
+                "Ucoordinates": 512.0,
+                "Vcoordinates": 512.0,
+                "IsSpriteSheet": false,
+                "IsAnimated": false,
+                "MaxIndex": 0,
+                "LayeringOrder": 0
+            },
+            {},
+            {},
+            {},
+            {},
+            {},
+            {}
+        ]
+    }
+}
