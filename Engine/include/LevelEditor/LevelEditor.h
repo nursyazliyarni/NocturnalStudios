@@ -97,9 +97,11 @@ namespace NocturnalEngine {
 		float mSceneRuntime = 0.0f;
 		float mUpdateTimer = 0.0f;
 		std::array<float, 5> mSystemRunTime = { 0.0f,0.0f,0.0f,0.0f };
+
+		// memory manager
+		std::size_t mMemoryBlock;
+		std::size_t mMemoryPage;
 		
-		
-	
 		//Content Browser
 		std::filesystem::path mAssetsPath= "Assets";
 		std::filesystem::path mCurrentDirectory = mAssetsPath;
@@ -118,8 +120,8 @@ namespace NocturnalEngine {
 		std::vector<std::filesystem::directory_entry> mFileList;
 		// For save confirmation
 		std::string mLastSavedScene{};
-		float mLastSaveTime = -1.0f;  // store ImGui::GetTime() when saved
-		float mSaveMessageDuration = 2.0f; // seconds
+		double mLastSaveTime = -1.0;  // store ImGui::GetTime() when saved
+		double mSaveMessageDuration = 2.0; // seconds
 
 		//To track scene editor is on (for saving purposes)
 		std::string mCurrentScene{};
