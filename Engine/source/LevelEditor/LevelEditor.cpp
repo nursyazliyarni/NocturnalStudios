@@ -348,7 +348,7 @@ namespace NocturnalEngine {
         if (mLastSaveTime > 0.0f && ImGui::GetTime() - mLastSaveTime < mSaveMessageDuration)
         {
             std::string saveMessage = mLastSavedScene + " has been saved in "+path+"!";
-            ImGui::TextColored(ImVec4(1.f,1.f,1.f,  ((mLastSaveTime+mSaveMessageDuration)- ImGui::GetTime())/mSaveMessageDuration), saveMessage.c_str());
+            ImGui::TextColored(ImVec4(1.f,1.f,1.f,  static_cast<float>(((mLastSaveTime+mSaveMessageDuration)- ImGui::GetTime())/mSaveMessageDuration)), saveMessage.c_str());
             
         }
         if (mLastSaveTime > 0.0f && ImGui::GetTime() - mLastSaveTime > mSaveMessageDuration)mLastSaveTime = -1.f;
@@ -550,7 +550,7 @@ namespace NocturnalEngine {
                 // Render breadcrumbs
                 std::filesystem::path accumulated;
 
-                for (size_t i{ 1 }; i < segments.size(); ++i)
+                for (int i{ 1 }; i < segments.size(); ++i)
                 {
           
                     if (i > 1)

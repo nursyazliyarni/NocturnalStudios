@@ -120,8 +120,8 @@ namespace NocturnalEngine {
 		std::vector<std::filesystem::directory_entry> mFileList;
 		// For save confirmation
 		std::string mLastSavedScene{};
-		float mLastSaveTime = -1.0f;  // store ImGui::GetTime() when saved
-		float mSaveMessageDuration = 2.0f; // seconds
+		double mLastSaveTime = -1.0;  // store ImGui::GetTime() when saved
+		double mSaveMessageDuration = 2.0; // seconds
 
 		//To track scene editor is on (for saving purposes)
 		std::string mCurrentScene{};
