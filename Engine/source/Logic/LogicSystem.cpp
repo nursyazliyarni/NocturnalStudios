@@ -18,6 +18,7 @@
 #include "Logic/LogicSystem.h"
 #include "GUI/GUI.h"
 #include "Timer/Time.h"
+#include "LevelEditor/LevelEditor.h"
 
 namespace NocturnalEngine
 {
@@ -36,6 +37,13 @@ namespace NocturnalEngine
 	{
 		Timer::GetInstance().Start(Systems::LOGIC);
 		Timer::GetInstance().GetDT(Systems::LOGIC);
+
+		// If editor is active, skip logic update
+		if (LevelEditor::IsEditorActive())
+		{
+			Timer::GetInstance().Update(Systems::LOGIC);
+			return;
+		}
 
 		for (const auto &entity : mEntities)
 		{
