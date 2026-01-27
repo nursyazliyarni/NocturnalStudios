@@ -62,6 +62,11 @@ namespace NocturnalEngine {
         return mInstance;
      }
 
+    bool LevelEditor::IsEditorActive()
+    {
+		return mInstance != nullptr && mInstance->is_ShowWindow;
+    }
+
     bool color_picker = false;
     bool drop_menu = false;
     bool logger = false;
