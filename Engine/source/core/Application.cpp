@@ -149,6 +149,8 @@ Application constructor
 
 			
 			p_Audio->Update();
+
+			p_Input->detect_draggable_item(GLFW_MOUSE_BUTTON_LEFT,m_window);
 			
 			if (p_Input->KeyPressed(GLFW_KEY_F3))
 			{

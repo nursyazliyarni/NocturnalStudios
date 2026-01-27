@@ -37,14 +37,6 @@ namespace NocturnalEngine
 		void SetComponentEntityID(Entity& entity) { entityID = entity; }
 
 	public:
-		double healthRestore;
-		double healthRegenRate;
-		double maxHealthRestore;
-		double sanityRestore;
-		double sanityRegenRate;
-		double maxSanityRestore;
-		double hungerRestore;
-		double hungerRegenRate;
-		double maxHungerRestore;
+		double gain_amount;
 	};
 }

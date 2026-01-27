@@ -122,7 +122,7 @@ namespace NocturnalEngine
 				if (ID_tag.GetTag() == "Start" && p_GUI->Check_HTP() == false)
 				{
 
-					Graphic::mcamera->SetZoomLevel(0.25f);
+					Graphic::mcamera->SetZoomLevel(1.0f);
 					p_Scene->setSceneToLoad("Assets/Scene/Game.json");
 				}
 

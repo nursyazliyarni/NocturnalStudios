@@ -738,6 +738,8 @@ namespace NocturnalEngine {
 
             // how much time per frame and Fps
             ImGui::Text("Application average % .3f ms / frame(% .3f FPS)", 1000.0f / FramePerSec::GetInstance().GetFps(), FramePerSec::GetInstance().GetFps());
+            ImGui::Text("Normalized mouse coordinates: %.3f %.3f", GetWindow()->Getter().mouseX/GetWindow()->Getter().m_Width, 
+                                                                   GetWindow()->Getter().mouseY/GetWindow()->Getter().m_Height);
 
             //Renderering Information
             ImGui::Text("\n");

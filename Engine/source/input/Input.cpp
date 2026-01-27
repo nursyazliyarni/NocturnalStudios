@@ -138,11 +138,27 @@ namespace NocturnalEngine {
         return false;
     }
 
-    /*bool InputSystem::detect_draggable_item(mousecode mouse)
+    bool InputSystem::detect_draggable_item(mousecode mouse, Window* wd)
     {
-        if (MousePressed(mouse)) {
+        glm::vec2 mouse_pos{ static_cast<float>(wd->Getter().mouseX) , static_cast<float>(wd->Getter().mouseY) };//store the mouse position into a vector
+        glm::vec2 screen_size{ static_cast<float>(wd->Getter().m_Width),static_cast<float>(wd->Getter().m_Height) };//store the screen size into a vector
 
+        if (MousePressed(mouse)) {
+            for (Entity i{ 0 }; i < p_ecs.GetTotalEntities(); ++i) {
+                if (p_ecs.HaveComponent<ItemsAttributes>(i)) {
+                    auto transform_data{ p_ecs.GetComponent<Transform>(i) };
+                    auto abc{ p_ecs.GetComponent<Sprite>(i) };
+                    if (mouse_pos.x/screen_size.x >= transform_data.GetPos().x - transform_data.GetScale().x/2 &&
+                        mouse_pos.x/screen_size.x <= transform_data.GetPos().x + transform_data.GetScale().x/2 &&
+                        mouse_pos.y/screen_size.y >= transform_data.GetPos().y - transform_data.GetScale().y/2 &&
+                        mouse_pos.y/screen_size.y <= transform_data.GetPos().y + transform_data.GetScale().y/2) {
+                        std::cout << p_ecs.GetComponent<NameTag>(i).GetNameTag() << "\n";
+                        //transform_data.GetPos().x = 1.0;
+                    }
+                }
+            }
         }
-    }*/
+        return false;
+    }
 
 }
