@@ -17,7 +17,8 @@
 
 #include "pch.h"
 #include "Input/Input.h"
-
+#include "Window/Window.h"
+#include "GUI/GUI.h"
 #include <GLFW/glfw3.h>
 
 namespace NocturnalEngine {
@@ -136,6 +137,7 @@ namespace NocturnalEngine {
             return it->second == GLFW_PRESS; //find the key in the map and execute the order
 
         return false;
+
     }
 
     bool InputSystem::detect_draggable_item()
