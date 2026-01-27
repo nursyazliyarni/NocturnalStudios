@@ -349,9 +349,10 @@ namespace NocturnalEngine {
 
             if (filename.empty())
             {
-                std::cout << "Cannot save: filename is empty.\n";
+                //std::cout << "Cannot save: filename is empty.\n";
+                filename = "Scene.json";
             }
-            else if (mLastSaveTime < 0.f)
+            if (mLastSaveTime < 0.f)
             {
                 // Ensure extension
                 if (filename.find(".json") == std::string::npos)
@@ -374,7 +375,7 @@ namespace NocturnalEngine {
 
             }
         }
-        ImGui::SameLine();
+        //ImGui::SameLine();
 
         // Show message if recently saved
         if (mLastSaveTime > 0.0f && ImGui::GetTime() - mLastSaveTime < mSaveMessageDuration)
