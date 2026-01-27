@@ -331,6 +331,7 @@ namespace NocturnalEngine {
                 if (p_Scene->SerializeToFile(fullPath))
                 {
                     mLastSavedScene = filename;
+                    mCurrentScene = filename;
                     mLastSaveTime = ImGui::GetTime();
                 }
 
@@ -666,8 +667,17 @@ namespace NocturnalEngine {
                         ImGui::EndTooltip();
 
                         if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left)) {
-                           //to add: autosaves the previous scene if any
+
+                            if (scene_autobackup&&!mCurrentScene.empty()&&mCurrentScene!=filename&&mLastSavedScene!=mCurrentScene)
+                            {
+                                std::string backupScene = mCurrentScene;
+                                backupScene.erase(mCurrentScene.find_last_of('.'));
+                                p_Scene->SerializeToFile(mCurrentDirectory.string() + '/' + backupScene + "_AutoBackup.json");
+                                mLastSavedScene = mCurrentScene;
+                            }
                             p_Scene->DeserializeFromFile(mCurrentDirectory.string()+'/' + filename);
+                            mCurrentScene = filename;
+                            
                         }
                     }
                     
