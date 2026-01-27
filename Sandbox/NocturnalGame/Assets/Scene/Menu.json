@@ -176,7 +176,7 @@
                 "NameTag": "Quit"
             },
             {
-                "TextureName": "Quit_Idle",
+                "TextureName": "quitBtn",
                 "Index_X": 0,
                 "Index_Y": 0,
                 "Ucoordinates": 512.0,
@@ -247,7 +247,7 @@
                 "NameTag": "Options"
             },
             {
-                "TextureName": "Options_Idle",
+                "TextureName": "optionsBtn",
                 "Index_X": 0,
                 "Index_Y": 0,
                 "Ucoordinates": 512.0,
