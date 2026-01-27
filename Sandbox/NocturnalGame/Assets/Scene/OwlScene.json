@@ -1,6 +1,6 @@
 {
     "Number of Entities": {
-        "Entities": 6
+        "Entities": 7
     },
     "EntitySignatures": [
         "00000000000000000000000011111101",
@@ -8,7 +8,8 @@
         "00000000000000000000000001111101",
         "00000000000000000000000001111101",
         "00000000000000000000000001111101",
-        "00000000000000000000000001111101"
+        "00000000000000000000000001111101",
+        "00000000000000000000000000011001"
     ],
     "Components": {
         "0": [
@@ -340,6 +341,37 @@
                 "Tag": "InventoryBtn",
                 "TargetTag": ""
             },
+            {},
+            {},
+            {},
+            {}
+        ],
+        "6": [
+            {
+                "posX": 0.10899999737739563,
+                "posY": 0.024000000208616257,
+                "scaleX": 4.072000026702881,
+                "scaleY": 2.1110000610351563,
+                "Rot": 0.0
+            },
+            {},
+            {},
+            {
+                "NameTag": "CameraHighlight"
+            },
+            {
+                "TextureName": "cameraHighlight",
+                "Index_X": 0,
+                "Index_Y": 0,
+                "Ucoordinates": 512.0,
+                "Vcoordinates": 512.0,
+                "IsSpriteSheet": false,
+                "IsAnimated": false,
+                "MaxIndex": 0,
+                "LayeringOrder": 0
+            },
+            {},
+            {},
             {},
             {},
             {},
