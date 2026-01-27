@@ -1,22 +1,20 @@
 {
     "Number of Entities": {
-        "Entities": 7
+        "Entities": 5
     },
     "EntitySignatures": [
         "00000000000000000000000011111101",
         "00000000000000000000000011111101",
         "00000000000000000000000011111101",
         "00000000000000000000000011111101",
-        "00000000000000000000000011111101",
-        "00000000000000000000000000011001",
-        "00000000000000000000000000011001"
+        "00000000000000000000000011111101"
     ],
     "Components": {
         "0": [
             {
                 "posX": 0.0,
                 "posY": 0.0,
-                "scaleX": 4.170206546783447,
+                "scaleX": 3.6449999809265137,
                 "scaleY": 1.9999960660934448,
                 "Rot": 0.0
             },
@@ -185,7 +183,8 @@
                 "Vcoordinates": 512.0,
                 "IsSpriteSheet": false,
                 "IsAnimated": false,
-                "MaxIndex": 0,
+                "MaxIndex": 1,
+                "DisplayTime 0": 0.0,
                 "LayeringOrder": 0
             },
             {
@@ -353,73 +352,6 @@
                 "SFX Volume": 0.75,
                 "Master Volume": 0.75
             },
-            {},
-            {},
-            {}
-        ],
-        "5": [
-            {
-                "posX": -1.0675040483474731,
-                "posY": 0.37990593910217285,
-                "scaleX": 1.0,
-                "scaleY": 1.0,
-                "Rot": 0.15195778012275696
-            },
-            {},
-            {},
-            {
-                "NameTag": "Test"
-            },
-            {
-                "TextureName": "Options_Idle",
-                "Index_X": 0,
-                "Index_Y": 0,
-                "Ucoordinates": 512.0,
-                "Vcoordinates": 512.0,
-                "IsSpriteSheet": false,
-                "IsAnimated": false,
-                "MaxIndex": 0,
-                "LayeringOrder": 0
-            },
-            {},
-            {},
-            {},
-            {},
-            {},
-            {}
-        ],
-        "6": [
-            {
-                "posX": 0.0,
-                "posY": 0.0,
-                "scaleX": 1.0,
-                "scaleY": 1.0,
-                "Rot": 0.0
-            },
-            {},
-            {},
-            {
-                "NameTag": "animation"
-            },
-            {
-                "TextureName": "flamingo_spritesheet",
-                "Index_X": 0,
-                "Index_Y": 0,
-                "Ucoordinates": 528.0,
-                "Vcoordinates": 528.0,
-                "IsSpriteSheet": true,
-                "IsAnimated": true,
-                "MaxIndex": 5,
-                "DisplayTime 0": 0.125,
-                "DisplayTime 1": 0.125,
-                "DisplayTime 2": 0.125,
-                "DisplayTime 3": 0.125,
-                "DisplayTime 4": 0.125,
-                "LayeringOrder": 0
-            },
-            {},
-            {},
-            {},
             {},
             {},
             {}

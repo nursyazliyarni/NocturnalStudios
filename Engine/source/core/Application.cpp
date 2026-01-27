@@ -35,6 +35,7 @@
 #include "Scripts/PauseMenu.h"
 #include "GUI/GUI.h"
 #include "Scripts/DialogueManager.h"
+#include "Core/MemoryManager.h"
 #include <stdlib.h>
 
 namespace NocturnalEngine {
@@ -124,15 +125,29 @@ Application constructor
 			Timer::GetInstance().Start(Systems::API);
 			Timer::GetInstance().GetDT(Systems::API);
 
-			if (p_Editor->is_ShowWindow)
-			{
-				p_Editor->Update();
-				if (p_Editor->is_ShowWindow) {
-					p_Editor->Draw();
-				}
-			}
 			
+#if DEBUG	
+			p_Editor->Update();
+			p_Editor->Draw();
+
+			if (p_Editor->is_ShowWindow == false && p_Input->KeyPressed(GLFW_KEY_0))
+			{
+				p_Editor->is_ShowWindow = true;
+			}
+#endif
 			p_Scene->checkForSceneToLoad();
+
+			if (p_Input->KeyPressed(GLFW_KEY_F9) && p_MemoryManager.IsEnabled())
+			{
+				p_MemoryManager.Shutdown();
+				p_MemoryManager.Enable(!p_MemoryManager.IsEnabled());
+				NOCTURNAL_ENGINE_INFO("Memory Manager Enabled: {}", p_MemoryManager.IsEnabled());
+			}
+			else if (p_Input->KeyPressed(GLFW_KEY_F9) && !p_MemoryManager.IsEnabled())
+			{
+				p_MemoryManager.Enable(!p_MemoryManager.IsEnabled());
+				NOCTURNAL_ENGINE_INFO("Memory Manager Enabled: {}", p_MemoryManager.IsEnabled());
+			}
 
 			if (p_Scene->isGameplay == true)
 				glfwSetInputMode(m_window->GetWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);

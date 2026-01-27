@@ -18,6 +18,7 @@
 #include "ECS/SceneManager.h"
 #include "Graphics/Graphics.h"
 #include "Audio/AudioEngine.h"
+#include "Core/MemoryManager.h"
 
 namespace NocturnalEngine
 {
@@ -70,6 +71,10 @@ namespace NocturnalEngine
 		p_ecs.ClearAllComponents();
 		p_ecs.ResetAllEntitySignatures();
 		p_ecs.ResetEntities();
+		if (p_MemoryManager.IsEnabled())
+		{
+			p_ecs.PrepareMemoryForEntities(obj["Number of Entities"]["Entities"].GetUint());
+		}
 		p_ecs.SetTotalEntitiesForWorldBuild(obj["Number of Entities"]["Entities"].GetUint());
 		auto aliveTotal = obj["Number of Entities"]["Entities"].GetUint();
 		Entity j = 0;
