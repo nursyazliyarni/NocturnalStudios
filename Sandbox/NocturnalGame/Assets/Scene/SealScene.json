@@ -3,298 +3,25 @@
         "Entities": 6
     },
     "EntitySignatures": [
-        "00000000000000000000000010011001",
-        "00000000000000000000000010011101",
-        "00000000000000000000000010011101",
-        "00000000000000000000000010011101",
-        "00000000000000000000000010011101",
-        "00000000000000000000000001011101"
+        "00000000000000000000000011111101",
+        "00000000000000000000000001111101",
+        "00000000000000000000000001111101",
+        "00000000000000000000000001111101",
+        "00000000000000000000000001111101",
+        "00000000000000000000000001111101"
     ],
     "Components": {
         "0": [
             {
                 "posX": 0.0,
                 "posY": 0.0,
-                "scaleX": 4.170206546783447,
+                "scaleX": 3.6449999809265137,
                 "scaleY": 1.9999960660934448,
                 "Rot": 0.0
             },
             {},
-            {},
-            {
-                "NameTag": "FlamingoBackground"
-            },
-            {
-                "TextureName": "flamingo_bg",
-                "Index_X": 0,
-                "Index_Y": 0,
-                "Ucoordinates": 512.0,
-                "Vcoordinates": 512.0,
-                "IsSpriteSheet": false,
-                "IsAnimated": false,
-                "MaxIndex": 0,
-                "LayeringOrder": 0
-            },
-            {},
-            {},
-            {
-                "0": {
-                    "AudioPath": "BGM_Iris_Luminara_Loop.wav",
-                    "Channel": 2,
-                    "IsLooping": true
-                },
-                "AudioArrCount": 1,
-                "BGM Volume": 0.75,
-                "SFX Volume": 0.75,
-                "Master Volume": 0.75
-            },
-            {},
-            {},
-            {}
-        ],
-        "1": [
-            {
-                "posX": -0.9560700058937073,
-                "posY": 0.2460063397884369,
-                "scaleX": 1.0,
-                "scaleY": 1.0,
-                "Rot": 0.0
-            },
-            {},
             {
                 "ColliderType1": 4,
-                "ColliderType2": 0,
-                "minX1": -1.0,
-                "minX2": 0.0,
-                "minY1": -0.6600000262260437,
-                "minY2": 0.0,
-                "maxX1": 1.0,
-                "maxX2": 0.0,
-                "maxY1": 0.6600000262260437,
-                "maxY2": 0.0,
-                "offsetX1": 0.0,
-                "offsetX2": 0.0,
-                "offsetY1": 0.0,
-                "offsetY2": 0.0,
-                "radius1": 0.0,
-                "radius2": 0.0
-            },
-            {
-                "NameTag": "flamingo"
-            },
-            {
-                "TextureName": "flamingo",
-                "Index_X": 0,
-                "Index_Y": 0,
-                "Ucoordinates": 512.0,
-                "Vcoordinates": 512.0,
-                "IsSpriteSheet": false,
-                "IsAnimated": false,
-                "MaxIndex": 0,
-                "LayeringOrder": 0
-            },
-            {},
-            {},
-            {
-                "0": {
-                    "AudioPath": "BGM_Iris_Luminara_Loop.wav",
-                    "Channel": 2,
-                    "IsLooping": true
-                },
-                "AudioArrCount": 1,
-                "BGM Volume": 0.75,
-                "SFX Volume": 0.75,
-                "Master Volume": 0.75
-            },
-            {},
-            {},
-            {}
-        ],
-        "2": [
-            {
-                "posX": -1.4832265377044678,
-                "posY": -0.7028753757476807,
-                "scaleX": 0.5,
-                "scaleY": 0.5,
-                "Rot": 0.0
-            },
-            {},
-            {
-                "ColliderType1": 4,
-                "ColliderType2": 0,
-                "minX1": -1.0,
-                "minX2": 0.0,
-                "minY1": -0.6600000262260437,
-                "minY2": 0.0,
-                "maxX1": 1.0,
-                "maxX2": 0.0,
-                "maxY1": 0.6600000262260437,
-                "maxY2": 0.0,
-                "offsetX1": 0.0,
-                "offsetX2": 0.0,
-                "offsetY1": 0.0,
-                "offsetY2": 0.0,
-                "radius1": 0.0,
-                "radius2": 0.0
-            },
-            {
-                "NameTag": "flamingo food"
-            },
-            {
-                "TextureName": "flamingo_food",
-                "Index_X": 0,
-                "Index_Y": 0,
-                "Ucoordinates": 512.0,
-                "Vcoordinates": 512.0,
-                "IsSpriteSheet": false,
-                "IsAnimated": false,
-                "MaxIndex": 0,
-                "LayeringOrder": 0
-            },
-            {},
-            {},
-            {
-                "0": {
-                    "AudioPath": "BGM_Iris_Luminara_Loop.wav",
-                    "Channel": 2,
-                    "IsLooping": true
-                },
-                "AudioArrCount": 1,
-                "BGM Volume": 0.75,
-                "SFX Volume": 0.75,
-                "Master Volume": 0.75
-            },
-            {},
-            {},
-            {}
-        ],
-        "3": [
-            {
-                "posX": -0.7803511619567871,
-                "posY": -0.6932907104492188,
-                "scaleX": 0.5,
-                "scaleY": 0.30000001192092896,
-                "Rot": 0.0
-            },
-            {},
-            {
-                "ColliderType1": 4,
-                "ColliderType2": 0,
-                "minX1": -1.0,
-                "minX2": 0.0,
-                "minY1": -0.6600000262260437,
-                "minY2": 0.0,
-                "maxX1": 1.0,
-                "maxX2": 0.0,
-                "maxY1": 0.6600000262260437,
-                "maxY2": 0.0,
-                "offsetX1": 0.0,
-                "offsetX2": 0.0,
-                "offsetY1": 0.0,
-                "offsetY2": 0.0,
-                "radius1": 0.0,
-                "radius2": 0.0
-            },
-            {
-                "NameTag": "flamingo medicine"
-            },
-            {
-                "TextureName": "flamingo_medicine",
-                "Index_X": 0,
-                "Index_Y": 0,
-                "Ucoordinates": 512.0,
-                "Vcoordinates": 512.0,
-                "IsSpriteSheet": false,
-                "IsAnimated": false,
-                "MaxIndex": 0,
-                "LayeringOrder": 0
-            },
-            {},
-            {},
-            {
-                "0": {
-                    "AudioPath": "BGM_Iris_Luminara_Loop.wav",
-                    "Channel": 2,
-                    "IsLooping": true
-                },
-                "AudioArrCount": 1,
-                "BGM Volume": 0.75,
-                "SFX Volume": 0.75,
-                "Master Volume": 0.75
-            },
-            {},
-            {},
-            {}
-        ],
-        "4": [
-            {
-                "posX": -0.04872174188494682,
-                "posY": -0.7060701847076416,
-                "scaleX": 0.5,
-                "scaleY": 0.4000000059604645,
-                "Rot": 0.0
-            },
-            {},
-            {
-                "ColliderType1": 4,
-                "ColliderType2": 0,
-                "minX1": -1.0,
-                "minX2": 0.0,
-                "minY1": -0.6600000262260437,
-                "minY2": 0.0,
-                "maxX1": 1.0,
-                "maxX2": 0.0,
-                "maxY1": 0.6600000262260437,
-                "maxY2": 0.0,
-                "offsetX1": 0.0,
-                "offsetX2": 0.0,
-                "offsetY1": 0.0,
-                "offsetY2": 0.0,
-                "radius1": 0.0,
-                "radius2": 0.0
-            },
-            {
-                "NameTag": "flamingo toy"
-            },
-            {
-                "TextureName": "flamingo_toy",
-                "Index_X": 0,
-                "Index_Y": 0,
-                "Ucoordinates": 512.0,
-                "Vcoordinates": 512.0,
-                "IsSpriteSheet": false,
-                "IsAnimated": false,
-                "MaxIndex": 0,
-                "LayeringOrder": 0
-            },
-            {},
-            {},
-            {
-                "0": {
-                    "AudioPath": "BGM_Iris_Luminara_Loop.wav",
-                    "Channel": 2,
-                    "IsLooping": true
-                },
-                "AudioArrCount": 1,
-                "BGM Volume": 0.75,
-                "SFX Volume": 0.75,
-                "Master Volume": 0.75
-            },
-            {},
-            {},
-            {}
-        ],
-        "5": [
-            {
-                "posX": 0.0,
-                "posY": 0.0,
-                "scaleX": 1.0,
-                "scaleY": 1.0,
-                "Rot": 0.0
-            },
-            {},
-            {
-                "ColliderType1": 0,
                 "ColliderType2": 0,
                 "minX1": 0.0,
                 "minX2": 0.0,
@@ -312,10 +39,10 @@
                 "radius2": 0.0
             },
             {
-                "NameTag": "SealBtn"
+                "NameTag": "SealBG"
             },
             {
-                "TextureName": "Blank",
+                "TextureName": "sealScene",
                 "Index_X": 0,
                 "Index_Y": 0,
                 "Ucoordinates": 512.0,
@@ -325,9 +52,295 @@
                 "MaxIndex": 0,
                 "LayeringOrder": 0
             },
+            {
+                "0": "AudioManager",
+                "1": "BackgroundAudio",
+                "ScriptCount": 2
+            },
+            {
+                "Tag": "Untagged",
+                "TargetTag": ""
+            },
+            {
+                "0": {
+                    "AudioPath": "BGM_Iris_Luminara_Loop.wav",
+                    "Channel": 2,
+                    "IsLooping": true
+                },
+                "AudioArrCount": 1,
+                "BGM Volume": 0.75,
+                "SFX Volume": 0.75,
+                "Master Volume": 0.75
+            },
+            {},
+            {},
+            {}
+        ],
+        "1": [
+            {
+                "posX": -0.8889999985694885,
+                "posY": -0.04399999976158142,
+                "scaleX": 0.31816616654396057,
+                "scaleY": 0.316239595413208,
+                "Rot": 0.0
+            },
             {},
             {
-                "Tag": "Sealbtn",
+                "ColliderType1": 4,
+                "ColliderType2": 0,
+                "minX1": 0.0,
+                "minX2": 0.0,
+                "minY1": 0.0,
+                "minY2": 0.0,
+                "maxX1": 0.0,
+                "maxX2": 0.0,
+                "maxY1": 0.0,
+                "maxY2": 0.0,
+                "offsetX1": 0.0,
+                "offsetX2": 0.0,
+                "offsetY1": 0.0,
+                "offsetY2": 0.0,
+                "radius1": 0.0,
+                "radius2": 0.0
+            },
+            {
+                "NameTag": "Seal"
+            },
+            {
+                "TextureName": "sealSpritesheet",
+                "Index_X": 2,
+                "Index_Y": 0,
+                "Ucoordinates": 532.0,
+                "Vcoordinates": 261.5,
+                "IsSpriteSheet": true,
+                "IsAnimated": true,
+                "MaxIndex": 3,
+                "DisplayTime 0": 0.5,
+                "DisplayTime 1": 0.5,
+                "DisplayTime 2": 0.5,
+                "LayeringOrder": 0
+            },
+            {
+                "ScriptCount": 0
+            },
+            {
+                "Tag": "Owl",
+                "TargetTag": ""
+            },
+            {},
+            {},
+            {},
+            {}
+        ],
+        "2": [
+            {
+                "posX": 0.40032678842544556,
+                "posY": 0.2418299913406372,
+                "scaleX": 0.13472461700439453,
+                "scaleY": 0.12401483952999115,
+                "Rot": 0.0
+            },
+            {},
+            {
+                "ColliderType1": 4,
+                "ColliderType2": 0,
+                "minX1": -1.0,
+                "minX2": 0.0,
+                "minY1": -0.6600000262260437,
+                "minY2": 0.0,
+                "maxX1": 1.0,
+                "maxX2": 0.0,
+                "maxY1": 0.6600000262260437,
+                "maxY2": 0.0,
+                "offsetX1": 0.0,
+                "offsetX2": 0.0,
+                "offsetY1": 0.0,
+                "offsetY2": 0.0,
+                "radius1": 0.0,
+                "radius2": 0.0
+            },
+            {
+                "NameTag": "FlamingoBtn"
+            },
+            {
+                "TextureName": "cameraButtonUnlit",
+                "Index_X": 0,
+                "Index_Y": 0,
+                "Ucoordinates": 512.0,
+                "Vcoordinates": 512.0,
+                "IsSpriteSheet": false,
+                "IsAnimated": false,
+                "MaxIndex": 0,
+                "LayeringOrder": 0
+            },
+            {
+                "0": "ButtonResponse",
+                "ScriptCount": 1
+            },
+            {
+                "Tag": "FlamingoBtn",
+                "TargetTag": ""
+            },
+            {},
+            {},
+            {},
+            {}
+        ],
+        "3": [
+            {
+                "posX": 0.40032678842544556,
+                "posY": -0.14785435795783997,
+                "scaleX": 0.12510144710540771,
+                "scaleY": 0.11588465422391891,
+                "Rot": 0.0
+            },
+            {},
+            {
+                "ColliderType1": 4,
+                "ColliderType2": 0,
+                "minX1": -1.0,
+                "minX2": 0.0,
+                "minY1": -0.6600000262260437,
+                "minY2": 0.0,
+                "maxX1": 1.0,
+                "maxX2": 0.0,
+                "maxY1": 0.6600000262260437,
+                "maxY2": 0.0,
+                "offsetX1": 0.0,
+                "offsetX2": 0.0,
+                "offsetY1": 0.0,
+                "offsetY2": 0.0,
+                "radius1": 0.0,
+                "radius2": 0.0
+            },
+            {
+                "NameTag": "OwlBtn"
+            },
+            {
+                "TextureName": "cameraButtonUnlit",
+                "Index_X": 0,
+                "Index_Y": 0,
+                "Ucoordinates": 512.0,
+                "Vcoordinates": 512.0,
+                "IsSpriteSheet": false,
+                "IsAnimated": false,
+                "MaxIndex": 0,
+                "LayeringOrder": 0
+            },
+            {
+                "0": "ButtonResponse",
+                "ScriptCount": 1
+            },
+            {
+                "Tag": "OwlBtn",
+                "TargetTag": ""
+            },
+            {},
+            {},
+            {},
+            {}
+        ],
+        "4": [
+            {
+                "posX": 0.40032678842544556,
+                "posY": -0.014748930931091309,
+                "scaleX": 0.13472461700439453,
+                "scaleY": 0.12255587428808212,
+                "Rot": 0.0
+            },
+            {},
+            {
+                "ColliderType1": 4,
+                "ColliderType2": 0,
+                "minX1": -1.0,
+                "minX2": 0.0,
+                "minY1": -0.6600000262260437,
+                "minY2": 0.0,
+                "maxX1": 1.0,
+                "maxX2": 0.0,
+                "maxY1": 0.6600000262260437,
+                "maxY2": 0.0,
+                "offsetX1": 0.0,
+                "offsetX2": 0.0,
+                "offsetY1": 0.0,
+                "offsetY2": 0.0,
+                "radius1": 0.0,
+                "radius2": 0.0
+            },
+            {
+                "NameTag": "HorseBtn"
+            },
+            {
+                "TextureName": "cameraButtonUnlit",
+                "Index_X": 0,
+                "Index_Y": 0,
+                "Ucoordinates": 512.0,
+                "Vcoordinates": 512.0,
+                "IsSpriteSheet": false,
+                "IsAnimated": false,
+                "MaxIndex": 0,
+                "LayeringOrder": 0
+            },
+            {
+                "0": "ButtonResponse",
+                "ScriptCount": 1
+            },
+            {
+                "Tag": "HorseBtn",
+                "TargetTag": ""
+            },
+            {},
+            {},
+            {},
+            {}
+        ],
+        "5": [
+            {
+                "posX": 0.40032678842544556,
+                "posY": -0.28433525562286377,
+                "scaleX": 0.13472461700439453,
+                "scaleY": 0.12255587428808212,
+                "Rot": 0.0
+            },
+            {},
+            {
+                "ColliderType1": 4,
+                "ColliderType2": 0,
+                "minX1": -1.0,
+                "minX2": 0.0,
+                "minY1": -0.6600000262260437,
+                "minY2": 0.0,
+                "maxX1": 1.0,
+                "maxX2": 0.0,
+                "maxY1": 0.6600000262260437,
+                "maxY2": 0.0,
+                "offsetX1": 0.0,
+                "offsetX2": 0.0,
+                "offsetY1": 0.0,
+                "offsetY2": 0.0,
+                "radius1": 0.0,
+                "radius2": 0.0
+            },
+            {
+                "NameTag": "InventoryBtn"
+            },
+            {
+                "TextureName": "cameraButtonUnlit",
+                "Index_X": 0,
+                "Index_Y": 0,
+                "Ucoordinates": 512.0,
+                "Vcoordinates": 512.0,
+                "IsSpriteSheet": false,
+                "IsAnimated": false,
+                "MaxIndex": 0,
+                "LayeringOrder": 0
+            },
+            {
+                "0": "ButtonResponse",
+                "ScriptCount": 1
+            },
+            {
+                "Tag": "InventoryBtn",
                 "TargetTag": ""
             },
             {},
