@@ -122,13 +122,13 @@ namespace NocturnalEngine
 				if (ID_tag.GetTag() == "Start" && p_GUI->Check_HTP() == false)
 				{
 
-					Graphic::mcamera->SetZoomLevel(0.25f);
-					p_Scene->setSceneToLoad("Assets/Scene/Game.json");
+					//Graphic::mcamera->SetZoomLevel(0.25f);
+					p_Scene->setSceneToLoad("Assets/Scene/FlamingoScene.json");
 				}
 
 				if (ID_tag.GetTag() == "Restart")
 				{
-					p_Scene->setSceneToLoad("Assets/Scene/Game.json");//reset the game level in game over
+					p_Scene->setSceneToLoad("Assets/Scene/FlamingoScene.json");//reset the game level in game over
 				}
 
 				if (ID_tag.GetTag() == "Quit" && p_GUI->Check_HTP() == false)
@@ -156,7 +156,7 @@ namespace NocturnalEngine
 				if (ID_tag.GetTag() == "PResart")
 				{
 					Graphic::mcamera->SetZoomLevel(0.25f);
-					p_Scene->setSceneToLoad("Assets/Scene/Game.json");// restart the game in pause
+					p_Scene->setSceneToLoad("Assets/Scene/FlamingoScene.json");// restart the game in pause
 				}
 
 				if (ID_tag.GetTag() == "Mute")
@@ -180,9 +180,24 @@ namespace NocturnalEngine
 					p_GUI->toggle_script();// tell the system to end the game 
 				}
 
-				if (ID_tag.GetTag() == "Button")
+				if (ID_tag.GetTag() == "FlamingoBtn")
 				{
-					p_Scene->setSceneToLoad("Assets/Scene/Game.json");//reset the game level in game over
+					p_Scene->setSceneToLoad("Assets/Scene/FlamingoScene.json");// switch to flamingo scene
+				}
+
+				if (ID_tag.GetTag() == "SealBtn")
+				{
+					p_Scene->setSceneToLoad("Assets/Scene/SealScene.json");// switch to seal scene
+				}
+
+				if (ID_tag.GetTag() == "HorseBtn")
+				{
+					p_Scene->setSceneToLoad("Assets/Scene/HorseScene.json");// switch to horse scene
+				}
+
+				if (ID_tag.GetTag() == "OwlBtn")
+				{
+					p_Scene->setSceneToLoad("Assets/Scene/OwlScene.json");// switch to owl scene
 				}
 
 

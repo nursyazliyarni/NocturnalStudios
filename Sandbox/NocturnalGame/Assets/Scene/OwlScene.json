@@ -1,9 +1,12 @@
 {
     "Number of Entities": {
-        "Entities": 3
+        "Entities": 6
     },
     "EntitySignatures": [
         "00000000000000000000000011111101",
+        "00000000000000000000000001111101",
+        "00000000000000000000000001111101",
+        "00000000000000000000000001111101",
         "00000000000000000000000001111101",
         "00000000000000000000000001111101"
     ],
@@ -36,7 +39,7 @@
                 "radius2": 0.0
             },
             {
-                "NameTag": "OwlBackground"
+                "NameTag": "OwlBG"
             },
             {
                 "TextureName": "owlScene",
@@ -131,6 +134,114 @@
                 "posX": 0.40032678842544556,
                 "posY": 0.2418299913406372,
                 "scaleX": 0.13472461700439453,
+                "scaleY": 0.12401483952999115,
+                "Rot": 0.0
+            },
+            {},
+            {
+                "ColliderType1": 4,
+                "ColliderType2": 0,
+                "minX1": -1.0,
+                "minX2": 0.0,
+                "minY1": -0.6600000262260437,
+                "minY2": 0.0,
+                "maxX1": 1.0,
+                "maxX2": 0.0,
+                "maxY1": 0.6600000262260437,
+                "maxY2": 0.0,
+                "offsetX1": 0.0,
+                "offsetX2": 0.0,
+                "offsetY1": 0.0,
+                "offsetY2": 0.0,
+                "radius1": 0.0,
+                "radius2": 0.0
+            },
+            {
+                "NameTag": "FlamingoBtn"
+            },
+            {
+                "TextureName": "cameraButtonUnlit",
+                "Index_X": 0,
+                "Index_Y": 0,
+                "Ucoordinates": 512.0,
+                "Vcoordinates": 512.0,
+                "IsSpriteSheet": false,
+                "IsAnimated": false,
+                "MaxIndex": 0,
+                "LayeringOrder": 0
+            },
+            {
+                "0": "ButtonResponse",
+                "ScriptCount": 1
+            },
+            {
+                "Tag": "FlamingoBtn",
+                "TargetTag": ""
+            },
+            {},
+            {},
+            {},
+            {}
+        ],
+        "3": [
+            {
+                "posX": 0.40032678842544556,
+                "posY": 0.11358354985713959,
+                "scaleX": 0.12510144710540771,
+                "scaleY": 0.11588465422391891,
+                "Rot": 0.0
+            },
+            {},
+            {
+                "ColliderType1": 4,
+                "ColliderType2": 0,
+                "minX1": -1.0,
+                "minX2": 0.0,
+                "minY1": -0.6600000262260437,
+                "minY2": 0.0,
+                "maxX1": 1.0,
+                "maxX2": 0.0,
+                "maxY1": 0.6600000262260437,
+                "maxY2": 0.0,
+                "offsetX1": 0.0,
+                "offsetX2": 0.0,
+                "offsetY1": 0.0,
+                "offsetY2": 0.0,
+                "radius1": 0.0,
+                "radius2": 0.0
+            },
+            {
+                "NameTag": "SealBtn"
+            },
+            {
+                "TextureName": "cameraButtonUnlit",
+                "Index_X": 0,
+                "Index_Y": 0,
+                "Ucoordinates": 512.0,
+                "Vcoordinates": 512.0,
+                "IsSpriteSheet": false,
+                "IsAnimated": false,
+                "MaxIndex": 0,
+                "LayeringOrder": 0
+            },
+            {
+                "0": "ButtonResponse",
+                "ScriptCount": 1
+            },
+            {
+                "Tag": "SealBtn",
+                "TargetTag": ""
+            },
+            {},
+            {},
+            {},
+            {}
+        ],
+        "4": [
+            {
+                "posX": 0.40032678842544556,
+                "posY": -0.014748930931091309,
+                "scaleX": 0.13472461700439453,
                 "scaleY": 0.12255587428808212,
                 "Rot": 0.0
             },
@@ -154,7 +265,7 @@
                 "radius2": 0.0
             },
             {
-                "NameTag": "Button"
+                "NameTag": "HorseBtn"
             },
             {
                 "TextureName": "cameraButtonUnlit",
@@ -172,7 +283,61 @@
                 "ScriptCount": 1
             },
             {
-                "Tag": "Button",
+                "Tag": "HorseBtn",
+                "TargetTag": ""
+            },
+            {},
+            {},
+            {},
+            {}
+        ],
+        "5": [
+            {
+                "posX": 0.40032678842544556,
+                "posY": -0.28433525562286377,
+                "scaleX": 0.13472461700439453,
+                "scaleY": 0.12255587428808212,
+                "Rot": 0.0
+            },
+            {},
+            {
+                "ColliderType1": 4,
+                "ColliderType2": 0,
+                "minX1": -1.0,
+                "minX2": 0.0,
+                "minY1": -0.6600000262260437,
+                "minY2": 0.0,
+                "maxX1": 1.0,
+                "maxX2": 0.0,
+                "maxY1": 0.6600000262260437,
+                "maxY2": 0.0,
+                "offsetX1": 0.0,
+                "offsetX2": 0.0,
+                "offsetY1": 0.0,
+                "offsetY2": 0.0,
+                "radius1": 0.0,
+                "radius2": 0.0
+            },
+            {
+                "NameTag": "InventoryBtn"
+            },
+            {
+                "TextureName": "cameraButtonUnlit",
+                "Index_X": 0,
+                "Index_Y": 0,
+                "Ucoordinates": 512.0,
+                "Vcoordinates": 512.0,
+                "IsSpriteSheet": false,
+                "IsAnimated": false,
+                "MaxIndex": 0,
+                "LayeringOrder": 0
+            },
+            {
+                "0": "ButtonResponse",
+                "ScriptCount": 1
+            },
+            {
+                "Tag": "InventoryBtn",
                 "TargetTag": ""
             },
             {},

@@ -1,21 +1,22 @@
 {
     "Number of Entities": {
-        "Entities": 5
+        "Entities": 6
     },
     "EntitySignatures": [
         "00000000000000000000000010011001",
         "00000000000000000000000010011101",
         "00000000000000000000000010011101",
         "00000000000000000000000010011101",
-        "00000000000000000000000010011101"
+        "00000000000000000000000010011101",
+        "00000000000000000000000000011101"
     ],
     "Components": {
         "0": [
             {
                 "posX": 0.0,
                 "posY": 0.0,
-                "scaleX": 4.170206546783447,
-                "scaleY": 1.9999960660934448,
+                "scaleX": 3.765000104904175,
+                "scaleY": 2.0,
                 "Rot": 0.0
             },
             {},
@@ -47,6 +48,8 @@
                 "SFX Volume": 0.75,
                 "Master Volume": 0.75
             },
+            {},
+            {},
             {}
         ],
         "1": [
@@ -103,6 +106,8 @@
                 "SFX Volume": 0.75,
                 "Master Volume": 0.75
             },
+            {},
+            {},
             {}
         ],
         "2": [
@@ -159,6 +164,8 @@
                 "SFX Volume": 0.75,
                 "Master Volume": 0.75
             },
+            {},
+            {},
             {}
         ],
         "3": [
@@ -215,6 +222,8 @@
                 "SFX Volume": 0.75,
                 "Master Volume": 0.75
             },
+            {},
+            {},
             {}
         ],
         "4": [
@@ -271,6 +280,56 @@
                 "SFX Volume": 0.75,
                 "Master Volume": 0.75
             },
+            {},
+            {},
+            {}
+        ],
+        "5": [
+            {
+                "posX": 0.45875585079193115,
+                "posY": 0.105263352394104,
+                "scaleX": 0.15922994911670685,
+                "scaleY": 0.1560685783624649,
+                "Rot": 0.0
+            },
+            {},
+            {
+                "ColliderType1": 4,
+                "ColliderType2": 0,
+                "minX1": -1.0,
+                "minX2": 0.0,
+                "minY1": -0.6600000262260437,
+                "minY2": 0.0,
+                "maxX1": 1.0,
+                "maxX2": 0.0,
+                "maxY1": 0.6600000262260437,
+                "maxY2": 0.0,
+                "offsetX1": 0.0,
+                "offsetX2": 0.0,
+                "offsetY1": 0.0,
+                "offsetY2": 0.0,
+                "radius1": 0.0,
+                "radius2": 0.0
+            },
+            {
+                "NameTag": "SealBtn"
+            },
+            {
+                "TextureName": "cameraButtonUnlit",
+                "Index_X": 0,
+                "Index_Y": 0,
+                "Ucoordinates": 512.0,
+                "Vcoordinates": 512.0,
+                "IsSpriteSheet": false,
+                "IsAnimated": false,
+                "MaxIndex": 0,
+                "LayeringOrder": 0
+            },
+            {},
+            {},
+            {},
+            {},
+            {},
             {}
         ]
     }
