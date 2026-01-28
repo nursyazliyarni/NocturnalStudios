@@ -1968,6 +1968,20 @@ namespace NocturnalEngine {
                 {
                     if (ImGui::CollapsingHeader("Items Attributes", ImGuiTreeNodeFlags_None)) {
                         auto& item_attributes = p_ecs.GetComponent<ItemsAttributes>(selectedEntity);
+                        static const char* ItemTypeNames[] = {
+                            "Food",
+                            "Medicine",
+                            "Toy"
+                        };
+
+                        int current = static_cast<int>(item_attributes.type);
+
+                        if (ImGui::Combo("Item Type", &current,
+                            ItemTypeNames,
+                            IM_ARRAYSIZE(ItemTypeNames)))
+                        {
+                            item_attributes.type = static_cast<ItemsAttributes::ItemType>(current);
+                        }
                         ImGui::PushItemWidth(100.0f);
                         ImGui::Text("gain amount"); ImGui::SameLine();
                         ImGui::InputDouble("##gain amount", &item_attributes.gain_amount);

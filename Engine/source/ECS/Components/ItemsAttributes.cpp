@@ -19,7 +19,7 @@ NocturnalEngine::ItemsAttributes::ItemsAttributes() :type{ ItemType::FOOD}, gain
 
 bool NocturnalEngine::ItemsAttributes::Deserialize(const rapidjson::Value& obj)
 {
-	type=static_cast<ItemType>(obj["type"].GetInt());
+	if(obj.HasMember("type"))type = static_cast<ItemType>(obj["type"].GetInt());
 	gain_amount = obj["gain amount"].GetDouble();
 	is_dragging = obj["is_dragging"].GetBool();
 
