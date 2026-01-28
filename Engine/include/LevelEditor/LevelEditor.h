@@ -38,6 +38,7 @@ namespace NocturnalEngine {
 		void ContentBrowser();
 		void Logger();
 		void Profiler();
+		void Layering();
 		void Hierarchy();
 		void Inspector();
 		void LogicSelector();

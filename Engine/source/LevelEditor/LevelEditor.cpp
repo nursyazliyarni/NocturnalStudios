@@ -50,6 +50,9 @@
 
 #include <unordered_map>
 #include <array>
+#include <vector>
+#include <algorithm>
+
 
 namespace NocturnalEngine {
 
@@ -147,6 +150,7 @@ namespace NocturnalEngine {
             /*MainMenuBar();*/
             LoadSaveScene();
             Profiler();
+            Layering();
             ContentBrowser();
             Logger();
             Hierarchy();
@@ -996,115 +1000,115 @@ namespace NocturnalEngine {
 
             ImGui::Checkbox("Show physics colliders", &mDebugDraw);
 
-            ImGui::Separator();
-            ImGui::Text("Layering System (Only shows used layers)");
-            ImGui::Text("Top draws first (behind). Bottom draws last (in front).");
-            ImGui::Separator();
+            //ImGui::Separator();
+            //ImGui::Text("Layering System (Only shows used layers)");
+            //ImGui::Text("Top draws first (behind). Bottom draws last (in front).");
+            //ImGui::Separator();
 
-            // 1) Collect which layers are actually used by sprites in the scene
-            std::vector<int> usedLayers;
-            usedLayers.reserve(NocturnalEngine::Graphic::MAX_LAYERS);
+            //// 1) Collect which layers are actually used by sprites in the scene
+            //std::vector<int> usedLayers;
+            //usedLayers.reserve(NocturnalEngine::Graphic::MAX_LAYERS);
 
-            for (Entity e = 0; e < p_ecs.GetTotalEntities(); ++e)
-            {
-                if (!p_ecs.HaveComponent<Sprite>(e)) continue;
+            //for (Entity e = 0; e < p_ecs.GetTotalEntities(); ++e)
+            //{
+            //    if (!p_ecs.HaveComponent<Sprite>(e)) continue;
 
-                int l = p_ecs.GetComponent<Sprite>(e).LayerOrder;
-                if (l < 0) l = 0;
-                if (l >= NocturnalEngine::Graphic::MAX_LAYERS) l = NocturnalEngine::Graphic::MAX_LAYERS - 1;
+            //    int l = p_ecs.GetComponent<Sprite>(e).LayerOrder;
+            //    if (l < 0) l = 0;
+            //    if (l >= NocturnalEngine::Graphic::MAX_LAYERS) l = NocturnalEngine::Graphic::MAX_LAYERS - 1;
 
-                usedLayers.push_back(l);
-            }
+            //    usedLayers.push_back(l);
+            //}
 
-            // If no sprites exist yet, at least show layer 0
-            if (usedLayers.empty())
-                usedLayers.push_back(0);
+            //// If no sprites exist yet, at least show layer 0
+            //if (usedLayers.empty())
+            //    usedLayers.push_back(0);
 
-            // Unique + sort
-            std::sort(usedLayers.begin(), usedLayers.end());
-            usedLayers.erase(std::unique(usedLayers.begin(), usedLayers.end()), usedLayers.end());
+            //// Unique + sort
+            //std::sort(usedLayers.begin(), usedLayers.end());
+            //usedLayers.erase(std::unique(usedLayers.begin(), usedLayers.end()), usedLayers.end());
 
-            // 2) Build the visible list in CURRENT draw order (so UI reflects current draw order)
-            std::vector<int> visibleLayers;
-            visibleLayers.reserve(usedLayers.size());
+            //// 2) Build the visible list in CURRENT draw order (so UI reflects current draw order)
+            //std::vector<int> visibleLayers;
+            //visibleLayers.reserve(usedLayers.size());
 
-            for (int i = 0; i < NocturnalEngine::Graphic::MAX_LAYERS; ++i)
-            {
-                int layer = NocturnalEngine::Graphic::layerDrawOrder[i];
+            //for (int i = 0; i < NocturnalEngine::Graphic::MAX_LAYERS; ++i)
+            //{
+            //    int layer = NocturnalEngine::Graphic::layerDrawOrder[i];
 
-                if (std::binary_search(usedLayers.begin(), usedLayers.end(), layer))
-                    visibleLayers.push_back(layer);
-            }
+            //    if (std::binary_search(usedLayers.begin(), usedLayers.end(), layer))
+            //        visibleLayers.push_back(layer);
+            //}
 
-            // 3) UI: drag to reorder ONLY visible layers,
-            // but we update the REAL global array: Graphic::layerDrawOrder[]
-            for (int visIdx = 0; visIdx < (int)visibleLayers.size(); ++visIdx)
-            {
-                int layer = visibleLayers[visIdx];
-                ImGui::PushID(visIdx);
+            //// 3) UI: drag to reorder ONLY visible layers,
+            //// but we update the REAL global array: Graphic::layerDrawOrder[]
+            //for (int visIdx = 0; visIdx < (int)visibleLayers.size(); ++visIdx)
+            //{
+            //    int layer = visibleLayers[visIdx];
+            //    ImGui::PushID(visIdx);
 
-                ImGui::Checkbox("##enable", &NocturnalEngine::Graphic::layerEnabled[layer]);
-                ImGui::SameLine();
+            //    ImGui::Checkbox("##enable", &NocturnalEngine::Graphic::layerEnabled[layer]);
+            //    ImGui::SameLine();
 
-                std::string label = "Layer " + std::to_string(layer);
-                ImGui::Selectable(label.c_str(), false);
+            //    std::string label = "Layer " + std::to_string(layer);
+            //    ImGui::Selectable(label.c_str(), false);
 
-                // Drag source: drag by visible index
-                if (ImGui::BeginDragDropSource())
-                {
-                    ImGui::SetDragDropPayload("LAYER_REORDER_VISIBLE", &visIdx, sizeof(int));
-                    ImGui::Text("Move %s", label.c_str());
-                    ImGui::EndDragDropSource();
-                }
+            //    // Drag source: drag by visible index
+            //    if (ImGui::BeginDragDropSource())
+            //    {
+            //        ImGui::SetDragDropPayload("LAYER_REORDER_VISIBLE", &visIdx, sizeof(int));
+            //        ImGui::Text("Move %s", label.c_str());
+            //        ImGui::EndDragDropSource();
+            //    }
 
-                // Drop target
-                if (ImGui::BeginDragDropTarget())
-                {
-                    if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("LAYER_REORDER_VISIBLE"))
-                    {
-                        int srcVisIdx = *(const int*)payload->Data;
-                        int dstVisIdx = visIdx;
+            //    // Drop target
+            //    if (ImGui::BeginDragDropTarget())
+            //    {
+            //        if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("LAYER_REORDER_VISIBLE"))
+            //        {
+            //            int srcVisIdx = *(const int*)payload->Data;
+            //            int dstVisIdx = visIdx;
 
-                        if (srcVisIdx != dstVisIdx &&
-                            srcVisIdx >= 0 && srcVisIdx < (int)visibleLayers.size() &&
-                            dstVisIdx >= 0 && dstVisIdx < (int)visibleLayers.size())
-                        {
-                            int movingLayer = visibleLayers[srcVisIdx];
-                            int dstLayer = visibleLayers[dstVisIdx];
+            //            if (srcVisIdx != dstVisIdx &&
+            //                srcVisIdx >= 0 && srcVisIdx < (int)visibleLayers.size() &&
+            //                dstVisIdx >= 0 && dstVisIdx < (int)visibleLayers.size())
+            //            {
+            //                int movingLayer = visibleLayers[srcVisIdx];
+            //                int dstLayer = visibleLayers[dstVisIdx];
 
-                            // Find their positions in the GLOBAL drawOrder array
-                            int srcGlobal = -1, dstGlobal = -1;
-                            for (int g = 0; g < NocturnalEngine::Graphic::MAX_LAYERS; ++g)
-                            {
-                                if (NocturnalEngine::Graphic::layerDrawOrder[g] == movingLayer) srcGlobal = g;
-                                if (NocturnalEngine::Graphic::layerDrawOrder[g] == dstLayer)    dstGlobal = g;
-                            }
+            //                // Find their positions in the GLOBAL drawOrder array
+            //                int srcGlobal = -1, dstGlobal = -1;
+            //                for (int g = 0; g < NocturnalEngine::Graphic::MAX_LAYERS; ++g)
+            //                {
+            //                    if (NocturnalEngine::Graphic::layerDrawOrder[g] == movingLayer) srcGlobal = g;
+            //                    if (NocturnalEngine::Graphic::layerDrawOrder[g] == dstLayer)    dstGlobal = g;
+            //                }
 
-                            if (srcGlobal != -1 && dstGlobal != -1)
-                            {
-                                // Stable "move" in global draw order
-                                int temp = NocturnalEngine::Graphic::layerDrawOrder[srcGlobal];
+            //                if (srcGlobal != -1 && dstGlobal != -1)
+            //                {
+            //                    // Stable "move" in global draw order
+            //                    int temp = NocturnalEngine::Graphic::layerDrawOrder[srcGlobal];
 
-                                if (srcGlobal < dstGlobal)
-                                {
-                                    for (int k = srcGlobal; k < dstGlobal; ++k)
-                                        NocturnalEngine::Graphic::layerDrawOrder[k] = NocturnalEngine::Graphic::layerDrawOrder[k + 1];
-                                    NocturnalEngine::Graphic::layerDrawOrder[dstGlobal] = temp;
-                                }
-                                else
-                                {
-                                    for (int k = srcGlobal; k > dstGlobal; --k)
-                                        NocturnalEngine::Graphic::layerDrawOrder[k] = NocturnalEngine::Graphic::layerDrawOrder[k - 1];
-                                    NocturnalEngine::Graphic::layerDrawOrder[dstGlobal] = temp;
-                                }
-                            }
-                        }
-                    }
-                    ImGui::EndDragDropTarget();
-                }
+            //                    if (srcGlobal < dstGlobal)
+            //                    {
+            //                        for (int k = srcGlobal; k < dstGlobal; ++k)
+            //                            NocturnalEngine::Graphic::layerDrawOrder[k] = NocturnalEngine::Graphic::layerDrawOrder[k + 1];
+            //                        NocturnalEngine::Graphic::layerDrawOrder[dstGlobal] = temp;
+            //                    }
+            //                    else
+            //                    {
+            //                        for (int k = srcGlobal; k > dstGlobal; --k)
+            //                            NocturnalEngine::Graphic::layerDrawOrder[k] = NocturnalEngine::Graphic::layerDrawOrder[k - 1];
+            //                        NocturnalEngine::Graphic::layerDrawOrder[dstGlobal] = temp;
+            //                    }
+            //                }
+            //            }
+            //        }
+            //        ImGui::EndDragDropTarget();
+            //    }
 
-                ImGui::PopID();
-            }
+            //    ImGui::PopID();
+            //}
 
 
 
@@ -1166,6 +1170,117 @@ namespace NocturnalEngine {
             ImGui::End();
         }
     }
+
+
+
+    void LevelEditor::Layering()
+    {
+        if (!is_ShowWindow) return;
+
+        ImGui::Begin("Layering");
+
+        ImGui::Text("Layering System (Only shows used layers)");
+        ImGui::Text("Top draws first (behind). Bottom draws last (in front).");
+        ImGui::Separator();
+
+        std::vector<int> usedLayers;
+        usedLayers.reserve(NocturnalEngine::Graphic::MAX_LAYERS);
+
+        for (Entity e = 0; e < p_ecs.GetTotalEntities(); ++e)
+        {
+            if (!p_ecs.HaveComponent<Sprite>(e)) continue;
+
+            int l = p_ecs.GetComponent<Sprite>(e).LayerOrder;
+            if (l < 0) l = 0;
+            if (l >= NocturnalEngine::Graphic::MAX_LAYERS) l = NocturnalEngine::Graphic::MAX_LAYERS - 1;
+
+            usedLayers.push_back(l);
+        }
+
+        if (usedLayers.empty())
+            usedLayers.push_back(0);
+
+        std::sort(usedLayers.begin(), usedLayers.end());
+        usedLayers.erase(std::unique(usedLayers.begin(), usedLayers.end()), usedLayers.end());
+
+        std::vector<int> visibleLayers;
+        visibleLayers.reserve(usedLayers.size());
+
+        for (int i = 0; i < NocturnalEngine::Graphic::MAX_LAYERS; ++i)
+        {
+            int layer = NocturnalEngine::Graphic::layerDrawOrder[i];
+
+            if (std::binary_search(usedLayers.begin(), usedLayers.end(), layer))
+                visibleLayers.push_back(layer);
+        }
+
+        for (int visIdx = 0; visIdx < (int)visibleLayers.size(); ++visIdx)
+        {
+            int layer = visibleLayers[visIdx];
+            ImGui::PushID(visIdx);
+
+            ImGui::Checkbox("##enable", &NocturnalEngine::Graphic::layerEnabled[layer]);
+            ImGui::SameLine();
+
+            std::string label = "Layer " + std::to_string(layer);
+            ImGui::Selectable(label.c_str(), false);
+
+            if (ImGui::BeginDragDropSource())
+            {
+                ImGui::SetDragDropPayload("LAYER_REORDER_VISIBLE", &visIdx, sizeof(int));
+                ImGui::Text("Move %s", label.c_str());
+                ImGui::EndDragDropSource();
+            }
+
+            if (ImGui::BeginDragDropTarget())
+            {
+                if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("LAYER_REORDER_VISIBLE"))
+                {
+                    int srcVisIdx = *(const int*)payload->Data;
+                    int dstVisIdx = visIdx;
+
+                    if (srcVisIdx != dstVisIdx &&
+                        srcVisIdx >= 0 && srcVisIdx < (int)visibleLayers.size() &&
+                        dstVisIdx >= 0 && dstVisIdx < (int)visibleLayers.size())
+                    {
+                        int movingLayer = visibleLayers[srcVisIdx];
+                        int dstLayer = visibleLayers[dstVisIdx];
+
+                        int srcGlobal = -1, dstGlobal = -1;
+                        for (int g = 0; g < NocturnalEngine::Graphic::MAX_LAYERS; ++g)
+                        {
+                            if (NocturnalEngine::Graphic::layerDrawOrder[g] == movingLayer) srcGlobal = g;
+                            if (NocturnalEngine::Graphic::layerDrawOrder[g] == dstLayer)    dstGlobal = g;
+                        }
+
+                        if (srcGlobal != -1 && dstGlobal != -1)
+                        {
+                            int temp = NocturnalEngine::Graphic::layerDrawOrder[srcGlobal];
+
+                            if (srcGlobal < dstGlobal)
+                            {
+                                for (int k = srcGlobal; k < dstGlobal; ++k)
+                                    NocturnalEngine::Graphic::layerDrawOrder[k] = NocturnalEngine::Graphic::layerDrawOrder[k + 1];
+                                NocturnalEngine::Graphic::layerDrawOrder[dstGlobal] = temp;
+                            }
+                            else
+                            {
+                                for (int k = srcGlobal; k > dstGlobal; --k)
+                                    NocturnalEngine::Graphic::layerDrawOrder[k] = NocturnalEngine::Graphic::layerDrawOrder[k - 1];
+                                NocturnalEngine::Graphic::layerDrawOrder[dstGlobal] = temp;
+                            }
+                        }
+                    }
+                }
+                ImGui::EndDragDropTarget();
+            }
+
+            ImGui::PopID();
+        }
+
+        ImGui::End();
+    }
+
 
     /*!*************************************************************************
   // Create, destroy and clone entities in the hirarchy window
