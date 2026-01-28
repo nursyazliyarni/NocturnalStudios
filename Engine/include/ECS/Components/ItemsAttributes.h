@@ -38,5 +38,7 @@ namespace NocturnalEngine
 
 	public:
 		double gain_amount;
+		bool is_dragging;
+		vec2D duplicate_item_pos;
 	};
 }

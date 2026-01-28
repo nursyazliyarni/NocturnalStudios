@@ -15,11 +15,12 @@
 #include "pch.h"
 #include "ECS/Components/ItemsAttributes.h"
 
-NocturnalEngine::ItemsAttributes::ItemsAttributes() : gain_amount{ 0 } {}
+NocturnalEngine::ItemsAttributes::ItemsAttributes() : gain_amount{ 0 }, is_dragging{ false } {}
 
 bool NocturnalEngine::ItemsAttributes::Deserialize(const rapidjson::Value& obj)
 {
 	gain_amount = obj["gain amount"].GetDouble();
+	is_dragging = obj["is_dragging"].GetBool();
 	return true;
 }
 
@@ -27,5 +28,7 @@ bool NocturnalEngine::ItemsAttributes::Serialize(rapidjson::PrettyWriter<rapidjs
 {
 	writer->Key("gain amount");
 	writer->Double(gain_amount);
+	writer->Key("is_dragging");
+	writer->Bool(is_dragging);
 	return true;
 }

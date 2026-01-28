@@ -916,8 +916,7 @@ namespace NocturnalEngine {
 
             // how much time per frame and Fps
             ImGui::Text("Application average % .3f ms / frame(% .3f FPS)", 1000.0f / FramePerSec::GetInstance().GetFps(), FramePerSec::GetInstance().GetFps());
-            ImGui::Text("Normalized mouse coordinates: %.3f %.3f", GetWindow()->Getter().mouseX/GetWindow()->Getter().m_Width, 
-                                                                   GetWindow()->Getter().mouseY/GetWindow()->Getter().m_Height);
+            ImGui::Text("GUI mouse coordinates: %.3f %.3f", p_GUI->MousePosition.x, p_GUI->MousePosition.y);
 
             //Renderering Information
             ImGui::Text("\n");
@@ -1163,6 +1162,18 @@ namespace NocturnalEngine {
                     {
                         if (!p_ecs.HaveComponent<HUDComponent>(selectedEntity))
                             p_ecs.AddComponent<HUDComponent>(selectedEntity, C_HUDComponent);
+                        ImGui::CloseCurrentPopup();
+                    }
+                    if (ImGui::MenuItem("Animal Attributes"))
+                    {
+                        if (!p_ecs.HaveComponent<AnimalAttributes>(selectedEntity))
+                            p_ecs.AddComponent<AnimalAttributes>(selectedEntity, C_AnimalAttributesComponent);
+                        ImGui::CloseCurrentPopup();
+                    }
+                    if (ImGui::MenuItem("Items Attributes"))
+                    {
+                        if (!p_ecs.HaveComponent<ItemsAttributes>(selectedEntity))
+                            p_ecs.AddComponent<ItemsAttributes>(selectedEntity, C_ItemsAttributesComponent);
                         ImGui::CloseCurrentPopup();
                     }
 
@@ -1604,6 +1615,55 @@ namespace NocturnalEngine {
                         ImGui::DragFloat("##OffsetY", (float*)&Offset.y, 0.005f);
                         ImGui::PopID();
                         HUDComp.SetOffset(Offset);
+                    }
+                }
+
+                //If Entity have Animal Attibutes Component
+                if (p_ecs.HaveComponent<AnimalAttributes>(selectedEntity))
+                {
+                    if (ImGui::CollapsingHeader("Animal Attributes", ImGuiTreeNodeFlags_None)) {
+                        auto& animal_attributes = p_ecs.GetComponent<AnimalAttributes>(selectedEntity);
+                        ImGui::PushItemWidth(100.0f);
+                        ImGui::Text("Current Health"); ImGui::SameLine();
+                        if (ImGui::InputDouble("##Current Health", &animal_attributes.current_health))
+                        {
+                            
+                            animal_attributes.current_health = glm::clamp(animal_attributes.current_health, 0.0, animal_attributes.maxHealth);
+                        }
+       
+                        ImGui::Text("Current Hunger"); ImGui::SameLine();
+                        if (ImGui::InputDouble("##Current Hunger", &animal_attributes.current_hunger))
+                        {
+
+                            animal_attributes.current_hunger = glm::clamp(animal_attributes.current_hunger, 0.0, animal_attributes.maxHunger);
+                        }
+
+                        ImGui::Text("Current Sanity"); ImGui::SameLine();
+                        if (ImGui::InputDouble("##Current Sanity", &animal_attributes.current_sanity))
+                        {
+
+                            animal_attributes.current_sanity = glm::clamp(animal_attributes.current_sanity, 0.0, animal_attributes.maxSanity);
+                        }
+
+                        ImGui::Text("Health Decay Rate"); ImGui::SameLine();
+                        ImGui::InputDouble("##Health Decay Rate", &animal_attributes.healthDecayRate);
+
+                        ImGui::Text("Hunger Decay Rate"); ImGui::SameLine();
+                        ImGui::InputDouble("##Hunger Decay Rate", &animal_attributes.hungerDecayRate);
+
+                        ImGui::Text("Sanity Decay Rate"); ImGui::SameLine();
+                        ImGui::InputDouble("##Sanity Decay Rate", &animal_attributes.sanityDecayRate);
+                    }
+                }
+
+                //If Entity have Item Attibutes Component
+                if (p_ecs.HaveComponent<ItemsAttributes>(selectedEntity))
+                {
+                    if (ImGui::CollapsingHeader("Items Attributes", ImGuiTreeNodeFlags_None)) {
+                        auto& item_attributes = p_ecs.GetComponent<ItemsAttributes>(selectedEntity);
+                        ImGui::PushItemWidth(100.0f);
+                        ImGui::Text("gain amount"); ImGui::SameLine();
+                        ImGui::InputDouble("##gain amount", &item_attributes.gain_amount);
                     }
                 }
                 

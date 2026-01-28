@@ -156,6 +156,12 @@ namespace NocturnalEngine {
 						mRenderer->DrawQuad({ transform.GetPos().x, transform.GetPos().y }, { transform.GetScale().x, transform.GetScale().y },
 							transform.GetRot(), GETTEXTURE(sprite.GetTexture()));
 					}
+
+					if (p_ecs.HaveComponent<ItemsAttributes>(*i) && p_ecs.GetComponent<ItemsAttributes>(*i).is_dragging) {
+						mRenderer->DrawQuad({ p_ecs.GetComponent<ItemsAttributes>(*i).duplicate_item_pos }, { transform.GetScale().x, transform.GetScale().y },
+							transform.GetRot(), GETTEXTURE(sprite.GetTexture()));
+					}
+
 					if (p_Editor->mDebugDraw)
 					{
 						if (p_ecs.HaveComponent<Collider>(*i) && ((p_ecs.GetComponent<Collider>(*i)[0].is_Alive) || (p_ecs.GetComponent<Collider>(*i)[1].is_Alive))) {

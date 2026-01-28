@@ -140,22 +140,59 @@ namespace NocturnalEngine {
 
     }
 
-    bool InputSystem::detect_draggable_item()
+    void InputSystem::detect_draggable_item(mousecode mouse, bool is_editormode)
     {
-        //glm::vec2 mouse_pos{ static_cast<float>(wd->Getter().mouseX) , static_cast<float>(wd->Getter().mouseY) };//store the mouse position into a vector
-        //glm::vec2 screen_size{ static_cast<float>(wd->Getter().m_Width),static_cast<float>(wd->Getter().m_Height) };//store the screen size into a vector
-
-        
-        
-        /*if (MousePressed(mouse)) {
+        static bool is_mouse_dragging{ false };
+        static vec2D drag_offset{}; static Entity animal_entity{};
+        if (!is_editormode) {
             for (Entity i{ 0 }; i < p_ecs.GetTotalEntities(); ++i) {
+                if (p_ecs.HaveComponent<AnimalAttributes>(i)) {
+                    animal_entity = i;
+                }
+
                 if (p_ecs.HaveComponent<ItemsAttributes>(i)) {
-                    auto transform_data{ p_ecs.GetComponent<Transform>(i) };
-                    
+                    auto& transform_data{ p_ecs.GetComponent<Transform>(i) };
+                    if (MousePressed(mouse)&&!is_mouse_dragging) {
+                        if (p_GUI->MousePosition.x >= transform_data.GetPos().x - transform_data.GetScale().x / 2 &&
+                            p_GUI->MousePosition.x <= transform_data.GetPos().x + transform_data.GetScale().x / 2 &&
+                            p_GUI->MousePosition.y >= transform_data.GetPos().y - transform_data.GetScale().y / 2 &&
+                            p_GUI->MousePosition.y <= transform_data.GetPos().y + transform_data.GetScale().y / 2)
+                        {
+                            is_mouse_dragging = true;
+                            p_ecs.GetComponent<ItemsAttributes>(i).is_dragging = true;
+                            p_ecs.GetComponent<ItemsAttributes>(i).duplicate_item_pos = { transform_data.GetPos().x,transform_data.GetPos().y };
+                            drag_offset = { p_ecs.GetComponent<ItemsAttributes>(i).duplicate_item_pos.x - p_GUI->MousePosition.x,
+                            p_ecs.GetComponent<ItemsAttributes>(i).duplicate_item_pos.y - p_GUI->MousePosition.y };
+                        }
+                    }
+
+                    else if (MouseIsReleased(mouse)) {
+                        if (p_ecs.GetComponent<ItemsAttributes>(i).is_dragging) {
+                            is_mouse_dragging = false;
+                            p_ecs.GetComponent<ItemsAttributes>(i).is_dragging = false;
+                        }
+                    }
+
+                    if (p_ecs.GetComponent<ItemsAttributes>(i).is_dragging) {
+                        auto& duplicate_item_pos{ p_ecs.GetComponent<ItemsAttributes>(i).duplicate_item_pos };
+                        duplicate_item_pos = { p_GUI->MousePosition.x + drag_offset.x,
+                            p_GUI->MousePosition.y + drag_offset.y };
+
+                        auto& animal_transform{ p_ecs.GetComponent<Transform>(animal_entity) };
+                        if (duplicate_item_pos.x+transform_data.GetScale().x/2>=animal_transform.GetPos().x - animal_transform.GetScale().x / 2 &&
+                            duplicate_item_pos.x-transform_data.GetScale().x/2<=animal_transform.GetPos().x + animal_transform.GetScale().x / 2 &&
+                            duplicate_item_pos.y+transform_data.GetScale().y/2>=animal_transform.GetPos().y - animal_transform.GetScale().y / 2 &&
+                            duplicate_item_pos.y-transform_data.GetScale().y/2<=animal_transform.GetPos().y + animal_transform.GetScale().y / 2)
+                        {
+                            is_mouse_dragging = false;
+                            p_ecs.GetComponent<ItemsAttributes>(i).is_dragging = false;
+                        }
+                    }
+
                 }
             }
-        }*/
-        return false;
+        }
+
     }
 
 }

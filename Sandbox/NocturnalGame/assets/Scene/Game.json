@@ -4,7 +4,7 @@
     },
     "EntitySignatures": [
         "00000000000000000000000010011001",
-        "00000000000000000000000010011101",
+        "00000000000000000000001010011101",
         "00000000000000000000010010011101",
         "00000000000000000000010010011101",
         "00000000000000000000010010011101"
@@ -106,7 +106,17 @@
                 "Master Volume": 0.75
             },
             {},
-            {},
+            {
+                "Current Health": 100.0,
+                "Max Health": 100.0,
+                "Current Hunger": 100.0,
+                "Max Hunger": 100.0,
+                "Current Sanity": 100.0,
+                "Max Sanity": 100.0,
+                "Health Decay Rate": 1.0,
+                "Hunger Decay Rate": 1.0,
+                "Sanity Decay Rate": 1.0
+            },
             {}
         ],
         "2": [
@@ -166,7 +176,8 @@
             {},
             {},
             {
-                "gain amount": 20
+                "gain amount": 20.0,
+                "is_dragging": false
             }
         ],
         "3": [
@@ -226,7 +237,8 @@
             {},
             {},
             {
-                "gain amount": 20
+                "gain amount": 20.0,
+                "is_dragging": false
             }
         ],
         "4": [
@@ -286,7 +298,8 @@
             {},
             {},
             {
-                "gain amount": 20
+                "gain amount": 20.0,
+                "is_dragging": false
             }
         ]
     }
