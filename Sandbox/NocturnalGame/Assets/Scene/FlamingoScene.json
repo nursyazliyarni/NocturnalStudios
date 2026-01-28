@@ -1,27 +1,32 @@
 {
     "Number of Entities": {
-        "Entities": 5
+        "Entities": 10
     },
     "EntitySignatures": [
         "00000000000000000000000010011001",
         "00000000000000000000001010011101",
         "00000000000000000000010010011101",
         "00000000000000000000010010011101",
-        "00000000000000000000010010011101"
+        "00000000000000000000010010011101",
+        "00000000000000000000000001111101",
+        "00000000000000000000000001111101",
+        "00000000000000000000000001111101",
+        "00000000000000000000000001111101",
+        "00000000000000000000000000011001"
     ],
     "Components": {
         "0": [
             {
                 "posX": 0.0,
                 "posY": 0.0,
-                "scaleX": 4.170206546783447,
-                "scaleY": 1.9999960660934448,
+                "scaleX": 3.6449999809265137,
+                "scaleY": 2.0,
                 "Rot": 0.0
             },
             {},
             {},
             {
-                "NameTag": "flamingo background"
+                "NameTag": "OwlBtn"
             },
             {
                 "TextureName": "flamingo_bg",
@@ -301,6 +306,253 @@
                 "gain amount": 20.0,
                 "is_dragging": false
             }
+        ],
+        "5": [
+            {
+                "posX": 0.4000000059604645,
+                "posY": 0.11400000005960464,
+                "scaleX": 0.13500000536441803,
+                "scaleY": 0.12300000339746475,
+                "Rot": 0.0
+            },
+            {},
+            {
+                "ColliderType1": 4,
+                "ColliderType2": 0,
+                "minX1": -1.0,
+                "minX2": 0.0,
+                "minY1": -0.6600000262260437,
+                "minY2": 0.0,
+                "maxX1": 1.0,
+                "maxX2": 0.0,
+                "maxY1": 0.6600000262260437,
+                "maxY2": 0.0,
+                "offsetX1": 0.0,
+                "offsetX2": 0.0,
+                "offsetY1": 0.0,
+                "offsetY2": 0.0,
+                "radius1": 0.0,
+                "radius2": 0.0
+            },
+            {
+                "NameTag": "SealBtn"
+            },
+            {
+                "TextureName": "cameraButtonUnlit",
+                "Index_X": 0,
+                "Index_Y": 0,
+                "Ucoordinates": 512.0,
+                "Vcoordinates": 512.0,
+                "IsSpriteSheet": false,
+                "IsAnimated": false,
+                "MaxIndex": 0,
+                "LayeringOrder": 0
+            },
+            {
+                "0": "ButtonResponse",
+                "ScriptCount": 1
+            },
+            {
+                "Tag": "SealBtn",
+                "TargetTag": ""
+            },
+            {},
+            {},
+            {},
+            {}
+        ],
+        "6": [
+            {
+                "posX": 0.4000000059604645,
+                "posY": -0.014999999664723873,
+                "scaleX": 0.13500000536441803,
+                "scaleY": 0.12300000339746475,
+                "Rot": 0.0
+            },
+            {},
+            {
+                "ColliderType1": 4,
+                "ColliderType2": 0,
+                "minX1": -1.0,
+                "minX2": 0.0,
+                "minY1": -0.6600000262260437,
+                "minY2": 0.0,
+                "maxX1": 1.0,
+                "maxX2": 0.0,
+                "maxY1": 0.6600000262260437,
+                "maxY2": 0.0,
+                "offsetX1": 0.0,
+                "offsetX2": 0.0,
+                "offsetY1": 0.0,
+                "offsetY2": 0.0,
+                "radius1": 0.0,
+                "radius2": 0.0
+            },
+            {
+                "NameTag": "HorseBtn"
+            },
+            {
+                "TextureName": "cameraButtonUnlit",
+                "Index_X": 0,
+                "Index_Y": 0,
+                "Ucoordinates": 512.0,
+                "Vcoordinates": 512.0,
+                "IsSpriteSheet": false,
+                "IsAnimated": false,
+                "MaxIndex": 0,
+                "LayeringOrder": 0
+            },
+            {
+                "0": "ButtonResponse",
+                "ScriptCount": 1
+            },
+            {
+                "Tag": "HorseBtn",
+                "TargetTag": ""
+            },
+            {},
+            {},
+            {},
+            {}
+        ],
+        "7": [
+            {
+                "posX": 0.4000000059604645,
+                "posY": -0.14499999582767487,
+                "scaleX": 0.13500000536441803,
+                "scaleY": 0.12300000339746475,
+                "Rot": 0.0
+            },
+            {},
+            {
+                "ColliderType1": 4,
+                "ColliderType2": 0,
+                "minX1": -1.0,
+                "minX2": 0.0,
+                "minY1": -0.6600000262260437,
+                "minY2": 0.0,
+                "maxX1": 1.0,
+                "maxX2": 0.0,
+                "maxY1": 0.6600000262260437,
+                "maxY2": 0.0,
+                "offsetX1": 0.0,
+                "offsetX2": 0.0,
+                "offsetY1": 0.0,
+                "offsetY2": 0.0,
+                "radius1": 0.0,
+                "radius2": 0.0
+            },
+            {
+                "NameTag": "OwlBtn"
+            },
+            {
+                "TextureName": "cameraButtonUnlit",
+                "Index_X": 0,
+                "Index_Y": 0,
+                "Ucoordinates": 512.0,
+                "Vcoordinates": 512.0,
+                "IsSpriteSheet": false,
+                "IsAnimated": false,
+                "MaxIndex": 0,
+                "LayeringOrder": 0
+            },
+            {
+                "0": "ButtonResponse",
+                "ScriptCount": 1
+            },
+            {
+                "Tag": "OwlBtn",
+                "TargetTag": ""
+            },
+            {},
+            {},
+            {},
+            {}
+        ],
+        "8": [
+            {
+                "posX": 0.4000000059604645,
+                "posY": -0.2840000092983246,
+                "scaleX": 0.13500000536441803,
+                "scaleY": 0.12300000339746475,
+                "Rot": 0.0
+            },
+            {},
+            {
+                "ColliderType1": 4,
+                "ColliderType2": 0,
+                "minX1": -1.0,
+                "minX2": 0.0,
+                "minY1": -0.6600000262260437,
+                "minY2": 0.0,
+                "maxX1": 1.0,
+                "maxX2": 0.0,
+                "maxY1": 0.6600000262260437,
+                "maxY2": 0.0,
+                "offsetX1": 0.0,
+                "offsetX2": 0.0,
+                "offsetY1": 0.0,
+                "offsetY2": 0.0,
+                "radius1": 0.0,
+                "radius2": 0.0
+            },
+            {
+                "NameTag": "InventoryBtn"
+            },
+            {
+                "TextureName": "cameraButtonUnlit",
+                "Index_X": 0,
+                "Index_Y": 0,
+                "Ucoordinates": 512.0,
+                "Vcoordinates": 512.0,
+                "IsSpriteSheet": false,
+                "IsAnimated": false,
+                "MaxIndex": 0,
+                "LayeringOrder": 0
+            },
+            {
+                "0": "ButtonResponse",
+                "ScriptCount": 1
+            },
+            {
+                "Tag": "InventoryBtn",
+                "TargetTag": ""
+            },
+            {},
+            {},
+            {},
+            {}
+        ],
+        "9": [
+            {
+                "posX": 0.10899999737739563,
+                "posY": 0.024000000208616257,
+                "scaleX": 4.072000026702881,
+                "scaleY": 2.1110000610351563,
+                "Rot": 0.0
+            },
+            {},
+            {},
+            {
+                "NameTag": "CameraHighlight"
+            },
+            {
+                "TextureName": "cameraHighlight",
+                "Index_X": 0,
+                "Index_Y": 0,
+                "Ucoordinates": 512.0,
+                "Vcoordinates": 512.0,
+                "IsSpriteSheet": false,
+                "IsAnimated": false,
+                "MaxIndex": 0,
+                "LayeringOrder": 0
+            },
+            {},
+            {},
+            {},
+            {},
+            {},
+            {}
         ]
     }
 }

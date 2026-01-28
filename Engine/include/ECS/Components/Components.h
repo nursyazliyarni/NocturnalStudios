@@ -28,6 +28,7 @@
 #include "HUDComponent.h"
 #include "AnimalAttributes.h"
 #include "ItemsAttributes.h"
+#include "Draggable.h"
 
 
 
@@ -43,3 +44,4 @@
 #define C_HUDComponent NocturnalEngine::HUDComponent::HUDComponent()
 #define C_AnimalAttributesComponent NocturnalEngine::AnimalAttributes::AnimalAttributes()
 #define C_ItemsAttributesComponent NocturnalEngine::ItemsAttributes::ItemsAttributes()
+#define C_DraggableComponent NocturnalEngine::Draggable::Draggable()

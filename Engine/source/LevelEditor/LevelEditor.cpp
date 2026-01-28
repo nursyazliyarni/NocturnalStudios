@@ -62,6 +62,11 @@ namespace NocturnalEngine {
         return mInstance;
      }
 
+    bool LevelEditor::IsEditorActive()
+    {
+		return mInstance != nullptr && mInstance->is_ShowWindow;
+    }
+
     bool color_picker = false;
     bool drop_menu = false;
     bool logger = false;
@@ -343,6 +348,39 @@ namespace NocturnalEngine {
         }
         // Same line as Save button
         ImGui::SameLine();
+        if (ImGui::Button("QUICK SAVE"))
+        {
+            std::string filename = mCurrentScene;
+
+            if (filename.empty())
+            {
+                //std::cout << "Cannot save: filename is empty.\n";
+                filename = "Scene.json";
+            }
+            if (mLastSaveTime < 0.f)
+            {
+                // Ensure extension
+                if (filename.find(".json") == std::string::npos)
+                    filename += ".json";
+
+
+                std::string fullPath = path + filename;
+
+                // Save scene
+
+                if (p_Scene->SerializeToFile(fullPath))
+                {
+                    mLastSavedScene = filename;
+                    mCurrentScene = filename;
+                    mLastSaveTime = ImGui::GetTime();
+                }
+
+                //std::cout << "Saved scene: " << fullPath << "\n";
+
+
+            }
+        }
+        //ImGui::SameLine();
 
         // Show message if recently saved
         if (mLastSaveTime > 0.0f && ImGui::GetTime() - mLastSaveTime < mSaveMessageDuration)

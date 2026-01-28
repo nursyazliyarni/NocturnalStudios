@@ -54,6 +54,9 @@ namespace NocturnalEngine {
 
 		Window* GetWindow() { return mWindow; }
 
+		// To get editor visibility
+		static bool IsEditorActive();
+
 	
 	public:
 
