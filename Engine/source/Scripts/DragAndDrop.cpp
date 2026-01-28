@@ -76,6 +76,8 @@ namespace NocturnalEngine {
 						//std::cout << "touching\n";
 						isDragging = false;
 						dupeItem = DestroyDupeItem();
+
+						AnimalGain();
 						
 					}
 				}
@@ -190,6 +192,12 @@ namespace NocturnalEngine {
 		}
 		return false;
 		
+	}
+	void DragAndDrop::AnimalGain() {
+		if (p_ecs.HaveComponent<ItemsAttributes>(entityID))
+		{
+
+		}
 	}
 
 }

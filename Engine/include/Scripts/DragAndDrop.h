@@ -76,5 +76,6 @@ namespace NocturnalEngine
 		void DragCheck();
 		Entity DestroyDupeItem();
 		bool CheckAnimalCollision();
+		void AnimalGain();
 	};
 }
