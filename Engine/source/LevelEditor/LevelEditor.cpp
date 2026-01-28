@@ -48,8 +48,13 @@
 #include "Scripts/CutScene.h"
 #include "Scripts/DialogueManager.h"
 
+#include <unordered_map>
+#include <array>
 
 namespace NocturnalEngine {
+
+    static std::unordered_map<std::string,
+        std::array<bool, NocturnalEngine::Graphic::MAX_LAYERS>> gSceneLayerState;
 
     std::unique_ptr<LevelEditor> LevelEditor::mInstance{ nullptr };
 
@@ -716,8 +721,32 @@ namespace NocturnalEngine {
                                 p_Scene->SerializeToFile(mCurrentDirectory.string() + '/' + backupScene + "_AutoBackup.json");
                                 mLastSavedScene = mCurrentScene;
                             }
+
+                            // SAVE current scene layer state BEFORE switching away
+                            if (!mCurrentScene.empty())
+                            {
+                                auto& saved = gSceneLayerState[mCurrentScene];
+                                for (int l = 0; l < NocturnalEngine::Graphic::MAX_LAYERS; ++l)
+                                    saved[l] = NocturnalEngine::Graphic::layerEnabled[l];
+                            }
+
                             p_Scene->DeserializeFromFile(mCurrentDirectory.string()+'/' + filename);
                             mCurrentScene = filename;
+
+                            //  RESTORE layer state for newly loaded scene 
+                            auto it = gSceneLayerState.find(mCurrentScene);
+                            if (it != gSceneLayerState.end())
+                            {
+                                for (int l = 0; l < NocturnalEngine::Graphic::MAX_LAYERS; ++l)
+                                    NocturnalEngine::Graphic::layerEnabled[l] = it->second[l];
+                            }
+                            else
+                            {
+                                // First time opening this scene -> default all ON
+                                for (int l = 0; l < NocturnalEngine::Graphic::MAX_LAYERS; ++l)
+                                    NocturnalEngine::Graphic::layerEnabled[l] = true;
+                            }
+
                             
                         }
                     }
@@ -966,6 +995,15 @@ namespace NocturnalEngine {
             ImGui::Text("Indices: %d", Infos.TotalIndexUsed());
 
             ImGui::Checkbox("Show physics colliders", &mDebugDraw);
+
+            ImGui::Separator();
+            ImGui::Text("Layering System");
+
+            for (int i = 0; i < NocturnalEngine::Graphic::MAX_LAYERS; ++i)
+            {
+                std::string label = "Enable Layer " + std::to_string(i);
+                ImGui::Checkbox(label.c_str(), &NocturnalEngine::Graphic::layerEnabled[i]);
+            }
 
             mSystemRunTime[0] = Timer::GetInstance().GetDT(Systems::COLLISION) / Timer::GetInstance().GetGlobalDT();
             mSystemRunTime[1] = Timer::GetInstance().GetDT(Systems::GRAPHIC) / Timer::GetInstance().GetGlobalDT();
@@ -1335,7 +1373,8 @@ namespace NocturnalEngine {
                             ImGui::PopID();
                         }
                         ImGui::Text("Layering Order: "); ImGui::SameLine();
-                        ImGui::DragInt("##layering", (int*)&sprite.LayerOrder, 1, 0, 8);
+                        // ImGui::DragInt("##layering", (int*)&sprite.LayerOrder, 1, 0, 8);
+                        ImGui::DragInt("##layering", (int*)&sprite.LayerOrder, 1, 0, NocturnalEngine::Graphic::MAX_LAYERS - 1);
                     }
                 }
                 //Collider Component

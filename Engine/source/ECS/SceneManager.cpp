@@ -19,11 +19,19 @@
 #include "Graphics/Graphics.h"
 #include "Audio/AudioEngine.h"
 #include "Core/MemoryManager.h"
+#include <unordered_map>
+#include <array>
 
 namespace NocturnalEngine
 {
 	// Unique pointer to instance of Scene
 	std::unique_ptr<SceneManager> SceneManager::m_instance;
+
+	static std::unordered_map<std::string,
+		std::array<bool, NocturnalEngine::Graphic::MAX_LAYERS>> gSceneLayerState_Runtime;
+
+	static std::string gCurrentScenePath = "";
+
 
 	/*!*************************************************************************
 	Returns an instance of the SceneManager
@@ -378,7 +386,32 @@ void NocturnalEngine::SceneManager::checkForSceneToLoad()
 			Graphic::camera.SetZoomLevel(0.25f);
 		}
 
+		// SAVE current scene layer state before switching away
+		if (!gCurrentScenePath.empty())
+		{
+			auto& saved = gSceneLayerState_Runtime[gCurrentScenePath];
+			for (int l = 0; l < NocturnalEngine::Graphic::MAX_LAYERS; ++l)
+				saved[l] = NocturnalEngine::Graphic::layerEnabled[l];
+		}
+
 		DeserializeFromFile(sceneToLoad);
+
+		gCurrentScenePath = sceneToLoad;
+
+		//  RESTORE layer state for newly loaded scene 
+		auto it = gSceneLayerState_Runtime.find(gCurrentScenePath);
+		if (it != gSceneLayerState_Runtime.end())
+		{
+			for (int l = 0; l < NocturnalEngine::Graphic::MAX_LAYERS; ++l)
+				NocturnalEngine::Graphic::layerEnabled[l] = it->second[l];
+		}
+		else
+		{
+			for (int l = 0; l < NocturnalEngine::Graphic::MAX_LAYERS; ++l)
+				NocturnalEngine::Graphic::layerEnabled[l] = true;
+		}
+
+
 		sceneToLoad = "";
 	}
 }

@@ -325,7 +325,7 @@
                 "IsSpriteSheet": false,
                 "IsAnimated": false,
                 "MaxIndex": 0,
-                "LayeringOrder": 0
+                "LayeringOrder": 1
             },
             {
                 "0": "ButtonResponse",

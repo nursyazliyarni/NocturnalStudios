@@ -19,6 +19,7 @@
 #include "GUI/GUI.h"
 #include "Timer/Time.h"
 #include "LevelEditor/LevelEditor.h"
+#include <graphics/Graphics.h>
 
 namespace NocturnalEngine
 {
@@ -47,6 +48,19 @@ namespace NocturnalEngine
 
 		for (const auto &entity : mEntities)
 		{
+			// Layering system: skip logic update if this entity is on a disabled layer
+			if (p_ecs.HaveComponent<Sprite>(entity))
+			{
+				int layer = p_ecs.GetComponent<Sprite>(entity).LayerOrder;
+
+				if (layer < 0) layer = 0;
+				if (layer >= NocturnalEngine::Graphic::MAX_LAYERS)
+					layer = NocturnalEngine::Graphic::MAX_LAYERS - 1;
+
+				if (!NocturnalEngine::Graphic::layerEnabled[layer])
+					continue;
+			}
+
 			auto& LogicComp = p_ecs.GetComponent<Logic>(entity);
 			LogicComp.SetScriptEntity(entity);
 			if (!LogicComp.GetScript().empty())

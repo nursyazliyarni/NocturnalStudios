@@ -18,6 +18,7 @@
 #include "ResourceManager/ResourceManager.h"
 #include "ECS/Components/Components.h"
 #include "Math/Physics.h"
+#include <graphics/Graphics.h>
 
 namespace NocturnalEngine {
     /*!*************************************************************************
@@ -37,6 +38,20 @@ namespace NocturnalEngine {
         (void)dt;
         Timer::GetInstance().Start(Systems::COLLISION);
         Timer::GetInstance().GetDT(Systems::COLLISION);
+
+        auto IsLayerDisabled = [&](Entity e) -> bool
+            {
+                if (!p_ecs.HaveComponent<Sprite>(e)) return false; // no sprite = not layer-controlled
+                int layer = p_ecs.GetComponent<Sprite>(e).LayerOrder;
+
+                if (layer < 0) layer = 0;
+                if (layer >= NocturnalEngine::Graphic::MAX_LAYERS)
+                    layer = NocturnalEngine::Graphic::MAX_LAYERS - 1;
+
+                return !NocturnalEngine::Graphic::layerEnabled[layer];
+            };
+
+
         //iterate through array of entities
         for (auto const& i : mEntities) {
             auto& col1 = p_ecs.GetComponent<Collider>(i);
@@ -51,6 +66,12 @@ namespace NocturnalEngine {
                 int l = 0;
                 for (auto const& j : mEntities) {
                     if (i != j && l > k) {
+                        // Layering system: if either entity is on a disabled layer, skip collision checks
+                        if (IsLayerDisabled(i) || IsLayerDisabled(j))
+                        {
+                            l++;
+                            continue;
+                        }
                         auto& col1 = p_ecs.GetComponent<Collider>(i);
                         auto& col2 = p_ecs.GetComponent<Collider>(j);
                         auto& rigid1 = p_ecs.GetComponent<RigidBody>(i);
