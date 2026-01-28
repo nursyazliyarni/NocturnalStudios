@@ -1,12 +1,12 @@
-#pragma once
+
 /*!------------------------------------------------------------------------------------------------
 	File: DragAndDrop.h
 	Project: NocturnalStudio
 
 	Brief:
-		 This file contains the CutScene class declaration
-		 which is responsible for managing cutscene functionalities within the engine
-		 for the cutscene components.
+		 This file contains the DragAndDrop class declaration
+		 which is responsible for managing DragAndDrop functionalities within the engine
+		 for the DragAndDrop components.
 
 	Primary Author:
 		 LAYCOCK ENHUI SARAH (100%)
@@ -15,13 +15,10 @@
 	All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
 *------------------------------------------------------------------------------------------------*/
 
-#pragma once
+#include "pch.h"
 #include "IScript.h"
 #include "Input/Input.h"
-#include "Graphics/Camera2D.h"
-#include "Graphics/Graphics.h"
-#include "ECS/SceneManager.h"
-#include "Input/Input.h"
+
 
 namespace NocturnalEngine
 {
@@ -32,49 +29,38 @@ namespace NocturnalEngine
 	{
 	public:
 		/*!*************************************************************************
-		Default constructor for Cutscenes
+		Default constructor for Drag & Drop
 		****************************************************************************/
-		DragAndDrop() : timer(0), draggedItem{ 0 }, mSwitchAudio{ 1 } {}
+		DragAndDrop() : isDragging{ false }, dragTarget{ 0 }, dupeItem{ 0 }, mInput{ InputSystem::GetInstance() }, dragOffset{} {}
 		/*!*************************************************************************
-		Default destructor for Cutscenes
+		Default destructor for Drag & Drop
 		****************************************************************************/
 		~DragAndDrop() = default;
 		/*!*************************************************************************
-		Returns a new copy of Cutscenes Script
+		Returns a new copy of Drag & Drop Script
 		****************************************************************************/
 		virtual DragAndDrop* Clone() const override
 		{
 			return new DragAndDrop(*this);
 		}
 		/*!*************************************************************************
-		Start State of Cutscenes Script
+		Start State of Drag & Drop Script
 		****************************************************************************/
-		virtual void Start() override
-		{
-
-		}
+		virtual void Start() override;
 		/*!*************************************************************************
-		Update Loop of Cutscenes Script
+		Update Loop of Drag & Drop Script
 		****************************************************************************/
-		virtual void Update(float Frametime) override
-		{
-	
-
-
-		}
+		virtual void Update(float Frametime) override;
 		/*!*************************************************************************
-		End State for Cutscenes
+		End State for Drag & Drop
 		****************************************************************************/
-		virtual void End() override
-		{
-
-		}
+		virtual void End() override;
 		/*!*************************************************************************
 		Returns the name of Script
 		****************************************************************************/
 		virtual std::string GetScriptName() override
 		{
-			return "CutScene";
+			return "DragAndDrop";
 		}
 
 		virtual void SetScriptEntityID(Entity& entity) override { entityID = entity; }
@@ -82,8 +68,13 @@ namespace NocturnalEngine
 		virtual Entity& GetScriptEntityID() override { return entityID; }
 
 	private:
-		float timer;
-		Entity draggedItem;
-		int mSwitchAudio;
+		bool isDragging;
+		Entity dragTarget,dupeItem;
+		std::unique_ptr< InputSystem>& mInput;
+		vec2D dragOffset;
+
+		void DragCheck();
+		Entity DestroyDupeItem();
+		bool CheckAnimalCollision();
 	};
 }

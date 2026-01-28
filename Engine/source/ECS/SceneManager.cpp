@@ -61,6 +61,7 @@ namespace NocturnalEngine
 		p_ecs.RegisterComponent<HUDComponent>();
 		p_ecs.RegisterComponent<AnimalAttributes>();
 		p_ecs.RegisterComponent<ItemsAttributes>();
+		p_ecs.RegisterComponent<Draggable>();
 		sceneToLoad = "";
 	}
 
@@ -208,6 +209,15 @@ namespace NocturnalEngine
 							p_ecs.AddComponent<ItemsAttributes>(j, itemAttr);
 						}
 					}
+					if (p_ecs.GetComponentTypeName(CompID) == "Draggable")
+					{
+						Draggable draggable;
+						draggable.SetComponentEntityID(j);
+						if (draggable.Deserialize(obj["Components"][std::to_string(j).c_str()][static_cast<int>(CompID)].GetObj()))
+						{
+							p_ecs.AddComponent<Draggable>(j, draggable);
+						}
+					}
 				}
 			}
 			++j;
@@ -324,6 +334,10 @@ namespace NocturnalEngine
 						if (p_ecs.GetComponentTypeName(compID) == "ItemsAttributes")
 						{
 							p_ecs.GetComponent<ItemsAttributes>(j).Serialize(writer);
+						}
+						if (p_ecs.GetComponentTypeName(compID) == "Draggable")
+						{
+							p_ecs.GetComponent<Draggable>(j).Serialize(writer);
 						}
 					}
 				}

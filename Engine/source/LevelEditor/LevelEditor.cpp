@@ -47,6 +47,8 @@
 #include "Scripts/PauseMenu.h"
 #include "Scripts/CutScene.h"
 #include "Scripts/DialogueManager.h"
+#include "Scripts/DragAndDrop.h"
+
 
 #include <unordered_map>
 #include <array>
@@ -1470,6 +1472,12 @@ namespace NocturnalEngine {
                             p_ecs.AddComponent<ItemsAttributes>(selectedEntity, C_ItemsAttributesComponent);
                         ImGui::CloseCurrentPopup();
                     }
+                    if (ImGui::MenuItem("Draggable"))
+                    {
+                        if (!p_ecs.HaveComponent<Draggable>(selectedEntity))
+                            p_ecs.AddComponent<Draggable>(selectedEntity, C_DraggableComponent);
+                        ImGui::CloseCurrentPopup();
+                    }
 
                     ImGui::EndPopup();
                 }
@@ -1762,6 +1770,10 @@ namespace NocturnalEngine {
                                     {
                                         logic.InsertScript(new DialogueManager(), selectedEntity);
                                     }
+                                    if (mScriptList[current_script] == "DragAndDrop" && p_ecs.HaveComponent<Sprite>(selectedEntity))
+                                    {
+                                        logic.InsertScript(new DragAndDrop(), selectedEntity);
+                                    }
                                 }
                             }
                         }
@@ -1961,6 +1973,15 @@ namespace NocturnalEngine {
                         ImGui::InputDouble("##gain amount", &item_attributes.gain_amount);
                     }
                 }
+                //Draggable
+                if (p_ecs.HaveComponent<Draggable>(selectedEntity))
+                {
+                    if (ImGui::CollapsingHeader("Draggable", ImGuiTreeNodeFlags_None)) {
+                        auto& draggable = p_ecs.GetComponent<Draggable>(selectedEntity);
+                        ImGui::Checkbox("Is Target", &draggable.IsTarget()); 
+                    }
+                }
+
                 
 
                 if (ImGui::Button("Delete Component"))
@@ -2006,6 +2027,11 @@ namespace NocturnalEngine {
                     if (ImGui::MenuItem("HUD") && p_ecs.HaveComponent<HUDComponent>(selectedEntity))
                     {
                         p_ecs.RemoveComponent<HUDComponent>(selectedEntity);
+                        ImGui::CloseCurrentPopup();
+                    }
+                    if (ImGui::MenuItem("Draggable") && p_ecs.HaveComponent<Draggable>(selectedEntity))
+                    {
+                        p_ecs.RemoveComponent<Draggable>(selectedEntity);
                         ImGui::CloseCurrentPopup();
                     }
                     ImGui::EndPopup();

@@ -34,6 +34,8 @@ namespace NocturnalEngine
 		****************************************************************************/
 		virtual bool Serialize(rapidjson::PrettyWriter<rapidjson::StringBuffer>* writer) const;
 
+		bool &IsTarget() { return isTarget; }
+
 
 		Entity& GetComponentEntityID() { return entityID; }
 		/*!*************************************************************************
@@ -42,6 +44,6 @@ namespace NocturnalEngine
 		void SetComponentEntityID(Entity& entity) { entityID = entity; }
 
 	private:
-		bool isDragging{};
+		bool isTarget{};
 	};
 }
