@@ -67,6 +67,21 @@ namespace NocturnalEngine
 	//NEW DESERIALIZE
 	bool SceneManager::Deserialize(const rapidjson::Value& obj)
 	{
+		// default
+		for (int i = 0; i < NocturnalEngine::Graphic::MAX_LAYERS; ++i)
+			NocturnalEngine::Graphic::layerDrawOrder[i] = i;
+
+		// load if exists
+		if (obj.HasMember("LayerDrawOrder") && obj["LayerDrawOrder"].IsArray())
+		{
+			const auto& arr = obj["LayerDrawOrder"].GetArray();
+			int n = (int)arr.Size();
+			if (n > NocturnalEngine::Graphic::MAX_LAYERS) n = NocturnalEngine::Graphic::MAX_LAYERS;
+
+			for (int i = 0; i < n; ++i)
+				NocturnalEngine::Graphic::layerDrawOrder[i] = arr[i].GetInt();
+		}
+
 
 		for (Entity i = 0; i < p_ecs.GetTotalEntities(); ++i)
 		{
@@ -209,6 +224,11 @@ namespace NocturnalEngine
 	bool SceneManager::Serialize(rapidjson::PrettyWriter<rapidjson::StringBuffer>* writer) const
 	{
 		writer->StartObject();
+		writer->Key("LayerDrawOrder");
+		writer->StartArray();
+		for (int i = 0; i < NocturnalEngine::Graphic::MAX_LAYERS; ++i)
+			writer->Int(NocturnalEngine::Graphic::layerDrawOrder[i]);
+		writer->EndArray();
 		writer->Key("Number of Entities");
 		writer->StartObject();
 		writer->Key("Entities");

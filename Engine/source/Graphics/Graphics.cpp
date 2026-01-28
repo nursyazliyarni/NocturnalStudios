@@ -79,6 +79,9 @@ namespace NocturnalEngine {
 		for (int i = 0; i < Graphic::MAX_LAYERS; ++i)
 			Graphic::layerEnabled[i] = true;
 
+		for (int i = 0; i < Graphic::MAX_LAYERS; ++i)
+			Graphic::layerDrawOrder[i] = i;
+
 	}
 
 	/*!*************************************************************************
@@ -133,8 +136,9 @@ namespace NocturnalEngine {
 		p_GUI->VPmat = mcamera->GetViewProjectionMatrix();
 		
 
-		for (auto layer = 0; layer < Graphic::MAX_LAYERS; layer++)
+		for (int orderIndex = 0; orderIndex < Graphic::MAX_LAYERS; ++orderIndex)
 		{
+			int layer = Graphic::layerDrawOrder[orderIndex];
 			if (!Graphic::layerEnabled[layer]) continue;
 
 			for (auto i = mEntities.begin(); i != mEntities.end(); i++)
