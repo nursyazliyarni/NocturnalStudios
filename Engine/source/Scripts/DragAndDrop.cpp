@@ -32,7 +32,7 @@ namespace NocturnalEngine {
 			{
 				if (p_ecs.HaveComponent<Transform>(e) && p_ecs.HaveComponent<Collider>(e)&& p_ecs.HaveComponent<AnimalAttributes>(e)) {
 					dragTarget = e; 
-					std::cout << "animal found for entity"<< p_ecs.GetComponent<NameTag>(entityID).GetNameTag()<<"\n";
+					//std::cout << "animal found for entity"<< p_ecs.GetComponent<NameTag>(entityID).GetNameTag()<<"\n";
 				}
 			}
 			
@@ -124,7 +124,7 @@ namespace NocturnalEngine {
 						if (mPos.x > minPt.x && mPos.x<maxPt.x && mPos.y>minPt.y && mPos.y < maxPt.y)
 						{
 							isDragging = true;
-							std::cout << "entity " << p_ecs.GetComponent<NameTag>(entityID).GetNameTag() << " collider check\n";
+							//std::cout << "entity " << p_ecs.GetComponent<NameTag>(entityID).GetNameTag() << " collider check\n";
 							
 						}
 						break;
@@ -147,7 +147,7 @@ namespace NocturnalEngine {
 			if (isDragging)
 			{
 				dragOffset = { t.GetPos().x - p_GUI->MousePosition.x,t.GetPos().y - p_GUI->MousePosition.y };
-				std::cout << "entity "<< p_ecs.GetComponent<NameTag>(entityID).GetNameTag() << " now is dragging\n";
+				//std::cout << "entity "<< p_ecs.GetComponent<NameTag>(entityID).GetNameTag() << " now is dragging\n";
 			}
 		}
 	}
