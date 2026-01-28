@@ -1,15 +1,16 @@
 {
     "Number of Entities": {
-        "Entities": 7
+        "Entities": 8
     },
     "EntitySignatures": [
         "00000000000000000000000011111101",
+        "00000000000000000000101001111101",
         "00000000000000000000000001111101",
         "00000000000000000000000001111101",
         "00000000000000000000000001111101",
         "00000000000000000000000001111101",
-        "00000000000000000000000001111101",
-        "00000000000000000000000000011001"
+        "00000000000000000000000000011001",
+        "00000000000000000000010001111101"
     ],
     "Components": {
         "0": [
@@ -22,15 +23,15 @@
             },
             {},
             {
-                "ColliderType1": 4,
+                "ColliderType1": 0,
                 "ColliderType2": 0,
-                "minX1": 0.0,
+                "minX1": -0.10000000149011612,
                 "minX2": 0.0,
-                "minY1": 0.0,
+                "minY1": -0.10000000149011612,
                 "minY2": 0.0,
-                "maxX1": 0.0,
+                "maxX1": 0.10000000149011612,
                 "maxX2": 0.0,
-                "maxY1": 0.0,
+                "maxY1": 0.10000000149011612,
                 "maxY2": 0.0,
                 "offsetX1": 0.0,
                 "offsetX2": 0.0,
@@ -75,6 +76,7 @@
             },
             {},
             {},
+            {},
             {}
         ],
         "1": [
@@ -87,15 +89,15 @@
             },
             {},
             {
-                "ColliderType1": 4,
+                "ColliderType1": 5,
                 "ColliderType2": 0,
-                "minX1": 0.0,
+                "minX1": 0.30000001192092896,
                 "minX2": 0.0,
-                "minY1": 0.0,
+                "minY1": 0.3499999940395355,
                 "minY2": 0.0,
-                "maxX1": 0.0,
+                "maxX1": 0.5,
                 "maxX2": 0.0,
-                "maxY1": 0.0,
+                "maxY1": 0.44999998807907104,
                 "maxY2": 0.0,
                 "offsetX1": 0.0,
                 "offsetX2": 0.0,
@@ -122,13 +124,26 @@
                 "ScriptCount": 0
             },
             {
-                "Tag": "Owl",
+                "Tag": "Horse",
                 "TargetTag": ""
             },
             {},
             {},
+            {
+                "Current Health": 0.0,
+                "Max Health": 0.0,
+                "Current Hunger": 0.0,
+                "Max Hunger": 0.0,
+                "Current Sanity": 0.0,
+                "Max Sanity": 0.0,
+                "Health Decay Rate": 0.0,
+                "Hunger Decay Rate": 0.0,
+                "Sanity Decay Rate": 0.0
+            },
             {},
-            {}
+            {
+                "isTarget": true
+            }
         ],
         "2": [
             {
@@ -179,6 +194,7 @@
                 "Tag": "FlamingoBtn",
                 "TargetTag": ""
             },
+            {},
             {},
             {},
             {},
@@ -236,6 +252,7 @@
             {},
             {},
             {},
+            {},
             {}
         ],
         "4": [
@@ -287,6 +304,7 @@
                 "Tag": "OwlBtn",
                 "TargetTag": ""
             },
+            {},
             {},
             {},
             {},
@@ -344,6 +362,7 @@
             {},
             {},
             {},
+            {},
             {}
         ],
         "6": [
@@ -375,6 +394,65 @@
             {},
             {},
             {},
+            {},
+            {}
+        ],
+        "7": [
+            {
+                "posX": -1.4191521406173706,
+                "posY": -0.7032967805862427,
+                "scaleX": 0.3753497898578644,
+                "scaleY": 0.3973937928676605,
+                "Rot": 0.0
+            },
+            {},
+            {
+                "ColliderType1": 5,
+                "ColliderType2": 0,
+                "minX1": 0.17499999701976776,
+                "minX2": 0.0,
+                "minY1": 0.10000000149011612,
+                "minY2": 0.0,
+                "maxX1": 0.17499999701976776,
+                "maxX2": 0.0,
+                "maxY1": 0.10000000149011612,
+                "maxY2": 0.0,
+                "offsetX1": 0.0,
+                "offsetX2": 0.0,
+                "offsetY1": 0.0,
+                "offsetY2": 0.0,
+                "radius1": 0.0,
+                "radius2": 0.0
+            },
+            {
+                "NameTag": "HorseToy"
+            },
+            {
+                "TextureName": "flamingo_food",
+                "Index_X": 0,
+                "Index_Y": 0,
+                "Ucoordinates": 512.0,
+                "Vcoordinates": 512.0,
+                "IsSpriteSheet": false,
+                "IsAnimated": false,
+                "MaxIndex": 0,
+                "LayeringOrder": 0
+            },
+            {
+                "0": "DragAndDrop",
+                "ScriptCount": 1
+            },
+            {
+                "Tag": "Tou",
+                "TargetTag": ""
+            },
+            {},
+            {},
+            {},
+            {
+                "gain amount": 0.0,
+                "is_dragging": false
+            },
             {}
         ]
     }

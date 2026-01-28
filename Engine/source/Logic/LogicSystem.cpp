@@ -38,7 +38,7 @@ namespace NocturnalEngine
 		Timer::GetInstance().Start(Systems::LOGIC);
 		Timer::GetInstance().GetDT(Systems::LOGIC);
 
-		// If editor is active, skip logic update
+		//If editor is active, skip logic update
 		if (LevelEditor::IsEditorActive())
 		{
 			Timer::GetInstance().Update(Systems::LOGIC);
