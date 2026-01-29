@@ -149,9 +149,9 @@ Application constructor
 				NOCTURNAL_ENGINE_INFO("Memory Manager Enabled: {}", p_MemoryManager.IsEnabled());
 			}
 
-			if (p_Scene->isGameplay == true)
-				glfwSetInputMode(m_window->GetWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-			else
+			//if (p_Scene->isGameplay == true)
+			//	glfwSetInputMode(m_window->GetWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+			//else
 				glfwSetInputMode(m_window->GetWindow(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 			if (!m_window->isWindowNotFocus)
 			{

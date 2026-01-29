@@ -386,21 +386,21 @@ void NocturnalEngine::SceneManager::checkForSceneToLoad()
 
 		if (sceneToLoad == "Assets/Scene/HorseScene.json")
 		{
-			isGameplay = false;
+			isGameplay = true;
 			Graphic::camera.SetZoomLevel(1.0f);
 			Graphic::camera.SetPosition({ 0.0f,0.0f,0.0f });
 		}
 
 		if (sceneToLoad == "Assets/Scene/SealScene.json")
 		{
-			isGameplay = false;
+			isGameplay = true;
 			Graphic::camera.SetZoomLevel(1.0f);
 			Graphic::camera.SetPosition({ 0.0f,0.0f,0.0f });
 		}
 
 		if (sceneToLoad == "Assets/Scene/OwlScene.json")
 		{
-			isGameplay = false;
+			isGameplay = true;
 			Graphic::camera.SetZoomLevel(1.0f);
 			Graphic::camera.SetPosition({ 0.0f,0.0f,0.0f });
 		}

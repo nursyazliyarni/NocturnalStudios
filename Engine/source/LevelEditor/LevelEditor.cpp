@@ -48,6 +48,8 @@
 #include "Scripts/CutScene.h"
 #include "Scripts/DialogueManager.h"
 #include "Scripts/DragAndDrop.h"
+#include "Scripts/HealthBar.h"
+
 
 
 #include <unordered_map>
@@ -1773,6 +1775,10 @@ namespace NocturnalEngine {
                                     if (mScriptList[current_script] == "DragAndDrop" && p_ecs.HaveComponent<Sprite>(selectedEntity)&& p_ecs.HaveComponent<ItemsAttributes>(selectedEntity))
                                     {
                                         logic.InsertScript(new DragAndDrop(), selectedEntity);
+                                    }
+                                    if (mScriptList[current_script] == "HealthBar" && p_ecs.HaveComponent<Sprite>(selectedEntity))
+                                    {
+                                        logic.InsertScript(new HealthBar(), selectedEntity);
                                     }
                                 }
                             }
