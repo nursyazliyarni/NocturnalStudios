@@ -1,10 +1,10 @@
 {
     "Number of Entities": {
-        "Entities": 10
+        "Entities": 13
     },
     "EntitySignatures": [
         "00000000000000000000000010011001",
-        "00000000000000000000001010011101",
+        "00000000000000000000001010111101",
         "00000000000000000000010010011101",
         "00000000000000000000010010011101",
         "00000000000000000000010010011101",
@@ -12,6 +12,9 @@
         "00000000000000000000000001111101",
         "00000000000000000000000001111101",
         "00000000000000000000000001111101",
+        "00000000000000000000000000011001",
+        "00000000000000000000000000011001",
+        "00000000000000000000000000011001",
         "00000000000000000000000000011001"
     ],
     "Components": {
@@ -26,7 +29,7 @@
             {},
             {},
             {
-                "NameTag": "OwlBtn"
+                "NameTag": "flamingoBG"
             },
             {
                 "TextureName": "flamingo_bg",
@@ -97,7 +100,9 @@
                 "MaxIndex": 0,
                 "LayeringOrder": 0
             },
-            {},
+            {
+                "ScriptCount": 0
+            },
             {},
             {
                 "0": {
@@ -120,7 +125,8 @@
                 "Max Sanity": 100.0,
                 "Health Decay Rate": 1.0,
                 "Hunger Decay Rate": 1.0,
-                "Sanity Decay Rate": 1.0
+                "Sanity Decay Rate": 1.0,
+                "IS_alive": true
             },
             {}
         ],
@@ -538,6 +544,99 @@
             },
             {
                 "TextureName": "cameraHighlight",
+                "Index_X": 0,
+                "Index_Y": 0,
+                "Ucoordinates": 512.0,
+                "Vcoordinates": 512.0,
+                "IsSpriteSheet": false,
+                "IsAnimated": false,
+                "MaxIndex": 0,
+                "LayeringOrder": 0
+            },
+            {},
+            {},
+            {},
+            {},
+            {},
+            {}
+        ],
+        "10": [
+            {
+                "posX": 0.6526573300361633,
+                "posY": 0.10966724902391434,
+                "scaleX": 0.25,
+                "scaleY": 0.20000000298023224,
+                "Rot": 0.0
+            },
+            {},
+            {},
+            {
+                "NameTag": "food_icon"
+            },
+            {
+                "TextureName": "hunger",
+                "Index_X": 0,
+                "Index_Y": 0,
+                "Ucoordinates": 512.0,
+                "Vcoordinates": 512.0,
+                "IsSpriteSheet": false,
+                "IsAnimated": false,
+                "MaxIndex": 0,
+                "LayeringOrder": 0
+            },
+            {},
+            {},
+            {},
+            {},
+            {},
+            {}
+        ],
+        "11": [
+            {
+                "posX": 0.6559522151947021,
+                "posY": -0.08143656700849533,
+                "scaleX": 0.25,
+                "scaleY": 0.20000000298023224,
+                "Rot": 0.0
+            },
+            {},
+            {},
+            {
+                "NameTag": "health_icon"
+            },
+            {
+                "TextureName": "health",
+                "Index_X": 0,
+                "Index_Y": 0,
+                "Ucoordinates": 512.0,
+                "Vcoordinates": 512.0,
+                "IsSpriteSheet": false,
+                "IsAnimated": false,
+                "MaxIndex": 0,
+                "LayeringOrder": 0
+            },
+            {},
+            {},
+            {},
+            {},
+            {},
+            {}
+        ],
+        "12": [
+            {
+                "posX": 0.6559522747993469,
+                "posY": -0.2725403904914856,
+                "scaleX": 0.25,
+                "scaleY": 0.20000000298023224,
+                "Rot": 0.0
+            },
+            {},
+            {},
+            {
+                "NameTag": "sanity_icon"
+            },
+            {
+                "TextureName": "sanity",
                 "Index_X": 0,
                 "Index_Y": 0,
                 "Ucoordinates": 512.0,

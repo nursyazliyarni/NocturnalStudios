@@ -127,12 +127,17 @@ namespace NocturnalEngine {
 	
 
 		p_GUI->VPmat = mcamera->GetViewProjectionMatrix();
-		
-
+		static std::map<std::string, Entity>nametag_map;
 		for (auto layer = 0; layer < 8; layer++)
 		{
 			for (auto i = mEntities.begin(); i != mEntities.end(); i++)
 			{
+				if (p_ecs.GetComponent<NameTag>(*i).GetNameTag() == "food_icon" ||
+					p_ecs.GetComponent<NameTag>(*i).GetNameTag() == "health_icon" ||
+					p_ecs.GetComponent<NameTag>(*i).GetNameTag() == "sanity_icon") 
+				{
+					nametag_map[p_ecs.GetComponent<NameTag>(*i).GetNameTag()] = *i;
+				}
 				
 				auto& transform = p_ecs.GetComponent<Transform>(*i);
 				auto& sprite = p_ecs.GetComponent<Sprite>(*i);
@@ -160,6 +165,30 @@ namespace NocturnalEngine {
 					if (p_ecs.HaveComponent<ItemsAttributes>(*i) && p_ecs.GetComponent<ItemsAttributes>(*i).is_dragging) {
 						mRenderer->DrawQuad({ p_ecs.GetComponent<ItemsAttributes>(*i).duplicate_item_pos }, { transform.GetScale().x, transform.GetScale().y },
 							transform.GetRot(), GETTEXTURE(sprite.GetTexture()));
+					}
+
+					if (p_ecs.HaveComponent<AnimalAttributes>(*i)) {
+						auto& animal_attributes{ p_ecs.GetComponent<AnimalAttributes>(*i) };
+						for (auto& pair : nametag_map) {
+							auto& icon_transform{ p_ecs.GetComponent<Transform>(pair.second)};
+							if (pair.first == "food_icon") {
+								mRenderer->DrawQuad({ icon_transform.GetPos().x + icon_transform.GetScale().x*static_cast<float>(animal_attributes.current_hunger)/50,icon_transform.GetPos().y },
+									{ icon_transform.GetScale().x*static_cast<float>(animal_attributes.current_hunger)/25,icon_transform.GetScale().y / 4}, 
+									Colors::norm_red);
+							}
+							
+							else if (pair.first == "health_icon") {
+								mRenderer->DrawQuad({ icon_transform.GetPos().x + icon_transform.GetScale().x * static_cast<float>(animal_attributes.current_health) / 50,icon_transform.GetPos().y },
+									{ icon_transform.GetScale().x * static_cast<float>(animal_attributes.current_health) / 25,icon_transform.GetScale().y / 4 },
+									Colors::Light_green);
+							}
+
+							else {
+								mRenderer->DrawQuad({ icon_transform.GetPos().x + icon_transform.GetScale().x * static_cast<float>(animal_attributes.current_sanity) / 50,icon_transform.GetPos().y },
+									{ icon_transform.GetScale().x * static_cast<float>(animal_attributes.current_sanity) / 25,icon_transform.GetScale().y / 4 },
+									Colors::Light_purple);
+							}
+						}
 					}
 
 					if (p_Editor->mDebugDraw)

@@ -27,6 +27,12 @@
 #include "Math/math.h"
 #include "Animation/Animation.h"
 
+namespace Colors {
+	inline NocturnalEngine::Vec4 norm_red{ 1.0f, 0.0f, 0.0f, 1.0f };
+	inline NocturnalEngine::Vec4 Light_green{ 0.5f, 1.0f, 0.5f, 1.0f };
+	inline NocturnalEngine::Vec4 Light_purple{ 0.8f, 0.6f, 1.0f, 1.0f };
+}
+
 namespace NocturnalEngine {
 
 	class Graphic : public System

@@ -30,6 +30,7 @@ bool NocturnalEngine::AnimalAttributes::Deserialize(const rapidjson::Value& obj)
 	healthDecayRate = obj["Health Decay Rate"].GetDouble();
 	hungerDecayRate = obj["Hunger Decay Rate"].GetDouble();
 	sanityDecayRate = obj["Sanity Decay Rate"].GetDouble();
+	is_alive = obj["IS_alive"].GetBool();
 	return true;
 }
 
@@ -53,5 +54,7 @@ bool NocturnalEngine::AnimalAttributes::Serialize(rapidjson::PrettyWriter<rapidj
 	writer->Double(hungerDecayRate);
 	writer->Key("Sanity Decay Rate");
 	writer->Double(sanityDecayRate);
+	writer->Key("IS_alive");
+	writer->Bool(is_alive);
 	return true;
 }
