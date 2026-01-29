@@ -1770,7 +1770,7 @@ namespace NocturnalEngine {
                                     {
                                         logic.InsertScript(new DialogueManager(), selectedEntity);
                                     }
-                                    if (mScriptList[current_script] == "DragAndDrop" && p_ecs.HaveComponent<Sprite>(selectedEntity))
+                                    if (mScriptList[current_script] == "DragAndDrop" && p_ecs.HaveComponent<Sprite>(selectedEntity)&& p_ecs.HaveComponent<ItemsAttributes>(selectedEntity))
                                     {
                                         logic.InsertScript(new DragAndDrop(), selectedEntity);
                                     }
@@ -1931,6 +1931,26 @@ namespace NocturnalEngine {
                     if (ImGui::CollapsingHeader("Animal Attributes", ImGuiTreeNodeFlags_None)) {
                         auto& animal_attributes = p_ecs.GetComponent<AnimalAttributes>(selectedEntity);
                         ImGui::PushItemWidth(100.0f);
+                        ImGui::Text("Max Health"); ImGui::SameLine();
+                        if (ImGui::InputDouble("##Max Health", &animal_attributes.maxHealth))
+                        {
+
+                            animal_attributes.current_health = glm::clamp(animal_attributes.maxHealth, 0.0, 9999.9999);
+                        }
+
+                        ImGui::Text("Max Hunger"); ImGui::SameLine();
+                        if (ImGui::InputDouble("##Max Hunger", &animal_attributes.maxHunger))
+                        {
+
+                            animal_attributes.current_hunger = glm::clamp(animal_attributes.maxHunger, 0.0, 9999.9999);
+                        }
+
+                        ImGui::Text("Max Sanity"); ImGui::SameLine();
+                        if (ImGui::InputDouble("##Max Sanity", &animal_attributes.maxSanity))
+                        {
+
+                            animal_attributes.current_sanity = glm::clamp(animal_attributes.maxSanity, 0.0, 9999.9999);
+                        }
                         ImGui::Text("Current Health"); ImGui::SameLine();
                         if (ImGui::InputDouble("##Current Health", &animal_attributes.current_health))
                         {
