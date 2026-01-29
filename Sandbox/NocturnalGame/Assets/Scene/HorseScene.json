@@ -55,7 +55,7 @@
                 "radius2": 0.0
             },
             {
-                "NameTag": "HorseFood"
+                "NameTag": "HorseBG"
             },
             {
                 "TextureName": "horseScene",
@@ -79,9 +79,9 @@
             },
             {
                 "0": {
-                    "AudioPath": "BGM_Iris_Luminara_Loop.wav",
+                    "AudioPath": "BGM_Ambience_Horse_01.wav",
                     "Channel": 2,
-                    "IsLooping": true
+                    "IsLooping": false
                 },
                 "AudioArrCount": 1,
                 "BGM Volume": 0.75,

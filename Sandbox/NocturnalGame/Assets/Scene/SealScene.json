@@ -1,4 +1,16 @@
 {
+    "LayerDrawOrder": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+    ],
     "Number of Entities": {
         "Entities": 7
     },
@@ -64,15 +76,16 @@
             },
             {
                 "0": {
-                    "AudioPath": "BGM_Iris_Luminara_Loop.wav",
+                    "AudioPath": "BGM_Ambience_Seal_01.wav",
                     "Channel": 2,
-                    "IsLooping": true
+                    "IsLooping": false
                 },
                 "AudioArrCount": 1,
                 "BGM Volume": 0.75,
                 "SFX Volume": 0.75,
                 "Master Volume": 0.75
             },
+            {},
             {},
             {},
             {}
@@ -131,6 +144,7 @@
             {},
             {},
             {},
+            {},
             {}
         ],
         "2": [
@@ -182,6 +196,7 @@
                 "Tag": "FlamingoBtn",
                 "TargetTag": ""
             },
+            {},
             {},
             {},
             {},
@@ -239,6 +254,7 @@
             {},
             {},
             {},
+            {},
             {}
         ],
         "4": [
@@ -290,6 +306,7 @@
                 "Tag": "HorseBtn",
                 "TargetTag": ""
             },
+            {},
             {},
             {},
             {},
@@ -347,6 +364,7 @@
             {},
             {},
             {},
+            {},
             {}
         ],
         "6": [
@@ -373,6 +391,7 @@
                 "MaxIndex": 0,
                 "LayeringOrder": 0
             },
+            {},
             {},
             {},
             {},
