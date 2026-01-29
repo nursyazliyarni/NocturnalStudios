@@ -31,7 +31,7 @@ namespace NocturnalEngine
 		/*!*************************************************************************
 		Default constructor for Drag & Drop
 		****************************************************************************/
-		HealthBar() : isDragging{ false }, dragTarget{ 0 }, dupeItem{ 0 }, mInput{ InputSystem::GetInstance() }, dragOffset{} {}
+		HealthBar() {}
 		/*!*************************************************************************
 		Default destructor for Drag & Drop
 		****************************************************************************/
@@ -68,14 +68,6 @@ namespace NocturnalEngine
 		virtual Entity& GetScriptEntityID() override { return entityID; }
 
 	private:
-		bool isDragging;
-		Entity dragTarget, dupeItem;
-		std::unique_ptr< InputSystem>& mInput;
-		vec2D dragOffset;
-
-		void DragCheck();
-		Entity DestroyDupeItem();
-		bool CheckAnimalCollision();
-		void AnimalGain();
+		
 	};
 }

@@ -38,23 +38,7 @@ namespace NocturnalEngine {
 
 	}
 
-	Entity HealthBar::DestroyDupeItem() {
-		
-
-		return 0;
-	}
-
-	void HealthBar::DragCheck() {
-		
-	}
-	bool HealthBar::CheckAnimalCollision() {
-
-		
-		return false;
-
-	}
-	void HealthBar::AnimalGain() {
-		
-	}
+	
+	
 
 }
