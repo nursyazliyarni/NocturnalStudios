@@ -47,7 +47,7 @@
                 "NameTag": "flamingoBG"
             },
             {
-                "TextureName": "flamingo_bg",
+                "TextureName": "flamingoScene",
                 "Index_X": 0,
                 "Index_Y": 0,
                 "Ucoordinates": 512.0,
@@ -57,18 +57,25 @@
                 "MaxIndex": 0,
                 "LayeringOrder": 0
             },
-            {},
-            {},
+            {
+                "0": "AudioManager",
+                "1": "BackgroundAudio",
+                "ScriptCount": 2
+            },
+            {
+                "Tag": "Untagged",
+                "TargetTag": ""
+            },
             {
                 "0": {
-                    "AudioPath": "BGM_Iris_Luminara_Loop.wav",
+                    "AudioPath": "BGM_Ambience_Flamingo_01.wav",
                     "Channel": 2,
-                    "IsLooping": true
+                    "IsLooping": false
                 },
                 "AudioArrCount": 1,
-                "BGM Volume": 0.75,
-                "SFX Volume": 0.75,
-                "Master Volume": 0.75
+                "BGM Volume": 1.0,
+                "SFX Volume": 1.0,
+                "Master Volume": 1.0
             },
             {},
             {},
@@ -106,31 +113,24 @@
                 "NameTag": "flamingo"
             },
             {
-                "TextureName": "flamingo",
-                "Index_X": 0,
+                "TextureName": "flamingo_spritesheet",
+                "Index_X": 4,
                 "Index_Y": 0,
-                "Ucoordinates": 512.0,
-                "Vcoordinates": 512.0,
-                "IsSpriteSheet": false,
-                "IsAnimated": false,
-                "MaxIndex": 0,
+                "Ucoordinates": 528.0,
+                "Vcoordinates": 528.0,
+                "IsSpriteSheet": true,
+                "IsAnimated": true,
+                "MaxIndex": 5,
+                "DisplayTime 0": 0.125,
+                "DisplayTime 1": 0.125,
+                "DisplayTime 2": 0.125,
+                "DisplayTime 3": 0.125,
+                "DisplayTime 4": 0.125,
                 "LayeringOrder": 0
             },
-            {
-                "ScriptCount": 0
-            },
             {},
-            {
-                "0": {
-                    "AudioPath": "BGM_Iris_Luminara_Loop.wav",
-                    "Channel": 2,
-                    "IsLooping": true
-                },
-                "AudioArrCount": 1,
-                "BGM Volume": 0.75,
-                "SFX Volume": 0.75,
-                "Master Volume": 0.75
-            },
+            {},
+            {},
             {},
             {
                 "Current Health": 100,
@@ -141,8 +141,7 @@
                 "Max Sanity": 100.0,
                 "Health Decay Rate": 1.0,
                 "Hunger Decay Rate": 1.0,
-                "Sanity Decay Rate": 1.0,
-                "IS_alive": true
+                "Sanity Decay Rate": 1.0
             },
             {},
             {}
@@ -190,17 +189,7 @@
             },
             {},
             {},
-            {
-                "0": {
-                    "AudioPath": "BGM_Iris_Luminara_Loop.wav",
-                    "Channel": 2,
-                    "IsLooping": true
-                },
-                "AudioArrCount": 1,
-                "BGM Volume": 0.75,
-                "SFX Volume": 0.75,
-                "Master Volume": 0.75
-            },
+            {},
             {},
             {},
             {
@@ -253,17 +242,7 @@
             },
             {},
             {},
-            {
-                "0": {
-                    "AudioPath": "BGM_Iris_Luminara_Loop.wav",
-                    "Channel": 2,
-                    "IsLooping": true
-                },
-                "AudioArrCount": 1,
-                "BGM Volume": 0.75,
-                "SFX Volume": 0.75,
-                "Master Volume": 0.75
-            },
+            {},
             {},
             {},
             {
@@ -316,17 +295,7 @@
             },
             {},
             {},
-            {
-                "0": {
-                    "AudioPath": "BGM_Iris_Luminara_Loop.wav",
-                    "Channel": 2,
-                    "IsLooping": true
-                },
-                "AudioArrCount": 1,
-                "BGM Volume": 0.75,
-                "SFX Volume": 0.75,
-                "Master Volume": 0.75
-            },
+            {},
             {},
             {},
             {
@@ -379,13 +348,24 @@
             },
             {
                 "0": "ButtonResponse",
-                "ScriptCount": 1
+                "1": "AudioManager",
+                "ScriptCount": 2
             },
             {
                 "Tag": "SealBtn",
                 "TargetTag": ""
             },
-            {},
+            {
+                "0": {
+                    "AudioPath": "SFX_Static_01.wav",
+                    "Channel": 3,
+                    "IsLooping": false
+                },
+                "AudioArrCount": 1,
+                "BGM Volume": 1.0,
+                "SFX Volume": 1.0,
+                "Master Volume": 1.0
+            },
             {},
             {},
             {},
@@ -434,13 +414,24 @@
             },
             {
                 "0": "ButtonResponse",
-                "ScriptCount": 1
+                "1": "AudioManager",
+                "ScriptCount": 2
             },
             {
                 "Tag": "HorseBtn",
                 "TargetTag": ""
             },
-            {},
+            {
+                "0": {
+                    "AudioPath": "SFX_Static_01.wav",
+                    "Channel": 3,
+                    "IsLooping": false
+                },
+                "AudioArrCount": 1,
+                "BGM Volume": 1.0,
+                "SFX Volume": 1.0,
+                "Master Volume": 1.0
+            },
             {},
             {},
             {},
@@ -495,7 +486,17 @@
                 "Tag": "OwlBtn",
                 "TargetTag": ""
             },
-            {},
+            {
+                "0": {
+                    "AudioPath": "SFX_Static_02.wav",
+                    "Channel": 3,
+                    "IsLooping": false
+                },
+                "AudioArrCount": 1,
+                "BGM Volume": 1.0,
+                "SFX Volume": 1.0,
+                "Master Volume": 1.0
+            },
             {},
             {},
             {},
@@ -544,13 +545,24 @@
             },
             {
                 "0": "ButtonResponse",
-                "ScriptCount": 1
+                "1": "AudioManager",
+                "ScriptCount": 2
             },
             {
                 "Tag": "InventoryBtn",
                 "TargetTag": ""
             },
-            {},
+            {
+                "0": {
+                    "AudioPath": "SFX_Static_03.wav",
+                    "Channel": 3,
+                    "IsLooping": false
+                },
+                "AudioArrCount": 1,
+                "BGM Volume": 1.0,
+                "SFX Volume": 1.0,
+                "Master Volume": 1.0
+            },
             {},
             {},
             {},

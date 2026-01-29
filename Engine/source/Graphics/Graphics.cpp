@@ -152,6 +152,7 @@ namespace NocturnalEngine {
 					animal_attribute_map["sanity bar"] = animal_attribute.current_sanity;
 				}
 				
+				
 				auto& transform = p_ecs.GetComponent<Transform>(*i);
 				auto& sprite = p_ecs.GetComponent<Sprite>(*i);
 				int layerId = sprite.LayerOrder;

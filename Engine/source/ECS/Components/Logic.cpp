@@ -23,6 +23,7 @@
 #include "Scripts/CutScene.h"
 #include "Scripts/DialogueManager.h"
 #include "Scripts/DragAndDrop.h"
+#include "Scripts/HealthBar.h"
 
 
 namespace NocturnalEngine
@@ -142,6 +143,10 @@ namespace NocturnalEngine
 			if (mScriptNameVector[j] == "DragAndDrop")
 			{
 				mScriptsVector.push_back(new DragAndDrop());
+			}
+			if (mScriptNameVector[j] == "HealthBar")
+			{
+				mScriptsVector.push_back(new HealthBar());
 			}
 		}
 		return true;

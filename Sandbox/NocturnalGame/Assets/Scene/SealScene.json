@@ -16,10 +16,6 @@
     },
     "EntitySignatures": [
         "00000000000000000000000011111101",
-        "00000000000000000000001001111101",
-        "00000000000000000000010010011101",
-        "00000000000000000000010010011101",
-        "00000000000000000000010010011101",
         "00000000000000000000000001111101",
         "00000000000000000000000001111101",
         "00000000000000000000000001111101",
@@ -85,14 +81,14 @@
             },
             {
                 "0": {
-                    "AudioPath": "BGM_Iris_Luminara_Loop.wav",
+                    "AudioPath": "BGM_Ambience_Seal_01.wav",
                     "Channel": 2,
-                    "IsLooping": true
+                    "IsLooping": false
                 },
                 "AudioArrCount": 1,
-                "BGM Volume": 0.75,
-                "SFX Volume": 0.75,
-                "Master Volume": 0.75
+                "BGM Volume": 1.0,
+                "SFX Volume": 1.0,
+                "Master Volume": 1.0
             },
             {},
             {},
@@ -399,11 +395,23 @@
             },
             {
                 "0": "ButtonResponse",
-                "ScriptCount": 1
+                "1": "AudioManager",
+                "ScriptCount": 2
             },
             {
                 "Tag": "FlamingoBtn",
                 "TargetTag": ""
+            },
+            {
+                "0": {
+                    "AudioPath": "SFX_Static_02.wav",
+                    "Channel": 3,
+                    "IsLooping": false
+                },
+                "AudioArrCount": 1,
+                "BGM Volume": 1.0,
+                "SFX Volume": 1.0,
+                "Master Volume": 1.0
             },
             {},
             {},
@@ -411,7 +419,7 @@
             {},
             {}
         ],
-        "6": [
+        "3": [
             {
                 "posX": 0.40032678842544556,
                 "posY": -0.14785435795783997,
@@ -454,11 +462,23 @@
             },
             {
                 "0": "ButtonResponse",
-                "ScriptCount": 1
+                "1": "AudioManager",
+                "ScriptCount": 2
             },
             {
                 "Tag": "OwlBtn",
                 "TargetTag": ""
+            },
+            {
+                "0": {
+                    "AudioPath": "SFX_Static_05.wav",
+                    "Channel": 3,
+                    "IsLooping": false
+                },
+                "AudioArrCount": 1,
+                "BGM Volume": 1.0,
+                "SFX Volume": 1.0,
+                "Master Volume": 1.0
             },
             {},
             {},
@@ -466,7 +486,7 @@
             {},
             {}
         ],
-        "7": [
+        "4": [
             {
                 "posX": 0.40032678842544556,
                 "posY": -0.014748930931091309,
@@ -509,11 +529,23 @@
             },
             {
                 "0": "ButtonResponse",
-                "ScriptCount": 1
+                "1": "AudioManager",
+                "ScriptCount": 2
             },
             {
                 "Tag": "HorseBtn",
                 "TargetTag": ""
+            },
+            {
+                "0": {
+                    "AudioPath": "SFX_Static_03.wav",
+                    "Channel": 3,
+                    "IsLooping": false
+                },
+                "AudioArrCount": 1,
+                "BGM Volume": 1.0,
+                "SFX Volume": 1.0,
+                "Master Volume": 1.0
             },
             {},
             {},
@@ -521,7 +553,7 @@
             {},
             {}
         ],
-        "8": [
+        "5": [
             {
                 "posX": 0.40032678842544556,
                 "posY": -0.28433525562286377,
@@ -564,11 +596,23 @@
             },
             {
                 "0": "ButtonResponse",
-                "ScriptCount": 1
+                "1": "AudioManager",
+                "ScriptCount": 2
             },
             {
                 "Tag": "InventoryBtn",
                 "TargetTag": ""
+            },
+            {
+                "0": {
+                    "AudioPath": "SFX_Static_04.wav",
+                    "Channel": 3,
+                    "IsLooping": false
+                },
+                "AudioArrCount": 1,
+                "BGM Volume": 1.0,
+                "SFX Volume": 1.0,
+                "Master Volume": 1.0
             },
             {},
             {},
@@ -576,7 +620,7 @@
             {},
             {}
         ],
-        "9": [
+        "6": [
             {
                 "posX": 0.10899999737739563,
                 "posY": 0.024000000208616257,

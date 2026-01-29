@@ -16,14 +16,11 @@
     },
     "EntitySignatures": [
         "00000000000000000000000011111101",
-        "00000000000000000000001001111101",
-        "00000000000000000000010010011101",
-        "00000000000000000000010010011101",
-        "00000000000000000000010010011101",
-        "00000000000000000000000001111101",
-        "00000000000000000000000001111101",
-        "00000000000000000000000001111101",
-        "00000000000000000000000001111101",
+        "00000000000000000000101001111101",
+        "00000000000000000000000011111101",
+        "00000000000000000000000011111101",
+        "00000000000000000000000011111101",
+        "00000000000000000000000011111101",
         "00000000000000000000000000011001",
         "00000000000000000000000000011001",
         "00000000000000000000000000011001",
@@ -43,15 +40,15 @@
             },
             {},
             {
-                "ColliderType1": 4,
+                "ColliderType1": 0,
                 "ColliderType2": 0,
-                "minX1": 0.0,
+                "minX1": -0.10000000149011612,
                 "minX2": 0.0,
-                "minY1": 0.0,
+                "minY1": -0.10000000149011612,
                 "minY2": 0.0,
-                "maxX1": 0.0,
+                "maxX1": 0.10000000149011612,
                 "maxX2": 0.0,
-                "maxY1": 0.0,
+                "maxY1": 0.10000000149011612,
                 "maxY2": 0.0,
                 "offsetX1": 0.0,
                 "offsetX2": 0.0,
@@ -85,14 +82,14 @@
             },
             {
                 "0": {
-                    "AudioPath": "BGM_Iris_Luminara_Loop.wav",
+                    "AudioPath": "BGM_Ambience_Horse_01.wav",
                     "Channel": 2,
-                    "IsLooping": true
+                    "IsLooping": false
                 },
                 "AudioArrCount": 1,
-                "BGM Volume": 0.75,
-                "SFX Volume": 0.75,
-                "Master Volume": 0.75
+                "BGM Volume": 1.0,
+                "SFX Volume": 1.0,
+                "Master Volume": 1.0
             },
             {},
             {},
@@ -109,15 +106,15 @@
             },
             {},
             {
-                "ColliderType1": 4,
+                "ColliderType1": 5,
                 "ColliderType2": 0,
-                "minX1": 0.0,
+                "minX1": 0.30000001192092896,
                 "minX2": 0.0,
-                "minY1": 0.0,
+                "minY1": 0.3499999940395355,
                 "minY2": 0.0,
-                "maxX1": 0.0,
+                "maxX1": 0.5,
                 "maxX2": 0.0,
-                "maxY1": 0.0,
+                "maxY1": 0.44999998807907104,
                 "maxY2": 0.0,
                 "offsetX1": 0.0,
                 "offsetX2": 0.0,
@@ -144,7 +141,7 @@
                 "ScriptCount": 0
             },
             {
-                "Tag": "Owl",
+                "Tag": "Horse",
                 "TargetTag": ""
             },
             {},
@@ -156,10 +153,9 @@
                 "Max Hunger": 100.0,
                 "Current Sanity": 100.0,
                 "Max Sanity": 100.0,
-                "Health Decay Rate": 1.0,
-                "Hunger Decay Rate": 1.0,
-                "Sanity Decay Rate": 1.0,
-                "IS_alive": true
+                "Health Decay Rate": 0.0,
+                "Hunger Decay Rate": 0.0,
+                "Sanity Decay Rate": 0.0
             },
             {},
             {}
@@ -396,11 +392,23 @@
             },
             {
                 "0": "ButtonResponse",
-                "ScriptCount": 1
+                "1": "AudioManager",
+                "ScriptCount": 2
             },
             {
                 "Tag": "FlamingoBtn",
                 "TargetTag": ""
+            },
+            {
+                "0": {
+                    "AudioPath": "SFX_Static_03.wav",
+                    "Channel": 3,
+                    "IsLooping": false
+                },
+                "AudioArrCount": 1,
+                "BGM Volume": 1.0,
+                "SFX Volume": 1.0,
+                "Master Volume": 1.0
             },
             {},
             {},
@@ -408,7 +416,7 @@
             {},
             {}
         ],
-        "6": [
+        "3": [
             {
                 "posX": 0.40032678842544556,
                 "posY": 0.11358354985713959,
@@ -451,11 +459,23 @@
             },
             {
                 "0": "ButtonResponse",
-                "ScriptCount": 1
+                "1": "AudioManager",
+                "ScriptCount": 2
             },
             {
                 "Tag": "SealBtn",
                 "TargetTag": ""
+            },
+            {
+                "0": {
+                    "AudioPath": "SFX_Static_04.wav",
+                    "Channel": 3,
+                    "IsLooping": false
+                },
+                "AudioArrCount": 1,
+                "BGM Volume": 1.0,
+                "SFX Volume": 1.0,
+                "Master Volume": 1.0
             },
             {},
             {},
@@ -463,7 +483,7 @@
             {},
             {}
         ],
-        "7": [
+        "4": [
             {
                 "posX": 0.40032678842544556,
                 "posY": -0.1454678773880005,
@@ -506,11 +526,23 @@
             },
             {
                 "0": "ButtonResponse",
-                "ScriptCount": 1
+                "1": "AudioManager",
+                "ScriptCount": 2
             },
             {
                 "Tag": "OwlBtn",
                 "TargetTag": ""
+            },
+            {
+                "0": {
+                    "AudioPath": "SFX_Static_05.wav",
+                    "Channel": 3,
+                    "IsLooping": false
+                },
+                "AudioArrCount": 1,
+                "BGM Volume": 1.0,
+                "SFX Volume": 1.0,
+                "Master Volume": 1.0
             },
             {},
             {},
@@ -518,7 +550,7 @@
             {},
             {}
         ],
-        "8": [
+        "5": [
             {
                 "posX": 0.40032678842544556,
                 "posY": -0.28433525562286377,
@@ -561,11 +593,23 @@
             },
             {
                 "0": "ButtonResponse",
-                "ScriptCount": 1
+                "1": "AudioManager",
+                "ScriptCount": 2
             },
             {
                 "Tag": "InventoryBtn",
                 "TargetTag": ""
+            },
+            {
+                "0": {
+                    "AudioPath": "SFX_Static_02.wav",
+                    "Channel": 3,
+                    "IsLooping": false
+                },
+                "AudioArrCount": 1,
+                "BGM Volume": 1.0,
+                "SFX Volume": 1.0,
+                "Master Volume": 1.0
             },
             {},
             {},
@@ -573,7 +617,7 @@
             {},
             {}
         ],
-        "9": [
+        "6": [
             {
                 "posX": 0.1090199276804924,
                 "posY": 0.023660331964492798,
@@ -605,21 +649,38 @@
             {},
             {}
         ],
-        "10": [
+        "7": [
             {
-                "posX": 0.6526573300361633,
-                "posY": 0.10966724902391434,
-                "scaleX": 0.25,
-                "scaleY": 0.20000000298023224,
+                "posX": -1.4191521406173706,
+                "posY": -0.7032967805862427,
+                "scaleX": 0.3753497898578644,
+                "scaleY": 0.3973937928676605,
                 "Rot": 0.0
             },
             {},
-            {},
             {
-                "NameTag": "food_icon"
+                "ColliderType1": 5,
+                "ColliderType2": 0,
+                "minX1": 0.17499999701976776,
+                "minX2": 0.0,
+                "minY1": 0.10000000149011612,
+                "minY2": 0.0,
+                "maxX1": 0.17499999701976776,
+                "maxX2": 0.0,
+                "maxY1": 0.10000000149011612,
+                "maxY2": 0.0,
+                "offsetX1": 0.0,
+                "offsetX2": 0.0,
+                "offsetY1": 0.0,
+                "offsetY2": 0.0,
+                "radius1": 0.0,
+                "radius2": 0.0
             },
             {
-                "TextureName": "hunger",
+                "NameTag": "HorseFood"
+            },
+            {
+                "TextureName": "flamingo_food",
                 "Index_X": 0,
                 "Index_Y": 0,
                 "Ucoordinates": 512.0,
@@ -628,6 +689,14 @@
                 "IsAnimated": false,
                 "MaxIndex": 0,
                 "LayeringOrder": 0
+            },
+            {
+                "0": "DragAndDrop",
+                "ScriptCount": 1
+            },
+            {
+                "Tag": "Tou",
+                "TargetTag": ""
             },
             {},
             {},
@@ -637,21 +706,38 @@
             {},
             {}
         ],
-        "11": [
+        "8": [
             {
-                "posX": 0.6559522151947021,
-                "posY": -0.08143656700849533,
-                "scaleX": 0.25,
-                "scaleY": 0.20000000298023224,
+                "posX": 0.07275722175836563,
+                "posY": -0.6644617319107056,
+                "scaleX": 0.3400000035762787,
+                "scaleY": 0.367000013589859,
                 "Rot": 0.0
             },
             {},
-            {},
             {
-                "NameTag": "health_icon"
+                "ColliderType1": 5,
+                "ColliderType2": 0,
+                "minX1": 0.09000000357627869,
+                "minX2": 0.0,
+                "minY1": 0.1850000023841858,
+                "minY2": 0.0,
+                "maxX1": 0.10999999940395355,
+                "maxX2": 0.0,
+                "maxY1": 0.05000000074505806,
+                "maxY2": 0.0,
+                "offsetX1": 0.0,
+                "offsetX2": 0.0,
+                "offsetY1": 0.0,
+                "offsetY2": 0.0,
+                "radius1": 0.0,
+                "radius2": 0.0
             },
             {
-                "TextureName": "health",
+                "NameTag": "HorseMedicine"
+            },
+            {
+                "TextureName": "flamingo_medicine",
                 "Index_X": 0,
                 "Index_Y": 0,
                 "Ucoordinates": 512.0,
@@ -660,6 +746,14 @@
                 "IsAnimated": false,
                 "MaxIndex": 0,
                 "LayeringOrder": 0
+            },
+            {
+                "0": "DragAndDrop",
+                "ScriptCount": 1
+            },
+            {
+                "Tag": "Tou",
+                "TargetTag": ""
             },
             {},
             {},
@@ -669,21 +763,38 @@
             {},
             {}
         ],
-        "12": [
+        "9": [
             {
-                "posX": 0.6559522747993469,
-                "posY": -0.2725403904914856,
-                "scaleX": 0.25,
-                "scaleY": 0.20000000298023224,
+                "posX": -0.6748155355453491,
+                "posY": -0.735659122467041,
+                "scaleX": 0.3400000035762787,
+                "scaleY": 0.367000013589859,
                 "Rot": 0.0
             },
             {},
-            {},
             {
-                "NameTag": "sanity_icon"
+                "ColliderType1": 5,
+                "ColliderType2": 0,
+                "minX1": 0.14000000059604645,
+                "minX2": 0.0,
+                "minY1": 0.08500000089406967,
+                "minY2": 0.0,
+                "maxX1": 0.1599999964237213,
+                "maxX2": 0.0,
+                "maxY1": 0.10000000149011612,
+                "maxY2": 0.0,
+                "offsetX1": 0.0,
+                "offsetX2": 0.0,
+                "offsetY1": 0.0,
+                "offsetY2": 0.0,
+                "radius1": 0.0,
+                "radius2": 0.0
             },
             {
-                "TextureName": "sanity",
+                "NameTag": "HorseToy"
+            },
+            {
+                "TextureName": "flamingo_toy",
                 "Index_X": 0,
                 "Index_Y": 0,
                 "Ucoordinates": 512.0,
@@ -692,6 +803,14 @@
                 "IsAnimated": false,
                 "MaxIndex": 0,
                 "LayeringOrder": 0
+            },
+            {
+                "0": "DragAndDrop",
+                "ScriptCount": 1
+            },
+            {
+                "Tag": "Tou",
+                "TargetTag": ""
             },
             {},
             {},
