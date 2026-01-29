@@ -41,6 +41,7 @@ namespace NocturnalEngine {
 
 	void DragAndDrop::Update(float Frametime)
 	{
+		UNREFERENCED_PARAMETER(Frametime);
 		
 		if (!isDragging)
 		{
