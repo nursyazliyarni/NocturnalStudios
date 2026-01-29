@@ -71,7 +71,6 @@ namespace NocturnalEngine
 			{
 				p_ecs.GetComponent<Audio>(GetScriptEntityID())[0].should_play = true; //menu hover audio
 				initial_hover = false;
-				std::cout << "hover sound played\n";
 			}
 
 			if (ID_tag.GetTag() == "Start" && !(p_Input->MousePressed(GLFW_MOUSE_BUTTON_LEFT)))
@@ -195,21 +194,25 @@ namespace NocturnalEngine
 
 				if (ID_tag.GetTag() == "FlamingoBtn")
 				{
+					p_ecs.GetComponent<Audio>(GetScriptEntityID())[0].should_play = true;
 					p_Scene->setSceneToLoad("Assets/Scene/FlamingoScene.json");// switch to flamingo scene
 				}
 
 				if (ID_tag.GetTag() == "SealBtn")
 				{
+					p_ecs.GetComponent<Audio>(GetScriptEntityID())[0].should_play = true;
 					p_Scene->setSceneToLoad("Assets/Scene/SealScene.json");// switch to seal scene
 				}
 
 				if (ID_tag.GetTag() == "HorseBtn")
 				{
+					p_ecs.GetComponent<Audio>(GetScriptEntityID())[0].should_play = true;
 					p_Scene->setSceneToLoad("Assets/Scene/HorseScene.json");// switch to horse scene
 				}
 
 				if (ID_tag.GetTag() == "OwlBtn")
 				{
+					p_ecs.GetComponent<Audio>(GetScriptEntityID())[0].should_play = true;
 					p_Scene->setSceneToLoad("Assets/Scene/OwlScene.json");// switch to owl scene
 				}
 
