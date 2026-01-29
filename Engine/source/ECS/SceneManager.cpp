@@ -363,11 +363,23 @@ void NocturnalEngine::SceneManager::checkForSceneToLoad()
 {
 	if (sceneToLoad != "")
 	{
-		changeScene();
+		//changeScene();
+
+		/*if (!isGameplay) {
+			isGameplay = true;
+			DeserializeFromFile(sceneToLoad);
+		}*/
+
+		if (sceneToLoad == "Assets/Scene/Menu.json")
+		{
+			isGameplay = false;
+			Graphic::camera.SetZoomLevel(1.0f);
+			Graphic::camera.SetPosition({ 0.0f,0.0f,0.0f });
+		}
 
 		if (sceneToLoad == "Assets/Scene/FlamingoScene.json")
 		{
-			isGameplay = false;
+			isGameplay = true;
 			Graphic::camera.SetZoomLevel(1.0f);
 			Graphic::camera.SetPosition({ 0.0f,0.0f,0.0f });
 		}
@@ -387,13 +399,6 @@ void NocturnalEngine::SceneManager::checkForSceneToLoad()
 		}
 
 		if (sceneToLoad == "Assets/Scene/OwlScene.json")
-		{
-			isGameplay = false;
-			Graphic::camera.SetZoomLevel(1.0f);
-			Graphic::camera.SetPosition({ 0.0f,0.0f,0.0f });
-		}
-
-		if (sceneToLoad == "Assets/Scene/Menu.json")
 		{
 			isGameplay = false;
 			Graphic::camera.SetZoomLevel(1.0f);
@@ -429,6 +434,7 @@ void NocturnalEngine::SceneManager::checkForSceneToLoad()
 		}
 
 		DeserializeFromFile(sceneToLoad);
+		//sceneToLoad = "";
 
 		gCurrentScenePath = sceneToLoad;
 

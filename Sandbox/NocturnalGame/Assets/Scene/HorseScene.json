@@ -1,30 +1,21 @@
 {
-    "LayerDrawOrder": [
-        0,
-        1,
-        2,
-        3,
-        4,
-        5,
-        6,
-        7,
-        8,
-        9
-    ],
     "Number of Entities": {
-        "Entities": 10
+        "Entities": 13
     },
     "EntitySignatures": [
         "00000000000000000000000011111101",
-        "00000000000000000000101001111101",
+        "00000000000000000000001001111101",
+        "00000000000000000000010010011101",
+        "00000000000000000000010010011101",
+        "00000000000000000000010010011101",
         "00000000000000000000000001111101",
         "00000000000000000000000001111101",
         "00000000000000000000000001111101",
         "00000000000000000000000001111101",
         "00000000000000000000000000011001",
-        "00000000000000000000010001111101",
-        "00000000000000000000010001111101",
-        "00000000000000000000010001111101"
+        "00000000000000000000000000011001",
+        "00000000000000000000000000011001",
+        "00000000000000000000000000011001"
     ],
     "Components": {
         "0": [
@@ -37,15 +28,15 @@
             },
             {},
             {
-                "ColliderType1": 0,
+                "ColliderType1": 4,
                 "ColliderType2": 0,
-                "minX1": -0.10000000149011612,
+                "minX1": 0.0,
                 "minX2": 0.0,
-                "minY1": -0.10000000149011612,
+                "minY1": 0.0,
                 "minY2": 0.0,
-                "maxX1": 0.10000000149011612,
+                "maxX1": 0.0,
                 "maxX2": 0.0,
-                "maxY1": 0.10000000149011612,
+                "maxY1": 0.0,
                 "maxY2": 0.0,
                 "offsetX1": 0.0,
                 "offsetX2": 0.0,
@@ -55,7 +46,7 @@
                 "radius2": 0.0
             },
             {
-                "NameTag": "HorseFood"
+                "NameTag": "HorseBG"
             },
             {
                 "TextureName": "horseScene",
@@ -90,7 +81,6 @@
             },
             {},
             {},
-            {},
             {}
         ],
         "1": [
@@ -103,15 +93,15 @@
             },
             {},
             {
-                "ColliderType1": 5,
+                "ColliderType1": 4,
                 "ColliderType2": 0,
-                "minX1": 0.30000001192092896,
+                "minX1": 0.0,
                 "minX2": 0.0,
-                "minY1": 0.3499999940395355,
+                "minY1": 0.0,
                 "minY2": 0.0,
-                "maxX1": 0.5,
+                "maxX1": 0.0,
                 "maxX2": 0.0,
-                "maxY1": 0.44999998807907104,
+                "maxY1": 0.0,
                 "maxY2": 0.0,
                 "offsetX1": 0.0,
                 "offsetX2": 0.0,
@@ -138,7 +128,7 @@
                 "ScriptCount": 0
             },
             {
-                "Tag": "Horse",
+                "Tag": "Owl",
                 "TargetTag": ""
             },
             {},
@@ -150,16 +140,197 @@
                 "Max Hunger": 100.0,
                 "Current Sanity": 100.0,
                 "Max Sanity": 100.0,
-                "Health Decay Rate": 0.0,
-                "Hunger Decay Rate": 0.0,
-                "Sanity Decay Rate": 0.0
+                "Health Decay Rate": 1.0,
+                "Hunger Decay Rate": 1.0,
+                "Sanity Decay Rate": 1.0,
+                "IS_alive": true
+            },
+            {}
+        ],
+        "2": [
+            {
+                "posX": -1.4832265377044678,
+                "posY": -0.7028753757476807,
+                "scaleX": 0.5,
+                "scaleY": 0.5,
+                "Rot": 0.0
             },
             {},
             {
-                "isTarget": true
+                "ColliderType1": 4,
+                "ColliderType2": 0,
+                "minX1": -1.0,
+                "minX2": 0.0,
+                "minY1": -0.6600000262260437,
+                "minY2": 0.0,
+                "maxX1": 1.0,
+                "maxX2": 0.0,
+                "maxY1": 0.6600000262260437,
+                "maxY2": 0.0,
+                "offsetX1": 0.0,
+                "offsetX2": 0.0,
+                "offsetY1": 0.0,
+                "offsetY2": 0.0,
+                "radius1": 0.0,
+                "radius2": 0.0
+            },
+            {
+                "NameTag": "horse food"
+            },
+            {
+                "TextureName": "flamingo_food",
+                "Index_X": 0,
+                "Index_Y": 0,
+                "Ucoordinates": 512.0,
+                "Vcoordinates": 512.0,
+                "IsSpriteSheet": false,
+                "IsAnimated": false,
+                "MaxIndex": 0,
+                "LayeringOrder": 0
+            },
+            {},
+            {},
+            {
+                "0": {
+                    "AudioPath": "BGM_Iris_Luminara_Loop.wav",
+                    "Channel": 2,
+                    "IsLooping": true
+                },
+                "AudioArrCount": 1,
+                "BGM Volume": 0.75,
+                "SFX Volume": 0.75,
+                "Master Volume": 0.75
+            },
+            {},
+            {},
+            {
+                "gain amount": 20.0,
+                "is_dragging": false
             }
         ],
-        "2": [
+        "3": [
+            {
+                "posX": -0.7803511619567871,
+                "posY": -0.6932907104492188,
+                "scaleX": 0.5,
+                "scaleY": 0.30000001192092896,
+                "Rot": 0.0
+            },
+            {},
+            {
+                "ColliderType1": 4,
+                "ColliderType2": 0,
+                "minX1": -1.0,
+                "minX2": 0.0,
+                "minY1": -0.6600000262260437,
+                "minY2": 0.0,
+                "maxX1": 1.0,
+                "maxX2": 0.0,
+                "maxY1": 0.6600000262260437,
+                "maxY2": 0.0,
+                "offsetX1": 0.0,
+                "offsetX2": 0.0,
+                "offsetY1": 0.0,
+                "offsetY2": 0.0,
+                "radius1": 0.0,
+                "radius2": 0.0
+            },
+            {
+                "NameTag": "horse medicine"
+            },
+            {
+                "TextureName": "flamingo_medicine",
+                "Index_X": 0,
+                "Index_Y": 0,
+                "Ucoordinates": 512.0,
+                "Vcoordinates": 512.0,
+                "IsSpriteSheet": false,
+                "IsAnimated": false,
+                "MaxIndex": 0,
+                "LayeringOrder": 0
+            },
+            {},
+            {},
+            {
+                "0": {
+                    "AudioPath": "BGM_Iris_Luminara_Loop.wav",
+                    "Channel": 2,
+                    "IsLooping": true
+                },
+                "AudioArrCount": 1,
+                "BGM Volume": 0.75,
+                "SFX Volume": 0.75,
+                "Master Volume": 0.75
+            },
+            {},
+            {},
+            {
+                "gain amount": 20.0,
+                "is_dragging": false
+            }
+        ],
+        "4": [
+            {
+                "posX": -0.04872174188494682,
+                "posY": -0.7060701847076416,
+                "scaleX": 0.5,
+                "scaleY": 0.4000000059604645,
+                "Rot": 0.0
+            },
+            {},
+            {
+                "ColliderType1": 4,
+                "ColliderType2": 0,
+                "minX1": -1.0,
+                "minX2": 0.0,
+                "minY1": -0.6600000262260437,
+                "minY2": 0.0,
+                "maxX1": 1.0,
+                "maxX2": 0.0,
+                "maxY1": 0.6600000262260437,
+                "maxY2": 0.0,
+                "offsetX1": 0.0,
+                "offsetX2": 0.0,
+                "offsetY1": 0.0,
+                "offsetY2": 0.0,
+                "radius1": 0.0,
+                "radius2": 0.0
+            },
+            {
+                "NameTag": "horse toy"
+            },
+            {
+                "TextureName": "flamingo_toy",
+                "Index_X": 0,
+                "Index_Y": 0,
+                "Ucoordinates": 512.0,
+                "Vcoordinates": 512.0,
+                "IsSpriteSheet": false,
+                "IsAnimated": false,
+                "MaxIndex": 0,
+                "LayeringOrder": 0
+            },
+            {},
+            {},
+            {
+                "0": {
+                    "AudioPath": "BGM_Iris_Luminara_Loop.wav",
+                    "Channel": 2,
+                    "IsLooping": true
+                },
+                "AudioArrCount": 1,
+                "BGM Volume": 0.75,
+                "SFX Volume": 0.75,
+                "Master Volume": 0.75
+            },
+            {},
+            {},
+            {
+                "gain amount": 20.0,
+                "is_dragging": false
+            }
+        ],
+        "5": [
             {
                 "posX": 0.40032678842544556,
                 "posY": 0.2418299913406372,
@@ -211,10 +382,9 @@
             {},
             {},
             {},
-            {},
             {}
         ],
-        "3": [
+        "6": [
             {
                 "posX": 0.40032678842544556,
                 "posY": 0.11358354985713959,
@@ -266,10 +436,9 @@
             {},
             {},
             {},
-            {},
             {}
         ],
-        "4": [
+        "7": [
             {
                 "posX": 0.40032678842544556,
                 "posY": -0.1454678773880005,
@@ -321,10 +490,9 @@
             {},
             {},
             {},
-            {},
             {}
         ],
-        "5": [
+        "8": [
             {
                 "posX": 0.40032678842544556,
                 "posY": -0.28433525562286377,
@@ -376,10 +544,9 @@
             {},
             {},
             {},
-            {},
             {}
         ],
-        "6": [
+        "9": [
             {
                 "posX": 0.1090199276804924,
                 "posY": 0.023660331964492798,
@@ -408,41 +575,23 @@
             {},
             {},
             {},
-            {},
             {}
         ],
-        "7": [
+        "10": [
             {
-                "posX": -1.4191521406173706,
-                "posY": -0.7032967805862427,
-                "scaleX": 0.3753497898578644,
-                "scaleY": 0.3973937928676605,
+                "posX": 0.6526573300361633,
+                "posY": 0.10966724902391434,
+                "scaleX": 0.25,
+                "scaleY": 0.20000000298023224,
                 "Rot": 0.0
             },
             {},
+            {},
             {
-                "ColliderType1": 5,
-                "ColliderType2": 0,
-                "minX1": 0.17499999701976776,
-                "minX2": 0.0,
-                "minY1": 0.10000000149011612,
-                "minY2": 0.0,
-                "maxX1": 0.17499999701976776,
-                "maxX2": 0.0,
-                "maxY1": 0.10000000149011612,
-                "maxY2": 0.0,
-                "offsetX1": 0.0,
-                "offsetX2": 0.0,
-                "offsetY1": 0.0,
-                "offsetY2": 0.0,
-                "radius1": 0.0,
-                "radius2": 0.0
+                "NameTag": "food_icon"
             },
             {
-                "NameTag": "HorseFood"
-            },
-            {
-                "TextureName": "flamingo_food",
+                "TextureName": "hunger",
                 "Index_X": 0,
                 "Index_Y": 0,
                 "Ucoordinates": 512.0,
@@ -452,56 +601,28 @@
                 "MaxIndex": 0,
                 "LayeringOrder": 0
             },
-            {
-                "0": "DragAndDrop",
-                "ScriptCount": 1
-            },
-            {
-                "Tag": "Tou",
-                "TargetTag": ""
-            },
             {},
             {},
             {},
-            {
-                "type": 0,
-                "gain amount": 20.0,
-                "is_dragging": false
-            },
+            {},
+            {},
             {}
         ],
-        "8": [
+        "11": [
             {
-                "posX": 0.07275722175836563,
-                "posY": -0.6644617319107056,
-                "scaleX": 0.3400000035762787,
-                "scaleY": 0.367000013589859,
+                "posX": 0.6559522151947021,
+                "posY": -0.08143656700849533,
+                "scaleX": 0.25,
+                "scaleY": 0.20000000298023224,
                 "Rot": 0.0
             },
             {},
+            {},
             {
-                "ColliderType1": 5,
-                "ColliderType2": 0,
-                "minX1": 0.09000000357627869,
-                "minX2": 0.0,
-                "minY1": 0.1850000023841858,
-                "minY2": 0.0,
-                "maxX1": 0.10999999940395355,
-                "maxX2": 0.0,
-                "maxY1": 0.05000000074505806,
-                "maxY2": 0.0,
-                "offsetX1": 0.0,
-                "offsetX2": 0.0,
-                "offsetY1": 0.0,
-                "offsetY2": 0.0,
-                "radius1": 0.0,
-                "radius2": 0.0
+                "NameTag": "health_icon"
             },
             {
-                "NameTag": "HorseMedicine"
-            },
-            {
-                "TextureName": "flamingo_medicine",
+                "TextureName": "health",
                 "Index_X": 0,
                 "Index_Y": 0,
                 "Ucoordinates": 512.0,
@@ -511,56 +632,28 @@
                 "MaxIndex": 0,
                 "LayeringOrder": 0
             },
-            {
-                "0": "DragAndDrop",
-                "ScriptCount": 1
-            },
-            {
-                "Tag": "Tou",
-                "TargetTag": ""
-            },
             {},
             {},
             {},
-            {
-                "type": 1,
-                "gain amount": 20.0,
-                "is_dragging": false
-            },
+            {},
+            {},
             {}
         ],
-        "9": [
+        "12": [
             {
-                "posX": -0.6748155355453491,
-                "posY": -0.735659122467041,
-                "scaleX": 0.3400000035762787,
-                "scaleY": 0.367000013589859,
+                "posX": 0.6559522747993469,
+                "posY": -0.2725403904914856,
+                "scaleX": 0.25,
+                "scaleY": 0.20000000298023224,
                 "Rot": 0.0
             },
             {},
+            {},
             {
-                "ColliderType1": 5,
-                "ColliderType2": 0,
-                "minX1": 0.14000000059604645,
-                "minX2": 0.0,
-                "minY1": 0.08500000089406967,
-                "minY2": 0.0,
-                "maxX1": 0.1599999964237213,
-                "maxX2": 0.0,
-                "maxY1": 0.10000000149011612,
-                "maxY2": 0.0,
-                "offsetX1": 0.0,
-                "offsetX2": 0.0,
-                "offsetY1": 0.0,
-                "offsetY2": 0.0,
-                "radius1": 0.0,
-                "radius2": 0.0
+                "NameTag": "sanity_icon"
             },
             {
-                "NameTag": "HorseToy"
-            },
-            {
-                "TextureName": "flamingo_toy",
+                "TextureName": "sanity",
                 "Index_X": 0,
                 "Index_Y": 0,
                 "Ucoordinates": 512.0,
@@ -570,22 +663,11 @@
                 "MaxIndex": 0,
                 "LayeringOrder": 0
             },
-            {
-                "0": "DragAndDrop",
-                "ScriptCount": 1
-            },
-            {
-                "Tag": "Tou",
-                "TargetTag": ""
-            },
             {},
             {},
             {},
-            {
-                "type": 2,
-                "gain amount": 20.0,
-                "is_dragging": false
-            },
+            {},
+            {},
             {}
         ]
     }

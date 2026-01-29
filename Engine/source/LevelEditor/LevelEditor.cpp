@@ -1980,6 +1980,8 @@ namespace NocturnalEngine {
 
                         ImGui::Text("Sanity Decay Rate"); ImGui::SameLine();
                         ImGui::InputDouble("##Sanity Decay Rate", &animal_attributes.sanityDecayRate);
+
+                        ImGui::Checkbox("Is Alive", &animal_attributes.is_alive);
                     }
                 }
 

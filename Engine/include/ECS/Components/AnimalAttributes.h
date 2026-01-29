@@ -14,6 +14,7 @@
 
 #pragma once
 #include "IComponent.h"
+#include "ECS/SceneManager.h"
 #include "pch.h"
 
 namespace NocturnalEngine
@@ -45,5 +46,6 @@ namespace NocturnalEngine
 		double healthDecayRate;
 		double hungerDecayRate;
 		double sanityDecayRate;
+		bool is_alive;
 	};
 }

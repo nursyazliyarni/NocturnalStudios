@@ -56,8 +56,8 @@ namespace NocturnalEngine
 		void setSceneToLoad(std::string s);
 		void checkForSceneToLoad();
 		void changeScene();
-		
-		bool isGameplay;
+
+		bool isGameplay{false};
 	private:
 		// Unique pointer to SceneManager
 		static std::unique_ptr<SceneManager> m_instance;
