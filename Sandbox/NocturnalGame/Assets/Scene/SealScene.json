@@ -1,6 +1,18 @@
 {
+    "LayerDrawOrder": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+    ],
     "Number of Entities": {
-        "Entities": 13
+        "Entities": 16
     },
     "EntitySignatures": [
         "00000000000000000000000011111101",
@@ -12,6 +24,9 @@
         "00000000000000000000000001111101",
         "00000000000000000000000001111101",
         "00000000000000000000000001111101",
+        "00000000000000000000000000011001",
+        "00000000000000000000000000011001",
+        "00000000000000000000000000011001",
         "00000000000000000000000000011001",
         "00000000000000000000000000011001",
         "00000000000000000000000000011001",
@@ -81,6 +96,7 @@
             },
             {},
             {},
+            {},
             {}
         ],
         "1": [
@@ -115,7 +131,7 @@
             },
             {
                 "TextureName": "sealSpritesheet",
-                "Index_X": 1,
+                "Index_X": 2,
                 "Index_Y": 0,
                 "Ucoordinates": 532.0,
                 "Vcoordinates": 261.5,
@@ -148,6 +164,7 @@
                 "Sanity Decay Rate": 1.0,
                 "IS_alive": true
             },
+            {},
             {}
         ],
         "2": [
@@ -207,9 +224,11 @@
             {},
             {},
             {
+                "type": 0,
                 "gain amount": 20.0,
                 "is_dragging": false
-            }
+            },
+            {}
         ],
         "3": [
             {
@@ -268,9 +287,11 @@
             {},
             {},
             {
+                "type": 0,
                 "gain amount": 20.0,
                 "is_dragging": false
-            }
+            },
+            {}
         ],
         "4": [
             {
@@ -329,9 +350,11 @@
             {},
             {},
             {
+                "type": 0,
                 "gain amount": 20.0,
                 "is_dragging": false
-            }
+            },
+            {}
         ],
         "5": [
             {
@@ -382,6 +405,7 @@
                 "Tag": "FlamingoBtn",
                 "TargetTag": ""
             },
+            {},
             {},
             {},
             {},
@@ -439,6 +463,7 @@
             {},
             {},
             {},
+            {},
             {}
         ],
         "7": [
@@ -490,6 +515,7 @@
                 "Tag": "HorseBtn",
                 "TargetTag": ""
             },
+            {},
             {},
             {},
             {},
@@ -547,6 +573,7 @@
             {},
             {},
             {},
+            {},
             {}
         ],
         "9": [
@@ -573,6 +600,7 @@
                 "MaxIndex": 0,
                 "LayeringOrder": 0
             },
+            {},
             {},
             {},
             {},
@@ -609,6 +637,7 @@
             {},
             {},
             {},
+            {},
             {}
         ],
         "11": [
@@ -640,6 +669,7 @@
             {},
             {},
             {},
+            {},
             {}
         ],
         "12": [
@@ -666,6 +696,103 @@
                 "MaxIndex": 0,
                 "LayeringOrder": 0
             },
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {}
+        ],
+        "13": [
+            {
+                "posX": 0.7675615549087524,
+                "posY": 0.1030774712562561,
+                "scaleX": 0.25,
+                "scaleY": 0.10000000149011612,
+                "Rot": 0.0
+            },
+            {},
+            {},
+            {
+                "NameTag": "hunger bar"
+            },
+            {
+                "TextureName": "hunger bar",
+                "Index_X": 0,
+                "Index_Y": 0,
+                "Ucoordinates": 512.0,
+                "Vcoordinates": 512.0,
+                "IsSpriteSheet": false,
+                "IsAnimated": false,
+                "MaxIndex": 0,
+                "LayeringOrder": 0
+            },
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {}
+        ],
+        "14": [
+            {
+                "posX": 0.7675615549087524,
+                "posY": -0.08802646398544312,
+                "scaleX": 0.25,
+                "scaleY": 0.10000000149011612,
+                "Rot": 0.0
+            },
+            {},
+            {},
+            {
+                "NameTag": "health bar"
+            },
+            {
+                "TextureName": "health bar",
+                "Index_X": 0,
+                "Index_Y": 0,
+                "Ucoordinates": 512.0,
+                "Vcoordinates": 512.0,
+                "IsSpriteSheet": false,
+                "IsAnimated": false,
+                "MaxIndex": 0,
+                "LayeringOrder": 0
+            },
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {}
+        ],
+        "15": [
+            {
+                "posX": 0.7675615549087524,
+                "posY": -0.26924556493759155,
+                "scaleX": 0.25,
+                "scaleY": 0.10000000149011612,
+                "Rot": 0.0
+            },
+            {},
+            {},
+            {
+                "NameTag": "sanity bar"
+            },
+            {
+                "TextureName": "sanity bar",
+                "Index_X": 0,
+                "Index_Y": 0,
+                "Ucoordinates": 512.0,
+                "Vcoordinates": 512.0,
+                "IsSpriteSheet": false,
+                "IsAnimated": false,
+                "MaxIndex": 0,
+                "LayeringOrder": 0
+            },
+            {},
             {},
             {},
             {},
