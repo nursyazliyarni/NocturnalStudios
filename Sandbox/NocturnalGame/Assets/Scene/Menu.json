@@ -1,4 +1,16 @@
 {
+    "LayerDrawOrder": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+    ],
     "Number of Entities": {
         "Entities": 5
     },
@@ -325,7 +337,7 @@
                 "IsSpriteSheet": false,
                 "IsAnimated": false,
                 "MaxIndex": 0,
-                "LayeringOrder": 0
+                "LayeringOrder": 1
             },
             {
                 "0": "ButtonResponse",

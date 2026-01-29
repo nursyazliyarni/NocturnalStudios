@@ -19,11 +19,19 @@
 #include "Graphics/Graphics.h"
 #include "Audio/AudioEngine.h"
 #include "Core/MemoryManager.h"
+#include <unordered_map>
+#include <array>
 
 namespace NocturnalEngine
 {
 	// Unique pointer to instance of Scene
 	std::unique_ptr<SceneManager> SceneManager::m_instance;
+
+	static std::unordered_map<std::string,
+		std::array<bool, NocturnalEngine::Graphic::MAX_LAYERS>> gSceneLayerState_Runtime;
+
+	static std::string gCurrentScenePath = "";
+
 
 	/*!*************************************************************************
 	Returns an instance of the SceneManager
@@ -53,12 +61,28 @@ namespace NocturnalEngine
 		p_ecs.RegisterComponent<HUDComponent>();
 		p_ecs.RegisterComponent<AnimalAttributes>();
 		p_ecs.RegisterComponent<ItemsAttributes>();
+		p_ecs.RegisterComponent<Draggable>();
 		sceneToLoad = "";
 	}
 
 	//NEW DESERIALIZE
 	bool SceneManager::Deserialize(const rapidjson::Value& obj)
 	{
+		// default
+		for (int i = 0; i < NocturnalEngine::Graphic::MAX_LAYERS; ++i)
+			NocturnalEngine::Graphic::layerDrawOrder[i] = i;
+
+		// load if exists
+		if (obj.HasMember("LayerDrawOrder") && obj["LayerDrawOrder"].IsArray())
+		{
+			const auto& arr = obj["LayerDrawOrder"].GetArray();
+			int n = (int)arr.Size();
+			if (n > NocturnalEngine::Graphic::MAX_LAYERS) n = NocturnalEngine::Graphic::MAX_LAYERS;
+
+			for (int i = 0; i < n; ++i)
+				NocturnalEngine::Graphic::layerDrawOrder[i] = arr[i].GetInt();
+		}
+
 
 		for (Entity i = 0; i < p_ecs.GetTotalEntities(); ++i)
 		{
@@ -185,6 +209,15 @@ namespace NocturnalEngine
 							p_ecs.AddComponent<ItemsAttributes>(j, itemAttr);
 						}
 					}
+					if (p_ecs.GetComponentTypeName(CompID) == "Draggable")
+					{
+						Draggable draggable;
+						draggable.SetComponentEntityID(j);
+						if (draggable.Deserialize(obj["Components"][std::to_string(j).c_str()][static_cast<int>(CompID)].GetObj()))
+						{
+							p_ecs.AddComponent<Draggable>(j, draggable);
+						}
+					}
 				}
 			}
 			++j;
@@ -201,6 +234,11 @@ namespace NocturnalEngine
 	bool SceneManager::Serialize(rapidjson::PrettyWriter<rapidjson::StringBuffer>* writer) const
 	{
 		writer->StartObject();
+		writer->Key("LayerDrawOrder");
+		writer->StartArray();
+		for (int i = 0; i < NocturnalEngine::Graphic::MAX_LAYERS; ++i)
+			writer->Int(NocturnalEngine::Graphic::layerDrawOrder[i]);
+		writer->EndArray();
 		writer->Key("Number of Entities");
 		writer->StartObject();
 		writer->Key("Entities");
@@ -297,6 +335,10 @@ namespace NocturnalEngine
 						{
 							p_ecs.GetComponent<ItemsAttributes>(j).Serialize(writer);
 						}
+						if (p_ecs.GetComponentTypeName(compID) == "Draggable")
+						{
+							p_ecs.GetComponent<Draggable>(j).Serialize(writer);
+						}
 					}
 				}
 				writer->EndObject();
@@ -383,8 +425,34 @@ void NocturnalEngine::SceneManager::checkForSceneToLoad()
 			Graphic::camera.SetZoomLevel(0.25f);
 		}
 
+		// SAVE current scene layer state before switching away
+		if (!gCurrentScenePath.empty())
+		{
+			auto& saved = gSceneLayerState_Runtime[gCurrentScenePath];
+			for (int l = 0; l < NocturnalEngine::Graphic::MAX_LAYERS; ++l)
+				saved[l] = NocturnalEngine::Graphic::layerEnabled[l];
+		}
+
 		DeserializeFromFile(sceneToLoad);
 		//sceneToLoad = "";
+
+		gCurrentScenePath = sceneToLoad;
+
+		//  RESTORE layer state for newly loaded scene 
+		auto it = gSceneLayerState_Runtime.find(gCurrentScenePath);
+		if (it != gSceneLayerState_Runtime.end())
+		{
+			for (int l = 0; l < NocturnalEngine::Graphic::MAX_LAYERS; ++l)
+				NocturnalEngine::Graphic::layerEnabled[l] = it->second[l];
+		}
+		else
+		{
+			for (int l = 0; l < NocturnalEngine::Graphic::MAX_LAYERS; ++l)
+				NocturnalEngine::Graphic::layerEnabled[l] = true;
+		}
+
+
+		sceneToLoad = "";
 	}
 }
 

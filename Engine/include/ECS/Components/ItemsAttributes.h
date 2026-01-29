@@ -37,6 +37,13 @@ namespace NocturnalEngine
 		void SetComponentEntityID(Entity& entity) { entityID = entity; }
 
 	public:
+		enum class ItemType{
+			FOOD,
+			MEDICINE,
+			TOY
+		};
+
+		ItemType type;
 		double gain_amount;
 		bool is_dragging;
 		vec2D duplicate_item_pos;

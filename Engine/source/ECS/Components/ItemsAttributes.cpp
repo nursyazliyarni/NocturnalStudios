@@ -15,17 +15,21 @@
 #include "pch.h"
 #include "ECS/Components/ItemsAttributes.h"
 
-NocturnalEngine::ItemsAttributes::ItemsAttributes() : gain_amount{ 0 }, is_dragging{ false } {}
+NocturnalEngine::ItemsAttributes::ItemsAttributes() :type{ ItemType::FOOD}, gain_amount { 0 }, is_dragging{ false } {}
 
 bool NocturnalEngine::ItemsAttributes::Deserialize(const rapidjson::Value& obj)
 {
+	if(obj.HasMember("type"))type = static_cast<ItemType>(obj["type"].GetInt());
 	gain_amount = obj["gain amount"].GetDouble();
 	is_dragging = obj["is_dragging"].GetBool();
+
 	return true;
 }
 
 bool NocturnalEngine::ItemsAttributes::Serialize(rapidjson::PrettyWriter<rapidjson::StringBuffer>* writer) const
 {
+	writer->Key("type");
+	writer->Int(static_cast<int>(type));
 	writer->Key("gain amount");
 	writer->Double(gain_amount);
 	writer->Key("is_dragging");

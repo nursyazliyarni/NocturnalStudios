@@ -1,4 +1,16 @@
 {
+    "LayerDrawOrder": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+    ],
     "Number of Entities": {
         "Entities": 13
     },
@@ -57,6 +69,7 @@
             },
             {},
             {},
+            {},
             {}
         ],
         "1": [
@@ -69,15 +82,15 @@
             },
             {},
             {
-                "ColliderType1": 4,
+                "ColliderType1": 5,
                 "ColliderType2": 0,
-                "minX1": -1.0,
+                "minX1": 0.20000000298023224,
                 "minX2": 0.0,
-                "minY1": -0.6600000262260437,
+                "minY1": 0.05000000074505806,
                 "minY2": 0.0,
-                "maxX1": 1.0,
+                "maxX1": 0.20000000298023224,
                 "maxX2": 0.0,
-                "maxY1": 0.6600000262260437,
+                "maxY1": 0.36000001430511475,
                 "maxY2": 0.0,
                 "offsetX1": 0.0,
                 "offsetX2": 0.0,
@@ -128,7 +141,10 @@
                 "Sanity Decay Rate": 1.0,
                 "IS_alive": true
             },
-            {}
+            {},
+            {
+                "isTarget": true
+            }
         ],
         "2": [
             {
@@ -140,15 +156,15 @@
             },
             {},
             {
-                "ColliderType1": 4,
+                "ColliderType1": 5,
                 "ColliderType2": 0,
-                "minX1": -1.0,
+                "minX1": 0.25,
                 "minX2": 0.0,
-                "minY1": -0.6600000262260437,
+                "minY1": 0.14000000059604645,
                 "minY2": 0.0,
-                "maxX1": 1.0,
+                "maxX1": 0.20000000298023224,
                 "maxX2": 0.0,
-                "maxY1": 0.6600000262260437,
+                "maxY1": 0.10999999940395355,
                 "maxY2": 0.0,
                 "offsetX1": 0.0,
                 "offsetX2": 0.0,
@@ -171,7 +187,10 @@
                 "MaxIndex": 0,
                 "LayeringOrder": 0
             },
-            {},
+            {
+                "0": "DragAndDrop",
+                "ScriptCount": 1
+            },
             {},
             {
                 "0": {
@@ -187,9 +206,11 @@
             {},
             {},
             {
+                "type": 0,
                 "gain amount": 20.0,
                 "is_dragging": false
-            }
+            },
+            {}
         ],
         "3": [
             {
@@ -201,15 +222,15 @@
             },
             {},
             {
-                "ColliderType1": 4,
+                "ColliderType1": 5,
                 "ColliderType2": 0,
-                "minX1": -1.0,
+                "minX1": 0.15000000596046448,
                 "minX2": 0.0,
-                "minY1": -0.6600000262260437,
+                "minY1": 0.15000000596046448,
                 "minY2": 0.0,
-                "maxX1": 1.0,
+                "maxX1": 0.15000000596046448,
                 "maxX2": 0.0,
-                "maxY1": 0.6600000262260437,
+                "maxY1": 0.05999999865889549,
                 "maxY2": 0.0,
                 "offsetX1": 0.0,
                 "offsetX2": 0.0,
@@ -232,7 +253,10 @@
                 "MaxIndex": 0,
                 "LayeringOrder": 0
             },
-            {},
+            {
+                "0": "DragAndDrop",
+                "ScriptCount": 1
+            },
             {},
             {
                 "0": {
@@ -248,9 +272,11 @@
             {},
             {},
             {
+                "type": 1,
                 "gain amount": 20.0,
                 "is_dragging": false
-            }
+            },
+            {}
         ],
         "4": [
             {
@@ -262,15 +288,15 @@
             },
             {},
             {
-                "ColliderType1": 4,
+                "ColliderType1": 5,
                 "ColliderType2": 0,
-                "minX1": -1.0,
+                "minX1": 0.20000000298023224,
                 "minX2": 0.0,
-                "minY1": -0.6600000262260437,
+                "minY1": 0.15000000596046448,
                 "minY2": 0.0,
-                "maxX1": 1.0,
+                "maxX1": 0.20000000298023224,
                 "maxX2": 0.0,
-                "maxY1": 0.6600000262260437,
+                "maxY1": 0.11500000208616257,
                 "maxY2": 0.0,
                 "offsetX1": 0.0,
                 "offsetX2": 0.0,
@@ -293,7 +319,10 @@
                 "MaxIndex": 0,
                 "LayeringOrder": 0
             },
-            {},
+            {
+                "0": "DragAndDrop",
+                "ScriptCount": 1
+            },
             {},
             {
                 "0": {
@@ -309,9 +338,11 @@
             {},
             {},
             {
+                "type": 2,
                 "gain amount": 20.0,
                 "is_dragging": false
-            }
+            },
+            {}
         ],
         "5": [
             {
@@ -362,6 +393,7 @@
                 "Tag": "SealBtn",
                 "TargetTag": ""
             },
+            {},
             {},
             {},
             {},
@@ -419,6 +451,7 @@
             {},
             {},
             {},
+            {},
             {}
         ],
         "7": [
@@ -470,6 +503,7 @@
                 "Tag": "OwlBtn",
                 "TargetTag": ""
             },
+            {},
             {},
             {},
             {},
@@ -527,6 +561,7 @@
             {},
             {},
             {},
+            {},
             {}
         ],
         "9": [
@@ -553,6 +588,7 @@
                 "MaxIndex": 0,
                 "LayeringOrder": 0
             },
+            {},
             {},
             {},
             {},

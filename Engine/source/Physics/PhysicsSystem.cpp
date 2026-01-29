@@ -17,6 +17,7 @@
 #include "Physics/PhysicsSystem.h"
 #include "ECS/Components/Components.h"
 #include "ResourceManager/ResourceManager.h"
+#include <graphics/Graphics.h>
 
 namespace NocturnalEngine {
 	/*!*************************************************************************
@@ -35,6 +36,19 @@ namespace NocturnalEngine {
 		Timer::GetInstance().GetDT(Systems::PHYSICS);
 		for (const auto& entity : mEntities)
 		{
+			// Layering system: skip physics update if this entity is on a disabled layer
+			if (p_ecs.HaveComponent<Sprite>(entity))
+			{
+				int layer = p_ecs.GetComponent<Sprite>(entity).LayerOrder;
+
+				if (layer < 0) layer = 0;
+				if (layer >= NocturnalEngine::Graphic::MAX_LAYERS)
+					layer = NocturnalEngine::Graphic::MAX_LAYERS - 1;
+
+				if (!NocturnalEngine::Graphic::layerEnabled[layer])
+					continue;
+			}
+
 			auto& mTrans = p_ecs.GetComponent<Transform>(entity);
 			auto& mRigid = p_ecs.GetComponent<RigidBody>(entity);
 			if (mRigid.GetNextPos().x != 0 || mRigid.GetNextPos().y != 0) {

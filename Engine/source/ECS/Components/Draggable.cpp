@@ -20,14 +20,14 @@ namespace NocturnalEngine
 	/*!*************************************************************************
 	Ctor for NameTag
 	****************************************************************************/
-	Draggable::Draggable() : isDragging{ false } {}
+	Draggable::Draggable() : isTarget{ false } {}
 
 	/*!*************************************************************************
 	Deserialize NameTag Component
 	****************************************************************************/
 	bool Draggable::Deserialize(const rapidjson::Value& obj)
 	{
-		isDragging = obj["isDragging"].GetBool();
+		isTarget = obj["isTarget"].GetBool();
 		return true;
 	}
 
@@ -36,8 +36,8 @@ namespace NocturnalEngine
 	****************************************************************************/
 	bool Draggable::Serialize(rapidjson::PrettyWriter<rapidjson::StringBuffer>* writer) const
 	{
-		writer->Key("isDragging");
-		writer->Bool(isDragging);
+		writer->Key("isTarget");
+		writer->Bool(isTarget);
 		return true;
 	}
 }
