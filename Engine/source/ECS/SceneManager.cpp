@@ -363,7 +363,7 @@ void NocturnalEngine::SceneManager::checkForSceneToLoad()
 {
 	if (sceneToLoad != "")
 	{
-		//changeScene();
+		changeScene();
 
 		/*if (!isGameplay) {
 			isGameplay = true;
@@ -434,7 +434,7 @@ void NocturnalEngine::SceneManager::checkForSceneToLoad()
 		}
 
 		DeserializeFromFile(sceneToLoad);
-		//sceneToLoad = "";
+		sceneToLoad = "";
 
 		gCurrentScenePath = sceneToLoad;
 

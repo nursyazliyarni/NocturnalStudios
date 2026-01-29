@@ -30,7 +30,7 @@ bool NocturnalEngine::AnimalAttributes::Deserialize(const rapidjson::Value& obj)
 	healthDecayRate = obj["Health Decay Rate"].GetDouble();
 	hungerDecayRate = obj["Hunger Decay Rate"].GetDouble();
 	sanityDecayRate = obj["Sanity Decay Rate"].GetDouble();
-	is_alive = obj["IS_alive"].GetBool();
+	if (obj.HasMember("IS_alive")&& obj["IS_alive"].IsBool())is_alive = obj["IS_alive"].GetBool();
 	return true;
 }
 
