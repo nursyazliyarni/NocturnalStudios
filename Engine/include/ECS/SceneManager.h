@@ -32,6 +32,8 @@ namespace NocturnalEngine
 	class SceneManager : public JSONSerializer
 	{
 	public:
+
+		using DeserializeFn = std::function<void(Entity, const rapidjson::Value&)>;
 		/*!*************************************************************************
 		Returns an instance of the SceneManager
 		****************************************************************************/
@@ -60,6 +62,10 @@ namespace NocturnalEngine
 		// Unique pointer to SceneManager
 		static std::unique_ptr<SceneManager> m_instance;
 
+		std::unordered_map<std::string, DeserializeFn> componentLoaders;
+
 		std::string sceneToLoad;
+
+
 	};
 }
