@@ -55,7 +55,7 @@ namespace NocturnalEngine
 
 		if (is_within_box(p_GUI->MousePosition, col, transform))//check if the system is hovering over an object, change to the hover sprite if it is
 		{
-			if (initial_hover && p_ecs.HaveComponent<Audio>(GetScriptEntityID()) && ((p_ecs.GetComponent<Audio>(GetScriptEntityID())).GetSize() > 0) && (p_GUI->Check_HTP() == false))
+			if (initial_hover && p_ecs.HaveComponent<Audio>(GetScriptEntityID()) && ((p_ecs.GetComponent<Audio>(GetScriptEntityID())).GetSize() > 0) && (p_GUI->Check_HTP() == false) && (p_Scene->isGameplay == false))
 			{
 				p_ecs.GetComponent<Audio>(GetScriptEntityID())[0].should_play = true; //menu hover audio
 				initial_hover = false;
@@ -182,21 +182,25 @@ namespace NocturnalEngine
 
 				if (ID_tag.GetTag() == "FlamingoBtn")
 				{
+					p_ecs.GetComponent<Audio>(GetScriptEntityID())[0].should_play = true;
 					p_Scene->setSceneToLoad("Assets/Scene/FlamingoScene.json");// switch to flamingo scene
 				}
 
 				if (ID_tag.GetTag() == "SealBtn")
 				{
+					p_ecs.GetComponent<Audio>(GetScriptEntityID())[0].should_play = true;
 					p_Scene->setSceneToLoad("Assets/Scene/SealScene.json");// switch to seal scene
 				}
 
 				if (ID_tag.GetTag() == "HorseBtn")
 				{
+					p_ecs.GetComponent<Audio>(GetScriptEntityID())[0].should_play = true;
 					p_Scene->setSceneToLoad("Assets/Scene/HorseScene.json");// switch to horse scene
 				}
 
 				if (ID_tag.GetTag() == "OwlBtn")
 				{
+					p_ecs.GetComponent<Audio>(GetScriptEntityID())[0].should_play = true;
 					p_Scene->setSceneToLoad("Assets/Scene/OwlScene.json");// switch to owl scene
 				}
 

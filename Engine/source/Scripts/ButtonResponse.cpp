@@ -19,7 +19,6 @@
 #include "GUI/GUI.h"
 #include "Graphics/Graphics.h"
 
-
 namespace NocturnalEngine
 {
 
@@ -68,10 +67,11 @@ namespace NocturnalEngine
 
 		if (is_within_box(p_GUI->MousePosition, col, transform))//check if the system is hovering over an object, change to the hover sprite if it is
 		{
-			if (initial_hover && p_ecs.HaveComponent<Audio>(GetScriptEntityID()) && ((p_ecs.GetComponent<Audio>(GetScriptEntityID())).GetSize() > 0) && (p_GUI->Check_HTP() == false))
+			if (initial_hover && p_ecs.HaveComponent<Audio>(GetScriptEntityID()) && ((p_ecs.GetComponent<Audio>(GetScriptEntityID())).GetSize() > 0) && (p_GUI->Check_HTP() == false) && (p_Scene->isGameplay == false))
 			{
 				p_ecs.GetComponent<Audio>(GetScriptEntityID())[0].should_play = true; //menu hover audio
 				initial_hover = false;
+				std::cout << "hover sound played\n";
 			}
 
 			if (ID_tag.GetTag() == "Start" && !(p_Input->MousePressed(GLFW_MOUSE_BUTTON_LEFT)))
@@ -116,17 +116,17 @@ namespace NocturnalEngine
 
 			if (ID_tag.GetTag() == "Back")
 			{
-				spt.SetTexture("BACK_B");
+				spt.SetTexture("BACK_B");//to be change
 			}
 
 			if (ID_tag.GetTag() == "No")
 			{
-				spt.SetTexture("NO_B");
+				spt.SetTexture("NO_B");//to be change
 			}
 
 			if (ID_tag.GetTag() == "Yes")
 			{
-				spt.SetTexture("YES_B");
+				spt.SetTexture("YES_B");//to be change
 			}
 
 			if (curr_state == button_state::release)// when mouse button is release, call the button functions, release is selected to prevent function from calling when mouse is held down 
@@ -135,13 +135,13 @@ namespace NocturnalEngine
 				if (ID_tag.GetTag() == "Start" && p_GUI->Check_HTP() == false)
 				{
 
-					Graphic::mcamera->SetZoomLevel(0.25f);
-					p_Scene->setSceneToLoad("Assets/Scene/CutScene.json");// go to the cutscene
+					Graphic::mcamera->SetZoomLevel(1.0f);
+					p_Scene->setSceneToLoad("Assets/Scene/FlamingoScene.json");
 				}
 
 				if (ID_tag.GetTag() == "Restart")
 				{
-					p_Scene->setSceneToLoad("Assets/Scene/Game.json");//reset the game level in game over
+					p_Scene->setSceneToLoad("Assets/Scene/FlamingoScene.json");//reset the game level in game over
 				}
 
 				if (ID_tag.GetTag() == "Quit" && p_GUI->Check_HTP() == false)
@@ -169,7 +169,7 @@ namespace NocturnalEngine
 				if (ID_tag.GetTag() == "PResart")
 				{
 					Graphic::mcamera->SetZoomLevel(0.25f);
-					p_Scene->setSceneToLoad("Assets/Scene/Game.json");// restart the game in pause
+					p_Scene->setSceneToLoad("Assets/Scene/FlamingoScene.json");// restart the game in pause
 				}
 
 				if (ID_tag.GetTag() == "Mute")
@@ -193,6 +193,25 @@ namespace NocturnalEngine
 					p_GUI->toggle_script();// tell the system to end the game 
 				}
 
+				if (ID_tag.GetTag() == "FlamingoBtn")
+				{
+					p_Scene->setSceneToLoad("Assets/Scene/FlamingoScene.json");// switch to flamingo scene
+				}
+
+				if (ID_tag.GetTag() == "SealBtn")
+				{
+					p_Scene->setSceneToLoad("Assets/Scene/SealScene.json");// switch to seal scene
+				}
+
+				if (ID_tag.GetTag() == "HorseBtn")
+				{
+					p_Scene->setSceneToLoad("Assets/Scene/HorseScene.json");// switch to horse scene
+				}
+
+				if (ID_tag.GetTag() == "OwlBtn")
+				{
+					p_Scene->setSceneToLoad("Assets/Scene/OwlScene.json");// switch to owl scene
+				}
 
 
 			}
@@ -284,11 +303,11 @@ namespace NocturnalEngine
 
 			if (ID_tag.GetTag() == "Quit")
 			{
-				spt.SetTexture("Quit_Idle");
+				spt.SetTexture("quitBtn");
 			}
 			if (ID_tag.GetTag() == "Options")
 			{
-				spt.SetTexture("Options_Idle");
+				spt.SetTexture("optionsBtn");
 			}
 
 			if (ID_tag.GetTag() == "MainMenu")
@@ -334,7 +353,7 @@ namespace NocturnalEngine
 
 	void ButtonResponse::End()
 	{
-		
+
 	}
 
 	ButtonResponse* ButtonResponse::Clone() const

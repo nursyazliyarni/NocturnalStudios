@@ -150,7 +150,7 @@ Application constructor
 			}
 
 			if (p_Scene->isGameplay == true)
-				glfwSetInputMode(m_window->GetWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+				glfwSetInputMode(m_window->GetWindow(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 			else
 				glfwSetInputMode(m_window->GetWindow(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 			if (!m_window->isWindowNotFocus)

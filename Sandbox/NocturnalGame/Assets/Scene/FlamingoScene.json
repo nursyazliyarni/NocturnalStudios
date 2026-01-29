@@ -20,10 +20,10 @@
         "00000000000000000000010000111101",
         "00000000000000000000010000111101",
         "00000000000000000000010000111101",
-        "00000000000000000000000001111101",
-        "00000000000000000000000001111101",
-        "00000000000000000000000001111101",
-        "00000000000000000000000001111101",
+        "00000000000000000000000011111101",
+        "00000000000000000000000011111101",
+        "00000000000000000000000011111101",
+        "00000000000000000000000011111101",
         "00000000000000000000000000011001"
     ],
     "Components": {
@@ -353,13 +353,24 @@
             },
             {
                 "0": "ButtonResponse",
-                "ScriptCount": 1
+                "1": "AudioManager",
+                "ScriptCount": 2
             },
             {
                 "Tag": "SealBtn",
                 "TargetTag": ""
             },
-            {},
+            {
+                "0": {
+                    "AudioPath": "SFX_Static_01.wav",
+                    "Channel": 3,
+                    "IsLooping": false
+                },
+                "AudioArrCount": 1,
+                "BGM Volume": 1.0,
+                "SFX Volume": 1.0,
+                "Master Volume": 1.0
+            },
             {},
             {},
             {},
@@ -408,13 +419,24 @@
             },
             {
                 "0": "ButtonResponse",
-                "ScriptCount": 1
+                "1": "AudioManager",
+                "ScriptCount": 2
             },
             {
                 "Tag": "HorseBtn",
                 "TargetTag": ""
             },
-            {},
+            {
+                "0": {
+                    "AudioPath": "SFX_Static_01.wav",
+                    "Channel": 3,
+                    "IsLooping": false
+                },
+                "AudioArrCount": 1,
+                "BGM Volume": 1.0,
+                "SFX Volume": 1.0,
+                "Master Volume": 1.0
+            },
             {},
             {},
             {},
@@ -469,7 +491,17 @@
                 "Tag": "OwlBtn",
                 "TargetTag": ""
             },
-            {},
+            {
+                "0": {
+                    "AudioPath": "SFX_Static_02.wav",
+                    "Channel": 3,
+                    "IsLooping": false
+                },
+                "AudioArrCount": 1,
+                "BGM Volume": 1.0,
+                "SFX Volume": 1.0,
+                "Master Volume": 1.0
+            },
             {},
             {},
             {},
@@ -518,13 +550,24 @@
             },
             {
                 "0": "ButtonResponse",
-                "ScriptCount": 1
+                "1": "AudioManager",
+                "ScriptCount": 2
             },
             {
                 "Tag": "InventoryBtn",
                 "TargetTag": ""
             },
-            {},
+            {
+                "0": {
+                    "AudioPath": "SFX_Static_03.wav",
+                    "Channel": 3,
+                    "IsLooping": false
+                },
+                "AudioArrCount": 1,
+                "BGM Volume": 1.0,
+                "SFX Volume": 1.0,
+                "Master Volume": 1.0
+            },
             {},
             {},
             {},
