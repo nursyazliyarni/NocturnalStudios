@@ -46,6 +46,7 @@ namespace NocturnalEngine {
 				gS = GameManager::GameScene::OWL;
 			}
 			AnimalAttributes& aA{ p_ecs.GetComponent<AnimalAttributes>(entityID) };
+			// in addition, the gamemanager also saves the above gS as the current gamestate
 			aA=p_GameManager.LoadPersistentValues(gS);
 		}
 	}
@@ -59,6 +60,7 @@ namespace NocturnalEngine {
 
 		AnimalAttributes& aA{ p_ecs.GetComponent<AnimalAttributes>(entityID) };
 		
+		//same as original code
 		if (aA.is_alive) {
 			aA.current_hunger -= aA.hungerDecayRate * static_cast<double>(Frametime) * 10.0;
 			aA.current_health -= aA.healthDecayRate * static_cast<double>(Frametime);
@@ -67,6 +69,7 @@ namespace NocturnalEngine {
 
 			if (aA.current_hunger <= 0 || aA.current_health <= 0 || aA.current_sanity <= 0) {
 				aA.is_alive = false;
+
 			}
 		}
 
@@ -75,6 +78,7 @@ namespace NocturnalEngine {
 
 	void AnimalLogic::End()
 	{
+		// this is so that the state saves to the game manager upon unloading
 		if (!p_ecs.HaveComponent<AnimalAttributes>(entityID))return;
 
 		AnimalAttributes& aA{ p_ecs.GetComponent<AnimalAttributes>(entityID) };

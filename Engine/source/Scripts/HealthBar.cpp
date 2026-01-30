@@ -25,7 +25,10 @@ namespace NocturnalEngine {
 	{
 
 		//this saves a copy of the origin at generation.
+		//This is important as we need the original size of the 
+		//full hp bar when calculating how wide we need it
 		origin = p_ecs.GetComponent<Transform>(entityID);
+
 		//this runs whenever the scene is started. 
 		//This loop is going through all the entities and finding the animal 
 		// (the first entity with AnimalAttributes component)
@@ -50,15 +53,18 @@ namespace NocturnalEngine {
 		//(by right it should, just in case)
 		if (!p_ecs.HaveComponent<HUDComponent>(entityID)) return;
 
+		//gets the GUD component from the entity this script is connected to
 		HUDComponent& hudC{ p_ecs.GetComponent<HUDComponent>(entityID) };
 
 		//make sure the animal exists lol
 		if (linkedAnimal == 0 || !p_ecs.HaveComponent<AnimalAttributes>(linkedAnimal))return;
 		AnimalAttributes& aA{ p_ecs.GetComponent<AnimalAttributes>(linkedAnimal) };
 
+		//check which type of hud this is, 
+		// this will then dictate what kind of info it takes from AnimalAttributes
 		float percentageHP{};
 		switch (hudC.GetType())
-		{
+		{//the percentage is calculated based on the current health divided by the max health
 		case HUDComponent::ElementType::HealthBar:
 			percentageHP = static_cast<float>(aA.current_health / aA.maxHealth);
 			break;
@@ -70,9 +76,21 @@ namespace NocturnalEngine {
 			break;
 		}
 
+		//uses the original scale of the entity and multiplies 
+		//it based on the percentage of hp calculated above (this determines how wide it is)
 		float currrentPercentageScale{ origin.GetScale().x * percentageHP };
 
+		//if animal is dead, do not show any of the bars
+		//this is not shown in dev mode for convenience
+#if !DEBUG
+		if (!aA.is_alive)currrentPercentageScale = 0.f;
+#endif
+		//sets the scale, basically how wide the bar will render
 		p_ecs.GetComponent<Transform>(entityID).GetScale().x = currrentPercentageScale;
+		//sets the origin, 
+		// since the ecs right now can only render from middle center 
+		// i added a helper function that sets the position of where we want the extreme left
+		//side of the bar is
 		p_ecs.GetComponent<Transform>(entityID).SetPosFromCenterLeft(origin.GetMinPos().x, origin.GetPos().y);
 
 	}

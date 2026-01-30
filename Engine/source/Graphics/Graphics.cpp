@@ -176,7 +176,7 @@ namespace NocturnalEngine {
 							transform.GetRot(), GETTEXTURE(sprite.GetTexture()));
 					}
 
-					//yu xuan's code (should not be here)
+					//yu xuan's code check HealthBar.h and HealthBar.cpp for amendments
 					//auto& nametag = p_ecs.GetComponent<NameTag>(*i).GetNameTag();
 					/*if (p_ecs.HaveComponent<AnimalAttributes>(*i))
 					{
