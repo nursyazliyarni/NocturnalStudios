@@ -1502,6 +1502,12 @@ namespace NocturnalEngine {
                             p_ecs.AddComponent<Draggable>(selectedEntity, C_DraggableComponent);
                         ImGui::CloseCurrentPopup();
                     }
+                    if (ImGui::MenuItem("Text"))
+                    {
+                        if (!p_ecs.HaveComponent<Text>(selectedEntity))
+                            p_ecs.AddComponent<Text>(selectedEntity, C_TextComponent);
+                        ImGui::CloseCurrentPopup();
+                    }
 
                     ImGui::EndPopup();
                 }
@@ -2049,7 +2055,36 @@ namespace NocturnalEngine {
                         ImGui::Checkbox("Is Target", &draggable.IsTarget()); 
                     }
                 }
+                // Text 
+                if (p_ecs.HaveComponent<Text>(selectedEntity))
+                {
+                    if (ImGui::CollapsingHeader("Text", ImGuiTreeNodeFlags_None))
+                    {
+                        auto& text = p_ecs.GetComponent<Text>(selectedEntity);
 
+                        // Keep an edit buffer (so typing doesn't reset every frame)
+                        static Entity lastEntity = -1;
+                        static char buffer[512];
+
+                        if (lastEntity != selectedEntity)
+                        {
+                            memset(buffer, 0, sizeof(buffer));
+                            strcpy_s(buffer, sizeof(buffer), text.GetContent().c_str());
+                            lastEntity = selectedEntity;
+                        }
+
+                        if (ImGui::InputTextMultiline("Content", buffer, sizeof(buffer), ImVec2(0, 80)))
+                        {
+                            text.SetContent(std::string(buffer));
+                        }
+
+                        ImGui::DragFloat("Size", &text.GetSize(), 0.5f, 1.0f, 200.0f);
+                        ImGui::ColorEdit4("Color", text.GetColor());
+
+                        ImGui::Checkbox("World Space", &text.GetWorldSpace());
+                        ImGui::Checkbox("Center", &text.GetCenter());
+                    }
+                }
                 
 
                 if (ImGui::Button("Delete Component"))
@@ -2100,6 +2135,11 @@ namespace NocturnalEngine {
                     if (ImGui::MenuItem("Draggable") && p_ecs.HaveComponent<Draggable>(selectedEntity))
                     {
                         p_ecs.RemoveComponent<Draggable>(selectedEntity);
+                        ImGui::CloseCurrentPopup();
+                    }
+                    if (ImGui::MenuItem("Text") && p_ecs.HaveComponent<Text>(selectedEntity))
+                    {
+                        p_ecs.RemoveComponent<Text>(selectedEntity);
                         ImGui::CloseCurrentPopup();
                     }
                     ImGui::EndPopup();
