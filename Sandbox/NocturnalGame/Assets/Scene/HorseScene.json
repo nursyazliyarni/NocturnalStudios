@@ -61,7 +61,7 @@
                 "radius2": 0.0
             },
             {
-                "NameTag": "HungerhBar"
+                "NameTag": "HorseBG"
             },
             {
                 "TextureName": "horseScene",
@@ -157,9 +157,9 @@
                 "Max Hunger": 100.0,
                 "Current Sanity": 100.0,
                 "Max Sanity": 100.0,
-                "Health Decay Rate": 5.0,
-                "Hunger Decay Rate": 5.0,
-                "Sanity Decay Rate": 5.0,
+                "Health Decay Rate": 1.0,
+                "Hunger Decay Rate": 1.0,
+                "Sanity Decay Rate": 1.0,
                 "IS_alive": true
             },
             {},
