@@ -12,7 +12,7 @@
         9
     ],
     "Number of Entities": {
-        "Entities": 12
+        "Entities": 10
     },
     "EntitySignatures": [
         "00000000000000000000000011111101",
@@ -22,12 +22,9 @@
         "00000000000000000000000011111101",
         "00000000000000000000000011111101",
         "00000000000000000000000000011001",
-        "00000000000000000000000000011001",
-        "00000000000000000000000000011001",
-        "00000000000000000000000000011001",
-        "00000000000000000000000000011001",
-        "00000000000000000000000000011001",
-        "00000000000000000000000000011001"
+        "00000000000000000000010001111101",
+        "00000000000000000000010001111101",
+        "00000000000000000000010001111101"
     ],
     "Components": {
         "0": [
@@ -158,198 +155,11 @@
                 "Sanity Decay Rate": 0.0
             },
             {},
-            {}
+            {
+                "isTarget": true
+            }
         ],
         "2": [
-            {
-                "posX": -1.4832265377044678,
-                "posY": -0.7028753757476807,
-                "scaleX": 0.5,
-                "scaleY": 0.5,
-                "Rot": 0.0
-            },
-            {},
-            {
-                "ColliderType1": 4,
-                "ColliderType2": 0,
-                "minX1": -1.0,
-                "minX2": 0.0,
-                "minY1": -0.6600000262260437,
-                "minY2": 0.0,
-                "maxX1": 1.0,
-                "maxX2": 0.0,
-                "maxY1": 0.6600000262260437,
-                "maxY2": 0.0,
-                "offsetX1": 0.0,
-                "offsetX2": 0.0,
-                "offsetY1": 0.0,
-                "offsetY2": 0.0,
-                "radius1": 0.0,
-                "radius2": 0.0
-            },
-            {
-                "NameTag": "horse food"
-            },
-            {
-                "TextureName": "flamingo_food",
-                "Index_X": 0,
-                "Index_Y": 0,
-                "Ucoordinates": 512.0,
-                "Vcoordinates": 512.0,
-                "IsSpriteSheet": false,
-                "IsAnimated": false,
-                "MaxIndex": 0,
-                "LayeringOrder": 0
-            },
-            {},
-            {},
-            {
-                "0": {
-                    "AudioPath": "BGM_Iris_Luminara_Loop.wav",
-                    "Channel": 2,
-                    "IsLooping": true
-                },
-                "AudioArrCount": 1,
-                "BGM Volume": 0.75,
-                "SFX Volume": 0.75,
-                "Master Volume": 0.75
-            },
-            {},
-            {},
-            {
-                "type": 0,
-                "gain amount": 20.0,
-                "is_dragging": false
-            },
-            {}
-        ],
-        "3": [
-            {
-                "posX": -0.7803511619567871,
-                "posY": -0.6932907104492188,
-                "scaleX": 0.5,
-                "scaleY": 0.30000001192092896,
-                "Rot": 0.0
-            },
-            {},
-            {
-                "ColliderType1": 4,
-                "ColliderType2": 0,
-                "minX1": -1.0,
-                "minX2": 0.0,
-                "minY1": -0.6600000262260437,
-                "minY2": 0.0,
-                "maxX1": 1.0,
-                "maxX2": 0.0,
-                "maxY1": 0.6600000262260437,
-                "maxY2": 0.0,
-                "offsetX1": 0.0,
-                "offsetX2": 0.0,
-                "offsetY1": 0.0,
-                "offsetY2": 0.0,
-                "radius1": 0.0,
-                "radius2": 0.0
-            },
-            {
-                "NameTag": "horse medicine"
-            },
-            {
-                "TextureName": "flamingo_medicine",
-                "Index_X": 0,
-                "Index_Y": 0,
-                "Ucoordinates": 512.0,
-                "Vcoordinates": 512.0,
-                "IsSpriteSheet": false,
-                "IsAnimated": false,
-                "MaxIndex": 0,
-                "LayeringOrder": 0
-            },
-            {},
-            {},
-            {
-                "0": {
-                    "AudioPath": "BGM_Iris_Luminara_Loop.wav",
-                    "Channel": 2,
-                    "IsLooping": true
-                },
-                "AudioArrCount": 1,
-                "BGM Volume": 0.75,
-                "SFX Volume": 0.75,
-                "Master Volume": 0.75
-            },
-            {},
-            {},
-            {
-                "type": 0,
-                "gain amount": 20.0,
-                "is_dragging": false
-            },
-            {}
-        ],
-        "4": [
-            {
-                "posX": -0.04872174188494682,
-                "posY": -0.7060701847076416,
-                "scaleX": 0.5,
-                "scaleY": 0.4000000059604645,
-                "Rot": 0.0
-            },
-            {},
-            {
-                "ColliderType1": 4,
-                "ColliderType2": 0,
-                "minX1": -1.0,
-                "minX2": 0.0,
-                "minY1": -0.6600000262260437,
-                "minY2": 0.0,
-                "maxX1": 1.0,
-                "maxX2": 0.0,
-                "maxY1": 0.6600000262260437,
-                "maxY2": 0.0,
-                "offsetX1": 0.0,
-                "offsetX2": 0.0,
-                "offsetY1": 0.0,
-                "offsetY2": 0.0,
-                "radius1": 0.0,
-                "radius2": 0.0
-            },
-            {
-                "NameTag": "horse toy"
-            },
-            {
-                "TextureName": "flamingo_toy",
-                "Index_X": 0,
-                "Index_Y": 0,
-                "Ucoordinates": 512.0,
-                "Vcoordinates": 512.0,
-                "IsSpriteSheet": false,
-                "IsAnimated": false,
-                "MaxIndex": 0,
-                "LayeringOrder": 0
-            },
-            {},
-            {},
-            {
-                "0": {
-                    "AudioPath": "BGM_Iris_Luminara_Loop.wav",
-                    "Channel": 2,
-                    "IsLooping": true
-                },
-                "AudioArrCount": 1,
-                "BGM Volume": 0.75,
-                "SFX Volume": 0.75,
-                "Master Volume": 0.75
-            },
-            {},
-            {},
-            {
-                "type": 0,
-                "gain amount": 20.0,
-                "is_dragging": false
-            },
-            {}
-        ],
-        "5": [
             {
                 "posX": 0.40032678842544556,
                 "posY": 0.2418299913406372,
@@ -410,7 +220,6 @@
                 "SFX Volume": 1.0,
                 "Master Volume": 1.0
             },
-            {},
             {},
             {},
             {},
@@ -480,7 +289,6 @@
             {},
             {},
             {},
-            {},
             {}
         ],
         "4": [
@@ -547,7 +355,6 @@
             {},
             {},
             {},
-            {},
             {}
         ],
         "5": [
@@ -611,7 +418,6 @@
                 "SFX Volume": 1.0,
                 "Master Volume": 1.0
             },
-            {},
             {},
             {},
             {},
@@ -701,9 +507,11 @@
             {},
             {},
             {},
-            {},
-            {},
-            {},
+            {
+                "type": 0,
+                "gain amount": 20.0,
+                "is_dragging": false
+            },
             {}
         ],
         "8": [
@@ -758,9 +566,11 @@
             {},
             {},
             {},
-            {},
-            {},
-            {},
+            {
+                "type": 1,
+                "gain amount": 20.0,
+                "is_dragging": false
+            },
             {}
         ],
         "9": [
@@ -815,105 +625,11 @@
             {},
             {},
             {},
-            {},
-            {},
-            {},
-            {}
-        ],
-        "13": [
             {
-                "posX": 0.7675615549087524,
-                "posY": 0.1030774712562561,
-                "scaleX": 0.25,
-                "scaleY": 0.10000000149011612,
-                "Rot": 0.0
+                "type": 2,
+                "gain amount": 20.0,
+                "is_dragging": false
             },
-            {},
-            {},
-            {
-                "NameTag": "hunger bar"
-            },
-            {
-                "TextureName": "hunger bar",
-                "Index_X": 0,
-                "Index_Y": 0,
-                "Ucoordinates": 512.0,
-                "Vcoordinates": 512.0,
-                "IsSpriteSheet": false,
-                "IsAnimated": false,
-                "MaxIndex": 0,
-                "LayeringOrder": 0
-            },
-            {},
-            {},
-            {},
-            {},
-            {},
-            {},
-            {}
-        ],
-        "14": [
-            {
-                "posX": 0.7675615549087524,
-                "posY": -0.08802646398544312,
-                "scaleX": 0.25,
-                "scaleY": 0.10000000149011612,
-                "Rot": 0.0
-            },
-            {},
-            {},
-            {
-                "NameTag": "health bar"
-            },
-            {
-                "TextureName": "health bar",
-                "Index_X": 0,
-                "Index_Y": 0,
-                "Ucoordinates": 512.0,
-                "Vcoordinates": 512.0,
-                "IsSpriteSheet": false,
-                "IsAnimated": false,
-                "MaxIndex": 0,
-                "LayeringOrder": 0
-            },
-            {},
-            {},
-            {},
-            {},
-            {},
-            {},
-            {}
-        ],
-        "15": [
-            {
-                "posX": 0.7675615549087524,
-                "posY": -0.26924556493759155,
-                "scaleX": 0.25,
-                "scaleY": 0.10000000149011612,
-                "Rot": 0.0
-            },
-            {},
-            {},
-            {
-                "NameTag": "sanity bar"
-            },
-            {
-                "TextureName": "sanity bar",
-                "Index_X": 0,
-                "Index_Y": 0,
-                "Ucoordinates": 512.0,
-                "Vcoordinates": 512.0,
-                "IsSpriteSheet": false,
-                "IsAnimated": false,
-                "MaxIndex": 0,
-                "LayeringOrder": 0
-            },
-            {},
-            {},
-            {},
-            {},
-            {},
-            {},
             {}
         ]
     }
