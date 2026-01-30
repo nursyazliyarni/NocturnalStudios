@@ -28,7 +28,6 @@
 #include "Animation/Animation.h"
 #include <array>
 
-
 namespace NocturnalEngine {
 
 	class Graphic : public System

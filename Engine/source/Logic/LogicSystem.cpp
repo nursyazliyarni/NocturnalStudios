@@ -80,6 +80,19 @@ namespace NocturnalEngine
 				}
 			}
 
+			if (p_ecs.HaveComponent<AnimalAttributes>(entity)) {
+				auto& animal_attributes = p_ecs.GetComponent<AnimalAttributes>(entity);
+				if (animal_attributes.is_alive) {
+					animal_attributes.current_hunger -= animal_attributes.hungerDecayRate * Frametime * 50;
+					animal_attributes.current_health -= animal_attributes.healthDecayRate * Frametime;
+					animal_attributes.current_sanity -= animal_attributes.sanityDecayRate * Frametime;
+					
+
+					if (animal_attributes.current_hunger <= 0 || animal_attributes.current_health <= 0 || animal_attributes.current_sanity <= 0) {
+						animal_attributes.is_alive = false;
+					}
+				}
+			}
 		}
 		Timer::GetInstance().Update(Systems::LOGIC);
 	}

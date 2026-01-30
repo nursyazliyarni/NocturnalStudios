@@ -134,9 +134,7 @@ namespace NocturnalEngine {
 	
 
 		p_GUI->VPmat = mcamera->GetViewProjectionMatrix();
-
-		for (auto layer = 0; layer < 8; layer++)
-		
+		std::map<std::string, double>animal_attribute_map;
 
 		for (int orderIndex = 0; orderIndex < Graphic::MAX_LAYERS; ++orderIndex)
 		{
@@ -145,6 +143,14 @@ namespace NocturnalEngine {
 
 			for (auto i = mEntities.begin(); i != mEntities.end(); i++)
 			{
+				auto& nametag = p_ecs.GetComponent<NameTag>(*i).GetNameTag();
+				if (p_ecs.HaveComponent<AnimalAttributes>(*i))
+				{
+					auto& animal_attribute = p_ecs.GetComponent<AnimalAttributes>(*i);
+					animal_attribute_map["hunger bar"] = animal_attribute.current_hunger;
+					animal_attribute_map["health bar"] = animal_attribute.current_health;
+					animal_attribute_map["sanity bar"] = animal_attribute.current_sanity;
+				}
 				
 				
 				auto& transform = p_ecs.GetComponent<Transform>(*i);
@@ -159,15 +165,23 @@ namespace NocturnalEngine {
 					{
 						mAimator.UpdateAnimation(frametime, p_ecs.GetComponent<Sprite>(*i));
 					}
+
 					if (sprite.is_SpriteSheet)
 					{
-					
+
 						mIndex1 = SpriteRender::CreateSprite(GETTEXTURE(sprite.GetTexture()), { sprite.GetIndex().x, sprite.GetIndex().y },
 							{ sprite.GetUVCoor().x, sprite.GetUVCoor().y });
 
 						mRenderer->DrawSprite({ transform.GetPos().x , transform.GetPos().y }, { transform.GetScale().x , transform.GetScale().y },
 							transform.GetRot(), mIndex1);
 					}
+
+					else if (nametag == "hunger bar" || nametag == "health bar" || nametag == "sanity bar") {
+						mRenderer->DrawQuad({ transform.GetPos().x+static_cast<float>(animal_attribute_map[nametag])/150*0.5f, transform.GetPos().y },
+							{ static_cast<float>(animal_attribute_map[nametag])/150, transform.GetScale().y},
+							transform.GetRot(), GETTEXTURE(sprite.GetTexture()));
+					}
+
 					else
 					{
 						mRenderer->DrawQuad({ transform.GetPos().x, transform.GetPos().y }, { transform.GetScale().x, transform.GetScale().y },
@@ -178,8 +192,6 @@ namespace NocturnalEngine {
 						mRenderer->DrawQuad({ p_ecs.GetComponent<ItemsAttributes>(*i).duplicate_item_pos }, { transform.GetScale().x, transform.GetScale().y },
 							transform.GetRot(), GETTEXTURE(sprite.GetTexture()));
 					}
-
-					
 
 					if (p_Editor->mDebugDraw)
 					{
