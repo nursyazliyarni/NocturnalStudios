@@ -134,7 +134,7 @@ namespace NocturnalEngine {
 	
 
 		p_GUI->VPmat = mcamera->GetViewProjectionMatrix();
-		std::map<std::string, double>animal_attribute_map;
+		//std::map<std::string, double>animal_attribute_map;
 
 		for (int orderIndex = 0; orderIndex < Graphic::MAX_LAYERS; ++orderIndex)
 		{
@@ -143,14 +143,6 @@ namespace NocturnalEngine {
 
 			for (auto i = mEntities.begin(); i != mEntities.end(); i++)
 			{
-				auto& nametag = p_ecs.GetComponent<NameTag>(*i).GetNameTag();
-				if (p_ecs.HaveComponent<AnimalAttributes>(*i))
-				{
-					auto& animal_attribute = p_ecs.GetComponent<AnimalAttributes>(*i);
-					animal_attribute_map["hunger bar"] = animal_attribute.current_hunger;
-					animal_attribute_map["health bar"] = animal_attribute.current_health;
-					animal_attribute_map["sanity bar"] = animal_attribute.current_sanity;
-				}
 				
 				
 				auto& transform = p_ecs.GetComponent<Transform>(*i);
@@ -176,11 +168,7 @@ namespace NocturnalEngine {
 							transform.GetRot(), mIndex1);
 					}
 
-					else if (nametag == "hunger bar" || nametag == "health bar" || nametag == "sanity bar") {
-						mRenderer->DrawQuad({ transform.GetPos().x+static_cast<float>(animal_attribute_map[nametag])/150*0.5f, transform.GetPos().y },
-							{ static_cast<float>(animal_attribute_map[nametag])/150, transform.GetScale().y},
-							transform.GetRot(), GETTEXTURE(sprite.GetTexture()));
-					}
+					
 
 					else
 					{
@@ -188,10 +176,25 @@ namespace NocturnalEngine {
 							transform.GetRot(), GETTEXTURE(sprite.GetTexture()));
 					}
 
+					//yu xuan's code (should not be here)
+					//auto& nametag = p_ecs.GetComponent<NameTag>(*i).GetNameTag();
+					/*if (p_ecs.HaveComponent<AnimalAttributes>(*i))
+					{
+						auto& animal_attribute = p_ecs.GetComponent<AnimalAttributes>(*i);
+						animal_attribute_map["hunger bar"] = animal_attribute.current_hunger;
+						animal_attribute_map["health bar"] = animal_attribute.current_health;
+						animal_attribute_map["sanity bar"] = animal_attribute.current_sanity;
+					}
+
+					else if (nametag == "hunger bar" || nametag == "health bar" || nametag == "sanity bar") {
+						mRenderer->DrawQuad({ transform.GetPos().x+static_cast<float>(animal_attribute_map[nametag])/150*0.5f, transform.GetPos().y },
+							{ static_cast<float>(animal_attribute_map[nametag])/150, transform.GetScale().y},
+							transform.GetRot(), GETTEXTURE(sprite.GetTexture()));
+					}
 					if (p_ecs.HaveComponent<ItemsAttributes>(*i) && p_ecs.GetComponent<ItemsAttributes>(*i).is_dragging) {
 						mRenderer->DrawQuad({ p_ecs.GetComponent<ItemsAttributes>(*i).duplicate_item_pos }, { transform.GetScale().x, transform.GetScale().y },
 							transform.GetRot(), GETTEXTURE(sprite.GetTexture()));
-					}
+					}*/
 
 					if (p_Editor->mDebugDraw)
 					{

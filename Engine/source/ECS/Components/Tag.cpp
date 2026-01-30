@@ -27,8 +27,8 @@ namespace NocturnalEngine
 	****************************************************************************/
 	bool Tag::Deserialize(const rapidjson::Value& obj)
 	{
-		mTag = obj["Tag"].GetString();
-		mTargetTag = obj["TargetTag"].GetString();
+		if(obj.HasMember("Tag")&& obj["Tag"].IsString())mTag = obj["Tag"].GetString();
+		if (obj.HasMember("TargetTag") && obj["TargetTag"].IsString())mTargetTag = obj["TargetTag"].GetString();
 		return true;
 	}
 

@@ -80,7 +80,7 @@ namespace NocturnalEngine
 				}
 			}
 
-			if (p_ecs.HaveComponent<AnimalAttributes>(entity)) {
+			/*if (p_ecs.HaveComponent<AnimalAttributes>(entity)) {
 				auto& animal_attributes = p_ecs.GetComponent<AnimalAttributes>(entity);
 				if (animal_attributes.is_alive) {
 					animal_attributes.current_hunger -= animal_attributes.hungerDecayRate * Frametime * 50;
@@ -92,7 +92,7 @@ namespace NocturnalEngine
 						animal_attributes.is_alive = false;
 					}
 				}
-			}
+			}*/
 		}
 		Timer::GetInstance().Update(Systems::LOGIC);
 	}

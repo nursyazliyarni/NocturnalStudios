@@ -110,10 +110,12 @@ namespace NocturnalEngine
 			{
 				if (p_ecs.GetEntitySignature(j).test(CompID))
 				{
+					if (!obj["Components"].HasMember("std::to_string(j).c_str()")|| obj["Components"]["std::to_string(j).c_str()"].Size()< static_cast<int>(CompID))break;
 					if (p_ecs.GetComponentTypeName(CompID) == "Transform")
 					{
 						Transform transform;
 						transform.SetComponentEntityID(j);
+						
 						if (transform.Deserialize(obj["Components"][std::to_string(j).c_str()][static_cast<int>(CompID)].GetObj()))
 						{
 							p_ecs.AddComponent<Transform>(j, transform);
@@ -168,6 +170,7 @@ namespace NocturnalEngine
 					{
 						Tag tag;
 						tag.SetComponentEntityID(j);
+
 						if (tag.Deserialize(obj["Components"][std::to_string(j).c_str()][static_cast<int>(CompID)].GetObj()))
 						{
 							p_ecs.AddComponent<Tag>(j, tag);
@@ -213,6 +216,7 @@ namespace NocturnalEngine
 					{
 						Draggable draggable;
 						draggable.SetComponentEntityID(j);
+
 						if (draggable.Deserialize(obj["Components"][std::to_string(j).c_str()][static_cast<int>(CompID)].GetObj()))
 						{
 							p_ecs.AddComponent<Draggable>(j, draggable);

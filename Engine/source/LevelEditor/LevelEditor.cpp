@@ -1320,12 +1320,15 @@ namespace NocturnalEngine {
                 }
 
                 auto aliveTotal = p_ecs.GetTotalEntities();
+                
                 Entity aliveCount = 0;
                 Entity iterEntity = 0;
                 while (aliveCount < aliveTotal)
                 {
+                    std::cout << iterEntity << "\n";
                     if (p_ecs.HaveComponent<NameTag>(iterEntity))
                     {
+                        
                         const auto& tag = p_ecs.GetComponent<NameTag>(iterEntity).GetNameTag();
 
                         ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_Selected | ImGuiTreeNodeFlags_OpenOnArrow;
@@ -1337,6 +1340,13 @@ namespace NocturnalEngine {
                         if (opened)
                             ImGui::TreePop();
 
+                        aliveCount++;
+                    }
+                    else {
+                        NameTag nt;
+                        nt.SetComponentEntityID(iterEntity);
+                        nt.SetNameTag("Entity " + std::to_string(iterEntity));
+                        p_ecs.AddComponent<NameTag>(iterEntity, nt);
                         aliveCount++;
                     }
 
