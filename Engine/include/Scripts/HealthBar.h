@@ -9,7 +9,7 @@
 		 for the HealthBar components.
 
 	Primary Author:
-		 LAYCOCK ENHUI SARAH (100%)
+		 ANG YU XUAN (100%)
 		- Created the HealthBar.h file and its function specification.
 
 	All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.

@@ -7,7 +7,7 @@
         for handling collision detection and response within the physics engine.
 
     Primary Author:
-         LAU XIANG YANG (100%)
+         LAUYCOCK ENHUI SARAH (100%)
         - Created the GameManager class and its function specification.
 
     All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.

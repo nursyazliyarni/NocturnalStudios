@@ -6,7 +6,7 @@
 		The AnimalLogic system manages the displaying of Various AnimalLogics of Anumals Bars of an
 
 	Primary Author:
-		 LAU XIANG YANG (100%)
+		 ANG YU XUAN (100%)
 		- Created the AnimalLogic class and its function specification.
 
 	All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
