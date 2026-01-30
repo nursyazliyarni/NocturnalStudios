@@ -242,7 +242,6 @@ namespace NocturnalEngine {
 	
 		p_FrameBuffer->UnBind();
 		
-		
 		mcamera->MouseScrolling();
 		if (p_Input->KeyPressed(GLFW_KEY_F2) && !p_Editor->is_ShowWindow)
 		{

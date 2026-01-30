@@ -12,7 +12,7 @@
         9
     ],
     "Number of Entities": {
-        "Entities": 10
+        "Entities": 13
     },
     "EntitySignatures": [
         "00000000000000000000000011111001",
@@ -24,7 +24,10 @@
         "00000000000000000000000011111101",
         "00000000000000000000000011111101",
         "00000000000000000000000011111101",
-        "00000000000000000000000000011001"
+        "00000000000000000000000000011001",
+        "00000000000000000000000000111001",
+        "00000000000000000000000000111001",
+        "00000000000000000000000000111001"
     ],
     "Components": {
         "0": [
@@ -108,7 +111,7 @@
             },
             {
                 "TextureName": "flamingo_spritesheet",
-                "Index_X": 4,
+                "Index_X": 1,
                 "Index_Y": 0,
                 "Ucoordinates": 528.0,
                 "Vcoordinates": 528.0,
@@ -135,7 +138,8 @@
                 "Max Sanity": 100.0,
                 "Health Decay Rate": 1.0,
                 "Hunger Decay Rate": 1.0,
-                "Sanity Decay Rate": 1.0
+                "Sanity Decay Rate": 1.0,
+                "IS_alive": true
             },
             {},
             {
@@ -598,6 +602,111 @@
                 "LayeringOrder": 0
             },
             {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {}
+        ],
+        "10": [
+            {
+                "posX": 0.6753605604171753,
+                "posY": 0.5243653059005737,
+                "scaleX": 0.21751198172569275,
+                "scaleY": 0.21751198172569275,
+                "Rot": 0.0
+            },
+            {},
+            {},
+            {
+                "NameTag": "HealthBar"
+            },
+            {
+                "TextureName": "health",
+                "Index_X": 0,
+                "Index_Y": 0,
+                "Ucoordinates": 512.0,
+                "Vcoordinates": 512.0,
+                "IsSpriteSheet": false,
+                "IsAnimated": false,
+                "MaxIndex": 0,
+                "LayeringOrder": 0
+            },
+            {
+                "0": "HealthBar",
+                "ScriptCount": 1
+            },
+            {},
+            {},
+            {},
+            {},
+            {},
+            {}
+        ],
+        "11": [
+            {
+                "posX": 0.6753605604171753,
+                "posY": 0.27453696727752686,
+                "scaleX": 0.21751198172569275,
+                "scaleY": 0.21751198172569275,
+                "Rot": 0.0
+            },
+            {},
+            {},
+            {
+                "NameTag": "HungerBar"
+            },
+            {
+                "TextureName": "hunger",
+                "Index_X": 0,
+                "Index_Y": 0,
+                "Ucoordinates": 512.0,
+                "Vcoordinates": 512.0,
+                "IsSpriteSheet": false,
+                "IsAnimated": false,
+                "MaxIndex": 0,
+                "LayeringOrder": 0
+            },
+            {
+                "0": "HealthBar",
+                "ScriptCount": 1
+            },
+            {},
+            {},
+            {},
+            {},
+            {},
+            {}
+        ],
+        "12": [
+            {
+                "posX": 0.6753605604171753,
+                "posY": 0.012354493141174316,
+                "scaleX": 0.21751198172569275,
+                "scaleY": 0.21751198172569275,
+                "Rot": 0.0
+            },
+            {},
+            {},
+            {
+                "NameTag": "SanityBar"
+            },
+            {
+                "TextureName": "sanity",
+                "Index_X": 0,
+                "Index_Y": 0,
+                "Ucoordinates": 512.0,
+                "Vcoordinates": 512.0,
+                "IsSpriteSheet": false,
+                "IsAnimated": false,
+                "MaxIndex": 0,
+                "LayeringOrder": 0
+            },
+            {
+                "0": "HealthBar",
+                "ScriptCount": 1
+            },
             {},
             {},
             {},

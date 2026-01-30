@@ -28,10 +28,16 @@ namespace NocturnalEngine
 	class HealthBar : public IScript
 	{
 	public:
+		enum class BarType {
+			HEALTH,
+			HUNGER,
+			SANITY
+		};
+
 		/*!*************************************************************************
 		Default constructor for Drag & Drop
 		****************************************************************************/
-		HealthBar() {}
+		HealthBar() :barType{ BarType::HEALTH } {}
 		/*!*************************************************************************
 		Default destructor for Drag & Drop
 		****************************************************************************/
@@ -68,6 +74,6 @@ namespace NocturnalEngine
 		virtual Entity& GetScriptEntityID() override { return entityID; }
 
 	private:
-		
+		BarType barType;
 	};
 }
