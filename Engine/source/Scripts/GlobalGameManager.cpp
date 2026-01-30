@@ -17,6 +17,7 @@
 #include "Scripts/GlobalGameManager.h"
 #include "ECS/ECS.h"
 #include "GUI/GUI.h"
+#include "ECS/SceneManager.h"
 
 namespace NocturnalEngine {
 
@@ -68,19 +69,19 @@ namespace NocturnalEngine {
     ****************************************************************************/
     void GameManager::Update(float dt) {
        
-        if (!p_GUI->check_pause())
+        if (p_Scene->isGameplay)
         {
-            for (std::pair<GameScene,AnimalAttributes> sceneAnimalPair:sceneAnimalMap)
+            for (std::pair<const GameScene,AnimalAttributes>& sceneAnimalPair:sceneAnimalMap)
             {
                 //this processes the other animals in the 
                 // background to give the illusion of persistent data
                 //For the animal currently in scene, refer to Scripts/AnimalLogic.cpp
                 // The code should be the exact same
-                if (sceneAnimalPair.first!=currScene)
+                if (sceneAnimalPair.first!=currScene&& sceneAnimalPair.second.is_alive)
                 {
-                    sceneAnimalPair.second.current_hunger -= sceneAnimalPair.second.hungerDecayRate * dt * 50;
-                    sceneAnimalPair.second.current_health -= sceneAnimalPair.second.healthDecayRate * dt;
-                    sceneAnimalPair.second.current_sanity -= sceneAnimalPair.second.sanityDecayRate * dt;
+                    sceneAnimalPair.second.current_hunger -= sceneAnimalPair.second.hungerDecayRate * static_cast<double>( dt) * 10.0;
+                    sceneAnimalPair.second.current_health -= sceneAnimalPair.second.healthDecayRate * static_cast<double>(dt);
+                    sceneAnimalPair.second.current_sanity -= sceneAnimalPair.second.sanityDecayRate * static_cast<double>(dt);
 
 
                     if (sceneAnimalPair.second.current_hunger <= 0 || sceneAnimalPair.second.current_health <= 0 || sceneAnimalPair.second.current_sanity <= 0) {

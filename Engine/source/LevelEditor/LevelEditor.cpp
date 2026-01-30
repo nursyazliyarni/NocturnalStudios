@@ -305,6 +305,16 @@ namespace NocturnalEngine {
                 if (ImGui::Button("Close Editor/Play"))
                 {
 				    is_ShowWindow = false;
+                    
+                    std::vector<std::string> playablescenes = {
+                       "FlamingoScene.json",
+                       "HorseScene.json",
+                       "SealScene.json",
+                       "OwlScene.json" };
+                    for (std::string s : playablescenes)
+                    {
+                        if (s == mCurrentScene) { p_Scene->isGameplay = true; break; }
+                    }
                 }
             }
             else
@@ -312,6 +322,7 @@ namespace NocturnalEngine {
                 if (ImGui::Button("Open Editor/Stop"))
                 {
                     is_ShowWindow = true;
+                    
                 }
             }
         }

@@ -73,4 +73,6 @@ namespace NocturnalEngine {
         GameScene currScene;
         std::unordered_map < GameScene, AnimalAttributes> sceneAnimalMap;
     };
+
+
 }
