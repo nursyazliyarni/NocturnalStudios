@@ -20,6 +20,7 @@
 #include "Input/Input.h"
 
 
+
 namespace NocturnalEngine
 {
 	/*!*************************************************************************
@@ -28,16 +29,12 @@ namespace NocturnalEngine
 	class HealthBar : public IScript
 	{
 	public:
-		enum class BarType {
-			HEALTH,
-			HUNGER,
-			SANITY
-		};
+		
 
 		/*!*************************************************************************
 		Default constructor for Drag & Drop
 		****************************************************************************/
-		HealthBar() :barType{ BarType::HEALTH } {}
+		HealthBar() :linkedAnimal{ 0 }, origin{} {}
 		/*!*************************************************************************
 		Default destructor for Drag & Drop
 		****************************************************************************/
@@ -74,6 +71,8 @@ namespace NocturnalEngine
 		virtual Entity& GetScriptEntityID() override { return entityID; }
 
 	private:
-		BarType barType;
+		Entity linkedAnimal;
+		Transform origin;
+		
 	};
 }

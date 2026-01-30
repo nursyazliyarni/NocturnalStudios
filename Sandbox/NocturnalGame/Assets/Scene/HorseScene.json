@@ -12,7 +12,7 @@
         9
     ],
     "Number of Entities": {
-        "Entities": 10
+        "Entities": 16
     },
     "EntitySignatures": [
         "00000000000000000000000011111101",
@@ -24,7 +24,13 @@
         "00000000000000000000000000011001",
         "00000000000000000000010001111101",
         "00000000000000000000010001111101",
-        "00000000000000000000010001111101"
+        "00000000000000000000010001111101",
+        "00000000000000000000000000011001",
+        "00000000000000000000000000011001",
+        "00000000000000000000000000011001",
+        "00000000000000000000000100111001",
+        "00000000000000000000000100111001",
+        "00000000000000000000000100111001"
     ],
     "Components": {
         "0": [
@@ -55,7 +61,7 @@
                 "radius2": 0.0
             },
             {
-                "NameTag": "HorseBG"
+                "NameTag": "HungerhBar"
             },
             {
                 "TextureName": "horseScene",
@@ -104,15 +110,15 @@
             {},
             {
                 "ColliderType1": 5,
-                "ColliderType2": 0,
+                "ColliderType2": 5,
                 "minX1": 0.30000001192092896,
-                "minX2": 0.0,
-                "minY1": 0.3499999940395355,
-                "minY2": 0.0,
-                "maxX1": 0.5,
-                "maxX2": 0.0,
-                "maxY1": 0.44999998807907104,
-                "maxY2": 0.0,
+                "minX2": -0.25,
+                "minY1": 0.05000000074505806,
+                "minY2": -0.4000000059604645,
+                "maxX1": 0.25,
+                "maxX2": 0.46000000834465027,
+                "maxY1": 0.30000001192092896,
+                "maxY2": 0.15000000596046448,
                 "offsetX1": 0.0,
                 "offsetX2": 0.0,
                 "offsetY1": 0.0,
@@ -135,7 +141,8 @@
                 "LayeringOrder": 0
             },
             {
-                "ScriptCount": 0
+                "0": "AnimalLogic",
+                "ScriptCount": 1
             },
             {
                 "Tag": "Horse",
@@ -150,9 +157,9 @@
                 "Max Hunger": 100.0,
                 "Current Sanity": 100.0,
                 "Max Sanity": 100.0,
-                "Health Decay Rate": 0.0,
-                "Hunger Decay Rate": 0.0,
-                "Sanity Decay Rate": 0.0,
+                "Health Decay Rate": 5.0,
+                "Hunger Decay Rate": 5.0,
+                "Sanity Decay Rate": 5.0,
                 "IS_alive": true
             },
             {},
@@ -631,6 +638,219 @@
                 "gain amount": 20.0,
                 "is_dragging": false
             },
+            {}
+        ],
+        "10": [
+            {
+                "posX": 0.6492796540260315,
+                "posY": 0.543582558631897,
+                "scaleX": 0.19385844469070435,
+                "scaleY": 0.19385844469070435,
+                "Rot": 0.0
+            },
+            {},
+            {},
+            {
+                "NameTag": "HungerIcon"
+            },
+            {
+                "TextureName": "hunger",
+                "Index_X": 0,
+                "Index_Y": 0,
+                "Ucoordinates": 512.0,
+                "Vcoordinates": 512.0,
+                "IsSpriteSheet": false,
+                "IsAnimated": false,
+                "MaxIndex": 0,
+                "LayeringOrder": 1
+            },
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {}
+        ],
+        "11": [
+            {
+                "posX": 0.6492796540260315,
+                "posY": 0.26899999380111694,
+                "scaleX": 0.19385844469070435,
+                "scaleY": 0.19385844469070435,
+                "Rot": 0.0
+            },
+            {},
+            {},
+            {
+                "NameTag": "HealthIcon"
+            },
+            {
+                "TextureName": "health",
+                "Index_X": 0,
+                "Index_Y": 0,
+                "Ucoordinates": 512.0,
+                "Vcoordinates": 512.0,
+                "IsSpriteSheet": false,
+                "IsAnimated": false,
+                "MaxIndex": 0,
+                "LayeringOrder": 1
+            },
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {}
+        ],
+        "12": [
+            {
+                "posX": 0.6492796540260315,
+                "posY": -0.008992373943328857,
+                "scaleX": 0.19385844469070435,
+                "scaleY": 0.19385844469070435,
+                "Rot": 0.0
+            },
+            {},
+            {},
+            {
+                "NameTag": "SanityIcon"
+            },
+            {
+                "TextureName": "sanity",
+                "Index_X": 0,
+                "Index_Y": 0,
+                "Ucoordinates": 512.0,
+                "Vcoordinates": 512.0,
+                "IsSpriteSheet": false,
+                "IsAnimated": false,
+                "MaxIndex": 0,
+                "LayeringOrder": 1
+            },
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {}
+        ],
+        "13": [
+            {
+                "posX": 1.1139999628067017,
+                "posY": 0.26899999380111694,
+                "scaleX": 0.8989999890327454,
+                "scaleY": 0.0689999982714653,
+                "Rot": 0.0
+            },
+            {},
+            {},
+            {
+                "NameTag": "HealthBar"
+            },
+            {
+                "TextureName": "health bar",
+                "Index_X": 0,
+                "Index_Y": 0,
+                "Ucoordinates": 512.0,
+                "Vcoordinates": 512.0,
+                "IsSpriteSheet": false,
+                "IsAnimated": false,
+                "MaxIndex": 0,
+                "LayeringOrder": 0
+            },
+            {
+                "0": "HealthBar",
+                "ScriptCount": 1
+            },
+            {},
+            {},
+            {
+                "ElementType": 2,
+                "offsetX": 0.0,
+                "offsetY": 0.0
+            },
+            {},
+            {},
+            {}
+        ],
+        "14": [
+            {
+                "posX": 1.1139999628067017,
+                "posY": 0.5440000295639038,
+                "scaleX": 0.8989999890327454,
+                "scaleY": 0.0689999982714653,
+                "Rot": 0.0
+            },
+            {},
+            {},
+            {
+                "NameTag": "HungerBar"
+            },
+            {
+                "TextureName": "hunger bar",
+                "Index_X": 0,
+                "Index_Y": 0,
+                "Ucoordinates": 512.0,
+                "Vcoordinates": 512.0,
+                "IsSpriteSheet": false,
+                "IsAnimated": false,
+                "MaxIndex": 0,
+                "LayeringOrder": 0
+            },
+            {
+                "0": "HealthBar",
+                "ScriptCount": 1
+            },
+            {},
+            {},
+            {
+                "ElementType": 3,
+                "offsetX": 0.0,
+                "offsetY": 0.0
+            },
+            {},
+            {},
+            {}
+        ],
+        "15": [
+            {
+                "posX": 1.1139999628067017,
+                "posY": -0.008999999612569809,
+                "scaleX": 0.8989999890327454,
+                "scaleY": 0.0689999982714653,
+                "Rot": 0.0
+            },
+            {},
+            {},
+            {
+                "NameTag": "SanityBar"
+            },
+            {
+                "TextureName": "sanity bar",
+                "Index_X": 0,
+                "Index_Y": 0,
+                "Ucoordinates": 512.0,
+                "Vcoordinates": 512.0,
+                "IsSpriteSheet": false,
+                "IsAnimated": false,
+                "MaxIndex": 0,
+                "LayeringOrder": 0
+            },
+            {
+                "0": "HealthBar",
+                "ScriptCount": 1
+            },
+            {},
+            {},
+            {
+                "ElementType": 4,
+                "offsetX": 0.0,
+                "offsetY": 0.0
+            },
+            {},
+            {},
             {}
         ]
     }

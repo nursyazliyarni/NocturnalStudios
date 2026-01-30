@@ -25,9 +25,10 @@ namespace NocturnalEngine {
 
 	void DragAndDrop::Start()
 	{
+		
+
 		for (Entity e:p_ecs.GetAliveEntitiesSet())
 		{
-			
 			if (p_ecs.HaveComponent<Draggable>(e)&& p_ecs.GetComponent<Draggable>(e).IsTarget())
 			{
 				if (p_ecs.HaveComponent<Transform>(e) && p_ecs.HaveComponent<Collider>(e)&& p_ecs.HaveComponent<AnimalAttributes>(e)) {

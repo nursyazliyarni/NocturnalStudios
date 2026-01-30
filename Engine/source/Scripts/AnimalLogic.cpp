@@ -57,9 +57,9 @@ namespace NocturnalEngine {
 		AnimalAttributes& aA{ p_ecs.GetComponent<AnimalAttributes>(entityID) };
 		
 		if (aA.is_alive) {
-			aA.current_hunger -= aA.hungerDecayRate * Frametime * 50;
-			aA.current_health -= aA.healthDecayRate * Frametime;
-			aA.current_sanity -= aA.sanityDecayRate * Frametime;
+			aA.current_hunger -= aA.hungerDecayRate * static_cast<double>(Frametime) * 15.0;
+			aA.current_health -= aA.healthDecayRate * static_cast<double>(Frametime);
+			aA.current_sanity -= aA.sanityDecayRate * static_cast<double>(Frametime);
 
 
 			if (aA.current_hunger <= 0 || aA.current_health <= 0 || aA.current_sanity <= 0) {
