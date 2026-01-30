@@ -22,10 +22,13 @@ namespace NocturnalEngine {
 
 	void AnimalLogic::Start()
 	{
+
+		//This is so that when the game entity withthis script is initiated,
+		//the values are loaded in from the gamemanager. 
 		if (p_ecs.HaveComponent<NameTag>(entityID)&& p_ecs.HaveComponent<AnimalAttributes>(entityID)) {
 			NameTag& nameT{ p_ecs.GetComponent<NameTag>(entityID) };
 			std::string name = nameT.GetNameTag();
-			GameManager::GameScene gS{};
+			GameManager::GameScene gS{ GameManager::GameScene::NONE };
 			if (name=="Flamingo")
 			{
 				gS = GameManager::GameScene::FLAMINGO;

@@ -12,7 +12,7 @@
         9
     ],
     "Number of Entities": {
-        "Entities": 13
+        "Entities": 16
     },
     "EntitySignatures": [
         "00000000000000000000000011111001",
@@ -25,9 +25,12 @@
         "00000000000000000000000011111101",
         "00000000000000000000000011111101",
         "00000000000000000000000000011001",
-        "00000000000000000000000000111001",
-        "00000000000000000000000000111001",
-        "00000000000000000000000000111001"
+        "00000000000000000000000000011001",
+        "00000000000000000000000000011001",
+        "00000000000000000000000000011001",
+        "00000000000000000000000100111001",
+        "00000000000000000000000100111001",
+        "00000000000000000000000100111001"
     ],
     "Components": {
         "0": [
@@ -107,7 +110,7 @@
                 "radius2": 0.0
             },
             {
-                "NameTag": "flamingo"
+                "NameTag": "Flamingo"
             },
             {
                 "TextureName": "flamingo_spritesheet",
@@ -620,7 +623,7 @@
             {},
             {},
             {
-                "NameTag": "HealthBar"
+                "NameTag": "HealthIcon"
             },
             {
                 "TextureName": "health",
@@ -631,12 +634,9 @@
                 "IsSpriteSheet": false,
                 "IsAnimated": false,
                 "MaxIndex": 0,
-                "LayeringOrder": 0
+                "LayeringOrder": 1
             },
-            {
-                "0": "HealthBar",
-                "ScriptCount": 1
-            },
+            {},
             {},
             {},
             {},
@@ -655,7 +655,7 @@
             {},
             {},
             {
-                "NameTag": "HungerBar"
+                "NameTag": "HungerIcon"
             },
             {
                 "TextureName": "hunger",
@@ -666,12 +666,9 @@
                 "IsSpriteSheet": false,
                 "IsAnimated": false,
                 "MaxIndex": 0,
-                "LayeringOrder": 0
+                "LayeringOrder": 1
             },
-            {
-                "0": "HealthBar",
-                "ScriptCount": 1
-            },
+            {},
             {},
             {},
             {},
@@ -690,10 +687,42 @@
             {},
             {},
             {
-                "NameTag": "SanityBar"
+                "NameTag": "SanityIcon"
             },
             {
                 "TextureName": "sanity",
+                "Index_X": 0,
+                "Index_Y": 0,
+                "Ucoordinates": 512.0,
+                "Vcoordinates": 512.0,
+                "IsSpriteSheet": false,
+                "IsAnimated": false,
+                "MaxIndex": 0,
+                "LayeringOrder": 1
+            },
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {}
+        ],
+        "13": [
+            {
+                "posX": 1.1399999856948853,
+                "posY": 0.5243653059005737,
+                "scaleX": 0.8989999890327454,
+                "scaleY": 0.0689999982714653,
+                "Rot": 0.0
+            },
+            {},
+            {},
+            {
+                "NameTag": "HealthBar"
+            },
+            {
+                "TextureName": "health bar",
                 "Index_X": 0,
                 "Index_Y": 0,
                 "Ucoordinates": 512.0,
@@ -709,7 +738,89 @@
             },
             {},
             {},
+            {
+                "ElementType": 2,
+                "offsetX": 0.0,
+                "offsetY": 0.0
+            },
             {},
+            {},
+            {}
+        ],
+        "14": [
+            {
+                "posX": 1.1399999856948853,
+                "posY": 0.2750000059604645,
+                "scaleX": 0.8989999890327454,
+                "scaleY": 0.0689999982714653,
+                "Rot": 0.0
+            },
+            {},
+            {},
+            {
+                "NameTag": "HungerBar"
+            },
+            {
+                "TextureName": "hunger bar",
+                "Index_X": 0,
+                "Index_Y": 0,
+                "Ucoordinates": 512.0,
+                "Vcoordinates": 512.0,
+                "IsSpriteSheet": false,
+                "IsAnimated": false,
+                "MaxIndex": 0,
+                "LayeringOrder": 0
+            },
+            {
+                "0": "HealthBar",
+                "ScriptCount": 1
+            },
+            {},
+            {},
+            {
+                "ElementType": 3,
+                "offsetX": 0.0,
+                "offsetY": 0.0
+            },
+            {},
+            {},
+            {}
+        ],
+        "15": [
+            {
+                "posX": 1.1399999856948853,
+                "posY": 0.012000000104308128,
+                "scaleX": 0.8989999890327454,
+                "scaleY": 0.0689999982714653,
+                "Rot": 0.0
+            },
+            {},
+            {},
+            {
+                "NameTag": "SanityBar"
+            },
+            {
+                "TextureName": "sanity bar",
+                "Index_X": 0,
+                "Index_Y": 0,
+                "Ucoordinates": 512.0,
+                "Vcoordinates": 512.0,
+                "IsSpriteSheet": false,
+                "IsAnimated": false,
+                "MaxIndex": 0,
+                "LayeringOrder": 0
+            },
+            {
+                "0": "HealthBar",
+                "ScriptCount": 1
+            },
+            {},
+            {},
+            {
+                "ElementType": 4,
+                "offsetX": 0.0,
+                "offsetY": 0.0
+            },
             {},
             {},
             {}
