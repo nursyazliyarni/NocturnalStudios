@@ -1325,7 +1325,6 @@ namespace NocturnalEngine {
                 Entity iterEntity = 0;
                 while (aliveCount < aliveTotal)
                 {
-                    std::cout << iterEntity << "\n";
                     if (p_ecs.HaveComponent<NameTag>(iterEntity))
                     {
                         

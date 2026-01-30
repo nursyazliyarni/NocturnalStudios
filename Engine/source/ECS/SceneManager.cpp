@@ -110,7 +110,7 @@ namespace NocturnalEngine
 			{
 				if (p_ecs.GetEntitySignature(j).test(CompID))
 				{
-					if (!obj["Components"].HasMember("std::to_string(j).c_str()")|| obj["Components"]["std::to_string(j).c_str()"].Size()< static_cast<int>(CompID))break;
+					//if (!obj["Components"].HasMember("std::to_string(j).c_str()")|| obj["Components"]["std::to_string(j).c_str()"].Size()< static_cast<int>(CompID))break;
 					if (p_ecs.GetComponentTypeName(CompID) == "Transform")
 					{
 						Transform transform;
