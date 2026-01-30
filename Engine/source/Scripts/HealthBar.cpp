@@ -3,8 +3,7 @@
 	Project: NocturnalStudio
 
 	Brief:
-		This file contains the implementation of the HealthBar script class which is responsible
-		for managing background audio playback within the engine.
+		The HealthBar system manages the displaying of Various Healthbars of Anumals Bars of an 
 
 	Primary Author:
 		 LAU XIANG YANG (100%)
@@ -27,7 +26,7 @@ namespace NocturnalEngine {
 
 	void HealthBar::Update(float Frametime)
 	{
-
+		UNREFERENCED_PARAMETER(Frametime);
 		
 
 	}
