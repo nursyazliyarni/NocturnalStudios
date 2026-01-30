@@ -79,7 +79,7 @@ namespace NocturnalEngine
 					}
 				}
 			}
-
+			//moved intob AnimalLogic.cpp
 			/*if (p_ecs.HaveComponent<AnimalAttributes>(entity)) {
 				auto& animal_attributes = p_ecs.GetComponent<AnimalAttributes>(entity);
 				if (animal_attributes.is_alive) {

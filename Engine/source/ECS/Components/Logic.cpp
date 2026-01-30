@@ -24,6 +24,7 @@
 #include "Scripts/DialogueManager.h"
 #include "Scripts/DragAndDrop.h"
 #include "Scripts/HealthBar.h"
+#include "Scripts/AnimalLogic.h"
 
 
 namespace NocturnalEngine
@@ -149,6 +150,10 @@ namespace NocturnalEngine
 			if (mScriptNameVector[j] == "HealthBar")
 			{
 				mScriptsVector.push_back(new HealthBar());
+			}
+			if (mScriptNameVector[j] == "AnimalLogic")
+			{
+				mScriptsVector.push_back(new AnimalLogic());
 			}
 		}
 		return true;

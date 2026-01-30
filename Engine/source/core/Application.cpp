@@ -33,6 +33,7 @@
 #include "Scripts/AudioManager.h"
 #include "Logic/LogicSystem.h"
 #include "Scripts/PauseMenu.h"
+#include "Scripts/GlobalGameManager.h"
 #include "GUI/GUI.h"
 #include "Scripts/DialogueManager.h"
 #include "Core/MemoryManager.h"
@@ -114,6 +115,8 @@ Application constructor
 			p_ecs.SetSystemSignature<PhysicsSystem>(signature);
 		}
 		mPosUpdate->Init();
+
+		p_GameManager.Init();
 #if !DEBUG
 		// p_Scene->setSceneToLoad("Assets/Scene/SplashScreen.json");
 		p_Scene->setSceneToLoad("Assets/Scene/Menu.json");
@@ -157,6 +160,7 @@ Application constructor
 			{
 //#if !DEBUG
 				mLogic->Update(Timer::GetInstance().GetGlobalDT());
+				p_GameManager.Update(Timer::GetInstance().GetGlobalDT());
 //#endif
 			}
 			mCollision->Update(Timer::GetInstance().GetGlobalDT());

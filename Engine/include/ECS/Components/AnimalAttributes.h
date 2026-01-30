@@ -36,6 +36,13 @@ namespace NocturnalEngine
 		****************************************************************************/
 		void SetComponentEntityID(Entity& entity) { entityID = entity; }
 
+		void SetDefault() {
+			 current_health = maxHealth =100.0;
+			 current_hunger=maxHunger=100.0;
+			 current_sanity=maxSanity=100.0;
+			 healthDecayRate=hungerDecayRate=sanityDecayRate=1.0;
+		}
+
 	public:
 		double current_health;
 		double maxHealth;

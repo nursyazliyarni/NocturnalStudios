@@ -1,0 +1,85 @@
+/*!------------------------------------------------------------------------------------------------
+	File: AnimalLogic.cpp
+	Project: NocturnalStudio
+
+	Brief:
+		The AnimalLogic system manages the displaying of Various AnimalLogics of Anumals Bars of an
+
+	Primary Author:
+		 LAU XIANG YANG (100%)
+		- Created the AnimalLogic class and its function specification.
+
+	All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
+
+#include "pch.h"
+#include "Scripts/AnimalLogic.h"
+#include "ECS/ECS.h"
+#include "Scripts/GlobalGameManager.h"
+
+
+namespace NocturnalEngine {
+
+	void AnimalLogic::Start()
+	{
+		if (p_ecs.HaveComponent<NameTag>(entityID)&& p_ecs.HaveComponent<AnimalAttributes>(entityID)) {
+			NameTag& nameT{ p_ecs.GetComponent<NameTag>(entityID) };
+			std::string name = nameT.GetNameTag();
+			GameManager::GameScene gS{};
+			if (name=="Flamingo")
+			{
+				gS = GameManager::GameScene::FLAMINGO;
+			}
+			if (name == "Horse")
+			{
+				gS = GameManager::GameScene::HORSE;
+			}
+			if (name == "Seal")
+			{
+				gS = GameManager::GameScene::SEAL;
+			}
+			if (name == "Owl")
+			{
+				gS = GameManager::GameScene::OWL;
+			}
+			AnimalAttributes& aA{ p_ecs.GetComponent<AnimalAttributes>(entityID) };
+			aA=p_GameManager.LoadPersistentValues(gS);
+		}
+	}
+
+	void AnimalLogic::Update(float Frametime)
+	{
+		//by right, the entity this script is connected to NEEDS to have
+		//the AnimalAttributes Component to have this script. This is just 
+		//a safeguard in case
+		if (!p_ecs.HaveComponent<AnimalAttributes>(entityID))return;
+
+		AnimalAttributes& aA{ p_ecs.GetComponent<AnimalAttributes>(entityID) };
+		
+		if (aA.is_alive) {
+			aA.current_hunger -= aA.hungerDecayRate * Frametime * 50;
+			aA.current_health -= aA.healthDecayRate * Frametime;
+			aA.current_sanity -= aA.sanityDecayRate * Frametime;
+
+
+			if (aA.current_hunger <= 0 || aA.current_health <= 0 || aA.current_sanity <= 0) {
+				aA.is_alive = false;
+			}
+		}
+
+
+	}
+
+	void AnimalLogic::End()
+	{
+		if (!p_ecs.HaveComponent<AnimalAttributes>(entityID))return;
+
+		AnimalAttributes& aA{ p_ecs.GetComponent<AnimalAttributes>(entityID) };
+		p_GameManager.SaveAnimalAttributesToCurrentScene(aA);
+
+	}
+
+
+
+
+}

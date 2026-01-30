@@ -49,6 +49,8 @@
 #include "Scripts/DialogueManager.h"
 #include "Scripts/DragAndDrop.h"
 #include "Scripts/HealthBar.h"
+#include "Scripts/AnimalLogic.h"
+
 
 
 
@@ -1788,6 +1790,10 @@ namespace NocturnalEngine {
                                     if (mScriptList[current_script] == "HealthBar" && p_ecs.HaveComponent<Sprite>(selectedEntity))
                                     {
                                         logic.InsertScript(new HealthBar(), selectedEntity);
+                                    }
+                                    if (mScriptList[current_script] == "AnimalLogic" && p_ecs.HaveComponent<AnimalAttributes>(selectedEntity))
+                                    {
+                                        logic.InsertScript(new AnimalLogic(), selectedEntity);
                                     }
                                 }
                             }

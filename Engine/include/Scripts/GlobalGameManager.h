@@ -24,8 +24,15 @@
 namespace NocturnalEngine {
     class GameManager {
     public:
-
-        void LoadPersistentValues();
+        enum class GameScene {
+            NONE = 0,
+            FLAMINGO,
+            HORSE,
+            SEAL,
+            OWL,
+            STORAGE
+        };
+        AnimalAttributes LoadPersistentValues(GameScene);
 
         static GameManager& GetInstance();
         /*!*************************************************************************
@@ -47,6 +54,8 @@ namespace NocturnalEngine {
         ****************************************************************************/
          void Restart() ;
 
+         void SaveAnimalAttributesToCurrentScene(AnimalAttributes aA);
+
          
     private:
 
@@ -57,14 +66,7 @@ namespace NocturnalEngine {
 
         static GameManager instance;
 
-        enum class GameScene {
-            NONE = 0,
-            FLAMINGO,
-            HORSE,
-            SEAL,
-            OWL,
-            STORAGE
-        };
+        
 
         float gameTimeElapsed{};
 
