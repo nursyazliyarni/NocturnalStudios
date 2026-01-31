@@ -420,6 +420,13 @@ void NocturnalEngine::SceneManager::checkForSceneToLoad()
 			Graphic::camera.SetZoomLevel(0.25f);
 		}
 
+		if (sceneToLoad == "Assets/Scene/HowToPlay.json")
+		{
+			isGameplay = false;
+			Graphic::camera.SetZoomLevel(1.0f);
+			Graphic::camera.SetPosition({ 0.0f,0.0f,0.0f });
+		}
+
 		// SAVE current scene layer state before switching away
 		if (!gCurrentScenePath.empty())
 		{

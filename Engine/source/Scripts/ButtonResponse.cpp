@@ -38,14 +38,14 @@ namespace NocturnalEngine
 
 
 
-		if (spt.GetTexture() == "HowToPlay" && p_Input->KeyPressed(GLFW_KEY_ESCAPE)) //if how to play screen in on and escape is pressed, return screen back to button mode
-		{
-			spt.SetTexture("htp_button_Idle");
-			transform.SetPos({ 0.0f,-0.25f });
-			transform.SetScale(1.0f, 0.2f);
-			p_GUI->toggle_HTP(); // toggle HTP off 
+		//if (spt.GetTexture() == "HowToPlay" && p_Input->KeyPressed(GLFW_KEY_ESCAPE)) //if how to play screen in on and escape is pressed, return screen back to button mode
+		//{
+		//	spt.SetTexture("htp_button_Idle");
+		//	transform.SetPos({ 0.0f,-0.25f });
+		//	transform.SetScale(1.0f, 0.2f);
+		//	p_GUI->toggle_HTP(); // toggle HTP off 
 
-		}
+		//}
 
 		if (p_GUI->Check_HTP() == false) // if HTP mode is off allow button to be click and interacted with
 		{
@@ -151,10 +151,7 @@ namespace NocturnalEngine
 
 				if (ID_tag.GetTag() == "HowToPlay" && p_GUI->Check_HTP() == false) // convert the button into a how to play screen
 				{
-					spt.SetTexture("HowToPlay");
-					transform.SetScale({ 4.170206546783447f,1.9999960660934448f });
-					transform.SetPos({ 0.0f,0.0f });
-					p_GUI->toggle_HTP();//let the system know that how to play is on
+					p_Scene->setSceneToLoad("Assets/Scene/HowToPlay.json");// escape to how to play scene
 				}
 
 				if (ID_tag.GetTag() == "Options" && p_GUI->Check_HTP() == false)
@@ -301,7 +298,7 @@ namespace NocturnalEngine
 				spt.SetTexture("RESTART_Y");
 			}
 
-			if (ID_tag.GetTag() == "HowToPlay" && spt.GetTexture() != "HowToPlay")
+			if (ID_tag.GetTag() == "HowToPlay")
 			{
 				spt.SetTexture("htp_button_Idle");
 			}
