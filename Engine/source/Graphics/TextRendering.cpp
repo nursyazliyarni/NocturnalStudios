@@ -27,9 +27,6 @@ namespace NocturnalEngine {
 	void Font::Init()
 	{
 		TextShader = ResourceManager::LoadShader("text", "Assets/Shaders/text.shader");;
-        Load("Assets/fonts/KernlGrotesk.otf");
-        
-     
 		glGenVertexArrays(1, &mVao);
 		glGenBuffers(1, &mVbo);
 		glBindVertexArray(mVao);

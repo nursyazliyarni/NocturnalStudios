@@ -1443,6 +1443,12 @@ namespace NocturnalEngine {
                             p_ecs.AddComponent<HUDComponent>(selectedEntity, C_HUDComponent);
                         ImGui::CloseCurrentPopup();
                     }
+                    if (ImGui::MenuItem("Text"))
+                    {
+                        if (!p_ecs.HaveComponent<Text>(selectedEntity))
+                            p_ecs.AddComponent<Text>(selectedEntity, C_TextComponent);
+                        ImGui::CloseCurrentPopup();
+                    }
                     if (ImGui::MenuItem("Animal Attributes"))
                     {
                         if (!p_ecs.HaveComponent<AnimalAttributes>(selectedEntity))
@@ -1584,6 +1590,51 @@ namespace NocturnalEngine {
                         ImGui::Text("Layering Order: "); ImGui::SameLine();
                         // ImGui::DragInt("##layering", (int*)&sprite.LayerOrder, 1, 0, 8);
                         ImGui::DragInt("##layering", (int*)&sprite.LayerOrder, 1, 0, NocturnalEngine::Graphic::MAX_LAYERS - 1);
+                    }
+                }
+                //Text Component
+                if (p_ecs.HaveComponent<Text>(selectedEntity))
+                {
+                    if (ImGui::CollapsingHeader("Text", ImGuiTreeNodeFlags_None))
+                    {
+                        auto& text = p_ecs.GetComponent<Text>(selectedEntity);
+
+                        char buffer[1024];
+                        memset(buffer, 0, sizeof(buffer));
+                        strcpy_s(buffer, sizeof(buffer), text.GetContent().c_str());
+                        if (ImGui::InputTextMultiline("Content", buffer, sizeof(buffer), ImVec2(0, 80)))
+                        {
+                            text.SetContent(std::string(buffer));
+                        }
+
+                        auto& fontName = text.GetFont();
+                        ImGui::Text("Font"); ImGui::SameLine();
+                        ImGui::SetNextItemWidth(180.0f);
+                        if (ImGui::BeginCombo("##textfont", fontName.c_str()))
+                        {
+                            for (auto& [name, font] : ResourceManager::fonts)
+                            {
+                                bool selected = (name == fontName);
+                                if (ImGui::Selectable(name.c_str(), selected))
+                                {
+                                    fontName = name;
+                                }
+                                if (selected)
+                                    ImGui::SetItemDefaultFocus();
+                            }
+                            ImGui::EndCombo();
+                        }
+
+                        ImGui::DragFloat("Size", &text.GetSize(), 0.1f, 1.0f, 200.0f);
+                        ImGui::ColorEdit4("Color", text.GetColor());
+                        ImGui::Checkbox("World Space", &text.GetWorldSpace());
+                        ImGui::Checkbox("Center", &text.GetCenter());
+
+                        ImGui::Text("Position"); ImGui::SameLine();
+                        ImGui::Text("X"); ImGui::SameLine();
+                        ImGui::DragFloat("##TextPosX", &text.GetPosition()[0], 0.01f); ImGui::SameLine();
+                        ImGui::Text("Y"); ImGui::SameLine();
+                        ImGui::DragFloat("##TextPosY", &text.GetPosition()[1], 0.01f);
                     }
                 }
                 //Collider Component
@@ -2054,6 +2105,11 @@ namespace NocturnalEngine {
                     if (ImGui::MenuItem("HUD") && p_ecs.HaveComponent<HUDComponent>(selectedEntity))
                     {
                         p_ecs.RemoveComponent<HUDComponent>(selectedEntity);
+                        ImGui::CloseCurrentPopup();
+                    }
+                    if (ImGui::MenuItem("Text") && p_ecs.HaveComponent<Text>(selectedEntity))
+                    {
+                        p_ecs.RemoveComponent<Text>(selectedEntity);
                         ImGui::CloseCurrentPopup();
                     }
                     if (ImGui::MenuItem("Draggable") && p_ecs.HaveComponent<Draggable>(selectedEntity))

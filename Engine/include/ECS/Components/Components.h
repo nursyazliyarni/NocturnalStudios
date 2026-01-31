@@ -29,6 +29,7 @@
 #include "AnimalAttributes.h"
 #include "ItemsAttributes.h"
 #include "Draggable.h"
+#include "Text.h"
 
 
 
@@ -45,3 +46,4 @@
 #define C_AnimalAttributesComponent NocturnalEngine::AnimalAttributes::AnimalAttributes()
 #define C_ItemsAttributesComponent NocturnalEngine::ItemsAttributes::ItemsAttributes()
 #define C_DraggableComponent NocturnalEngine::Draggable::Draggable()
+#define C_TextComponent NocturnalEngine::Text::Text()

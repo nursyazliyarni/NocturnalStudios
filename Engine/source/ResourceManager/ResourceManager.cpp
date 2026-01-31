@@ -20,6 +20,7 @@
 namespace NocturnalEngine {
 	std::unordered_map <std::string, std::shared_ptr<Texture>> ResourceManager::textures;
 	std::unordered_map <std::string, std::shared_ptr<Shader>> ResourceManager::shaders;
+	std::unordered_map <std::string, std::shared_ptr<Font>> ResourceManager::fonts;
 	std::unordered_map <std::string, std::shared_ptr<CAudioEngine>> ResourceManager::audios;
 	std::unordered_map <std::string, std::shared_ptr<Texture>> ResourceManager::Icons;
 
@@ -105,9 +106,29 @@ namespace NocturnalEngine {
 	/*!*************************************************************************
 	Load font based on filepath
 	****************************************************************************/
+	std::shared_ptr<Font> ResourceManager::LoadFont(std::string name, const std::string& filepath, unsigned int fontsize)
+	{
+		return fonts[name] = ResourceManager::LoadFontFromFile(filepath, fontsize);
+	}
+
+	/*!*************************************************************************
+	Retrieve font based on name
+	****************************************************************************/
+	std::shared_ptr<Font> ResourceManager::GetFont(const std::string& name)
+	{
+		auto it = fonts.find(name);
+		if (it == fonts.end())
+			return nullptr;
+		return it->second;
+	}
+
+	/*!*************************************************************************
+	Load font based on filepath
+	****************************************************************************/
 	std::shared_ptr<Font> ResourceManager::LoadFontFromFile(const std::string& filepath, unsigned int fontsize)
 	{
 		auto m_font = std::make_shared<Font>();
+		m_font->Init();
 		m_font->Load(filepath, fontsize);
 		return m_font;
 	}
@@ -158,5 +179,6 @@ namespace NocturnalEngine {
 		textures.clear();
 		Icons.clear();
 		shaders.clear();
+		fonts.clear();
 	}
 }

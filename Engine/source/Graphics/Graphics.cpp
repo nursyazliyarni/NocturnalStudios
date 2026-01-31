@@ -68,13 +68,43 @@ namespace NocturnalEngine {
 				ResourceManager::LoadTexture(Imagename, gs);
 			}
 		}
+		std::string fontPath = "Assets/fonts";
+		if (std::filesystem::exists(fontPath))
+		{
+			for (const auto& entry : std::filesystem::directory_iterator(fontPath))
+			{
+				if (!entry.is_regular_file())
+					continue;
+
+				auto ext = entry.path().extension().string();
+				std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
+				if (ext != ".ttf" && ext != ".otf")
+					continue;
+
+				std::string fontName = entry.path().stem().string();
+				if (!ResourceManager::GetFont(fontName))
+				{
+					ResourceManager::LoadFont(fontName, entry.path().generic_string());
+				}
+			}
+		}
 		FrameBufferSpecification fbspec;
 		fbspec.Attachments = { FrameBufferTextureFormat::RGBA8, FrameBufferTextureFormat::RED_INTEGER, FrameBufferTextureFormat::DEPTH };
 		fbspec.Width = mWinData.GetWidth();
 		fbspec.Height = mWinData.GetHeight();
 		p_FrameBuffer->SetFrameBufferSpecification(fbspec);
 		Renderer::Init();
-		mFont->Init();
+		if (!ResourceManager::GetFont("KernlGrotesk"))
+		{
+			ResourceManager::LoadFont("KernlGrotesk", "Assets/fonts/KernlGrotesk.otf");
+		}
+		mFont = ResourceManager::GetFont("KernlGrotesk");
+		if (!mFont)
+		{
+			mFont = std::make_shared<Font>();
+			mFont->Init();
+			mFont->Load("Assets/fonts/KernlGrotesk.otf");
+		}
 
 		for (int i = 0; i < Graphic::MAX_LAYERS; ++i)
 			Graphic::layerEnabled[i] = true;
@@ -232,6 +262,41 @@ namespace NocturnalEngine {
 
 		}
 		mRenderer->End();
+
+		const auto alive = p_ecs.GetAliveEntitiesSet();
+		for (const auto& e : alive)
+		{
+			if (!p_ecs.HaveComponent<Text>(e)) continue;
+			auto& text = p_ecs.GetComponent<Text>(e);
+
+			glm::vec2 pos(0.0f, 0.0f);
+
+			if (text.GetWorldSpace())
+			{
+				if (!p_ecs.HaveComponent<Transform>(e)) continue;
+				auto& tr = p_ecs.GetComponent<Transform>(e);
+
+				pos = glm::vec2(tr.GetPos().x, tr.GetPos().y);
+				pos.x += text.GetPosition()[0];
+				pos.y += text.GetPosition()[1];
+			}
+			else
+			{
+				pos = glm::vec2(text.GetPosition()[0], text.GetPosition()[1]);
+			}
+
+			float* c = text.GetColor();
+			glm::vec3 col(c[0], c[1], c[2]);
+
+			float scale = text.GetSize() * 0.0000333f;
+			if (scale < 0.0001f) scale = 0.0008f;
+
+			std::shared_ptr<Font> font = ResourceManager::GetFont(text.GetFont());
+			if (!font)
+				font = mFont;
+			if (font)
+				font->RenderText(text.GetContent(), pos, scale, *mcamera, col);
+		}
 	
 		p_FrameBuffer->UnBind();
 		
