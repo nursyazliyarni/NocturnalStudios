@@ -161,7 +161,6 @@ namespace NocturnalEngine {
             Logger();
             Hierarchy();
             Inspector();
-            LogicSelector();
             SceneViewer();
             AudioEditor();
         }
@@ -1369,51 +1368,6 @@ namespace NocturnalEngine {
             if (ImGui::IsMouseDown(0) && ImGui::IsWindowHovered())
                 selectedEntity = {};
             ImGui::End();
-        }
-
-    }
-
-    void LevelEditor::LogicSelector()
-    {
-        struct LogicScript
-        {
-            const char* name;
-            std::function<void()> run;
-        };
-
-        static std::vector<LogicScript> g_Scripts = {
-            { "Move Forward", []() { /* logic here */ } },
-            { "Rotate Object", []() { /* logic here */ } },
-            { "AI Patrol", []() { /* logic here */ } }
-        };
-
-        if (is_ShowWindow)
-        {
-            static int selectedScript = 0;
-
-            if (ImGui::Begin("Logic Script Selector"))
-            {
-                if (ImGui::BeginCombo("Script", g_Scripts[selectedScript].name))
-                {
-                    for (int i = 0; i < g_Scripts.size(); i++)
-                    {
-                        bool isSelected = (selectedScript == i);
-                        if (ImGui::Selectable(g_Scripts[i].name, isSelected))
-                            selectedScript = i;
-
-                        if (isSelected)
-                            ImGui::SetItemDefaultFocus();
-                    }
-                    ImGui::EndCombo();
-                }
-
-                if (ImGui::Button("Run Script"))
-                {
-                    g_Scripts[selectedScript].run();
-                }
-            }
-            ImGui::End();
-
         }
 
     }
