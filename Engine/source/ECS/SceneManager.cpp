@@ -21,6 +21,7 @@
 #include "Core/MemoryManager.h"
 #include <unordered_map>
 #include <array>
+#include "Scripts/GlobalGameManager.h"
 
 namespace NocturnalEngine
 {
@@ -462,7 +463,7 @@ void NocturnalEngine::SceneManager::checkForSceneToLoad()
 				NocturnalEngine::Graphic::layerEnabled[l] = true;
 		}
 
-
+		p_GameManager.SetState(GameManager::GameState::PLAYING);
 		sceneToLoad = "";
 	}
 }

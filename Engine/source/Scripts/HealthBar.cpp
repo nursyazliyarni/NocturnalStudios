@@ -17,6 +17,7 @@
 #include "ECS/Components/Transform.h"
 #include "ECS/Components/HUDComponent.h"
 #include "ECS/Components/AnimalAttributes.h"
+#include "Scripts/GlobalGameManager.h"
 
 
 namespace NocturnalEngine {
@@ -48,7 +49,7 @@ namespace NocturnalEngine {
 	void HealthBar::Update(float Frametime)
 	{
 		UNREFERENCED_PARAMETER(Frametime);
-
+		//std::cout << "Entity " << p_ecs.GetComponent<NameTag>(entityID).GetNameTag() << " script running\n";
 		//check if the connected entity has HUD component 
 		//(by right it should, just in case)
 		if (!p_ecs.HaveComponent<HUDComponent>(entityID)) return;
@@ -56,6 +57,9 @@ namespace NocturnalEngine {
 		//gets the GUD component from the entity this script is connected to
 		HUDComponent& hudC{ p_ecs.GetComponent<HUDComponent>(entityID) };
 
+		
+		if (linkedAnimal == 0)std::cout << "Entity " << p_ecs.GetComponent<NameTag>(entityID).GetNameTag() << " cannot find an animal!\n"; 
+		if (!p_ecs.HaveComponent<AnimalAttributes>(linkedAnimal))std::cout << "Entity " << p_ecs.GetComponent<NameTag>(entityID).GetNameTag() << "'s animal has no Animal Attributes!\n";
 		//make sure the animal exists lol
 		if (linkedAnimal == 0 || !p_ecs.HaveComponent<AnimalAttributes>(linkedAnimal))return;
 		AnimalAttributes& aA{ p_ecs.GetComponent<AnimalAttributes>(linkedAnimal) };
@@ -92,6 +96,8 @@ namespace NocturnalEngine {
 		// i added a helper function that sets the position of where we want the extreme left
 		//side of the bar is
 		p_ecs.GetComponent<Transform>(entityID).SetPosFromCenterLeft(origin.GetMinPos().x, origin.GetPos().y);
+
+		
 
 	}
 
