@@ -131,7 +131,7 @@ namespace NocturnalEngine {
 		glClearTexImage(p_FrameBuffer->GetColorAttachmentRendererID(1), 0, GL_RGBA8, GL_INT, &value);
 	
 		mRenderer->Begin(*mcamera);// begin of the renderer 
-	
+		//mFont->RenderText("TEXT TEST", { 0.f, 0.f }, 0.001f, *mcamera, { 1,1,1 }); // for testing
 
 		p_GUI->VPmat = mcamera->GetViewProjectionMatrix();
 		//std::map<std::string, double>animal_attribute_map;
@@ -155,7 +155,7 @@ namespace NocturnalEngine {
 				{//render the lowest layer level then follow on
 					if (sprite.is_Animated)
 					{
-						mAimator.UpdateAnimation(frametime, p_ecs.GetComponent<Sprite>(*i));
+						mAimator.UpdateAnimation(frametime,  p_ecs.GetComponent<Sprite>(*i));
 					}
 
 					if (sprite.is_SpriteSheet)
@@ -254,6 +254,37 @@ namespace NocturnalEngine {
 
 		}
 		mRenderer->End();
+
+		const auto alive = p_ecs.GetAliveEntitiesSet();
+		for (const auto& e : alive)
+		{
+			if (!p_ecs.HaveComponent<Text>(e)) continue;
+			auto& text = p_ecs.GetComponent<Text>(e);
+
+			glm::vec2 pos(0.0f, 0.0f);
+
+			if (text.GetWorldSpace())
+			{
+				if (!p_ecs.HaveComponent<Transform>(e)) continue;
+				auto& tr = p_ecs.GetComponent<Transform>(e);
+
+				pos = glm::vec2(tr.GetPos().x, tr.GetPos().y);
+				pos.x += text.GetPosition()[0];
+				pos.y += text.GetPosition()[1];
+			}
+			else
+			{
+				pos = glm::vec2(text.GetPosition()[0], text.GetPosition()[1]);
+			}
+
+			float* c = text.GetColor();
+			glm::vec3 col(c[0], c[1], c[2]);
+
+			float scale = text.GetSize() * 0.0000333f;
+			if (scale < 0.0001f) scale = 0.0008f;
+
+			mFont->RenderText(text.GetContent(), pos, scale, *mcamera, col);
+		}
 	
 		p_FrameBuffer->UnBind();
 		

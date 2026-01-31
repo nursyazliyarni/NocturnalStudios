@@ -45,6 +45,9 @@ namespace NocturnalEngine
         Entity& GetComponentEntityID() { return entityID; }
         void SetComponentEntityID(Entity& entity) { entityID = entity; }
 
+        float* GetPosition() { return mPosition; }
+        void SetPosition(float x, float y) { mPosition[0] = x; mPosition[1] = y; }
+
     private:
         std::string mContent;
         float mSize;
@@ -52,5 +55,7 @@ namespace NocturnalEngine
         float mColor[4];   // r,g,b,a
         bool mWorldSpace;
         bool mCenter;
+
+        float mPosition[2];   // x, y 
     };
 }

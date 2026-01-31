@@ -2082,6 +2082,7 @@ namespace NocturnalEngine {
                         {
                             text.SetContent(std::string(buffer));
                         }
+                        ImGui::DragFloat2("Position", text.GetPosition(), 0.01f);
 
                         ImGui::DragFloat("Size", &text.GetSize(), 0.5f, 1.0f, 200.0f);
                         ImGui::ColorEdit4("Color", text.GetColor());

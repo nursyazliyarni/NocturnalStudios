@@ -23,6 +23,8 @@ namespace NocturnalEngine
         mColor[1] = 1.0f;
         mColor[2] = 1.0f;
         mColor[3] = 1.0f;
+        mPosition[0] = 0.f;
+        mPosition[1] = 0.f;
     }
 
     bool Text::Deserialize(const rapidjson::Value& obj)
@@ -35,6 +37,10 @@ namespace NocturnalEngine
         mColor[1] = col[1].GetFloat();
         mColor[2] = col[2].GetFloat();
         mColor[3] = col[3].GetFloat();
+
+        const rapidjson::Value& pos = obj["Position"];
+        mPosition[0] = pos[0].GetFloat();
+        mPosition[1] = pos[1].GetFloat();
 
         mWorldSpace = obj["WorldSpace"].GetBool();
         mCenter = obj["Center"].GetBool();
@@ -56,6 +62,8 @@ namespace NocturnalEngine
         writer->Double(mColor[1]);
         writer->Double(mColor[2]);
         writer->Double(mColor[3]);
+        writer->Double(mPosition[0]);
+        writer->Double(mPosition[1]);
         writer->EndArray();
 
         writer->Key("WorldSpace");
