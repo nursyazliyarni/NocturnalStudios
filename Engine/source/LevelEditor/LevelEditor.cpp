@@ -51,7 +51,7 @@
 #include "Scripts/HealthBar.h"
 #include "Scripts/AnimalLogic.h"
 
-
+#include "Scripts/GlobalGameManager.h"
 
 
 #include <unordered_map>
@@ -315,6 +315,7 @@ namespace NocturnalEngine {
                     {
                         if (s == mCurrentScene) { p_Scene->isGameplay = true; break; }
                     }
+                    p_GameManager.SetState(GameManager::GameState::STARTING);
                 }
             }
             else
@@ -322,6 +323,10 @@ namespace NocturnalEngine {
                 if (ImGui::Button("Open Editor/Stop"))
                 {
                     is_ShowWindow = true;
+                    p_Scene->isGameplay = false;
+                    p_GameManager.ResetSystem(true);
+                   
+                    
                     
                 }
             }

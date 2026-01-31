@@ -1,20 +1,34 @@
 {
+    "LayerDrawOrder": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+    ],
     "Number of Entities": {
-        "Entities": 5
+        "Entities": 7
     },
     "EntitySignatures": [
         "00000000000000000000000011111101",
+        "00000000000000000000000001111101",
         "00000000000000000000000011111101",
         "00000000000000000000000011111101",
         "00000000000000000000000011111101",
-        "00000000000000000000000011111101"
+        "00000000000000000000000011111101",
+        "00000000000000000000000000011001"
     ],
     "Components": {
         "0": [
             {
                 "posX": 0.0,
                 "posY": 0.0,
-                "scaleX": 4.170206546783447,
+                "scaleX": 3.6449999809265137,
                 "scaleY": 1.9999960660934448,
                 "Rot": 0.0
             },
@@ -38,10 +52,10 @@
                 "radius2": 0.0
             },
             {
-                "NameTag": "Main Menu BackGround"
+                "NameTag": "SealBG"
             },
             {
-                "TextureName": "Main_Background",
+                "TextureName": "sealScene",
                 "Index_X": 0,
                 "Index_Y": 0,
                 "Ucoordinates": 512.0,
@@ -62,38 +76,39 @@
             },
             {
                 "0": {
-                    "AudioPath": "BGM_Iris_Luminara_Loop.wav",
+                    "AudioPath": "BGM_Ambience_Seal_01.wav",
                     "Channel": 2,
-                    "IsLooping": true
+                    "IsLooping": false
                 },
                 "AudioArrCount": 1,
-                "BGM Volume": 0.75,
-                "SFX Volume": 0.75,
-                "Master Volume": 0.75
+                "BGM Volume": 1.0,
+                "SFX Volume": 1.0,
+                "Master Volume": 1.0
             },
+            {},
             {},
             {},
             {}
         ],
         "1": [
             {
-                "posX": 0.0,
-                "posY": 0.0,
-                "scaleX": 1.0,
-                "scaleY": 0.20000000298023224,
+                "posX": -0.8889999985694885,
+                "posY": -0.04399999976158142,
+                "scaleX": 0.31816616654396057,
+                "scaleY": 0.316239595413208,
                 "Rot": 0.0
             },
             {},
             {
                 "ColliderType1": 4,
                 "ColliderType2": 0,
-                "minX1": -1.0,
+                "minX1": 0.0,
                 "minX2": 0.0,
-                "minY1": -0.6600000262260437,
+                "minY1": 0.0,
                 "minY2": 0.0,
-                "maxX1": 1.0,
+                "maxX1": 0.0,
                 "maxX2": 0.0,
-                "maxY1": 0.6600000262260437,
+                "maxY1": 0.0,
                 "maxY2": 0.0,
                 "offsetX1": 0.0,
                 "offsetX2": 0.0,
@@ -103,54 +118,41 @@
                 "radius2": 0.0
             },
             {
-                "NameTag": "Start"
+                "NameTag": "Seal"
             },
             {
-                "TextureName": "Start_Idle",
+                "TextureName": "sealSpritesheet",
                 "Index_X": 0,
                 "Index_Y": 0,
-                "Ucoordinates": 512.0,
-                "Vcoordinates": 512.0,
-                "IsSpriteSheet": false,
-                "IsAnimated": false,
-                "MaxIndex": 0,
+                "Ucoordinates": 532.0,
+                "Vcoordinates": 261.5,
+                "IsSpriteSheet": true,
+                "IsAnimated": true,
+                "MaxIndex": 3,
+                "DisplayTime 0": 0.5,
+                "DisplayTime 1": 0.5,
+                "DisplayTime 2": 0.5,
                 "LayeringOrder": 0
             },
             {
-                "0": "ButtonResponse",
-                "1": "AudioManager",
-                "ScriptCount": 2
+                "ScriptCount": 0
             },
             {
-                "Tag": "Start",
+                "Tag": "Owl",
                 "TargetTag": ""
             },
-            {
-                "0": {
-                    "AudioPath": "UI_Hover.wav",
-                    "Channel": 3,
-                    "IsLooping": false
-                },
-                "1": {
-                    "AudioPath": "UI_ButtonClick.wav",
-                    "Channel": 3,
-                    "IsLooping": false
-                },
-                "AudioArrCount": 2,
-                "BGM Volume": 0.75,
-                "SFX Volume": 0.75,
-                "Master Volume": 0.75
-            },
+            {},
+            {},
             {},
             {},
             {}
         ],
         "2": [
             {
-                "posX": 0.0,
-                "posY": -0.75,
-                "scaleX": 1.0,
-                "scaleY": 0.20000000298023224,
+                "posX": 0.40032678842544556,
+                "posY": 0.2418299913406372,
+                "scaleX": 0.13472461700439453,
+                "scaleY": 0.12401483952999115,
                 "Rot": 0.0
             },
             {},
@@ -173,10 +175,10 @@
                 "radius2": 0.0
             },
             {
-                "NameTag": "Quit"
+                "NameTag": "FlamingoBtn"
             },
             {
-                "TextureName": "Quit_Idle",
+                "TextureName": "cameraButtonUnlit",
                 "Index_X": 0,
                 "Index_Y": 0,
                 "Ucoordinates": 512.0,
@@ -192,35 +194,31 @@
                 "ScriptCount": 2
             },
             {
-                "Tag": "Quit",
+                "Tag": "FlamingoBtn",
                 "TargetTag": ""
             },
             {
                 "0": {
-                    "AudioPath": "UI_Hover.wav",
+                    "AudioPath": "SFX_Static_02.wav",
                     "Channel": 3,
                     "IsLooping": false
                 },
-                "1": {
-                    "AudioPath": "UI_ButtonClick.wav",
-                    "Channel": 3,
-                    "IsLooping": false
-                },
-                "AudioArrCount": 2,
-                "BGM Volume": 0.75,
-                "SFX Volume": 0.75,
-                "Master Volume": 0.75
+                "AudioArrCount": 1,
+                "BGM Volume": 1.0,
+                "SFX Volume": 1.0,
+                "Master Volume": 1.0
             },
+            {},
             {},
             {},
             {}
         ],
         "3": [
             {
-                "posX": 0.0,
-                "posY": -0.5,
-                "scaleX": 1.0,
-                "scaleY": 0.20000000298023224,
+                "posX": 0.40032678842544556,
+                "posY": -0.14785435795783997,
+                "scaleX": 0.12510144710540771,
+                "scaleY": 0.11588465422391891,
                 "Rot": 0.0
             },
             {},
@@ -243,10 +241,10 @@
                 "radius2": 0.0
             },
             {
-                "NameTag": "Options"
+                "NameTag": "OwlBtn"
             },
             {
-                "TextureName": "Options_Idle",
+                "TextureName": "cameraButtonUnlit",
                 "Index_X": 0,
                 "Index_Y": 0,
                 "Ucoordinates": 512.0,
@@ -262,35 +260,31 @@
                 "ScriptCount": 2
             },
             {
-                "Tag": "Options",
+                "Tag": "OwlBtn",
                 "TargetTag": ""
             },
             {
                 "0": {
-                    "AudioPath": "UI_Hover.wav",
+                    "AudioPath": "SFX_Static_05.wav",
                     "Channel": 3,
                     "IsLooping": false
                 },
-                "1": {
-                    "AudioPath": "UI_ButtonClick.wav",
-                    "Channel": 3,
-                    "IsLooping": false
-                },
-                "AudioArrCount": 2,
-                "BGM Volume": 0.75,
-                "SFX Volume": 0.75,
-                "Master Volume": 0.75
+                "AudioArrCount": 1,
+                "BGM Volume": 1.0,
+                "SFX Volume": 1.0,
+                "Master Volume": 1.0
             },
+            {},
             {},
             {},
             {}
         ],
         "4": [
             {
-                "posX": -1.30385160446167e-7,
-                "posY": -0.24372053146362305,
-                "scaleX": 1.0,
-                "scaleY": 0.20000000298023224,
+                "posX": 0.40032678842544556,
+                "posY": -0.014748930931091309,
+                "scaleX": 0.13472461700439453,
+                "scaleY": 0.12255587428808212,
                 "Rot": 0.0
             },
             {},
@@ -313,10 +307,10 @@
                 "radius2": 0.0
             },
             {
-                "NameTag": "HowToPlay"
+                "NameTag": "HorseBtn"
             },
             {
-                "TextureName": "htp_button_Idle",
+                "TextureName": "cameraButtonUnlit",
                 "Index_X": 0,
                 "Index_Y": 0,
                 "Ucoordinates": 512.0,
@@ -332,25 +326,119 @@
                 "ScriptCount": 2
             },
             {
-                "Tag": "HowToPlay",
+                "Tag": "HorseBtn",
                 "TargetTag": ""
             },
             {
                 "0": {
-                    "AudioPath": "UI_Hover.wav",
+                    "AudioPath": "SFX_Static_03.wav",
                     "Channel": 3,
                     "IsLooping": false
                 },
-                "1": {
-                    "AudioPath": "UI_ButtonClick.wav",
-                    "Channel": 3,
-                    "IsLooping": false
-                },
-                "AudioArrCount": 2,
-                "BGM Volume": 0.75,
-                "SFX Volume": 0.75,
-                "Master Volume": 0.75
+                "AudioArrCount": 1,
+                "BGM Volume": 1.0,
+                "SFX Volume": 1.0,
+                "Master Volume": 1.0
             },
+            {},
+            {},
+            {},
+            {}
+        ],
+        "5": [
+            {
+                "posX": 0.40032678842544556,
+                "posY": -0.28433525562286377,
+                "scaleX": 0.13472461700439453,
+                "scaleY": 0.12255587428808212,
+                "Rot": 0.0
+            },
+            {},
+            {
+                "ColliderType1": 4,
+                "ColliderType2": 0,
+                "minX1": -1.0,
+                "minX2": 0.0,
+                "minY1": -0.6600000262260437,
+                "minY2": 0.0,
+                "maxX1": 1.0,
+                "maxX2": 0.0,
+                "maxY1": 0.6600000262260437,
+                "maxY2": 0.0,
+                "offsetX1": 0.0,
+                "offsetX2": 0.0,
+                "offsetY1": 0.0,
+                "offsetY2": 0.0,
+                "radius1": 0.0,
+                "radius2": 0.0
+            },
+            {
+                "NameTag": "InventoryBtn"
+            },
+            {
+                "TextureName": "cameraButtonUnlit",
+                "Index_X": 0,
+                "Index_Y": 0,
+                "Ucoordinates": 512.0,
+                "Vcoordinates": 512.0,
+                "IsSpriteSheet": false,
+                "IsAnimated": false,
+                "MaxIndex": 0,
+                "LayeringOrder": 0
+            },
+            {
+                "0": "ButtonResponse",
+                "1": "AudioManager",
+                "ScriptCount": 2
+            },
+            {
+                "Tag": "InventoryBtn",
+                "TargetTag": ""
+            },
+            {
+                "0": {
+                    "AudioPath": "SFX_Static_04.wav",
+                    "Channel": 3,
+                    "IsLooping": false
+                },
+                "AudioArrCount": 1,
+                "BGM Volume": 1.0,
+                "SFX Volume": 1.0,
+                "Master Volume": 1.0
+            },
+            {},
+            {},
+            {},
+            {}
+        ],
+        "6": [
+            {
+                "posX": 0.10899999737739563,
+                "posY": 0.024000000208616257,
+                "scaleX": 4.072000026702881,
+                "scaleY": 2.1110000610351563,
+                "Rot": 0.0
+            },
+            {},
+            {},
+            {
+                "NameTag": "CameraHighlight"
+            },
+            {
+                "TextureName": "cameraHighlight",
+                "Index_X": 0,
+                "Index_Y": 0,
+                "Ucoordinates": 512.0,
+                "Vcoordinates": 512.0,
+                "IsSpriteSheet": false,
+                "IsAnimated": false,
+                "MaxIndex": 0,
+                "LayeringOrder": 0
+            },
+            {},
+            {},
+            {},
+            {},
             {},
             {},
             {}

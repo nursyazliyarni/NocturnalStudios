@@ -41,6 +41,7 @@ namespace NocturnalEngine
 			 current_hunger=maxHunger=100.0;
 			 current_sanity=maxSanity=100.0;
 			 healthDecayRate=hungerDecayRate=sanityDecayRate=1.0;
+			 is_alive = true;
 		}
 
 	public:
