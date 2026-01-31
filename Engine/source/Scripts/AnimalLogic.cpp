@@ -53,15 +53,20 @@ namespace NocturnalEngine {
 
 	void AnimalLogic::Update(float Frametime)
 	{
+		//std::cout << "Entity " << p_ecs.GetComponent<NameTag>(entityID).GetNameTag() << " script running\n";
+		
 		//by right, the entity this script is connected to NEEDS to have
 		//the AnimalAttributes Component to have this script. This is just 
 		//a safeguard in case
 		if (!p_ecs.HaveComponent<AnimalAttributes>(entityID))return;
 
 		AnimalAttributes& aA{ p_ecs.GetComponent<AnimalAttributes>(entityID) };
-		
+		if (p_GameManager.GetGameState() == GameManager::GameState::STARTING)
+		{
+			aA.SetDefault();
+		}
 		//same as original code
-		if (aA.is_alive) {
+		if (aA.is_alive&&p_GameManager.GetGameState() != GameManager::GameState::ENDING) {
 			aA.current_hunger -= aA.hungerDecayRate * static_cast<double>(Frametime) * 10.0;
 			aA.current_health -= aA.healthDecayRate * static_cast<double>(Frametime);
 			aA.current_sanity -= aA.sanityDecayRate * static_cast<double>(Frametime);
@@ -69,8 +74,12 @@ namespace NocturnalEngine {
 
 			if (aA.current_hunger <= 0 || aA.current_health <= 0 || aA.current_sanity <= 0) {
 				aA.is_alive = false;
-
+				p_GameManager.AddDeath();
 			}
+		}
+		else if (p_GameManager.GetGameState() == GameManager::GameState::ENDING) {
+			aA.SetDefault();
+			p_GameManager.SaveAnimalAttributesToCurrentScene(aA);
 		}
 
 
@@ -82,7 +91,12 @@ namespace NocturnalEngine {
 		if (!p_ecs.HaveComponent<AnimalAttributes>(entityID))return;
 
 		AnimalAttributes& aA{ p_ecs.GetComponent<AnimalAttributes>(entityID) };
+		if (p_GameManager.GetGameState() == GameManager::GameState::ENDING)
+		{
+			aA.SetDefault();
+		}
 		p_GameManager.SaveAnimalAttributesToCurrentScene(aA);
+		
 
 	}
 

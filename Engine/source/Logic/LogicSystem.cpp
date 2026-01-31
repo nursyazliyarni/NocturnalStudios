@@ -69,13 +69,17 @@ namespace NocturnalEngine
 				{
 					if ((p_GUI->check_pause() == false || (*i)->GetScriptName() == "PauseMenu" || (*i)->GetScriptName() == "SliderScript"))
 					{
+						
 						if (!(*i)->GetScriptInit())
 						{
 							(*i)->Start();
 							(*i)->SetScriptInit();
 						}
-						if(!(*i)->GetScriptPaused())
+						if(!(*i)->GetScriptPaused()){
 							(*i)->Update(Frametime);
+							
+						}
+							
 					}
 				}
 			}

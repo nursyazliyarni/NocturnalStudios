@@ -32,6 +32,12 @@ namespace NocturnalEngine {
             OWL,
             STORAGE
         };
+
+        enum class GameState {
+            STARTING,
+            PLAYING,
+            ENDING
+        };
         AnimalAttributes LoadPersistentValues(GameScene);
 
         static GameManager& GetInstance();
@@ -52,10 +58,15 @@ namespace NocturnalEngine {
         initialization, there are no data members that need to be un-initialised.
         Therefore this function is empty
         ****************************************************************************/
-         void Restart() ;
+         void ResetSystem(bool editorMode = false) ;
 
          void SaveAnimalAttributesToCurrentScene(AnimalAttributes aA);
 
+         GameState GetGameState()const { return currState; }
+
+         void SetState(GameState s) { currState = s; }
+        
+         void AddDeath() { deadAnimals++; }
          
     private:
 
@@ -66,12 +77,15 @@ namespace NocturnalEngine {
 
         static GameManager instance;
 
-        
+        void LoseGame();
+        void WinGame();
 
-        float gameTimeElapsed{};
+        float gameTimeElapsed{}, winRequirement{10.f}; //in seconds
 
         GameScene currScene;
+        GameState currState;
         std::unordered_map < GameScene, AnimalAttributes> sceneAnimalMap;
+        int deadAnimals, deathLimit{ 5 };
     };
 
 

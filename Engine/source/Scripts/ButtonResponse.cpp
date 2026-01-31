@@ -19,6 +19,7 @@
 #include "GUI/GUI.h"
 #include "Graphics/Graphics.h"
 
+
 namespace NocturnalEngine
 {
 
@@ -136,11 +137,13 @@ namespace NocturnalEngine
 
 					Graphic::mcamera->SetZoomLevel(1.0f);
 					p_Scene->setSceneToLoad("Assets/Scene/FlamingoScene.json");
+					
 				}
 
 				if (ID_tag.GetTag() == "Restart")
 				{
 					p_Scene->setSceneToLoad("Assets/Scene/FlamingoScene.json");//reset the game level in game over
+					
 				}
 
 				if (ID_tag.GetTag() == "Quit" && p_GUI->Check_HTP() == false)

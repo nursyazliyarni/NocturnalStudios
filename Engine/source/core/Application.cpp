@@ -205,6 +205,7 @@ Application constructor
 #if !DEBUG
 			p_Editor->is_ShowWindow = false;
 #endif 
+			if (p_GameManager.GetGameState() == GameManager::GameState::STARTING)p_GameManager.SetState(GameManager::GameState::PLAYING);
 			FramePerSec::GetInstance().EndFrameCount();
 			Timer::GetInstance().Update(Systems::API);
 		}

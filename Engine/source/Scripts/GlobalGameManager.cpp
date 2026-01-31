@@ -60,6 +60,8 @@ namespace NocturnalEngine {
         sceneAnimalMap.emplace(GameScene::HORSE, defaultAttributes);
         sceneAnimalMap.emplace(GameScene::OWL, defaultAttributes);
         sceneAnimalMap.emplace(GameScene::SEAL, defaultAttributes);
+        currState=  GameManager::GameState::PLAYING;
+        deadAnimals = 0;
     }
     /*!*************************************************************************
     This function runs the logic of the system. It checks the list of entities with
@@ -69,8 +71,10 @@ namespace NocturnalEngine {
     ****************************************************************************/
     void GameManager::Update(float dt) {
        
+
         if (p_Scene->isGameplay)
         {
+
             for (std::pair<const GameScene,AnimalAttributes>& sceneAnimalPair:sceneAnimalMap)
             {
                 //this processes the other animals in the 
@@ -86,11 +90,21 @@ namespace NocturnalEngine {
 
                     if (sceneAnimalPair.second.current_hunger <= 0 || sceneAnimalPair.second.current_health <= 0 || sceneAnimalPair.second.current_sanity <= 0) {
                         sceneAnimalPair.second.is_alive = false;
+                        deadAnimals++;
                     }
                 
                 }
             }
+
+            if (deadAnimals>=deathLimit)
+            {
+                LoseGame();
+            }
             gameTimeElapsed += dt;
+            if (gameTimeElapsed>=winRequirement)
+            {
+                WinGame();
+            }
         }
     }
 
@@ -114,9 +128,21 @@ namespace NocturnalEngine {
     initialization, there are no data members that need to be un-initialised.
     Therefore this function is empty
     ****************************************************************************/
-    void GameManager::Restart() {}
+    void GameManager::ResetSystem(bool editorMode) {
+        AnimalAttributes defaultAttributes{};
+        defaultAttributes.SetDefault();
+        for (std::pair<const GameScene, AnimalAttributes>& sceneAnimalPair : sceneAnimalMap)
+        {
+            sceneAnimalPair.second = defaultAttributes;
+        }
+        gameTimeElapsed = 0.f;
+        deadAnimals = 0;
+        currState = GameManager::GameState::ENDING;
+        
+    }
 
     void GameManager::SaveAnimalAttributesToCurrentScene(AnimalAttributes aA) {
+        if (currState == GameManager::GameState::ENDING)return;
         auto it = sceneAnimalMap.find(currScene);
 
         //there is an older version of the aa in the thingy
@@ -128,4 +154,16 @@ namespace NocturnalEngine {
             it->second = aA;
         }
     }
+
+    void GameManager::LoseGame() {
+        ResetSystem(false);
+        p_Scene->setSceneToLoad("Assets/Scene/Game_Over.json");
+
+    }
+    void GameManager::WinGame() {
+        ResetSystem();
+        p_Scene->setSceneToLoad("Assets/Scene/Menu.json");
+
+    }
+    
 }
