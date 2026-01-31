@@ -12,19 +12,25 @@
         9
     ],
     "Number of Entities": {
-        "Entities": 10
+        "Entities": 16
     },
     "EntitySignatures": [
-        "00000000000000000000000010011001",
-        "00000000000000000000101010011101",
-        "00000000000000000000010010111101",
-        "00000000000000000000010010111101",
-        "00000000000000000000010010111101",
-        "00000000000000000000000001111101",
-        "00000000000000000000000001111101",
-        "00000000000000000000000001111101",
-        "00000000000000000000000001111101",
-        "00000000000000000000000000011001"
+        "00000000000000000000000011111001",
+        "00000000000000000000101000111101",
+        "00000000000000000000010000111101",
+        "00000000000000000000010000111101",
+        "00000000000000000000010000111101",
+        "00000000000000000000000011111101",
+        "00000000000000000000000011111101",
+        "00000000000000000000000011111101",
+        "00000000000000000000000011111101",
+        "00000000000000000000000000011001",
+        "00000000000000000000000000011001",
+        "00000000000000000000000000011001",
+        "00000000000000000000000000011001",
+        "00000000000000000000000100111001",
+        "00000000000000000000000100111001",
+        "00000000000000000000000100111001"
     ],
     "Components": {
         "0": [
@@ -38,10 +44,10 @@
             {},
             {},
             {
-                "NameTag": "OwlBtn"
+                "NameTag": "flamingoBG"
             },
             {
-                "TextureName": "flamingo_bg",
+                "TextureName": "flamingoScene",
                 "Index_X": 0,
                 "Index_Y": 0,
                 "Ucoordinates": 512.0,
@@ -51,18 +57,25 @@
                 "MaxIndex": 0,
                 "LayeringOrder": 0
             },
-            {},
-            {},
+            {
+                "0": "AudioManager",
+                "1": "BackgroundAudio",
+                "ScriptCount": 2
+            },
+            {
+                "Tag": "Untagged",
+                "TargetTag": ""
+            },
             {
                 "0": {
-                    "AudioPath": "BGM_Iris_Luminara_Loop.wav",
+                    "AudioPath": "BGM_Ambience_Flamingo_01.wav",
                     "Channel": 2,
                     "IsLooping": true
                 },
                 "AudioArrCount": 1,
-                "BGM Volume": 0.75,
-                "SFX Volume": 0.75,
-                "Master Volume": 0.75
+                "BGM Volume": 1.0,
+                "SFX Volume": 1.0,
+                "Master Volume": 1.0
             },
             {},
             {},
@@ -97,32 +110,30 @@
                 "radius2": 0.0
             },
             {
-                "NameTag": "flamingo"
+                "NameTag": "Flamingo"
             },
             {
-                "TextureName": "flamingo",
-                "Index_X": 0,
+                "TextureName": "flamingo_spritesheet",
+                "Index_X": 4,
                 "Index_Y": 0,
-                "Ucoordinates": 512.0,
-                "Vcoordinates": 512.0,
-                "IsSpriteSheet": false,
-                "IsAnimated": false,
-                "MaxIndex": 0,
+                "Ucoordinates": 528.0,
+                "Vcoordinates": 528.0,
+                "IsSpriteSheet": true,
+                "IsAnimated": true,
+                "MaxIndex": 5,
+                "DisplayTime 0": 0.125,
+                "DisplayTime 1": 0.125,
+                "DisplayTime 2": 0.125,
+                "DisplayTime 3": 0.125,
+                "DisplayTime 4": 0.125,
                 "LayeringOrder": 0
             },
-            {},
-            {},
             {
-                "0": {
-                    "AudioPath": "BGM_Iris_Luminara_Loop.wav",
-                    "Channel": 2,
-                    "IsLooping": true
-                },
-                "AudioArrCount": 1,
-                "BGM Volume": 0.75,
-                "SFX Volume": 0.75,
-                "Master Volume": 0.75
+                "0": "AnimalLogic",
+                "ScriptCount": 1
             },
+            {},
+            {},
             {},
             {
                 "Current Health": 100.0,
@@ -133,7 +144,8 @@
                 "Max Sanity": 100.0,
                 "Health Decay Rate": 1.0,
                 "Hunger Decay Rate": 1.0,
-                "Sanity Decay Rate": 1.0
+                "Sanity Decay Rate": 1.0,
+                "IS_alive": true
             },
             {},
             {
@@ -186,17 +198,7 @@
                 "ScriptCount": 1
             },
             {},
-            {
-                "0": {
-                    "AudioPath": "BGM_Iris_Luminara_Loop.wav",
-                    "Channel": 2,
-                    "IsLooping": true
-                },
-                "AudioArrCount": 1,
-                "BGM Volume": 0.75,
-                "SFX Volume": 0.75,
-                "Master Volume": 0.75
-            },
+            {},
             {},
             {},
             {
@@ -252,17 +254,7 @@
                 "ScriptCount": 1
             },
             {},
-            {
-                "0": {
-                    "AudioPath": "BGM_Iris_Luminara_Loop.wav",
-                    "Channel": 2,
-                    "IsLooping": true
-                },
-                "AudioArrCount": 1,
-                "BGM Volume": 0.75,
-                "SFX Volume": 0.75,
-                "Master Volume": 0.75
-            },
+            {},
             {},
             {},
             {
@@ -318,17 +310,7 @@
                 "ScriptCount": 1
             },
             {},
-            {
-                "0": {
-                    "AudioPath": "BGM_Iris_Luminara_Loop.wav",
-                    "Channel": 2,
-                    "IsLooping": true
-                },
-                "AudioArrCount": 1,
-                "BGM Volume": 0.75,
-                "SFX Volume": 0.75,
-                "Master Volume": 0.75
-            },
+            {},
             {},
             {},
             {
@@ -381,13 +363,24 @@
             },
             {
                 "0": "ButtonResponse",
-                "ScriptCount": 1
+                "1": "AudioManager",
+                "ScriptCount": 2
             },
             {
                 "Tag": "SealBtn",
                 "TargetTag": ""
             },
-            {},
+            {
+                "0": {
+                    "AudioPath": "SFX_Static_01.wav",
+                    "Channel": 3,
+                    "IsLooping": false
+                },
+                "AudioArrCount": 1,
+                "BGM Volume": 1.0,
+                "SFX Volume": 1.0,
+                "Master Volume": 1.0
+            },
             {},
             {},
             {},
@@ -436,13 +429,24 @@
             },
             {
                 "0": "ButtonResponse",
-                "ScriptCount": 1
+                "1": "AudioManager",
+                "ScriptCount": 2
             },
             {
                 "Tag": "HorseBtn",
                 "TargetTag": ""
             },
-            {},
+            {
+                "0": {
+                    "AudioPath": "SFX_Static_01.wav",
+                    "Channel": 3,
+                    "IsLooping": false
+                },
+                "AudioArrCount": 1,
+                "BGM Volume": 1.0,
+                "SFX Volume": 1.0,
+                "Master Volume": 1.0
+            },
             {},
             {},
             {},
@@ -497,7 +501,17 @@
                 "Tag": "OwlBtn",
                 "TargetTag": ""
             },
-            {},
+            {
+                "0": {
+                    "AudioPath": "SFX_Static_02.wav",
+                    "Channel": 3,
+                    "IsLooping": false
+                },
+                "AudioArrCount": 1,
+                "BGM Volume": 1.0,
+                "SFX Volume": 1.0,
+                "Master Volume": 1.0
+            },
             {},
             {},
             {},
@@ -546,13 +560,24 @@
             },
             {
                 "0": "ButtonResponse",
-                "ScriptCount": 1
+                "1": "AudioManager",
+                "ScriptCount": 2
             },
             {
                 "Tag": "InventoryBtn",
                 "TargetTag": ""
             },
-            {},
+            {
+                "0": {
+                    "AudioPath": "SFX_Static_03.wav",
+                    "Channel": 3,
+                    "IsLooping": false
+                },
+                "AudioArrCount": 1,
+                "BGM Volume": 1.0,
+                "SFX Volume": 1.0,
+                "Master Volume": 1.0
+            },
             {},
             {},
             {},
@@ -586,6 +611,219 @@
             {},
             {},
             {},
+            {},
+            {},
+            {}
+        ],
+        "10": [
+            {
+                "posX": 0.6753605604171753,
+                "posY": 0.5243653059005737,
+                "scaleX": 0.21751198172569275,
+                "scaleY": 0.21751198172569275,
+                "Rot": 0.0
+            },
+            {},
+            {},
+            {
+                "NameTag": "HealthIcon"
+            },
+            {
+                "TextureName": "health",
+                "Index_X": 0,
+                "Index_Y": 0,
+                "Ucoordinates": 512.0,
+                "Vcoordinates": 512.0,
+                "IsSpriteSheet": false,
+                "IsAnimated": false,
+                "MaxIndex": 0,
+                "LayeringOrder": 1
+            },
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {}
+        ],
+        "11": [
+            {
+                "posX": 0.6753605604171753,
+                "posY": 0.27453696727752686,
+                "scaleX": 0.21751198172569275,
+                "scaleY": 0.21751198172569275,
+                "Rot": 0.0
+            },
+            {},
+            {},
+            {
+                "NameTag": "HungerIcon"
+            },
+            {
+                "TextureName": "hunger",
+                "Index_X": 0,
+                "Index_Y": 0,
+                "Ucoordinates": 512.0,
+                "Vcoordinates": 512.0,
+                "IsSpriteSheet": false,
+                "IsAnimated": false,
+                "MaxIndex": 0,
+                "LayeringOrder": 1
+            },
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {}
+        ],
+        "12": [
+            {
+                "posX": 0.6753605604171753,
+                "posY": 0.012354493141174316,
+                "scaleX": 0.21751198172569275,
+                "scaleY": 0.21751198172569275,
+                "Rot": 0.0
+            },
+            {},
+            {},
+            {
+                "NameTag": "SanityIcon"
+            },
+            {
+                "TextureName": "sanity",
+                "Index_X": 0,
+                "Index_Y": 0,
+                "Ucoordinates": 512.0,
+                "Vcoordinates": 512.0,
+                "IsSpriteSheet": false,
+                "IsAnimated": false,
+                "MaxIndex": 0,
+                "LayeringOrder": 1
+            },
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {}
+        ],
+        "13": [
+            {
+                "posX": 1.1399999856948853,
+                "posY": 0.5243653059005737,
+                "scaleX": 0.8989999890327454,
+                "scaleY": 0.0689999982714653,
+                "Rot": 0.0
+            },
+            {},
+            {},
+            {
+                "NameTag": "HealthBar"
+            },
+            {
+                "TextureName": "health bar",
+                "Index_X": 0,
+                "Index_Y": 0,
+                "Ucoordinates": 512.0,
+                "Vcoordinates": 512.0,
+                "IsSpriteSheet": false,
+                "IsAnimated": false,
+                "MaxIndex": 0,
+                "LayeringOrder": 0
+            },
+            {
+                "0": "HealthBar",
+                "ScriptCount": 1
+            },
+            {},
+            {},
+            {
+                "ElementType": 2,
+                "offsetX": 0.0,
+                "offsetY": 0.0
+            },
+            {},
+            {},
+            {}
+        ],
+        "14": [
+            {
+                "posX": 1.1399999856948853,
+                "posY": 0.2750000059604645,
+                "scaleX": 0.8989999890327454,
+                "scaleY": 0.0689999982714653,
+                "Rot": 0.0
+            },
+            {},
+            {},
+            {
+                "NameTag": "HungerBar"
+            },
+            {
+                "TextureName": "hunger bar",
+                "Index_X": 0,
+                "Index_Y": 0,
+                "Ucoordinates": 512.0,
+                "Vcoordinates": 512.0,
+                "IsSpriteSheet": false,
+                "IsAnimated": false,
+                "MaxIndex": 0,
+                "LayeringOrder": 0
+            },
+            {
+                "0": "HealthBar",
+                "ScriptCount": 1
+            },
+            {},
+            {},
+            {
+                "ElementType": 3,
+                "offsetX": 0.0,
+                "offsetY": 0.0
+            },
+            {},
+            {},
+            {}
+        ],
+        "15": [
+            {
+                "posX": 1.1399999856948853,
+                "posY": 0.012000000104308128,
+                "scaleX": 0.8989999890327454,
+                "scaleY": 0.0689999982714653,
+                "Rot": 0.0
+            },
+            {},
+            {},
+            {
+                "NameTag": "SanityBar"
+            },
+            {
+                "TextureName": "sanity bar",
+                "Index_X": 0,
+                "Index_Y": 0,
+                "Ucoordinates": 512.0,
+                "Vcoordinates": 512.0,
+                "IsSpriteSheet": false,
+                "IsAnimated": false,
+                "MaxIndex": 0,
+                "LayeringOrder": 0
+            },
+            {
+                "0": "HealthBar",
+                "ScriptCount": 1
+            },
+            {},
+            {},
+            {
+                "ElementType": 4,
+                "offsetX": 0.0,
+                "offsetY": 0.0
+            },
             {},
             {},
             {}

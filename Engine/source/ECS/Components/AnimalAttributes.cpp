@@ -21,15 +21,16 @@ hungerDecayRate(0.0), sanityDecayRate(0.0) {}
 
 bool NocturnalEngine::AnimalAttributes::Deserialize(const rapidjson::Value& obj)
 {
-	current_health = obj["Current Health"].GetDouble();
-	maxHealth = obj["Max Health"].GetDouble();
-	current_hunger = obj["Current Hunger"].GetDouble();
-	maxHunger = obj["Max Hunger"].GetDouble();
-	current_sanity = obj["Current Sanity"].GetDouble();
-	maxSanity = obj["Max Sanity"].GetDouble();
-	healthDecayRate = obj["Health Decay Rate"].GetDouble();
-	hungerDecayRate = obj["Hunger Decay Rate"].GetDouble();
-	sanityDecayRate = obj["Sanity Decay Rate"].GetDouble();
+	if (obj.HasMember("Current Health") && obj["Current Health"].IsNumber())current_health = obj["Current Health"].GetDouble();
+	if (obj.HasMember("Max Health") && obj["Max Health"].IsNumber())maxHealth = obj["Max Health"].GetDouble();
+	if (obj.HasMember("Current Hunger") && obj["Current Hunger"].IsNumber())current_hunger = obj["Current Hunger"].GetDouble();
+	if (obj.HasMember("Max Hunger") && obj["Max Hunger"].IsNumber())maxHunger = obj["Max Hunger"].GetDouble();
+	if (obj.HasMember("Current Sanity") && obj["Current Sanity"].IsNumber())current_sanity = obj["Current Sanity"].GetDouble();
+	if (obj.HasMember("Max Sanity") && obj["Max Sanity"].IsNumber())maxSanity = obj["Max Sanity"].GetDouble();
+	if (obj.HasMember("Health Decay Rate") && obj["Health Decay Rate"].IsNumber())healthDecayRate = obj["Health Decay Rate"].GetDouble();
+	if (obj.HasMember("Hunger Decay Rate") && obj["Hunger Decay Rate"].IsNumber())hungerDecayRate = obj["Hunger Decay Rate"].GetDouble();
+	if (obj.HasMember("Sanity Decay Rate") && obj["Sanity Decay Rate"].IsNumber())sanityDecayRate = obj["Sanity Decay Rate"].GetDouble();
+	if (obj.HasMember("IS_alive")&& obj["IS_alive"].IsBool())is_alive = obj["IS_alive"].GetBool();
 	return true;
 }
 
@@ -53,5 +54,7 @@ bool NocturnalEngine::AnimalAttributes::Serialize(rapidjson::PrettyWriter<rapidj
 	writer->Double(hungerDecayRate);
 	writer->Key("Sanity Decay Rate");
 	writer->Double(sanityDecayRate);
+	writer->Key("IS_alive");
+	writer->Bool(is_alive);
 	return true;
 }

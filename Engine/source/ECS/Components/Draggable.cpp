@@ -27,7 +27,7 @@ namespace NocturnalEngine
 	****************************************************************************/
 	bool Draggable::Deserialize(const rapidjson::Value& obj)
 	{
-		isTarget = obj["isTarget"].GetBool();
+		if (obj.HasMember("isTarget") && obj["isTarget"].IsBool())isTarget = obj["isTarget"].GetBool();
 		return true;
 	}
 

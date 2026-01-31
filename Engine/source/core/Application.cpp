@@ -33,6 +33,7 @@
 #include "Scripts/AudioManager.h"
 #include "Logic/LogicSystem.h"
 #include "Scripts/PauseMenu.h"
+#include "Scripts/GlobalGameManager.h"
 #include "GUI/GUI.h"
 #include "Scripts/DialogueManager.h"
 #include "Core/MemoryManager.h"
@@ -114,6 +115,8 @@ Application constructor
 			p_ecs.SetSystemSignature<PhysicsSystem>(signature);
 		}
 		mPosUpdate->Init();
+
+		p_GameManager.Init();
 #if !DEBUG
 		// p_Scene->setSceneToLoad("Assets/Scene/SplashScreen.json");
 		p_Scene->setSceneToLoad("Assets/Scene/Menu.json");
@@ -150,13 +153,14 @@ Application constructor
 			}
 
 			if (p_Scene->isGameplay == true)
-				glfwSetInputMode(m_window->GetWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+				glfwSetInputMode(m_window->GetWindow(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 			else
 				glfwSetInputMode(m_window->GetWindow(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 			if (!m_window->isWindowNotFocus)
 			{
 //#if !DEBUG
 				mLogic->Update(Timer::GetInstance().GetGlobalDT());
+				p_GameManager.Update(Timer::GetInstance().GetGlobalDT());
 //#endif
 			}
 			mCollision->Update(Timer::GetInstance().GetGlobalDT());
@@ -165,7 +169,6 @@ Application constructor
 			
 			p_Audio->Update();
 
-			//p_Input->detect_draggable_item(GLFW_MOUSE_BUTTON_LEFT,p_Editor->is_ShowWindow);
 			
 			if (p_Input->KeyPressed(GLFW_KEY_F3))
 			{
@@ -202,6 +205,7 @@ Application constructor
 #if !DEBUG
 			p_Editor->is_ShowWindow = false;
 #endif 
+			if (p_GameManager.GetGameState() == GameManager::GameState::STARTING)p_GameManager.SetState(GameManager::GameState::PLAYING);
 			FramePerSec::GetInstance().EndFrameCount();
 			Timer::GetInstance().Update(Systems::API);
 		}

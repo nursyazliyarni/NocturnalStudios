@@ -28,6 +28,7 @@ namespace NocturnalEngine
 
 		void SetNameTag(std::string name) { mName = name; }
 		std::string& GetNameTag() { return mName; }
+		
 
 		/*!*************************************************************************
 		Retrieves Component Entity ID
@@ -41,4 +42,6 @@ namespace NocturnalEngine
 	private:
 		std::string mName;
 	};
+
+
 }

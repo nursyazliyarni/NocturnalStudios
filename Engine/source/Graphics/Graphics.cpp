@@ -134,7 +134,7 @@ namespace NocturnalEngine {
 	
 
 		p_GUI->VPmat = mcamera->GetViewProjectionMatrix();
-		
+		//std::map<std::string, double>animal_attribute_map;
 
 		for (int orderIndex = 0; orderIndex < Graphic::MAX_LAYERS; ++orderIndex)
 		{
@@ -143,6 +143,7 @@ namespace NocturnalEngine {
 
 			for (auto i = mEntities.begin(); i != mEntities.end(); i++)
 			{
+				
 				
 				auto& transform = p_ecs.GetComponent<Transform>(*i);
 				auto& sprite = p_ecs.GetComponent<Sprite>(*i);
@@ -156,23 +157,20 @@ namespace NocturnalEngine {
 					{
 						mAimator.UpdateAnimation(frametime, p_ecs.GetComponent<Sprite>(*i));
 					}
+
 					if (sprite.is_SpriteSheet)
 					{
-					
+
 						mIndex1 = SpriteRender::CreateSprite(GETTEXTURE(sprite.GetTexture()), { sprite.GetIndex().x, sprite.GetIndex().y },
 							{ sprite.GetUVCoor().x, sprite.GetUVCoor().y });
 
 						mRenderer->DrawSprite({ transform.GetPos().x , transform.GetPos().y }, { transform.GetScale().x , transform.GetScale().y },
 							transform.GetRot(), mIndex1);
 					}
+
 					else
 					{
 						mRenderer->DrawQuad({ transform.GetPos().x, transform.GetPos().y }, { transform.GetScale().x, transform.GetScale().y },
-							transform.GetRot(), GETTEXTURE(sprite.GetTexture()));
-					}
-
-					if (p_ecs.HaveComponent<ItemsAttributes>(*i) && p_ecs.GetComponent<ItemsAttributes>(*i).is_dragging) {
-						mRenderer->DrawQuad({ p_ecs.GetComponent<ItemsAttributes>(*i).duplicate_item_pos }, { transform.GetScale().x, transform.GetScale().y },
 							transform.GetRot(), GETTEXTURE(sprite.GetTexture()));
 					}
 
@@ -236,7 +234,6 @@ namespace NocturnalEngine {
 		mRenderer->End();
 	
 		p_FrameBuffer->UnBind();
-		
 		
 		mcamera->MouseScrolling();
 		if (p_Input->KeyPressed(GLFW_KEY_F2) && !p_Editor->is_ShowWindow)

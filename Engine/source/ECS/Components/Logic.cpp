@@ -23,6 +23,8 @@
 #include "Scripts/CutScene.h"
 #include "Scripts/DialogueManager.h"
 #include "Scripts/DragAndDrop.h"
+#include "Scripts/HealthBar.h"
+#include "Scripts/AnimalLogic.h"
 
 
 namespace NocturnalEngine
@@ -101,6 +103,8 @@ namespace NocturnalEngine
 	****************************************************************************/
 	bool Logic::Deserialize(const rapidjson::Value& obj)
 	{
+		int scriptCount = obj.HasMember("ScriptCount") && obj["ScriptCount"].IsNumber() ? obj["ScriptCount"].GetInt() : 0;
+		if (scriptCount <= 0)return true;
 		for (int i = 0; i < obj["ScriptCount"].GetInt(); ++i)
 		{
 			mScriptNameVector.push_back(obj[std::to_string(i).c_str()].GetString());
@@ -142,6 +146,14 @@ namespace NocturnalEngine
 			if (mScriptNameVector[j] == "DragAndDrop")
 			{
 				mScriptsVector.push_back(new DragAndDrop());
+			}
+			if (mScriptNameVector[j] == "HealthBar")
+			{
+				mScriptsVector.push_back(new HealthBar());
+			}
+			if (mScriptNameVector[j] == "AnimalLogic")
+			{
+				mScriptsVector.push_back(new AnimalLogic());
 			}
 		}
 		return true;

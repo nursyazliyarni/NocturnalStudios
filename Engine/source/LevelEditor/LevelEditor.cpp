@@ -48,6 +48,10 @@
 #include "Scripts/CutScene.h"
 #include "Scripts/DialogueManager.h"
 #include "Scripts/DragAndDrop.h"
+#include "Scripts/HealthBar.h"
+#include "Scripts/AnimalLogic.h"
+
+#include "Scripts/GlobalGameManager.h"
 
 
 #include <unordered_map>
@@ -157,7 +161,6 @@ namespace NocturnalEngine {
             Logger();
             Hierarchy();
             Inspector();
-            LogicSelector();
             SceneViewer();
             AudioEditor();
         }
@@ -301,6 +304,17 @@ namespace NocturnalEngine {
                 if (ImGui::Button("Close Editor/Play"))
                 {
 				    is_ShowWindow = false;
+                    
+                    std::vector<std::string> playablescenes = {
+                       "FlamingoScene.json",
+                       "HorseScene.json",
+                       "SealScene.json",
+                       "OwlScene.json" };
+                    for (std::string s : playablescenes)
+                    {
+                        if (s == mCurrentScene) { p_Scene->isGameplay = true; break; }
+                    }
+                    p_GameManager.SetState(GameManager::GameState::STARTING);
                 }
             }
             else
@@ -308,6 +322,11 @@ namespace NocturnalEngine {
                 if (ImGui::Button("Open Editor/Stop"))
                 {
                     is_ShowWindow = true;
+                    p_Scene->isGameplay = false;
+                    p_GameManager.ResetSystem(true);
+                   
+                    
+                    
                 }
             }
         }
@@ -1318,12 +1337,14 @@ namespace NocturnalEngine {
                 }
 
                 auto aliveTotal = p_ecs.GetTotalEntities();
+                
                 Entity aliveCount = 0;
                 Entity iterEntity = 0;
                 while (aliveCount < aliveTotal)
                 {
                     if (p_ecs.HaveComponent<NameTag>(iterEntity))
                     {
+                        
                         const auto& tag = p_ecs.GetComponent<NameTag>(iterEntity).GetNameTag();
 
                         ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_Selected | ImGuiTreeNodeFlags_OpenOnArrow;
@@ -1337,6 +1358,13 @@ namespace NocturnalEngine {
 
                         aliveCount++;
                     }
+                    else {
+                        NameTag nt;
+                        nt.SetComponentEntityID(iterEntity);
+                        nt.SetNameTag("Entity " + std::to_string(iterEntity));
+                        p_ecs.AddComponent<NameTag>(iterEntity, nt);
+                        aliveCount++;
+                    }
 
                     iterEntity++;
                 }
@@ -1345,51 +1373,6 @@ namespace NocturnalEngine {
             if (ImGui::IsMouseDown(0) && ImGui::IsWindowHovered())
                 selectedEntity = {};
             ImGui::End();
-        }
-
-    }
-
-    void LevelEditor::LogicSelector()
-    {
-        struct LogicScript
-        {
-            const char* name;
-            std::function<void()> run;
-        };
-
-        static std::vector<LogicScript> g_Scripts = {
-            { "Move Forward", []() { /* logic here */ } },
-            { "Rotate Object", []() { /* logic here */ } },
-            { "AI Patrol", []() { /* logic here */ } }
-        };
-
-        if (is_ShowWindow)
-        {
-            static int selectedScript = 0;
-
-            if (ImGui::Begin("Logic Script Selector"))
-            {
-                if (ImGui::BeginCombo("Script", g_Scripts[selectedScript].name))
-                {
-                    for (int i = 0; i < g_Scripts.size(); i++)
-                    {
-                        bool isSelected = (selectedScript == i);
-                        if (ImGui::Selectable(g_Scripts[i].name, isSelected))
-                            selectedScript = i;
-
-                        if (isSelected)
-                            ImGui::SetItemDefaultFocus();
-                    }
-                    ImGui::EndCombo();
-                }
-
-                if (ImGui::Button("Run Script"))
-                {
-                    g_Scripts[selectedScript].run();
-                }
-            }
-            ImGui::End();
-
         }
 
     }
@@ -1770,9 +1753,17 @@ namespace NocturnalEngine {
                                     {
                                         logic.InsertScript(new DialogueManager(), selectedEntity);
                                     }
-                                    if (mScriptList[current_script] == "DragAndDrop" && p_ecs.HaveComponent<Sprite>(selectedEntity))
+                                    if (mScriptList[current_script] == "DragAndDrop" && p_ecs.HaveComponent<Sprite>(selectedEntity)&& p_ecs.HaveComponent<ItemsAttributes>(selectedEntity))
                                     {
                                         logic.InsertScript(new DragAndDrop(), selectedEntity);
+                                    }
+                                    if (mScriptList[current_script] == "HealthBar" && p_ecs.HaveComponent<Sprite>(selectedEntity)&& p_ecs.HaveComponent<HUDComponent>(selectedEntity))
+                                    {
+                                        logic.InsertScript(new HealthBar(), selectedEntity);
+                                    }
+                                    if (mScriptList[current_script] == "AnimalLogic" && p_ecs.HaveComponent<AnimalAttributes>(selectedEntity))
+                                    {
+                                        logic.InsertScript(new AnimalLogic(), selectedEntity);
                                     }
                                 }
                             }
@@ -1905,7 +1896,7 @@ namespace NocturnalEngine {
                     if (ImGui::CollapsingHeader("HUD", ImGuiTreeNodeFlags_None))
                     {
                         auto& HUDComp = p_ecs.GetComponent<HUDComponent>(selectedEntity);
-                        const char* HUDList = "Static\0Boss Overlay\0Player Health Bar\0Boss Health Bar\0Block Bar\0Dash Bar\0Charge Attack\0Text";
+                        const char* HUDList = "Static\0Boss Overlay\0Health Bar\0Hunger Bar\0Sanity Bar\0Dash Bar\0Charge Attack\0Text";
                         auto HUDType = HUDComp.GetType();
                         int HUDIndex = static_cast<int>(HUDType);
                         ImGui::Combo("HudType", &HUDIndex, HUDList);
@@ -1931,6 +1922,26 @@ namespace NocturnalEngine {
                     if (ImGui::CollapsingHeader("Animal Attributes", ImGuiTreeNodeFlags_None)) {
                         auto& animal_attributes = p_ecs.GetComponent<AnimalAttributes>(selectedEntity);
                         ImGui::PushItemWidth(100.0f);
+                        ImGui::Text("Max Health"); ImGui::SameLine();
+                        if (ImGui::InputDouble("##Max Health", &animal_attributes.maxHealth))
+                        {
+
+                            animal_attributes.current_health = glm::clamp(animal_attributes.maxHealth, 0.0, 9999.9999);
+                        }
+
+                        ImGui::Text("Max Hunger"); ImGui::SameLine();
+                        if (ImGui::InputDouble("##Max Hunger", &animal_attributes.maxHunger))
+                        {
+
+                            animal_attributes.current_hunger = glm::clamp(animal_attributes.maxHunger, 0.0, 9999.9999);
+                        }
+
+                        ImGui::Text("Max Sanity"); ImGui::SameLine();
+                        if (ImGui::InputDouble("##Max Sanity", &animal_attributes.maxSanity))
+                        {
+
+                            animal_attributes.current_sanity = glm::clamp(animal_attributes.maxSanity, 0.0, 9999.9999);
+                        }
                         ImGui::Text("Current Health"); ImGui::SameLine();
                         if (ImGui::InputDouble("##Current Health", &animal_attributes.current_health))
                         {
@@ -1960,6 +1971,8 @@ namespace NocturnalEngine {
 
                         ImGui::Text("Sanity Decay Rate"); ImGui::SameLine();
                         ImGui::InputDouble("##Sanity Decay Rate", &animal_attributes.sanityDecayRate);
+
+                        ImGui::Checkbox("Is Alive", &animal_attributes.is_alive);
                     }
                 }
 

@@ -34,7 +34,7 @@ namespace NocturnalEngine {
 		mUVcooridnates = vec2D(obj["Ucoordinates"].GetFloat(), obj["Vcoordinates"].GetFloat());
 		is_SpriteSheet = bool(obj["IsSpriteSheet"].GetBool());
 		is_Animated = bool(obj["IsAnimated"].GetBool());
-		MaxIndex_X = int(obj["MaxIndex"].GetInt());
+		if (obj.HasMember("MaxIndex") && obj["MaxIndex"].IsNumber())MaxIndex_X = int(obj["MaxIndex"].GetInt());
 		for (auto i = 0; i < MaxIndex_X; i++)
 		{
 			std::string DpNum;

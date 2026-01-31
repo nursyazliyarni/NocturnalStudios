@@ -21,6 +21,7 @@
 #include "Core/MemoryManager.h"
 #include <unordered_map>
 #include <array>
+#include "Scripts/GlobalGameManager.h"
 
 namespace NocturnalEngine
 {
@@ -110,10 +111,12 @@ namespace NocturnalEngine
 			{
 				if (p_ecs.GetEntitySignature(j).test(CompID))
 				{
+					//if (!obj["Components"].HasMember("std::to_string(j).c_str()")|| obj["Components"]["std::to_string(j).c_str()"].Size()< static_cast<int>(CompID))break;
 					if (p_ecs.GetComponentTypeName(CompID) == "Transform")
 					{
 						Transform transform;
 						transform.SetComponentEntityID(j);
+						
 						if (transform.Deserialize(obj["Components"][std::to_string(j).c_str()][static_cast<int>(CompID)].GetObj()))
 						{
 							p_ecs.AddComponent<Transform>(j, transform);
@@ -168,6 +171,7 @@ namespace NocturnalEngine
 					{
 						Tag tag;
 						tag.SetComponentEntityID(j);
+
 						if (tag.Deserialize(obj["Components"][std::to_string(j).c_str()][static_cast<int>(CompID)].GetObj()))
 						{
 							p_ecs.AddComponent<Tag>(j, tag);
@@ -213,6 +217,7 @@ namespace NocturnalEngine
 					{
 						Draggable draggable;
 						draggable.SetComponentEntityID(j);
+
 						if (draggable.Deserialize(obj["Components"][std::to_string(j).c_str()][static_cast<int>(CompID)].GetObj()))
 						{
 							p_ecs.AddComponent<Draggable>(j, draggable);
@@ -365,30 +370,42 @@ void NocturnalEngine::SceneManager::checkForSceneToLoad()
 	{
 		changeScene();
 
+		/*if (!isGameplay) {
+			isGameplay = true;
+			DeserializeFromFile(sceneToLoad);
+		}*/
+
+		if (sceneToLoad == "Assets/Scene/Menu.json")
+		{
+			isGameplay = true;
+			Graphic::camera.SetZoomLevel(1.0f);
+			Graphic::camera.SetPosition({ 0.0f,0.0f,0.0f });
+		}
+
 		if (sceneToLoad == "Assets/Scene/FlamingoScene.json")
 		{
-			isGameplay = false;
+			isGameplay = true;
 			Graphic::camera.SetZoomLevel(1.0f);
 			Graphic::camera.SetPosition({ 0.0f,0.0f,0.0f });
 		}
 
 		if (sceneToLoad == "Assets/Scene/HorseScene.json")
 		{
-			isGameplay = false;
+			isGameplay = true;
 			Graphic::camera.SetZoomLevel(1.0f);
 			Graphic::camera.SetPosition({ 0.0f,0.0f,0.0f });
 		}
 
 		if (sceneToLoad == "Assets/Scene/SealScene.json")
 		{
-			isGameplay = false;
+			isGameplay = true;
 			Graphic::camera.SetZoomLevel(1.0f);
 			Graphic::camera.SetPosition({ 0.0f,0.0f,0.0f });
 		}
 
 		if (sceneToLoad == "Assets/Scene/OwlScene.json")
 		{
-			isGameplay = false;
+			isGameplay = true;
 			Graphic::camera.SetZoomLevel(1.0f);
 			Graphic::camera.SetPosition({ 0.0f,0.0f,0.0f });
 		}
@@ -436,6 +453,7 @@ void NocturnalEngine::SceneManager::checkForSceneToLoad()
 		}
 
 		DeserializeFromFile(sceneToLoad);
+		sceneToLoad = "";
 
 		gCurrentScenePath = sceneToLoad;
 
@@ -452,7 +470,7 @@ void NocturnalEngine::SceneManager::checkForSceneToLoad()
 				NocturnalEngine::Graphic::layerEnabled[l] = true;
 		}
 
-
+		p_GameManager.SetState(GameManager::GameState::PLAYING);
 		sceneToLoad = "";
 	}
 }

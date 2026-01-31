@@ -25,8 +25,8 @@ namespace NocturnalEngine {
 			Static,
 			BossStatic,
 			HealthBar,
-			BossHP,
-			BlockBar,
+			HungerBar,
+			SanityBar,
 			DashBar,
 			ChargeAtk,
 			Text

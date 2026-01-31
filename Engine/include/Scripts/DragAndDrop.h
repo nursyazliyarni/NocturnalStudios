@@ -77,5 +77,6 @@ namespace NocturnalEngine
 		Entity DestroyDupeItem();
 		bool CheckAnimalCollision();
 		void AnimalGain();
+		bool BoxCircleCollision(vec2D boxMax,vec2D boxMin,vec2D circleMiddle, float circleRadius);
 	};
 }
