@@ -67,22 +67,23 @@ namespace NocturnalEngine{
 		//set initialize window width & height to current (to be set in rapidjson file)
 		m_windowData.m_CurrentWidth = m_windowData.m_Width;
 		m_windowData.m_CurrentHeight = m_windowData.m_Height;
-
+#if DEBUG
 		//create window
 		m_window = glfwCreateWindow(m_windowData.m_CurrentWidth,
 			m_windowData.m_CurrentHeight,
 			m_windowData.Title.c_str(),
 			NULL, NULL);
 
-#if !DEBUG		
+#else	
 		const GLFWvidmode* mode = glfwGetVideoMode(m_monitor);
 		m_windowData.m_Width = mode->width;
 		m_windowData.m_Height = mode->height;
 	
-		glfwSetWindowMonitor(
-			m_window, m_monitor,
-			0, 0,
-			m_windowData.m_Width, m_windowData.m_Height, 0);
+		m_window = glfwCreateWindow(mode->width,
+			mode->height,
+			m_windowData.Title.c_str(),
+			NULL, NULL);
+
 #endif			
 		glfwMakeContextCurrent(m_window);
 		glfwSetWindowUserPointer(m_window, &m_windowData);
