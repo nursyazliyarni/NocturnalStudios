@@ -25,6 +25,7 @@
 #include "Scripts/DragAndDrop.h"
 #include "Scripts/HealthBar.h"
 #include "Scripts/AnimalLogic.h"
+#include "Scripts/TimerDisplay.h"
 
 
 namespace NocturnalEngine
@@ -154,6 +155,10 @@ namespace NocturnalEngine
 			if (mScriptNameVector[j] == "AnimalLogic")
 			{
 				mScriptsVector.push_back(new AnimalLogic());
+			}
+			if (mScriptNameVector[j] == "TimerDisplay")
+			{
+				mScriptsVector.push_back(new TimerDisplay());
 			}
 		}
 		return true;

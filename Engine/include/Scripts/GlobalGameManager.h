@@ -67,6 +67,11 @@ namespace NocturnalEngine {
          void SetState(GameState s) { currState = s; }
         
          void AddDeath() { deadAnimals++; }
+
+         //returns how much we have to multiply seconds by for timer
+         float GetTimeScale() { return 21600.f/winRequirement; }
+
+         float GetTimeElapsed() { return gameTimeElapsed; }
          
     private:
 
@@ -80,12 +85,12 @@ namespace NocturnalEngine {
         void LoseGame();
         void WinGame();
 
-        float gameTimeElapsed{}, winRequirement{60.f}; //in seconds
+        float gameTimeElapsed{}, winRequirement{180.f}; //in seconds
 
         GameScene currScene;
         GameState currState;
         std::unordered_map < GameScene, AnimalAttributes> sceneAnimalMap;
-        int deadAnimals, deathLimit{ 5 };
+        int deadAnimals, deathLimit{ 2 };
     };
 
 

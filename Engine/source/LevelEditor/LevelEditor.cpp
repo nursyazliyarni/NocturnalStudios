@@ -50,6 +50,7 @@
 #include "Scripts/DragAndDrop.h"
 #include "Scripts/HealthBar.h"
 #include "Scripts/AnimalLogic.h"
+#include "Scripts/TimerDisplay.h"
 
 #include "Scripts/GlobalGameManager.h"
 
@@ -1819,6 +1820,10 @@ namespace NocturnalEngine {
                                     if (mScriptList[current_script] == "AnimalLogic" && p_ecs.HaveComponent<AnimalAttributes>(selectedEntity))
                                     {
                                         logic.InsertScript(new AnimalLogic(), selectedEntity);
+                                    }
+                                    if (mScriptList[current_script] == "TimerDisplay" && p_ecs.HaveComponent<Text>(selectedEntity))
+                                    {
+                                        logic.InsertScript(new TimerDisplay(), selectedEntity);
                                     }
                                 }
                             }
