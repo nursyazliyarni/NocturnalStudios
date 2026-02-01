@@ -80,7 +80,7 @@ namespace NocturnalEngine {
         void LoseGame();
         void WinGame();
 
-        float gameTimeElapsed{}, winRequirement{10.f}; //in seconds
+        float gameTimeElapsed{}, winRequirement{60.f}; //in seconds
 
         GameScene currScene;
         GameState currState;
