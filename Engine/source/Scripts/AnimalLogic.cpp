@@ -8,6 +8,9 @@
 	Primary Author:
 		 ANG YU XUAN (100%)
 		- Created the AnimalLogic class and its function specification.
+    Secondary Author:
+         Nur Syazliyarni (5%)
+        - Adjusted health decay behavior per animal.
 
 	All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
 *------------------------------------------------------------------------------------------------*/
@@ -65,11 +68,36 @@ namespace NocturnalEngine {
 		{
 			aA.SetDefault();
 		}
-		//same as original code
+
 		if (aA.is_alive&&p_GameManager.GetGameState() != GameManager::GameState::ENDING) {
 			aA.current_hunger -= aA.hungerDecayRate * static_cast<double>(Frametime) * 10.0;
-			aA.current_health -= aA.healthDecayRate * static_cast<double>(Frametime);
-			aA.current_sanity -= aA.sanityDecayRate * static_cast<double>(Frametime);
+
+			// Adjust health decay based on animal type and hunger state
+			const double baseHealthMultiplier = 1.1; // slightly faster overall
+			double healthMultiplier = baseHealthMultiplier;
+			if (p_ecs.HaveComponent<NameTag>(entityID))
+			{
+				const std::string& name = p_ecs.GetComponent<NameTag>(entityID).GetNameTag();
+				const double hungerRatio = (aA.maxHunger > 0.0) ? (aA.current_hunger / aA.maxHunger) : 0.0;
+				const double lowHungerThreshold = 0.30;   // below 30% is "low"
+				const double highHungerThreshold = 0.70;  // above 70% is "normal+"
+
+				if (name == "Flamingo")
+				{
+					if (hungerRatio < lowHungerThreshold)
+						healthMultiplier = 2.0; // faster when hungry
+					else if (hungerRatio > highHungerThreshold)
+						healthMultiplier = 0.5; // slower when well fed
+				}
+				else if (name == "Horse")
+				{
+					healthMultiplier = 1.5; // faster health decay
+				}
+				// Seal and Owl remain at normal decay (1.0)
+			}
+
+			aA.current_health -= aA.healthDecayRate * static_cast<double>(Frametime) * healthMultiplier;
+			// aA.current_sanity -= aA.sanityDecayRate * static_cast<double>(Frametime);
 
 
 			if (aA.current_hunger <= 0 || aA.current_health <= 0 || aA.current_sanity <= 0) {
