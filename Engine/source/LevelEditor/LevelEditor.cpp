@@ -504,7 +504,7 @@ namespace NocturnalEngine {
             mGizmoType = ImGuizmo::OPERATION::SCALE;
         }
         ImGuizmo::BeginFrame();
-        if (selectedEntity >= 0 && selectedEntity < MAX_ENTITIES && p_ecs.HaveComponent<Transform>(selectedEntity))//have selected entity
+        if (selectedEntity >= 0 && selectedEntity < MAX_ENTITIES && isTransformOpen&&p_ecs.HaveComponent<Transform>(selectedEntity))//have selected entity
         {
             ImGuizmo::SetOrthographic(true);
 
@@ -1490,6 +1490,7 @@ namespace NocturnalEngine {
                 {
                     if (ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_None))
                     {
+                        if (!isTransformOpen)isTransformOpen = true;
                         //position
                         auto& Position = p_ecs.GetComponent<Transform>(selectedEntity).GetPos();
                         ImGui::PushItemWidth(100.0f);
@@ -1515,6 +1516,9 @@ namespace NocturnalEngine {
                         auto& rotation = p_ecs.GetComponent<Transform>(selectedEntity).GetRot();
                         ImGui::Text("Rotation Z"); ImGui::SameLine();
                         ImGui::DragFloat("##", (float*)&rotation, 1.0f);
+                    }
+                    else if (isTransformOpen) {
+                        isTransformOpen = false;
                     }
                 }
                 //Sprite Component
@@ -1630,9 +1634,9 @@ namespace NocturnalEngine {
                         ImGui::Checkbox("World Space", &text.GetWorldSpace());
                         ImGui::Checkbox("Center", &text.GetCenter());
 
-                        ImGui::Text("Position"); ImGui::SameLine();
+                        ImGui::Text("Position");
                         ImGui::Text("X"); ImGui::SameLine();
-                        ImGui::DragFloat("##TextPosX", &text.GetPosition()[0], 0.01f); ImGui::SameLine();
+                        ImGui::DragFloat("##TextPosX", &text.GetPosition()[0], 0.01f);
                         ImGui::Text("Y"); ImGui::SameLine();
                         ImGui::DragFloat("##TextPosY", &text.GetPosition()[1], 0.01f);
                     }
