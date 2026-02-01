@@ -5,6 +5,10 @@
     Brief:
         This file is used to serialize and deserialize text components for ECS.
 
+    Secondary Author:
+         Nur Syazliyarni (5%)
+        - Added Text component serialization/deserialization support.
+
     All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
 *------------------------------------------------------------------------------------------------*/
 

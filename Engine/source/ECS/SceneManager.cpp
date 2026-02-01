@@ -8,8 +8,11 @@
 		saved into a json file for future loading
 	
     Primary Author:
-         LAU XIANG YANG (100%)
+         LAU XIANG YANG (95%)
 		- Created the scene manager and its function specification.
+    Secondary Author:
+         Nur Syazliyarni (5%)
+        - Added Text component handling in scene load/save.
 
     All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
 *------------------------------------------------------------------------------------------------*/

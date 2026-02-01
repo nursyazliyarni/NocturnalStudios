@@ -5,6 +5,10 @@
     Brief:
         A Component used for rendering text (world-space or screen-space).
 
+    Secondary Author:
+         Nur Syazliyarni (5%)
+        - Added Text component support.
+
     All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
 *------------------------------------------------------------------------------------------------*/
 

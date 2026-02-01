@@ -8,11 +8,12 @@
         properties of the components and save them accordingly.
 	
     Primary Author:
-         LAU XIANG YANG (95%)
+         LAU XIANG YANG (93%)
 		- Created the LevelEditor class and its function specification.
     Secondary Author:
-         Nur Syazliyarni (5%)
+         Nur Syazliyarni (7%)
         - Added gizmo visibility toggle in the Scene viewer.
+        - Updated Text component UI usage in the inspector.
 
     All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
 *------------------------------------------------------------------------------------------------*/
@@ -2081,39 +2082,6 @@ namespace NocturnalEngine {
                         ImGui::Checkbox("Is Target", &draggable.IsTarget()); 
                     }
                 }
-                // Text 
-                if (p_ecs.HaveComponent<Text>(selectedEntity))
-                {
-                    if (ImGui::CollapsingHeader("Text", ImGuiTreeNodeFlags_None))
-                    {
-                        auto& text = p_ecs.GetComponent<Text>(selectedEntity);
-
-                        // Keep an edit buffer (so typing doesn't reset every frame)
-                        static Entity lastEntity = -1;
-                        static char buffer[512];
-
-                        if (lastEntity != selectedEntity)
-                        {
-                            memset(buffer, 0, sizeof(buffer));
-                            strcpy_s(buffer, sizeof(buffer), text.GetContent().c_str());
-                            lastEntity = selectedEntity;
-                        }
-
-                        if (ImGui::InputTextMultiline("Content", buffer, sizeof(buffer), ImVec2(0, 80)))
-                        {
-                            text.SetContent(std::string(buffer));
-                        }
-                        ImGui::DragFloat2("Position", text.GetPosition(), 0.01f);
-
-                        ImGui::DragFloat("Size", &text.GetSize(), 0.5f, 1.0f, 200.0f);
-                        ImGui::ColorEdit4("Color", text.GetColor());
-
-                        ImGui::Checkbox("World Space", &text.GetWorldSpace());
-                        ImGui::Checkbox("Center", &text.GetCenter());
-                    }
-                }
-                
-
                 if (ImGui::Button("Delete Component"))
                     ImGui::OpenPopup("Delete Component");
 
