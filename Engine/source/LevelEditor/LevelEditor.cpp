@@ -55,6 +55,7 @@
 #include "Scripts/HealthBar.h"
 #include "Scripts/AnimalLogic.h"
 #include "Scripts/TimerDisplay.h"
+#include "Scripts/RevealTargetOnClick.h"
 
 #include "Scripts/GlobalGameManager.h"
 
@@ -1838,6 +1839,10 @@ namespace NocturnalEngine {
                                     if (mScriptList[current_script] == "TimerDisplay" && p_ecs.HaveComponent<Text>(selectedEntity))
                                     {
                                         logic.InsertScript(new TimerDisplay(), selectedEntity);
+                                    }
+                                    if (mScriptList[current_script] == "RevealTargetOnClick" && p_ecs.HaveComponent<Collider>(selectedEntity))
+                                    {
+                                        logic.InsertScript(new RevealTargetOnClick(), selectedEntity);
                                     }
                                 }
                             }
