@@ -6,8 +6,11 @@
 		This file is used to serialize and deserialize logic components for ECS.
 	
     Primary Author:
-         LAU XIANG YANG (100%)
+         LAU XIANG YANG (95%)
 		- Created the logic class and its function specification.
+    Secondary Author:
+         Nur Syazliyarni (5%)
+        - Added RevealTargetOnClick script wiring for logic deserialization.
 
     All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
 *------------------------------------------------------------------------------------------------*/

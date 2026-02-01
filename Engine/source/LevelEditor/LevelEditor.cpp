@@ -11,9 +11,10 @@
          LAU XIANG YANG (93%)
 		- Created the LevelEditor class and its function specification.
     Secondary Author:
-         Nur Syazliyarni (7%)
+         Nur Syazliyarni (8%)
         - Added gizmo visibility toggle in the Scene viewer.
         - Updated Text component UI usage in the inspector.
+        - Added RevealTargetOnClick script to the editor script list.
 
     All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
 *------------------------------------------------------------------------------------------------*/
