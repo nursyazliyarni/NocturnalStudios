@@ -61,7 +61,7 @@
                 "radius2": 0.0
             },
             {
-                "NameTag": "OwlBG"
+                "NameTag": "OwlMedicine"
             },
             {
                 "TextureName": "owlScene",
@@ -110,8 +110,8 @@
             },
             {},
             {
-                "ColliderType1": 4,
-                "ColliderType2": 0,
+                "ColliderType1": 2,
+                "ColliderType2": 2,
                 "minX1": -0.05000000074505806,
                 "minX2": 0.0,
                 "minY1": -0.10000000149011612,
@@ -120,12 +120,12 @@
                 "maxX2": 0.0,
                 "maxY1": 0.44999998807907104,
                 "maxY2": 0.0,
-                "offsetX1": -0.30000001192092896,
+                "offsetX1": 0.0,
                 "offsetX2": 0.0,
-                "offsetY1": -0.25,
-                "offsetY2": 0.0,
-                "radius1": 0.0,
-                "radius2": 0.0
+                "offsetY1": -0.023000000044703484,
+                "offsetY2": 0.05000000074505806,
+                "radius1": 0.07800000160932541,
+                "radius2": 0.07999999821186066
             },
             {
                 "NameTag": "Owl"
@@ -152,11 +152,11 @@
             {},
             {},
             {
-                "Current Health": 98.94999994523823,
+                "Current Health": 100.0,
                 "Max Health": 100.0,
-                "Current Hunger": 89.49999945238233,
+                "Current Hunger": 100.0,
                 "Max Hunger": 100.0,
-                "Current Sanity": 98.94999994523823,
+                "Current Sanity": 100.0,
                 "Max Sanity": 100.0,
                 "Health Decay Rate": 1.0,
                 "Hunger Decay Rate": 1.0,
@@ -494,9 +494,9 @@
             {
                 "ColliderType1": 5,
                 "ColliderType2": 0,
-                "minX1": 0.25,
+                "minX1": 0.15000000596046448,
                 "minX2": 0.0,
-                "minY1": 0.14000000059604645,
+                "minY1": 0.09000000357627869,
                 "minY2": 0.0,
                 "maxX1": 0.20000000298023224,
                 "maxX2": 0.0,
@@ -510,7 +510,7 @@
                 "radius2": 0.0
             },
             {
-                "NameTag": "owl food"
+                "NameTag": "OwlFood"
             },
             {
                 "TextureName": "flamingo_food",
@@ -567,7 +567,7 @@
                 "radius2": 0.0
             },
             {
-                "NameTag": "owl medicine"
+                "NameTag": "OwlMedicine"
             },
             {
                 "TextureName": "flamingo_medicine",
@@ -610,7 +610,7 @@
                 "ColliderType2": 0,
                 "minX1": 0.20000000298023224,
                 "minX2": 0.0,
-                "minY1": 0.15000000596046448,
+                "minY1": 0.10000000149011612,
                 "minY2": 0.0,
                 "maxX1": 0.20000000298023224,
                 "maxX2": 0.0,
@@ -624,7 +624,7 @@
                 "radius2": 0.0
             },
             {
-                "NameTag": "owl toy"
+                "NameTag": "OwlToy"
             },
             {
                 "TextureName": "flamingo_toy",
@@ -754,9 +754,9 @@
         ],
         "13": [
             {
-                "posX": 1.1352802515029907,
+                "posX": 1.1399999856948853,
                 "posY": 0.5239999890327454,
-                "scaleX": 0.8895604610443115,
+                "scaleX": 0.8989999890327454,
                 "scaleY": 0.0689999982714653,
                 "Rot": 0.0
             },
@@ -794,9 +794,9 @@
         ],
         "14": [
             {
-                "posX": 1.0929707288742065,
+                "posX": 1.1399999856948853,
                 "posY": 0.2750000059604645,
-                "scaleX": 0.8046049475669861,
+                "scaleX": 0.8989999890327454,
                 "scaleY": 0.0689999982714653,
                 "Rot": 0.0
             },
@@ -834,9 +834,9 @@
         ],
         "15": [
             {
-                "posX": 1.1352802515029907,
+                "posX": 1.1399999856948853,
                 "posY": 0.012000000104308128,
-                "scaleX": 0.8895604610443115,
+                "scaleX": 0.8989999890327454,
                 "scaleY": 0.0689999982714653,
                 "Rot": 0.0
             },

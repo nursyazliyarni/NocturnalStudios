@@ -59,6 +59,7 @@ namespace NocturnalEngine {
         sceneAnimalMap.emplace(GameScene::FLAMINGO, defaultAttributes);
         sceneAnimalMap.emplace(GameScene::HORSE, defaultAttributes);
         sceneAnimalMap.emplace(GameScene::OWL, defaultAttributes);
+        sceneAnimalMap[GameScene::OWL].hungerDecayRate = 1.5;
         sceneAnimalMap.emplace(GameScene::SEAL, defaultAttributes);
         currState=  GameManager::GameState::PLAYING;
         deadAnimals = 0;
@@ -134,6 +135,9 @@ namespace NocturnalEngine {
         for (std::pair<const GameScene, AnimalAttributes>& sceneAnimalPair : sceneAnimalMap)
         {
             sceneAnimalPair.second = defaultAttributes;
+            if (sceneAnimalPair.first == GameScene::OWL) {
+                sceneAnimalPair.second.hungerDecayRate = 1.5f;
+            }
         }
         gameTimeElapsed = 0.f;
         deadAnimals = 0;
