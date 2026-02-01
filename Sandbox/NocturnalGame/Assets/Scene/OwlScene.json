@@ -12,7 +12,7 @@
         9
     ],
     "Number of Entities": {
-        "Entities": 18
+        "Entities": 19
     },
     "EntitySignatures": [
         "00000000000000000000000011111101",
@@ -32,7 +32,8 @@
         "00000000000000000000000100111001",
         "00000000000000000000000100111001",
         "00000000000000000001000000101001",
-        "00000000000000000000000001011001"
+        "00000000000000000000000001011001",
+        "00000000000000000000000000011001"
     ],
     "Components": {
         "0": [
@@ -145,7 +146,8 @@
             },
             {
                 "0": "AnimalLogic",
-                "ScriptCount": 1
+                "1": "PainSpotSpawner",
+                "ScriptCount": 2
             },
             {
                 "Tag": "Owl",
@@ -964,6 +966,39 @@
                 "Tag": "target",
                 "TargetTag": ""
             },
+            {},
+            {},
+            {},
+            {},
+            {},
+            {}
+        ],
+        "18": [
+            {
+                "posX": -0.9061489105224609,
+                "posY": 0.3712949752807617,
+                "scaleX": 0.05000000074505806,
+                "scaleY": 0.05000000074505806,
+                "Rot": 0.0
+            },
+            {},
+            {},
+            {
+                "NameTag": "painSpot"
+            },
+            {
+                "TextureName": "painSpot",
+                "Index_X": 0,
+                "Index_Y": 0,
+                "Ucoordinates": 512.0,
+                "Vcoordinates": 512.0,
+                "IsSpriteSheet": false,
+                "IsAnimated": false,
+                "MaxIndex": 0,
+                "LayeringOrder": 0
+            },
+            {},
+            {},
             {},
             {},
             {},

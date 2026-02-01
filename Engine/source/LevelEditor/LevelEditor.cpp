@@ -57,6 +57,7 @@
 #include "Scripts/AnimalLogic.h"
 #include "Scripts/TimerDisplay.h"
 #include "Scripts/RevealTargetOnClick.h"
+#include "Scripts/PainSpotSpawner.h"
 
 #include "Scripts/GlobalGameManager.h"
 
@@ -1844,6 +1845,10 @@ namespace NocturnalEngine {
                                     if (mScriptList[current_script] == "RevealTargetOnClick" && p_ecs.HaveComponent<Collider>(selectedEntity))
                                     {
                                         logic.InsertScript(new RevealTargetOnClick(), selectedEntity);
+                                    }
+                                    if (mScriptList[current_script] == "PainSpotSpawner" && p_ecs.HaveComponent<AnimalAttributes>(selectedEntity))
+                                    {
+                                        logic.InsertScript(new PainSpotSpawner(), selectedEntity);
                                     }
                                 }
                             }

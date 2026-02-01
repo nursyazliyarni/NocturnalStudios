@@ -84,7 +84,7 @@ namespace NocturnalEngine {
                 // The code should be the exact same
                 if (sceneAnimalPair.first!=currScene&& sceneAnimalPair.second.is_alive)
                 {
-                    sceneAnimalPair.second.current_hunger -= sceneAnimalPair.second.hungerDecayRate * static_cast<double>( dt) * 10.0;
+                    // sceneAnimalPair.second.current_hunger -= sceneAnimalPair.second.hungerDecayRate * static_cast<double>( dt) * 10.0;
                     sceneAnimalPair.second.current_health -= sceneAnimalPair.second.healthDecayRate * static_cast<double>(dt);
                     sceneAnimalPair.second.current_sanity -= sceneAnimalPair.second.sanityDecayRate * static_cast<double>(dt);
 

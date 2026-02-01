@@ -30,6 +30,7 @@
 #include "Scripts/AnimalLogic.h"
 #include "Scripts/TimerDisplay.h"
 #include "Scripts/RevealTargetOnClick.h"
+#include "Scripts/PainSpotSpawner.h"
 
 
 namespace NocturnalEngine
@@ -167,6 +168,10 @@ namespace NocturnalEngine
 			if (mScriptNameVector[j] == "RevealTargetOnClick")
 			{
 				mScriptsVector.push_back(new RevealTargetOnClick());
+			}
+			if (mScriptNameVector[j] == "PainSpotSpawner")
+			{
+				mScriptsVector.push_back(new PainSpotSpawner());
 			}
 		}
 		return true;
