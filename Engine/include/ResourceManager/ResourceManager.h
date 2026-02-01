@@ -43,6 +43,10 @@ namespace NocturnalEngine {
 		//load shader from file
 		static std::shared_ptr<Shader> LoadShader(std::string name, const std::string& filepath);
 		static std::shared_ptr<Shader> GetShader(std::string name);
+
+		//load font from file
+		static std::shared_ptr<Font> LoadFont(std::string name, const std::string& filepath, unsigned int fontsize = 50);
+		static std::shared_ptr<Font> GetFont(const std::string& name);
 		
 		static std::shared_ptr<CAudioEngine> GetAudio(std::string name);
 		static std::shared_ptr<CAudioEngine> LoadAudio(std::string name, const std::string& filepath);

@@ -41,7 +41,6 @@ namespace NocturnalEngine {
 		void Layering();
 		void Hierarchy();
 		void Inspector();
-		void LogicSelector();
 
 		//for audio loading from files
 		void LoadAudioFromFile();
@@ -64,6 +63,7 @@ namespace NocturnalEngine {
 		bool is_ShowWindow = true;
 		bool imgui_mouse_control = true;
 		bool scene_autobackup = false;
+		bool isTransformOpen = false;
 
 		static std::unique_ptr<LevelEditor>& GetInstance();
 

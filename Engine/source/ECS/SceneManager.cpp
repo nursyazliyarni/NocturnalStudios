@@ -358,6 +358,10 @@ namespace NocturnalEngine
 						{
 							p_ecs.GetComponent<Draggable>(j).Serialize(writer);
 						}
+						if (p_ecs.GetComponentTypeName(compID) == "Text")
+						{
+							p_ecs.GetComponent<Text>(j).Serialize(writer);
+						}
 					}
 				}
 				writer->EndObject();

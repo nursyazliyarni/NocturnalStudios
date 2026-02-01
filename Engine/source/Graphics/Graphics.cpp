@@ -68,13 +68,43 @@ namespace NocturnalEngine {
 				ResourceManager::LoadTexture(Imagename, gs);
 			}
 		}
+		std::string fontPath = "Assets/fonts";
+		if (std::filesystem::exists(fontPath))
+		{
+			for (const auto& entry : std::filesystem::directory_iterator(fontPath))
+			{
+				if (!entry.is_regular_file())
+					continue;
+
+				auto ext = entry.path().extension().string();
+				std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
+				if (ext != ".ttf" && ext != ".otf")
+					continue;
+
+				std::string fontName = entry.path().stem().string();
+				if (!ResourceManager::GetFont(fontName))
+				{
+					ResourceManager::LoadFont(fontName, entry.path().generic_string());
+				}
+			}
+		}
 		FrameBufferSpecification fbspec;
 		fbspec.Attachments = { FrameBufferTextureFormat::RGBA8, FrameBufferTextureFormat::RED_INTEGER, FrameBufferTextureFormat::DEPTH };
 		fbspec.Width = mWinData.GetWidth();
 		fbspec.Height = mWinData.GetHeight();
 		p_FrameBuffer->SetFrameBufferSpecification(fbspec);
 		Renderer::Init();
-		mFont->Init();
+		if (!ResourceManager::GetFont("KernlGrotesk"))
+		{
+			ResourceManager::LoadFont("KernlGrotesk", "Assets/fonts/KernlGrotesk.otf");
+		}
+		mFont = ResourceManager::GetFont("KernlGrotesk");
+		if (!mFont)
+		{
+			mFont = std::make_shared<Font>();
+			mFont->Init();
+			mFont->Load("Assets/fonts/KernlGrotesk.otf");
+		}
 
 		for (int i = 0; i < Graphic::MAX_LAYERS; ++i)
 			Graphic::layerEnabled[i] = true;
@@ -168,33 +198,11 @@ namespace NocturnalEngine {
 							transform.GetRot(), mIndex1);
 					}
 
-					
-
 					else
 					{
 						mRenderer->DrawQuad({ transform.GetPos().x, transform.GetPos().y }, { transform.GetScale().x, transform.GetScale().y },
 							transform.GetRot(), GETTEXTURE(sprite.GetTexture()));
 					}
-
-					//yu xuan's code check HealthBar.h and HealthBar.cpp for amendments
-					//auto& nametag = p_ecs.GetComponent<NameTag>(*i).GetNameTag();
-					/*if (p_ecs.HaveComponent<AnimalAttributes>(*i))
-					{
-						auto& animal_attribute = p_ecs.GetComponent<AnimalAttributes>(*i);
-						animal_attribute_map["hunger bar"] = animal_attribute.current_hunger;
-						animal_attribute_map["health bar"] = animal_attribute.current_health;
-						animal_attribute_map["sanity bar"] = animal_attribute.current_sanity;
-					}
-
-					else if (nametag == "hunger bar" || nametag == "health bar" || nametag == "sanity bar") {
-						mRenderer->DrawQuad({ transform.GetPos().x+static_cast<float>(animal_attribute_map[nametag])/150*0.5f, transform.GetPos().y },
-							{ static_cast<float>(animal_attribute_map[nametag])/150, transform.GetScale().y},
-							transform.GetRot(), GETTEXTURE(sprite.GetTexture()));
-					}
-					if (p_ecs.HaveComponent<ItemsAttributes>(*i) && p_ecs.GetComponent<ItemsAttributes>(*i).is_dragging) {
-						mRenderer->DrawQuad({ p_ecs.GetComponent<ItemsAttributes>(*i).duplicate_item_pos }, { transform.GetScale().x, transform.GetScale().y },
-							transform.GetRot(), GETTEXTURE(sprite.GetTexture()));
-					}*/
 
 					if (p_Editor->mDebugDraw)
 					{
@@ -283,7 +291,11 @@ namespace NocturnalEngine {
 			float scale = text.GetSize() * 0.0000333f;
 			if (scale < 0.0001f) scale = 0.0008f;
 
-			mFont->RenderText(text.GetContent(), pos, scale, *mcamera, col);
+			std::shared_ptr<Font> font = ResourceManager::GetFont(text.GetFont());
+			if (!font)
+				font = mFont;
+			if (font)
+				font->RenderText(text.GetContent(), pos, scale, *mcamera, col);
 		}
 	
 		p_FrameBuffer->UnBind();

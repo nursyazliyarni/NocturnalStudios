@@ -23,6 +23,9 @@ namespace NocturnalEngine
         void SetContent(const std::string& text) { mContent = text; }
         std::string& GetContent() { return mContent; }
 
+        void SetFont(const std::string& fontName) { mFontName = fontName; }
+        std::string& GetFont() { return mFontName; }
+
         void SetSize(float size) { mSize = size; }
         float& GetSize() { return mSize; }
 
@@ -50,6 +53,7 @@ namespace NocturnalEngine
 
     private:
         std::string mContent;
+        std::string mFontName;
         float mSize;
 
         float mColor[4];   // r,g,b,a

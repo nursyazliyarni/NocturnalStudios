@@ -13,58 +13,78 @@
 
 namespace NocturnalEngine
 {
+    /*!*************************************************************************
+    Ctor for Text Component
+    ****************************************************************************/
     Text::Text()
         : mContent{ "New Text" }
+        , mFontName{ "KernlGrotesk" }
         , mSize{ 24.0f }
-        , mWorldSpace{ true }
+        , mColor{ 1.0f, 1.0f, 1.0f, 1.0f }
+        , mWorldSpace{ false }
         , mCenter{ false }
+        , mPosition{ 0.0f, 0.0f }
     {
-        mColor[0] = 1.0f;
-        mColor[1] = 1.0f;
-        mColor[2] = 1.0f;
-        mColor[3] = 1.0f;
-        mPosition[0] = 0.f;
-        mPosition[1] = 0.f;
     }
 
+    /*!*************************************************************************
+    Deserialize for Text Component
+    ****************************************************************************/
     bool Text::Deserialize(const rapidjson::Value& obj)
     {
-        mContent = obj["Content"].GetString();
-        mSize = obj["Size"].GetFloat();
+        if (obj.HasMember("Content") && obj["Content"].IsString())
+            mContent = obj["Content"].GetString();
 
-        const rapidjson::Value& col = obj["Color"];
-        mColor[0] = col[0].GetFloat();
-        mColor[1] = col[1].GetFloat();
-        mColor[2] = col[2].GetFloat();
-        mColor[3] = col[3].GetFloat();
+        if (obj.HasMember("Font") && obj["Font"].IsString())
+            mFontName = obj["Font"].GetString();
 
-        const rapidjson::Value& pos = obj["Position"];
-        mPosition[0] = pos[0].GetFloat();
-        mPosition[1] = pos[1].GetFloat();
+        if (obj.HasMember("Size") && obj["Size"].IsNumber())
+            mSize = obj["Size"].GetFloat();
 
-        mWorldSpace = obj["WorldSpace"].GetBool();
-        mCenter = obj["Center"].GetBool();
+        if (obj.HasMember("ColorR") && obj["ColorR"].IsNumber()) mColor[0] = obj["ColorR"].GetFloat();
+        if (obj.HasMember("ColorG") && obj["ColorG"].IsNumber()) mColor[1] = obj["ColorG"].GetFloat();
+        if (obj.HasMember("ColorB") && obj["ColorB"].IsNumber()) mColor[2] = obj["ColorB"].GetFloat();
+        if (obj.HasMember("ColorA") && obj["ColorA"].IsNumber()) mColor[3] = obj["ColorA"].GetFloat();
+
+        if (obj.HasMember("PosX") && obj["PosX"].IsNumber()) mPosition[0] = obj["PosX"].GetFloat();
+        if (obj.HasMember("PosY") && obj["PosY"].IsNumber()) mPosition[1] = obj["PosY"].GetFloat();
+
+        if (obj.HasMember("WorldSpace") && obj["WorldSpace"].IsBool())
+            mWorldSpace = obj["WorldSpace"].GetBool();
+
+        if (obj.HasMember("Center") && obj["Center"].IsBool())
+            mCenter = obj["Center"].GetBool();
 
         return true;
     }
 
+    /*!*************************************************************************
+    Serialize for Text Component
+    ****************************************************************************/
     bool Text::Serialize(rapidjson::PrettyWriter<rapidjson::StringBuffer>* writer) const
     {
         writer->Key("Content");
         writer->String(mContent.c_str());
 
+        writer->Key("Font");
+        writer->String(mFontName.c_str());
+
         writer->Key("Size");
         writer->Double(mSize);
 
-        writer->Key("Color");
-        writer->StartArray();
+        writer->Key("ColorR");
         writer->Double(mColor[0]);
+        writer->Key("ColorG");
         writer->Double(mColor[1]);
+        writer->Key("ColorB");
         writer->Double(mColor[2]);
+        writer->Key("ColorA");
         writer->Double(mColor[3]);
+
+        writer->Key("PosX");
         writer->Double(mPosition[0]);
+        writer->Key("PosY");
         writer->Double(mPosition[1]);
-        writer->EndArray();
 
         writer->Key("WorldSpace");
         writer->Bool(mWorldSpace);
