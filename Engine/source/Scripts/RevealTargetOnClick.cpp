@@ -14,6 +14,7 @@
 
 #include "pch.h"
 #include "Scripts/RevealTargetOnClick.h"
+#include "ECS/Components/AnimalAttributes.h"
 #include "ECS/Components/NameTag.h"
 #include "ECS/Components/Transform.h"
 #include "ECS/Components/Collider.h"
@@ -30,6 +31,7 @@ namespace NocturnalEngine
     void RevealTargetOnClick::Start()
     {
         FindTargetEntity();
+        FindOwlEntity();
         HideTarget();
     }
 
@@ -40,15 +42,21 @@ namespace NocturnalEngine
         if (!mHasTarget) // Skip if we didn't find the target entity
             return;
 
-        if (mInput->MousePressed(GLFW_MOUSE_BUTTON_LEFT) && IsMouseOver(entityID)) // Click on OwlMedicine to toggle
-        {
-            ToggleTarget();
-        }
-
         if (mVisible && p_ecs.HaveComponent<Transform>(mTarget)) // Follow cursor when visible
         {
             auto& transform = p_ecs.GetComponent<Transform>(mTarget);
             transform.SetPos(p_GUI->MousePosition.x, p_GUI->MousePosition.y);
+        }
+
+        if (mInput->MousePressed(GLFW_MOUSE_BUTTON_LEFT) && IsMouseOver(entityID)) // Click on OwlMedicine to toggle
+        {
+            ToggleTarget();
+            return;
+        }
+
+        if (mVisible && mInput->MousePressed(GLFW_MOUSE_BUTTON_LEFT))
+        {
+            ConsumePainSpotAndHeal();
         }
     }
 
@@ -64,6 +72,31 @@ namespace NocturnalEngine
                 mTarget = e;
                 mHasTarget = true;
                 break;
+            }
+        }
+    }
+
+    void RevealTargetOnClick::FindOwlEntity()
+    {
+        mOwl = 0;
+        for (Entity e : p_ecs.GetAliveEntitiesSet())
+        {
+            if (!p_ecs.HaveComponent<AnimalAttributes>(e) || !p_ecs.HaveComponent<NameTag>(e))
+                continue;
+
+            if (p_ecs.GetComponent<NameTag>(e).GetNameTag() == "Owl")
+            {
+                mOwl = e;
+                return;
+            }
+        }
+
+        for (Entity e : p_ecs.GetAliveEntitiesSet())
+        {
+            if (p_ecs.HaveComponent<AnimalAttributes>(e))
+            {
+                mOwl = e;
+                return;
             }
         }
     }
@@ -96,6 +129,59 @@ namespace NocturnalEngine
             transform.SetScale(mTargetScale.x, mTargetScale.y);
             mVisible = true;
         }
+    }
+
+    void RevealTargetOnClick::ConsumePainSpotAndHeal()
+    {
+        Entity painSpot = 0;
+        if (!IsTargetOverPainSpot(painSpot))
+            return;
+
+        p_ecs.DestroyEntity(painSpot);
+
+        if (mOwl == 0 || !p_ecs.HaveComponent<AnimalAttributes>(mOwl))
+            return;
+
+        auto& attrs = p_ecs.GetComponent<AnimalAttributes>(mOwl);
+        const double maxHealth = attrs.maxHealth > 0.0 ? attrs.maxHealth : 1.0;
+        const double healAmount = maxHealth * 0.15;
+        attrs.current_health = std::min(maxHealth, attrs.current_health + healAmount);
+    }
+
+    bool RevealTargetOnClick::IsTargetOverPainSpot(Entity& outSpot) const
+    {
+        outSpot = 0;
+
+        if (!mVisible || !mHasTarget || !p_ecs.HaveComponent<Transform>(mTarget))
+            return false;
+
+        auto& targetTransform = p_ecs.GetComponent<Transform>(mTarget);
+        const vec2D targetPos = targetTransform.GetPos();
+        const vec2D targetScale = targetTransform.GetScale();
+        const float targetRadius = std::max(std::abs(targetScale.x), std::abs(targetScale.y)) * 0.5f;
+
+        for (Entity e : p_ecs.GetAliveEntitiesSet())
+        {
+            if (e == mTarget)
+                continue;
+            if (!p_ecs.HaveComponent<NameTag>(e) || !p_ecs.HaveComponent<Transform>(e))
+                continue;
+            if (p_ecs.GetComponent<NameTag>(e).GetNameTag() != "painSpot")
+                continue;
+
+            auto& painTransform = p_ecs.GetComponent<Transform>(e);
+            const vec2D painPos = painTransform.GetPos();
+            const vec2D painScale = painTransform.GetScale();
+            const float painRadius = std::max(std::abs(painScale.x), std::abs(painScale.y)) * 0.5f;
+
+            if (distance(targetPos, painPos) <= targetRadius + painRadius)
+            {
+                outSpot = e;
+                return true;
+            }
+        }
+
+        return false;
     }
 
     bool RevealTargetOnClick::IsMouseOver(Entity entity) const

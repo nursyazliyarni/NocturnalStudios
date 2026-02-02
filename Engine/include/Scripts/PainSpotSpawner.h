@@ -41,6 +41,7 @@ namespace NocturnalEngine
 
         void SpawnSpot();
         vec2D RandomOffset(const vec2D& owlScale);
+        void CleanupDestroyedSpots();
         void UpdateSpotPositions();
     };
 }

@@ -37,13 +37,17 @@ namespace NocturnalEngine
     private:
         std::unique_ptr<InputSystem>& mInput;
         Entity mTarget{ 0 };
+        Entity mOwl{ 0 };
         vec2D mTargetScale{ 0.0f, 0.0f };
         bool mHasTarget{ false };
         bool mVisible{ false };
 
         void FindTargetEntity();
+        void FindOwlEntity();
         void HideTarget();
         void ToggleTarget();
+        void ConsumePainSpotAndHeal();
+        bool IsTargetOverPainSpot(Entity& outSpot) const;
         bool IsMouseOver(Entity entity) const;
     };
 }

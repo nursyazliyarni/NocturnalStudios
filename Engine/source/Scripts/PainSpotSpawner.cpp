@@ -41,6 +41,8 @@ namespace NocturnalEngine
         if (!p_ecs.HaveComponent<AnimalAttributes>(entityID) || !p_ecs.HaveComponent<Transform>(entityID))
             return;
 
+        CleanupDestroyedSpots();
+
         auto& attrs = p_ecs.GetComponent<AnimalAttributes>(entityID);
         const double maxHealth = attrs.maxHealth > 0.0 ? attrs.maxHealth : 1.0;
         const double healthRatio = attrs.current_health / maxHealth;
@@ -105,6 +107,22 @@ namespace NocturnalEngine
         std::uniform_real_distribution<float> distX(-0.5f * owlScale.x, 0.5f * owlScale.x);
         std::uniform_real_distribution<float> distY(-0.5f * owlScale.y, 0.5f * owlScale.y);
         return vec2D(distX(mRng), distY(mRng));
+    }
+
+    void PainSpotSpawner::CleanupDestroyedSpots()
+    {
+        size_t i = 0;
+        while (i < mSpots.size())
+        {
+            if (!p_ecs.HaveComponent<Transform>(mSpots[i]) || !p_ecs.HaveComponent<NameTag>(mSpots[i]) ||
+                p_ecs.GetComponent<NameTag>(mSpots[i]).GetNameTag() != "painSpot")
+            {
+                mSpots.erase(mSpots.begin() + i);
+                mOffsets.erase(mOffsets.begin() + i);
+                continue;
+            }
+            ++i;
+        }
     }
 
     void PainSpotSpawner::UpdateSpotPositions()
