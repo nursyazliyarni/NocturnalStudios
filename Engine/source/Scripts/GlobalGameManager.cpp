@@ -127,6 +127,7 @@ namespace NocturnalEngine {
             defaultAttributes.SetDefault();
             return defaultAttributes;
         }
+        targetVisibility = false;
     }
     /*!*************************************************************************
     This function ends the system. As there are no data members that require
@@ -149,7 +150,7 @@ namespace NocturnalEngine {
         diegeticLogEntries.clear();
         deadAnimals = 0;
         currState = GameManager::GameState::ENDING;
-        
+        targetVisibility = false;
     }
 
     void GameManager::SaveAnimalAttributesToCurrentScene(AnimalAttributes aA) {

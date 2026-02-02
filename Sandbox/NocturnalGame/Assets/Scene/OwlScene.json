@@ -12,7 +12,7 @@
         9
     ],
     "Number of Entities": {
-        "Entities": 21
+        "Entities": 22
     },
     "EntitySignatures": [
         "00000000000000000000000011111101",
@@ -35,7 +35,8 @@
         "00000000000000000001000000001000",
         "00000000000000000001000000001000",
         "00000000000000000001000000001000",
-        "00000000000000000000000001011001"
+        "00000000000000000000000001011001",
+        "00000000000000000001000000111001"
     ],
     "Components": {
         "0": [
@@ -650,9 +651,8 @@
                 "LayeringOrder": 0
             },
             {
-                "0": "DragAndDrop",
-                "1": "RevealTargetOnClick",
-                "ScriptCount": 2
+                "0": "RevealTargetOnClick",
+                "ScriptCount": 1
             },
             {},
             {},
@@ -1154,6 +1154,67 @@
             {},
             {},
             {}
+        ],
+        "21": [
+            {
+                "posX": 1.0999298095703125,
+                "posY": -0.54035484790802,
+                "scaleX": 0.9850000143051147,
+                "scaleY": 0.5099999904632568,
+                "Rot": 0.0
+            },
+            {},
+            {},
+            {
+                "NameTag": "LogObj"
+            },
+            {
+                "TextureName": "PlaceholderLogbg",
+                "Index_X": 0,
+                "Index_Y": 0,
+                "Ucoordinates": 512.0,
+                "Vcoordinates": 512.0,
+                "IsSpriteSheet": false,
+                "IsAnimated": false,
+                "MaxIndex": 0,
+                "LayeringOrder": 0
+            },
+            {
+                "0": "DigeticLog",
+                "ScriptCount": 1
+            },
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {
+                "Content": "[00:00:00] This is a Log entry",
+                "Font": "Jersey10Charted-Regular",
+                "Size": 25.899999618530273,
+                "ColorR": 1.0,
+                "ColorG": 0.0,
+                "ColorB": 0.0,
+                "ColorA": 1.0,
+                "PosX": -0.4699999988079071,
+                "PosY": 0.20000000298023224,
+                "Line Height": 0,
+                "WorldSpace": true,
+                "Center": false,
+                "Content": "[00:00:00] This is a Log entry",
+                "Font": "Jersey10Charted-Regular",
+                "Size": 25.899999618530273,
+                "ColorR": 1.0,
+                "ColorG": 0.0,
+                "ColorB": 0.0,
+                "ColorA": 1.0,
+                "PosX": -0.4699999988079071,
+                "PosY": 0.20000000298023224,
+                "Line Height": 0,
+                "WorldSpace": true,
+                "Center": false
+            }
         ]
     }
 }

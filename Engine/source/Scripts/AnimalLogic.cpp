@@ -158,7 +158,7 @@ namespace NocturnalEngine {
 
 		if (!aA.is_alive)
 		{
-			p_GameManager.AddLogEntry( p_ecs.GetComponent<NameTag>(entityID).GetNameTag() + "is dead.");
+			p_GameManager.AddLogEntry( p_ecs.GetComponent<NameTag>(entityID).GetNameTag() + " is dead.");
 		}
 	}
 

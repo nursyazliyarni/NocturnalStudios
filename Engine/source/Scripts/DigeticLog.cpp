@@ -25,7 +25,7 @@ namespace NocturnalEngine {
 		if (p_ecs.HaveComponent<Transform>(entityID)&&p_ecs.HaveComponent<Text>(entityID))
 		{
 			textWorldHeight = p_ecs.GetComponent<Text>(entityID).GetSize() * 0.0020f;
-			float yBuffer = p_ecs.GetComponent<Transform>(entityID).GetMaxPos().y-(p_ecs.GetComponent<Transform>(entityID).GetPos().y+p_ecs.GetComponent<Text>(entityID).GetPosition()[1])-textWorldHeight/2.f;
+			float yBuffer = p_ecs.GetComponent<Transform>(entityID).GetMaxPos().y-(p_ecs.GetComponent<Transform>(entityID).GetPos().y+p_ecs.GetComponent<Text>(entityID).GetPosition()[1])-textWorldHeight;
 			logSpaces = static_cast<int>((p_ecs.GetComponent<Transform>(entityID).GetScale().y-yBuffer*2.f) /textWorldHeight);
 
 

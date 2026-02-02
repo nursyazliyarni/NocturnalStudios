@@ -78,6 +78,10 @@ namespace NocturnalEngine {
          const std::deque<std::string>& GetLogEntries()  { return diegeticLogEntries; }
 
          void AddLogEntry(std::string message);
+
+         bool isTargetVisible()const { return targetVisibility; }
+
+         void setTargetVisibility(bool t) { targetVisibility = t; }
     private:
 
         GameManager();
@@ -99,7 +103,7 @@ namespace NocturnalEngine {
         int deadAnimals, deathLimit{ 2 }, maxDiegeticLogEntries{40};
         std::deque<std::string> diegeticLogEntries;
 
-        bool diegeticLogUpdated{ true };
+        bool diegeticLogUpdated{ true }, targetVisibility{ false };
 
     };
 
