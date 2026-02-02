@@ -5,6 +5,10 @@
     Brief:
         A Component used for rendering text (world-space or screen-space).
 
+    Secondary Author:
+         Nur Syazliyarni (5%)
+        - Added Text component support.
+
     All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
 *------------------------------------------------------------------------------------------------*/
 
@@ -51,6 +55,9 @@ namespace NocturnalEngine
         float* GetPosition() { return mPosition; }
         void SetPosition(float x, float y) { mPosition[0] = x; mPosition[1] = y; }
 
+        int& Get_line_height() { return line_height; }
+        void Set_line_height(int Line_Height) { line_height = Line_Height; }
+
     private:
         std::string mContent;
         std::string mFontName;
@@ -60,6 +67,7 @@ namespace NocturnalEngine
         bool mWorldSpace;
         bool mCenter;
 
-        float mPosition[2];   // x, y 
+        float mPosition[2];   // x, y
+        int line_height;
     };
 }

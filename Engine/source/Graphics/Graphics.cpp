@@ -7,8 +7,11 @@
 		once render class is up.
 	
     Primary Author:
-         LAU XIANG YANG (100%)
+         LAU XIANG YANG (95%)
 		- Created the graphics class and its function specification.
+    Secondary Author:
+         Nur Syazliyarni (5%)
+        - Added Text component rendering path in the graphics loop.
 
     All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
 *------------------------------------------------------------------------------------------------*/
@@ -161,7 +164,7 @@ namespace NocturnalEngine {
 		glClearTexImage(p_FrameBuffer->GetColorAttachmentRendererID(1), 0, GL_RGBA8, GL_INT, &value);
 	
 		mRenderer->Begin(*mcamera);// begin of the renderer 
-	
+		//mFont->RenderText("TEXT TEST", { 0.f, 0.f }, 0.001f, *mcamera, { 1,1,1 }); // for testing
 
 		p_GUI->VPmat = mcamera->GetViewProjectionMatrix();
 		//std::map<std::string, double>animal_attribute_map;
@@ -185,7 +188,7 @@ namespace NocturnalEngine {
 				{//render the lowest layer level then follow on
 					if (sprite.is_Animated)
 					{
-						mAimator.UpdateAnimation(frametime, p_ecs.GetComponent<Sprite>(*i));
+						mAimator.UpdateAnimation(frametime,  p_ecs.GetComponent<Sprite>(*i));
 					}
 
 					if (sprite.is_SpriteSheet)
@@ -295,7 +298,7 @@ namespace NocturnalEngine {
 			if (!font)
 				font = mFont;
 			if (font)
-				font->RenderText(text.GetContent(), pos, scale, *mcamera, col);
+				font->RenderText(text.GetContent(), pos, text.Get_line_height(), scale, *mcamera, col);
 		}
 	
 		p_FrameBuffer->UnBind();
@@ -308,7 +311,7 @@ namespace NocturnalEngine {
 		if (misFps)
 		{
 			auto i = std::to_string(FramePerSec::GetInstance().GetFps());
-			mFont->RenderText("FPS: " + i, { camera.GetPosition().x + 0.2f, camera.GetPosition().y + 0.2f },
+			mFont->RenderText("FPS: " + i, { camera.GetPosition().x + 0.2f, camera.GetPosition().y + 0.2f }, 0,
 				0.0008f, camera, { 0.87f, 0.92f, 0.18f });
 		}
 		Timer::GetInstance().Update(Systems::GRAPHIC);

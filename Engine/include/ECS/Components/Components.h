@@ -9,8 +9,11 @@
         deserialize its data
 		
     Primary Author:
-         LAU XIANG YANG (100%)
+         LAU XIANG YANG (95%)
 		- Created the Components.h file and its function specification.
+    Secondary Author:
+         Nur Syazliyarni (5%)
+        - Added Text component integration into ECS component includes/macros.
 
     All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
 *------------------------------------------------------------------------------------------------*/

@@ -8,8 +8,11 @@
 		 such as textures, shaders, fonts, and audio assets used in the engine.
 
     Primary Author:
-         LAU XIANG YANG (100%)
+         LAU XIANG YANG (95%)
 		- Created the ResourceManager.h file and its function specification.
+    Secondary Author:
+         Nur Syazliyarni (5%)
+        - Added font/text resource declarations for text rendering.
 
     All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
 *------------------------------------------------------------------------------------------------*/

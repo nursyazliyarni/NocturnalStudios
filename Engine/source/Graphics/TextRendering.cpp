@@ -6,8 +6,11 @@
 		This file render text using texture atlas and glm
 	
     Primary Author:
-         LAU XIANG YANG (100%)
+         LAU XIANG YANG (95%)
 		- Created the text rendering class and its function specification.
+    Secondary Author:
+         Nur Syazliyarni (5%)
+        - Added Text component rendering support.
         
     All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
 *------------------------------------------------------------------------------------------------*/
@@ -105,7 +108,7 @@ namespace NocturnalEngine {
     /*!*************************************************************************
     Render font
     ****************************************************************************/
-    void Font::RenderText(const std::string& text, glm::vec2 position , float scale, Camera2D& camera, glm::vec3 color)
+    void Font::RenderText(const std::string& text, glm::vec2 position, int line_height, float scale, Camera2D& camera, glm::vec3 color)
 	{
         // activate corresponding render state	
         TextShader->Bind();
@@ -116,20 +119,27 @@ namespace NocturnalEngine {
 
         // iterate through all characters
         std::string::const_iterator c;
+        float startX = position.x;
         for (c = text.begin(); c != text.end(); c++)
         {
+            if (*c == '\n') {
+                position.x = startX;
+                position.y -= scale*line_height;
+                continue;
+            }
+
             Character ch = Characters[*c];
             float w = ch.Size.x * scale;
             float h = ch.Size.y * scale;
             // update VBO for each character
             float vertices[6][4] = {
-                { position.x,     position.y + h,   0.0f, 0.0f },
-                { position.x ,    position.y,       0.0f, 1.0f },
-                { position.x + w, position.y,       1.0f, 1.0f },
+                { position.x + ch.Bearing.x * scale,     position.y - (ch.Size.y - ch.Bearing.y) * scale + h,   0.0f, 0.0f },
+                { position.x + ch.Bearing.x * scale,     position.y - (ch.Size.y - ch.Bearing.y) * scale,       0.0f, 1.0f },
+                { position.x + ch.Bearing.x * scale + w, position.y - (ch.Size.y - ch.Bearing.y) * scale,       1.0f, 1.0f },
 
-                { position.x,     position.y + h,   0.0f, 0.0f },
-                { position.x + w, position.y ,      1.0f, 1.0f },
-                { position.x + w, position.y + h,   1.0f, 0.0f }
+                { position.x + ch.Bearing.x * scale,     position.y - (ch.Size.y - ch.Bearing.y) * scale + h,   0.0f, 0.0f },
+                { position.x + ch.Bearing.x * scale + w, position.y - (ch.Size.y - ch.Bearing.y) * scale ,      1.0f, 1.0f },
+                { position.x + ch.Bearing.x * scale + w, position.y - (ch.Size.y - ch.Bearing.y) * scale + h,   1.0f, 0.0f }
             };
             // render glyph texture over quad
             glBindTexture(GL_TEXTURE_2D, ch.TextureID);

@@ -12,14 +12,14 @@
         9
     ],
     "Number of Entities": {
-        "Entities": 17
+        "Entities": 21
     },
     "EntitySignatures": [
         "00000000000000000000000011111101",
         "00000000000000000000101001111101",
-        "00000000000000000000000011111101",
-        "00000000000000000000000011111101",
-        "00000000000000000000000011111101",
+        "00000000000000000001000011111101",
+        "00000000000000000001000011111101",
+        "00000000000000000001000011111101",
         "00000000000000000000000011111101",
         "00000000000000000000000000011001",
         "00000000000000000000010001111101",
@@ -31,7 +31,11 @@
         "00000000000000000000000100111001",
         "00000000000000000000000100111001",
         "00000000000000000000000100111001",
-        "00000000000000000001000000101001"
+        "00000000000000000001000000101001",
+        "00000000000000000001000000001000",
+        "00000000000000000001000000001000",
+        "00000000000000000001000000001000",
+        "00000000000000000000000001011001"
     ],
     "Components": {
         "0": [
@@ -136,7 +140,7 @@
             },
             {
                 "TextureName": "sealSpritesheet",
-                "Index_X": 2,
+                "Index_X": 1,
                 "Index_Y": 0,
                 "Ucoordinates": 530.0,
                 "Vcoordinates": 254.5,
@@ -150,7 +154,8 @@
             },
             {
                 "0": "AnimalLogic",
-                "ScriptCount": 1
+                "1": "PainSpotSpawner",
+                "ScriptCount": 2
             },
             {
                 "Tag": "Horse",
@@ -241,7 +246,32 @@
             {},
             {},
             {},
-            {}
+            {
+                "Content": "1",
+                "Font": "ChauPhilomeneOne-Regular",
+                "Size": 32.5,
+                "ColorR": 0.0,
+                "ColorG": 0.0,
+                "ColorB": 0.0,
+                "ColorA": 1.0,
+                "PosX": 0.38749998807907104,
+                "PosY": 0.2280000001192093,
+                "Line Height": 0,
+                "WorldSpace": false,
+                "Center": false,
+                "Content": "1",
+                "Font": "ChauPhilomeneOne-Regular",
+                "Size": 32.5,
+                "ColorR": 0.0,
+                "ColorG": 0.0,
+                "ColorB": 0.0,
+                "ColorA": 1.0,
+                "PosX": 0.38749998807907104,
+                "PosY": 0.2280000001192093,
+                "Line Height": 0,
+                "WorldSpace": false,
+                "Center": false
+            }
         ],
         "3": [
             {
@@ -308,7 +338,32 @@
             {},
             {},
             {},
-            {}
+            {
+                "Content": "4",
+                "Font": "ChauPhilomeneOne-Regular",
+                "Size": 32.5,
+                "ColorR": 0.0,
+                "ColorG": 0.0,
+                "ColorB": 0.0,
+                "ColorA": 1.0,
+                "PosX": 0.38749998807907104,
+                "PosY": -0.1720000058412552,
+                "Line Height": 0,
+                "WorldSpace": false,
+                "Center": false,
+                "Content": "4",
+                "Font": "ChauPhilomeneOne-Regular",
+                "Size": 32.5,
+                "ColorR": 0.0,
+                "ColorG": 0.0,
+                "ColorB": 0.0,
+                "ColorA": 1.0,
+                "PosX": 0.38749998807907104,
+                "PosY": -0.1720000058412552,
+                "Line Height": 0,
+                "WorldSpace": false,
+                "Center": false
+            }
         ],
         "4": [
             {
@@ -375,7 +430,32 @@
             {},
             {},
             {},
-            {}
+            {
+                "Content": "3",
+                "Font": "ChauPhilomeneOne-Regular",
+                "Size": 32.5,
+                "ColorR": 0.0,
+                "ColorG": 0.0,
+                "ColorB": 0.0,
+                "ColorA": 1.0,
+                "PosX": 0.38749998807907104,
+                "PosY": -0.03200000151991844,
+                "Line Height": 0,
+                "WorldSpace": false,
+                "Center": false,
+                "Content": "3",
+                "Font": "ChauPhilomeneOne-Regular",
+                "Size": 32.5,
+                "ColorR": 0.0,
+                "ColorG": 0.0,
+                "ColorB": 0.0,
+                "ColorA": 1.0,
+                "PosX": 0.38749998807907104,
+                "PosY": -0.03200000151991844,
+                "Line Height": 0,
+                "WorldSpace": false,
+                "Center": false
+            }
         ],
         "5": [
             {
@@ -580,7 +660,8 @@
             },
             {
                 "0": "DragAndDrop",
-                "ScriptCount": 1
+                "1": "RevealTargetOnClick",
+                "ScriptCount": 2
             },
             {
                 "Tag": "Tou",
@@ -659,43 +740,10 @@
         ],
         "10": [
             {
-                "posX": 0.675000011920929,
-                "posY": 0.2750000059604645,
-                "scaleX": 0.21799999475479126,
-                "scaleY": 0.21799999475479126,
-                "Rot": 0.0
-            },
-            {},
-            {},
-            {
-                "NameTag": "HungerIcon"
-            },
-            {
-                "TextureName": "hunger",
-                "Index_X": 0,
-                "Index_Y": 0,
-                "Ucoordinates": 512.0,
-                "Vcoordinates": 512.0,
-                "IsSpriteSheet": false,
-                "IsAnimated": false,
-                "MaxIndex": 0,
-                "LayeringOrder": 1
-            },
-            {},
-            {},
-            {},
-            {},
-            {},
-            {},
-            {},
-            {}
-        ],
-        "11": [
-            {
-                "posX": 0.675000011920929,
-                "posY": 0.5239999890327454,
-                "scaleX": 0.21799999475479126,
-                "scaleY": 0.21799999475479126,
+                "posX": 0.6753605604171753,
+                "posY": 0.12399999797344208,
+                "scaleX": 0.21751198172569275,
+                "scaleY": 0.21751198172569275,
                 "Rot": 0.0
             },
             {},
@@ -723,12 +771,45 @@
             {},
             {}
         ],
+        "11": [
+            {
+                "posX": 0.6753605604171753,
+                "posY": -0.029999999329447746,
+                "scaleX": 0.21751198172569275,
+                "scaleY": 0.21751198172569275,
+                "Rot": 0.0
+            },
+            {},
+            {},
+            {
+                "NameTag": "HungerIcon"
+            },
+            {
+                "TextureName": "hunger",
+                "Index_X": 0,
+                "Index_Y": 0,
+                "Ucoordinates": 512.0,
+                "Vcoordinates": 512.0,
+                "IsSpriteSheet": false,
+                "IsAnimated": false,
+                "MaxIndex": 0,
+                "LayeringOrder": 1
+            },
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {}
+        ],
         "12": [
             {
-                "posX": 0.675000011920929,
-                "posY": 0.012000000104308128,
-                "scaleX": 0.21799999475479126,
-                "scaleY": 0.21799999475479126,
+                "posX": 0.6753605604171753,
+                "posY": -0.1679999977350235,
+                "scaleX": 0.21751198172569275,
+                "scaleY": 0.21751198172569275,
                 "Rot": 0.0
             },
             {},
@@ -759,7 +840,7 @@
         "13": [
             {
                 "posX": 1.1399999856948853,
-                "posY": 0.5239999890327454,
+                "posY": 0.11400000005960464,
                 "scaleX": 0.8989999890327454,
                 "scaleY": 0.0689999982714653,
                 "Rot": 0.0
@@ -799,7 +880,7 @@
         "14": [
             {
                 "posX": 1.1399999856948853,
-                "posY": 0.2750000059604645,
+                "posY": -0.02500000037252903,
                 "scaleX": 0.8989999890327454,
                 "scaleY": 0.0689999982714653,
                 "Rot": 0.0
@@ -839,7 +920,7 @@
         "15": [
             {
                 "posX": 1.1399999856948853,
-                "posY": 0.012000000104308128,
+                "posY": -0.15299999713897705,
                 "scaleX": 0.8989999890327454,
                 "scaleY": 0.0689999982714653,
                 "Rot": 0.0
@@ -910,9 +991,184 @@
                 "ColorA": 1.0,
                 "PosX": 0.0,
                 "PosY": 0.0,
+                "Line Height": 0,
+                "WorldSpace": true,
+                "Center": false,
+                "Content": "00:00:00",
+                "Font": "DSEG7Classic-Bold",
+                "Size": 35.29999923706055,
+                "ColorR": 0.0,
+                "ColorG": 1.0,
+                "ColorB": 0.0,
+                "ColorA": 1.0,
+                "PosX": 0.0,
+                "PosY": 0.0,
+                "Line Height": 0,
                 "WorldSpace": true,
                 "Center": false
             }
+        ],
+        "17": [
+            {},
+            {},
+            {},
+            {
+                "NameTag": "seal_title"
+            },
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {
+                "Content": "SEAL",
+                "Font": "ChauPhilomeneOne-Regular",
+                "Size": 72.0,
+                "ColorR": 0.31651291251182556,
+                "ColorG": 0.7254902124404907,
+                "ColorB": 0.3285415470600128,
+                "ColorA": 1.0,
+                "PosX": 0.6399999856948853,
+                "PosY": 0.6299999952316284,
+                "Line Height": 50,
+                "WorldSpace": false,
+                "Center": false,
+                "Content": "SEAL",
+                "Font": "ChauPhilomeneOne-Regular",
+                "Size": 72.0,
+                "ColorR": 0.31651291251182556,
+                "ColorG": 0.7254902124404907,
+                "ColorB": 0.3285415470600128,
+                "ColorA": 1.0,
+                "PosX": 0.6399999856948853,
+                "PosY": 0.6299999952316284,
+                "Line Height": 50,
+                "WorldSpace": false,
+                "Center": false
+            }
+        ],
+        "18": [
+            {},
+            {},
+            {},
+            {
+                "NameTag": "seal enclosure"
+            },
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {
+                "Content": "Enclosure 2 - 04-01-5A",
+                "Font": "ChauPhilomeneOne-Regular",
+                "Size": 36.0,
+                "ColorR": 0.31651291251182556,
+                "ColorG": 0.7254902124404907,
+                "ColorB": 0.3285415470600128,
+                "ColorA": 1.0,
+                "PosX": 0.6399999856948853,
+                "PosY": 0.550000011920929,
+                "Line Height": 50,
+                "WorldSpace": false,
+                "Center": false,
+                "Content": "Enclosure 2 - 04-01-5A",
+                "Font": "ChauPhilomeneOne-Regular",
+                "Size": 36.0,
+                "ColorR": 0.31651291251182556,
+                "ColorG": 0.7254902124404907,
+                "ColorB": 0.3285415470600128,
+                "ColorA": 1.0,
+                "PosX": 0.6399999856948853,
+                "PosY": 0.550000011920929,
+                "Line Height": 50,
+                "WorldSpace": false,
+                "Center": false
+            }
+        ],
+        "19": [
+            {},
+            {},
+            {},
+            {
+                "NameTag": "seal_intro"
+            },
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {
+                "Content": "A chubby-looking seal rests on the\nrocks, its large black eyes impossibly\nshiny in the light.",
+                "Font": "ChauPhilomeneOne-Regular",
+                "Size": 36.0,
+                "ColorR": 0.4215686321258545,
+                "ColorG": 0.41214776039123535,
+                "ColorB": 0.41123607754707336,
+                "ColorA": 0.501960813999176,
+                "PosX": 0.6399999856948853,
+                "PosY": 0.4399999976158142,
+                "Line Height": 62,
+                "WorldSpace": false,
+                "Center": false,
+                "Content": "A chubby-looking seal rests on the\nrocks, its large black eyes impossibly\nshiny in the light.",
+                "Font": "ChauPhilomeneOne-Regular",
+                "Size": 36.0,
+                "ColorR": 0.4215686321258545,
+                "ColorG": 0.41214776039123535,
+                "ColorB": 0.41123607754707336,
+                "ColorA": 0.501960813999176,
+                "PosX": 0.6399999856948853,
+                "PosY": 0.4399999976158142,
+                "Line Height": 62,
+                "WorldSpace": false,
+                "Center": false
+            }
+        ],
+        "20": [
+            {
+                "posX": 0.0,
+                "posY": 0.0,
+                "scaleX": 0.20000000298023224,
+                "scaleY": 0.20000000298023224,
+                "Rot": 0.0
+            },
+            {},
+            {},
+            {
+                "NameTag": "Target"
+            },
+            {
+                "TextureName": "target",
+                "Index_X": 0,
+                "Index_Y": 0,
+                "Ucoordinates": 512.0,
+                "Vcoordinates": 512.0,
+                "IsSpriteSheet": false,
+                "IsAnimated": false,
+                "MaxIndex": 0,
+                "LayeringOrder": 0
+            },
+            {},
+            {
+                "Tag": "target",
+                "TargetTag": ""
+            },
+            {},
+            {},
+            {},
+            {},
+            {},
+            {}
         ]
     }
 }

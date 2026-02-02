@@ -8,8 +8,13 @@
         properties of the components and save them accordingly.
 	
     Primary Author:
-         LAU XIANG YANG (100%)
+         LAU XIANG YANG (93%)
 		- Created the LevelEditor class and its function specification.
+    Secondary Author:
+         Nur Syazliyarni (8%)
+        - Added gizmo visibility toggle in the Scene viewer.
+        - Updated Text component UI usage in the inspector.
+        - Added RevealTargetOnClick script to the editor script list.
 
     All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
 *------------------------------------------------------------------------------------------------*/
@@ -52,6 +57,8 @@
 #include "Scripts/AnimalLogic.h"
 #include "Scripts/TimerDisplay.h"
 #include "Scripts/DigeticLog.h"
+#include "Scripts/RevealTargetOnClick.h"
+#include "Scripts/PainSpotSpawner.h"
 
 #include "Scripts/GlobalGameManager.h"
 
@@ -436,6 +443,7 @@ namespace NocturnalEngine {
     {
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 0, 0 });
         ImGui::Begin("Scene");
+        ImGui::Checkbox("Show Gizmos", &mShowGizmos); // User toggle for gizmo visibility
 
         auto vpMinRegion = ImGui::GetWindowContentRegionMin();
         auto vpMaxRegion = ImGui::GetWindowContentRegionMax();
@@ -505,48 +513,51 @@ namespace NocturnalEngine {
         {
             mGizmoType = ImGuizmo::OPERATION::SCALE;
         }
-        ImGuizmo::BeginFrame();
-        if (selectedEntity >= 0 && selectedEntity < MAX_ENTITIES && isTransformOpen&&p_ecs.HaveComponent<Transform>(selectedEntity))//have selected entity
+        if (mShowGizmos) // Skip ImGuizmo draw path when hidden
         {
-            ImGuizmo::SetOrthographic(true);
-
-
-            ImGuizmo::SetRect(
-                mViewportBounds[0].x,
-                mViewportBounds[0].y,
-                mViewportBounds[1].x - mViewportBounds[0].x,
-                mViewportBounds[1].y - mViewportBounds[0].y
-            );
-
-            glm::mat4 cameraProj = NocturnalEngine::Graphic::mcamera->GetProjectionMatrix();
-            glm::mat4 cameraView = NocturnalEngine::Graphic::mcamera->GetViewMatrix();
-            glm::mat4 transform{ 1.0f }; // identity matrix
-
-            auto& trans = p_ecs.GetComponent<Transform>(selectedEntity);
-
-            transform = glm::translate(glm::mat4{ 1.0f }, glm::vec3(trans.GetPos().x, trans.GetPos().y, 0.0f))
-                * glm::rotate(glm::mat4(1.0f), glm::radians(trans.GetRot()), glm::vec3(0.0f, 0.0f, 1.0f))
-                * glm::scale(glm::mat4(1.f), { trans.GetScale().x,trans.GetScale().y ,1.0f });
-
-            ImGuizmo::SetDrawlist();
-            // Draw ImGuizmo (renders every frame)
-            ImGuizmo::Manipulate(glm::value_ptr(cameraView)
-                , glm::value_ptr(cameraProj), (ImGuizmo::OPERATION)mGizmoType,
-                ImGuizmo::WORLD, glm::value_ptr(transform));
-
-            if (ImGuizmo::IsUsing())
+            ImGuizmo::BeginFrame();
+            if (selectedEntity >= 0 && selectedEntity < MAX_ENTITIES && p_ecs.HaveComponent<Transform>(selectedEntity))//have selected entity
             {
-                glm::vec3 decompTrans, decompRot, decompScale;
+                ImGuizmo::SetOrthographic(true);
 
-                ImGuizmo::DecomposeMatrixToComponents(glm::value_ptr(transform),
-                    glm::value_ptr(decompTrans),
-                    glm::value_ptr(decompRot),
-                    glm::value_ptr(decompScale));
-                // change size 
-                trans.SetPos(decompTrans[0], decompTrans[1]);
-                trans.SetRot(decompRot[2]);
-                trans.SetScale(decompScale[0], decompScale[1]);
 
+                ImGuizmo::SetRect(
+                    mViewportBounds[0].x,
+                    mViewportBounds[0].y,
+                    mViewportBounds[1].x - mViewportBounds[0].x,
+                    mViewportBounds[1].y - mViewportBounds[0].y
+                );
+
+                glm::mat4 cameraProj = NocturnalEngine::Graphic::mcamera->GetProjectionMatrix();
+                glm::mat4 cameraView = NocturnalEngine::Graphic::mcamera->GetViewMatrix();
+                glm::mat4 transform{ 1.0f }; // identity matrix
+
+                auto& trans = p_ecs.GetComponent<Transform>(selectedEntity);
+
+                transform = glm::translate(glm::mat4{ 1.0f }, glm::vec3(trans.GetPos().x, trans.GetPos().y, 0.0f))
+                    * glm::rotate(glm::mat4(1.0f), glm::radians(trans.GetRot()), glm::vec3(0.0f, 0.0f, 1.0f))
+                    * glm::scale(glm::mat4(1.f), { trans.GetScale().x,trans.GetScale().y ,1.0f });
+
+                ImGuizmo::SetDrawlist();
+                // Draw ImGuizmo (renders every frame)
+                ImGuizmo::Manipulate(glm::value_ptr(cameraView)
+                    , glm::value_ptr(cameraProj), (ImGuizmo::OPERATION)mGizmoType,
+                    ImGuizmo::WORLD, glm::value_ptr(transform));
+
+                if (ImGuizmo::IsUsing())
+                {
+                    glm::vec3 decompTrans, decompRot, decompScale;
+
+                    ImGuizmo::DecomposeMatrixToComponents(glm::value_ptr(transform),
+                        glm::value_ptr(decompTrans),
+                        glm::value_ptr(decompRot),
+                        glm::value_ptr(decompScale));
+                    // change size 
+                    trans.SetPos(decompTrans[0], decompTrans[1]);
+                    trans.SetRot(decompRot[2]);
+                    trans.SetScale(decompScale[0], decompScale[1]);
+
+                }
             }
         }
 
@@ -559,7 +570,7 @@ namespace NocturnalEngine {
                 sortedMultimap.insert({ p_ecs.GetComponent<Transform>(entity).GetRot(),
                             &p_ecs.GetComponent<Transform>(entity) });
         }
-        if (p_ecs.GetTotalEntities() != 0 && p_Input->MousePressed(GLFW_MOUSE_BUTTON_LEFT) && !ImGuizmo::IsOver())
+        if (p_ecs.GetTotalEntities() != 0 && p_Input->MousePressed(GLFW_MOUSE_BUTTON_LEFT) && (!mShowGizmos || !ImGuizmo::IsOver())) // Allow picking when gizmos are hidden
         {
             if (selectedEntity >= 0 && selectedEntity < MAX_ENTITIES)//no entity selected will remain to the previous selected entity
             {
@@ -1469,7 +1480,6 @@ namespace NocturnalEngine {
                             p_ecs.AddComponent<Draggable>(selectedEntity, C_DraggableComponent);
                         ImGui::CloseCurrentPopup();
                     }
-
                     ImGui::EndPopup();
                 }
                 //Check and change the name of the Entity
@@ -1641,6 +1651,8 @@ namespace NocturnalEngine {
                         ImGui::DragFloat("##TextPosX", &text.GetPosition()[0], 0.01f);
                         ImGui::Text("Y"); ImGui::SameLine();
                         ImGui::DragFloat("##TextPosY", &text.GetPosition()[1], 0.01f);
+                        ImGui::Text("Line Height"); ImGui::SameLine();
+                        ImGui::DragInt("##Line Height", &text.Get_line_height(), 1);
                     }
                 }
                 //Collider Component
@@ -1829,6 +1841,14 @@ namespace NocturnalEngine {
                                     if (mScriptList[current_script] == "DigeticLog" && p_ecs.HaveComponent<Text>(selectedEntity))
                                     {
                                         logic.InsertScript(new DigeticLog(), selectedEntity);
+                                    }
+                                    if (mScriptList[current_script] == "RevealTargetOnClick" && p_ecs.HaveComponent<Collider>(selectedEntity))
+                                    {
+                                        logic.InsertScript(new RevealTargetOnClick(), selectedEntity);
+                                    }
+                                    if (mScriptList[current_script] == "PainSpotSpawner" && p_ecs.HaveComponent<AnimalAttributes>(selectedEntity))
+                                    {
+                                        logic.InsertScript(new PainSpotSpawner(), selectedEntity);
                                     }
                                 }
                             }
@@ -2073,9 +2093,6 @@ namespace NocturnalEngine {
                         ImGui::Checkbox("Is Target", &draggable.IsTarget()); 
                     }
                 }
-
-                
-
                 if (ImGui::Button("Delete Component"))
                     ImGui::OpenPopup("Delete Component");
 
