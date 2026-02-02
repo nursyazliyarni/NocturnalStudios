@@ -96,19 +96,19 @@
             {},
             {
                 "ColliderType1": 5,
-                "ColliderType2": 0,
-                "minX1": 0.20000000298023224,
-                "minX2": 0.0,
+                "ColliderType2": 5,
+                "minX1": -0.10000000149011612,
+                "minX2": -0.4000000059604645,
                 "minY1": 0.05000000074505806,
-                "minY2": 0.0,
+                "minY2": 0.20000000298023224,
                 "maxX1": 0.20000000298023224,
                 "maxX2": 0.0,
                 "maxY1": 0.36000001430511475,
                 "maxY2": 0.0,
                 "offsetX1": 0.0,
-                "offsetX2": 0.0,
-                "offsetY1": 0.0,
-                "offsetY2": 0.0,
+                "offsetX2": -0.20000000298023224,
+                "offsetY1": 0.05000000074505806,
+                "offsetY2": 0.15000000596046448,
                 "radius1": 0.0,
                 "radius2": 0.0
             },
@@ -117,7 +117,7 @@
             },
             {
                 "TextureName": "flamingo_spritesheet",
-                "Index_X": 2,
+                "Index_X": 3,
                 "Index_Y": 0,
                 "Ucoordinates": 528.0,
                 "Vcoordinates": 528.0,
@@ -133,7 +133,8 @@
             },
             {
                 "0": "AnimalLogic",
-                "ScriptCount": 1
+                "1": "PainSpotSpawner",
+                "ScriptCount": 2
             },
             {},
             {},

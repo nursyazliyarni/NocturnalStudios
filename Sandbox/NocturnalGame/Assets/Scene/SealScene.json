@@ -129,7 +129,7 @@
                 "offsetX2": 0.0,
                 "offsetY1": 0.02500000037252903,
                 "offsetY2": 0.0,
-                "radius1": 0.15000000596046448,
+                "radius1": -0.15000000596046448,
                 "radius2": 0.0
             },
             {
@@ -151,7 +151,8 @@
             },
             {
                 "0": "AnimalLogic",
-                "ScriptCount": 1
+                "1": "PainSpotSpawner",
+                "ScriptCount": 2
             },
             {
                 "Tag": "Horse",
