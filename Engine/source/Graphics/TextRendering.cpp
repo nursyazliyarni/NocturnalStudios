@@ -130,13 +130,13 @@ namespace NocturnalEngine {
             float h = ch.Size.y * scale;
             // update VBO for each character
             float vertices[6][4] = {
-                { position.x,     position.y + h,   0.0f, 0.0f },
-                { position.x ,    position.y,       0.0f, 1.0f },
-                { position.x + w, position.y,       1.0f, 1.0f },
+                { position.x + ch.Bearing.x * scale,     position.y - (ch.Size.y - ch.Bearing.y) * scale + h,   0.0f, 0.0f },
+                { position.x + ch.Bearing.x * scale,     position.y - (ch.Size.y - ch.Bearing.y) * scale,       0.0f, 1.0f },
+                { position.x + ch.Bearing.x * scale + w, position.y - (ch.Size.y - ch.Bearing.y) * scale,       1.0f, 1.0f },
 
-                { position.x,     position.y + h,   0.0f, 0.0f },
-                { position.x + w, position.y ,      1.0f, 1.0f },
-                { position.x + w, position.y + h,   1.0f, 0.0f }
+                { position.x + ch.Bearing.x * scale,     position.y - (ch.Size.y - ch.Bearing.y) * scale + h,   0.0f, 0.0f },
+                { position.x + ch.Bearing.x * scale + w, position.y - (ch.Size.y - ch.Bearing.y) * scale ,      1.0f, 1.0f },
+                { position.x + ch.Bearing.x * scale + w, position.y - (ch.Size.y - ch.Bearing.y) * scale + h,   1.0f, 0.0f }
             };
             // render glyph texture over quad
             glBindTexture(GL_TEXTURE_2D, ch.TextureID);
