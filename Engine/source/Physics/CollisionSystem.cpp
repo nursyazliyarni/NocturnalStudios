@@ -4,7 +4,10 @@
 
 	Brief:
 		This file contains the implementation of the CollisionSystem class which is responsible 
-        for handling collision detection and response within the physics engine.
+        for handling collision detection and response within the physics engine. The collision 
+		system utilizes a spatial-hashing broad-phase algorithm to efficiently identify potential 
+        collisions between entities, followed by precise narrow-phase collision checks based 
+		on the specific collider types of the entities involved.
 	
     Primary Author:
          LAU XIANG YANG (100%)
