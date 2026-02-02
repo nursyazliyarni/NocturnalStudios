@@ -75,7 +75,7 @@ namespace NocturnalEngine {
 
          bool HasLogBeenUpdated();
 
-         const std::deque<std::string>& const GetLogEntries()  { return diegeticLogEntries; }
+         const std::deque<std::string>& GetLogEntries()  { return diegeticLogEntries; }
 
          void AddLogEntry(std::string message);
     private:

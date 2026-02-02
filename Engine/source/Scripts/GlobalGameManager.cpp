@@ -134,6 +134,8 @@ namespace NocturnalEngine {
     Therefore this function is empty
     ****************************************************************************/
     void GameManager::ResetSystem(bool editorMode) {
+		UNREFERENCED_PARAMETER(editorMode);
+
         AnimalAttributes defaultAttributes{};
         defaultAttributes.SetDefault();
         for (std::pair<const GameScene, AnimalAttributes>& sceneAnimalPair : sceneAnimalMap)

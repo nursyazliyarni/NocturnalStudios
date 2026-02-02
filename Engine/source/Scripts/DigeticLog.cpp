@@ -43,8 +43,8 @@ namespace NocturnalEngine {
 
 			const std::deque<std::string>& queueRef{ p_GameManager.GetLogEntries() };
 
-			int maxlogs = queueRef.size() < logSpaces ? queueRef.size() : logSpaces,
-				startingLog = queueRef.size() < logSpaces ? 0 : queueRef.size() - logSpaces;
+			int maxlogs = static_cast<int>(queueRef.size()) < logSpaces ? static_cast<int>(queueRef.size()) : logSpaces,
+				startingLog = static_cast<int>(queueRef.size()) < logSpaces ? 0 : static_cast<int>(queueRef.size()) - logSpaces;
 
 			for (int i{ 0 }; i < maxlogs; i++, startingLog++)
 			{
@@ -58,14 +58,16 @@ namespace NocturnalEngine {
 
 	void DigeticLog::Update(float Frametime)
 	{
+		UNREFERENCED_PARAMETER(Frametime);
+
 		if (!setupDone)Start();
 
 		if (!p_GameManager.HasLogBeenUpdated())
 		{
 			const std::deque<std::string>& queueRef{ p_GameManager.GetLogEntries() };
 
-			int maxlogs = queueRef.size() < logSpaces ? queueRef.size() : logSpaces,
-				startingLog = queueRef.size() < logSpaces ? 0 : queueRef.size() - logSpaces;
+			int maxlogs = static_cast<int>(queueRef.size()) < logSpaces ? static_cast<int>(queueRef.size()) : logSpaces,
+				startingLog = static_cast<int>(queueRef.size()) < logSpaces ? 0 : static_cast<int>(queueRef.size()) - logSpaces;
 
 			for (int i{ 0 }; i < maxlogs; i++,startingLog++)
 			{
