@@ -55,5 +55,7 @@ namespace NocturnalEngine
 		double hungerDecayRate;
 		double sanityDecayRate;
 		bool is_alive;
+
+		bool healthWarn{ false }, hungerWarn{ false }, sanityWarn{ false };
 	};
 }

@@ -32,6 +32,7 @@ namespace NocturnalEngine {
 			if (name=="Flamingo")
 			{
 				gS = GameManager::GameScene::FLAMINGO;
+
 			}
 			if (name == "Horse")
 			{
@@ -71,11 +72,11 @@ namespace NocturnalEngine {
 			aA.current_health -= aA.healthDecayRate * static_cast<double>(Frametime);
 			aA.current_sanity -= aA.sanityDecayRate * static_cast<double>(Frametime);
 
-
 			if (aA.current_hunger <= 0 || aA.current_health <= 0 || aA.current_sanity <= 0) {
 				aA.is_alive = false;
 				p_GameManager.AddDeath();
 			}
+			LogLowHealth(aA);
 		}
 		else if (p_GameManager.GetGameState() == GameManager::GameState::ENDING) {
 			aA.SetDefault();
@@ -101,6 +102,36 @@ namespace NocturnalEngine {
 	}
 
 
+	void AnimalLogic::LogLowHealth(AnimalAttributes& aA) {
+		if (aA.current_health <= aA.maxHealth / 2.0 && !aA.healthWarn)
+		{
+			p_GameManager.AddLogEntry("WARNING! " + p_ecs.GetComponent<NameTag>(entityID).GetNameTag() + "'s Health is below 50%!");
+			aA.healthWarn = true;
+		}
+		else if (aA.current_health > aA.maxHealth / 2.0 && aA.healthWarn) {
+			aA.healthWarn = false;
+		}
+		if (aA.current_hunger <= aA.maxHunger / 2.0 && !aA.hungerWarn)
+		{
+			p_GameManager.AddLogEntry("WARNING! " + p_ecs.GetComponent<NameTag>(entityID).GetNameTag() + "'s Hunger is below 50%!");
+			aA.hungerWarn = true;
+		}
+		else if (aA.current_hunger > aA.maxHunger / 2.0 && aA.hungerWarn) {
+			aA.hungerWarn = false;
+		}
+		if (aA.current_sanity <= aA.maxSanity / 2.0 && !aA.sanityWarn)
+		{
+			p_GameManager.AddLogEntry("WARNING! " + p_ecs.GetComponent<NameTag>(entityID).GetNameTag() + "'s Sanity is below 50%!");
+			aA.sanityWarn = true;
+		}
+		else if (aA.current_sanity > aA.maxSanity / 2.0 && aA.sanityWarn) {
+			aA.sanityWarn = false;
+		}
 
+		if (!aA.is_alive)
+		{
+			p_GameManager.AddLogEntry( p_ecs.GetComponent<NameTag>(entityID).GetNameTag() + "is dead.");
+		}
+	}
 
 }

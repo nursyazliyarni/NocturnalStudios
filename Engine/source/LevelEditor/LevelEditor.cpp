@@ -51,6 +51,7 @@
 #include "Scripts/HealthBar.h"
 #include "Scripts/AnimalLogic.h"
 #include "Scripts/TimerDisplay.h"
+#include "Scripts/DigeticLog.h"
 
 #include "Scripts/GlobalGameManager.h"
 
@@ -1824,6 +1825,10 @@ namespace NocturnalEngine {
                                     if (mScriptList[current_script] == "TimerDisplay" && p_ecs.HaveComponent<Text>(selectedEntity))
                                     {
                                         logic.InsertScript(new TimerDisplay(), selectedEntity);
+                                    }
+                                    if (mScriptList[current_script] == "DigeticLog" && p_ecs.HaveComponent<Text>(selectedEntity))
+                                    {
+                                        logic.InsertScript(new DigeticLog(), selectedEntity);
                                     }
                                 }
                             }

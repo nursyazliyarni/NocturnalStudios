@@ -26,6 +26,7 @@
 #include "Scripts/HealthBar.h"
 #include "Scripts/AnimalLogic.h"
 #include "Scripts/TimerDisplay.h"
+#include "Scripts/DigeticLog.h"
 
 
 namespace NocturnalEngine
@@ -159,6 +160,10 @@ namespace NocturnalEngine
 			if (mScriptNameVector[j] == "TimerDisplay")
 			{
 				mScriptsVector.push_back(new TimerDisplay());
+			}
+			if (mScriptNameVector[j] == "DigeticLog")
+			{
+				mScriptsVector.push_back(new DigeticLog());
 			}
 		}
 		return true;

@@ -69,10 +69,15 @@ namespace NocturnalEngine {
          void AddDeath() { deadAnimals++; }
 
          //returns how much we have to multiply seconds by for timer
-         float GetTimeScale() { return 21600.f/winRequirement; }
+         float GetTimeScale() const{ return 21600.f/winRequirement; }
 
-         float GetTimeElapsed() { return gameTimeElapsed; }
-         
+         float GetTimeElapsed() const{ return gameTimeElapsed; }
+
+         bool HasLogBeenUpdated();
+
+         const std::deque<std::string>& const GetLogEntries()  { return diegeticLogEntries; }
+
+         void AddLogEntry(std::string message);
     private:
 
         GameManager();
@@ -84,13 +89,18 @@ namespace NocturnalEngine {
 
         void LoseGame();
         void WinGame();
+        void LogLowHealth(std::pair<const GameScene, AnimalAttributes>& sceneAnimalPair);
 
         float gameTimeElapsed{}, winRequirement{180.f}; //in seconds
 
         GameScene currScene;
         GameState currState;
         std::unordered_map < GameScene, AnimalAttributes> sceneAnimalMap;
-        int deadAnimals, deathLimit{ 2 };
+        int deadAnimals, deathLimit{ 2 }, maxDiegeticLogEntries{40};
+        std::deque<std::string> diegeticLogEntries;
+
+        bool diegeticLogUpdated{ true };
+
     };
 
 

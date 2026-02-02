@@ -234,6 +234,8 @@ namespace NocturnalEngine {
 			if (!aa.is_alive)return;
 			if (aa.current_hunger + ia.gain_amount >= aa.maxHunger)aa.current_hunger = aa.maxHunger;
 			else aa.current_hunger += ia.gain_amount;
+
+			
 		}
 	}
 	bool DragAndDrop::BoxCircleCollision(vec2D boxMax, vec2D boxMin, vec2D circleMiddle, float circleRadius) {

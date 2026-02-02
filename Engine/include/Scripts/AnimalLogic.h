@@ -68,6 +68,6 @@ namespace NocturnalEngine
 		virtual Entity& GetScriptEntityID() override { return entityID; }
 
 	private:
-		
+		void LogLowHealth(AnimalAttributes& aA);
 	};
 }
