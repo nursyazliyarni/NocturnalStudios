@@ -12,7 +12,7 @@
         9
     ],
     "Number of Entities": {
-        "Entities": 18
+        "Entities": 19
     },
     "EntitySignatures": [
         "00000000000000000000000011111001",
@@ -32,8 +32,8 @@
         "00000000000000000000000100111001",
         "00000000000000000000000100111001",
         "00000000000000000001000000101001",
-        "00000000000000000000000001011001",
-        "00000000000000000001000000001000"
+        "00000000000000000001000000001000",
+        "00000000000000000000000001011001"
     ],
     "Components": {
         "0": [
@@ -118,7 +118,7 @@
             },
             {
                 "TextureName": "flamingo_spritesheet",
-                "Index_X": 3,
+                "Index_X": 2,
                 "Index_Y": 0,
                 "Ucoordinates": 528.0,
                 "Vcoordinates": 528.0,
@@ -895,6 +895,7 @@
                 "ColorA": 1.0,
                 "PosX": 0.0,
                 "PosY": 0.0,
+                "Line Height": 0,
                 "WorldSpace": true,
                 "Center": false
             }
@@ -926,8 +927,56 @@
                 "PosY": 0.6299999952316284,
                 "Line Height": 50,
                 "WorldSpace": false,
+                "Center": false,
+                "Content": "FLAMINGO\nTESTING",
+                "Font": "ChauPhilomeneOne-Regular",
+                "Size": 72.0,
+                "ColorR": 0.31651291251182556,
+                "ColorG": 0.7254902124404907,
+                "ColorB": 0.3285415470600128,
+                "ColorA": 1.0,
+                "PosX": 0.6399999856948853,
+                "PosY": 0.6299999952316284,
+                "Line Height": 50,
+                "WorldSpace": false,
                 "Center": false
             }
+        ],
+        "18": [
+            {
+                "posX": 0.0,
+                "posY": 0.0,
+                "scaleX": 0.20000000298023224,
+                "scaleY": 0.20000000298023224,
+                "Rot": 0.0
+            },
+            {},
+            {},
+            {
+                "NameTag": "Target"
+            },
+            {
+                "TextureName": "target",
+                "Index_X": 0,
+                "Index_Y": 0,
+                "Ucoordinates": 512.0,
+                "Vcoordinates": 512.0,
+                "IsSpriteSheet": false,
+                "IsAnimated": false,
+                "MaxIndex": 0,
+                "LayeringOrder": 0
+            },
+            {},
+            {
+                "Tag": "target",
+                "TargetTag": ""
+            },
+            {},
+            {},
+            {},
+            {},
+            {},
+            {}
         ]
     }
 }
