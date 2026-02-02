@@ -117,6 +117,7 @@ namespace NocturnalEngine {
     
 
     AnimalAttributes GameManager::LoadPersistentValues(GameScene gs) {
+        targetVisibility = false;
         auto it = sceneAnimalMap.find(gs);
         if (it != sceneAnimalMap.end()) {
             currScene = gs;
@@ -127,7 +128,6 @@ namespace NocturnalEngine {
             defaultAttributes.SetDefault();
             return defaultAttributes;
         }
-        targetVisibility = false;
     }
     /*!*************************************************************************
     This function ends the system. As there are no data members that require
