@@ -105,12 +105,14 @@ namespace NocturnalEngine {
     {
         if (!window || !window->GetWindow()) return;
         mWindow = window;
+        // Ensure the snapshot folder exists and starts clean each run.
         std::filesystem::create_directories(mUndoDirectory);
         for (const auto& entry : std::filesystem::directory_iterator(mUndoDirectory))
         {
             if (entry.is_regular_file())
                 std::filesystem::remove(entry.path());
         }
+        // Reset in-memory history state.
         mUndoStack.clear();
         mRedoStack.clear();
         mStartedGizmoDrag = false;
@@ -135,6 +137,7 @@ namespace NocturnalEngine {
         LoadSceneFromFile();
 
         LoadScriptsFromFile();
+        // Seed undo history with the initial editor state.
         PushUndoSnapshot();
 
     }
@@ -169,6 +172,7 @@ namespace NocturnalEngine {
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
+        // Check keyboard shortcuts before drawing UI.
         HandleUndoRedoShortcuts();
         MainMenuBar();
 
@@ -220,10 +224,12 @@ namespace NocturnalEngine {
     ****************************************************************************/
     void LevelEditor::End()
     {
+        // Remove tracked snapshot files.
         for (const auto& path : mUndoStack)
             std::filesystem::remove(path);
         for (const auto& path : mRedoStack)
             std::filesystem::remove(path);
+        // Remove any leftover files in undo folder.
         for (const auto& entry : std::filesystem::directory_iterator(mUndoDirectory))
         {
             if (entry.is_regular_file())
@@ -333,6 +339,7 @@ namespace NocturnalEngine {
     {
         if (ImGui::BeginMainMenuBar())
         {
+            // Basic edit menu for manual undo/redo actions.
             if (ImGui::BeginMenu("Edit"))
             {
                 const bool canUndo = !mUndoStack.empty();
@@ -584,6 +591,7 @@ namespace NocturnalEngine {
 
                 if (ImGuizmo::IsUsing() && !mStartedGizmoDrag)
                 {
+                    // Snapshot once when drag starts (not every frame).
                     PushUndoSnapshotAndInvalidateRedo();
                     mStartedGizmoDrag = true;
                 }
@@ -638,6 +646,7 @@ namespace NocturnalEngine {
         {
             if (selectedEntity >= 0 && selectedEntity < MAX_ENTITIES)
             {
+                // Snapshot before entity delete.
                 PushUndoSnapshotAndInvalidateRedo();
                 p_ecs.DestroyEntity(selectedEntity);
                 selectedEntity = {};
@@ -823,12 +832,14 @@ namespace NocturnalEngine {
 
                             p_Scene->DeserializeFromFile(mCurrentDirectory.string() + '/' + filename);
                             mCurrentScene = filename;
+                            // New scene load starts a fresh history chain.
                             for (const auto& path : mUndoStack)
                                 std::filesystem::remove(path);
                             for (const auto& path : mRedoStack)
                                 std::filesystem::remove(path);
                             mUndoStack.clear();
                             mRedoStack.clear();
+                            // Keep one baseline snapshot for the loaded scene.
                             PushUndoSnapshot();
                             selectedEntity = {};
 
@@ -1387,6 +1398,7 @@ namespace NocturnalEngine {
             ImGui::Begin("Hierarchy");
             if (ImGui::Button("Create Entity") && p_ecs.GetTotalEntities() != MAX_ENTITIES)
             {
+                // Snapshot before create.
                 PushUndoSnapshotAndInvalidateRedo();
                 p_ecs.AddComponent<NameTag>(p_ecs.CreateEntity(), C_NameTagComponent);
             }
@@ -1398,6 +1410,7 @@ namespace NocturnalEngine {
                 {
                     if (selectedEntity != MAX_ENTITIES)
                     {
+                        // Snapshot before destroy.
                         PushUndoSnapshotAndInvalidateRedo();
                         p_ecs.DestroyEntity(selectedEntity);
                         selectedEntity = {};
@@ -1408,6 +1421,7 @@ namespace NocturnalEngine {
                 {
                     if (selectedEntity != MAX_ENTITIES)
                     {
+                        // Snapshot before clone.
                         PushUndoSnapshotAndInvalidateRedo();
                         Entity CloneEntity = p_ecs.CloneEntity(selectedEntity);
                         selectedEntity = CloneEntity; // when the entity is destroy there is no current selected entity
@@ -2390,6 +2404,7 @@ namespace NocturnalEngine {
     void LevelEditor::HandleUndoRedoShortcuts()
     {
         ImGuiIO& io = ImGui::GetIO();
+        // Avoid editor shortcuts while typing in text fields.
         if (io.WantTextInput)
             return;
 
@@ -2408,6 +2423,7 @@ namespace NocturnalEngine {
 
     std::string LevelEditor::CreateSnapshotFilePath() const
     {
+        // Counter avoids filename collisions in the same microsecond.
         static std::uint64_t snapshotCounter = 0;
         const auto now = std::chrono::steady_clock::now().time_since_epoch();
         const auto ticks = std::chrono::duration_cast<std::chrono::microseconds>(now).count();
@@ -2418,12 +2434,14 @@ namespace NocturnalEngine {
     void LevelEditor::PushUndoSnapshot()
     {
         const std::string snapshotPath = CreateSnapshotFilePath();
+        // Save full scene state to disk.
         if (!p_Scene->SerializeToFile(snapshotPath))
             return;
 
         mUndoStack.push_back(snapshotPath);
         while (mUndoStack.size() > mMaxUndoSteps)
         {
+            // Trim oldest history when cap is exceeded.
             std::filesystem::remove(mUndoStack.front());
             mUndoStack.erase(mUndoStack.begin());
         }
@@ -2431,6 +2449,7 @@ namespace NocturnalEngine {
 
     void LevelEditor::PushUndoSnapshotAndInvalidateRedo()
     {
+        // New edits invalidate the redo path.
         PushUndoSnapshot();
         for (const auto& redoSnapshot : mRedoStack)
             std::filesystem::remove(redoSnapshot);
@@ -2442,6 +2461,7 @@ namespace NocturnalEngine {
         if (!std::filesystem::exists(snapshotPath))
             return false;
 
+        // Replace world state with snapshot contents.
         if (!p_Scene->DeserializeFromFile(snapshotPath))
             return false;
 
@@ -2454,6 +2474,7 @@ namespace NocturnalEngine {
         if (mUndoStack.empty())
             return;
 
+        // Save current state so user can redo to it.
         const std::string redoSnapshot = CreateSnapshotFilePath();
         if (!p_Scene->SerializeToFile(redoSnapshot))
             return;
@@ -2465,11 +2486,13 @@ namespace NocturnalEngine {
             std::filesystem::remove(redoSnapshot);
             return;
         }
+        // Consumed undo snapshot can be deleted.
         std::filesystem::remove(undoSnapshot);
 
         mRedoStack.push_back(redoSnapshot);
         while (mRedoStack.size() > mMaxUndoSteps)
         {
+            // Enforce history cap.
             std::filesystem::remove(mRedoStack.front());
             mRedoStack.erase(mRedoStack.begin());
         }
@@ -2480,6 +2503,7 @@ namespace NocturnalEngine {
         if (mRedoStack.empty())
             return;
 
+        // Save current state so user can undo this redo.
         const std::string undoSnapshot = CreateSnapshotFilePath();
         if (!p_Scene->SerializeToFile(undoSnapshot))
             return;
@@ -2491,11 +2515,13 @@ namespace NocturnalEngine {
             std::filesystem::remove(undoSnapshot);
             return;
         }
+        // Consumed redo snapshot can be deleted.
         std::filesystem::remove(redoSnapshot);
 
         mUndoStack.push_back(undoSnapshot);
         while (mUndoStack.size() > mMaxUndoSteps)
         {
+            // Enforce history cap.
             std::filesystem::remove(mUndoStack.front());
             mUndoStack.erase(mUndoStack.begin());
         }
