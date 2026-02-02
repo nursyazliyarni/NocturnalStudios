@@ -105,7 +105,7 @@ namespace NocturnalEngine {
     /*!*************************************************************************
     Render font
     ****************************************************************************/
-    void Font::RenderText(const std::string& text, glm::vec2 position , float scale, Camera2D& camera, glm::vec3 color)
+    void Font::RenderText(const std::string& text, glm::vec2 position, int line_height, float scale, Camera2D& camera, glm::vec3 color)
 	{
         // activate corresponding render state	
         TextShader->Bind();
@@ -116,8 +116,15 @@ namespace NocturnalEngine {
 
         // iterate through all characters
         std::string::const_iterator c;
+        float startX = position.x;
         for (c = text.begin(); c != text.end(); c++)
         {
+            if (*c == '\n') {
+                position.x = startX;
+                position.y -= scale*line_height;
+                continue;
+            }
+
             Character ch = Characters[*c];
             float w = ch.Size.x * scale;
             float h = ch.Size.y * scale;

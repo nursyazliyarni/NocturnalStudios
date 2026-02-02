@@ -1640,6 +1640,8 @@ namespace NocturnalEngine {
                         ImGui::DragFloat("##TextPosX", &text.GetPosition()[0], 0.01f);
                         ImGui::Text("Y"); ImGui::SameLine();
                         ImGui::DragFloat("##TextPosY", &text.GetPosition()[1], 0.01f);
+                        ImGui::Text("Line Height"); ImGui::SameLine();
+                        ImGui::DragInt("##Line Height", &text.Get_line_height(), 1);
                     }
                 }
                 //Collider Component
