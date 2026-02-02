@@ -70,7 +70,7 @@ namespace NocturnalEngine {
 		}
 
 		if (aA.is_alive&&p_GameManager.GetGameState() != GameManager::GameState::ENDING) {
-			// aA.current_hunger -= aA.hungerDecayRate * static_cast<double>(Frametime) * 10.0;
+			aA.current_hunger -= aA.hungerDecayRate * static_cast<double>(Frametime) * 10.0;
 
 			// Adjust health decay based on animal type and hunger state
 			const double baseHealthMultiplier = 3.0; // much faster overall
