@@ -141,7 +141,7 @@
             },
             {
                 "TextureName": "sealSpritesheet",
-                "Index_X": 2,
+                "Index_X": 1,
                 "Index_Y": 0,
                 "Ucoordinates": 530.0,
                 "Vcoordinates": 254.5,
@@ -660,9 +660,8 @@
                 "LayeringOrder": 0
             },
             {
-                "0": "DragAndDrop",
-                "1": "RevealTargetOnClick",
-                "ScriptCount": 2
+                "0": "RevealTargetOnClick",
+                "ScriptCount": 1
             },
             {
                 "Tag": "Tou",

@@ -651,9 +651,8 @@
                 "LayeringOrder": 0
             },
             {
-                "0": "DragAndDrop",
-                "1": "RevealTargetOnClick",
-                "ScriptCount": 2
+                "0": "RevealTargetOnClick",
+                "ScriptCount": 1
             },
             {},
             {},
