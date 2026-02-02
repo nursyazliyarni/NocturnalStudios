@@ -26,7 +26,9 @@ namespace NocturnalEngine
         ~RevealTargetOnClick() = default;
 
         virtual RevealTargetOnClick* Clone() const override { return new RevealTargetOnClick(*this); }
+        // Finds required scene entities and hides the target on scene start.
         virtual void Start() override;
+        // Handles click input, target toggling, and pain spot consume/heal logic.
         virtual void Update(float Frametime) override;
         virtual void End() override {}
         virtual std::string GetScriptName() override { return "RevealTargetOnClick"; }
@@ -42,12 +44,19 @@ namespace NocturnalEngine
         bool mHasTarget{ false };
         bool mVisible{ false };
 
+        // Locates the reveal icon target entity using Tag == "target".
         void FindTargetEntity();
+        // Locates the owl entity used for health updates.
         void FindOwlEntity();
+        // Stores original target scale and hides target.
         void HideTarget();
+        // Shows or hides the target sprite.
         void ToggleTarget();
+        // Removes one pain spot under target center and heals owl by 15%.
         void ConsumePainSpotAndHeal();
+        // Returns true if target center is inside any pain spot.
         bool IsTargetOverPainSpot(Entity& outSpot) const;
+        // Mouse-over test for the script owner collider (medicine icon).
         bool IsMouseOver(Entity entity) const;
     };
 }

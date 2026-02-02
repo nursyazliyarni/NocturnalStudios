@@ -24,11 +24,13 @@
 
 namespace NocturnalEngine
 {
+    // - Constructor: cache input system reference.
     RevealTargetOnClick::RevealTargetOnClick()
         : mInput{ InputSystem::GetInstance() }
     {
     }
 
+    // - Start: find target/owl entities and hide target at scene start.
     void RevealTargetOnClick::Start()
     {
         FindTargetEntity();
@@ -36,6 +38,7 @@ namespace NocturnalEngine
         HideTarget();
     }
 
+    // - Update: move visible target with cursor, toggle on medicine click, and consume pain spots on click when target is active.
     void RevealTargetOnClick::Update(float Frametime)
     {
         UNREFERENCED_PARAMETER(Frametime);
@@ -61,6 +64,7 @@ namespace NocturnalEngine
         }
     }
 
+    // - Locate the target entity by Tag == "target".
     void RevealTargetOnClick::FindTargetEntity()
     {
         for (Entity e : p_ecs.GetAliveEntitiesSet()) // Search for the entity tagged as "target"
@@ -77,6 +81,7 @@ namespace NocturnalEngine
         }
     }
 
+    // - Locate owl entity for health modification; prefer NameTag "Owl", otherwise first AnimalAttributes entity.
     void RevealTargetOnClick::FindOwlEntity()
     {
         mOwl = 0;
@@ -102,6 +107,7 @@ namespace NocturnalEngine
         }
     }
 
+    // - Hide target and cache its original scale for later restore.
     void RevealTargetOnClick::HideTarget()
     {
         if (!mHasTarget || !p_ecs.HaveComponent<Transform>(mTarget)) // Ensure target has a Transform
@@ -113,6 +119,7 @@ namespace NocturnalEngine
         mVisible = false;
     }
 
+    // - Toggle target visibility state.
     void RevealTargetOnClick::ToggleTarget()
     {
         if (!mHasTarget || !p_ecs.HaveComponent<Transform>(mTarget)) // Ensure target is valid
@@ -132,6 +139,7 @@ namespace NocturnalEngine
         }
     }
 
+    // - If target center overlaps a pain spot, destroy that spot and heal owl by 15% max health (clamped).
     void RevealTargetOnClick::ConsumePainSpotAndHeal()
     {
         Entity painSpot = 0;
@@ -149,6 +157,7 @@ namespace NocturnalEngine
         attrs.current_health = std::min(maxHealth, attrs.current_health + healAmount);
     }
 
+    // - Check whether target center lies inside any pain spot area; return overlapping spot via outSpot.
     bool RevealTargetOnClick::IsTargetOverPainSpot(Entity& outSpot) const
     {
         outSpot = 0;
@@ -184,6 +193,7 @@ namespace NocturnalEngine
         return false;
     }
 
+    // - Generic mouse-over test against collider shapes on the given entity (used for medicine icon clicks).
     bool RevealTargetOnClick::IsMouseOver(Entity entity) const
     {
         if (!p_ecs.HaveComponent<Transform>(entity) || !p_ecs.HaveComponent<Collider>(entity)) // Need transform + collider

@@ -22,18 +22,21 @@
 
 namespace NocturnalEngine
 {
+    // - Constructor: set health thresholds and initialize RNG.
     PainSpotSpawner::PainSpotSpawner()
         : mThresholds{ 0.75, 0.50, 0.25, 0.10 }
         , mRng{ std::random_device{}() }
     {
     }
 
+    // - Start: clear runtime tracked pain spots and offsets.
     void PainSpotSpawner::Start()
     {
         mSpots.clear();
         mOffsets.clear();
     }
 
+    // - Update: remove invalid tracked spots, spawn new spots at health thresholds, and keep spots following the animal.
     void PainSpotSpawner::Update(float Frametime)
     {
         UNREFERENCED_PARAMETER(Frametime);
@@ -55,6 +58,7 @@ namespace NocturnalEngine
         UpdateSpotPositions();
     }
 
+    // - Spawn one pain spot entity and remember its local offset from animal.
     void PainSpotSpawner::SpawnSpot()
     {
         auto& owlTransform = p_ecs.GetComponent<Transform>(entityID);
@@ -81,6 +85,7 @@ namespace NocturnalEngine
         mOffsets.push_back(offset);
     }
 
+    // - Pick a random spot offset inside collider bounds when available, otherwise inside transform scale extents.
     vec2D PainSpotSpawner::RandomOffset(const vec2D& owlScale)
     {
         if (p_ecs.HaveComponent<Collider>(entityID))
@@ -109,6 +114,7 @@ namespace NocturnalEngine
         return vec2D(distX(mRng), distY(mRng));
     }
 
+    // - Remove tracked entries if the underlying entity was destroyed or is no longer a pain spot.
     void PainSpotSpawner::CleanupDestroyedSpots()
     {
         size_t i = 0;
@@ -125,6 +131,7 @@ namespace NocturnalEngine
         }
     }
 
+    // - Keep spawned pain spots attached to the animal as it moves.
     void PainSpotSpawner::UpdateSpotPositions()
     {
         auto& owlTransform = p_ecs.GetComponent<Transform>(entityID);

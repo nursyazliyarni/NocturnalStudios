@@ -24,7 +24,9 @@ namespace NocturnalEngine
         ~PainSpotSpawner() = default;
 
         virtual PainSpotSpawner* Clone() const override { return new PainSpotSpawner(*this); }
+        // Clears runtime pain spot tracking when scene starts.
         virtual void Start() override;
+        // Spawns and updates pain spots based on current health percentage.
         virtual void Update(float Frametime) override;
         virtual void End() override {}
         virtual std::string GetScriptName() override { return "PainSpotSpawner"; }
@@ -39,9 +41,13 @@ namespace NocturnalEngine
 
         std::mt19937 mRng;
 
+        // Creates one pain spot entity and stores its offset from the animal.
         void SpawnSpot();
+        // Picks a random local offset inside collider bounds (or scale fallback).
         vec2D RandomOffset(const vec2D& owlScale);
+        // Removes destroyed pain spots from local tracking arrays.
         void CleanupDestroyedSpots();
+        // Repositions all tracked pain spots to follow the animal transform.
         void UpdateSpotPositions();
     };
 }
