@@ -891,7 +891,7 @@
         "16": [
             {
                 "posX": -1.469074010848999,
-                "posY": 0.7638832330703735,
+                "posY": 0.7429999709129333,
                 "scaleX": 1.0,
                 "scaleY": 1.0,
                 "Rot": 0.0
@@ -913,9 +913,9 @@
             {},
             {},
             {
-                "Content": "New Text",
-                "Font": "DS-DIGII",
-                "Size": 41.79999923706055,
+                "Content": "00:00:00",
+                "Font": "DSEG7Classic-Bold",
+                "Size": 35.29999923706055,
                 "ColorR": 0.0,
                 "ColorG": 1.0,
                 "ColorB": 0.0,
