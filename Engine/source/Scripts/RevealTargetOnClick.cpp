@@ -16,6 +16,7 @@
 #include "Scripts/RevealTargetOnClick.h"
 #include "ECS/Components/AnimalAttributes.h"
 #include "ECS/Components/NameTag.h"
+#include "ECS/Components/Tag.h"
 #include "ECS/Components/Transform.h"
 #include "ECS/Components/Collider.h"
 #include "GUI/GUI.h"
@@ -62,12 +63,12 @@ namespace NocturnalEngine
 
     void RevealTargetOnClick::FindTargetEntity()
     {
-        for (Entity e : p_ecs.GetAliveEntitiesSet()) // Search for the entity named "target"
+        for (Entity e : p_ecs.GetAliveEntitiesSet()) // Search for the entity tagged as "target"
         {
-            if (!p_ecs.HaveComponent<NameTag>(e))
+            if (!p_ecs.HaveComponent<Tag>(e))
                 continue;
 
-            if (p_ecs.GetComponent<NameTag>(e).GetNameTag() == "target")
+            if (p_ecs.GetComponent<Tag>(e).GetTag() == "target")
             {
                 mTarget = e;
                 mHasTarget = true;
@@ -157,8 +158,6 @@ namespace NocturnalEngine
 
         auto& targetTransform = p_ecs.GetComponent<Transform>(mTarget);
         const vec2D targetPos = targetTransform.GetPos();
-        const vec2D targetScale = targetTransform.GetScale();
-        const float targetRadius = std::max(std::abs(targetScale.x), std::abs(targetScale.y)) * 0.5f;
 
         for (Entity e : p_ecs.GetAliveEntitiesSet())
         {
@@ -174,7 +173,8 @@ namespace NocturnalEngine
             const vec2D painScale = painTransform.GetScale();
             const float painRadius = std::max(std::abs(painScale.x), std::abs(painScale.y)) * 0.5f;
 
-            if (distance(targetPos, painPos) <= targetRadius + painRadius)
+            // Require the target center point to lie on the pain spot.
+            if (distance(targetPos, painPos) <= painRadius)
             {
                 outSpot = e;
                 return true;
