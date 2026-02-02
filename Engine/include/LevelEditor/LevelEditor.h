@@ -44,6 +44,7 @@ namespace NocturnalEngine {
 		void Layering();
 		void Hierarchy();
 		void Inspector();
+		void HandleUndoRedoShortcuts(); // Handles Ctrl+Z / Ctrl+Y / Ctrl+Shift+Z every frame.
 
 		//for audio loading from files
 		void LoadAudioFromFile();
@@ -89,6 +90,12 @@ namespace NocturnalEngine {
 	private:
 		void MainMenuBar();
 		void Docking();
+		void PushUndoSnapshot(); // Saves current scene state as an undo snapshot.
+		void PushUndoSnapshotAndInvalidateRedo(); // Saves undo snapshot and clears redo history for new edits.
+		void ApplyUndo(); // Restores previous state from undo history.
+		void ApplyRedo(); // Restores next state from redo history.
+		bool LoadSnapshot(const std::string& snapshotPath); // Loads a snapshot file into the current scene.
+		std::string CreateSnapshotFilePath() const; // Builds a unique snapshot path in the undo folder.
 		bool FullScreenMode{};
 		bool Pad{};
 
@@ -145,5 +152,11 @@ namespace NocturnalEngine {
 
 		//load script list from file
 		std::vector<std::string> mScriptList;
+
+		std::vector<std::string> mUndoStack; // Stack of snapshots for undo operations.
+		std::vector<std::string> mRedoStack; // Stack of snapshots for redo operations.
+		std::filesystem::path mUndoDirectory{ "Assets/Scene/.editor_undo" }; // Temporary folder for editor snapshots.
+		std::size_t mMaxUndoSteps{ 20 }; // Maximum number of history entries kept.
+		bool mStartedGizmoDrag{ false }; // Prevents duplicate snapshots during one gizmo drag.
 	};
 }

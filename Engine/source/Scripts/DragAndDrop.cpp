@@ -235,8 +235,24 @@ namespace NocturnalEngine {
 			ItemsAttributes& ia = p_ecs.GetComponent<ItemsAttributes>(entityID);
 			AnimalAttributes& aa = p_ecs.GetComponent<AnimalAttributes>(dragTarget);
 			if (!aa.is_alive)return;
-			if (aa.current_hunger + ia.gain_amount >= aa.maxHunger)aa.current_hunger = aa.maxHunger;
-			else aa.current_hunger += ia.gain_amount;
+
+			switch (ia.type)
+			{
+			case ItemsAttributes::ItemType::TOY :
+				if (aa.current_sanity + ia.gain_amount >= aa.maxSanity)aa.current_sanity = aa.maxSanity;
+				else aa.current_sanity += ia.gain_amount;
+				break;
+			case ItemsAttributes::ItemType::MEDICINE:
+				if (aa.current_health + ia.gain_amount >= aa.maxHealth)aa.current_health = aa.maxHealth;
+				else aa.current_health += ia.gain_amount;
+				break;
+			case ItemsAttributes::ItemType::FOOD:
+				if (aa.current_hunger + ia.gain_amount >= aa.maxHunger)aa.current_hunger = aa.maxHunger;
+				else aa.current_hunger += ia.gain_amount;
+				break;
+
+			}
+
 
 			
 		}
