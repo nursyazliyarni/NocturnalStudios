@@ -1479,13 +1479,6 @@ namespace NocturnalEngine {
                             p_ecs.AddComponent<Draggable>(selectedEntity, C_DraggableComponent);
                         ImGui::CloseCurrentPopup();
                     }
-                    if (ImGui::MenuItem("Text"))
-                    {
-                        if (!p_ecs.HaveComponent<Text>(selectedEntity))
-                            p_ecs.AddComponent<Text>(selectedEntity, C_TextComponent);
-                        ImGui::CloseCurrentPopup();
-                    }
-
                     ImGui::EndPopup();
                 }
                 //Check and change the name of the Entity
@@ -2146,11 +2139,6 @@ namespace NocturnalEngine {
                     if (ImGui::MenuItem("Draggable") && p_ecs.HaveComponent<Draggable>(selectedEntity))
                     {
                         p_ecs.RemoveComponent<Draggable>(selectedEntity);
-                        ImGui::CloseCurrentPopup();
-                    }
-                    if (ImGui::MenuItem("Text") && p_ecs.HaveComponent<Text>(selectedEntity))
-                    {
-                        p_ecs.RemoveComponent<Text>(selectedEntity);
                         ImGui::CloseCurrentPopup();
                     }
                     ImGui::EndPopup();
