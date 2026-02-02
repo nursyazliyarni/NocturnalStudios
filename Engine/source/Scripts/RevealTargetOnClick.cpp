@@ -22,6 +22,8 @@
 #include "GUI/GUI.h"
 #include "Math/Vmath.h"
 
+#include "Scripts/GlobalGameManager.h"
+
 namespace NocturnalEngine
 {
     // - Constructor: cache input system reference.
@@ -137,6 +139,7 @@ namespace NocturnalEngine
             transform.SetScale(mTargetScale.x, mTargetScale.y);
             mVisible = true;
         }
+        p_GameManager.setTargetVisibility(mVisible);
     }
 
     // - If target center overlaps a pain spot, destroy that spot and heal owl by 15% max health (clamped).
