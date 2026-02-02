@@ -67,6 +67,8 @@
 #include <array>
 #include <vector>
 #include <algorithm>
+#include <chrono>
+#include <cstdint>
 
 
 namespace NocturnalEngine {
@@ -103,6 +105,15 @@ namespace NocturnalEngine {
     {
         if (!window || !window->GetWindow()) return;
         mWindow = window;
+        std::filesystem::create_directories(mUndoDirectory);
+        for (const auto& entry : std::filesystem::directory_iterator(mUndoDirectory))
+        {
+            if (entry.is_regular_file())
+                std::filesystem::remove(entry.path());
+        }
+        mUndoStack.clear();
+        mRedoStack.clear();
+        mStartedGizmoDrag = false;
         
         IMGUI_CHECKVERSION();
 
@@ -124,6 +135,7 @@ namespace NocturnalEngine {
         LoadSceneFromFile();
 
         LoadScriptsFromFile();
+        PushUndoSnapshot();
 
     }
     /*!*************************************************************************
@@ -157,6 +169,7 @@ namespace NocturnalEngine {
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
+        HandleUndoRedoShortcuts();
         MainMenuBar();
 
         if (is_ShowWindow)
@@ -207,6 +220,18 @@ namespace NocturnalEngine {
     ****************************************************************************/
     void LevelEditor::End()
     {
+        for (const auto& path : mUndoStack)
+            std::filesystem::remove(path);
+        for (const auto& path : mRedoStack)
+            std::filesystem::remove(path);
+        for (const auto& entry : std::filesystem::directory_iterator(mUndoDirectory))
+        {
+            if (entry.is_regular_file())
+                std::filesystem::remove(entry.path());
+        }
+        mUndoStack.clear();
+        mRedoStack.clear();
+
         ImGui_ImplOpenGL3_Shutdown();
         ImGui_ImplGlfw_Shutdown();
         ImGui::DestroyContext();
@@ -308,6 +333,19 @@ namespace NocturnalEngine {
     {
         if (ImGui::BeginMainMenuBar())
         {
+            if (ImGui::BeginMenu("Edit"))
+            {
+                const bool canUndo = !mUndoStack.empty();
+                const bool canRedo = !mRedoStack.empty();
+
+                if (ImGui::MenuItem("Undo", "Ctrl+Z", false, canUndo))
+                    ApplyUndo();
+                if (ImGui::MenuItem("Redo", "Ctrl+Y", false, canRedo))
+                    ApplyRedo();
+
+                ImGui::EndMenu();
+            }
+
             if (is_ShowWindow)
             {
                 if (ImGui::Button("Close Editor/Play"))
@@ -544,6 +582,12 @@ namespace NocturnalEngine {
                     , glm::value_ptr(cameraProj), (ImGuizmo::OPERATION)mGizmoType,
                     ImGuizmo::WORLD, glm::value_ptr(transform));
 
+                if (ImGuizmo::IsUsing() && !mStartedGizmoDrag)
+                {
+                    PushUndoSnapshotAndInvalidateRedo();
+                    mStartedGizmoDrag = true;
+                }
+
                 if (ImGuizmo::IsUsing())
                 {
                     glm::vec3 decompTrans, decompRot, decompScale;
@@ -558,7 +602,15 @@ namespace NocturnalEngine {
                     trans.SetScale(decompScale[0], decompScale[1]);
 
                 }
+                else if (mStartedGizmoDrag)
+                {
+                    mStartedGizmoDrag = false;
+                }
             }
+        }
+        else
+        {
+            mStartedGizmoDrag = false;
         }
 
         ImGui::End();
@@ -586,6 +638,7 @@ namespace NocturnalEngine {
         {
             if (selectedEntity >= 0 && selectedEntity < MAX_ENTITIES)
             {
+                PushUndoSnapshotAndInvalidateRedo();
                 p_ecs.DestroyEntity(selectedEntity);
                 selectedEntity = {};
             }
@@ -768,8 +821,16 @@ namespace NocturnalEngine {
                                     saved[l] = NocturnalEngine::Graphic::layerEnabled[l];
                             }
 
-                            p_Scene->DeserializeFromFile(mCurrentDirectory.string()+'/' + filename);
+                            p_Scene->DeserializeFromFile(mCurrentDirectory.string() + '/' + filename);
                             mCurrentScene = filename;
+                            for (const auto& path : mUndoStack)
+                                std::filesystem::remove(path);
+                            for (const auto& path : mRedoStack)
+                                std::filesystem::remove(path);
+                            mUndoStack.clear();
+                            mRedoStack.clear();
+                            PushUndoSnapshot();
+                            selectedEntity = {};
 
                             //  RESTORE layer state for newly loaded scene 
                             auto it = gSceneLayerState.find(mCurrentScene);
@@ -1326,6 +1387,7 @@ namespace NocturnalEngine {
             ImGui::Begin("Hierarchy");
             if (ImGui::Button("Create Entity") && p_ecs.GetTotalEntities() != MAX_ENTITIES)
             {
+                PushUndoSnapshotAndInvalidateRedo();
                 p_ecs.AddComponent<NameTag>(p_ecs.CreateEntity(), C_NameTagComponent);
             }
 
@@ -1336,7 +1398,9 @@ namespace NocturnalEngine {
                 {
                     if (selectedEntity != MAX_ENTITIES)
                     {
+                        PushUndoSnapshotAndInvalidateRedo();
                         p_ecs.DestroyEntity(selectedEntity);
+                        selectedEntity = {};
                     }
                 }
                 ImGui::SameLine();
@@ -1344,6 +1408,7 @@ namespace NocturnalEngine {
                 {
                     if (selectedEntity != MAX_ENTITIES)
                     {
+                        PushUndoSnapshotAndInvalidateRedo();
                         Entity CloneEntity = p_ecs.CloneEntity(selectedEntity);
                         selectedEntity = CloneEntity; // when the entity is destroy there is no current selected entity
                     }
@@ -1411,73 +1476,109 @@ namespace NocturnalEngine {
                     if (ImGui::MenuItem("Transform"))
                     {
                         if (!p_ecs.HaveComponent<Transform>(selectedEntity))
+                        {
+                            PushUndoSnapshotAndInvalidateRedo();
                             p_ecs.AddComponent<Transform>(selectedEntity, C_TransformComponent);
+                        }
                         ImGui::CloseCurrentPopup();
                     }
                     if (ImGui::MenuItem("Sprite"))
                     {
                         if (!p_ecs.HaveComponent<Sprite>(selectedEntity))
+                        {
+                            PushUndoSnapshotAndInvalidateRedo();
                             p_ecs.AddComponent<Sprite>(selectedEntity, C_SpriteComponent);
+                        }
                         ImGui::CloseCurrentPopup();
                     }
                     if (ImGui::MenuItem("Collider"))
                     {
                         if (!p_ecs.HaveComponent<Collider>(selectedEntity))
+                        {
+                            PushUndoSnapshotAndInvalidateRedo();
                             p_ecs.AddComponent<Collider>(selectedEntity, C_ColliderComponent);
+                        }
                         ImGui::CloseCurrentPopup();
                     }
                     if (ImGui::MenuItem("RigidBody"))
                     {
                         if (!p_ecs.HaveComponent<RigidBody>(selectedEntity))
+                        {
+                            PushUndoSnapshotAndInvalidateRedo();
                             p_ecs.AddComponent<RigidBody>(selectedEntity, C_RigidBodyComponent);
+                        }
                         ImGui::CloseCurrentPopup();
                     }
                     if (ImGui::MenuItem("Logic"))
                     {
                         if (!p_ecs.HaveComponent<Logic>(selectedEntity))
+                        {
+                            PushUndoSnapshotAndInvalidateRedo();
                             p_ecs.AddComponent<Logic>(selectedEntity, C_LogicComponent);
+                        }
                         ImGui::CloseCurrentPopup();
                     }
                     if (ImGui::MenuItem("Audio"))
                     {
                         if (!p_ecs.HaveComponent<Audio>(selectedEntity))
+                        {
+                            PushUndoSnapshotAndInvalidateRedo();
                             p_ecs.AddComponent<Audio>(selectedEntity, C_AudioComponent);
+                        }
                         ImGui::CloseCurrentPopup();
                     }
                     if (ImGui::MenuItem("Tag"))
                     {
                         if (!p_ecs.HaveComponent<Tag>(selectedEntity))
+                        {
+                            PushUndoSnapshotAndInvalidateRedo();
                             p_ecs.AddComponent<Tag>(selectedEntity, C_TagComponent);
+                        }
                         ImGui::CloseCurrentPopup();
                     }
                     if (ImGui::MenuItem("HUD"))
                     {
                         if (!p_ecs.HaveComponent<HUDComponent>(selectedEntity))
+                        {
+                            PushUndoSnapshotAndInvalidateRedo();
                             p_ecs.AddComponent<HUDComponent>(selectedEntity, C_HUDComponent);
+                        }
                         ImGui::CloseCurrentPopup();
                     }
                     if (ImGui::MenuItem("Text"))
                     {
                         if (!p_ecs.HaveComponent<Text>(selectedEntity))
+                        {
+                            PushUndoSnapshotAndInvalidateRedo();
                             p_ecs.AddComponent<Text>(selectedEntity, C_TextComponent);
+                        }
                         ImGui::CloseCurrentPopup();
                     }
                     if (ImGui::MenuItem("Animal Attributes"))
                     {
                         if (!p_ecs.HaveComponent<AnimalAttributes>(selectedEntity))
+                        {
+                            PushUndoSnapshotAndInvalidateRedo();
                             p_ecs.AddComponent<AnimalAttributes>(selectedEntity, C_AnimalAttributesComponent);
+                        }
                         ImGui::CloseCurrentPopup();
                     }
                     if (ImGui::MenuItem("Items Attributes"))
                     {
                         if (!p_ecs.HaveComponent<ItemsAttributes>(selectedEntity))
+                        {
+                            PushUndoSnapshotAndInvalidateRedo();
                             p_ecs.AddComponent<ItemsAttributes>(selectedEntity, C_ItemsAttributesComponent);
+                        }
                         ImGui::CloseCurrentPopup();
                     }
                     if (ImGui::MenuItem("Draggable"))
                     {
                         if (!p_ecs.HaveComponent<Draggable>(selectedEntity))
+                        {
+                            PushUndoSnapshotAndInvalidateRedo();
                             p_ecs.AddComponent<Draggable>(selectedEntity, C_DraggableComponent);
+                        }
                         ImGui::CloseCurrentPopup();
                     }
                     ImGui::EndPopup();
@@ -2100,51 +2201,61 @@ namespace NocturnalEngine {
                 {
                     if (ImGui::MenuItem("Transform") && p_ecs.HaveComponent<Transform>(selectedEntity))
                     {
+                        PushUndoSnapshotAndInvalidateRedo();
                         p_ecs.RemoveComponent<Transform>(selectedEntity);
                         ImGui::CloseCurrentPopup();
                     }
                     if (ImGui::MenuItem("Sprite") && p_ecs.HaveComponent<Sprite>(selectedEntity))
                     {
+                        PushUndoSnapshotAndInvalidateRedo();
                         p_ecs.RemoveComponent<Sprite>(selectedEntity);
                         ImGui::CloseCurrentPopup();
                     }
                     if (ImGui::MenuItem("Collider") && p_ecs.HaveComponent<Collider>(selectedEntity))
                     {
+                        PushUndoSnapshotAndInvalidateRedo();
                         p_ecs.RemoveComponent<Collider>(selectedEntity);
                         ImGui::CloseCurrentPopup();
                     }
                     if (ImGui::MenuItem("RigidBody") && p_ecs.HaveComponent<RigidBody>(selectedEntity))
                     {
+                        PushUndoSnapshotAndInvalidateRedo();
                         p_ecs.RemoveComponent<RigidBody>(selectedEntity);
                         ImGui::CloseCurrentPopup();
                     }
                     if (ImGui::MenuItem("Logic") && p_ecs.HaveComponent<Logic>(selectedEntity))
                     {
+                        PushUndoSnapshotAndInvalidateRedo();
                         p_ecs.RemoveComponent<Logic>(selectedEntity);
                         ImGui::CloseCurrentPopup();
                     }
                     if (ImGui::MenuItem("Audio") && p_ecs.HaveComponent<Audio>(selectedEntity))
                     {
+                        PushUndoSnapshotAndInvalidateRedo();
                         p_ecs.RemoveComponent<Audio>(selectedEntity);
                         ImGui::CloseCurrentPopup();
                     }
                     if (ImGui::MenuItem("Tag") && p_ecs.HaveComponent<Tag>(selectedEntity))
                     {
+                        PushUndoSnapshotAndInvalidateRedo();
                         p_ecs.RemoveComponent<Tag>(selectedEntity);
                         ImGui::CloseCurrentPopup();
                     }
                     if (ImGui::MenuItem("HUD") && p_ecs.HaveComponent<HUDComponent>(selectedEntity))
                     {
+                        PushUndoSnapshotAndInvalidateRedo();
                         p_ecs.RemoveComponent<HUDComponent>(selectedEntity);
                         ImGui::CloseCurrentPopup();
                     }
                     if (ImGui::MenuItem("Text") && p_ecs.HaveComponent<Text>(selectedEntity))
                     {
+                        PushUndoSnapshotAndInvalidateRedo();
                         p_ecs.RemoveComponent<Text>(selectedEntity);
                         ImGui::CloseCurrentPopup();
                     }
                     if (ImGui::MenuItem("Draggable") && p_ecs.HaveComponent<Draggable>(selectedEntity))
                     {
+                        PushUndoSnapshotAndInvalidateRedo();
                         p_ecs.RemoveComponent<Draggable>(selectedEntity);
                         ImGui::CloseCurrentPopup();
                     }
@@ -2273,6 +2384,120 @@ namespace NocturnalEngine {
                 }
             }
             ImGui::End();
+        }
+    }
+
+    void LevelEditor::HandleUndoRedoShortcuts()
+    {
+        ImGuiIO& io = ImGui::GetIO();
+        if (io.WantTextInput)
+            return;
+
+        if (io.KeyCtrl && ImGui::IsKeyPressed(ImGuiKey_Z, false))
+        {
+            if (io.KeyShift)
+                ApplyRedo();
+            else
+                ApplyUndo();
+        }
+        else if (io.KeyCtrl && ImGui::IsKeyPressed(ImGuiKey_Y, false))
+        {
+            ApplyRedo();
+        }
+    }
+
+    std::string LevelEditor::CreateSnapshotFilePath() const
+    {
+        static std::uint64_t snapshotCounter = 0;
+        const auto now = std::chrono::steady_clock::now().time_since_epoch();
+        const auto ticks = std::chrono::duration_cast<std::chrono::microseconds>(now).count();
+        const std::string filename = "snapshot_" + std::to_string(ticks) + "_" + std::to_string(snapshotCounter++) + ".json";
+        return (mUndoDirectory / filename).string();
+    }
+
+    void LevelEditor::PushUndoSnapshot()
+    {
+        const std::string snapshotPath = CreateSnapshotFilePath();
+        if (!p_Scene->SerializeToFile(snapshotPath))
+            return;
+
+        mUndoStack.push_back(snapshotPath);
+        while (mUndoStack.size() > mMaxUndoSteps)
+        {
+            std::filesystem::remove(mUndoStack.front());
+            mUndoStack.erase(mUndoStack.begin());
+        }
+    }
+
+    void LevelEditor::PushUndoSnapshotAndInvalidateRedo()
+    {
+        PushUndoSnapshot();
+        for (const auto& redoSnapshot : mRedoStack)
+            std::filesystem::remove(redoSnapshot);
+        mRedoStack.clear();
+    }
+
+    bool LevelEditor::LoadSnapshot(const std::string& snapshotPath)
+    {
+        if (!std::filesystem::exists(snapshotPath))
+            return false;
+
+        if (!p_Scene->DeserializeFromFile(snapshotPath))
+            return false;
+
+        selectedEntity = {};
+        return true;
+    }
+
+    void LevelEditor::ApplyUndo()
+    {
+        if (mUndoStack.empty())
+            return;
+
+        const std::string redoSnapshot = CreateSnapshotFilePath();
+        if (!p_Scene->SerializeToFile(redoSnapshot))
+            return;
+
+        const std::string undoSnapshot = mUndoStack.back();
+        mUndoStack.pop_back();
+        if (!LoadSnapshot(undoSnapshot))
+        {
+            std::filesystem::remove(redoSnapshot);
+            return;
+        }
+        std::filesystem::remove(undoSnapshot);
+
+        mRedoStack.push_back(redoSnapshot);
+        while (mRedoStack.size() > mMaxUndoSteps)
+        {
+            std::filesystem::remove(mRedoStack.front());
+            mRedoStack.erase(mRedoStack.begin());
+        }
+    }
+
+    void LevelEditor::ApplyRedo()
+    {
+        if (mRedoStack.empty())
+            return;
+
+        const std::string undoSnapshot = CreateSnapshotFilePath();
+        if (!p_Scene->SerializeToFile(undoSnapshot))
+            return;
+
+        const std::string redoSnapshot = mRedoStack.back();
+        mRedoStack.pop_back();
+        if (!LoadSnapshot(redoSnapshot))
+        {
+            std::filesystem::remove(undoSnapshot);
+            return;
+        }
+        std::filesystem::remove(redoSnapshot);
+
+        mUndoStack.push_back(undoSnapshot);
+        while (mUndoStack.size() > mMaxUndoSteps)
+        {
+            std::filesystem::remove(mUndoStack.front());
+            mUndoStack.erase(mUndoStack.begin());
         }
     }
 

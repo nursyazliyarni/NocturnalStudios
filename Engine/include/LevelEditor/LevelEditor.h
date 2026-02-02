@@ -44,6 +44,7 @@ namespace NocturnalEngine {
 		void Layering();
 		void Hierarchy();
 		void Inspector();
+		void HandleUndoRedoShortcuts();
 
 		//for audio loading from files
 		void LoadAudioFromFile();
@@ -89,6 +90,12 @@ namespace NocturnalEngine {
 	private:
 		void MainMenuBar();
 		void Docking();
+		void PushUndoSnapshot();
+		void PushUndoSnapshotAndInvalidateRedo();
+		void ApplyUndo();
+		void ApplyRedo();
+		bool LoadSnapshot(const std::string& snapshotPath);
+		std::string CreateSnapshotFilePath() const;
 		bool FullScreenMode{};
 		bool Pad{};
 
@@ -145,5 +152,12 @@ namespace NocturnalEngine {
 
 		//load script list from file
 		std::vector<std::string> mScriptList;
+
+		// Undo/Redo snapshot history
+		std::vector<std::string> mUndoStack;
+		std::vector<std::string> mRedoStack;
+		std::filesystem::path mUndoDirectory{ "Assets/Scene/.editor_undo" };
+		std::size_t mMaxUndoSteps{ 20 };
+		bool mStartedGizmoDrag{ false };
 	};
 }
