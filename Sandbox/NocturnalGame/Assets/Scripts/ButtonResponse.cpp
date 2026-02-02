@@ -5,7 +5,7 @@
 #include "ECS/SceneManager.h"
 #include "GUI/GUI.h"
 #include "Graphics/Graphics.h"
-
+#include "Input/Input.h"
 
 namespace NocturnalEngine
 {
@@ -22,6 +22,38 @@ namespace NocturnalEngine
 		auto& ID_tag = p_ecs.GetComponent<Tag>(GetScriptEntityID());
 		auto& col = p_ecs.GetComponent<Collider>(GetScriptEntityID());
 		auto& spt = p_ecs.GetComponent<Sprite>(GetScriptEntityID());
+
+
+		// ------------------------------------------------------------
+// Keyboard shortcuts for scene switching (works anywhere)
+// 1 / W -> Flamingo
+// 2 / A -> Seal
+// 3 / S -> Horse
+// 4 / D -> Owl
+// ------------------------------------------------------------
+		if (p_GUI->Check_HTP() == false) // don't allow shortcuts during HTP overlay
+		{
+			if (p_Input->KeyPressed(GLFW_KEY_1) || p_Input->KeyPressed(GLFW_KEY_W))
+			{
+				p_Scene->setSceneToLoad("Assets/Scene/FlamingoScene.json");
+				return;
+			}
+			if (p_Input->KeyPressed(GLFW_KEY_2) || p_Input->KeyPressed(GLFW_KEY_A))
+			{
+				p_Scene->setSceneToLoad("Assets/Scene/SealScene.json");
+				return;
+			}
+			if (p_Input->KeyPressed(GLFW_KEY_3) || p_Input->KeyPressed(GLFW_KEY_S))
+			{
+				p_Scene->setSceneToLoad("Assets/Scene/HorseScene.json");
+				return;
+			}
+			if (p_Input->KeyPressed(GLFW_KEY_4) || p_Input->KeyPressed(GLFW_KEY_D))
+			{
+				p_Scene->setSceneToLoad("Assets/Scene/OwlScene.json");
+				return;
+			}
+		}
 
 
 
