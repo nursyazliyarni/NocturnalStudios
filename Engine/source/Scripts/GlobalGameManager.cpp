@@ -59,6 +59,7 @@ namespace NocturnalEngine {
         sceneAnimalMap.emplace(GameScene::FLAMINGO, defaultAttributes);
         sceneAnimalMap.emplace(GameScene::HORSE, defaultAttributes);
         sceneAnimalMap.emplace(GameScene::OWL, defaultAttributes);
+        sceneAnimalMap[GameScene::OWL].hungerDecayRate = 1.5; //owl special hunger
         sceneAnimalMap.emplace(GameScene::SEAL, defaultAttributes);
         currState=  GameManager::GameState::PLAYING;
         deadAnimals = 0;
@@ -85,14 +86,18 @@ namespace NocturnalEngine {
                 {
                     sceneAnimalPair.second.current_hunger -= sceneAnimalPair.second.hungerDecayRate * static_cast<double>( dt) * 10.0;
                     sceneAnimalPair.second.current_health -= sceneAnimalPair.second.healthDecayRate * static_cast<double>(dt);
-                    sceneAnimalPair.second.current_sanity -= sceneAnimalPair.second.sanityDecayRate * static_cast<double>(dt);
+                    // Keep sanity static across non-active scenes.
+                    // sceneAnimalPair.second.current_sanity -= sceneAnimalPair.second.sanityDecayRate * static_cast<double>(dt);
 
+                    
 
                     if (sceneAnimalPair.second.current_hunger <= 0 || sceneAnimalPair.second.current_health <= 0 || sceneAnimalPair.second.current_sanity <= 0) {
                         sceneAnimalPair.second.is_alive = false;
+                        
                         deadAnimals++;
                     }
                 
+                    LogLowHealth(sceneAnimalPair);
                 }
             }
 
@@ -112,6 +117,7 @@ namespace NocturnalEngine {
     
 
     AnimalAttributes GameManager::LoadPersistentValues(GameScene gs) {
+        targetVisibility = false;
         auto it = sceneAnimalMap.find(gs);
         if (it != sceneAnimalMap.end()) {
             currScene = gs;
@@ -129,16 +135,22 @@ namespace NocturnalEngine {
     Therefore this function is empty
     ****************************************************************************/
     void GameManager::ResetSystem(bool editorMode) {
+		UNREFERENCED_PARAMETER(editorMode);
+
         AnimalAttributes defaultAttributes{};
         defaultAttributes.SetDefault();
         for (std::pair<const GameScene, AnimalAttributes>& sceneAnimalPair : sceneAnimalMap)
         {
             sceneAnimalPair.second = defaultAttributes;
+            if (sceneAnimalPair.first == GameScene::OWL) {
+                sceneAnimalPair.second.hungerDecayRate = 1.5f;//owl special hunger
+            }
         }
         gameTimeElapsed = 0.f;
+        diegeticLogEntries.clear();
         deadAnimals = 0;
         currState = GameManager::GameState::ENDING;
-        
+        targetVisibility = false;
     }
 
     void GameManager::SaveAnimalAttributesToCurrentScene(AnimalAttributes aA) {
@@ -165,5 +177,87 @@ namespace NocturnalEngine {
         p_Scene->setSceneToLoad("Assets/Scene/Menu.json");
 
     }
+
+    bool GameManager::HasLogBeenUpdated() {
+
+        if (!diegeticLogUpdated) {
+            diegeticLogUpdated = true;
+            return false;
+
+        }
+        else
+        {
+            return true;
+        }
+    }
     
+    void GameManager::AddLogEntry(std::string message) {
+        float timeInGameWorld{ gameTimeElapsed * GetTimeScale()};
+        int hours{ static_cast<int>(timeInGameWorld / 3600.f) },
+            mins{ static_cast<int>((timeInGameWorld - (static_cast<float>(hours) * 3600.f)) / 60.f) },
+            secs{ static_cast<int>(timeInGameWorld - (static_cast<float>(hours) * 3600.f) - (static_cast<float>(mins) * 60.f)) };
+
+        char ingameTime[16];
+        sprintf(ingameTime, "[%02d:%02d:%02d]", hours, mins, secs);
+        
+        std::string fullMessage{ ingameTime };
+        fullMessage += " " + message;
+        //std::cout << fullMessage << " logged\n";
+        
+        if (diegeticLogEntries.size()>=maxDiegeticLogEntries)
+        {
+            diegeticLogEntries.pop_front();
+
+        }
+        diegeticLogEntries.push_back(fullMessage);
+        
+        diegeticLogUpdated = false;
+    }
+
+    void GameManager::LogLowHealth(std::pair<const GameScene, AnimalAttributes>& sceneAnimalPair) {
+        std::string animalName{};
+
+        switch (sceneAnimalPair.first)
+        {
+        case GameScene::OWL: animalName = "Owl";
+            break;
+        case GameScene::FLAMINGO:animalName = "Flamingo";
+            break;
+        case GameScene::HORSE:animalName = "Horse";
+            break;
+        case GameScene::SEAL:animalName = "Seal";
+            break;
+        }
+
+
+        if (sceneAnimalPair.second.current_health <= sceneAnimalPair.second.maxHealth / 2.0 && !sceneAnimalPair.second.healthWarn)
+        {
+            AddLogEntry("WARNING! " +animalName + "'s Health is below 50%!");
+            sceneAnimalPair.second.healthWarn = true;
+        }
+        else if (sceneAnimalPair.second.current_health > sceneAnimalPair.second.maxHealth / 2.0 && sceneAnimalPair.second.healthWarn) {
+            sceneAnimalPair.second.healthWarn = false;
+        }
+        if (sceneAnimalPair.second.current_hunger <= sceneAnimalPair.second.maxHunger / 2.0 && !sceneAnimalPair.second.hungerWarn)
+        {
+            AddLogEntry("WARNING! " + animalName + "'s Hunger is below 50%!");
+            sceneAnimalPair.second.hungerWarn = true;
+        }
+        else if (sceneAnimalPair.second.current_hunger > sceneAnimalPair.second.maxHunger / 2.0 && sceneAnimalPair.second.hungerWarn) {
+            sceneAnimalPair.second.hungerWarn = false;
+        }
+        if (sceneAnimalPair.second.current_sanity <= sceneAnimalPair.second.maxSanity / 2.0 && !sceneAnimalPair.second.sanityWarn)
+        {
+            AddLogEntry("WARNING! " + animalName + "'s Sanity is below 50%!");
+            sceneAnimalPair.second.sanityWarn = true;
+        }
+        else if (sceneAnimalPair.second.current_sanity > sceneAnimalPair.second.maxSanity / 2.0 && sceneAnimalPair.second.sanityWarn) {
+            sceneAnimalPair.second.sanityWarn = false;
+        }
+
+        if (!sceneAnimalPair.second.is_alive)
+        {
+            AddLogEntry(animalName + " is dead.");
+        }
+    }
 }

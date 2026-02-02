@@ -7,8 +7,11 @@
 		and the functions of the editor windows.
 		
     Primary Author:
-         LAU XIANG YANG (100%)
+         LAU XIANG YANG (95%)
 		- Created the LevelEditor.h file and its function specification.
+    Secondary Author:
+         Nur Syazliyarni (5%)
+        - Added gizmo visibility toggle state.
 
     All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
 *------------------------------------------------------------------------------------------------*/
@@ -63,6 +66,7 @@ namespace NocturnalEngine {
 		bool is_ShowWindow = true;
 		bool imgui_mouse_control = true;
 		bool scene_autobackup = false;
+		bool isTransformOpen = false;
 
 		static std::unique_ptr<LevelEditor>& GetInstance();
 
@@ -113,6 +117,7 @@ namespace NocturnalEngine {
 		
 		//Scene/guizmo
 		int mGizmoType = -1;
+		bool mShowGizmos = true; // Toggle to hide/show ImGuizmo visuals
 
 
 		//For loading of scene usage

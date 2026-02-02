@@ -31,7 +31,7 @@ namespace NocturnalEngine
 		/*!*************************************************************************
 		Default constructor for Drag & Drop
 		****************************************************************************/
-		DragAndDrop() : isDragging{ false }, dragTarget{ 0 }, dupeItem{ 0 }, mInput{ InputSystem::GetInstance() }, dragOffset{} {}
+		DragAndDrop() : isDragging{ false }, dragTarget{ 0 }, dupeItem{ 0 }, mInput{InputSystem::GetInstance()}, dragOffset{} {}
 		/*!*************************************************************************
 		Default destructor for Drag & Drop
 		****************************************************************************/

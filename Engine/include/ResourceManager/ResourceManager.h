@@ -8,8 +8,11 @@
 		 such as textures, shaders, fonts, and audio assets used in the engine.
 
     Primary Author:
-         LAU XIANG YANG (100%)
+         LAU XIANG YANG (95%)
 		- Created the ResourceManager.h file and its function specification.
+    Secondary Author:
+         Nur Syazliyarni (5%)
+        - Added font/text resource declarations for text rendering.
 
     All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
 *------------------------------------------------------------------------------------------------*/
@@ -43,6 +46,10 @@ namespace NocturnalEngine {
 		//load shader from file
 		static std::shared_ptr<Shader> LoadShader(std::string name, const std::string& filepath);
 		static std::shared_ptr<Shader> GetShader(std::string name);
+
+		//load font from file
+		static std::shared_ptr<Font> LoadFont(std::string name, const std::string& filepath, unsigned int fontsize = 50);
+		static std::shared_ptr<Font> GetFont(const std::string& name);
 		
 		static std::shared_ptr<CAudioEngine> GetAudio(std::string name);
 		static std::shared_ptr<CAudioEngine> LoadAudio(std::string name, const std::string& filepath);

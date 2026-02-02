@@ -6,8 +6,11 @@
 		This file is used to serialize and deserialize logic components for ECS.
 	
     Primary Author:
-         LAU XIANG YANG (100%)
+         LAU XIANG YANG (95%)
 		- Created the logic class and its function specification.
+    Secondary Author:
+         Nur Syazliyarni (5%)
+        - Added RevealTargetOnClick script wiring for logic deserialization.
 
     All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
 *------------------------------------------------------------------------------------------------*/
@@ -25,6 +28,10 @@
 #include "Scripts/DragAndDrop.h"
 #include "Scripts/HealthBar.h"
 #include "Scripts/AnimalLogic.h"
+#include "Scripts/TimerDisplay.h"
+#include "Scripts/DigeticLog.h"
+#include "Scripts/RevealTargetOnClick.h"
+#include "Scripts/PainSpotSpawner.h"
 
 
 namespace NocturnalEngine
@@ -154,6 +161,22 @@ namespace NocturnalEngine
 			if (mScriptNameVector[j] == "AnimalLogic")
 			{
 				mScriptsVector.push_back(new AnimalLogic());
+			}
+			if (mScriptNameVector[j] == "TimerDisplay")
+			{
+				mScriptsVector.push_back(new TimerDisplay());
+			}
+			if (mScriptNameVector[j] == "DigeticLog")
+			{
+				mScriptsVector.push_back(new DigeticLog());
+			}
+			if (mScriptNameVector[j] == "RevealTargetOnClick")
+			{
+				mScriptsVector.push_back(new RevealTargetOnClick());
+			}
+			if (mScriptNameVector[j] == "PainSpotSpawner")
+			{
+				mScriptsVector.push_back(new PainSpotSpawner());
 			}
 		}
 		return true;

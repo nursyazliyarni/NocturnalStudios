@@ -67,7 +67,21 @@ namespace NocturnalEngine {
          void SetState(GameState s) { currState = s; }
         
          void AddDeath() { deadAnimals++; }
-         
+
+         //returns how much we have to multiply seconds by for timer
+         float GetTimeScale() const{ return 21600.f/winRequirement; }
+
+         float GetTimeElapsed() const{ return gameTimeElapsed; }
+
+         bool HasLogBeenUpdated();
+
+         const std::deque<std::string>& GetLogEntries()  { return diegeticLogEntries; }
+
+         void AddLogEntry(std::string message);
+
+         bool isTargetVisible()const { return targetVisibility; }
+
+         void setTargetVisibility(bool t) { targetVisibility = t; }
     private:
 
         GameManager();
@@ -79,13 +93,18 @@ namespace NocturnalEngine {
 
         void LoseGame();
         void WinGame();
+        void LogLowHealth(std::pair<const GameScene, AnimalAttributes>& sceneAnimalPair);
 
-        float gameTimeElapsed{}, winRequirement{10.f}; //in seconds
+        float gameTimeElapsed{}, winRequirement{180.f}; //in seconds
 
         GameScene currScene;
         GameState currState;
         std::unordered_map < GameScene, AnimalAttributes> sceneAnimalMap;
-        int deadAnimals, deathLimit{ 5 };
+        int deadAnimals, deathLimit{ 2 }, maxDiegeticLogEntries{40};
+        std::deque<std::string> diegeticLogEntries;
+
+        bool diegeticLogUpdated{ true }, targetVisibility{ false };
+
     };
 
 

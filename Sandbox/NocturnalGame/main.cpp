@@ -122,13 +122,21 @@ int main(int argc, char* argv[])
 {
 	(void)argc;
 	(void)argv;
-	//Mermory leak check
-	int tmpDbgFlag = _CrtSetDbgFlag(_CRTDBG_REPORT_FLAG);
-	tmpDbgFlag |= _CRTDBG_LEAK_CHECK_DF;
-	_CrtSetDbgFlag(tmpDbgFlag);
-	HWND hWnd = GetConsoleWindow();
-	ShowWindow(hWnd, SW_NORMAL);
 
+#if DEBUG
+    // Memory leak check (Debug only)
+    int tmpDbgFlag = _CrtSetDbgFlag(_CRTDBG_REPORT_FLAG);
+    tmpDbgFlag |= _CRTDBG_LEAK_CHECK_DF;
+    _CrtSetDbgFlag(tmpDbgFlag);
+
+    HWND hWnd = GetConsoleWindow();
+    ShowWindow(hWnd, SW_SHOW);
+#else
+    // Hide console in Release
+    HWND hWnd = GetConsoleWindow();
+    if (hWnd)
+        ShowWindow(hWnd, SW_HIDE);
+#endif
 	// temporary memory leak check to set break point on specific allocation
 	//_CrtSetBreakAlloc();
 

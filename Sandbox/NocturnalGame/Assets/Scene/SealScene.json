@@ -12,25 +12,31 @@
         9
     ],
     "Number of Entities": {
-        "Entities": 16
+        "Entities": 22
     },
     "EntitySignatures": [
         "00000000000000000000000011111101",
         "00000000000000000000101001111101",
-        "00000000000000000000000011111101",
-        "00000000000000000000000011111101",
-        "00000000000000000000000011111101",
+        "00000000000000000001000011111101",
+        "00000000000000000001000011111101",
+        "00000000000000000001000011111101",
         "00000000000000000000000011111101",
         "00000000000000000000000000011001",
-        "00000000000000000000010000111101",
-        "00000000000000000000010000111101",
-        "00000000000000000000010000111101",
+        "00000000000000000000010001111101",
+        "00000000000000000000010001111101",
+        "00000000000000000000010001111101",
         "00000000000000000000000000011001",
         "00000000000000000000000000011001",
         "00000000000000000000000000011001",
         "00000000000000000000000100111001",
         "00000000000000000000000100111001",
-        "00000000000000000000000100111001"
+        "00000000000000000000000100111001",
+        "00000000000000000001000000101001",
+        "00000000000000000001000000001000",
+        "00000000000000000001000000001000",
+        "00000000000000000001000000001000",
+        "00000000000000000000000001011001",
+        "00000000000000000001000000111001"
     ],
     "Components": {
         "0": [
@@ -100,6 +106,7 @@
             {},
             {},
             {},
+            {},
             {}
         ],
         "1": [
@@ -108,25 +115,25 @@
                 "posY": -0.01907503604888916,
                 "scaleX": 0.4940004050731659,
                 "scaleY": 0.3830002248287201,
-                "Rot": 0.0
+                "Rot": -9.082768440246582
             },
             {},
             {
                 "ColliderType1": 1,
                 "ColliderType2": 0,
-                "minX1": 0.0,
-                "minX2": 0.0,
-                "minY1": 0.0,
-                "minY2": 0.0,
-                "maxX1": 0.4000000059604645,
-                "maxX2": 0.0,
-                "maxY1": 0.4000000059604645,
-                "maxY2": 0.0,
-                "offsetX1": 0.0,
+                "minX1": 0.30000001192092896,
+                "minX2": -0.25,
+                "minY1": 0.05000000074505806,
+                "minY2": -0.4000000059604645,
+                "maxX1": 0.25,
+                "maxX2": 0.46000000834465027,
+                "maxY1": 0.30000001192092896,
+                "maxY2": 0.15000000596046448,
+                "offsetX1": 0.05000000074505806,
                 "offsetX2": 0.0,
-                "offsetY1": 0.0,
+                "offsetY1": 0.02500000037252903,
                 "offsetY2": 0.0,
-                "radius1": 0.25,
+                "radius1": 0.15000000596046448,
                 "radius2": 0.0
             },
             {
@@ -134,7 +141,7 @@
             },
             {
                 "TextureName": "sealSpritesheet",
-                "Index_X": 2,
+                "Index_X": 1,
                 "Index_Y": 0,
                 "Ucoordinates": 530.0,
                 "Vcoordinates": 254.5,
@@ -148,20 +155,21 @@
             },
             {
                 "0": "AnimalLogic",
-                "ScriptCount": 1
+                "1": "PainSpotSpawner",
+                "ScriptCount": 2
             },
             {
-                "Tag": "Seal",
+                "Tag": "Horse",
                 "TargetTag": ""
             },
             {},
             {},
             {
-                "Current Health": 97.44999986700714,
+                "Current Health": 100.0,
                 "Max Health": 100.0,
-                "Current Hunger": 74.49999867007136,
+                "Current Hunger": 100.0,
                 "Max Hunger": 100.0,
-                "Current Sanity": 97.44999986700714,
+                "Current Sanity": 100.0,
                 "Max Sanity": 100.0,
                 "Health Decay Rate": 1.0,
                 "Hunger Decay Rate": 1.0,
@@ -171,7 +179,8 @@
             {},
             {
                 "isTarget": true
-            }
+            },
+            {}
         ],
         "2": [
             {
@@ -237,7 +246,33 @@
             {},
             {},
             {},
-            {}
+            {},
+            {
+                "Content": "1",
+                "Font": "ChauPhilomeneOne-Regular",
+                "Size": 32.5,
+                "ColorR": 0.0,
+                "ColorG": 0.0,
+                "ColorB": 0.0,
+                "ColorA": 1.0,
+                "PosX": 0.38749998807907104,
+                "PosY": 0.2280000001192093,
+                "Line Height": 0,
+                "WorldSpace": false,
+                "Center": false,
+                "Content": "1",
+                "Font": "ChauPhilomeneOne-Regular",
+                "Size": 32.5,
+                "ColorR": 0.0,
+                "ColorG": 0.0,
+                "ColorB": 0.0,
+                "ColorA": 1.0,
+                "PosX": 0.38749998807907104,
+                "PosY": 0.2280000001192093,
+                "Line Height": 0,
+                "WorldSpace": false,
+                "Center": false
+            }
         ],
         "3": [
             {
@@ -303,7 +338,33 @@
             {},
             {},
             {},
-            {}
+            {},
+            {
+                "Content": "4",
+                "Font": "ChauPhilomeneOne-Regular",
+                "Size": 32.5,
+                "ColorR": 0.0,
+                "ColorG": 0.0,
+                "ColorB": 0.0,
+                "ColorA": 1.0,
+                "PosX": 0.38749998807907104,
+                "PosY": -0.1720000058412552,
+                "Line Height": 0,
+                "WorldSpace": false,
+                "Center": false,
+                "Content": "4",
+                "Font": "ChauPhilomeneOne-Regular",
+                "Size": 32.5,
+                "ColorR": 0.0,
+                "ColorG": 0.0,
+                "ColorB": 0.0,
+                "ColorA": 1.0,
+                "PosX": 0.38749998807907104,
+                "PosY": -0.1720000058412552,
+                "Line Height": 0,
+                "WorldSpace": false,
+                "Center": false
+            }
         ],
         "4": [
             {
@@ -369,7 +430,33 @@
             {},
             {},
             {},
-            {}
+            {},
+            {
+                "Content": "3",
+                "Font": "ChauPhilomeneOne-Regular",
+                "Size": 32.5,
+                "ColorR": 0.0,
+                "ColorG": 0.0,
+                "ColorB": 0.0,
+                "ColorA": 1.0,
+                "PosX": 0.38749998807907104,
+                "PosY": -0.03200000151991844,
+                "Line Height": 0,
+                "WorldSpace": false,
+                "Center": false,
+                "Content": "3",
+                "Font": "ChauPhilomeneOne-Regular",
+                "Size": 32.5,
+                "ColorR": 0.0,
+                "ColorG": 0.0,
+                "ColorB": 0.0,
+                "ColorA": 1.0,
+                "PosX": 0.38749998807907104,
+                "PosY": -0.03200000151991844,
+                "Line Height": 0,
+                "WorldSpace": false,
+                "Center": false
+            }
         ],
         "5": [
             {
@@ -435,6 +522,7 @@
             {},
             {},
             {},
+            {},
             {}
         ],
         "6": [
@@ -467,27 +555,28 @@
             {},
             {},
             {},
+            {},
             {}
         ],
         "7": [
             {
-                "posX": -1.4832265377044678,
-                "posY": -0.7028753757476807,
-                "scaleX": 0.5,
-                "scaleY": 0.5,
+                "posX": -1.4191521406173706,
+                "posY": -0.7032967805862427,
+                "scaleX": 0.3753497898578644,
+                "scaleY": 0.3973937928676605,
                 "Rot": 0.0
             },
             {},
             {
                 "ColliderType1": 5,
                 "ColliderType2": 0,
-                "minX1": 0.25,
+                "minX1": 0.17499999701976776,
                 "minX2": 0.0,
-                "minY1": 0.14000000059604645,
+                "minY1": 0.10000000149011612,
                 "minY2": 0.0,
-                "maxX1": 0.20000000298023224,
+                "maxX1": 0.17499999701976776,
                 "maxX2": 0.0,
-                "maxY1": 0.10999999940395355,
+                "maxY1": 0.10000000149011612,
                 "maxY2": 0.0,
                 "offsetX1": 0.0,
                 "offsetX2": 0.0,
@@ -497,7 +586,7 @@
                 "radius2": 0.0
             },
             {
-                "NameTag": "seal food"
+                "NameTag": "SealFood"
             },
             {
                 "TextureName": "flamingo_food",
@@ -514,7 +603,10 @@
                 "0": "DragAndDrop",
                 "ScriptCount": 1
             },
-            {},
+            {
+                "Tag": "Tou",
+                "TargetTag": ""
+            },
             {},
             {},
             {},
@@ -523,27 +615,28 @@
                 "gain amount": 20.0,
                 "is_dragging": false
             },
+            {},
             {}
         ],
         "8": [
             {
-                "posX": -0.7803511619567871,
-                "posY": -0.6932907104492188,
-                "scaleX": 0.5,
-                "scaleY": 0.30000001192092896,
+                "posX": 0.07275722175836563,
+                "posY": -0.6644617319107056,
+                "scaleX": 0.3400000035762787,
+                "scaleY": 0.367000013589859,
                 "Rot": 0.0
             },
             {},
             {
                 "ColliderType1": 5,
                 "ColliderType2": 0,
-                "minX1": 0.15000000596046448,
+                "minX1": 0.09000000357627869,
                 "minX2": 0.0,
-                "minY1": 0.15000000596046448,
+                "minY1": 0.1850000023841858,
                 "minY2": 0.0,
-                "maxX1": 0.15000000596046448,
+                "maxX1": 0.10999999940395355,
                 "maxX2": 0.0,
-                "maxY1": 0.05999999865889549,
+                "maxY1": 0.05000000074505806,
                 "maxY2": 0.0,
                 "offsetX1": 0.0,
                 "offsetX2": 0.0,
@@ -553,7 +646,7 @@
                 "radius2": 0.0
             },
             {
-                "NameTag": "seal medicine"
+                "NameTag": "SealMedicine"
             },
             {
                 "TextureName": "flamingo_medicine",
@@ -567,10 +660,13 @@
                 "LayeringOrder": 0
             },
             {
-                "0": "DragAndDrop",
+                "0": "RevealTargetOnClick",
                 "ScriptCount": 1
             },
-            {},
+            {
+                "Tag": "Tou",
+                "TargetTag": ""
+            },
             {},
             {},
             {},
@@ -579,27 +675,28 @@
                 "gain amount": 20.0,
                 "is_dragging": false
             },
+            {},
             {}
         ],
         "9": [
             {
-                "posX": -0.04872174188494682,
-                "posY": -0.7060701847076416,
-                "scaleX": 0.5,
-                "scaleY": 0.4000000059604645,
+                "posX": -0.6748155355453491,
+                "posY": -0.735659122467041,
+                "scaleX": 0.3400000035762787,
+                "scaleY": 0.367000013589859,
                 "Rot": 0.0
             },
             {},
             {
                 "ColliderType1": 5,
                 "ColliderType2": 0,
-                "minX1": 0.20000000298023224,
+                "minX1": 0.14000000059604645,
                 "minX2": 0.0,
-                "minY1": 0.15000000596046448,
+                "minY1": 0.08500000089406967,
                 "minY2": 0.0,
-                "maxX1": 0.20000000298023224,
+                "maxX1": 0.1599999964237213,
                 "maxX2": 0.0,
-                "maxY1": 0.11500000208616257,
+                "maxY1": 0.10000000149011612,
                 "maxY2": 0.0,
                 "offsetX1": 0.0,
                 "offsetX2": 0.0,
@@ -609,7 +706,7 @@
                 "radius2": 0.0
             },
             {
-                "NameTag": "seal toy"
+                "NameTag": "SealToy"
             },
             {
                 "TextureName": "flamingo_toy",
@@ -626,7 +723,10 @@
                 "0": "DragAndDrop",
                 "ScriptCount": 1
             },
-            {},
+            {
+                "Tag": "Tou",
+                "TargetTag": ""
+            },
             {},
             {},
             {},
@@ -635,46 +735,15 @@
                 "gain amount": 20.0,
                 "is_dragging": false
             },
+            {},
             {}
         ],
         "10": [
             {
-                "posX": 0.675000011920929,
-                "posY": 0.2750000059604645,
-                "scaleX": 0.21799999475479126,
-                "scaleY": 0.21799999475479126,
-                "Rot": 0.0
-            },
-            {},
-            {},
-            {
-                "NameTag": "HungerIcon"
-            },
-            {
-                "TextureName": "hunger",
-                "Index_X": 0,
-                "Index_Y": 0,
-                "Ucoordinates": 512.0,
-                "Vcoordinates": 512.0,
-                "IsSpriteSheet": false,
-                "IsAnimated": false,
-                "MaxIndex": 0,
-                "LayeringOrder": 1
-            },
-            {},
-            {},
-            {},
-            {},
-            {},
-            {},
-            {}
-        ],
-        "11": [
-            {
-                "posX": 0.675000011920929,
-                "posY": 0.5239999890327454,
-                "scaleX": 0.21799999475479126,
-                "scaleY": 0.21799999475479126,
+                "posX": 0.6753605604171753,
+                "posY": 0.12399999797344208,
+                "scaleX": 0.21751198172569275,
+                "scaleY": 0.21751198172569275,
                 "Rot": 0.0
             },
             {},
@@ -699,14 +768,48 @@
             {},
             {},
             {},
+            {},
+            {}
+        ],
+        "11": [
+            {
+                "posX": 0.6753605604171753,
+                "posY": -0.029999999329447746,
+                "scaleX": 0.21751198172569275,
+                "scaleY": 0.21751198172569275,
+                "Rot": 0.0
+            },
+            {},
+            {},
+            {
+                "NameTag": "HungerIcon"
+            },
+            {
+                "TextureName": "hunger",
+                "Index_X": 0,
+                "Index_Y": 0,
+                "Ucoordinates": 512.0,
+                "Vcoordinates": 512.0,
+                "IsSpriteSheet": false,
+                "IsAnimated": false,
+                "MaxIndex": 0,
+                "LayeringOrder": 1
+            },
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
             {}
         ],
         "12": [
             {
-                "posX": 0.675000011920929,
-                "posY": 0.012000000104308128,
-                "scaleX": 0.21799999475479126,
-                "scaleY": 0.21799999475479126,
+                "posX": 0.6753605604171753,
+                "posY": -0.1679999977350235,
+                "scaleX": 0.21751198172569275,
+                "scaleY": 0.21751198172569275,
                 "Rot": 0.0
             },
             {},
@@ -731,13 +834,14 @@
             {},
             {},
             {},
+            {},
             {}
         ],
         "13": [
             {
-                "posX": 1.1285377740859985,
-                "posY": 0.5239999890327454,
-                "scaleX": 0.8760755062103271,
+                "posX": 1.1399999856948853,
+                "posY": 0.11400000005960464,
+                "scaleX": 0.8989999890327454,
                 "scaleY": 0.0689999982714653,
                 "Rot": 0.0
             },
@@ -770,13 +874,14 @@
             },
             {},
             {},
+            {},
             {}
         ],
         "14": [
             {
-                "posX": 1.0255457162857056,
-                "posY": 0.2750000059604645,
-                "scaleX": 0.6697549819946289,
+                "posX": 1.1399999856948853,
+                "posY": -0.02500000037252903,
+                "scaleX": 0.8989999890327454,
                 "scaleY": 0.0689999982714653,
                 "Rot": 0.0
             },
@@ -809,13 +914,14 @@
             },
             {},
             {},
+            {},
             {}
         ],
         "15": [
             {
-                "posX": 1.1285377740859985,
-                "posY": 0.012000000104308128,
-                "scaleX": 0.8760755062103271,
+                "posX": 1.1399999856948853,
+                "posY": -0.15299999713897705,
+                "scaleX": 0.8989999890327454,
                 "scaleY": 0.0689999982714653,
                 "Rot": 0.0
             },
@@ -848,7 +954,282 @@
             },
             {},
             {},
+            {},
             {}
+        ],
+        "16": [
+            {
+                "posX": -1.469074010848999,
+                "posY": 0.7429999709129333,
+                "scaleX": 1.0,
+                "scaleY": 1.0,
+                "Rot": 0.0
+            },
+            {},
+            {},
+            {
+                "NameTag": "TimerDisplay"
+            },
+            {},
+            {
+                "0": "TimerDisplay",
+                "ScriptCount": 1
+            },
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {
+                "Content": "00:00:00",
+                "Font": "DSEG7Classic-Bold",
+                "Size": 35.29999923706055,
+                "ColorR": 0.0,
+                "ColorG": 1.0,
+                "ColorB": 0.0,
+                "ColorA": 1.0,
+                "PosX": 0.0,
+                "PosY": 0.0,
+                "Line Height": 0,
+                "WorldSpace": true,
+                "Center": false,
+                "Content": "00:00:00",
+                "Font": "DSEG7Classic-Bold",
+                "Size": 35.29999923706055,
+                "ColorR": 0.0,
+                "ColorG": 1.0,
+                "ColorB": 0.0,
+                "ColorA": 1.0,
+                "PosX": 0.0,
+                "PosY": 0.0,
+                "Line Height": 0,
+                "WorldSpace": true,
+                "Center": false
+            }
+        ],
+        "17": [
+            {},
+            {},
+            {},
+            {
+                "NameTag": "seal_title"
+            },
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {
+                "Content": "SEAL",
+                "Font": "ChauPhilomeneOne-Regular",
+                "Size": 72.0,
+                "ColorR": 0.31651291251182556,
+                "ColorG": 0.7254902124404907,
+                "ColorB": 0.3285415470600128,
+                "ColorA": 1.0,
+                "PosX": 0.6399999856948853,
+                "PosY": 0.6299999952316284,
+                "Line Height": 50,
+                "WorldSpace": false,
+                "Center": false,
+                "Content": "SEAL",
+                "Font": "ChauPhilomeneOne-Regular",
+                "Size": 72.0,
+                "ColorR": 0.31651291251182556,
+                "ColorG": 0.7254902124404907,
+                "ColorB": 0.3285415470600128,
+                "ColorA": 1.0,
+                "PosX": 0.6399999856948853,
+                "PosY": 0.6299999952316284,
+                "Line Height": 50,
+                "WorldSpace": false,
+                "Center": false
+            }
+        ],
+        "18": [
+            {},
+            {},
+            {},
+            {
+                "NameTag": "seal enclosure"
+            },
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {
+                "Content": "Enclosure 2 - 04-01-5A",
+                "Font": "ChauPhilomeneOne-Regular",
+                "Size": 36.0,
+                "ColorR": 0.31651291251182556,
+                "ColorG": 0.7254902124404907,
+                "ColorB": 0.3285415470600128,
+                "ColorA": 1.0,
+                "PosX": 0.6399999856948853,
+                "PosY": 0.550000011920929,
+                "Line Height": 50,
+                "WorldSpace": false,
+                "Center": false,
+                "Content": "Enclosure 2 - 04-01-5A",
+                "Font": "ChauPhilomeneOne-Regular",
+                "Size": 36.0,
+                "ColorR": 0.31651291251182556,
+                "ColorG": 0.7254902124404907,
+                "ColorB": 0.3285415470600128,
+                "ColorA": 1.0,
+                "PosX": 0.6399999856948853,
+                "PosY": 0.550000011920929,
+                "Line Height": 50,
+                "WorldSpace": false,
+                "Center": false
+            }
+        ],
+        "19": [
+            {},
+            {},
+            {},
+            {
+                "NameTag": "seal_intro"
+            },
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {
+                "Content": "A chubby-looking seal rests on the\nrocks, its large black eyes impossibly\nshiny in the light.",
+                "Font": "ChauPhilomeneOne-Regular",
+                "Size": 36.0,
+                "ColorR": 0.4215686321258545,
+                "ColorG": 0.41214776039123535,
+                "ColorB": 0.41123607754707336,
+                "ColorA": 0.501960813999176,
+                "PosX": 0.6399999856948853,
+                "PosY": 0.4399999976158142,
+                "Line Height": 62,
+                "WorldSpace": false,
+                "Center": false,
+                "Content": "A chubby-looking seal rests on the\nrocks, its large black eyes impossibly\nshiny in the light.",
+                "Font": "ChauPhilomeneOne-Regular",
+                "Size": 36.0,
+                "ColorR": 0.4215686321258545,
+                "ColorG": 0.41214776039123535,
+                "ColorB": 0.41123607754707336,
+                "ColorA": 0.501960813999176,
+                "PosX": 0.6399999856948853,
+                "PosY": 0.4399999976158142,
+                "Line Height": 62,
+                "WorldSpace": false,
+                "Center": false
+            }
+        ],
+        "20": [
+            {
+                "posX": 0.0,
+                "posY": 0.0,
+                "scaleX": 0.20000000298023224,
+                "scaleY": 0.20000000298023224,
+                "Rot": 0.0
+            },
+            {},
+            {},
+            {
+                "NameTag": "Target"
+            },
+            {
+                "TextureName": "target",
+                "Index_X": 0,
+                "Index_Y": 0,
+                "Ucoordinates": 512.0,
+                "Vcoordinates": 512.0,
+                "IsSpriteSheet": false,
+                "IsAnimated": false,
+                "MaxIndex": 0,
+                "LayeringOrder": 0
+            },
+            {},
+            {
+                "Tag": "target",
+                "TargetTag": ""
+            },
+            {},
+            {},
+            {},
+            {},
+            {},
+            {}
+        ],
+        "21": [
+            {
+                "posX": 1.0999298095703125,
+                "posY": -0.54035484790802,
+                "scaleX": 0.9850000143051147,
+                "scaleY": 0.5099999904632568,
+                "Rot": 0.0
+            },
+            {},
+            {},
+            {
+                "NameTag": "LogObj"
+            },
+            {
+                "TextureName": "PlaceholderLogbg",
+                "Index_X": 0,
+                "Index_Y": 0,
+                "Ucoordinates": 512.0,
+                "Vcoordinates": 512.0,
+                "IsSpriteSheet": false,
+                "IsAnimated": false,
+                "MaxIndex": 0,
+                "LayeringOrder": 0
+            },
+            {
+                "0": "DigeticLog",
+                "ScriptCount": 1
+            },
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {
+                "Content": "[00:00:00] This is a Log entry",
+                "Font": "Jersey10Charted-Regular",
+                "Size": 25.899999618530273,
+                "ColorR": 1.0,
+                "ColorG": 0.0,
+                "ColorB": 0.0,
+                "ColorA": 1.0,
+                "PosX": -0.4699999988079071,
+                "PosY": 0.20000000298023224,
+                "Line Height": 0,
+                "WorldSpace": true,
+                "Center": false,
+                "Content": "[00:00:00] This is a Log entry",
+                "Font": "Jersey10Charted-Regular",
+                "Size": 25.899999618530273,
+                "ColorR": 1.0,
+                "ColorG": 0.0,
+                "ColorB": 0.0,
+                "ColorA": 1.0,
+                "PosX": -0.4699999988079071,
+                "PosY": 0.20000000298023224,
+                "Line Height": 0,
+                "WorldSpace": true,
+                "Center": false
+            }
         ]
     }
 }

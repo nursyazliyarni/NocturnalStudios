@@ -8,8 +8,11 @@
 		saved into a json file for future loading
 	
     Primary Author:
-         LAU XIANG YANG (100%)
+         LAU XIANG YANG (95%)
 		- Created the scene manager and its function specification.
+    Secondary Author:
+         Nur Syazliyarni (5%)
+        - Added Text component handling in scene load/save.
 
     All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
 *------------------------------------------------------------------------------------------------*/
@@ -63,6 +66,7 @@ namespace NocturnalEngine
 		p_ecs.RegisterComponent<AnimalAttributes>();
 		p_ecs.RegisterComponent<ItemsAttributes>();
 		p_ecs.RegisterComponent<Draggable>();
+		p_ecs.RegisterComponent<Text>();
 		sceneToLoad = "";
 	}
 
@@ -223,6 +227,15 @@ namespace NocturnalEngine
 							p_ecs.AddComponent<Draggable>(j, draggable);
 						}
 					}
+					if (p_ecs.GetComponentTypeName(CompID) == "Text")
+					{
+						Text text;
+						text.SetComponentEntityID(j);
+						if (text.Deserialize(obj["Components"][std::to_string(j).c_str()][static_cast<int>(CompID)].GetObj()))
+						{
+							p_ecs.AddComponent<Text>(j, text);
+						}
+					}
 				}
 			}
 			++j;
@@ -316,6 +329,10 @@ namespace NocturnalEngine
 						{
 							p_ecs.GetComponent<Sprite>(j).Serialize(writer);
 						}
+						if (p_ecs.GetComponentTypeName(compID) == "Text")
+						{
+							p_ecs.GetComponent<Text>(j).Serialize(writer);
+						}
 						if (p_ecs.GetComponentTypeName(compID) == "Logic")
 						{
 							p_ecs.GetComponent<Logic>(j).Serialize(writer);
@@ -343,6 +360,10 @@ namespace NocturnalEngine
 						if (p_ecs.GetComponentTypeName(compID) == "Draggable")
 						{
 							p_ecs.GetComponent<Draggable>(j).Serialize(writer);
+						}
+						if (p_ecs.GetComponentTypeName(compID) == "Text")
+						{
+							p_ecs.GetComponent<Text>(j).Serialize(writer);
 						}
 					}
 				}

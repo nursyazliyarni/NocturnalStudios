@@ -20,6 +20,7 @@
 #include "ECS/Components/Collider.h"
 #include "ECS/Components/Draggable.h"
 #include "GUI/GUI.h"
+#include "Scripts/GlobalGameManager.h"
 
 namespace NocturnalEngine {
 
@@ -36,22 +37,24 @@ namespace NocturnalEngine {
 					//std::cout << "animal found for entity"<< p_ecs.GetComponent<NameTag>(entityID).GetNameTag()<<"\n";
 				}
 			}
-			
+
 		}
+		
 	}
 
 	void DragAndDrop::Update(float Frametime)
 	{
 		UNREFERENCED_PARAMETER(Frametime);
-		
-		if (!isDragging)
+
+
+		if (!isDragging&&!p_GameManager.isTargetVisible())
 		{
 			
 			DragCheck();
 
 		}
 		else{
-			if (!mInput->MouseHold(0)|| mInput->MouseIsReleased(0))
+			if (!mInput->MouseHold(0)|| mInput->MouseIsReleased(0)|| p_GameManager.isTargetVisible())
 			{
 				isDragging = false;
 				dupeItem = DestroyDupeItem();
@@ -234,6 +237,8 @@ namespace NocturnalEngine {
 			if (!aa.is_alive)return;
 			if (aa.current_hunger + ia.gain_amount >= aa.maxHunger)aa.current_hunger = aa.maxHunger;
 			else aa.current_hunger += ia.gain_amount;
+
+			
 		}
 	}
 	bool DragAndDrop::BoxCircleCollision(vec2D boxMax, vec2D boxMin, vec2D circleMiddle, float circleRadius) {
