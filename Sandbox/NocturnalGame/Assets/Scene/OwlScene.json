@@ -12,7 +12,7 @@
         9
     ],
     "Number of Entities": {
-        "Entities": 20
+        "Entities": 21
     },
     "EntitySignatures": [
         "00000000000000000000000011111101",
@@ -34,7 +34,8 @@
         "00000000000000000001000000101001",
         "00000000000000000001000000001000",
         "00000000000000000001000000001000",
-        "00000000000000000001000000001000"
+        "00000000000000000001000000001000",
+        "00000000000000000000000001011001"
     ],
     "Components": {
         "0": [
@@ -157,11 +158,11 @@
             {},
             {},
             {
-                "Current Health": 100,
+                "Current Health": 100.0,
                 "Max Health": 100.0,
-                "Current Hunger": 100,
+                "Current Hunger": 100.0,
                 "Max Hunger": 100.0,
-                "Current Sanity": 100,
+                "Current Sanity": 100.0,
                 "Max Sanity": 100.0,
                 "Health Decay Rate": 1.0,
                 "Hunger Decay Rate": 1.0,
@@ -251,6 +252,18 @@
                 "PosY": 0.2280000001192093,
                 "Line Height": 0,
                 "WorldSpace": false,
+                "Center": false,
+                "Content": "1",
+                "Font": "ChauPhilomeneOne-Regular",
+                "Size": 32.5,
+                "ColorR": 0.0,
+                "ColorG": 0.0,
+                "ColorB": 0.0,
+                "ColorA": 1.0,
+                "PosX": 0.38749998807907104,
+                "PosY": 0.2280000001192093,
+                "Line Height": 0,
+                "WorldSpace": false,
                 "Center": false
             }
         ],
@@ -320,6 +333,18 @@
             {},
             {},
             {
+                "Content": "2",
+                "Font": "ChauPhilomeneOne-Regular",
+                "Size": 32.5,
+                "ColorR": 0.0,
+                "ColorG": 0.0,
+                "ColorB": 0.0,
+                "ColorA": 1.0,
+                "PosX": 0.38749998807907104,
+                "PosY": 0.09799999743700027,
+                "Line Height": 0,
+                "WorldSpace": false,
+                "Center": false,
                 "Content": "2",
                 "Font": "ChauPhilomeneOne-Regular",
                 "Size": 32.5,
@@ -421,6 +446,7 @@
                 "ColorA": 1.0,
                 "PosX": 0.38749998807907104,
                 "PosY": -0.03200000151991844,
+                "Line Height": 0,
                 "WorldSpace": false,
                 "Center": false
             }
@@ -953,7 +979,7 @@
                 "Line Height": 0,
                 "WorldSpace": true,
                 "Center": false,
-                "Content": "00:00:00",
+                "Content": "00:13:50",
                 "Font": "DSEG7Classic-Bold",
                 "Size": 35.29999923706055,
                 "ColorR": 0.0,
@@ -962,6 +988,7 @@
                 "ColorA": 1.0,
                 "PosX": 0.0,
                 "PosY": 0.0,
+                "Line Height": 0,
                 "WorldSpace": true,
                 "Center": false
             }
@@ -982,6 +1009,18 @@
             {},
             {},
             {
+                "Content": "OWL",
+                "Font": "ChauPhilomeneOne-Regular",
+                "Size": 72.0,
+                "ColorR": 0.31651291251182556,
+                "ColorG": 0.7254902124404907,
+                "ColorB": 0.3285415470600128,
+                "ColorA": 1.0,
+                "PosX": 0.6399999856948853,
+                "PosY": 0.6299999952316284,
+                "Line Height": 50,
+                "WorldSpace": false,
+                "Center": false,
                 "Content": "OWL",
                 "Font": "ChauPhilomeneOne-Regular",
                 "Size": 72.0,
@@ -1023,6 +1062,18 @@
                 "PosY": 0.550000011920929,
                 "Line Height": 50,
                 "WorldSpace": false,
+                "Center": false,
+                "Content": "Enclosure 3 - 05-02-4B",
+                "Font": "ChauPhilomeneOne-Regular",
+                "Size": 36.0,
+                "ColorR": 0.31651291251182556,
+                "ColorG": 0.7254902124404907,
+                "ColorB": 0.3285415470600128,
+                "ColorA": 1.0,
+                "PosX": 0.6399999856948853,
+                "PosY": 0.550000011920929,
+                "Line Height": 50,
+                "WorldSpace": false,
                 "Center": false
             }
         ],
@@ -1053,8 +1104,56 @@
                 "PosY": 0.4399999976158142,
                 "Line Height": 62,
                 "WorldSpace": false,
+                "Center": false,
+                "Content": "Resting atop a tree branch, the\nfeathered creature engages in a\nstaring contest with the viewer.",
+                "Font": "ChauPhilomeneOne-Regular",
+                "Size": 36.0,
+                "ColorR": 0.4215686321258545,
+                "ColorG": 0.41214776039123535,
+                "ColorB": 0.41123607754707336,
+                "ColorA": 0.501960813999176,
+                "PosX": 0.6399999856948853,
+                "PosY": 0.4399999976158142,
+                "Line Height": 62,
+                "WorldSpace": false,
                 "Center": false
             }
+        ],
+        "20": [
+            {
+                "posX": 0.0,
+                "posY": 0.0,
+                "scaleX": 0.20000000298023224,
+                "scaleY": 0.20000000298023224,
+                "Rot": 0.0
+            },
+            {},
+            {},
+            {
+                "NameTag": "Target"
+            },
+            {
+                "TextureName": "target",
+                "Index_X": 0,
+                "Index_Y": 0,
+                "Ucoordinates": 512.0,
+                "Vcoordinates": 512.0,
+                "IsSpriteSheet": false,
+                "IsAnimated": false,
+                "MaxIndex": 0,
+                "LayeringOrder": 0
+            },
+            {},
+            {
+                "Tag": "target",
+                "TargetTag": ""
+            },
+            {},
+            {},
+            {},
+            {},
+            {},
+            {}
         ]
     }
 }
