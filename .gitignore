@@ -39,6 +39,8 @@ Release/
 Sandbox/NocturnalGame/crash_message/crash_message_log.txt
 Sandbox/NocturnalGame/crash_message/crash_message_log.txt
 Sandbox/NocturnalGame/imgui.ini
+Sandbox/NocturnalGame/Assets/Scene/.editor_undo
+
 *.log
 *.iobj
 *.tlog
