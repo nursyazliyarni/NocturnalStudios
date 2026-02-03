@@ -82,7 +82,7 @@ namespace NocturnalEngine {
 			double healthMultiplier = baseHealthMultiplier;
 			if (p_ecs.HaveComponent<NameTag>(entityID))
 			{
-				const std::string& name = p_ecs.GetComponent<NameTag>(entityID).GetNameTag();
+				const std::string& name = p_GameManager.IsNewSceneManagement()?aA.WhatKindOfAnimalIsThis():p_ecs.GetComponent<NameTag>(entityID).GetNameTag();
 				const double hungerRatio = (aA.maxHunger > 0.0) ? (aA.current_hunger / aA.maxHunger) : 0.0;
 				const double lowHungerThreshold = 0.30;   // below 30% is "low"
 				const double highHungerThreshold = 0.70;  // above 70% is "normal+"

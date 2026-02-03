@@ -82,6 +82,8 @@ namespace NocturnalEngine {
          bool isTargetVisible()const { return targetVisibility; }
 
          void setTargetVisibility(bool t) { targetVisibility = t; }
+
+         bool IsNewSceneManagement() const { return freakyMode; }
     private:
 
         GameManager();
@@ -103,7 +105,9 @@ namespace NocturnalEngine {
         int deadAnimals, deathLimit{ 2 }, maxDiegeticLogEntries{40};
         std::deque<std::string> diegeticLogEntries;
 
-        bool diegeticLogUpdated{ true }, targetVisibility{ false };
+        bool diegeticLogUpdated{ true }, targetVisibility{ false }, freakyMode{ false };
+
+        void CombinedSceneLogic(float dt);
 
     };
 

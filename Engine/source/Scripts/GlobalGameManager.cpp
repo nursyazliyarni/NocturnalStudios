@@ -75,7 +75,7 @@ namespace NocturnalEngine {
 
         if (p_Scene->isGameplay)
         {
-
+            if (IsNewSceneManagement())CombinedSceneLogic(dt);
             for (std::pair<const GameScene,AnimalAttributes>& sceneAnimalPair:sceneAnimalMap)
             {
                 //this processes the other animals in the 
@@ -259,5 +259,9 @@ namespace NocturnalEngine {
         {
             AddLogEntry(animalName + " is dead.");
         }
+    }
+
+    void GameManager::CombinedSceneLogic(float dt) {
+
     }
 }
