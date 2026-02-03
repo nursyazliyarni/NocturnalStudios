@@ -102,7 +102,7 @@ namespace NocturnalEngine {
 			}
 
 			aA.current_health -= aA.healthDecayRate * static_cast<double>(Frametime) * healthMultiplier;
-			// aA.current_sanity -= aA.sanityDecayRate * static_cast<double>(Frametime);
+			aA.current_sanity -= aA.sanityDecayRate * static_cast<double>(Frametime);
 
 			if (aA.current_hunger <= 0 || aA.current_health <= 0 || aA.current_sanity <= 0) {
 				aA.is_alive = false;
