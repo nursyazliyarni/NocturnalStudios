@@ -167,7 +167,9 @@ namespace NocturnalEngine {
 	}
 
 	void AnimalLogic::MoveAnimalLeftRight(float Frametime) {
-		Transform& t{ p_ecs.GetComponent<Transform>(entityID) };
+		UNREFERENCED_PARAMETER(Frametime);
+
+		// Transform& t{ p_ecs.GetComponent<Transform>(entityID) };
 
 	}
 
