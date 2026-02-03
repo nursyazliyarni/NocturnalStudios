@@ -12,7 +12,7 @@
         9
     ],
     "Number of Entities": {
-        "Entities": 28
+        "Entities": 35
     },
     "EntitySignatures": [
         "00000000000000000000000000011001",
@@ -42,7 +42,14 @@
         "00000000000000000000000000011001",
         "00000000000000000000000000011001",
         "00000000000000000000000000011001",
-        "00000000000000000000001000011101"
+        "00000000000000000000001000011101",
+        "00000000000000000000000010011001",
+        "00000000000000000000001000011101",
+        "00000000000000000000000010011001",
+        "00000000000000000000001000011101",
+        "00000000000000000000000010011001",
+        "00000000000000000000001000011101",
+        "00000000000000000000000010011001"
     ],
     "Components": {
         "0": [
@@ -110,7 +117,7 @@
             },
             {
                 "TextureName": "flamingo_spritesheet",
-                "Index_X": 4,
+                "Index_X": 0,
                 "Index_Y": 0,
                 "Ucoordinates": 528.0,
                 "Vcoordinates": 528.0,
@@ -360,7 +367,7 @@
                 "IsSpriteSheet": false,
                 "IsAnimated": false,
                 "MaxIndex": 0,
-                "LayeringOrder": 2
+                "LayeringOrder": 3
             },
             {
                 "0": "ButtonResponse",
@@ -452,7 +459,7 @@
                 "IsSpriteSheet": false,
                 "IsAnimated": false,
                 "MaxIndex": 0,
-                "LayeringOrder": 2
+                "LayeringOrder": 3
             },
             {
                 "0": "ButtonResponse",
@@ -544,7 +551,7 @@
                 "IsSpriteSheet": false,
                 "IsAnimated": false,
                 "MaxIndex": 0,
-                "LayeringOrder": 2
+                "LayeringOrder": 3
             },
             {
                 "0": "ButtonResponse",
@@ -636,7 +643,7 @@
                 "IsSpriteSheet": false,
                 "IsAnimated": false,
                 "MaxIndex": 0,
-                "LayeringOrder": 2
+                "LayeringOrder": 3
             },
             {
                 "0": "ButtonResponse",
@@ -1164,7 +1171,7 @@
             {},
             {},
             {
-                "Content": "",
+                "Content": "[00:00:00] This is a log entry",
                 "Font": "Jersey10Charted-Regular",
                 "Size": 25.899999618530273,
                 "ColorR": 1.0,
@@ -1176,7 +1183,7 @@
                 "Line Height": 0,
                 "WorldSpace": true,
                 "Center": false,
-                "Content": "",
+                "Content": "[00:00:00] This is a log entry",
                 "Font": "Jersey10Charted-Regular",
                 "Size": 25.899999618530273,
                 "ColorR": 1.0,
@@ -1292,7 +1299,7 @@
                 "IsSpriteSheet": false,
                 "IsAnimated": false,
                 "MaxIndex": 0,
-                "LayeringOrder": 1
+                "LayeringOrder": 2
             },
             {},
             {},
@@ -1401,7 +1408,7 @@
             },
             {
                 "TextureName": "flamingo_spritesheet",
-                "Index_X": 4,
+                "Index_X": 0,
                 "Index_Y": 0,
                 "Ucoordinates": 528.0,
                 "Vcoordinates": 528.0,
@@ -1431,6 +1438,364 @@
                 "Sanity Decay Rate": 1.0,
                 "IS_alive": true
             },
+            {},
+            {},
+            {}
+        ],
+        "28": [
+            {
+                "posX": -0.6617671847343445,
+                "posY": 0.2274315059185028,
+                "scaleX": 2.0318408012390137,
+                "scaleY": 1.240743637084961,
+                "Rot": 0.0
+            },
+            {},
+            {},
+            {
+                "NameTag": "FlamingoBG"
+            },
+            {
+                "TextureName": "flamingoCage",
+                "Index_X": 0,
+                "Index_Y": 0,
+                "Ucoordinates": 512.0,
+                "Vcoordinates": 512.0,
+                "IsSpriteSheet": false,
+                "IsAnimated": false,
+                "MaxIndex": 0,
+                "LayeringOrder": 1
+            },
+            {},
+            {},
+            {
+                "0": {
+                    "AudioPath": "BGM_Ambience_Flamingo_01.wav",
+                    "Channel": 2,
+                    "IsLooping": false
+                },
+                "AudioArrCount": 1,
+                "BGM Volume": 1.0,
+                "SFX Volume": 1.0,
+                "Master Volume": 1.0
+            },
+            {},
+            {},
+            {},
+            {},
+            {}
+        ],
+        "29": [
+            {
+                "posX": -0.9539999961853027,
+                "posY": 0.0560000017285347,
+                "scaleX": 0.9879999756813049,
+                "scaleY": 1.0360000133514404,
+                "Rot": 0.0
+            },
+            {},
+            {
+                "ColliderType1": 5,
+                "ColliderType2": 5,
+                "minX1": 0.30000001192092896,
+                "minX2": -0.25,
+                "minY1": -0.05000000074505806,
+                "minY2": -0.30000001192092896,
+                "maxX1": 0.25,
+                "maxX2": 0.46000000834465027,
+                "maxY1": 0.30000001192092896,
+                "maxY2": 0.15000000596046448,
+                "offsetX1": 0.0,
+                "offsetX2": 0.0,
+                "offsetY1": -0.10000000149011612,
+                "offsetY2": 0.05000000074505806,
+                "radius1": 0.0,
+                "radius2": 0.0
+            },
+            {
+                "NameTag": "Horse"
+            },
+            {
+                "TextureName": "horse",
+                "Index_X": 0,
+                "Index_Y": 0,
+                "Ucoordinates": 512.0,
+                "Vcoordinates": 512.0,
+                "IsSpriteSheet": false,
+                "IsAnimated": false,
+                "MaxIndex": 0,
+                "LayeringOrder": 2
+            },
+            {},
+            {},
+            {},
+            {},
+            {
+                "Current Health": 100.0,
+                "Max Health": 100.0,
+                "Current Hunger": 100.0,
+                "Max Hunger": 100.0,
+                "Current Sanity": 100.0,
+                "Max Sanity": 100.0,
+                "Health Decay Rate": 1.0,
+                "Hunger Decay Rate": 1.0,
+                "Sanity Decay Rate": 1.0,
+                "IS_alive": true
+            },
+            {},
+            {},
+            {}
+        ],
+        "30": [
+            {
+                "posX": -0.6617671847343445,
+                "posY": 0.2274315059185028,
+                "scaleX": 2.0318408012390137,
+                "scaleY": 1.240743637084961,
+                "Rot": 0.0
+            },
+            {},
+            {},
+            {
+                "NameTag": "HorseBG"
+            },
+            {
+                "TextureName": "horseCage",
+                "Index_X": 0,
+                "Index_Y": 0,
+                "Ucoordinates": 512.0,
+                "Vcoordinates": 512.0,
+                "IsSpriteSheet": false,
+                "IsAnimated": false,
+                "MaxIndex": 0,
+                "LayeringOrder": 1
+            },
+            {},
+            {},
+            {
+                "0": {
+                    "AudioPath": "BGM_Ambience_Horse_01.wav",
+                    "Channel": 2,
+                    "IsLooping": false
+                },
+                "AudioArrCount": 1,
+                "BGM Volume": 1.0,
+                "SFX Volume": 1.0,
+                "Master Volume": 1.0
+            },
+            {},
+            {},
+            {},
+            {},
+            {}
+        ],
+        "31": [
+            {
+                "posX": -0.8536927700042725,
+                "posY": 0.44117629528045654,
+                "scaleX": 0.31816616654396057,
+                "scaleY": 0.316239595413208,
+                "Rot": 0.0
+            },
+            {},
+            {
+                "ColliderType1": 2,
+                "ColliderType2": 2,
+                "minX1": -0.05000000074505806,
+                "minX2": 0.0,
+                "minY1": -0.10000000149011612,
+                "minY2": 0.0,
+                "maxX1": 0.5,
+                "maxX2": 0.0,
+                "maxY1": 0.44999998807907104,
+                "maxY2": 0.0,
+                "offsetX1": 0.0,
+                "offsetX2": 0.0,
+                "offsetY1": -0.023000000044703484,
+                "offsetY2": 0.05000000074505806,
+                "radius1": 0.07800000160932541,
+                "radius2": 0.07999999821186066
+            },
+            {
+                "NameTag": "Owl"
+            },
+            {
+                "TextureName": "owl",
+                "Index_X": 0,
+                "Index_Y": 0,
+                "Ucoordinates": 512.0,
+                "Vcoordinates": 512.0,
+                "IsSpriteSheet": false,
+                "IsAnimated": false,
+                "MaxIndex": 0,
+                "LayeringOrder": 2
+            },
+            {},
+            {},
+            {},
+            {},
+            {
+                "Current Health": 100.0,
+                "Max Health": 100.0,
+                "Current Hunger": 100.0,
+                "Max Hunger": 100.0,
+                "Current Sanity": 100.0,
+                "Max Sanity": 100.0,
+                "Health Decay Rate": 1.0,
+                "Hunger Decay Rate": 1.5,
+                "Sanity Decay Rate": 1.0,
+                "IS_alive": true
+            },
+            {},
+            {},
+            {}
+        ],
+        "32": [
+            {
+                "posX": -0.6617671847343445,
+                "posY": 0.2274315059185028,
+                "scaleX": 2.0318408012390137,
+                "scaleY": 1.240743637084961,
+                "Rot": 0.0
+            },
+            {},
+            {},
+            {
+                "NameTag": "OwlBG"
+            },
+            {
+                "TextureName": "owl cage",
+                "Index_X": 0,
+                "Index_Y": 0,
+                "Ucoordinates": 512.0,
+                "Vcoordinates": 512.0,
+                "IsSpriteSheet": false,
+                "IsAnimated": false,
+                "MaxIndex": 0,
+                "LayeringOrder": 1
+            },
+            {},
+            {},
+            {
+                "0": {
+                    "AudioPath": "BGM_Ambience_Owl_01.wav",
+                    "Channel": 2,
+                    "IsLooping": false
+                },
+                "AudioArrCount": 1,
+                "BGM Volume": 1.0,
+                "SFX Volume": 1.0,
+                "Master Volume": 1.0
+            },
+            {},
+            {},
+            {},
+            {},
+            {}
+        ],
+        "33": [
+            {
+                "posX": -0.7948408126831055,
+                "posY": -0.01907503604888916,
+                "scaleX": 0.4940004050731659,
+                "scaleY": 0.3830002248287201,
+                "Rot": -9.082768440246582
+            },
+            {},
+            {
+                "ColliderType1": 1,
+                "ColliderType2": 0,
+                "minX1": 0.30000001192092896,
+                "minX2": -0.25,
+                "minY1": 0.05000000074505806,
+                "minY2": -0.4000000059604645,
+                "maxX1": 0.25,
+                "maxX2": 0.46000000834465027,
+                "maxY1": 0.30000001192092896,
+                "maxY2": 0.15000000596046448,
+                "offsetX1": 0.05000000074505806,
+                "offsetX2": 0.0,
+                "offsetY1": 0.02500000037252903,
+                "offsetY2": 0.0,
+                "radius1": 0.15000000596046448,
+                "radius2": 0.0
+            },
+            {
+                "NameTag": "Seal"
+            },
+            {
+                "TextureName": "sealSpritesheet",
+                "Index_X": 2,
+                "Index_Y": 0,
+                "Ucoordinates": 530.0,
+                "Vcoordinates": 254.5,
+                "IsSpriteSheet": true,
+                "IsAnimated": true,
+                "MaxIndex": 3,
+                "DisplayTime 0": -0.75,
+                "DisplayTime 1": 0.8100000023841858,
+                "DisplayTime 2": 1.3600000143051147,
+                "LayeringOrder": 2
+            },
+            {},
+            {},
+            {},
+            {},
+            {
+                "Current Health": 100.0,
+                "Max Health": 100.0,
+                "Current Hunger": 100.0,
+                "Max Hunger": 100.0,
+                "Current Sanity": 100.0,
+                "Max Sanity": 100.0,
+                "Health Decay Rate": 1.0,
+                "Hunger Decay Rate": 1.0,
+                "Sanity Decay Rate": 1.0,
+                "IS_alive": true
+            },
+            {},
+            {},
+            {}
+        ],
+        "34": [
+            {
+                "posX": -0.6617671847343445,
+                "posY": 0.2274315059185028,
+                "scaleX": 2.0318408012390137,
+                "scaleY": 1.240743637084961,
+                "Rot": 0.0
+            },
+            {},
+            {},
+            {
+                "NameTag": "SealBG"
+            },
+            {
+                "TextureName": "sealCage",
+                "Index_X": 0,
+                "Index_Y": 0,
+                "Ucoordinates": 512.0,
+                "Vcoordinates": 512.0,
+                "IsSpriteSheet": false,
+                "IsAnimated": false,
+                "MaxIndex": 0,
+                "LayeringOrder": 1
+            },
+            {},
+            {},
+            {
+                "0": {
+                    "AudioPath": "BGM_Ambience_Seal_01.wav",
+                    "Channel": 2,
+                    "IsLooping": false
+                },
+                "AudioArrCount": 1,
+                "BGM Volume": 1.0,
+                "SFX Volume": 1.0,
+                "Master Volume": 1.0
+            },
+            {},
+            {},
             {},
             {},
             {}

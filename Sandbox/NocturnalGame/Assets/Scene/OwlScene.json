@@ -166,7 +166,7 @@
                 "Current Sanity": 100.0,
                 "Max Sanity": 100.0,
                 "Health Decay Rate": 1.0,
-                "Hunger Decay Rate": 1.0,
+                "Hunger Decay Rate": 1.5,
                 "Sanity Decay Rate": 1.0,
                 "IS_alive": true
             },
