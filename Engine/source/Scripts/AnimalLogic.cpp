@@ -6,7 +6,7 @@
 		The AnimalLogic system manages the displaying of Various AnimalLogics of Anumals Bars of an
 
 	Primary Author:
-		 ANG YU XUAN (100%)
+		 ANG YU XUAN (95%)
 		- Created the AnimalLogic class and its function specification.
     Secondary Author:
          Nur Syazliyarni (5%)
@@ -50,6 +50,9 @@ namespace NocturnalEngine {
 				gS = GameManager::GameScene::OWL;
 			}
 			AnimalAttributes& aA{ p_ecs.GetComponent<AnimalAttributes>(entityID) };
+
+			orgXPos = p_ecs.GetComponent<Transform>(entityID).GetPos().x;
+
 			// in addition, the gamemanager also saves the above gS as the current gamestate
 			aA=p_GameManager.LoadPersistentValues(gS);
 		}
@@ -57,6 +60,7 @@ namespace NocturnalEngine {
 
 	void AnimalLogic::Update(float Frametime)
 	{
+		MoveAnimalLeftRight(Frametime);
 		//std::cout << "Entity " << p_ecs.GetComponent<NameTag>(entityID).GetNameTag() << " script running\n";
 		
 		//by right, the entity this script is connected to NEEDS to have
@@ -160,6 +164,11 @@ namespace NocturnalEngine {
 		{
 			p_GameManager.AddLogEntry( p_ecs.GetComponent<NameTag>(entityID).GetNameTag() + " is dead.");
 		}
+	}
+
+	void AnimalLogic::MoveAnimalLeftRight(float Frametime) {
+		Transform& t{ p_ecs.GetComponent<Transform>(entityID) };
+
 	}
 
 }
