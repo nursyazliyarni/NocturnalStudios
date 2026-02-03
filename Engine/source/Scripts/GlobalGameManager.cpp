@@ -57,12 +57,21 @@ namespace NocturnalEngine {
         defaultAttributes.SetDefault();
 
         sceneAnimalMap.emplace(GameScene::FLAMINGO, defaultAttributes);
+        sceneAnimalMap[GameScene::FLAMINGO].animalType = AnimalAttributes::AnimalType::FLAMINGO;
         sceneAnimalMap.emplace(GameScene::HORSE, defaultAttributes);
+        sceneAnimalMap[GameScene::HORSE].animalType = AnimalAttributes::AnimalType::HOESE;
         sceneAnimalMap.emplace(GameScene::OWL, defaultAttributes);
+        sceneAnimalMap[GameScene::OWL].animalType = AnimalAttributes::AnimalType::OWL;
         sceneAnimalMap[GameScene::OWL].hungerDecayRate = 1.5; //owl special hunger
         sceneAnimalMap.emplace(GameScene::SEAL, defaultAttributes);
+        sceneAnimalMap[GameScene::SEAL].animalType = AnimalAttributes::AnimalType::SEAL;
         currState=  GameManager::GameState::PLAYING;
         deadAnimals = 0;
+    }
+
+    void GameManager::CombinedSceneStart() {
+        
+        
     }
     /*!*************************************************************************
     This function runs the logic of the system. It checks the list of entities with
@@ -72,10 +81,11 @@ namespace NocturnalEngine {
     ****************************************************************************/
     void GameManager::Update(float dt) {
        
+        if (IsNewSceneManagement() && !combinedSceneSetup) CombinedSceneStart();
 
         if (p_Scene->isGameplay)
         {
-            if (IsNewSceneManagement())CombinedSceneLogic(dt);
+            if (IsNewSceneManagement())CombinedSceneUpdate(dt);
             for (std::pair<const GameScene,AnimalAttributes>& sceneAnimalPair:sceneAnimalMap)
             {
                 //this processes the other animals in the 
@@ -85,7 +95,27 @@ namespace NocturnalEngine {
                 if (sceneAnimalPair.first!=currScene&& sceneAnimalPair.second.is_alive)
                 {
                     sceneAnimalPair.second.current_hunger -= sceneAnimalPair.second.hungerDecayRate * static_cast<double>( dt) * 10.0;
-                    sceneAnimalPair.second.current_health -= sceneAnimalPair.second.healthDecayRate * static_cast<double>(dt);
+                    // Adjust health decay based on animal type and hunger state
+                    const double baseHealthMultiplier = 3.0; // much faster overall
+                    double healthMultiplier = baseHealthMultiplier;
+
+                    const double hungerRatio = (sceneAnimalPair.second.maxHunger > 0.0) ? (sceneAnimalPair.second.current_hunger / sceneAnimalPair.second.maxHunger) : 0.0;
+                    const double lowHungerThreshold = 0.30;   // below 30% is "low"
+                    const double highHungerThreshold = 0.70;  // above 70% is "normal+"
+
+                    if (sceneAnimalPair.second.WhatKindOfAnimalIsThis() == "Flamingo")
+                    {
+                        if (hungerRatio < lowHungerThreshold)
+                            healthMultiplier = 2.0; // faster when hungry
+                        else if (hungerRatio > highHungerThreshold)
+                            healthMultiplier = 0.5; // slower when well fed
+                    }
+                    else if (sceneAnimalPair.second.WhatKindOfAnimalIsThis() == "Horse")
+                    {
+                        healthMultiplier = 1.5; // faster health decay
+                    }
+                        // Seal and Owl remain at normal decay (1.0)
+                    
                     // Keep sanity static across non-active scenes.
                     // sceneAnimalPair.second.current_sanity -= sceneAnimalPair.second.sanityDecayRate * static_cast<double>(dt);
 
@@ -261,7 +291,7 @@ namespace NocturnalEngine {
         }
     }
 
-    void GameManager::CombinedSceneLogic(float dt) {
+    void GameManager::CombinedSceneUpdate(float dt) {
 
     }
 }

@@ -105,9 +105,21 @@ namespace NocturnalEngine {
         int deadAnimals, deathLimit{ 2 }, maxDiegeticLogEntries{40};
         std::deque<std::string> diegeticLogEntries;
 
-        bool diegeticLogUpdated{ true }, targetVisibility{ false }, freakyMode{ false };
+        bool diegeticLogUpdated{ true }, targetVisibility{ false }, freakyMode{ false }, combinedSceneSetup{ false };
 
-        void CombinedSceneLogic(float dt);
+        Entity animalE{}, cageBGE{}, containmentE[3]{0,0,0};
+        struct AnimalSceneData
+        {
+            Transform aTransform;
+            Sprite aniSprite,bgSprite;
+            Collider aCollider;
+            Audio bgAudio;
+            std::string containmentEntries[3];
+        };
+        std::unordered_map < GameScene, AnimalSceneData> combinedSceneMap;
+        void CombinedSceneStart();
+        void CombinedSceneUpdate(float dt);
+
 
     };
 
