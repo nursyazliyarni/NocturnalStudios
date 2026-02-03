@@ -117,7 +117,7 @@ namespace NocturnalEngine {
                         // Seal and Owl remain at normal decay (1.0)
                     
                     // Keep sanity static across non-active scenes.
-                    // sceneAnimalPair.second.current_sanity -= sceneAnimalPair.second.sanityDecayRate * static_cast<double>(dt);
+                    sceneAnimalPair.second.current_sanity -= sceneAnimalPair.second.sanityDecayRate * static_cast<double>(dt);
 
                     
 
