@@ -70,6 +70,10 @@ namespace NocturnalEngine {
 
          void AddCrit() { under20++; }
 
+         int AnimalsGone() const { return deadAnimals + escapedAnimals; }
+
+         int getCrits() const{ return under20; }
+
          //returns how much we have to multiply seconds by for timer
          float GetTimeScale() const{ return 21600.f/winRequirement; }
 

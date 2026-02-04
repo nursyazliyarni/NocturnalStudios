@@ -39,7 +39,7 @@
             {},
             {},
             {
-                "NameTag": "LoseBackGround"
+                "NameTag": "BackGround"
             },
             {
                 "TextureName": "blackbg",
@@ -221,7 +221,7 @@
         "5": [
             {
                 "posX": -0.33756422996520996,
-                "posY": 0.008996933698654175,
+                "posY": 0.02757689356803894,
                 "scaleX": 1.0,
                 "scaleY": 1.0,
                 "Rot": 0.0
@@ -240,7 +240,7 @@
             {},
             {},
             {
-                "Content": "Number of animals in their enclosures: 0/4",
+                "Content": "Number of animals alive/in their \nenclosures: 0/4",
                 "Font": "Flexi_IBM_VGA_False_437",
                 "Size": 22.5,
                 "ColorR": 0.25,
@@ -258,7 +258,7 @@
         "6": [
             {
                 "posX": -0.33756422996520996,
-                "posY": -0.05798235535621643,
+                "posY": -0.07656230032444,
                 "scaleX": 1.0,
                 "scaleY": 1.0,
                 "Rot": 0.0
