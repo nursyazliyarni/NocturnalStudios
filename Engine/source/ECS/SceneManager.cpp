@@ -457,12 +457,13 @@ void NocturnalEngine::SceneManager::checkForSceneToLoad()
 		if (sceneToLoad == "Assets/Scene/HowToPlay.json")
 		{
 			isGameplay = false;
-		if (sceneToLoad == "Assets/Scene/CombinedScene.json")
-		{
-			isGameplay = true;
-			p_GameManager.ToggleSceneManagement();
-			Graphic::camera.SetZoomLevel(1.0f);
-			Graphic::camera.SetPosition({ 0.0f,0.0f,0.0f });
+			if (sceneToLoad == "Assets/Scene/CombinedScene.json")
+			{
+				isGameplay = true;
+				p_GameManager.ToggleSceneManagement();
+				Graphic::camera.SetZoomLevel(1.0f);
+				Graphic::camera.SetPosition({ 0.0f,0.0f,0.0f });
+			}
 		}
 
 		// SAVE current scene layer state before switching away
