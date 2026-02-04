@@ -1,4 +1,16 @@
 {
+    "LayerDrawOrder": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+    ],
     "Number of Entities": {
         "Entities": 3
     },
@@ -39,7 +51,7 @@
                 "NameTag": "quit Game BackGround"
             },
             {
-                "TextureName": "QUIT_GAME",
+                "TextureName": "menu_bg",
                 "Index_X": 0,
                 "Index_Y": 0,
                 "Ucoordinates": 512.0,
@@ -69,6 +81,10 @@
                 "SFX Volume": 1.0,
                 "Master Volume": 1.0
             },
+            {},
+            {},
+            {},
+            {},
             {}
         ],
         "1": [
@@ -81,15 +97,15 @@
             },
             {},
             {
-                "ColliderType1": 0,
+                "ColliderType1": 4,
                 "ColliderType2": 0,
-                "minX1": -0.5,
+                "minX1": 0.41999998688697815,
                 "minX2": 0.0,
-                "minY1": -0.5,
+                "minY1": 0.09000000357627869,
                 "minY2": 0.0,
-                "maxX1": 0.5,
+                "maxX1": 0.41999998688697815,
                 "maxX2": 0.0,
-                "maxY1": 0.5,
+                "maxY1": 0.07000000029802322,
                 "maxY2": 0.0,
                 "offsetX1": 0.0,
                 "offsetX2": 0.0,
@@ -137,6 +153,10 @@
                 "SFX Volume": 1.0,
                 "Master Volume": 1.0
             },
+            {},
+            {},
+            {},
+            {},
             {}
         ],
         "2": [
@@ -151,13 +171,13 @@
             {
                 "ColliderType1": 4,
                 "ColliderType2": 0,
-                "minX1": -0.5,
+                "minX1": 0.41999998688697815,
                 "minX2": 0.0,
-                "minY1": -0.5,
+                "minY1": 0.09000000357627869,
                 "minY2": 0.0,
-                "maxX1": 0.5,
+                "maxX1": 0.41999998688697815,
                 "maxX2": 0.0,
-                "maxY1": 0.5,
+                "maxY1": 0.07000000029802322,
                 "maxY2": 0.0,
                 "offsetX1": 0.0,
                 "offsetX2": 0.0,
@@ -205,6 +225,10 @@
                 "SFX Volume": 1.0,
                 "Master Volume": 1.0
             },
+            {},
+            {},
+            {},
+            {},
             {}
         ]
     }
