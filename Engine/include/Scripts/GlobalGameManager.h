@@ -99,7 +99,7 @@ namespace NocturnalEngine {
         std::string currScene;
         GameState currState;
         std::unordered_map < std::string, AnimalAttributes> sceneAnimalMap;
-        int deadAnimals, deathLimit{ 2 }, maxDiegeticLogEntries{40};
+        int deadAnimals, deathLimit{ 3 }, maxDiegeticLogEntries{40};
         std::deque<std::string> diegeticLogEntries;
 
         bool diegeticLogUpdated{ true }, targetVisibility{ false }, freakyMode{ false }, combinedSceneSetup{ false };
