@@ -32,6 +32,7 @@
 #include "Scripts/DigeticLog.h"
 #include "Scripts/RevealTargetOnClick.h"
 #include "Scripts/PainSpotSpawner.h"
+#include "Scripts/EndScreenDisplay.h"
 
 
 namespace NocturnalEngine
@@ -177,6 +178,10 @@ namespace NocturnalEngine
 			if (mScriptNameVector[j] == "PainSpotSpawner")
 			{
 				mScriptsVector.push_back(new PainSpotSpawner());
+			}
+			if (mScriptNameVector[j] == "EndScreenDisplay")
+			{
+				mScriptsVector.push_back(new EndScreenDisplay());
 			}
 		}
 		return true;

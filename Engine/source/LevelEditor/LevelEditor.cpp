@@ -59,6 +59,7 @@
 #include "Scripts/DigeticLog.h"
 #include "Scripts/RevealTargetOnClick.h"
 #include "Scripts/PainSpotSpawner.h"
+#include "Scripts/EndScreenDisplay.h"
 
 #include "Scripts/GlobalGameManager.h"
 
@@ -1987,6 +1988,10 @@ namespace NocturnalEngine {
                                     if (mScriptList[current_script] == "PainSpotSpawner" && p_ecs.HaveComponent<AnimalAttributes>(selectedEntity))
                                     {
                                         logic.InsertScript(new PainSpotSpawner(), selectedEntity);
+                                    }
+                                    if (mScriptList[current_script] == "EndScreenDisplay")
+                                    {
+                                        logic.InsertScript(new EndScreenDisplay(), selectedEntity);
                                     }
                                 }
                             }

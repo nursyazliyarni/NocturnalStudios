@@ -145,6 +145,10 @@ namespace NocturnalEngine
 			{
 				spt.SetTexture("Xmark");
 			}
+			if (ID_tag.GetTag() == "ProceedT" && !(p_Input->MousePressed(GLFW_MOUSE_BUTTON_LEFT)))
+			{
+				spt.SetTexture("Xmark");
+			}
 			if (ID_tag.GetTag() == "QuitT" && !(p_Input->MousePressed(GLFW_MOUSE_BUTTON_LEFT)))
 			{
 				spt.SetTexture("Xmark");
@@ -194,6 +198,12 @@ namespace NocturnalEngine
 					p_GameManager.ResetStats();
 					
 					p_Scene->setSceneToLoad("Assets/Scene/FlamingoScene.json");//reset the game level in game over
+				}
+				if (ID_tag.GetTag() == "ProceedT")
+				{
+					p_GameManager.ResetStats();
+
+					p_Scene->setSceneToLoad("Assets/Scene/Menu.json");//reset the game level in game over
 				}
 
 				if (ID_tag.GetTag() == "Quit" && p_GUI->Check_HTP() == false)
@@ -404,6 +414,10 @@ namespace NocturnalEngine
 				spt.SetTexture("Blank");
 			}
 			if (ID_tag.GetTag() == "QuitT")
+			{
+				spt.SetTexture("Blank");
+			}
+			if (ID_tag.GetTag() == "ProceedT")
 			{
 				spt.SetTexture("Blank");
 			}

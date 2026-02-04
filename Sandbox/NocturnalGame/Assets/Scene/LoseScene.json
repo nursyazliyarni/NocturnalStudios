@@ -39,7 +39,7 @@
             {},
             {},
             {
-                "NameTag": "LoseBackGround"
+                "NameTag": "BackGround"
             },
             {
                 "TextureName": "blackbg",
@@ -55,7 +55,8 @@
             {
                 "0": "AudioManager",
                 "1": "NoLoopBackgroundAudio",
-                "ScriptCount": 2
+                "2": "EndScreenDisplay",
+                "ScriptCount": 3
             },
             {
                 "Tag": "Untagged",
@@ -203,7 +204,7 @@
             {},
             {},
             {
-                "Content": "The management have noticed your\nincompetence and have made the\nunanimous decision to #fire you$",
+                "Content": "The management have noticed your\nincompetence and have made the\nunanimous decision to #fire you|",
                 "Font": "Flexi_IBM_VGA_False_437",
                 "Size": 27.299999237060547,
                 "ColorR": 0.0,
@@ -221,7 +222,7 @@
         "5": [
             {
                 "posX": -0.33756422996520996,
-                "posY": 0.008996933698654175,
+                "posY": 0.02757689356803894,
                 "scaleX": 1.0,
                 "scaleY": 1.0,
                 "Rot": 0.0
@@ -240,7 +241,7 @@
             {},
             {},
             {
-                "Content": "Number of animals in their enclosures: 0/4",
+                "Content": "Number of animals alive/in their \nenclosures: 0/4",
                 "Font": "Flexi_IBM_VGA_False_437",
                 "Size": 22.5,
                 "ColorR": 0.25,
@@ -258,7 +259,7 @@
         "6": [
             {
                 "posX": -0.33756422996520996,
-                "posY": -0.05798235535621643,
+                "posY": -0.07656230032444,
                 "scaleX": 1.0,
                 "scaleY": 1.0,
                 "Rot": 0.0
@@ -314,7 +315,7 @@
             {},
             {},
             {
-                "Content": "Please leave the premises #immediately$",
+                "Content": "Please leave the premises #immediately|",
                 "Font": "Flexi_IBM_VGA_False_437",
                 "Size": 22.299999237060547,
                 "ColorR": 0.0,
@@ -351,7 +352,7 @@
             {},
             {},
             {
-                "Content": "If there are no errors,\n#Please mark accordingly.$",
+                "Content": "If there are no errors,\n#Please mark accordingly.|",
                 "Font": "Flexi_IBM_VGA_False_437",
                 "Size": 27.299999237060547,
                 "ColorR": 0.0,

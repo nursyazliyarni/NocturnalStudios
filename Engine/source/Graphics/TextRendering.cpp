@@ -131,8 +131,8 @@ namespace NocturnalEngine {
         for (c = text.begin(); c != text.end(); c++)
         {
             if (*c == '#') { charColor = { 225.0f, 0.2f, 0.2f }; continue; }     // red
-            else if (*c == '@') { charColor = { 0.2f, 1.0f, 0.2f }; continue; }// green
-            else if (*c == '$') { charColor = color; continue; }//back to defau;t
+            else if (*c == '@') { charColor = { 0.2f, 0.5f, 0.2f }; continue; }// green
+            else if (*c == '|') { charColor = color; continue; }//back to defau;t
 
             if (*c == '\n') {
                 position.x = startX;

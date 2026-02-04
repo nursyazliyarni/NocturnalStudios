@@ -297,7 +297,7 @@ namespace NocturnalEngine {
     }
     void GameManager::WinGame() {
         ResetSystem(false);
-        p_Scene->setSceneToLoad("Assets/Scene/Menu.json");
+        p_Scene->setSceneToLoad("Assets/Scene/WinScene.json");
 
     }
 

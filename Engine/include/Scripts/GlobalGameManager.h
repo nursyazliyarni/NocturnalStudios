@@ -70,6 +70,10 @@ namespace NocturnalEngine {
 
          void AddCrit() { under20++; }
 
+         int AnimalsGone() const { return deadAnimals + escapedAnimals; }
+
+         int getCrits() const{ return under20; }
+
          //returns how much we have to multiply seconds by for timer
          float GetTimeScale() const{ return 21600.f/winRequirement; }
 
@@ -104,7 +108,7 @@ namespace NocturnalEngine {
         void LogLowHealth(std::pair < const std ::string , AnimalAttributes > & sceneAnimalPair);
 
 
-        float gameTimeElapsed{}, winRequirement{180.f}; //in seconds
+        float gameTimeElapsed{}, winRequirement{10.f}; //in seconds
 
         std::string currScene;
         GameState currState;
