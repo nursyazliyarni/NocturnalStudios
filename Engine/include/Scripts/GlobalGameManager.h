@@ -97,6 +97,7 @@ namespace NocturnalEngine {
         void WinGame();
         void LogLowHealth(std::pair<const GameScene, AnimalAttributes>& sceneAnimalPair);
 
+
         float gameTimeElapsed{}, winRequirement{180.f}; //in seconds
 
         GameScene currScene;
@@ -116,9 +117,10 @@ namespace NocturnalEngine {
             Audio bgAudio;
             std::string containmentEntries[3];
         };
-        std::unordered_map < GameScene, AnimalSceneData> combinedSceneMap;
+        std::unordered_map < std::string, AnimalSceneData> combinedSceneMap;
         void CombinedSceneStart();
         void CombinedSceneUpdate(float dt);
+        Entity GetEntityByName(const std::string name);
 
 
     };

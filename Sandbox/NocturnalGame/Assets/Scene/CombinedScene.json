@@ -42,13 +42,13 @@
         "00000000000000000000000000011001",
         "00000000000000000000000000011001",
         "00000000000000000000000000011001",
-        "00000000000000000000001000011101",
+        "00000000000000000001001000011101",
         "00000000000000000000000010011001",
-        "00000000000000000000001000011101",
+        "00000000000000000001001000011101",
         "00000000000000000000000010011001",
-        "00000000000000000000001000011101",
+        "00000000000000000001001000011101",
         "00000000000000000000000010011001",
-        "00000000000000000000001000011101",
+        "00000000000000000001001000011101",
         "00000000000000000000000010011001"
     ],
     "Components": {
@@ -117,7 +117,7 @@
             },
             {
                 "TextureName": "flamingo_spritesheet",
-                "Index_X": 0,
+                "Index_X": 2,
                 "Index_Y": 0,
                 "Ucoordinates": 528.0,
                 "Vcoordinates": 528.0,
@@ -1408,7 +1408,7 @@
             },
             {
                 "TextureName": "flamingo_spritesheet",
-                "Index_X": 0,
+                "Index_X": 2,
                 "Index_Y": 0,
                 "Ucoordinates": 528.0,
                 "Vcoordinates": 528.0,
@@ -1440,7 +1440,20 @@
             },
             {},
             {},
-            {}
+            {
+                "Content": "FLAMINGO:Enclosure 3 - 05-02-4B:A pink bird loved by many, despite\nits legs not being of optimal\ncondition due to _____",
+                "Font": "KernlGrotesk",
+                "Size": 24.0,
+                "ColorR": 1.0,
+                "ColorG": 1.0,
+                "ColorB": 1.0,
+                "ColorA": 1.0,
+                "PosX": 0.0,
+                "PosY": 0.0,
+                "Line Height": 0,
+                "WorldSpace": false,
+                "Center": false
+            }
         ],
         "28": [
             {
@@ -1544,7 +1557,20 @@
             },
             {},
             {},
-            {}
+            {
+                "Content": "HORSE:Enclosure 1 - 03-00-2A:An equine that is trained for \nhorseracing. Until now, it has not\nwon a single race. Needs extra care\nfor health.",
+                "Font": "KernlGrotesk",
+                "Size": 24.0,
+                "ColorR": 1.0,
+                "ColorG": 1.0,
+                "ColorB": 1.0,
+                "ColorA": 1.0,
+                "PosX": 0.0,
+                "PosY": 0.0,
+                "Line Height": 0,
+                "WorldSpace": false,
+                "Center": false
+            }
         ],
         "30": [
             {
@@ -1648,7 +1674,20 @@
             },
             {},
             {},
-            {}
+            {
+                "Content": "OWL:Enclosure 3 - 05-02-4B:Resting atop a tree branch, the\nfeathered creature engages in a\nstaring contest with the viewer.",
+                "Font": "KernlGrotesk",
+                "Size": 24.0,
+                "ColorR": 1.0,
+                "ColorG": 1.0,
+                "ColorB": 1.0,
+                "ColorA": 1.0,
+                "PosX": 0.0,
+                "PosY": 0.0,
+                "Line Height": 0,
+                "WorldSpace": false,
+                "Center": false
+            }
         ],
         "32": [
             {
@@ -1725,7 +1764,7 @@
             },
             {
                 "TextureName": "sealSpritesheet",
-                "Index_X": 2,
+                "Index_X": 1,
                 "Index_Y": 0,
                 "Ucoordinates": 530.0,
                 "Vcoordinates": 254.5,
@@ -1755,7 +1794,20 @@
             },
             {},
             {},
-            {}
+            {
+                "Content": "SEAL:Enclosure 2 - 04-01-5A:A chubby-looking seal rests on the\nrocks, its large black eyes impossibly\nshiny in the light.",
+                "Font": "KernlGrotesk",
+                "Size": 24.0,
+                "ColorR": 1.0,
+                "ColorG": 1.0,
+                "ColorB": 1.0,
+                "ColorA": 1.0,
+                "PosX": 0.0,
+                "PosY": 0.0,
+                "Line Height": 0,
+                "WorldSpace": false,
+                "Center": false
+            }
         ],
         "34": [
             {

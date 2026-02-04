@@ -18,6 +18,7 @@
 #include "ECS/ECS.h"
 #include "GUI/GUI.h"
 #include "ECS/SceneManager.h"
+#include "core/Log.h"
 
 namespace NocturnalEngine {
 
@@ -71,7 +72,44 @@ namespace NocturnalEngine {
 
     void GameManager::CombinedSceneStart() {
         
-        
+        const std::string animalNames[]{ "Flamingo","Horse","Owl","Seal" };
+
+        for (std::string name:animalNames)
+        {
+            Entity animal{ GetEntityByName(name) }, animalBG{ GetEntityByName(name + "BG") };
+            if (animal==0||animalBG==0)
+            {
+                NOCTURNAL_GAME_WARN("Animal or AnimalBG missing for: " + name);
+                break;
+            }
+
+            if (!p_ecs.HaveComponent<Sprite>(animal)|| 
+                !p_ecs.HaveComponent<Transform>(animal)|| 
+                !p_ecs.HaveComponent<Collider>(animal)|| 
+                !p_ecs.HaveComponent<Text>(animal))
+            {
+                NOCTURNAL_GAME_WARN("Animal " + name+" entity is missing one or more of the required components!");
+                break;
+            }
+
+            if (!p_ecs.HaveComponent<Sprite>(animalBG) ||
+                !p_ecs.HaveComponent<Audio>(animalBG) )
+            {
+                NOCTURNAL_GAME_WARN("Animal " + name + "BG entity is missing one or more of the required components!");
+                break;
+            }
+
+            AnimalSceneData asd;
+            
+            asd.aTransform = p_ecs.GetComponent<Transform>(animal);
+            asd.aCollider = p_ecs.GetComponent<Collider>(animal);
+            asd.aniSprite = p_ecs.GetComponent<Sprite>(animal);
+            asd.bgSprite = p_ecs.GetComponent<Sprite>(animalBG);
+            asd.bgAudio = p_ecs.GetComponent<Audio>(animalBG);
+            
+            std::string toSplit{ p_ecs.GetComponent<Text>(animal).GetContent()};
+            
+        }
     }
     /*!*************************************************************************
     This function runs the logic of the system. It checks the list of entities with
@@ -293,5 +331,15 @@ namespace NocturnalEngine {
 
     void GameManager::CombinedSceneUpdate(float dt) {
 
+    }
+
+    Entity GameManager::GetEntityByName(const std::string name) {
+        std::set<Entity> eSet{ p_ecs.GetAliveEntitiesSet() };
+
+        for (Entity e:eSet)
+        {
+            if (p_ecs.HaveComponent<NameTag>(e) && p_ecs.GetComponent<NameTag>(e).GetNameTag() == name) return e;
+        }
+        return 0;
     }
 }
