@@ -118,9 +118,11 @@ namespace NocturnalEngine {
 
 
 	void AnimalLogic::LogLowHealth(AnimalAttributes& aA) {
+		std::string animalName = p_ecs.GetComponent<NameTag>(entityID).GetNameTag() == "Animal" ? aA.WhatKindOfAnimalIsThis() : p_ecs.GetComponent<NameTag>(entityID).GetNameTag();
+
 		if (aA.current_health <= aA.maxHealth / 2.0 && !aA.healthWarn)
 		{
-			p_GameManager.AddLogEntry("WARNING! " + p_ecs.GetComponent<NameTag>(entityID).GetNameTag() + "'s Health is below 50%!");
+			p_GameManager.AddLogEntry("WARNING! " + animalName + "'s Health is below 50%!");
 			aA.healthWarn = true;
 		}
 		else if (aA.current_health > aA.maxHealth / 2.0 && aA.healthWarn) {
@@ -128,7 +130,7 @@ namespace NocturnalEngine {
 		}
 		if (aA.current_hunger <= aA.maxHunger / 2.0 && !aA.hungerWarn)
 		{
-			p_GameManager.AddLogEntry("WARNING! " + p_ecs.GetComponent<NameTag>(entityID).GetNameTag() + "'s Hunger is below 50%!");
+			p_GameManager.AddLogEntry("WARNING! " + animalName + "'s Hunger is below 50%!");
 			aA.hungerWarn = true;
 		}
 		else if (aA.current_hunger > aA.maxHunger / 2.0 && aA.hungerWarn) {
@@ -136,7 +138,7 @@ namespace NocturnalEngine {
 		}
 		if (aA.current_sanity <= aA.maxSanity / 2.0 && !aA.sanityWarn)
 		{
-			p_GameManager.AddLogEntry("WARNING! " + p_ecs.GetComponent<NameTag>(entityID).GetNameTag() + "'s Sanity is below 50%!");
+			p_GameManager.AddLogEntry("WARNING! " + animalName + "'s Sanity is below 50%!");
 			aA.sanityWarn = true;
 		}
 		else if (aA.current_sanity > aA.maxSanity / 2.0 && aA.sanityWarn) {
@@ -145,7 +147,7 @@ namespace NocturnalEngine {
 
 		if (!aA.is_alive)
 		{
-			p_GameManager.AddLogEntry( p_ecs.GetComponent<NameTag>(entityID).GetNameTag() + " is dead.");
+			p_GameManager.AddLogEntry( animalName + " is dead.");
 		}
 	}
 

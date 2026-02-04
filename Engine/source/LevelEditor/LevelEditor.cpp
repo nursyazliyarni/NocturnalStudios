@@ -372,6 +372,7 @@ namespace NocturnalEngine {
                     }
                     if (mCurrentScene == "CombinedScene.json")p_GameManager.ToggleSceneManagement();
                     else if (p_GameManager.IsNewSceneManagement())p_GameManager.ToggleSceneManagement();
+                    
                     p_GameManager.SetState(GameManager::GameState::STARTING);
                 }
             }

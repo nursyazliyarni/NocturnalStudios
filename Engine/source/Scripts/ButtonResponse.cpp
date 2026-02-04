@@ -19,6 +19,7 @@
 #include "GUI/GUI.h"
 #include "Graphics/Graphics.h"
 #include "Input/Input.h"
+#include "Scripts/GlobalGameManager.h"
 
 
 namespace NocturnalEngine
@@ -254,7 +255,29 @@ namespace NocturnalEngine
 					p_Scene->setSceneToLoad("Assets/Scene/OwlScene.json");// switch to owl scene
 				}
 
+				if (ID_tag.GetTag() == "AltFlamingoBtn")
+				{
+					p_ecs.GetComponent<Audio>(GetScriptEntityID())[0].should_play = true;
+					p_GameManager.SetSceneToSwitch("Flamingo");// switch to flamingo scene
+				}
 
+				if (ID_tag.GetTag() == "AltSealBtn")
+				{
+					p_ecs.GetComponent<Audio>(GetScriptEntityID())[0].should_play = true;
+					p_GameManager.SetSceneToSwitch("Seal");
+				}
+
+				if (ID_tag.GetTag() == "AltHorseBtn")
+				{
+					p_ecs.GetComponent<Audio>(GetScriptEntityID())[0].should_play = true;
+					p_GameManager.SetSceneToSwitch("Horse");// switch to horse scene
+				}
+
+				if (ID_tag.GetTag() == "AltOwlBtn")
+				{
+					p_ecs.GetComponent<Audio>(GetScriptEntityID())[0].should_play = true;
+					p_GameManager.SetSceneToSwitch("Owl");// switch to owl scene
+				}
 			}
 
 			if (curr_state == button_state::click)

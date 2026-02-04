@@ -111,7 +111,7 @@ namespace NocturnalEngine {
             Transform aTransform;
             Sprite aniSprite,bgSprite;
             Collider aCollider;
-            Audio bgAudio;
+            int bgAudioInd;
             std::string containmentEntries[3];
         };
         std::string nextScene{ "Flamingo" };

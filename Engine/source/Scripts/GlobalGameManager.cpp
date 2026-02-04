@@ -72,8 +72,16 @@ namespace NocturnalEngine {
 
     void GameManager::CombinedSceneStart() {
         
-        const std::string animalNames[]{ "Flamingo","Horse","Owl","Seal" };
+        animalE = GetEntityByName("Animal");
+        cageBGE = GetEntityByName("BGObject");
+        containmentE[0] = GetEntityByName("AnimalName");
+        containmentE[1] = GetEntityByName("EnclosureTitle");
+        containmentE[2] = GetEntityByName("Intro");
 
+        p_ecs.GetComponent<Audio>(cageBGE).GetArr().clear();
+
+        const std::string animalNames[]{ "Flamingo","Horse","Owl","Seal" };
+        int audI{ 0 };
         for (std::string name:animalNames)
         {
             Entity animal{ GetEntityByName(name) }, animalBG{ GetEntityByName(name + "BG") };
@@ -106,7 +114,10 @@ namespace NocturnalEngine {
             asd.aCollider = p_ecs.GetComponent<Collider>(animal);
             asd.aniSprite = p_ecs.GetComponent<Sprite>(animal);
             asd.bgSprite = p_ecs.GetComponent<Sprite>(animalBG);
-            asd.bgAudio = p_ecs.GetComponent<Audio>(animalBG);
+
+            p_ecs.GetComponent<Audio>(cageBGE).GetArr().push_back (p_ecs.GetComponent<Audio>(animalBG).GetArr()[0]);
+            asd.bgAudioInd = audI;
+            audI++;
             
             std::string toSplit{ p_ecs.GetComponent<Text>(animal).GetContent()};
 
@@ -139,11 +150,7 @@ namespace NocturnalEngine {
             combinedSceneMap.emplace(name, asd);
         }
 
-        animalE = GetEntityByName("Animal");
-        cageBGE = GetEntityByName("BGObject");
-        containmentE[0] = GetEntityByName("AnimalName");
-        containmentE[1] = GetEntityByName("EnclosureTitle");
-        containmentE[2] = GetEntityByName("Intro");
+
 
         currScene = "Flamingo";
 
@@ -358,15 +365,39 @@ namespace NocturnalEngine {
 
     void GameManager::CombinedSceneUpdate(float dt) {
         UNREFERENCED_PARAMETER(dt);
-        switch (innerState)
+        if (innerState==2) //ending, save animaldata to the corresponding array
         {
-        case 0://entering a new scene
-            break; 
-        case 1:
-            break;
-        case 2://exiting a scene
-            break;
+            sceneAnimalMap[currScene] = p_ecs.GetComponent<AnimalAttributes>(animalE);
+            p_ecs.GetComponent<Audio>(cageBGE).GetArr()[combinedSceneMap[currScene].bgAudioInd].is_Playing = false;
+            currScene = nextScene;
+            innerState = 0;
         }
+        if (innerState == 0) 
+        {
+            auto it = combinedSceneMap.find(currScene);
+            if (it!=combinedSceneMap.end())
+            {
+                p_ecs.GetComponent<Transform>(animalE) = it->second.aTransform;
+                p_ecs.GetComponent<Sprite>(animalE) = it->second.aniSprite;
+                p_ecs.GetComponent<Collider>(animalE) = it->second.aCollider;
+                p_ecs.GetComponent<AnimalAttributes>(animalE) = sceneAnimalMap[currScene];
+
+                p_ecs.GetComponent<Sprite>(cageBGE) = it->second.bgSprite;
+                
+                p_ecs.GetComponent<Audio>(cageBGE).GetArr()[it->second.bgAudioInd].is_Playing=true;
+
+                for (int i = 0; i < 3; i++)
+                {
+                    p_ecs.GetComponent<Text>(containmentE[i]).SetContent(it->second.containmentEntries[i]);
+                }
+            }
+            innerState = 1;
+        }
+        if (innerState==1)
+        {
+            
+        }
+
     }
 
     Entity GameManager::GetEntityByName(const std::string name) {
@@ -380,6 +411,8 @@ namespace NocturnalEngine {
     }
 
     void GameManager::SetSceneToSwitch( std::string seekScene ){
+
+        //std::cout << "switch requested to " << seekScene;
         if (seekScene!=currScene)
         {
             nextScene = seekScene;
