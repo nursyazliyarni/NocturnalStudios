@@ -361,10 +361,6 @@ namespace NocturnalEngine
 						{
 							p_ecs.GetComponent<Draggable>(j).Serialize(writer);
 						}
-						if (p_ecs.GetComponentTypeName(compID) == "Text")
-						{
-							p_ecs.GetComponent<Text>(j).Serialize(writer);
-						}
 					}
 				}
 				writer->EndObject();
@@ -461,6 +457,10 @@ void NocturnalEngine::SceneManager::checkForSceneToLoad()
 		if (sceneToLoad == "Assets/Scene/HowToPlay.json")
 		{
 			isGameplay = false;
+		if (sceneToLoad == "Assets/Scene/CombinedScene.json")
+		{
+			isGameplay = true;
+			p_GameManager.ToggleSceneManagement();
 			Graphic::camera.SetZoomLevel(1.0f);
 			Graphic::camera.SetPosition({ 0.0f,0.0f,0.0f });
 		}
