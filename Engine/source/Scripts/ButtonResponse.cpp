@@ -433,12 +433,30 @@ namespace NocturnalEngine
 
 	bool ButtonResponse::is_within_box(glm::vec2 cur, Collider box, Transform trans)//unique aabb code for entity and mouse
 	{
-		if (cur.x > ((box[0].mMin.x * (trans.GetScale().x / 2)) + trans.GetPos().x) && cur.y > (box[0].mMin.y * (trans.GetScale().y / 2) + trans.GetPos().y) &&
-			cur.x < ((box[0].mMax.x * (trans.GetScale().x / 2)) + trans.GetPos().x) && cur.y < (box[0].mMax.y * (trans.GetScale().y / 2) + trans.GetPos().y))
+		vec2D mPos{ cur.x,cur.y };
+		for (int i = 0; i < 2 ; i++)
 		{
-			return true;//return true if the position of the cursor is between both of the button minimun and maximum bounding point
+			vec2D offsetPos{ trans.GetPos().x + box[i].mOffset.x ,trans.GetPos().y + box[i].mOffset.y };
+			switch (box[i].mCol)
+			{
+			case Collider::ColliderType::circle:
+			case Collider::ColliderType::bubble:
+				if (distance(mPos, offsetPos) < box[i].mRadius) {
+					return true;
+				}
+				break;
+			case Collider::ColliderType::rect:
+			case Collider::ColliderType::box:
+				vec2D minPt{ offsetPos.x - box[i].mMin.x,offsetPos.y - box[i].mMin.y }, maxPt{ offsetPos.x + box[i].mMax.x,offsetPos.y + box[i].mMax.y };
+				if (mPos.x > minPt.x && mPos.x<maxPt.x && mPos.y>minPt.y && mPos.y < maxPt.y)
+				{
+					return true;
+					//std::cout << "entity " << p_ecs.GetComponent<NameTag>(entityID).GetNameTag() << " collider check\n";
+
+				}
+				break;
+			}
 		}
-		else
-			return false;// return false if it isnt
+		return false;
 	}
 }
