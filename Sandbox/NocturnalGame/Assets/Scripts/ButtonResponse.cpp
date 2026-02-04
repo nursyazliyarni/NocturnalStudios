@@ -35,21 +35,25 @@ namespace NocturnalEngine
 		{
 			if (p_Input->KeyPressed(GLFW_KEY_1) || p_Input->KeyPressed(GLFW_KEY_W))
 			{
+				p_ecs.GetComponent<Audio>(GetScriptEntityID())[0].should_play = true;
 				p_Scene->setSceneToLoad("Assets/Scene/FlamingoScene.json");
 				return;
 			}
 			if (p_Input->KeyPressed(GLFW_KEY_2) || p_Input->KeyPressed(GLFW_KEY_A))
 			{
+				p_ecs.GetComponent<Audio>(GetScriptEntityID())[0].should_play = true;
 				p_Scene->setSceneToLoad("Assets/Scene/SealScene.json");
 				return;
 			}
 			if (p_Input->KeyPressed(GLFW_KEY_3) || p_Input->KeyPressed(GLFW_KEY_S))
 			{
+				p_ecs.GetComponent<Audio>(GetScriptEntityID())[0].should_play = true;
 				p_Scene->setSceneToLoad("Assets/Scene/HorseScene.json");
 				return;
 			}
 			if (p_Input->KeyPressed(GLFW_KEY_4) || p_Input->KeyPressed(GLFW_KEY_D))
 			{
+				p_ecs.GetComponent<Audio>(GetScriptEntityID())[0].should_play = true;
 				p_Scene->setSceneToLoad("Assets/Scene/OwlScene.json");
 				return;
 			}
