@@ -110,26 +110,43 @@ namespace NocturnalEngine
 			{
 				p_ecs.GetComponent<Audio>(GetScriptEntityID())[0].should_play = true; //menu hover audio
 				initial_hover = false;
+				leftcollider =true;
+				entercollider = true;
 			}
 
 			if (ID_tag.GetTag() == "Start" && !(p_Input->MousePressed(GLFW_MOUSE_BUTTON_LEFT)))
 			{
-				spt.SetTexture("Start_Hover");
+				//spt.SetTexture("Start_Hover");
+				if (entercollider)
+				{
+					transform.ScaleBy(0.05f);
+					entercollider = false;
+				}
 			}
 
 			if (ID_tag.GetTag() == "Quit" && !(p_Input->MousePressed(GLFW_MOUSE_BUTTON_LEFT)))
 			{
-				spt.SetTexture("Quit_Hover");
+				//spt.SetTexture("Quit_Hover");
+				if (entercollider)
+				{
+					transform.ScaleBy(0.05f);
+					entercollider = false;
+				}
 			}
 
 			if (ID_tag.GetTag() == "Options" && !(p_Input->MousePressed(GLFW_MOUSE_BUTTON_LEFT)))
 			{
-				spt.SetTexture("Options_Hover");
+				//spt.SetTexture("Options_Hover");
+				if (entercollider)
+				{
+					transform.ScaleBy(0.05f);
+					entercollider = false;
+				}
 			}
 
 			if (ID_tag.GetTag() == "HowToPlay" && spt.GetTexture() != "HowToPlay" && !(p_Input->MousePressed(GLFW_MOUSE_BUTTON_LEFT)))
 			{
-				spt.SetTexture("htp_button_Hover");
+				//spt.SetTexture("htp_button_Hover");
 			}
 
 			if (ID_tag.GetTag() == "MainMenu" && !(p_Input->MousePressed(GLFW_MOUSE_BUTTON_LEFT)))
@@ -212,7 +229,7 @@ namespace NocturnalEngine
 				}
 				if (ID_tag.GetTag() == "QuitT" && p_GUI->Check_HTP() == false)
 				{
-
+					p_GameManager.ResetStats();
 					p_Scene->setSceneToLoad("Assets/Scene/Quit.json");//exit to the are you sure page
 				}
 
@@ -316,12 +333,14 @@ namespace NocturnalEngine
 				if (ID_tag.GetTag() == "Start" && p_GUI->Check_HTP() == false)
 				{
 					//	p_GUI->toggle_menu();
-					spt.SetTexture("Start_Click");
+					//spt.SetTexture("Start_Click");
+					//transform.ScaleBy(-0.1f);
 				}
 
 				if (ID_tag.GetTag() == "Quit" && p_GUI->Check_HTP() == false)
 				{
-					spt.SetTexture("Quit_Click");
+					//spt.SetTexture("Quit_Click");
+					//transform.ScaleBy(-0.1f);
 				}
 
 				if (ID_tag.GetTag() == "MainMenu" && p_GUI->Check_HTP() == false)
@@ -343,7 +362,8 @@ namespace NocturnalEngine
 
 				if (ID_tag.GetTag() == "Options" && p_GUI->Check_HTP() == false)
 				{
-					spt.SetTexture("Options_Click");
+					//spt.SetTexture("Options_Click");
+					//transform.ScaleBy(-0.1f);
 				}
 
 				if (ID_tag.GetTag() == "Resume")
@@ -389,15 +409,31 @@ namespace NocturnalEngine
 			if (ID_tag.GetTag() == "Start")
 			{
 				spt.SetTexture("menuPLAY_btn");
+				if (leftcollider)
+				{
+					transform.ScaleBy(-0.05f);
+					leftcollider = false;
+				}
+				//
 			}
 
 			if (ID_tag.GetTag() == "Quit")
 			{
 				spt.SetTexture("quitBtn");
+				if (leftcollider)
+				{
+					transform.ScaleBy(-0.05f);
+					leftcollider = false;
+				}
 			}
 			if (ID_tag.GetTag() == "Options")
 			{
 				spt.SetTexture("optionsBtn");
+				if (leftcollider)
+				{
+					transform.ScaleBy(-0.05f);
+					leftcollider = false;
+				}
 			}
 
 			if (ID_tag.GetTag() == "MainMenu")

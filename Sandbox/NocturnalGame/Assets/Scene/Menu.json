@@ -12,10 +12,9 @@
         9
     ],
     "Number of Entities": {
-        "Entities": 5
+        "Entities": 4
     },
     "EntitySignatures": [
-        "00000000000000000000000011111101",
         "00000000000000000000000011111101",
         "00000000000000000000000011111101",
         "00000000000000000000000011111101",
@@ -91,10 +90,10 @@
         ],
         "1": [
             {
-                "posX": 0.0,
-                "posY": 0.0,
-                "scaleX": 1.0,
-                "scaleY": 0.20000000298023224,
+                "posX": 0.1388140320777893,
+                "posY": -0.19907091557979584,
+                "scaleX": 1.1399999856948853,
+                "scaleY": 0.2280000001192093,
                 "Rot": 0.0
             },
             {},
@@ -163,10 +162,10 @@
         ],
         "2": [
             {
-                "posX": 0.0,
-                "posY": -0.75,
-                "scaleX": 1.0,
-                "scaleY": 0.20000000298023224,
+                "posX": 0.04582221806049347,
+                "posY": -0.7393828630447388,
+                "scaleX": 1.1399999856948853,
+                "scaleY": 0.2280000001192093,
                 "Rot": 0.0
             },
             {},
@@ -236,10 +235,10 @@
         ],
         "3": [
             {
-                "posX": 0.0,
-                "posY": -0.5,
-                "scaleX": 1.0,
-                "scaleY": 0.20000000298023224,
+                "posX": 0.014824695885181427,
+                "posY": -0.4615129232406616,
+                "scaleX": 1.1399999856948853,
+                "scaleY": 0.2280000001192093,
                 "Rot": 0.0
             },
             {},
@@ -282,78 +281,6 @@
             },
             {
                 "Tag": "Options",
-                "TargetTag": ""
-            },
-            {
-                "0": {
-                    "AudioPath": "UI_Hover.wav",
-                    "Channel": 3,
-                    "IsLooping": false
-                },
-                "1": {
-                    "AudioPath": "UI_ButtonClick.wav",
-                    "Channel": 3,
-                    "IsLooping": false
-                },
-                "AudioArrCount": 2,
-                "BGM Volume": 0.75,
-                "SFX Volume": 0.75,
-                "Master Volume": 0.75
-            },
-            {},
-            {},
-            {},
-            {},
-            {}
-        ],
-        "4": [
-            {
-                "posX": -1.30385160446167e-7,
-                "posY": -0.24372053146362305,
-                "scaleX": 1.0,
-                "scaleY": 0.20000000298023224,
-                "Rot": 0.0
-            },
-            {},
-            {
-                "ColliderType1": 4,
-                "ColliderType2": 0,
-                "minX1": 0.4000000059604645,
-                "minX2": 0.0,
-                "minY1": 0.0729999989271164,
-                "minY2": 0.0,
-                "maxX1": 0.4000000059604645,
-                "maxX2": 0.0,
-                "maxY1": 0.0729999989271164,
-                "maxY2": 0.0,
-                "offsetX1": 0.0,
-                "offsetX2": 0.0,
-                "offsetY1": 0.0,
-                "offsetY2": 0.0,
-                "radius1": 0.0,
-                "radius2": 0.0
-            },
-            {
-                "NameTag": "HowToPlay"
-            },
-            {
-                "TextureName": "htp_button_Idle",
-                "Index_X": 0,
-                "Index_Y": 0,
-                "Ucoordinates": 512.0,
-                "Vcoordinates": 512.0,
-                "IsSpriteSheet": false,
-                "IsAnimated": false,
-                "MaxIndex": 0,
-                "LayeringOrder": 1
-            },
-            {
-                "0": "ButtonResponse",
-                "1": "AudioManager",
-                "ScriptCount": 2
-            },
-            {
-                "Tag": "HowToPlay",
                 "TargetTag": ""
             },
             {
