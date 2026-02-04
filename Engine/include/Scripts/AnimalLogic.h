@@ -73,6 +73,6 @@ namespace NocturnalEngine
 		float orgXPos{}, xMovementSpeed{0.05f}, maxXMovement{ 0.05f };
 		void MoveAnimalLeftRight(float Frametime);
 
-		
+		bool spriteDeactivated{ false };
 	};
 }

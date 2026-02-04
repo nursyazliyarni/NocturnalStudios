@@ -191,6 +191,8 @@ namespace NocturnalEngine
 				}
 				if (ID_tag.GetTag() == "RestartT")
 				{
+					p_GameManager.ResetStats();
+					
 					p_Scene->setSceneToLoad("Assets/Scene/FlamingoScene.json");//reset the game level in game over
 				}
 
@@ -200,6 +202,7 @@ namespace NocturnalEngine
 				}
 				if (ID_tag.GetTag() == "QuitT" && p_GUI->Check_HTP() == false)
 				{
+
 					p_Scene->setSceneToLoad("Assets/Scene/Quit.json");//exit to the are you sure page
 				}
 

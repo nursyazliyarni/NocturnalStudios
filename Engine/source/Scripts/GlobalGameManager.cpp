@@ -176,7 +176,7 @@ namespace NocturnalEngine {
                 // background to give the illusion of persistent data
                 //For the animal currently in scene, refer to Scripts/AnimalLogic.cpp
                 // The code should be the exact same
-                if (sceneAnimalPair.first!=currScene&& sceneAnimalPair.second.is_alive)
+                if (sceneAnimalPair.first!=currScene&& !sceneAnimalPair.second.isEscaped &&sceneAnimalPair.second.is_alive)
                 {
                     sceneAnimalPair.second.current_hunger -= sceneAnimalPair.second.hungerDecayRate * static_cast<double>( dt) * 2.0;
                     // Adjust health decay based on animal type and hunger state
@@ -199,12 +199,16 @@ namespace NocturnalEngine {
                         healthMultiplier = 1.5; // faster health decay
                     }
                         // Seal and Owl remain at normal decay (1.0)
-                    
+                    sceneAnimalPair.second.current_health -= sceneAnimalPair.second.healthDecayRate * static_cast<double>(dt) * healthMultiplier;
                     sceneAnimalPair.second.current_sanity -= sceneAnimalPair.second.sanityDecayRate * static_cast<double>(dt);
 
                     
-
-                    if (sceneAnimalPair.second.current_hunger <= 0 || sceneAnimalPair.second.current_health <= 0 || sceneAnimalPair.second.current_sanity <= 0) {
+                    if (sceneAnimalPair.second.current_sanity <= 0)
+                    {
+                        sceneAnimalPair.second.isEscaped = true;
+                        escapedAnimals++;
+                    }
+                    if (sceneAnimalPair.second.current_hunger <= 0 || sceneAnimalPair.second.current_health <= 0) {
                         sceneAnimalPair.second.is_alive = false;
                         
                         deadAnimals++;
@@ -214,7 +218,7 @@ namespace NocturnalEngine {
                 }
             }
 
-            if (deadAnimals>=deathLimit)
+            if (deadAnimals+escapedAnimals>=deathLimit)
             {
                 LoseGame();
             }
@@ -247,8 +251,8 @@ namespace NocturnalEngine {
     initialization, there are no data members that need to be un-initialised.
     Therefore this function is empty
     ****************************************************************************/
-    void GameManager::ResetSystem(bool editorMode) {
-		UNREFERENCED_PARAMETER(editorMode);
+    void GameManager::ResetSystem(bool resetStats) {
+
 
         AnimalAttributes defaultAttributes{};
         defaultAttributes.SetDefault();
@@ -261,7 +265,13 @@ namespace NocturnalEngine {
         }
         gameTimeElapsed = 0.f;
         diegeticLogEntries.clear();
-        deadAnimals = 0;
+        if (resetStats)
+        {
+            deadAnimals = 0;
+            escapedAnimals = 0;
+            under20 = 0;
+        }
+        
         currState = GameManager::GameState::ENDING;
         targetVisibility = false;
     }
@@ -282,11 +292,11 @@ namespace NocturnalEngine {
 
     void GameManager::LoseGame() {
         ResetSystem(false);
-        p_Scene->setSceneToLoad("Assets/Scene/Game_Over.json");
+        p_Scene->setSceneToLoad("Assets/Scene/LoseScene.json");
 
     }
     void GameManager::WinGame() {
-        ResetSystem();
+        ResetSystem(false);
         p_Scene->setSceneToLoad("Assets/Scene/Menu.json");
 
     }
@@ -331,34 +341,38 @@ namespace NocturnalEngine {
         
 
 
-        if (sceneAnimalPair.second.current_health <= sceneAnimalPair.second.maxHealth / 2.0 && !sceneAnimalPair.second.healthWarn)
+        if (sceneAnimalPair.second.current_health <= sceneAnimalPair.second.maxHealth / 2.0 && sceneAnimalPair.second.healthWarnLevel<1)
         {
             AddLogEntry("WARNING! " + sceneAnimalPair.first + "'s Health is below 50%!");
-            sceneAnimalPair.second.healthWarn = true;
+            sceneAnimalPair.second.healthWarnLevel++;
         }
-        else if (sceneAnimalPair.second.current_health > sceneAnimalPair.second.maxHealth / 2.0 && sceneAnimalPair.second.healthWarn) {
-            sceneAnimalPair.second.healthWarn = false;
+        else if (sceneAnimalPair.second.current_health > sceneAnimalPair.second.maxHealth / 2.0 && sceneAnimalPair.second.healthWarnLevel!=0) {
+            sceneAnimalPair.second.healthWarnLevel = 0;
         }
-        if (sceneAnimalPair.second.current_hunger <= sceneAnimalPair.second.maxHunger / 2.0 && !sceneAnimalPair.second.hungerWarn)
+        if (sceneAnimalPair.second.current_hunger <= sceneAnimalPair.second.maxHunger / 2.0 && sceneAnimalPair.second.hungerWarnLevel<1)
         {
             AddLogEntry("WARNING! " + sceneAnimalPair.first + "'s Hunger is below 50%!");
-            sceneAnimalPair.second.hungerWarn = true;
+            sceneAnimalPair.second.hungerWarnLevel ++;
         }
-        else if (sceneAnimalPair.second.current_hunger > sceneAnimalPair.second.maxHunger / 2.0 && sceneAnimalPair.second.hungerWarn) {
-            sceneAnimalPair.second.hungerWarn = false;
+        else if (sceneAnimalPair.second.current_hunger > sceneAnimalPair.second.maxHunger / 2.0 && sceneAnimalPair.second.hungerWarnLevel!=0) {
+            sceneAnimalPair.second.hungerWarnLevel = 0;
         }
-        if (sceneAnimalPair.second.current_sanity <= sceneAnimalPair.second.maxSanity / 2.0 && !sceneAnimalPair.second.sanityWarn)
+        if (sceneAnimalPair.second.current_sanity <= sceneAnimalPair.second.maxSanity / 2.0 && sceneAnimalPair.second.sanityWarnLevel<1)
         {
             AddLogEntry("WARNING! " + sceneAnimalPair.first + "'s Sanity is below 50%!");
-            sceneAnimalPair.second.sanityWarn = true;
+            sceneAnimalPair.second.sanityWarnLevel ++;
         }
-        else if (sceneAnimalPair.second.current_sanity > sceneAnimalPair.second.maxSanity / 2.0 && sceneAnimalPair.second.sanityWarn) {
-            sceneAnimalPair.second.sanityWarn = false;
+        else if (sceneAnimalPair.second.current_sanity > sceneAnimalPair.second.maxSanity / 2.0 && sceneAnimalPair.second.sanityWarnLevel!=0) {
+            sceneAnimalPair.second.sanityWarnLevel =0;
         }
 
         if (!sceneAnimalPair.second.is_alive)
         {
             AddLogEntry(sceneAnimalPair.first + " is dead.");
+        }
+        if (sceneAnimalPair.second.isEscaped)
+        {
+            AddLogEntry(sceneAnimalPair.first + " has breached containment.");
         }
     }
 

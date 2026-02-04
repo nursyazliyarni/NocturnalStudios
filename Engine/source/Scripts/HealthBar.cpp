@@ -92,7 +92,7 @@ namespace NocturnalEngine {
 		//if animal is dead, do not show any of the bars
 		//this is not shown in dev mode for convenience
 #if !DEBUG
-		if (!aA.is_alive)currrentPercentageScale = 0.f;
+		if (!aA.is_alive||aA.isEscaped)currrentPercentageScale = 0.f;
 #endif
 		//sets the scale, basically how wide the bar will render
 		p_ecs.GetComponent<Transform>(entityID).GetScale().x = currrentPercentageScale;

@@ -52,6 +52,12 @@ namespace NocturnalEngine {
         ****************************************************************************/
          void ResetSystem(bool editorMode = false) ;
 
+         void ResetStats() {
+             deadAnimals = 0;
+             escapedAnimals = 0;
+             under20 = 0;
+         }
+
          void SaveAnimalAttributesToCurrentScene(AnimalAttributes aA);
 
          GameState GetGameState()const { return currState; }
@@ -59,6 +65,10 @@ namespace NocturnalEngine {
          void SetState(GameState s) { currState = s; }
         
          void AddDeath() { deadAnimals++; }
+
+         void AddEscape() { escapedAnimals++; }
+
+         void AddCrit() { under20++; }
 
          //returns how much we have to multiply seconds by for timer
          float GetTimeScale() const{ return 21600.f/winRequirement; }

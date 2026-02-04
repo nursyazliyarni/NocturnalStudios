@@ -57,7 +57,7 @@ namespace NocturnalEngine {
 			aA.SetDefault();
 		}
 
-		if (aA.is_alive&&p_GameManager.GetGameState() != GameManager::GameState::ENDING) {
+		if (!aA.isEscaped&&aA.is_alive&&p_GameManager.GetGameState() != GameManager::GameState::ENDING) {
 			aA.current_hunger -= aA.hungerDecayRate * static_cast<double>(Frametime) * 2.0;
 
 			// Adjust health decay based on animal type and hunger state
@@ -87,16 +87,27 @@ namespace NocturnalEngine {
 			aA.current_health -= aA.healthDecayRate * static_cast<double>(Frametime) * healthMultiplier;
 			aA.current_sanity -= aA.sanityDecayRate * static_cast<double>(Frametime);
 
-			if (aA.current_hunger <= 0 || aA.current_health <= 0 || aA.current_sanity <= 0) {
+			if (aA.current_sanity <= 0)
+			{
+				aA.isEscaped = true;
+
+				p_GameManager.AddEscape();
+			}
+			if (aA.current_hunger <= 0 || aA.current_health <= 0 ) {
 				aA.is_alive = false;
 				p_GameManager.AddDeath();
 			}
 			LogLowHealth(aA);
 		}
+		else if (aA.isEscaped&&!spriteDeactivated) {
+			p_ecs.GetComponent<Sprite>(entityID).SetTexture("Blank");
+			spriteDeactivated = true;
+		}
 		else if (p_GameManager.GetGameState() == GameManager::GameState::ENDING) {
 			aA.SetDefault();
 			p_GameManager.SaveAnimalAttributesToCurrentScene(aA);
 		}
+		
 
 
 	}
@@ -125,6 +136,12 @@ namespace NocturnalEngine {
 			p_GameManager.AddLogEntry("WARNING! " + animalName + "'s Health is below 50%!");
 			aA.healthWarnLevel++;
 		}
+		else if (aA.current_health <= aA.maxHealth / 5.0 && aA.healthWarnLevel < 2) 
+		{
+			p_GameManager.AddLogEntry("WARNING! " + animalName + "'s Health is below 20%!");
+			aA.healthWarnLevel++;
+			p_GameManager.AddCrit();
+		}
 		else if (aA.current_health > aA.maxHealth / 2.0 && aA.healthWarnLevel!=0) {
 			aA.healthWarnLevel = 0;
 		}
@@ -132,6 +149,12 @@ namespace NocturnalEngine {
 		{
 			p_GameManager.AddLogEntry("WARNING! " + animalName + "'s Hunger is below 50%!");
 			aA.hungerWarnLevel++;
+		}
+		else if (aA.current_hunger <= aA.maxHunger / 5.0 && aA.hungerWarnLevel < 2)
+		{
+			p_GameManager.AddLogEntry("WARNING! " + animalName + "'s Hunger is below 20%!");
+			aA.hungerWarnLevel++;
+			p_GameManager.AddCrit();
 		}
 		else if (aA.current_hunger > aA.maxHunger / 2.0 && aA.hungerWarnLevel!=0) {
 			aA.hungerWarnLevel = 0;
@@ -141,7 +164,13 @@ namespace NocturnalEngine {
 			p_GameManager.AddLogEntry("WARNING! " + animalName + "'s Sanity is below 50%!");
 			aA.sanityWarnLevel++;
 		}
-		else if (aA.current_sanity > aA.maxSanity / 2.0 && aA.sanityWarnLevel!0) {
+		else if (aA.current_sanity <= aA.maxSanity / 5.0 && aA.sanityWarnLevel < 2)
+		{
+			p_GameManager.AddLogEntry("WARNING! " + animalName + "'s Sanity is below 20%!");
+			aA.sanityWarnLevel++;
+			p_GameManager.AddCrit();
+		}
+		else if (aA.current_sanity > aA.maxSanity / 2.0 && aA.sanityWarnLevel!=0) {
 			aA.sanityWarnLevel = 0;
 		}
 
