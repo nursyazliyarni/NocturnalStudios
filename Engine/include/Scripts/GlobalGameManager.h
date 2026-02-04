@@ -78,6 +78,8 @@ namespace NocturnalEngine {
          bool IsNewSceneManagement() const { return freakyMode; }
 
          void ToggleSceneManagement() { freakyMode = !freakyMode; }
+
+         void SetSceneToSwitch(std::string);
     private:
 
         GameManager();
@@ -112,6 +114,7 @@ namespace NocturnalEngine {
             Audio bgAudio;
             std::string containmentEntries[3];
         };
+        std::string nextScene{ "Flamingo" };
         std::unordered_map < std::string, AnimalSceneData> combinedSceneMap;
         void CombinedSceneStart();
         void CombinedSceneUpdate(float dt);

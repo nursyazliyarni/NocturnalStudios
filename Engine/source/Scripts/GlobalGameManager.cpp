@@ -143,7 +143,9 @@ namespace NocturnalEngine {
         cageBGE = GetEntityByName("BGObject");
         containmentE[0] = GetEntityByName("AnimalName");
         containmentE[1] = GetEntityByName("EnclosureTitle");
-        containmentE[3] = GetEntityByName("Intro");
+        containmentE[2] = GetEntityByName("Intro");
+
+        currScene = "Flamingo";
 
         combinedSceneSetup = true;
     }
@@ -375,5 +377,13 @@ namespace NocturnalEngine {
             if (p_ecs.HaveComponent<NameTag>(e) && p_ecs.GetComponent<NameTag>(e).GetNameTag() == name) return e;
         }
         return 0;
+    }
+
+    void GameManager::SetSceneToSwitch( std::string seekScene ){
+        if (seekScene!=currScene)
+        {
+            nextScene = seekScene;
+            innerState = 2;
+        }
     }
 }
