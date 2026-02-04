@@ -53,6 +53,7 @@ namespace NocturnalEngine
 
         if (obj.HasMember("PosX") && obj["PosX"].IsNumber()) mPosition[0] = obj["PosX"].GetFloat();
         if (obj.HasMember("PosY") && obj["PosY"].IsNumber()) mPosition[1] = obj["PosY"].GetFloat();
+        if (obj.HasMember("Rotation") && obj["Rotation"].IsNumber()) rotation = obj["Rotation"].GetFloat();
         if (obj.HasMember("Line Height") && obj["Line Height"].IsInt()) line_height = obj["Line Height"].GetInt();
 
         if (obj.HasMember("WorldSpace") && obj["WorldSpace"].IsBool())
@@ -91,6 +92,8 @@ namespace NocturnalEngine
         writer->Double(mPosition[0]);
         writer->Key("PosY");
         writer->Double(mPosition[1]);
+        writer->Key("Rotation");
+        writer->Double(rotation);
         writer->Key("Line Height");
         writer->Int(line_height);
 

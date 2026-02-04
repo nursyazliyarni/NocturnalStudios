@@ -509,7 +509,23 @@ namespace NocturnalEngine {
         uint64_t textureID = p_FrameBuffer->GetColorAttachmentRendererID();
         ImGui::Image((ImTextureID)textureID, mViewportSize,
             ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
-
+        if (ImGui::BeginDragDropTarget())
+        {
+            if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Textures"))
+            {
+                Entity newEntity = p_ecs.CreateEntity();
+                Transform trans;
+                trans.SetPos(0.f,0.f);
+                trans.SetScale(1.0f, 1.0f);
+                trans.SetRot(0.0f);
+                p_ecs.AddComponent<Transform>(newEntity, trans);
+                Sprite sprite{};
+                sprite.SetTexture(*(const std::string*)payload->Data);
+                p_ecs.AddComponent<Sprite>(newEntity, sprite);
+                selectedEntity = newEntity;
+            }
+            ImGui::EndDragDropTarget();
+        }
 
         //for mouse position
         mGameMousePosition = ImGui::GetMousePos();
@@ -1771,6 +1787,8 @@ namespace NocturnalEngine {
                         ImGui::DragFloat("##TextPosX", &text.GetPosition()[0], 0.01f);
                         ImGui::Text("Y"); ImGui::SameLine();
                         ImGui::DragFloat("##TextPosY", &text.GetPosition()[1], 0.01f);
+                        ImGui::Text("Rotation"); ImGui::SameLine();
+                        ImGui::DragFloat("##TextRot", &text.Rot(), 5.f,0.f,360.f);
                         ImGui::Text("Line Height"); ImGui::SameLine();
                         ImGui::DragInt("##Line Height", &text.Get_line_height(), 1);
                     }

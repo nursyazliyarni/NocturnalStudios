@@ -55,6 +55,8 @@ namespace NocturnalEngine
         float* GetPosition() { return mPosition; }
         void SetPosition(float x, float y) { mPosition[0] = x; mPosition[1] = y; }
 
+        float& Rot() { return rotation; }
+
         int& Get_line_height() { return line_height; }
         void Set_line_height(int Line_Height) { line_height = Line_Height; }
 
@@ -68,6 +70,8 @@ namespace NocturnalEngine
         bool mCenter;
 
         float mPosition[2];   // x, y
+        float rotation{};
         int line_height;
+        
     };
 }

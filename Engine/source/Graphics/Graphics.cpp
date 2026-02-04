@@ -298,7 +298,7 @@ namespace NocturnalEngine {
 			if (!font)
 				font = mFont;
 			if (font)
-				font->RenderText(text.GetContent(), pos, text.Get_line_height(), scale, *mcamera, col);
+				font->RenderText(text.GetContent(), pos, text.Get_line_height(), scale, *mcamera, col,text.Rot());
 		}
 	
 		p_FrameBuffer->UnBind();
