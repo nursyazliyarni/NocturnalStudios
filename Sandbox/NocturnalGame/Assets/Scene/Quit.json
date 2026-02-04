@@ -1,11 +1,24 @@
 {
+    "LayerDrawOrder": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+    ],
     "Number of Entities": {
-        "Entities": 3
+        "Entities": 4
     },
     "EntitySignatures": [
         "00000000000000000000000011111101",
         "00000000000000000000000011111101",
-        "00000000000000000000000011111101"
+        "00000000000000000000000011111101",
+        "00000000000000000001000000001001"
     ],
     "Components": {
         "0": [
@@ -39,7 +52,7 @@
                 "NameTag": "quit Game BackGround"
             },
             {
-                "TextureName": "QUIT_GAME",
+                "TextureName": "menu_bg",
                 "Index_X": 0,
                 "Index_Y": 0,
                 "Ucoordinates": 512.0,
@@ -69,6 +82,10 @@
                 "SFX Volume": 1.0,
                 "Master Volume": 1.0
             },
+            {},
+            {},
+            {},
+            {},
             {}
         ],
         "1": [
@@ -81,15 +98,15 @@
             },
             {},
             {
-                "ColliderType1": 0,
+                "ColliderType1": 4,
                 "ColliderType2": 0,
-                "minX1": -0.5,
+                "minX1": 0.41999998688697815,
                 "minX2": 0.0,
-                "minY1": -0.5,
+                "minY1": 0.09000000357627869,
                 "minY2": 0.0,
-                "maxX1": 0.5,
+                "maxX1": 0.41999998688697815,
                 "maxX2": 0.0,
-                "maxY1": 0.5,
+                "maxY1": 0.07000000029802322,
                 "maxY2": 0.0,
                 "offsetX1": 0.0,
                 "offsetX2": 0.0,
@@ -137,6 +154,10 @@
                 "SFX Volume": 1.0,
                 "Master Volume": 1.0
             },
+            {},
+            {},
+            {},
+            {},
             {}
         ],
         "2": [
@@ -151,13 +172,13 @@
             {
                 "ColliderType1": 4,
                 "ColliderType2": 0,
-                "minX1": -0.5,
+                "minX1": 0.41999998688697815,
                 "minX2": 0.0,
-                "minY1": -0.5,
+                "minY1": 0.09000000357627869,
                 "minY2": 0.0,
-                "maxX1": 0.5,
+                "maxX1": 0.41999998688697815,
                 "maxX2": 0.0,
-                "maxY1": 0.5,
+                "maxY1": 0.07000000029802322,
                 "maxY2": 0.0,
                 "offsetX1": 0.0,
                 "offsetX2": 0.0,
@@ -205,7 +226,48 @@
                 "SFX Volume": 1.0,
                 "Master Volume": 1.0
             },
+            {},
+            {},
+            {},
+            {},
             {}
+        ],
+        "3": [
+            {
+                "posX": 0.0,
+                "posY": 0.0,
+                "scaleX": 1.0,
+                "scaleY": 1.0,
+                "Rot": 0.0
+            },
+            {},
+            {},
+            {
+                "NameTag": "Text"
+            },
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {
+                "Content": "Are you sure?",
+                "Font": "ChauPhilomeneOne-Regular",
+                "Size": 150.0,
+                "ColorR": 1.0,
+                "ColorG": 0.943483293056488,
+                "ColorB": 0.7254902124404907,
+                "ColorA": 1.0,
+                "PosX": -0.6399999856948853,
+                "PosY": 0.10000000149011612,
+                "Rotation": 0.0,
+                "Line Height": 0,
+                "WorldSpace": false,
+                "Center": false
+            }
         ]
     }
 }
