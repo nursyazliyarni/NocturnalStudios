@@ -24,21 +24,13 @@
 namespace NocturnalEngine {
     class GameManager {
     public:
-        enum class GameScene {
-            NONE = 0,
-            FLAMINGO,
-            HORSE,
-            SEAL,
-            OWL,
-            STORAGE
-        };
 
         enum class GameState {
             STARTING,
             PLAYING,
             ENDING
         };
-        AnimalAttributes LoadPersistentValues(GameScene);
+        AnimalAttributes LoadPersistentValues(std::string gs);
 
         static GameManager& GetInstance();
         /*!*************************************************************************
@@ -84,6 +76,8 @@ namespace NocturnalEngine {
          void setTargetVisibility(bool t) { targetVisibility = t; }
 
          bool IsNewSceneManagement() const { return freakyMode; }
+
+         void ToggleSceneManagement() { freakyMode = !freakyMode; }
     private:
 
         GameManager();
@@ -95,19 +89,20 @@ namespace NocturnalEngine {
 
         void LoseGame();
         void WinGame();
-        void LogLowHealth(std::pair<const GameScene, AnimalAttributes>& sceneAnimalPair);
+        void LogLowHealth(std::pair < const std ::string , AnimalAttributes > & sceneAnimalPair);
 
 
         float gameTimeElapsed{}, winRequirement{180.f}; //in seconds
 
-        GameScene currScene;
+        std::string currScene;
         GameState currState;
-        std::unordered_map < GameScene, AnimalAttributes> sceneAnimalMap;
+        std::unordered_map < std::string, AnimalAttributes> sceneAnimalMap;
         int deadAnimals, deathLimit{ 2 }, maxDiegeticLogEntries{40};
         std::deque<std::string> diegeticLogEntries;
 
         bool diegeticLogUpdated{ true }, targetVisibility{ false }, freakyMode{ false }, combinedSceneSetup{ false };
 
+        int innerState{ 0 };
         Entity animalE{}, cageBGE{}, containmentE[3]{0,0,0};
         struct AnimalSceneData
         {

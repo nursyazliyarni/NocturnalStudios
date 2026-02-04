@@ -34,7 +34,7 @@ namespace NocturnalEngine {
     /*!*************************************************************************
     Constructor
     ****************************************************************************/
-    GameManager::GameManager() :gameTimeElapsed{ 0.f }, currScene{ GameScene::NONE }, sceneAnimalMap{}
+    GameManager::GameManager() :gameTimeElapsed{ 0.f }, currScene{ "" }, sceneAnimalMap{}
     {
 
 
@@ -57,15 +57,15 @@ namespace NocturnalEngine {
         AnimalAttributes defaultAttributes{};
         defaultAttributes.SetDefault();
 
-        sceneAnimalMap.emplace(GameScene::FLAMINGO, defaultAttributes);
-        sceneAnimalMap[GameScene::FLAMINGO].animalType = AnimalAttributes::AnimalType::FLAMINGO;
-        sceneAnimalMap.emplace(GameScene::HORSE, defaultAttributes);
-        sceneAnimalMap[GameScene::HORSE].animalType = AnimalAttributes::AnimalType::HOESE;
-        sceneAnimalMap.emplace(GameScene::OWL, defaultAttributes);
-        sceneAnimalMap[GameScene::OWL].animalType = AnimalAttributes::AnimalType::OWL;
-        sceneAnimalMap[GameScene::OWL].hungerDecayRate = 1.5; //owl special hunger
-        sceneAnimalMap.emplace(GameScene::SEAL, defaultAttributes);
-        sceneAnimalMap[GameScene::SEAL].animalType = AnimalAttributes::AnimalType::SEAL;
+        sceneAnimalMap.emplace("Flamingo", defaultAttributes);
+        sceneAnimalMap["Flamingo"].animalType = AnimalAttributes::AnimalType::FLAMINGO;
+        sceneAnimalMap.emplace("Horse", defaultAttributes);
+        sceneAnimalMap["Horse"].animalType = AnimalAttributes::AnimalType::HOESE;
+        sceneAnimalMap.emplace("Owl", defaultAttributes);
+        sceneAnimalMap["Owl"].animalType = AnimalAttributes::AnimalType::OWL;
+        sceneAnimalMap["Owl"].hungerDecayRate = 1.5; //owl special hunger
+        sceneAnimalMap.emplace("Seal", defaultAttributes);
+        sceneAnimalMap["Seal"].animalType = AnimalAttributes::AnimalType::SEAL;
         currState=  GameManager::GameState::PLAYING;
         deadAnimals = 0;
     }
@@ -86,7 +86,8 @@ namespace NocturnalEngine {
             if (!p_ecs.HaveComponent<Sprite>(animal)|| 
                 !p_ecs.HaveComponent<Transform>(animal)|| 
                 !p_ecs.HaveComponent<Collider>(animal)|| 
-                !p_ecs.HaveComponent<Text>(animal))
+                !p_ecs.HaveComponent<Text>(animal)||
+                !p_ecs.HaveComponent<AnimalAttributes>(animal))
             {
                 NOCTURNAL_GAME_WARN("Animal " + name+" entity is missing one or more of the required components!");
                 break;
@@ -108,8 +109,43 @@ namespace NocturnalEngine {
             asd.bgAudio = p_ecs.GetComponent<Audio>(animalBG);
             
             std::string toSplit{ p_ecs.GetComponent<Text>(animal).GetContent()};
+
+            for (std::string& str:asd.containmentEntries)
+            {
+                if (toSplit.empty())
+                {
+                    str.clear();
+                    continue;
+                }
+                size_t pos = toSplit.find_first_of(':');
+
+                if (pos == std::string::npos)   // last token
+                {
+                    str = toSplit;
+                    toSplit.clear();
+                }
+                else
+                {
+                    str = toSplit.substr(0, pos);
+                    toSplit.erase(0, pos + 1);
+                }
+            }
+
+            sceneAnimalMap[name] = p_ecs.GetComponent<AnimalAttributes>(animal);
+
+            p_ecs.DestroyEntity(animal);
+            p_ecs.DestroyEntity(animalBG);
             
+            combinedSceneMap.emplace(name, asd);
         }
+
+        animalE = GetEntityByName("Animal");
+        cageBGE = GetEntityByName("BGObject");
+        containmentE[0] = GetEntityByName("AnimalName");
+        containmentE[1] = GetEntityByName("EnclosureTitle");
+        containmentE[3] = GetEntityByName("Intro");
+
+        combinedSceneSetup = true;
     }
     /*!*************************************************************************
     This function runs the logic of the system. It checks the list of entities with
@@ -119,12 +155,13 @@ namespace NocturnalEngine {
     ****************************************************************************/
     void GameManager::Update(float dt) {
        
-        if (IsNewSceneManagement() && !combinedSceneSetup) CombinedSceneStart();
+        
 
         if (p_Scene->isGameplay)
         {
+            if (IsNewSceneManagement() && !combinedSceneSetup) CombinedSceneStart();
             if (IsNewSceneManagement())CombinedSceneUpdate(dt);
-            for (std::pair<const GameScene,AnimalAttributes>& sceneAnimalPair:sceneAnimalMap)
+            for (std::pair<const std::string,AnimalAttributes>& sceneAnimalPair:sceneAnimalMap)
             {
                 //this processes the other animals in the 
                 // background to give the illusion of persistent data
@@ -184,7 +221,7 @@ namespace NocturnalEngine {
         
     
 
-    AnimalAttributes GameManager::LoadPersistentValues(GameScene gs) {
+    AnimalAttributes GameManager::LoadPersistentValues(std::string gs) {
         targetVisibility = false;
         auto it = sceneAnimalMap.find(gs);
         if (it != sceneAnimalMap.end()) {
@@ -207,10 +244,10 @@ namespace NocturnalEngine {
 
         AnimalAttributes defaultAttributes{};
         defaultAttributes.SetDefault();
-        for (std::pair<const GameScene, AnimalAttributes>& sceneAnimalPair : sceneAnimalMap)
+        for (std::pair<const std::string, AnimalAttributes>& sceneAnimalPair : sceneAnimalMap)
         {
             sceneAnimalPair.second = defaultAttributes;
-            if (sceneAnimalPair.first == GameScene::OWL) {
+            if (sceneAnimalPair.first == "Owl") {
                 sceneAnimalPair.second.hungerDecayRate = 1.5f;//owl special hunger
             }
         }
@@ -282,25 +319,13 @@ namespace NocturnalEngine {
         diegeticLogUpdated = false;
     }
 
-    void GameManager::LogLowHealth(std::pair<const GameScene, AnimalAttributes>& sceneAnimalPair) {
-        std::string animalName{};
-
-        switch (sceneAnimalPair.first)
-        {
-        case GameScene::OWL: animalName = "Owl";
-            break;
-        case GameScene::FLAMINGO:animalName = "Flamingo";
-            break;
-        case GameScene::HORSE:animalName = "Horse";
-            break;
-        case GameScene::SEAL:animalName = "Seal";
-            break;
-        }
+    void GameManager::LogLowHealth(std::pair<const std::string, AnimalAttributes>& sceneAnimalPair) {
+        
 
 
         if (sceneAnimalPair.second.current_health <= sceneAnimalPair.second.maxHealth / 2.0 && !sceneAnimalPair.second.healthWarn)
         {
-            AddLogEntry("WARNING! " +animalName + "'s Health is below 50%!");
+            AddLogEntry("WARNING! " + sceneAnimalPair.first + "'s Health is below 50%!");
             sceneAnimalPair.second.healthWarn = true;
         }
         else if (sceneAnimalPair.second.current_health > sceneAnimalPair.second.maxHealth / 2.0 && sceneAnimalPair.second.healthWarn) {
@@ -308,7 +333,7 @@ namespace NocturnalEngine {
         }
         if (sceneAnimalPair.second.current_hunger <= sceneAnimalPair.second.maxHunger / 2.0 && !sceneAnimalPair.second.hungerWarn)
         {
-            AddLogEntry("WARNING! " + animalName + "'s Hunger is below 50%!");
+            AddLogEntry("WARNING! " + sceneAnimalPair.first + "'s Hunger is below 50%!");
             sceneAnimalPair.second.hungerWarn = true;
         }
         else if (sceneAnimalPair.second.current_hunger > sceneAnimalPair.second.maxHunger / 2.0 && sceneAnimalPair.second.hungerWarn) {
@@ -316,7 +341,7 @@ namespace NocturnalEngine {
         }
         if (sceneAnimalPair.second.current_sanity <= sceneAnimalPair.second.maxSanity / 2.0 && !sceneAnimalPair.second.sanityWarn)
         {
-            AddLogEntry("WARNING! " + animalName + "'s Sanity is below 50%!");
+            AddLogEntry("WARNING! " + sceneAnimalPair.first + "'s Sanity is below 50%!");
             sceneAnimalPair.second.sanityWarn = true;
         }
         else if (sceneAnimalPair.second.current_sanity > sceneAnimalPair.second.maxSanity / 2.0 && sceneAnimalPair.second.sanityWarn) {
@@ -325,7 +350,7 @@ namespace NocturnalEngine {
 
         if (!sceneAnimalPair.second.is_alive)
         {
-            AddLogEntry(animalName + " is dead.");
+            AddLogEntry(sceneAnimalPair.first + " is dead.");
         }
     }
 

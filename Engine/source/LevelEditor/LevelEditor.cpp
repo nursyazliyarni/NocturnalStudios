@@ -364,11 +364,14 @@ namespace NocturnalEngine {
                        "HorseScene.json",
                        "SealScene.json",
                        "OwlScene.json",
-                        "CombinedScene.json"};
+                       "CombinedScene.json"};
                     for (std::string s : playablescenes)
                     {
                         if (s == mCurrentScene) { p_Scene->isGameplay = true; break; }
+                        
                     }
+                    if (mCurrentScene == "CombinedScene.json")p_GameManager.ToggleSceneManagement();
+                    else if (p_GameManager.IsNewSceneManagement())p_GameManager.ToggleSceneManagement();
                     p_GameManager.SetState(GameManager::GameState::STARTING);
                 }
             }

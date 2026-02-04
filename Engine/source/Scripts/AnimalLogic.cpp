@@ -31,30 +31,13 @@ namespace NocturnalEngine {
 		if (p_ecs.HaveComponent<NameTag>(entityID)&& p_ecs.HaveComponent<AnimalAttributes>(entityID)) {
 			NameTag& nameT{ p_ecs.GetComponent<NameTag>(entityID) };
 			std::string name = nameT.GetNameTag();
-			GameManager::GameScene gS{ GameManager::GameScene::NONE };
-			if (name=="Flamingo")
-			{
-				gS = GameManager::GameScene::FLAMINGO;
 
-			}
-			if (name == "Horse")
-			{
-				gS = GameManager::GameScene::HORSE;
-			}
-			if (name == "Seal")
-			{
-				gS = GameManager::GameScene::SEAL;
-			}
-			if (name == "Owl")
-			{
-				gS = GameManager::GameScene::OWL;
-			}
 			AnimalAttributes& aA{ p_ecs.GetComponent<AnimalAttributes>(entityID) };
 
 			orgXPos = p_ecs.GetComponent<Transform>(entityID).GetPos().x;
 
 			// in addition, the gamemanager also saves the above gS as the current gamestate
-			aA=p_GameManager.LoadPersistentValues(gS);
+			aA=p_GameManager.LoadPersistentValues(name);
 		}
 	}
 
