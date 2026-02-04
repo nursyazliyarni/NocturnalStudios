@@ -69,10 +69,10 @@ namespace NocturnalEngine
 
 	private:
 		Entity fileBG{}, dayE{}, escapedStats{}, barStats{};
+		Transform fileT;
+		std::vector<std::pair<Entity,Transform>> paper;
 
-		std::vector<Entity> paper;
-
-		float timeToFloatIn{ 2.f }, bgT{ 0.f }, allOtherT{ 0.f };
+		float timeToFloatIn{1.f }, bgT{ 0.f }, allOtherT{ 0.0f };
 
 		Entity GetEntityByName(const std::string name);
 	};

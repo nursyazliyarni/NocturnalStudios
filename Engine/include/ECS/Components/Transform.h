@@ -38,6 +38,7 @@ namespace NocturnalEngine
 		void SetScale(vec2D Scale) { mScale = Scale; }
 		void SetScale(float X, float Y) { mScale = vec2D(X, Y); }
 		void SetRot(float value) { mRot = value; }
+		void MoveX(float x) { mPosition.x += x; }
 
 
 		vec2D GetMinPos() { return {mPosition.x-mScale.x/2.f,mPosition.y - mScale.y / 2.f}; }
