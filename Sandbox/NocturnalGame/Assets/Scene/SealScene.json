@@ -257,6 +257,7 @@
                 "ColorA": 1.0,
                 "PosX": 0.38749998807907104,
                 "PosY": 0.2280000001192093,
+                "Rotation": 0.0,
                 "Line Height": 0,
                 "WorldSpace": false,
                 "Center": false
@@ -337,6 +338,7 @@
                 "ColorA": 1.0,
                 "PosX": 0.38749998807907104,
                 "PosY": -0.1720000058412552,
+                "Rotation": 0.0,
                 "Line Height": 0,
                 "WorldSpace": false,
                 "Center": false
@@ -417,6 +419,7 @@
                 "ColorA": 1.0,
                 "PosX": 0.38749998807907104,
                 "PosY": -0.03200000151991844,
+                "Rotation": 0.0,
                 "Line Height": 0,
                 "WorldSpace": false,
                 "Center": false
@@ -955,6 +958,7 @@
                 "ColorA": 1.0,
                 "PosX": 0.0,
                 "PosY": 0.0,
+                "Rotation": 0.0,
                 "Line Height": 0,
                 "WorldSpace": true,
                 "Center": false
@@ -985,6 +989,7 @@
                 "ColorA": 1.0,
                 "PosX": 0.6399999856948853,
                 "PosY": 0.6299999952316284,
+                "Rotation": 0.0,
                 "Line Height": 50,
                 "WorldSpace": false,
                 "Center": false
@@ -1015,6 +1020,7 @@
                 "ColorA": 1.0,
                 "PosX": 0.6399999856948853,
                 "PosY": 0.550000011920929,
+                "Rotation": 0.0,
                 "Line Height": 50,
                 "WorldSpace": false,
                 "Center": false
@@ -1045,6 +1051,7 @@
                 "ColorA": 0.501960813999176,
                 "PosX": 0.6399999856948853,
                 "PosY": 0.4399999976158142,
+                "Rotation": 0.0,
                 "Line Height": 62,
                 "WorldSpace": false,
                 "Center": false
@@ -1072,7 +1079,7 @@
                 "IsSpriteSheet": false,
                 "IsAnimated": false,
                 "MaxIndex": 0,
-                "LayeringOrder": 0
+                "LayeringOrder": 4
             },
             {},
             {
@@ -1130,6 +1137,7 @@
                 "ColorA": 1.0,
                 "PosX": -0.4699999988079071,
                 "PosY": 0.20000000298023224,
+                "Rotation": 0.0,
                 "Line Height": 0,
                 "WorldSpace": true,
                 "Center": false
