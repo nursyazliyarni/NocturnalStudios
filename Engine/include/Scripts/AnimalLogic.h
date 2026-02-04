@@ -70,9 +70,7 @@ namespace NocturnalEngine
 	private:
 		void LogLowHealth(AnimalAttributes& aA);
 		// sets on start ,//per second			//max
-		float orgXPos{}, xMovementSpeed{0.05f}, maxXMovement{ 0.05f };
+		float orgXPos{}, xMovementSpeed{0.05}, maxXMovement{ 0.05 };
 		void MoveAnimalLeftRight(float Frametime);
-
-		
 	};
 }

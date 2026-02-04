@@ -32,12 +32,8 @@ namespace NocturnalEngine {
 
 	void BackgroundAudio::End()
 	{
-		if (p_ecs.HaveComponent<Audio>(GetScriptEntityID()))
-		{
-			p_ecs.GetComponent<Audio>(GetScriptEntityID())[0].should_stop = true;
-			p_ecs.GetComponent<Audio>(GetScriptEntityID())[0].is_Looping = false;
-		}
-		
+		p_ecs.GetComponent<Audio>(GetScriptEntityID())[0].should_stop = true;
+		p_ecs.GetComponent<Audio>(GetScriptEntityID())[0].is_Looping = false;
 		
 	}
 

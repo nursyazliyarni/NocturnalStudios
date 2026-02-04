@@ -22,34 +22,6 @@ namespace NocturnalEngine
 	class AnimalAttributes : public IComponent
 	{
 	public:
-		enum class AnimalType {
-			FLAMINGO,
-			HOESE,
-			SEAL,
-			OWL
-		};
-		AnimalType animalType{ AnimalType::FLAMINGO };
-
-		std::string WhatKindOfAnimalIsThis() {
-
-			switch (animalType)
-			{
-			case AnimalType::FLAMINGO:
-				return "Flamingo";
-				break;
-			case AnimalType::HOESE:
-				return "Horse";
-				break;
-			case AnimalType::SEAL:
-				return "Seal";
-				break;
-			case AnimalType::OWL:
-				return "Owl";
-				break;
-			}
-			return "I don't fucking know";
-		}
-
 		AnimalAttributes();
 		~AnimalAttributes() = default;
 

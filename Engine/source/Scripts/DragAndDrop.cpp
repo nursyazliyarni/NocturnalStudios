@@ -39,105 +39,12 @@ namespace NocturnalEngine {
 			}
 
 		}
-
-		//  CLICK-TO-USE TOY: cache original transform + hide at start 
-		if (p_ecs.HaveComponent<ItemsAttributes>(entityID) && p_ecs.HaveComponent<Transform>(entityID))
-		{
-			ItemsAttributes& ia = p_ecs.GetComponent<ItemsAttributes>(entityID);
-			if (ia.type == ItemsAttributes::ItemType::TOY)
-			{
-				mOriginalToyTransform = p_ecs.GetComponent<Transform>(entityID);
-				p_ecs.GetComponent<Transform>(entityID).SetScale(0.0f, 0.0f); // hide sprite
-				mToyHidden = true;
-			}
-		}
-
 		
 	}
 
 	void DragAndDrop::Update(float Frametime)
 	{
 		UNREFERENCED_PARAMETER(Frametime);
-
-
-
-
-		//  If this entity is TOY, do NOT drag. Click the spot instead. 
-		if (p_ecs.HaveComponent<ItemsAttributes>(entityID))
-		{
-			ItemsAttributes& ia = p_ecs.GetComponent<ItemsAttributes>(entityID);
-
-			if (ia.type == ItemsAttributes::ItemType::TOY)
-			{
-				// click on the toy area
-				if (mInput->MousePressed(0) && p_ecs.HaveComponent<Transform>(entityID))
-				{
-					vec2D mPos{ p_GUI->MousePosition.x,p_GUI->MousePosition.y };
-					Transform& t = p_ecs.GetComponent<Transform>(entityID);
-
-					bool hit = false;
-
-					if (p_ecs.HaveComponent<Collider>(entityID))
-					{
-						Collider& c = p_ecs.GetComponent<Collider>(entityID);
-						for (int i = 0; i < 2 && !hit; i++)
-						{
-							vec2D offsetPos{ t.GetPos().x + c[i].mOffset.x ,t.GetPos().y + c[i].mOffset.y };
-
-							switch (c[i].mCol)
-							{
-							case Collider::ColliderType::circle:
-							case Collider::ColliderType::bubble:
-								if (distance(mPos, offsetPos) < c[i].mRadius) hit = true;
-								break;
-
-							case Collider::ColliderType::rect:
-							case Collider::ColliderType::box:
-							{
-								vec2D minPt{ offsetPos.x - c[i].mMin.x, offsetPos.y - c[i].mMin.y };
-								vec2D maxPt{ offsetPos.x + c[i].mMax.x, offsetPos.y + c[i].mMax.y };
-								if (mPos.x > minPt.x && mPos.x < maxPt.x &&
-									mPos.y > minPt.y && mPos.y < maxPt.y)
-									hit = true;
-								break;
-							}
-							default:
-								break;
-							}
-						}
-					}
-					else
-					{
-						if (mPos.x > t.GetMinPos().x && mPos.x < t.GetMaxPos().x &&
-							mPos.y > t.GetMinPos().y && mPos.y < t.GetMaxPos().y)
-							hit = true;
-					}
-
-					if (hit)
-					{
-						// Show the toy
-						if (mToyHidden)
-						{
-							p_ecs.GetComponent<Transform>(entityID).SetScale(
-								mOriginalToyTransform.GetScale().x,
-								mOriginalToyTransform.GetScale().y
-							);
-							mToyHidden = false;
-						}
-
-						// Apply gain (TOY already boosts sanity in AnimalGain)
-						AnimalGain();
-
-					}
-				}
-
-				return; // IMPORTANT: prevents drag logic for TOY
-			}
-		}
-
-
-
-
 
 
 		if (!isDragging&&!p_GameManager.isTargetVisible())
@@ -331,11 +238,10 @@ namespace NocturnalEngine {
 
 			switch (ia.type)
 			{
-			case ItemsAttributes::ItemType::TOY:
-				if (aa.current_sanity + ia.gain_amount >= aa.maxSanity) aa.current_sanity = aa.maxSanity;
+			case ItemsAttributes::ItemType::TOY :
+				if (aa.current_sanity + ia.gain_amount >= aa.maxSanity)aa.current_sanity = aa.maxSanity;
 				else aa.current_sanity += ia.gain_amount;
 				break;
-
 			case ItemsAttributes::ItemType::MEDICINE:
 				if (aa.current_health + ia.gain_amount >= aa.maxHealth)aa.current_health = aa.maxHealth;
 				else aa.current_health += ia.gain_amount;

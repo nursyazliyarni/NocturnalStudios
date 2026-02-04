@@ -105,9 +105,8 @@
 //}
 #endif
 
-#ifndef _DEBUG
-#pragma comment(linker, "/SUBSYSTEM:windows /ENTRY:mainCRTStartup")
-#endif
+
+//#pragma comment(linker, "/SUBSYSTEM:windows /ENTRY:mainCRTStartup")
 #include "Core/Application.h"
 
 //NocturnalEngine::Application* NocturnalEngine::CreateApplication()

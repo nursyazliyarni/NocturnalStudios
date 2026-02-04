@@ -12,7 +12,7 @@
         9
     ],
     "Number of Entities": {
-        "Entities": 36
+        "Entities": 27
     },
     "EntitySignatures": [
         "00000000000000000000000000011001",
@@ -20,7 +20,6 @@
         "00000000000000000000010000111101",
         "00000000000000000000010000111101",
         "00000000000000000000010000111101",
-        "00000000000000000001000011111101",
         "00000000000000000001000011111101",
         "00000000000000000001000011111101",
         "00000000000000000001000011111101",
@@ -38,19 +37,11 @@
         "00000000000000000001000000001000",
         "00000000000000000000000001011001",
         "00000000000000000001000000111001",
-        "00000000000000000000000010111001",
         "00000000000000000000000000011001",
         "00000000000000000000000000011001",
         "00000000000000000000000000011001",
         "00000000000000000000000000011001",
-        "00000000000000000001001000011101",
-        "00000000000000000000000010011001",
-        "00000000000000000001001000011101",
-        "00000000000000000000000010011001",
-        "00000000000000000001001000011101",
-        "00000000000000000000000010011001",
-        "00000000000000000001001000011101",
-        "00000000000000000000000010011001"
+        "00000000000000000000000000011001"
     ],
     "Components": {
         "0": [
@@ -114,11 +105,11 @@
                 "radius2": 0.0
             },
             {
-                "NameTag": "Animal"
+                "NameTag": "Flamingo"
             },
             {
                 "TextureName": "flamingo_spritesheet",
-                "Index_X": 2,
+                "Index_X": 4,
                 "Index_Y": 0,
                 "Ucoordinates": 528.0,
                 "Vcoordinates": 528.0,
@@ -141,9 +132,9 @@
             {},
             {},
             {
-                "Current Health": 96.8499998357147,
+                "Current Health": 100.0,
                 "Max Health": 100.0,
-                "Current Hunger": 89.49999945238233,
+                "Current Hunger": 100.0,
                 "Max Hunger": 100.0,
                 "Current Sanity": 100.0,
                 "Max Sanity": 100.0,
@@ -186,7 +177,7 @@
                 "radius2": 0.0
             },
             {
-                "NameTag": "Food"
+                "NameTag": "flamingo food"
             },
             {
                 "TextureName": "flamingo_food",
@@ -197,7 +188,7 @@
                 "IsSpriteSheet": false,
                 "IsAnimated": false,
                 "MaxIndex": 0,
-                "LayeringOrder": 2
+                "LayeringOrder": 0
             },
             {
                 "0": "DragAndDrop",
@@ -243,7 +234,7 @@
                 "radius2": 0.0
             },
             {
-                "NameTag": "Medicine"
+                "NameTag": "flamingo medicine"
             },
             {
                 "TextureName": "flamingo_medicine",
@@ -254,7 +245,7 @@
                 "IsSpriteSheet": false,
                 "IsAnimated": false,
                 "MaxIndex": 0,
-                "LayeringOrder": 2
+                "LayeringOrder": 0
             },
             {
                 "0": "RevealTargetOnClick",
@@ -300,7 +291,7 @@
                 "radius2": 0.0
             },
             {
-                "NameTag": "Toy"
+                "NameTag": "flamingo toy"
             },
             {
                 "TextureName": "flamingo_toy",
@@ -311,7 +302,7 @@
                 "IsSpriteSheet": false,
                 "IsAnimated": false,
                 "MaxIndex": 0,
-                "LayeringOrder": 2
+                "LayeringOrder": 0
             },
             {
                 "0": "DragAndDrop",
@@ -331,86 +322,6 @@
         ],
         "5": [
             {
-                "posX": 0.40032678842544556,
-                "posY": 0.2418299913406372,
-                "scaleX": 0.13472461700439453,
-                "scaleY": 0.12401483952999115,
-                "Rot": 0.0
-            },
-            {},
-            {
-                "ColliderType1": 5,
-                "ColliderType2": 0,
-                "minX1": -1.0,
-                "minX2": 0.0,
-                "minY1": -0.6600000262260437,
-                "minY2": 0.0,
-                "maxX1": 1.0,
-                "maxX2": 0.0,
-                "maxY1": 0.6600000262260437,
-                "maxY2": 0.0,
-                "offsetX1": 0.0,
-                "offsetX2": 0.0,
-                "offsetY1": 0.0,
-                "offsetY2": 0.0,
-                "radius1": 0.0,
-                "radius2": 0.0
-            },
-            {
-                "NameTag": "FlamingoBtn"
-            },
-            {
-                "TextureName": "cameraButtonUnlit",
-                "Index_X": 0,
-                "Index_Y": 0,
-                "Ucoordinates": 512.0,
-                "Vcoordinates": 512.0,
-                "IsSpriteSheet": false,
-                "IsAnimated": false,
-                "MaxIndex": 0,
-                "LayeringOrder": 3
-            },
-            {
-                "0": "ButtonResponse",
-                "1": "AudioManager",
-                "ScriptCount": 2
-            },
-            {
-                "Tag": "AltFlamingoBtn",
-                "TargetTag": ""
-            },
-            {
-                "0": {
-                    "AudioPath": "SFX_Static_03.wav",
-                    "Channel": 3,
-                    "IsLooping": false
-                },
-                "AudioArrCount": 1,
-                "BGM Volume": 1.0,
-                "SFX Volume": 1.0,
-                "Master Volume": 1.0
-            },
-            {},
-            {},
-            {},
-            {},
-            {
-                "Content": "1",
-                "Font": "ChauPhilomeneOne-Regular",
-                "Size": 32.5,
-                "ColorR": 0.0,
-                "ColorG": 0.0,
-                "ColorB": 0.0,
-                "ColorA": 1.0,
-                "PosX": 0.38749998807907104,
-                "PosY": 0.2280000001192093,
-                "Line Height": 0,
-                "WorldSpace": false,
-                "Center": false
-            }
-        ],
-        "6": [
-            {
                 "posX": 0.4000000059604645,
                 "posY": 0.11400000005960464,
                 "scaleX": 0.13500000536441803,
@@ -419,7 +330,7 @@
             },
             {},
             {
-                "ColliderType1": 5,
+                "ColliderType1": 4,
                 "ColliderType2": 0,
                 "minX1": -1.0,
                 "minX2": 0.0,
@@ -448,7 +359,7 @@
                 "IsSpriteSheet": false,
                 "IsAnimated": false,
                 "MaxIndex": 0,
-                "LayeringOrder": 3
+                "LayeringOrder": 2
             },
             {
                 "0": "ButtonResponse",
@@ -456,7 +367,7 @@
                 "ScriptCount": 2
             },
             {
-                "Tag": "AltSealBtn",
+                "Tag": "SealBtn",
                 "TargetTag": ""
             },
             {
@@ -486,10 +397,22 @@
                 "PosY": 0.09799999743700027,
                 "Line Height": 0,
                 "WorldSpace": false,
+                "Center": false,
+                "Content": "2",
+                "Font": "ChauPhilomeneOne-Regular",
+                "Size": 32.5,
+                "ColorR": 0.0,
+                "ColorG": 0.0,
+                "ColorB": 0.0,
+                "ColorA": 1.0,
+                "PosX": 0.38749998807907104,
+                "PosY": 0.09799999743700027,
+                "Line Height": 0,
+                "WorldSpace": false,
                 "Center": false
             }
         ],
-        "7": [
+        "6": [
             {
                 "posX": 0.4000000059604645,
                 "posY": -0.014999999664723873,
@@ -499,7 +422,7 @@
             },
             {},
             {
-                "ColliderType1": 5,
+                "ColliderType1": 4,
                 "ColliderType2": 0,
                 "minX1": -1.0,
                 "minX2": 0.0,
@@ -528,7 +451,7 @@
                 "IsSpriteSheet": false,
                 "IsAnimated": false,
                 "MaxIndex": 0,
-                "LayeringOrder": 3
+                "LayeringOrder": 2
             },
             {
                 "0": "ButtonResponse",
@@ -536,12 +459,12 @@
                 "ScriptCount": 2
             },
             {
-                "Tag": "AltHorseBtn",
+                "Tag": "HorseBtn",
                 "TargetTag": ""
             },
             {
                 "0": {
-                    "AudioPath": "SFX_Static_02.wav",
+                    "AudioPath": "SFX_Static_01.wav",
                     "Channel": 3,
                     "IsLooping": false
                 },
@@ -566,10 +489,22 @@
                 "PosY": -0.03200000151991844,
                 "Line Height": 0,
                 "WorldSpace": false,
+                "Center": false,
+                "Content": "3",
+                "Font": "ChauPhilomeneOne-Regular",
+                "Size": 32.5,
+                "ColorR": 0.0,
+                "ColorG": 0.0,
+                "ColorB": 0.0,
+                "ColorA": 1.0,
+                "PosX": 0.38749998807907104,
+                "PosY": -0.03200000151991844,
+                "Line Height": 0,
+                "WorldSpace": false,
                 "Center": false
             }
         ],
-        "8": [
+        "7": [
             {
                 "posX": 0.4000000059604645,
                 "posY": -0.14499999582767487,
@@ -579,7 +514,7 @@
             },
             {},
             {
-                "ColliderType1": 5,
+                "ColliderType1": 4,
                 "ColliderType2": 0,
                 "minX1": -1.0,
                 "minX2": 0.0,
@@ -608,20 +543,19 @@
                 "IsSpriteSheet": false,
                 "IsAnimated": false,
                 "MaxIndex": 0,
-                "LayeringOrder": 3
+                "LayeringOrder": 2
             },
             {
                 "0": "ButtonResponse",
-                "1": "AudioManager",
-                "ScriptCount": 2
+                "ScriptCount": 1
             },
             {
-                "Tag": "AltOwlBtn",
+                "Tag": "OwlBtn",
                 "TargetTag": ""
             },
             {
                 "0": {
-                    "AudioPath": "SFX_Static_03.wav",
+                    "AudioPath": "SFX_Static_02.wav",
                     "Channel": 3,
                     "IsLooping": false
                 },
@@ -646,10 +580,22 @@
                 "PosY": -0.1720000058412552,
                 "Line Height": 0,
                 "WorldSpace": false,
+                "Center": false,
+                "Content": "4",
+                "Font": "ChauPhilomeneOne-Regular",
+                "Size": 32.5,
+                "ColorR": 0.0,
+                "ColorG": 0.0,
+                "ColorB": 0.0,
+                "ColorA": 1.0,
+                "PosX": 0.38749998807907104,
+                "PosY": -0.1720000058412552,
+                "Line Height": 0,
+                "WorldSpace": false,
                 "Center": false
             }
         ],
-        "9": [
+        "8": [
             {
                 "posX": 0.4000000059604645,
                 "posY": -0.2840000092983246,
@@ -661,13 +607,13 @@
             {
                 "ColliderType1": 4,
                 "ColliderType2": 0,
-                "minX1": 0.05000000074505806,
+                "minX1": -1.0,
                 "minX2": 0.0,
-                "minY1": 0.05000000074505806,
+                "minY1": -0.6600000262260437,
                 "minY2": 0.0,
-                "maxX1": 0.05000000074505806,
+                "maxX1": 1.0,
                 "maxX2": 0.0,
-                "maxY1": 0.05000000074505806,
+                "maxY1": 0.6600000262260437,
                 "maxY2": 0.0,
                 "offsetX1": 0.0,
                 "offsetX2": 0.0,
@@ -688,7 +634,7 @@
                 "IsSpriteSheet": false,
                 "IsAnimated": false,
                 "MaxIndex": 0,
-                "LayeringOrder": 3
+                "LayeringOrder": 2
             },
             {
                 "0": "ButtonResponse",
@@ -701,7 +647,7 @@
             },
             {
                 "0": {
-                    "AudioPath": "SFX_Static_04.wav",
+                    "AudioPath": "SFX_Static_03.wav",
                     "Channel": 3,
                     "IsLooping": false
                 },
@@ -716,7 +662,7 @@
             {},
             {}
         ],
-        "10": [
+        "9": [
             {
                 "posX": 0.10899999737739563,
                 "posY": 0.024000000208616257,
@@ -749,7 +695,7 @@
             {},
             {}
         ],
-        "11": [
+        "10": [
             {
                 "posX": 0.6753605604171753,
                 "posY": 0.12399999797344208,
@@ -782,7 +728,7 @@
             {},
             {}
         ],
-        "12": [
+        "11": [
             {
                 "posX": 0.6753605604171753,
                 "posY": -0.029999999329447746,
@@ -815,7 +761,7 @@
             {},
             {}
         ],
-        "13": [
+        "12": [
             {
                 "posX": 0.6753605604171753,
                 "posY": -0.1679999977350235,
@@ -848,7 +794,7 @@
             {},
             {}
         ],
-        "14": [
+        "13": [
             {
                 "posX": 1.1399999856948853,
                 "posY": 0.11400000005960464,
@@ -888,7 +834,7 @@
             {},
             {}
         ],
-        "15": [
+        "14": [
             {
                 "posX": 1.1399999856948853,
                 "posY": -0.02500000037252903,
@@ -928,7 +874,7 @@
             {},
             {}
         ],
-        "16": [
+        "15": [
             {
                 "posX": 1.1399999856948853,
                 "posY": -0.15299999713897705,
@@ -968,7 +914,7 @@
             {},
             {}
         ],
-        "17": [
+        "16": [
             {
                 "posX": -1.469074010848999,
                 "posY": 0.7429999709129333,
@@ -993,7 +939,19 @@
             {},
             {},
             {
-                "Content": "00:02:03",
+                "Content": "00:00:00",
+                "Font": "DSEG7Classic-Bold",
+                "Size": 35.29999923706055,
+                "ColorR": 0.0,
+                "ColorG": 1.0,
+                "ColorB": 0.08823513984680176,
+                "ColorA": 1.0,
+                "PosX": 0.0,
+                "PosY": 0.0,
+                "Line Height": 0,
+                "WorldSpace": true,
+                "Center": false,
+                "Content": "00:00:00",
                 "Font": "DSEG7Classic-Bold",
                 "Size": 35.29999923706055,
                 "ColorR": 0.0,
@@ -1007,12 +965,12 @@
                 "Center": false
             }
         ],
-        "18": [
+        "17": [
             {},
             {},
             {},
             {
-                "NameTag": "AnimalName"
+                "NameTag": "flamingo_title"
             },
             {},
             {},
@@ -1034,15 +992,27 @@
                 "PosY": 0.6299999952316284,
                 "Line Height": 50,
                 "WorldSpace": false,
+                "Center": false,
+                "Content": "FLAMINGO",
+                "Font": "ChauPhilomeneOne-Regular",
+                "Size": 72.0,
+                "ColorR": 0.31651291251182556,
+                "ColorG": 0.7254902124404907,
+                "ColorB": 0.3285415470600128,
+                "ColorA": 1.0,
+                "PosX": 0.6399999856948853,
+                "PosY": 0.6299999952316284,
+                "Line Height": 50,
+                "WorldSpace": false,
                 "Center": false
             }
         ],
-        "19": [
+        "18": [
             {},
             {},
             {},
             {
-                "NameTag": "EnclosureTitle"
+                "NameTag": "flamingo enclosure"
             },
             {},
             {},
@@ -1064,15 +1034,27 @@
                 "PosY": 0.550000011920929,
                 "Line Height": 50,
                 "WorldSpace": false,
+                "Center": false,
+                "Content": "Enclosure 3 - 05-02-4B",
+                "Font": "ChauPhilomeneOne-Regular",
+                "Size": 36.0,
+                "ColorR": 0.31651291251182556,
+                "ColorG": 0.7254902124404907,
+                "ColorB": 0.3285415470600128,
+                "ColorA": 1.0,
+                "PosX": 0.6399999856948853,
+                "PosY": 0.550000011920929,
+                "Line Height": 50,
+                "WorldSpace": false,
                 "Center": false
             }
         ],
-        "20": [
+        "19": [
             {},
             {},
             {},
             {
-                "NameTag": "Intro"
+                "NameTag": "flamingo_intro"
             },
             {},
             {},
@@ -1094,15 +1076,27 @@
                 "PosY": 0.4399999976158142,
                 "Line Height": 62,
                 "WorldSpace": false,
+                "Center": false,
+                "Content": "A pink bird loved by many, despite\nits legs not being of optimal\ncondition due to _____",
+                "Font": "ChauPhilomeneOne-Regular",
+                "Size": 36.0,
+                "ColorR": 0.4215686321258545,
+                "ColorG": 0.41214776039123535,
+                "ColorB": 0.41123607754707336,
+                "ColorA": 0.501960813999176,
+                "PosX": 0.6399999856948853,
+                "PosY": 0.4399999976158142,
+                "Line Height": 62,
+                "WorldSpace": false,
                 "Center": false
             }
         ],
-        "21": [
+        "20": [
             {
                 "posX": 0.0,
                 "posY": 0.0,
-                "scaleX": 0.0,
-                "scaleY": 0.0,
+                "scaleX": 0.20000000298023224,
+                "scaleY": 0.20000000298023224,
                 "Rot": 0.0
             },
             {},
@@ -1119,7 +1113,7 @@
                 "IsSpriteSheet": false,
                 "IsAnimated": false,
                 "MaxIndex": 0,
-                "LayeringOrder": 3
+                "LayeringOrder": 0
             },
             {},
             {
@@ -1133,7 +1127,7 @@
             {},
             {}
         ],
-        "22": [
+        "21": [
             {
                 "posX": 1.0999298095703125,
                 "posY": -0.54035484790802,
@@ -1168,7 +1162,19 @@
             {},
             {},
             {
-                "Content": "[00:00:00] This is a log entry",
+                "Content": "[00:00:00] This is a Log entry",
+                "Font": "Jersey10Charted-Regular",
+                "Size": 25.899999618530273,
+                "ColorR": 1.0,
+                "ColorG": 0.0,
+                "ColorB": 0.0,
+                "ColorA": 1.0,
+                "PosX": -0.4699999988079071,
+                "PosY": 0.20000000298023224,
+                "Line Height": 0,
+                "WorldSpace": true,
+                "Center": false,
+                "Content": "[00:00:00] This is a Log entry",
                 "Font": "Jersey10Charted-Regular",
                 "Size": 25.899999618530273,
                 "ColorR": 1.0,
@@ -1182,7 +1188,7 @@
                 "Center": false
             }
         ],
-        "23": [
+        "22": [
             {
                 "posX": -0.6617671847343445,
                 "posY": 0.2274315059185028,
@@ -1206,30 +1212,16 @@
                 "MaxIndex": 0,
                 "LayeringOrder": 1
             },
-            {
-                "0": "AudioManager",
-                "1": "BackgroundAudio",
-                "ScriptCount": 2
-            },
             {},
-            {
-                "0": {
-                    "AudioPath": "BGM_Ambience_Flamingo_01.wav",
-                    "Channel": 2,
-                    "IsLooping": false
-                },
-                "AudioArrCount": 1,
-                "BGM Volume": 1.0,
-                "SFX Volume": 1.0,
-                "Master Volume": 1.0
-            },
+            {},
+            {},
             {},
             {},
             {},
             {},
             {}
         ],
-        "24": [
+        "23": [
             {
                 "posX": 0.07611019909381866,
                 "posY": 0.01612885296344757,
@@ -1262,7 +1254,7 @@
             {},
             {}
         ],
-        "25": [
+        "24": [
             {
                 "posX": 0.09443240612745285,
                 "posY": 0.02419362962245941,
@@ -1284,7 +1276,7 @@
                 "IsSpriteSheet": false,
                 "IsAnimated": false,
                 "MaxIndex": 0,
-                "LayeringOrder": 2
+                "LayeringOrder": 1
             },
             {},
             {},
@@ -1295,7 +1287,7 @@
             {},
             {}
         ],
-        "26": [
+        "25": [
             {
                 "posX": 0.08500000089406967,
                 "posY": 0.02500000037252903,
@@ -1328,7 +1320,7 @@
             {},
             {}
         ],
-        "27": [
+        "26": [
             {
                 "posX": -0.015625059604644775,
                 "posY": 0.0,
@@ -1355,482 +1347,6 @@
             {},
             {},
             {},
-            {},
-            {},
-            {},
-            {},
-            {}
-        ],
-        "28": [
-            {
-                "posX": -0.9560700058937073,
-                "posY": 0.2460063397884369,
-                "scaleX": 1.0,
-                "scaleY": 1.0,
-                "Rot": 0.0
-            },
-            {},
-            {
-                "ColliderType1": 5,
-                "ColliderType2": 5,
-                "minX1": -0.10000000149011612,
-                "minX2": 0.20000000298023224,
-                "minY1": 0.05000000074505806,
-                "minY2": 0.10000000149011612,
-                "maxX1": 0.20000000298023224,
-                "maxX2": 0.20000000298023224,
-                "maxY1": 0.36000001430511475,
-                "maxY2": 0.10000000149011612,
-                "offsetX1": 0.0,
-                "offsetX2": -0.05000000074505806,
-                "offsetY1": 0.05000000074505806,
-                "offsetY2": 0.05000000074505806,
-                "radius1": 0.0,
-                "radius2": 0.0
-            },
-            {
-                "NameTag": "Flamingo"
-            },
-            {
-                "TextureName": "flamingo_spritesheet",
-                "Index_X": 2,
-                "Index_Y": 0,
-                "Ucoordinates": 528.0,
-                "Vcoordinates": 528.0,
-                "IsSpriteSheet": true,
-                "IsAnimated": true,
-                "MaxIndex": 5,
-                "DisplayTime 0": 0.125,
-                "DisplayTime 1": 0.125,
-                "DisplayTime 2": 0.125,
-                "DisplayTime 3": 0.125,
-                "DisplayTime 4": 0.125,
-                "LayeringOrder": 2
-            },
-            {},
-            {},
-            {},
-            {},
-            {
-                "Current Health": 100.0,
-                "Max Health": 100.0,
-                "Current Hunger": 100.0,
-                "Max Hunger": 100.0,
-                "Current Sanity": 100.0,
-                "Max Sanity": 100.0,
-                "Health Decay Rate": 1.0,
-                "Hunger Decay Rate": 1.0,
-                "Sanity Decay Rate": 1.0,
-                "IS_alive": true
-            },
-            {},
-            {},
-            {
-                "Content": "FLAMINGO:Enclosure 3 - 05-02-4B:A pink bird loved by many, despite\nits legs not being of optimal\ncondition due to _____",
-                "Font": "KernlGrotesk",
-                "Size": 24.0,
-                "ColorR": 1.0,
-                "ColorG": 1.0,
-                "ColorB": 1.0,
-                "ColorA": 1.0,
-                "PosX": 0.0,
-                "PosY": 0.0,
-                "Line Height": 0,
-                "WorldSpace": false,
-                "Center": false
-            }
-        ],
-        "29": [
-            {
-                "posX": -0.6617671847343445,
-                "posY": 0.2274315059185028,
-                "scaleX": 2.0318408012390137,
-                "scaleY": 1.240743637084961,
-                "Rot": 0.0
-            },
-            {},
-            {},
-            {
-                "NameTag": "FlamingoBG"
-            },
-            {
-                "TextureName": "flamingoCage",
-                "Index_X": 0,
-                "Index_Y": 0,
-                "Ucoordinates": 512.0,
-                "Vcoordinates": 512.0,
-                "IsSpriteSheet": false,
-                "IsAnimated": false,
-                "MaxIndex": 0,
-                "LayeringOrder": 1
-            },
-            {},
-            {},
-            {
-                "0": {
-                    "AudioPath": "BGM_Ambience_Flamingo_01.wav",
-                    "Channel": 2,
-                    "IsLooping": false
-                },
-                "AudioArrCount": 1,
-                "BGM Volume": 1.0,
-                "SFX Volume": 1.0,
-                "Master Volume": 1.0
-            },
-            {},
-            {},
-            {},
-            {},
-            {}
-        ],
-        "30": [
-            {
-                "posX": -0.9539999961853027,
-                "posY": 0.0560000017285347,
-                "scaleX": 0.9879999756813049,
-                "scaleY": 1.0360000133514404,
-                "Rot": 0.0
-            },
-            {},
-            {
-                "ColliderType1": 5,
-                "ColliderType2": 5,
-                "minX1": 0.30000001192092896,
-                "minX2": -0.25,
-                "minY1": -0.05000000074505806,
-                "minY2": -0.30000001192092896,
-                "maxX1": 0.25,
-                "maxX2": 0.46000000834465027,
-                "maxY1": 0.30000001192092896,
-                "maxY2": 0.15000000596046448,
-                "offsetX1": 0.0,
-                "offsetX2": 0.0,
-                "offsetY1": -0.10000000149011612,
-                "offsetY2": 0.05000000074505806,
-                "radius1": 0.0,
-                "radius2": 0.0
-            },
-            {
-                "NameTag": "Horse"
-            },
-            {
-                "TextureName": "horse",
-                "Index_X": 0,
-                "Index_Y": 0,
-                "Ucoordinates": 512.0,
-                "Vcoordinates": 512.0,
-                "IsSpriteSheet": false,
-                "IsAnimated": false,
-                "MaxIndex": 0,
-                "LayeringOrder": 2
-            },
-            {},
-            {},
-            {},
-            {},
-            {
-                "Current Health": 100.0,
-                "Max Health": 100.0,
-                "Current Hunger": 100.0,
-                "Max Hunger": 100.0,
-                "Current Sanity": 100.0,
-                "Max Sanity": 100.0,
-                "Health Decay Rate": 1.0,
-                "Hunger Decay Rate": 1.0,
-                "Sanity Decay Rate": 1.0,
-                "IS_alive": true
-            },
-            {},
-            {},
-            {
-                "Content": "HORSE:Enclosure 1 - 03-00-2A:An equine that is trained for \nhorseracing. Until now, it has not\nwon a single race. Needs extra care\nfor health.",
-                "Font": "KernlGrotesk",
-                "Size": 24.0,
-                "ColorR": 1.0,
-                "ColorG": 1.0,
-                "ColorB": 1.0,
-                "ColorA": 1.0,
-                "PosX": 0.0,
-                "PosY": 0.0,
-                "Line Height": 0,
-                "WorldSpace": false,
-                "Center": false
-            }
-        ],
-        "31": [
-            {
-                "posX": -0.6617671847343445,
-                "posY": 0.2274315059185028,
-                "scaleX": 2.0318408012390137,
-                "scaleY": 1.240743637084961,
-                "Rot": 0.0
-            },
-            {},
-            {},
-            {
-                "NameTag": "HorseBG"
-            },
-            {
-                "TextureName": "horseCage",
-                "Index_X": 0,
-                "Index_Y": 0,
-                "Ucoordinates": 512.0,
-                "Vcoordinates": 512.0,
-                "IsSpriteSheet": false,
-                "IsAnimated": false,
-                "MaxIndex": 0,
-                "LayeringOrder": 1
-            },
-            {},
-            {},
-            {
-                "0": {
-                    "AudioPath": "BGM_Ambience_Horse_01.wav",
-                    "Channel": 2,
-                    "IsLooping": false
-                },
-                "AudioArrCount": 1,
-                "BGM Volume": 1.0,
-                "SFX Volume": 1.0,
-                "Master Volume": 1.0
-            },
-            {},
-            {},
-            {},
-            {},
-            {}
-        ],
-        "32": [
-            {
-                "posX": -0.8536927700042725,
-                "posY": 0.44117629528045654,
-                "scaleX": 0.31816616654396057,
-                "scaleY": 0.316239595413208,
-                "Rot": 0.0
-            },
-            {},
-            {
-                "ColliderType1": 2,
-                "ColliderType2": 2,
-                "minX1": -0.05000000074505806,
-                "minX2": 0.0,
-                "minY1": -0.10000000149011612,
-                "minY2": 0.0,
-                "maxX1": 0.5,
-                "maxX2": 0.0,
-                "maxY1": 0.44999998807907104,
-                "maxY2": 0.0,
-                "offsetX1": 0.0,
-                "offsetX2": 0.0,
-                "offsetY1": -0.023000000044703484,
-                "offsetY2": 0.05000000074505806,
-                "radius1": 0.07800000160932541,
-                "radius2": 0.07999999821186066
-            },
-            {
-                "NameTag": "Owl"
-            },
-            {
-                "TextureName": "owl",
-                "Index_X": 0,
-                "Index_Y": 0,
-                "Ucoordinates": 512.0,
-                "Vcoordinates": 512.0,
-                "IsSpriteSheet": false,
-                "IsAnimated": false,
-                "MaxIndex": 0,
-                "LayeringOrder": 2
-            },
-            {},
-            {},
-            {},
-            {},
-            {
-                "Current Health": 100.0,
-                "Max Health": 100.0,
-                "Current Hunger": 100.0,
-                "Max Hunger": 100.0,
-                "Current Sanity": 100.0,
-                "Max Sanity": 100.0,
-                "Health Decay Rate": 1.0,
-                "Hunger Decay Rate": 1.5,
-                "Sanity Decay Rate": 1.0,
-                "IS_alive": true
-            },
-            {},
-            {},
-            {
-                "Content": "OWL:Enclosure 3 - 05-02-4B:Resting atop a tree branch, the\nfeathered creature engages in a\nstaring contest with the viewer.",
-                "Font": "KernlGrotesk",
-                "Size": 24.0,
-                "ColorR": 1.0,
-                "ColorG": 1.0,
-                "ColorB": 1.0,
-                "ColorA": 1.0,
-                "PosX": 0.0,
-                "PosY": 0.0,
-                "Line Height": 0,
-                "WorldSpace": false,
-                "Center": false
-            }
-        ],
-        "33": [
-            {
-                "posX": -0.6617671847343445,
-                "posY": 0.2274315059185028,
-                "scaleX": 2.0318408012390137,
-                "scaleY": 1.240743637084961,
-                "Rot": 0.0
-            },
-            {},
-            {},
-            {
-                "NameTag": "OwlBG"
-            },
-            {
-                "TextureName": "owl cage",
-                "Index_X": 0,
-                "Index_Y": 0,
-                "Ucoordinates": 512.0,
-                "Vcoordinates": 512.0,
-                "IsSpriteSheet": false,
-                "IsAnimated": false,
-                "MaxIndex": 0,
-                "LayeringOrder": 1
-            },
-            {},
-            {},
-            {
-                "0": {
-                    "AudioPath": "BGM_Ambience_Owl_01.wav",
-                    "Channel": 2,
-                    "IsLooping": false
-                },
-                "AudioArrCount": 1,
-                "BGM Volume": 1.0,
-                "SFX Volume": 1.0,
-                "Master Volume": 1.0
-            },
-            {},
-            {},
-            {},
-            {},
-            {}
-        ],
-        "34": [
-            {
-                "posX": -0.7948408126831055,
-                "posY": -0.01907503604888916,
-                "scaleX": 0.4940004050731659,
-                "scaleY": 0.3830002248287201,
-                "Rot": -9.082768440246582
-            },
-            {},
-            {
-                "ColliderType1": 1,
-                "ColliderType2": 0,
-                "minX1": 0.30000001192092896,
-                "minX2": -0.25,
-                "minY1": 0.05000000074505806,
-                "minY2": -0.4000000059604645,
-                "maxX1": 0.25,
-                "maxX2": 0.46000000834465027,
-                "maxY1": 0.30000001192092896,
-                "maxY2": 0.15000000596046448,
-                "offsetX1": 0.05000000074505806,
-                "offsetX2": 0.0,
-                "offsetY1": 0.02500000037252903,
-                "offsetY2": 0.0,
-                "radius1": 0.15000000596046448,
-                "radius2": 0.0
-            },
-            {
-                "NameTag": "Seal"
-            },
-            {
-                "TextureName": "sealSpritesheet",
-                "Index_X": 1,
-                "Index_Y": 0,
-                "Ucoordinates": 530.0,
-                "Vcoordinates": 254.5,
-                "IsSpriteSheet": true,
-                "IsAnimated": true,
-                "MaxIndex": 3,
-                "DisplayTime 0": -0.75,
-                "DisplayTime 1": 0.8100000023841858,
-                "DisplayTime 2": 1.3600000143051147,
-                "LayeringOrder": 2
-            },
-            {},
-            {},
-            {},
-            {},
-            {
-                "Current Health": 100.0,
-                "Max Health": 100.0,
-                "Current Hunger": 100.0,
-                "Max Hunger": 100.0,
-                "Current Sanity": 100.0,
-                "Max Sanity": 100.0,
-                "Health Decay Rate": 1.0,
-                "Hunger Decay Rate": 1.0,
-                "Sanity Decay Rate": 1.0,
-                "IS_alive": true
-            },
-            {},
-            {},
-            {
-                "Content": "SEAL:Enclosure 2 - 04-01-5A:A chubby-looking seal rests on the\nrocks, its large black eyes impossibly\nshiny in the light.",
-                "Font": "KernlGrotesk",
-                "Size": 24.0,
-                "ColorR": 1.0,
-                "ColorG": 1.0,
-                "ColorB": 1.0,
-                "ColorA": 1.0,
-                "PosX": 0.0,
-                "PosY": 0.0,
-                "Line Height": 0,
-                "WorldSpace": false,
-                "Center": false
-            }
-        ],
-        "35": [
-            {
-                "posX": -0.6617671847343445,
-                "posY": 0.2274315059185028,
-                "scaleX": 2.0318408012390137,
-                "scaleY": 1.240743637084961,
-                "Rot": 0.0
-            },
-            {},
-            {},
-            {
-                "NameTag": "SealBG"
-            },
-            {
-                "TextureName": "sealCage",
-                "Index_X": 0,
-                "Index_Y": 0,
-                "Ucoordinates": 512.0,
-                "Vcoordinates": 512.0,
-                "IsSpriteSheet": false,
-                "IsAnimated": false,
-                "MaxIndex": 0,
-                "LayeringOrder": 1
-            },
-            {},
-            {},
-            {
-                "0": {
-                    "AudioPath": "BGM_Ambience_Seal_01.wav",
-                    "Channel": 2,
-                    "IsLooping": false
-                },
-                "AudioArrCount": 1,
-                "BGM Volume": 1.0,
-                "SFX Volume": 1.0,
-                "Master Volume": 1.0
-            },
             {},
             {},
             {},

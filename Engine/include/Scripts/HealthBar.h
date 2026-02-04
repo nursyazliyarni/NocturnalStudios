@@ -74,8 +74,5 @@ namespace NocturnalEngine
 		Entity linkedAnimal;
 		Transform origin;
 		
-
-		int findAnimalTries{};
-		void FindAnimal();
 	};
 }

@@ -18,8 +18,6 @@
 #include "ECS/SceneManager.h"
 #include "GUI/GUI.h"
 #include "Graphics/Graphics.h"
-#include "Input/Input.h"
-#include "Scripts/GlobalGameManager.h"
 
 
 namespace NocturnalEngine
@@ -37,42 +35,6 @@ namespace NocturnalEngine
 		auto& ID_tag = p_ecs.GetComponent<Tag>(GetScriptEntityID());
 		auto& col = p_ecs.GetComponent<Collider>(GetScriptEntityID());
 		auto& spt = p_ecs.GetComponent<Sprite>(GetScriptEntityID());
-
-
-		// ------------------------------------------------------------
-// Keyboard shortcuts for scene switching (works anywhere)
-// 1 / W -> Flamingo
-// 2 / A -> Seal
-// 3 / S -> Horse
-// 4 / D -> Owl
-// ------------------------------------------------------------
-		if (p_GUI->Check_HTP() == false) // don't allow shortcuts during HTP overlay
-		{
-			if (p_Input->KeyPressed(GLFW_KEY_1) || p_Input->KeyPressed(GLFW_KEY_W))
-			{
-				p_ecs.GetComponent<Audio>(GetScriptEntityID())[0].should_play = true;
-				p_Scene->setSceneToLoad("Assets/Scene/FlamingoScene.json");
-				return;
-			}
-			if (p_Input->KeyPressed(GLFW_KEY_2) || p_Input->KeyPressed(GLFW_KEY_A))
-			{
-				p_ecs.GetComponent<Audio>(GetScriptEntityID())[0].should_play = true;
-				p_Scene->setSceneToLoad("Assets/Scene/SealScene.json");
-				return;
-			}
-			if (p_Input->KeyPressed(GLFW_KEY_3) || p_Input->KeyPressed(GLFW_KEY_S))
-			{
-				p_ecs.GetComponent<Audio>(GetScriptEntityID())[0].should_play = true;
-				p_Scene->setSceneToLoad("Assets/Scene/HorseScene.json");
-				return;
-			}
-			if (p_Input->KeyPressed(GLFW_KEY_4) || p_Input->KeyPressed(GLFW_KEY_D))
-			{
-				p_ecs.GetComponent<Audio>(GetScriptEntityID())[0].should_play = true;
-				p_Scene->setSceneToLoad("Assets/Scene/OwlScene.json");
-				return;
-			}
-		}
 
 
 
@@ -175,11 +137,13 @@ namespace NocturnalEngine
 
 					Graphic::mcamera->SetZoomLevel(1.0f);
 					p_Scene->setSceneToLoad("Assets/Scene/FlamingoScene.json");
+					
 				}
 
 				if (ID_tag.GetTag() == "Restart")
 				{
 					p_Scene->setSceneToLoad("Assets/Scene/FlamingoScene.json");//reset the game level in game over
+					
 				}
 
 				if (ID_tag.GetTag() == "Quit" && p_GUI->Check_HTP() == false)
@@ -252,29 +216,7 @@ namespace NocturnalEngine
 					p_Scene->setSceneToLoad("Assets/Scene/OwlScene.json");// switch to owl scene
 				}
 
-				if (ID_tag.GetTag() == "AltFlamingoBtn")
-				{
-					p_ecs.GetComponent<Audio>(GetScriptEntityID())[0].should_play = true;
-					p_GameManager.SetSceneToSwitch("Flamingo");// switch to flamingo scene
-				}
 
-				if (ID_tag.GetTag() == "AltSealBtn")
-				{
-					p_ecs.GetComponent<Audio>(GetScriptEntityID())[0].should_play = true;
-					p_GameManager.SetSceneToSwitch("Seal");
-				}
-
-				if (ID_tag.GetTag() == "AltHorseBtn")
-				{
-					p_ecs.GetComponent<Audio>(GetScriptEntityID())[0].should_play = true;
-					p_GameManager.SetSceneToSwitch("Horse");// switch to horse scene
-				}
-
-				if (ID_tag.GetTag() == "AltOwlBtn")
-				{
-					p_ecs.GetComponent<Audio>(GetScriptEntityID())[0].should_play = true;
-					p_GameManager.SetSceneToSwitch("Owl");// switch to owl scene
-				}
 			}
 
 			if (curr_state == button_state::click)

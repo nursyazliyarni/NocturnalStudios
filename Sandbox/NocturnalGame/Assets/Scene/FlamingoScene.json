@@ -12,7 +12,7 @@
         9
     ],
     "Number of Entities": {
-        "Entities": 30
+        "Entities": 22
     },
     "EntitySignatures": [
         "00000000000000000000000011111001",
@@ -36,15 +36,7 @@
         "00000000000000000001000000001000",
         "00000000000000000001000000001000",
         "00000000000000000000000001011001",
-        "00000000000000000001000000111001",
-        "00000000000000000001000000001001",
-        "00000000000000000001000000001001",
-        "00000000000000000001000000001001",
-        "00000000000000000001000000001001",
-        "00000000000000000001000000001001",
-        "00000000000000000001000000001001",
-        "00000000000000000001000000001001",
-        "00000000000000000001000000001001"
+        "00000000000000000001000000111001"
     ],
     "Components": {
         "0": [
@@ -129,7 +121,7 @@
             },
             {
                 "TextureName": "flamingo_spritesheet",
-                "Index_X": 1,
+                "Index_X": 2,
                 "Index_Y": 0,
                 "Ucoordinates": 528.0,
                 "Vcoordinates": 528.0,
@@ -152,11 +144,11 @@
             {},
             {},
             {
-                "Current Health": 94.95833307038993,
+                "Current Health": 100.0,
                 "Max Health": 100.0,
-                "Current Hunger": 79.8333322815597,
+                "Current Hunger": 100.0,
                 "Max Hunger": 100.0,
-                "Current Sanity": 98.2833332438022,
+                "Current Sanity": 100.0,
                 "Max Sanity": 100.0,
                 "Health Decay Rate": 1.0,
                 "Hunger Decay Rate": 1.0,
@@ -171,10 +163,10 @@
         ],
         "2": [
             {
-                "posX": -1.337353229522705,
-                "posY": -0.6955225467681885,
-                "scaleX": 0.30000001192092896,
-                "scaleY": 0.30000001192092896,
+                "posX": -1.4832265377044678,
+                "posY": -0.7028753757476807,
+                "scaleX": 0.5,
+                "scaleY": 0.5,
                 "Rot": 0.0
             },
             {},
@@ -200,7 +192,7 @@
                 "NameTag": "flamingo food"
             },
             {
-                "TextureName": "Food",
+                "TextureName": "flamingo_food",
                 "Index_X": 0,
                 "Index_Y": 0,
                 "Ucoordinates": 512.0,
@@ -228,10 +220,10 @@
         ],
         "3": [
             {
-                "posX": -0.6022435426712036,
-                "posY": -0.7217352390289307,
-                "scaleX": 0.25,
-                "scaleY": 0.25,
+                "posX": -0.7803511619567871,
+                "posY": -0.6932907104492188,
+                "scaleX": 0.5,
+                "scaleY": 0.30000001192092896,
                 "Rot": 0.0
             },
             {},
@@ -257,7 +249,7 @@
                 "NameTag": "flamingo medicine"
             },
             {
-                "TextureName": "Medicine",
+                "TextureName": "flamingo_medicine",
                 "Index_X": 0,
                 "Index_Y": 0,
                 "Ucoordinates": 512.0,
@@ -285,9 +277,9 @@
         ],
         "4": [
             {
-                "posX": 0.02384057641029358,
-                "posY": -0.6656290292739868,
-                "scaleX": 0.4000000059604645,
+                "posX": -0.04872174188494682,
+                "posY": -0.7060701847076416,
+                "scaleX": 0.5,
                 "scaleY": 0.4000000059604645,
                 "Rot": 0.0
             },
@@ -417,6 +409,18 @@
                 "PosY": 0.09799999743700027,
                 "Line Height": 0,
                 "WorldSpace": false,
+                "Center": false,
+                "Content": "2",
+                "Font": "ChauPhilomeneOne-Regular",
+                "Size": 32.5,
+                "ColorR": 0.0,
+                "ColorG": 0.0,
+                "ColorB": 0.0,
+                "ColorA": 1.0,
+                "PosX": 0.38749998807907104,
+                "PosY": 0.09799999743700027,
+                "Line Height": 0,
+                "WorldSpace": false,
                 "Center": false
             }
         ],
@@ -497,6 +501,18 @@
                 "PosY": -0.03200000151991844,
                 "Line Height": 0,
                 "WorldSpace": false,
+                "Center": false,
+                "Content": "3",
+                "Font": "ChauPhilomeneOne-Regular",
+                "Size": 32.5,
+                "ColorR": 0.0,
+                "ColorG": 0.0,
+                "ColorB": 0.0,
+                "ColorA": 1.0,
+                "PosX": 0.38749998807907104,
+                "PosY": -0.03200000151991844,
+                "Line Height": 0,
+                "WorldSpace": false,
                 "Center": false
             }
         ],
@@ -565,6 +581,18 @@
             {},
             {},
             {
+                "Content": "4",
+                "Font": "ChauPhilomeneOne-Regular",
+                "Size": 32.5,
+                "ColorR": 0.0,
+                "ColorG": 0.0,
+                "ColorB": 0.0,
+                "ColorA": 1.0,
+                "PosX": 0.38749998807907104,
+                "PosY": -0.1720000058412552,
+                "Line Height": 0,
+                "WorldSpace": false,
+                "Center": false,
                 "Content": "4",
                 "Font": "ChauPhilomeneOne-Regular",
                 "Size": 32.5,
@@ -780,9 +808,9 @@
         ],
         "13": [
             {
-                "posX": 1.117337703704834,
+                "posX": 1.1399999856948853,
                 "posY": 0.11400000005960464,
-                "scaleX": 0.8536754250526428,
+                "scaleX": 0.8989999890327454,
                 "scaleY": 0.0689999982714653,
                 "Rot": 0.0
             },
@@ -820,9 +848,9 @@
         ],
         "14": [
             {
-                "posX": 1.0493508577346802,
+                "posX": 1.1399999856948853,
                 "posY": -0.02500000037252903,
-                "scaleX": 0.7177016735076904,
+                "scaleX": 0.8989999890327454,
                 "scaleY": 0.0689999982714653,
                 "Rot": 0.0
             },
@@ -860,9 +888,9 @@
         ],
         "15": [
             {
-                "posX": 1.1322835683822632,
+                "posX": 1.1399999856948853,
                 "posY": -0.15299999713897705,
-                "scaleX": 0.8835671544075012,
+                "scaleX": 0.8989999890327454,
                 "scaleY": 0.0689999982714653,
                 "Rot": 0.0
             },
@@ -923,7 +951,19 @@
             {},
             {},
             {
-                "Content": "00:20:08",
+                "Content": "00:00:00",
+                "Font": "DSEG7Classic-Bold",
+                "Size": 35.29999923706055,
+                "ColorR": 0.0,
+                "ColorG": 1.0,
+                "ColorB": 0.08823513984680176,
+                "ColorA": 1.0,
+                "PosX": 0.0,
+                "PosY": 0.0,
+                "Line Height": 0,
+                "WorldSpace": true,
+                "Center": false,
+                "Content": "00:00:00",
                 "Font": "DSEG7Classic-Bold",
                 "Size": 35.29999923706055,
                 "ColorR": 0.0,
@@ -953,6 +993,18 @@
             {},
             {},
             {
+                "Content": "FLAMINGO",
+                "Font": "ChauPhilomeneOne-Regular",
+                "Size": 72.0,
+                "ColorR": 0.31651291251182556,
+                "ColorG": 0.7254902124404907,
+                "ColorB": 0.3285415470600128,
+                "ColorA": 1.0,
+                "PosX": 0.6399999856948853,
+                "PosY": 0.6299999952316284,
+                "Line Height": 50,
+                "WorldSpace": false,
+                "Center": false,
                 "Content": "FLAMINGO",
                 "Font": "ChauPhilomeneOne-Regular",
                 "Size": 72.0,
@@ -994,6 +1046,18 @@
                 "PosY": 0.550000011920929,
                 "Line Height": 50,
                 "WorldSpace": false,
+                "Center": false,
+                "Content": "Enclosure 3 - 05-02-4B",
+                "Font": "ChauPhilomeneOne-Regular",
+                "Size": 36.0,
+                "ColorR": 0.31651291251182556,
+                "ColorG": 0.7254902124404907,
+                "ColorB": 0.3285415470600128,
+                "ColorA": 1.0,
+                "PosX": 0.6399999856948853,
+                "PosY": 0.550000011920929,
+                "Line Height": 50,
+                "WorldSpace": false,
                 "Center": false
             }
         ],
@@ -1024,6 +1088,18 @@
                 "PosY": 0.4399999976158142,
                 "Line Height": 62,
                 "WorldSpace": false,
+                "Center": false,
+                "Content": "A pink bird loved by many, despite\nits legs not being of optimal\ncondition due to _____",
+                "Font": "ChauPhilomeneOne-Regular",
+                "Size": 36.0,
+                "ColorR": 0.4215686321258545,
+                "ColorG": 0.41214776039123535,
+                "ColorB": 0.41123607754707336,
+                "ColorA": 0.501960813999176,
+                "PosX": 0.6399999856948853,
+                "PosY": 0.4399999976158142,
+                "Line Height": 62,
+                "WorldSpace": false,
                 "Center": false
             }
         ],
@@ -1031,8 +1107,8 @@
             {
                 "posX": 0.0,
                 "posY": 0.0,
-                "scaleX": 0.0,
-                "scaleY": 0.0,
+                "scaleX": 0.20000000298023224,
+                "scaleY": 0.20000000298023224,
                 "Rot": 0.0
             },
             {},
@@ -1098,7 +1174,7 @@
             {},
             {},
             {
-                "Content": "",
+                "Content": "[00:00:00] This is a Log entry",
                 "Font": "Jersey10Charted-Regular",
                 "Size": 25.899999618530273,
                 "ColorR": 1.0,
@@ -1109,284 +1185,8 @@
                 "PosY": 0.20000000298023224,
                 "Line Height": 0,
                 "WorldSpace": true,
-                "Center": false
-            }
-        ],
-        "22": [
-            {
-                "posX": 1.0999298095703125,
-                "posY": -0.592154860496521,
-                "scaleX": 0.9850000143051147,
-                "scaleY": 0.5099999904632568,
-                "Rot": 0.0
-            },
-            {},
-            {},
-            {
-                "NameTag": "Entity 22"
-            },
-            {},
-            {},
-            {},
-            {},
-            {},
-            {},
-            {},
-            {},
-            {
-                "Content": "",
-                "Font": "Jersey10Charted-Regular",
-                "Size": 25.899999618530273,
-                "ColorR": 1.0,
-                "ColorG": 0.0,
-                "ColorB": 0.0,
-                "ColorA": 1.0,
-                "PosX": -0.4699999988079071,
-                "PosY": 0.20000000298023224,
-                "Line Height": 0,
-                "WorldSpace": true,
-                "Center": false
-            }
-        ],
-        "23": [
-            {
-                "posX": 1.0999298095703125,
-                "posY": -0.643954873085022,
-                "scaleX": 0.9850000143051147,
-                "scaleY": 0.5099999904632568,
-                "Rot": 0.0
-            },
-            {},
-            {},
-            {
-                "NameTag": "Entity 23"
-            },
-            {},
-            {},
-            {},
-            {},
-            {},
-            {},
-            {},
-            {},
-            {
-                "Content": "",
-                "Font": "Jersey10Charted-Regular",
-                "Size": 25.899999618530273,
-                "ColorR": 1.0,
-                "ColorG": 0.0,
-                "ColorB": 0.0,
-                "ColorA": 1.0,
-                "PosX": -0.4699999988079071,
-                "PosY": 0.20000000298023224,
-                "Line Height": 0,
-                "WorldSpace": true,
-                "Center": false
-            }
-        ],
-        "24": [
-            {
-                "posX": 1.0999298095703125,
-                "posY": -0.695754885673523,
-                "scaleX": 0.9850000143051147,
-                "scaleY": 0.5099999904632568,
-                "Rot": 0.0
-            },
-            {},
-            {},
-            {
-                "NameTag": "Entity 24"
-            },
-            {},
-            {},
-            {},
-            {},
-            {},
-            {},
-            {},
-            {},
-            {
-                "Content": "",
-                "Font": "Jersey10Charted-Regular",
-                "Size": 25.899999618530273,
-                "ColorR": 1.0,
-                "ColorG": 0.0,
-                "ColorB": 0.0,
-                "ColorA": 1.0,
-                "PosX": -0.4699999988079071,
-                "PosY": 0.20000000298023224,
-                "Line Height": 0,
-                "WorldSpace": true,
-                "Center": false
-            }
-        ],
-        "25": [
-            {
-                "posX": 1.0999298095703125,
-                "posY": -0.7475548386573792,
-                "scaleX": 0.9850000143051147,
-                "scaleY": 0.5099999904632568,
-                "Rot": 0.0
-            },
-            {},
-            {},
-            {
-                "NameTag": "Entity 25"
-            },
-            {},
-            {},
-            {},
-            {},
-            {},
-            {},
-            {},
-            {},
-            {
-                "Content": "",
-                "Font": "Jersey10Charted-Regular",
-                "Size": 25.899999618530273,
-                "ColorR": 1.0,
-                "ColorG": 0.0,
-                "ColorB": 0.0,
-                "ColorA": 1.0,
-                "PosX": -0.4699999988079071,
-                "PosY": 0.20000000298023224,
-                "Line Height": 0,
-                "WorldSpace": true,
-                "Center": false
-            }
-        ],
-        "26": [
-            {
-                "posX": 1.0999298095703125,
-                "posY": -0.7993548512458801,
-                "scaleX": 0.9850000143051147,
-                "scaleY": 0.5099999904632568,
-                "Rot": 0.0
-            },
-            {},
-            {},
-            {
-                "NameTag": "Entity 26"
-            },
-            {},
-            {},
-            {},
-            {},
-            {},
-            {},
-            {},
-            {},
-            {
-                "Content": "",
-                "Font": "Jersey10Charted-Regular",
-                "Size": 25.899999618530273,
-                "ColorR": 1.0,
-                "ColorG": 0.0,
-                "ColorB": 0.0,
-                "ColorA": 1.0,
-                "PosX": -0.4699999988079071,
-                "PosY": 0.20000000298023224,
-                "Line Height": 0,
-                "WorldSpace": true,
-                "Center": false
-            }
-        ],
-        "27": [
-            {
-                "posX": 1.0999298095703125,
-                "posY": -0.8511548638343811,
-                "scaleX": 0.9850000143051147,
-                "scaleY": 0.5099999904632568,
-                "Rot": 0.0
-            },
-            {},
-            {},
-            {
-                "NameTag": "Entity 27"
-            },
-            {},
-            {},
-            {},
-            {},
-            {},
-            {},
-            {},
-            {},
-            {
-                "Content": "",
-                "Font": "Jersey10Charted-Regular",
-                "Size": 25.899999618530273,
-                "ColorR": 1.0,
-                "ColorG": 0.0,
-                "ColorB": 0.0,
-                "ColorA": 1.0,
-                "PosX": -0.4699999988079071,
-                "PosY": 0.20000000298023224,
-                "Line Height": 0,
-                "WorldSpace": true,
-                "Center": false
-            }
-        ],
-        "28": [
-            {
-                "posX": 1.0999298095703125,
-                "posY": -0.9029548168182373,
-                "scaleX": 0.9850000143051147,
-                "scaleY": 0.5099999904632568,
-                "Rot": 0.0
-            },
-            {},
-            {},
-            {
-                "NameTag": "Entity 28"
-            },
-            {},
-            {},
-            {},
-            {},
-            {},
-            {},
-            {},
-            {},
-            {
-                "Content": "",
-                "Font": "Jersey10Charted-Regular",
-                "Size": 25.899999618530273,
-                "ColorR": 1.0,
-                "ColorG": 0.0,
-                "ColorB": 0.0,
-                "ColorA": 1.0,
-                "PosX": -0.4699999988079071,
-                "PosY": 0.20000000298023224,
-                "Line Height": 0,
-                "WorldSpace": true,
-                "Center": false
-            }
-        ],
-        "29": [
-            {
-                "posX": 1.0999298095703125,
-                "posY": -0.9547548294067383,
-                "scaleX": 0.9850000143051147,
-                "scaleY": 0.5099999904632568,
-                "Rot": 0.0
-            },
-            {},
-            {},
-            {
-                "NameTag": "Entity 29"
-            },
-            {},
-            {},
-            {},
-            {},
-            {},
-            {},
-            {},
-            {},
-            {
-                "Content": "",
+                "Center": false,
+                "Content": "[00:00:00] This is a Log entry",
                 "Font": "Jersey10Charted-Regular",
                 "Size": 25.899999618530273,
                 "ColorR": 1.0,
