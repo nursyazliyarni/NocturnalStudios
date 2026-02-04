@@ -39,6 +39,7 @@ namespace NocturnalEngine {
 			{
 				
 				linkedAnimal = e;
+				continue;
 				//std::cout << "animal found for entity"<< p_ecs.GetComponent<NameTag>(entityID).GetNameTag()<<"\n";
 				
 			}
@@ -57,11 +58,15 @@ namespace NocturnalEngine {
 		//gets the GUD component from the entity this script is connected to
 		HUDComponent& hudC{ p_ecs.GetComponent<HUDComponent>(entityID) };
 
-		
-		if (linkedAnimal == 0)std::cout << "Entity " << p_ecs.GetComponent<NameTag>(entityID).GetNameTag() << " cannot find an animal!\n"; 
-		if (!p_ecs.HaveComponent<AnimalAttributes>(linkedAnimal))std::cout << "Entity " << p_ecs.GetComponent<NameTag>(entityID).GetNameTag() << "'s animal has no Animal Attributes!\n";
+		if (linkedAnimal == 0 || !p_ecs.HaveComponent<AnimalAttributes>(linkedAnimal)) {
+			if(findAnimalTries<3)FindAnimal();
+			return;
+		}
+
+		//if (linkedAnimal == 0)std::cout << "Entity " << p_ecs.GetComponent<NameTag>(entityID).GetNameTag() << " cannot find an animal!\n"; 
+		//if (!p_ecs.HaveComponent<AnimalAttributes>(linkedAnimal))std::cout << "Entity " << p_ecs.GetComponent<NameTag>(entityID).GetNameTag() << "'s animal has no Animal Attributes!\n";
 		//make sure the animal exists lol
-		if (linkedAnimal == 0 || !p_ecs.HaveComponent<AnimalAttributes>(linkedAnimal))return;
+
 		AnimalAttributes& aA{ p_ecs.GetComponent<AnimalAttributes>(linkedAnimal) };
 
 		//check which type of hud this is, 
@@ -107,7 +112,21 @@ namespace NocturnalEngine {
 		p_ecs.GetComponent<Transform>(entityID) = origin;
 	}
 
-	
+	void HealthBar::FindAnimal() {
+		for (Entity e : p_ecs.GetAliveEntitiesSet())
+		{
+			if (p_ecs.HaveComponent<AnimalAttributes>(e))
+			{
+
+				linkedAnimal = e;
+				continue;
+				//std::cout << "animal found for entity"<< p_ecs.GetComponent<NameTag>(entityID).GetNameTag()<<"\n";
+
+			}
+
+		}
+		findAnimalTries++;
+	}
 	
 
 }

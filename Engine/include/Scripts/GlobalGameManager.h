@@ -24,21 +24,13 @@
 namespace NocturnalEngine {
     class GameManager {
     public:
-        enum class GameScene {
-            NONE = 0,
-            FLAMINGO,
-            HORSE,
-            SEAL,
-            OWL,
-            STORAGE
-        };
 
         enum class GameState {
             STARTING,
             PLAYING,
             ENDING
         };
-        AnimalAttributes LoadPersistentValues(GameScene);
+        AnimalAttributes LoadPersistentValues(std::string gs);
 
         static GameManager& GetInstance();
         /*!*************************************************************************
@@ -82,6 +74,12 @@ namespace NocturnalEngine {
          bool isTargetVisible()const { return targetVisibility; }
 
          void setTargetVisibility(bool t) { targetVisibility = t; }
+
+         bool IsNewSceneManagement() const { return freakyMode; }
+
+         void ToggleSceneManagement() { freakyMode = !freakyMode; }
+
+         void SetSceneToSwitch(std::string);
     private:
 
         GameManager();
@@ -93,17 +91,35 @@ namespace NocturnalEngine {
 
         void LoseGame();
         void WinGame();
-        void LogLowHealth(std::pair<const GameScene, AnimalAttributes>& sceneAnimalPair);
+        void LogLowHealth(std::pair < const std ::string , AnimalAttributes > & sceneAnimalPair);
+
 
         float gameTimeElapsed{}, winRequirement{180.f}; //in seconds
 
-        GameScene currScene;
+        std::string currScene;
         GameState currState;
-        std::unordered_map < GameScene, AnimalAttributes> sceneAnimalMap;
-        int deadAnimals, deathLimit{ 2 }, maxDiegeticLogEntries{40};
+        std::unordered_map < std::string, AnimalAttributes> sceneAnimalMap;
+        int deadAnimals, deathLimit{ 3 }, maxDiegeticLogEntries{40};
         std::deque<std::string> diegeticLogEntries;
 
-        bool diegeticLogUpdated{ true }, targetVisibility{ false };
+        bool diegeticLogUpdated{ true }, targetVisibility{ false }, freakyMode{ false }, combinedSceneSetup{ false };
+
+        int innerState{ 0 };
+        Entity animalE{}, cageBGE{}, containmentE[3]{0,0,0};
+        struct AnimalSceneData
+        {
+            Transform aTransform;
+            Sprite aniSprite,bgSprite;
+            Collider aCollider;
+            int bgAudioInd;
+            std::string containmentEntries[3];
+        };
+        std::string nextScene{ "Flamingo" };
+        std::unordered_map < std::string, AnimalSceneData> combinedSceneMap;
+        void CombinedSceneStart();
+        void CombinedSceneUpdate(float dt);
+        Entity GetEntityByName(const std::string name);
+
 
     };
 
