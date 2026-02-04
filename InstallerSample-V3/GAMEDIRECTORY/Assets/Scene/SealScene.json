@@ -1,0 +1,1139 @@
+{
+    "LayerDrawOrder": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+    ],
+    "Number of Entities": {
+        "Entities": 22
+    },
+    "EntitySignatures": [
+        "00000000000000000000000011111101",
+        "00000000000000000000101001111101",
+        "00000000000000000001000011111101",
+        "00000000000000000001000011111101",
+        "00000000000000000001000011111101",
+        "00000000000000000000000011111101",
+        "00000000000000000000000000011001",
+        "00000000000000000000010001111101",
+        "00000000000000000000010001111101",
+        "00000000000000000000010001111101",
+        "00000000000000000000000000011001",
+        "00000000000000000000000000011001",
+        "00000000000000000000000000011001",
+        "00000000000000000000000100111001",
+        "00000000000000000000000100111001",
+        "00000000000000000000000100111001",
+        "00000000000000000001000000101001",
+        "00000000000000000001000000001000",
+        "00000000000000000001000000001000",
+        "00000000000000000001000000001000",
+        "00000000000000000000000001011001",
+        "00000000000000000001000000111001"
+    ],
+    "Components": {
+        "0": [
+            {
+                "posX": 0.0,
+                "posY": 0.0,
+                "scaleX": 3.6449999809265137,
+                "scaleY": 1.9999960660934448,
+                "Rot": 0.0
+            },
+            {},
+            {
+                "ColliderType1": 0,
+                "ColliderType2": 0,
+                "minX1": -0.10000000149011612,
+                "minX2": 0.0,
+                "minY1": -0.10000000149011612,
+                "minY2": 0.0,
+                "maxX1": 0.10000000149011612,
+                "maxX2": 0.0,
+                "maxY1": 0.10000000149011612,
+                "maxY2": 0.0,
+                "offsetX1": 0.0,
+                "offsetX2": 0.0,
+                "offsetY1": 0.0,
+                "offsetY2": 0.0,
+                "radius1": 0.0,
+                "radius2": 0.0
+            },
+            {
+                "NameTag": "SealBG"
+            },
+            {
+                "TextureName": "sealScene",
+                "Index_X": 0,
+                "Index_Y": 0,
+                "Ucoordinates": 512.0,
+                "Vcoordinates": 512.0,
+                "IsSpriteSheet": false,
+                "IsAnimated": false,
+                "MaxIndex": 3,
+                "DisplayTime 0": 0.0,
+                "DisplayTime 1": 0.0,
+                "DisplayTime 2": 0.0,
+                "LayeringOrder": 0
+            },
+            {
+                "0": "AudioManager",
+                "1": "BackgroundAudio",
+                "ScriptCount": 2
+            },
+            {
+                "Tag": "Untagged",
+                "TargetTag": ""
+            },
+            {
+                "0": {
+                    "AudioPath": "BGM_Ambience_Horse_01.wav",
+                    "Channel": 2,
+                    "IsLooping": true
+                },
+                "AudioArrCount": 1,
+                "BGM Volume": 1.0,
+                "SFX Volume": 1.0,
+                "Master Volume": 1.0
+            },
+            {},
+            {},
+            {},
+            {},
+            {}
+        ],
+        "1": [
+            {
+                "posX": -0.7948408126831055,
+                "posY": -0.01907503604888916,
+                "scaleX": 0.4940004050731659,
+                "scaleY": 0.3830002248287201,
+                "Rot": -9.082768440246582
+            },
+            {},
+            {
+                "ColliderType1": 1,
+                "ColliderType2": 0,
+                "minX1": 0.30000001192092896,
+                "minX2": -0.25,
+                "minY1": 0.05000000074505806,
+                "minY2": -0.4000000059604645,
+                "maxX1": 0.25,
+                "maxX2": 0.46000000834465027,
+                "maxY1": 0.30000001192092896,
+                "maxY2": 0.15000000596046448,
+                "offsetX1": 0.05000000074505806,
+                "offsetX2": 0.0,
+                "offsetY1": 0.02500000037252903,
+                "offsetY2": 0.0,
+                "radius1": 0.15000000596046448,
+                "radius2": 0.0
+            },
+            {
+                "NameTag": "Seal"
+            },
+            {
+                "TextureName": "sealSpritesheet",
+                "Index_X": 1,
+                "Index_Y": 0,
+                "Ucoordinates": 530.0,
+                "Vcoordinates": 254.5,
+                "IsSpriteSheet": true,
+                "IsAnimated": true,
+                "MaxIndex": 3,
+                "DisplayTime 0": -0.75,
+                "DisplayTime 1": 0.8100000023841858,
+                "DisplayTime 2": 1.3600000143051147,
+                "LayeringOrder": 0
+            },
+            {
+                "0": "AnimalLogic",
+                "1": "PainSpotSpawner",
+                "ScriptCount": 2
+            },
+            {
+                "Tag": "Horse",
+                "TargetTag": ""
+            },
+            {},
+            {},
+            {
+                "Current Health": 100.0,
+                "Max Health": 100.0,
+                "Current Hunger": 100.0,
+                "Max Hunger": 100.0,
+                "Current Sanity": 100.0,
+                "Max Sanity": 100.0,
+                "Health Decay Rate": 1.0,
+                "Hunger Decay Rate": 1.0,
+                "Sanity Decay Rate": 1.0,
+                "IS_alive": true
+            },
+            {},
+            {
+                "isTarget": true
+            },
+            {}
+        ],
+        "2": [
+            {
+                "posX": 0.40032678842544556,
+                "posY": 0.2418299913406372,
+                "scaleX": 0.13472461700439453,
+                "scaleY": 0.12401483952999115,
+                "Rot": 0.0
+            },
+            {},
+            {
+                "ColliderType1": 4,
+                "ColliderType2": 0,
+                "minX1": -1.0,
+                "minX2": 0.0,
+                "minY1": -0.6600000262260437,
+                "minY2": 0.0,
+                "maxX1": 1.0,
+                "maxX2": 0.0,
+                "maxY1": 0.6600000262260437,
+                "maxY2": 0.0,
+                "offsetX1": 0.0,
+                "offsetX2": 0.0,
+                "offsetY1": 0.0,
+                "offsetY2": 0.0,
+                "radius1": 0.0,
+                "radius2": 0.0
+            },
+            {
+                "NameTag": "FlamingoBtn"
+            },
+            {
+                "TextureName": "cameraButtonUnlit",
+                "Index_X": 0,
+                "Index_Y": 0,
+                "Ucoordinates": 512.0,
+                "Vcoordinates": 512.0,
+                "IsSpriteSheet": false,
+                "IsAnimated": false,
+                "MaxIndex": 0,
+                "LayeringOrder": 0
+            },
+            {
+                "0": "ButtonResponse",
+                "1": "AudioManager",
+                "ScriptCount": 2
+            },
+            {
+                "Tag": "FlamingoBtn",
+                "TargetTag": ""
+            },
+            {
+                "0": {
+                    "AudioPath": "SFX_Static_02.wav",
+                    "Channel": 3,
+                    "IsLooping": false
+                },
+                "AudioArrCount": 1,
+                "BGM Volume": 1.0,
+                "SFX Volume": 1.0,
+                "Master Volume": 1.0
+            },
+            {},
+            {},
+            {},
+            {},
+            {
+                "Content": "1",
+                "Font": "ChauPhilomeneOne-Regular",
+                "Size": 32.5,
+                "ColorR": 0.0,
+                "ColorG": 0.0,
+                "ColorB": 0.0,
+                "ColorA": 1.0,
+                "PosX": 0.38749998807907104,
+                "PosY": 0.2280000001192093,
+                "Line Height": 0,
+                "WorldSpace": false,
+                "Center": false
+            }
+        ],
+        "3": [
+            {
+                "posX": 0.40032678842544556,
+                "posY": -0.14785435795783997,
+                "scaleX": 0.12510144710540771,
+                "scaleY": 0.11588465422391891,
+                "Rot": 0.0
+            },
+            {},
+            {
+                "ColliderType1": 4,
+                "ColliderType2": 0,
+                "minX1": -1.0,
+                "minX2": 0.0,
+                "minY1": -0.6600000262260437,
+                "minY2": 0.0,
+                "maxX1": 1.0,
+                "maxX2": 0.0,
+                "maxY1": 0.6600000262260437,
+                "maxY2": 0.0,
+                "offsetX1": 0.0,
+                "offsetX2": 0.0,
+                "offsetY1": 0.0,
+                "offsetY2": 0.0,
+                "radius1": 0.0,
+                "radius2": 0.0
+            },
+            {
+                "NameTag": "OwlBtn"
+            },
+            {
+                "TextureName": "cameraButtonUnlit",
+                "Index_X": 0,
+                "Index_Y": 0,
+                "Ucoordinates": 512.0,
+                "Vcoordinates": 512.0,
+                "IsSpriteSheet": false,
+                "IsAnimated": false,
+                "MaxIndex": 0,
+                "LayeringOrder": 0
+            },
+            {
+                "0": "ButtonResponse",
+                "1": "AudioManager",
+                "ScriptCount": 2
+            },
+            {
+                "Tag": "OwlBtn",
+                "TargetTag": ""
+            },
+            {
+                "0": {
+                    "AudioPath": "SFX_Static_05.wav",
+                    "Channel": 3,
+                    "IsLooping": false
+                },
+                "AudioArrCount": 1,
+                "BGM Volume": 1.0,
+                "SFX Volume": 1.0,
+                "Master Volume": 1.0
+            },
+            {},
+            {},
+            {},
+            {},
+            {
+                "Content": "4",
+                "Font": "ChauPhilomeneOne-Regular",
+                "Size": 32.5,
+                "ColorR": 0.0,
+                "ColorG": 0.0,
+                "ColorB": 0.0,
+                "ColorA": 1.0,
+                "PosX": 0.38749998807907104,
+                "PosY": -0.1720000058412552,
+                "Line Height": 0,
+                "WorldSpace": false,
+                "Center": false
+            }
+        ],
+        "4": [
+            {
+                "posX": 0.40032678842544556,
+                "posY": -0.014748930931091309,
+                "scaleX": 0.13472461700439453,
+                "scaleY": 0.12255587428808212,
+                "Rot": 0.0
+            },
+            {},
+            {
+                "ColliderType1": 4,
+                "ColliderType2": 0,
+                "minX1": -1.0,
+                "minX2": 0.0,
+                "minY1": -0.6600000262260437,
+                "minY2": 0.0,
+                "maxX1": 1.0,
+                "maxX2": 0.0,
+                "maxY1": 0.6600000262260437,
+                "maxY2": 0.0,
+                "offsetX1": 0.0,
+                "offsetX2": 0.0,
+                "offsetY1": 0.0,
+                "offsetY2": 0.0,
+                "radius1": 0.0,
+                "radius2": 0.0
+            },
+            {
+                "NameTag": "HorseBtn"
+            },
+            {
+                "TextureName": "cameraButtonUnlit",
+                "Index_X": 0,
+                "Index_Y": 0,
+                "Ucoordinates": 512.0,
+                "Vcoordinates": 512.0,
+                "IsSpriteSheet": false,
+                "IsAnimated": false,
+                "MaxIndex": 0,
+                "LayeringOrder": 0
+            },
+            {
+                "0": "ButtonResponse",
+                "1": "AudioManager",
+                "ScriptCount": 2
+            },
+            {
+                "Tag": "HorseBtn",
+                "TargetTag": ""
+            },
+            {
+                "0": {
+                    "AudioPath": "SFX_Static_03.wav",
+                    "Channel": 3,
+                    "IsLooping": false
+                },
+                "AudioArrCount": 1,
+                "BGM Volume": 1.0,
+                "SFX Volume": 1.0,
+                "Master Volume": 1.0
+            },
+            {},
+            {},
+            {},
+            {},
+            {
+                "Content": "3",
+                "Font": "ChauPhilomeneOne-Regular",
+                "Size": 32.5,
+                "ColorR": 0.0,
+                "ColorG": 0.0,
+                "ColorB": 0.0,
+                "ColorA": 1.0,
+                "PosX": 0.38749998807907104,
+                "PosY": -0.03200000151991844,
+                "Line Height": 0,
+                "WorldSpace": false,
+                "Center": false
+            }
+        ],
+        "5": [
+            {
+                "posX": 0.40032678842544556,
+                "posY": -0.28433525562286377,
+                "scaleX": 0.13472461700439453,
+                "scaleY": 0.12255587428808212,
+                "Rot": 0.0
+            },
+            {},
+            {
+                "ColliderType1": 4,
+                "ColliderType2": 0,
+                "minX1": -1.0,
+                "minX2": 0.0,
+                "minY1": -0.6600000262260437,
+                "minY2": 0.0,
+                "maxX1": 1.0,
+                "maxX2": 0.0,
+                "maxY1": 0.6600000262260437,
+                "maxY2": 0.0,
+                "offsetX1": 0.0,
+                "offsetX2": 0.0,
+                "offsetY1": 0.0,
+                "offsetY2": 0.0,
+                "radius1": 0.0,
+                "radius2": 0.0
+            },
+            {
+                "NameTag": "InventoryBtn"
+            },
+            {
+                "TextureName": "cameraButtonUnlit",
+                "Index_X": 0,
+                "Index_Y": 0,
+                "Ucoordinates": 512.0,
+                "Vcoordinates": 512.0,
+                "IsSpriteSheet": false,
+                "IsAnimated": false,
+                "MaxIndex": 0,
+                "LayeringOrder": 0
+            },
+            {
+                "0": "ButtonResponse",
+                "1": "AudioManager",
+                "ScriptCount": 2
+            },
+            {
+                "Tag": "InventoryBtn",
+                "TargetTag": ""
+            },
+            {
+                "0": {
+                    "AudioPath": "SFX_Static_04.wav",
+                    "Channel": 3,
+                    "IsLooping": false
+                },
+                "AudioArrCount": 1,
+                "BGM Volume": 1.0,
+                "SFX Volume": 1.0,
+                "Master Volume": 1.0
+            },
+            {},
+            {},
+            {},
+            {},
+            {}
+        ],
+        "6": [
+            {
+                "posX": 0.1090199276804924,
+                "posY": 0.023660331964492798,
+                "scaleX": 4.071832180023193,
+                "scaleY": 2.111469030380249,
+                "Rot": 0.0
+            },
+            {},
+            {},
+            {
+                "NameTag": "CameraHighlight"
+            },
+            {
+                "TextureName": "cameraHighlight",
+                "Index_X": 0,
+                "Index_Y": 0,
+                "Ucoordinates": 512.0,
+                "Vcoordinates": 512.0,
+                "IsSpriteSheet": false,
+                "IsAnimated": false,
+                "MaxIndex": 0,
+                "LayeringOrder": 0
+            },
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {}
+        ],
+        "7": [
+            {
+                "posX": -1.3370000123977661,
+                "posY": -0.6959999799728394,
+                "scaleX": 0.30000001192092896,
+                "scaleY": 0.30000001192092896,
+                "Rot": 0.0
+            },
+            {},
+            {
+                "ColliderType1": 5,
+                "ColliderType2": 0,
+                "minX1": 0.17499999701976776,
+                "minX2": 0.0,
+                "minY1": 0.10000000149011612,
+                "minY2": 0.0,
+                "maxX1": 0.17499999701976776,
+                "maxX2": 0.0,
+                "maxY1": 0.10000000149011612,
+                "maxY2": 0.0,
+                "offsetX1": 0.0,
+                "offsetX2": 0.0,
+                "offsetY1": 0.0,
+                "offsetY2": 0.0,
+                "radius1": 0.0,
+                "radius2": 0.0
+            },
+            {
+                "NameTag": "SealFood"
+            },
+            {
+                "TextureName": "Food",
+                "Index_X": 0,
+                "Index_Y": 0,
+                "Ucoordinates": 512.0,
+                "Vcoordinates": 512.0,
+                "IsSpriteSheet": false,
+                "IsAnimated": false,
+                "MaxIndex": 0,
+                "LayeringOrder": 0
+            },
+            {
+                "0": "DragAndDrop",
+                "ScriptCount": 1
+            },
+            {
+                "Tag": "Tou",
+                "TargetTag": ""
+            },
+            {},
+            {},
+            {},
+            {
+                "type": 0,
+                "gain amount": 20.0,
+                "is_dragging": false
+            },
+            {},
+            {}
+        ],
+        "8": [
+            {
+                "posX": -0.6019999980926514,
+                "posY": -0.722000002861023,
+                "scaleX": 0.25,
+                "scaleY": 0.25,
+                "Rot": 0.0
+            },
+            {},
+            {
+                "ColliderType1": 5,
+                "ColliderType2": 0,
+                "minX1": 0.09000000357627869,
+                "minX2": 0.0,
+                "minY1": 0.1850000023841858,
+                "minY2": 0.0,
+                "maxX1": 0.10999999940395355,
+                "maxX2": 0.0,
+                "maxY1": 0.05000000074505806,
+                "maxY2": 0.0,
+                "offsetX1": 0.0,
+                "offsetX2": 0.0,
+                "offsetY1": 0.0,
+                "offsetY2": 0.0,
+                "radius1": 0.0,
+                "radius2": 0.0
+            },
+            {
+                "NameTag": "SealMedicine"
+            },
+            {
+                "TextureName": "Medicine",
+                "Index_X": 0,
+                "Index_Y": 0,
+                "Ucoordinates": 512.0,
+                "Vcoordinates": 512.0,
+                "IsSpriteSheet": false,
+                "IsAnimated": false,
+                "MaxIndex": 0,
+                "LayeringOrder": 0
+            },
+            {
+                "0": "RevealTargetOnClick",
+                "ScriptCount": 1
+            },
+            {
+                "Tag": "Tou",
+                "TargetTag": ""
+            },
+            {},
+            {},
+            {},
+            {
+                "type": 1,
+                "gain amount": 20.0,
+                "is_dragging": false
+            },
+            {},
+            {}
+        ],
+        "9": [
+            {
+                "posX": 0.04600000008940697,
+                "posY": -0.7172768115997314,
+                "scaleX": 0.3400000035762787,
+                "scaleY": 0.367000013589859,
+                "Rot": 0.0
+            },
+            {},
+            {
+                "ColliderType1": 5,
+                "ColliderType2": 0,
+                "minX1": 0.14000000059604645,
+                "minX2": 0.0,
+                "minY1": 0.08500000089406967,
+                "minY2": 0.0,
+                "maxX1": 0.1599999964237213,
+                "maxX2": 0.0,
+                "maxY1": 0.10000000149011612,
+                "maxY2": 0.0,
+                "offsetX1": 0.0,
+                "offsetX2": 0.0,
+                "offsetY1": 0.0,
+                "offsetY2": 0.0,
+                "radius1": 0.0,
+                "radius2": 0.0
+            },
+            {
+                "NameTag": "SealToy"
+            },
+            {
+                "TextureName": "Seal_Toy",
+                "Index_X": 0,
+                "Index_Y": 0,
+                "Ucoordinates": 512.0,
+                "Vcoordinates": 512.0,
+                "IsSpriteSheet": false,
+                "IsAnimated": false,
+                "MaxIndex": 0,
+                "LayeringOrder": 0
+            },
+            {
+                "0": "DragAndDrop",
+                "ScriptCount": 1
+            },
+            {
+                "Tag": "Tou",
+                "TargetTag": ""
+            },
+            {},
+            {},
+            {},
+            {
+                "type": 2,
+                "gain amount": 20.0,
+                "is_dragging": false
+            },
+            {},
+            {}
+        ],
+        "10": [
+            {
+                "posX": 0.6753605604171753,
+                "posY": 0.12399999797344208,
+                "scaleX": 0.21751198172569275,
+                "scaleY": 0.21751198172569275,
+                "Rot": 0.0
+            },
+            {},
+            {},
+            {
+                "NameTag": "HealthIcon"
+            },
+            {
+                "TextureName": "health",
+                "Index_X": 0,
+                "Index_Y": 0,
+                "Ucoordinates": 512.0,
+                "Vcoordinates": 512.0,
+                "IsSpriteSheet": false,
+                "IsAnimated": false,
+                "MaxIndex": 0,
+                "LayeringOrder": 1
+            },
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {}
+        ],
+        "11": [
+            {
+                "posX": 0.6753605604171753,
+                "posY": -0.029999999329447746,
+                "scaleX": 0.21751198172569275,
+                "scaleY": 0.21751198172569275,
+                "Rot": 0.0
+            },
+            {},
+            {},
+            {
+                "NameTag": "HungerIcon"
+            },
+            {
+                "TextureName": "hunger",
+                "Index_X": 0,
+                "Index_Y": 0,
+                "Ucoordinates": 512.0,
+                "Vcoordinates": 512.0,
+                "IsSpriteSheet": false,
+                "IsAnimated": false,
+                "MaxIndex": 0,
+                "LayeringOrder": 1
+            },
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {}
+        ],
+        "12": [
+            {
+                "posX": 0.6753605604171753,
+                "posY": -0.1679999977350235,
+                "scaleX": 0.21751198172569275,
+                "scaleY": 0.21751198172569275,
+                "Rot": 0.0
+            },
+            {},
+            {},
+            {
+                "NameTag": "SanityIcon"
+            },
+            {
+                "TextureName": "sanity",
+                "Index_X": 0,
+                "Index_Y": 0,
+                "Ucoordinates": 512.0,
+                "Vcoordinates": 512.0,
+                "IsSpriteSheet": false,
+                "IsAnimated": false,
+                "MaxIndex": 0,
+                "LayeringOrder": 1
+            },
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {}
+        ],
+        "13": [
+            {
+                "posX": 1.1399999856948853,
+                "posY": 0.11400000005960464,
+                "scaleX": 0.8989999890327454,
+                "scaleY": 0.0689999982714653,
+                "Rot": 0.0
+            },
+            {},
+            {},
+            {
+                "NameTag": "HealthBar"
+            },
+            {
+                "TextureName": "health bar",
+                "Index_X": 0,
+                "Index_Y": 0,
+                "Ucoordinates": 512.0,
+                "Vcoordinates": 512.0,
+                "IsSpriteSheet": false,
+                "IsAnimated": false,
+                "MaxIndex": 0,
+                "LayeringOrder": 0
+            },
+            {
+                "0": "HealthBar",
+                "ScriptCount": 1
+            },
+            {},
+            {},
+            {
+                "ElementType": 2,
+                "offsetX": 0.0,
+                "offsetY": 0.0
+            },
+            {},
+            {},
+            {},
+            {}
+        ],
+        "14": [
+            {
+                "posX": 1.1399999856948853,
+                "posY": -0.02500000037252903,
+                "scaleX": 0.8989999890327454,
+                "scaleY": 0.0689999982714653,
+                "Rot": 0.0
+            },
+            {},
+            {},
+            {
+                "NameTag": "HungerBar"
+            },
+            {
+                "TextureName": "hunger bar",
+                "Index_X": 0,
+                "Index_Y": 0,
+                "Ucoordinates": 512.0,
+                "Vcoordinates": 512.0,
+                "IsSpriteSheet": false,
+                "IsAnimated": false,
+                "MaxIndex": 0,
+                "LayeringOrder": 0
+            },
+            {
+                "0": "HealthBar",
+                "ScriptCount": 1
+            },
+            {},
+            {},
+            {
+                "ElementType": 3,
+                "offsetX": 0.0,
+                "offsetY": 0.0
+            },
+            {},
+            {},
+            {},
+            {}
+        ],
+        "15": [
+            {
+                "posX": 1.1399999856948853,
+                "posY": -0.15299999713897705,
+                "scaleX": 0.8989999890327454,
+                "scaleY": 0.0689999982714653,
+                "Rot": 0.0
+            },
+            {},
+            {},
+            {
+                "NameTag": "SanityBar"
+            },
+            {
+                "TextureName": "sanity bar",
+                "Index_X": 0,
+                "Index_Y": 0,
+                "Ucoordinates": 512.0,
+                "Vcoordinates": 512.0,
+                "IsSpriteSheet": false,
+                "IsAnimated": false,
+                "MaxIndex": 0,
+                "LayeringOrder": 0
+            },
+            {
+                "0": "HealthBar",
+                "ScriptCount": 1
+            },
+            {},
+            {},
+            {
+                "ElementType": 4,
+                "offsetX": 0.0,
+                "offsetY": 0.0
+            },
+            {},
+            {},
+            {},
+            {}
+        ],
+        "16": [
+            {
+                "posX": -1.469074010848999,
+                "posY": 0.7429999709129333,
+                "scaleX": 1.0,
+                "scaleY": 1.0,
+                "Rot": 0.0
+            },
+            {},
+            {},
+            {
+                "NameTag": "TimerDisplay"
+            },
+            {},
+            {
+                "0": "TimerDisplay",
+                "ScriptCount": 1
+            },
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {
+                "Content": "00:00:00",
+                "Font": "DSEG7Classic-Bold",
+                "Size": 35.29999923706055,
+                "ColorR": 0.0,
+                "ColorG": 1.0,
+                "ColorB": 0.0,
+                "ColorA": 1.0,
+                "PosX": 0.0,
+                "PosY": 0.0,
+                "Line Height": 0,
+                "WorldSpace": true,
+                "Center": false
+            }
+        ],
+        "17": [
+            {},
+            {},
+            {},
+            {
+                "NameTag": "seal_title"
+            },
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {
+                "Content": "SEAL",
+                "Font": "ChauPhilomeneOne-Regular",
+                "Size": 72.0,
+                "ColorR": 0.31651291251182556,
+                "ColorG": 0.7254902124404907,
+                "ColorB": 0.3285415470600128,
+                "ColorA": 1.0,
+                "PosX": 0.6399999856948853,
+                "PosY": 0.6299999952316284,
+                "Line Height": 50,
+                "WorldSpace": false,
+                "Center": false
+            }
+        ],
+        "18": [
+            {},
+            {},
+            {},
+            {
+                "NameTag": "seal enclosure"
+            },
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {
+                "Content": "Enclosure 2 - 04-01-5A",
+                "Font": "ChauPhilomeneOne-Regular",
+                "Size": 36.0,
+                "ColorR": 0.31651291251182556,
+                "ColorG": 0.7254902124404907,
+                "ColorB": 0.3285415470600128,
+                "ColorA": 1.0,
+                "PosX": 0.6399999856948853,
+                "PosY": 0.550000011920929,
+                "Line Height": 50,
+                "WorldSpace": false,
+                "Center": false
+            }
+        ],
+        "19": [
+            {},
+            {},
+            {},
+            {
+                "NameTag": "seal_intro"
+            },
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {
+                "Content": "A chubby-looking seal rests on the\nrocks, its large black eyes impossibly\nshiny in the light.",
+                "Font": "ChauPhilomeneOne-Regular",
+                "Size": 36.0,
+                "ColorR": 0.4215686321258545,
+                "ColorG": 0.41214776039123535,
+                "ColorB": 0.41123607754707336,
+                "ColorA": 0.501960813999176,
+                "PosX": 0.6399999856948853,
+                "PosY": 0.4399999976158142,
+                "Line Height": 62,
+                "WorldSpace": false,
+                "Center": false
+            }
+        ],
+        "20": [
+            {
+                "posX": 0.0,
+                "posY": 0.0,
+                "scaleX": 0.20000000298023224,
+                "scaleY": 0.20000000298023224,
+                "Rot": 0.0
+            },
+            {},
+            {},
+            {
+                "NameTag": "Target"
+            },
+            {
+                "TextureName": "target",
+                "Index_X": 0,
+                "Index_Y": 0,
+                "Ucoordinates": 512.0,
+                "Vcoordinates": 512.0,
+                "IsSpriteSheet": false,
+                "IsAnimated": false,
+                "MaxIndex": 0,
+                "LayeringOrder": 0
+            },
+            {},
+            {
+                "Tag": "target",
+                "TargetTag": ""
+            },
+            {},
+            {},
+            {},
+            {},
+            {},
+            {}
+        ],
+        "21": [
+            {
+                "posX": 1.0999298095703125,
+                "posY": -0.54035484790802,
+                "scaleX": 0.9850000143051147,
+                "scaleY": 0.5099999904632568,
+                "Rot": 0.0
+            },
+            {},
+            {},
+            {
+                "NameTag": "LogObj"
+            },
+            {
+                "TextureName": "PlaceholderLogbg",
+                "Index_X": 0,
+                "Index_Y": 0,
+                "Ucoordinates": 512.0,
+                "Vcoordinates": 512.0,
+                "IsSpriteSheet": false,
+                "IsAnimated": false,
+                "MaxIndex": 0,
+                "LayeringOrder": 0
+            },
+            {
+                "0": "DigeticLog",
+                "ScriptCount": 1
+            },
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {
+                "Content": "[00:00:00] This is a Log entry",
+                "Font": "Jersey10Charted-Regular",
+                "Size": 25.899999618530273,
+                "ColorR": 1.0,
+                "ColorG": 0.0,
+                "ColorB": 0.0,
+                "ColorA": 1.0,
+                "PosX": -0.4699999988079071,
+                "PosY": 0.20000000298023224,
+                "Line Height": 0,
+                "WorldSpace": true,
+                "Center": false
+            }
+        ]
+    }
+}
