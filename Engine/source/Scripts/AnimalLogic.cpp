@@ -120,34 +120,38 @@ namespace NocturnalEngine {
 	void AnimalLogic::LogLowHealth(AnimalAttributes& aA) {
 		std::string animalName = p_ecs.GetComponent<NameTag>(entityID).GetNameTag() == "Animal" ? aA.WhatKindOfAnimalIsThis() : p_ecs.GetComponent<NameTag>(entityID).GetNameTag();
 
-		if (aA.current_health <= aA.maxHealth / 2.0 && !aA.healthWarn)
+		if (aA.current_health <= aA.maxHealth / 2.0 && aA.healthWarnLevel<1)
 		{
 			p_GameManager.AddLogEntry("WARNING! " + animalName + "'s Health is below 50%!");
-			aA.healthWarn = true;
+			aA.healthWarnLevel++;
 		}
-		else if (aA.current_health > aA.maxHealth / 2.0 && aA.healthWarn) {
-			aA.healthWarn = false;
+		else if (aA.current_health > aA.maxHealth / 2.0 && aA.healthWarnLevel!=0) {
+			aA.healthWarnLevel = 0;
 		}
-		if (aA.current_hunger <= aA.maxHunger / 2.0 && !aA.hungerWarn)
+		if (aA.current_hunger <= aA.maxHunger / 2.0 && aA.hungerWarnLevel<1)
 		{
 			p_GameManager.AddLogEntry("WARNING! " + animalName + "'s Hunger is below 50%!");
-			aA.hungerWarn = true;
+			aA.hungerWarnLevel++;
 		}
-		else if (aA.current_hunger > aA.maxHunger / 2.0 && aA.hungerWarn) {
-			aA.hungerWarn = false;
+		else if (aA.current_hunger > aA.maxHunger / 2.0 && aA.hungerWarnLevel!=0) {
+			aA.hungerWarnLevel = 0;
 		}
-		if (aA.current_sanity <= aA.maxSanity / 2.0 && !aA.sanityWarn)
+		if (aA.current_sanity <= aA.maxSanity / 2.0 && aA.sanityWarnLevel<1)
 		{
 			p_GameManager.AddLogEntry("WARNING! " + animalName + "'s Sanity is below 50%!");
-			aA.sanityWarn = true;
+			aA.sanityWarnLevel++;
 		}
-		else if (aA.current_sanity > aA.maxSanity / 2.0 && aA.sanityWarn) {
-			aA.sanityWarn = false;
+		else if (aA.current_sanity > aA.maxSanity / 2.0 && aA.sanityWarnLevel!0) {
+			aA.sanityWarnLevel = 0;
 		}
 
 		if (!aA.is_alive)
 		{
 			p_GameManager.AddLogEntry( animalName + " is dead.");
+		}
+		if (aA.isEscaped)
+		{
+			p_GameManager.AddLogEntry(animalName + " has breached containment.");
 		}
 	}
 

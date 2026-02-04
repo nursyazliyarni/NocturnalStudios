@@ -70,6 +70,7 @@ namespace NocturnalEngine
 			 current_sanity=maxSanity=100.0;
 			 healthDecayRate=hungerDecayRate=sanityDecayRate=1.0;
 			 is_alive = true;
+			 isEscaped=false;
 		}
 
 	public:
@@ -82,8 +83,8 @@ namespace NocturnalEngine
 		double healthDecayRate;
 		double hungerDecayRate;
 		double sanityDecayRate;
-		bool is_alive;
+		bool is_alive,isEscaped;
 
-		bool healthWarn{ false }, hungerWarn{ false }, sanityWarn{ false };
+		int healthWarnLevel{ 0 }, hungerWarnLevel{ 0 }, sanityWarnLevel{ 0 };
 	};
 }

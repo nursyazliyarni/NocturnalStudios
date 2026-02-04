@@ -12,14 +12,20 @@
         9
     ],
     "Number of Entities": {
-        "Entities": 5
+        "Entities": 11
     },
     "EntitySignatures": [
         "00000000000000000000000011111001",
         "00000000000000000000000000011001",
         "00000000000000000000000000011001",
         "00000000000000000001000000001001",
-        "00000000000000000001000000001001"
+        "00000000000000000001000000001001",
+        "00000000000000000001000000001001",
+        "00000000000000000001000000001001",
+        "00000000000000000001000000001001",
+        "00000000000000000001000000001001",
+        "00000000000000000000000001111101",
+        "00000000000000000000000001111101"
     ],
     "Components": {
         "0": [
@@ -177,8 +183,8 @@
         ],
         "4": [
             {
-                "posX": -0.3348705768585205,
-                "posY": 0.18988093733787537,
+                "posX": -0.33756422996520996,
+                "posY": 0.19385966658592224,
                 "scaleX": 1.0,
                 "scaleY": 1.0,
                 "Rot": 0.0
@@ -199,7 +205,7 @@
             {
                 "Content": "The management have noticed your\nincompetence and have made the\nunanimous decision to #fire you$",
                 "Font": "Flexi_IBM_VGA_False_437",
-                "Size": 24.899999618530273,
+                "Size": 27.299999237060547,
                 "ColorR": 0.0,
                 "ColorG": 0.0,
                 "ColorB": 0.0,
@@ -211,6 +217,266 @@
                 "WorldSpace": true,
                 "Center": false
             }
+        ],
+        "5": [
+            {
+                "posX": -0.33756422996520996,
+                "posY": 0.008996933698654175,
+                "scaleX": 1.0,
+                "scaleY": 1.0,
+                "Rot": 0.0
+            },
+            {},
+            {},
+            {
+                "NameTag": "EscapedStats"
+            },
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {
+                "Content": "Number of animals in their enclosures: 0/4",
+                "Font": "Flexi_IBM_VGA_False_437",
+                "Size": 22.5,
+                "ColorR": 0.25,
+                "ColorG": 0.25,
+                "ColorB": 0.25,
+                "ColorA": 1.0,
+                "PosX": 0.0,
+                "PosY": 0.0,
+                "Rotation": 0.0,
+                "Line Height": 0,
+                "WorldSpace": true,
+                "Center": false
+            }
+        ],
+        "6": [
+            {
+                "posX": -0.33756422996520996,
+                "posY": -0.05798235535621643,
+                "scaleX": 1.0,
+                "scaleY": 1.0,
+                "Rot": 0.0
+            },
+            {},
+            {},
+            {
+                "NameTag": "BarStats"
+            },
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {
+                "Content": "Number of times the bars have reached\nbelow 20%: 67",
+                "Font": "Flexi_IBM_VGA_False_437",
+                "Size": 22.5,
+                "ColorR": 0.0,
+                "ColorG": 0.0,
+                "ColorB": 0.0,
+                "ColorA": 1.0,
+                "PosX": 0.0,
+                "PosY": 0.0,
+                "Rotation": 0.0,
+                "Line Height": 0,
+                "WorldSpace": true,
+                "Center": false
+            }
+        ],
+        "7": [
+            {
+                "posX": -0.33756422996520996,
+                "posY": -0.17988434433937073,
+                "scaleX": 1.0,
+                "scaleY": 1.0,
+                "Rot": 0.0
+            },
+            {},
+            {},
+            {
+                "NameTag": "Leave"
+            },
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {
+                "Content": "Please leave the premises #immediately$",
+                "Font": "Flexi_IBM_VGA_False_437",
+                "Size": 22.299999237060547,
+                "ColorR": 0.0,
+                "ColorG": 0.0,
+                "ColorB": 0.0,
+                "ColorA": 1.0,
+                "PosX": 0.0,
+                "PosY": 0.0,
+                "Rotation": 0.0,
+                "Line Height": 0,
+                "WorldSpace": true,
+                "Center": false
+            }
+        ],
+        "8": [
+            {
+                "posX": -0.33756422996520996,
+                "posY": -0.281692773103714,
+                "scaleX": 1.0,
+                "scaleY": 1.0,
+                "Rot": 0.0
+            },
+            {},
+            {},
+            {
+                "NameTag": "sign"
+            },
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {
+                "Content": "If there are no errors,\n#Please mark accordingly.$",
+                "Font": "Flexi_IBM_VGA_False_437",
+                "Size": 27.299999237060547,
+                "ColorR": 0.0,
+                "ColorG": 0.0,
+                "ColorB": 0.0,
+                "ColorA": 1.0,
+                "PosX": 0.0,
+                "PosY": 0.0,
+                "Rotation": 0.0,
+                "Line Height": 0,
+                "WorldSpace": true,
+                "Center": false
+            }
+        ],
+        "9": [
+            {
+                "posX": -0.09023542702198029,
+                "posY": -0.5185675621032715,
+                "scaleX": 0.2475000023841858,
+                "scaleY": 0.2475000023841858,
+                "Rot": 0.0
+            },
+            {},
+            {
+                "ColliderType1": 4,
+                "ColliderType2": 0,
+                "minX1": 0.10000000149011612,
+                "minX2": 0.0,
+                "minY1": 0.10000000149011612,
+                "minY2": 0.0,
+                "maxX1": 0.10000000149011612,
+                "maxX2": 0.0,
+                "maxY1": 0.10000000149011612,
+                "maxY2": 0.0,
+                "offsetX1": 0.0,
+                "offsetX2": 0.0,
+                "offsetY1": 0.0,
+                "offsetY2": 0.0,
+                "radius1": 0.0,
+                "radius2": 0.0
+            },
+            {
+                "NameTag": "RestartButton"
+            },
+            {
+                "TextureName": "Xmark",
+                "Index_X": 0,
+                "Index_Y": 0,
+                "Ucoordinates": 512.0,
+                "Vcoordinates": 512.0,
+                "IsSpriteSheet": false,
+                "IsAnimated": false,
+                "MaxIndex": 0,
+                "LayeringOrder": 0
+            },
+            {
+                "0": "ButtonResponse",
+                "ScriptCount": 1
+            },
+            {
+                "Tag": "RestartT",
+                "TargetTag": ""
+            },
+            {},
+            {},
+            {},
+            {},
+            {},
+            {}
+        ],
+        "10": [
+            {
+                "posX": 0.27070745825767517,
+                "posY": -0.5185675621032715,
+                "scaleX": 0.2475000023841858,
+                "scaleY": 0.2475000023841858,
+                "Rot": 0.0
+            },
+            {},
+            {
+                "ColliderType1": 4,
+                "ColliderType2": 0,
+                "minX1": 0.10000000149011612,
+                "minX2": 0.0,
+                "minY1": 0.10000000149011612,
+                "minY2": 0.0,
+                "maxX1": 0.10000000149011612,
+                "maxX2": 0.0,
+                "maxY1": 0.10000000149011612,
+                "maxY2": 0.0,
+                "offsetX1": 0.0,
+                "offsetX2": 0.0,
+                "offsetY1": 0.0,
+                "offsetY2": 0.0,
+                "radius1": 0.0,
+                "radius2": 0.0
+            },
+            {
+                "NameTag": "QuitButton"
+            },
+            {
+                "TextureName": "Xmark",
+                "Index_X": 0,
+                "Index_Y": 0,
+                "Ucoordinates": 512.0,
+                "Vcoordinates": 512.0,
+                "IsSpriteSheet": false,
+                "IsAnimated": false,
+                "MaxIndex": 0,
+                "LayeringOrder": 0
+            },
+            {
+                "0": "ButtonResponse",
+                "ScriptCount": 1
+            },
+            {
+                "Tag": "QuitT",
+                "TargetTag": ""
+            },
+            {},
+            {},
+            {},
+            {},
+            {},
+            {}
         ]
     }
 }

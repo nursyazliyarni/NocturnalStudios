@@ -141,6 +141,14 @@ namespace NocturnalEngine
 			{
 				spt.SetTexture("RESTART_B");
 			}
+			if (ID_tag.GetTag() == "RestartT" && !(p_Input->MousePressed(GLFW_MOUSE_BUTTON_LEFT)))
+			{
+				spt.SetTexture("Xmark");
+			}
+			if (ID_tag.GetTag() == "QuitT" && !(p_Input->MousePressed(GLFW_MOUSE_BUTTON_LEFT)))
+			{
+				spt.SetTexture("Xmark");
+			}
 
 			if (ID_tag.GetTag() == "Resume" && !(p_Input->MousePressed(GLFW_MOUSE_BUTTON_LEFT)))
 			{
@@ -181,8 +189,16 @@ namespace NocturnalEngine
 				{
 					p_Scene->setSceneToLoad("Assets/Scene/FlamingoScene.json");//reset the game level in game over
 				}
+				if (ID_tag.GetTag() == "RestartT")
+				{
+					p_Scene->setSceneToLoad("Assets/Scene/FlamingoScene.json");//reset the game level in game over
+				}
 
 				if (ID_tag.GetTag() == "Quit" && p_GUI->Check_HTP() == false)
+				{
+					p_Scene->setSceneToLoad("Assets/Scene/Quit.json");//exit to the are you sure page
+				}
+				if (ID_tag.GetTag() == "QuitT" && p_GUI->Check_HTP() == false)
 				{
 					p_Scene->setSceneToLoad("Assets/Scene/Quit.json");//exit to the are you sure page
 				}
@@ -379,6 +395,14 @@ namespace NocturnalEngine
 			if (ID_tag.GetTag() == "Restart")
 			{
 				spt.SetTexture("RESTART_Y");
+			}
+			if (ID_tag.GetTag() == "RestartT")
+			{
+				spt.SetTexture("Blank");
+			}
+			if (ID_tag.GetTag() == "QuitT")
+			{
+				spt.SetTexture("Blank");
 			}
 
 			if (ID_tag.GetTag() == "HowToPlay")
