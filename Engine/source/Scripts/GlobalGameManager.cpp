@@ -355,7 +355,16 @@ namespace NocturnalEngine {
     }
 
     void GameManager::CombinedSceneUpdate(float dt) {
-
+        UNREFERENCED_PARAMETER(dt);
+        switch (innerState)
+        {
+        case 0://entering a new scene
+            break; 
+        case 1:
+            break;
+        case 2://exiting a scene
+            break;
+        }
     }
 
     Entity GameManager::GetEntityByName(const std::string name) {
