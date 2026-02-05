@@ -85,7 +85,7 @@ namespace NocturnalEngine {
 		bool HTP {false};
 		bool initial_hover;
 		bool how_to_play;
-		bool entercollider{false},leftcollider{ true };
+		bool entercollider{false},leftcollider{ false };
 
 		
 	

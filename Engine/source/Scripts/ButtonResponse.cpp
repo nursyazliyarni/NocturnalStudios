@@ -109,7 +109,7 @@ namespace NocturnalEngine
 		{
 			if (initial_hover && p_ecs.HaveComponent<Audio>(GetScriptEntityID()) && ((p_ecs.GetComponent<Audio>(GetScriptEntityID())).GetSize() > 0) && (p_GUI->Check_HTP() == false) && (p_Scene->isGameplay == false))
 			{
-				p_ecs.GetComponent<Audio>(GetScriptEntityID())[0].should_play = true; //menu hover audio
+				p_ecs.GetComponent<Audio>(GetScriptEntityID())[1].should_play = true; //menu hover audio
 				initial_hover = false;
 				leftcollider =true;
 				entercollider = true;
@@ -120,7 +120,7 @@ namespace NocturnalEngine
 				//spt.SetTexture("Start_Hover");
 				if (entercollider)
 				{
-					transform.ScaleBy(0.05f);
+					transform.ScaleBy(1.2f);
 					entercollider = false;
 				}
 			}
@@ -130,7 +130,7 @@ namespace NocturnalEngine
 				//spt.SetTexture("Quit_Hover");
 				if (entercollider)
 				{
-					transform.ScaleBy(0.05f);
+					transform.ScaleBy(1.2f);
 					entercollider = false;
 				}
 			}
@@ -140,7 +140,7 @@ namespace NocturnalEngine
 				//spt.SetTexture("Options_Hover");
 				if (entercollider)
 				{
-					transform.ScaleBy(0.05f);
+					transform.ScaleBy(1.2f);
 					entercollider = false;
 				}
 			}
@@ -148,6 +148,11 @@ namespace NocturnalEngine
 			if (ID_tag.GetTag() == "HowToPlay" && spt.GetTexture() != "HowToPlay" && !(p_Input->MousePressed(GLFW_MOUSE_BUTTON_LEFT)))
 			{
 				//spt.SetTexture("htp_button_Hover");
+				if (entercollider)
+				{
+					transform.ScaleBy(1.2f);
+					entercollider = false;
+				}
 			}
 
 			if (ID_tag.GetTag() == "MainMenu" && !(p_Input->MousePressed(GLFW_MOUSE_BUTTON_LEFT)))
@@ -335,7 +340,7 @@ namespace NocturnalEngine
 			{
 				if (p_ecs.HaveComponent<Audio>(GetScriptEntityID()) && ((p_ecs.GetComponent<Audio>(GetScriptEntityID())).GetSize() > 1) && (p_GUI->Check_HTP() == false))
 				{
-					p_ecs.GetComponent<Audio>(GetScriptEntityID())[1].should_play = true; //menu click audio
+					p_ecs.GetComponent<Audio>(GetScriptEntityID())[0].should_play = true; //menu click audio
 				}
 				//when mouse is held down set the coresspoding sprites to clicked state
 				if (ID_tag.GetTag() == "Start" && p_GUI->Check_HTP() == false)
@@ -365,7 +370,7 @@ namespace NocturnalEngine
 
 				if (ID_tag.GetTag() == "HowToPlay")
 				{
-					spt.SetTexture("htp_button_Click");
+					//spt.SetTexture("htp_button_Click");
 				}
 
 				if (ID_tag.GetTag() == "Options" && p_GUI->Check_HTP() == false)
@@ -416,10 +421,10 @@ namespace NocturnalEngine
 
 			if (ID_tag.GetTag() == "Start")
 			{
-				spt.SetTexture("menuPLAY_btn");
+				spt.SetTexture("BlankArrow");
 				if (leftcollider)
 				{
-					transform.ScaleBy(-0.05f);
+					transform.ScaleBy(1.f/1.2f);
 					leftcollider = false;
 				}
 				//
@@ -427,19 +432,19 @@ namespace NocturnalEngine
 
 			if (ID_tag.GetTag() == "Quit")
 			{
-				spt.SetTexture("quitBtn");
+				spt.SetTexture("BlankArrow");
 				if (leftcollider)
 				{
-					transform.ScaleBy(-0.05f);
+					transform.ScaleBy(1.f / 1.2f);
 					leftcollider = false;
 				}
 			}
 			if (ID_tag.GetTag() == "Options")
 			{
-				spt.SetTexture("optionsBtn");
+				spt.SetTexture("BlankArrow");
 				if (leftcollider)
 				{
-					transform.ScaleBy(-0.05f);
+					transform.ScaleBy(1.f / 1.2f);
 					leftcollider = false;
 				}
 			}
@@ -468,7 +473,12 @@ namespace NocturnalEngine
 
 			if (ID_tag.GetTag() == "HowToPlay")
 			{
-				spt.SetTexture("htp_button_Idle");
+				spt.SetTexture("BlankArrow");
+				if (leftcollider)
+				{
+					transform.ScaleBy(1.f / 1.2f);
+					leftcollider = false;
+				}
 			}
 
 			if (ID_tag.GetTag() == "Resume")
