@@ -2080,7 +2080,7 @@ namespace NocturnalEngine {
                             ImGui::Text("Inserted Audio Channel Group:");
                             const char* ChList = "None\0Master\0BGM\0SFX";
                             int ChIndex = static_cast<int>(AudioComp[current_audio].mChannelGroup);
-                            ImGui::Combo("###test", &ChIndex, ChList);
+                            ImGui::Combo("###why is this named tes", &ChIndex, ChList);
                             ImGui::PushItemWidth(100.0f);
                             AudioComp[current_audio].mChannelGroup = static_cast<Audio::AudioType>(ChIndex);
                         }

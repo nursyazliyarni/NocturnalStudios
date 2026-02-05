@@ -89,9 +89,9 @@ namespace NocturnalEngine {
 
          void setTargetVisibility(bool t) { targetVisibility = t; }
 
-         bool IsNewSceneManagement() const { return freakyMode; }
+         bool IsNewSceneManagement() const { return altMode; }
 
-         void ToggleSceneManagement() { freakyMode = !freakyMode; }
+         void ToggleSceneManagement() { altMode = !altMode; }
 
          void SetSceneToSwitch(std::string);
     private:
@@ -120,7 +120,7 @@ namespace NocturnalEngine {
 
 
         //all these is for another method of loading scenes i am proposing
-        bool freakyMode{ false }, combinedSceneSetup{ false };
+        bool altMode{ false }, combinedSceneSetup{ false };
         int innerState{ 0 };
         Entity animalE{}, cageBGE{}, containmentE[3]{0,0,0};
         struct AnimalSceneData

@@ -64,10 +64,13 @@ namespace NocturnalEngine
 		void SetBGMVolume(float vol) { bgmVol = vol; }
 		void SetSFXVolume(float vol) { sfxVol = vol; }
 		void SetMasterVolume(float vol) { masterVol = vol; }
+
+		bool IsRandomized()const { return randomFromArray; }
 	private:
 		std::vector<AudioPiece> AudioArr;
 		float bgmVol;
 		float sfxVol;
 		float masterVol;
+		bool randomFromArray{ false };
 	};
 }

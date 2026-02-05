@@ -341,29 +341,47 @@ namespace NocturnalEngine {
         
 
 
-        if (sceneAnimalPair.second.current_health <= sceneAnimalPair.second.maxHealth / 2.0 && sceneAnimalPair.second.healthWarnLevel<1)
+        if (sceneAnimalPair.second.current_health <= sceneAnimalPair.second.maxHealth / 2.0 && sceneAnimalPair.second.healthWarnLevel < 1)
         {
             AddLogEntry("WARNING! " + sceneAnimalPair.first + "'s Health is below 50%!");
             sceneAnimalPair.second.healthWarnLevel++;
         }
-        else if (sceneAnimalPair.second.current_health > sceneAnimalPair.second.maxHealth / 2.0 && sceneAnimalPair.second.healthWarnLevel!=0) {
+        else if (sceneAnimalPair.second.current_health <= sceneAnimalPair.second.maxHealth / 5.0 && sceneAnimalPair.second.healthWarnLevel < 2)
+        {
+            AddLogEntry("WARNING! " + sceneAnimalPair.first + "'s Health is below 20%!");
+            sceneAnimalPair.second.healthWarnLevel++;
+            AddCrit();
+        }
+        else if (sceneAnimalPair.second.current_health > sceneAnimalPair.second.maxHealth / 2.0 && sceneAnimalPair.second.healthWarnLevel != 0) {
             sceneAnimalPair.second.healthWarnLevel = 0;
         }
-        if (sceneAnimalPair.second.current_hunger <= sceneAnimalPair.second.maxHunger / 2.0 && sceneAnimalPair.second.hungerWarnLevel<1)
+        if (sceneAnimalPair.second.current_hunger <= sceneAnimalPair.second.maxHunger / 2.0 && sceneAnimalPair.second.hungerWarnLevel < 1)
         {
             AddLogEntry("WARNING! " + sceneAnimalPair.first + "'s Hunger is below 50%!");
-            sceneAnimalPair.second.hungerWarnLevel ++;
+            sceneAnimalPair.second.hungerWarnLevel++;
         }
-        else if (sceneAnimalPair.second.current_hunger > sceneAnimalPair.second.maxHunger / 2.0 && sceneAnimalPair.second.hungerWarnLevel!=0) {
+        else if (sceneAnimalPair.second.current_hunger <= sceneAnimalPair.second.maxHunger / 5.0 && sceneAnimalPair.second.hungerWarnLevel < 2)
+        {
+            AddLogEntry("WARNING! " + sceneAnimalPair.first + "'s Hunger is below 20%!");
+            sceneAnimalPair.second.hungerWarnLevel++;
+            AddCrit();
+        }
+        else if (sceneAnimalPair.second.current_hunger > sceneAnimalPair.second.maxHunger / 2.0 && sceneAnimalPair.second.hungerWarnLevel != 0) {
             sceneAnimalPair.second.hungerWarnLevel = 0;
         }
-        if (sceneAnimalPair.second.current_sanity <= sceneAnimalPair.second.maxSanity / 2.0 && sceneAnimalPair.second.sanityWarnLevel<1)
+        if (sceneAnimalPair.second.current_sanity <= sceneAnimalPair.second.maxSanity / 2.0 && sceneAnimalPair.second.sanityWarnLevel < 1)
         {
             AddLogEntry("WARNING! " + sceneAnimalPair.first + "'s Sanity is below 50%!");
-            sceneAnimalPair.second.sanityWarnLevel ++;
+            sceneAnimalPair.second.sanityWarnLevel++;
         }
-        else if (sceneAnimalPair.second.current_sanity > sceneAnimalPair.second.maxSanity / 2.0 && sceneAnimalPair.second.sanityWarnLevel!=0) {
-            sceneAnimalPair.second.sanityWarnLevel =0;
+        else if (sceneAnimalPair.second.current_sanity <= sceneAnimalPair.second.maxSanity / 5.0 && sceneAnimalPair.second.sanityWarnLevel < 2)
+        {
+            AddLogEntry("WARNING! " + sceneAnimalPair.first + "'s Sanity is below 20%!");
+            sceneAnimalPair.second.sanityWarnLevel++;
+            AddCrit();
+        }
+        else if (sceneAnimalPair.second.current_sanity > sceneAnimalPair.second.maxSanity / 2.0 && sceneAnimalPair.second.sanityWarnLevel != 0) {
+            sceneAnimalPair.second.sanityWarnLevel = 0;
         }
 
         if (!sceneAnimalPair.second.is_alive)

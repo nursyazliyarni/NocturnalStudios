@@ -630,7 +630,7 @@ Overload function for Draw Quad using vec3 position with texture
 		Translate4x4(translate, position.x, position.y, position.z);
 		Scale4x4(scale, size.x, size.y, 1.0f);
 		RotRad4x4(rot, rotation, { 0.0f, 0.0f, 1.0f });
-		transform = translate* scale * rot ;
+		transform = translate * rot * scale; 
 		DrawQuad(transform, texture);
 	}
 	/*!*************************************************************************

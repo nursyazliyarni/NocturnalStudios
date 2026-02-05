@@ -42,6 +42,7 @@ bool NocturnalEngine::Audio::Deserialize(const rapidjson::Value& obj)
 	bgmVol = (float)obj["BGM Volume"].GetDouble();
 	sfxVol = (float)obj["SFX Volume"].GetDouble();
 	masterVol = (float)obj["Master Volume"].GetDouble();
+	if (obj.HasMember("RandomFromArray") && obj["RandomFromArray"].IsBool())randomFromArray = obj["RandomFromArray"].GetBool();
 	return true;
 }
 
@@ -71,5 +72,7 @@ bool NocturnalEngine::Audio::Serialize(rapidjson::PrettyWriter<rapidjson::String
 	writer->Double(sfxVol);
 	writer->Key("Master Volume");
 	writer->Double(masterVol);
+	writer->Key("RandomFromArray");
+	writer->Bool(randomFromArray);
 	return true;
 }
