@@ -140,6 +140,36 @@ Application constructor
 #endif
 			p_Scene->checkForSceneToLoad();
 
+			// Global Esc behavior: return to main menu from gameplay or HowToPlay scene.
+			bool isHowToPlayScene = false;
+			for (Entity entity = 0; entity < p_ecs.GetTotalEntities(); ++entity)
+			{
+				if (p_ecs.HaveComponent<NameTag>(entity) &&
+					p_ecs.GetComponent<NameTag>(entity).GetNameTag() == "HowToPlayBackground")
+				{
+					isHowToPlayScene = true;
+					break;
+				}
+			}
+
+			if (p_Editor->is_ShowWindow == false &&
+				p_Input->KeyPressed(GLFW_KEY_ESCAPE) &&
+				(p_Scene->isGameplay || p_GUI->check_pause() || isHowToPlayScene))
+			{
+				const bool shouldResetGameplayState = (p_Scene->isGameplay || p_GUI->check_pause());
+				if (shouldResetGameplayState)
+				{
+					p_GameManager.ResetSystem(false);
+				}
+
+				if (p_GUI->check_pause())
+				{
+					p_GUI->toggle_pause();
+				}
+				p_GUI->sub_menu = false;
+				p_Scene->setSceneToLoad("Assets/Scene/Menu.json");
+			}
+
 			if (p_Input->KeyPressed(GLFW_KEY_F9) && p_MemoryManager.IsEnabled())
 			{
 				p_MemoryManager.Shutdown();

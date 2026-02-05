@@ -108,7 +108,7 @@ namespace NocturnalEngine {
         void LogLowHealth(std::pair < const std ::string , AnimalAttributes > & sceneAnimalPair);
 
 
-        float gameTimeElapsed{}, winRequirement{10.f}; //in seconds
+        float gameTimeElapsed{}, winRequirement{120.f}; //in seconds
 
         std::string currScene;
         GameState currState;

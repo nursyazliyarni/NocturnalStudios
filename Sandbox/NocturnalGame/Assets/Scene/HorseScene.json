@@ -251,6 +251,7 @@
                 "ColorA": 1.0,
                 "PosX": 0.38749998807907104,
                 "PosY": 0.2280000001192093,
+                "Rotation": 0.0,
                 "Line Height": 0,
                 "WorldSpace": false,
                 "Center": false
@@ -331,6 +332,7 @@
                 "ColorA": 1.0,
                 "PosX": 0.38749998807907104,
                 "PosY": 0.09799999743700027,
+                "Rotation": 0.0,
                 "Line Height": 0,
                 "WorldSpace": false,
                 "Center": false
@@ -411,6 +413,7 @@
                 "ColorA": 1.0,
                 "PosX": 0.38749998807907104,
                 "PosY": -0.1720000058412552,
+                "Rotation": 0.0,
                 "Line Height": 0,
                 "WorldSpace": false,
                 "Center": false
@@ -949,6 +952,7 @@
                 "ColorA": 1.0,
                 "PosX": 0.0,
                 "PosY": 0.0,
+                "Rotation": 0.0,
                 "Line Height": 0,
                 "WorldSpace": true,
                 "Center": false
@@ -979,6 +983,7 @@
                 "ColorA": 1.0,
                 "PosX": 0.6399999856948853,
                 "PosY": 0.6299999952316284,
+                "Rotation": 0.0,
                 "Line Height": 50,
                 "WorldSpace": false,
                 "Center": false
@@ -1009,6 +1014,7 @@
                 "ColorA": 1.0,
                 "PosX": 0.6399999856948853,
                 "PosY": 0.550000011920929,
+                "Rotation": 0.0,
                 "Line Height": 50,
                 "WorldSpace": false,
                 "Center": false
@@ -1030,15 +1036,16 @@
             {},
             {},
             {
-                "Content": "An equine that is trained for \nhorseracing. Until now, it has not\nwon a single race. Needs extra care\nfor health.",
+                "Content": "An equine that is trained for horseracing.\nUntil now, it has not won a single race.\nNeeds extra care for health.",
                 "Font": "ChauPhilomeneOne-Regular",
-                "Size": 36.0,
+                "Size": 34.79999923706055,
                 "ColorR": 0.4215686321258545,
                 "ColorG": 0.41214776039123535,
                 "ColorB": 0.41123607754707336,
                 "ColorA": 0.501960813999176,
                 "PosX": 0.6399999856948853,
-                "PosY": 0.4399999976158142,
+                "PosY": 0.44999998807907104,
+                "Rotation": 0.0,
                 "Line Height": 62,
                 "WorldSpace": false,
                 "Center": false
@@ -1066,7 +1073,7 @@
                 "IsSpriteSheet": false,
                 "IsAnimated": false,
                 "MaxIndex": 0,
-                "LayeringOrder": 0
+                "LayeringOrder": 4
             },
             {},
             {
@@ -1124,6 +1131,7 @@
                 "ColorA": 1.0,
                 "PosX": -0.4699999988079071,
                 "PosY": 0.20000000298023224,
+                "Rotation": 0.0,
                 "Line Height": 0,
                 "WorldSpace": true,
                 "Center": false
