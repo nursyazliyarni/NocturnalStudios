@@ -20,6 +20,7 @@
 #include "Graphics/Graphics.h"
 #include "Input/Input.h"
 #include "Scripts/GlobalGameManager.h"
+#include "Math/Random.h"
 
 
 namespace NocturnalEngine
@@ -257,27 +258,34 @@ namespace NocturnalEngine
 					p_GUI->toggle_script();// tell the system to end the game 
 				}
 
+				int randSoundIndex{ 0 };
+				if (p_ecs.HaveComponent<Audio>(GetScriptEntityID())&& p_ecs.GetComponent<Audio>(GetScriptEntityID()).IsRandomized())
+				{
+					randSoundIndex = Random::Range(0, p_ecs.GetComponent<Audio>(GetScriptEntityID()).GetSize() - 1);
+				}
+
 				if (ID_tag.GetTag() == "FlamingoBtn")
 				{
-					p_ecs.GetComponent<Audio>(GetScriptEntityID())[0].should_play = true;
+					
+					p_ecs.GetComponent<Audio>(GetScriptEntityID())[randSoundIndex].should_play = true;
 					p_Scene->setSceneToLoad("Assets/Scene/FlamingoScene.json");// switch to flamingo scene
 				}
 
 				if (ID_tag.GetTag() == "SealBtn")
 				{
-					p_ecs.GetComponent<Audio>(GetScriptEntityID())[0].should_play = true;
+					p_ecs.GetComponent<Audio>(GetScriptEntityID())[randSoundIndex].should_play = true;
 					p_Scene->setSceneToLoad("Assets/Scene/SealScene.json");// switch to seal scene
 				}
 
 				if (ID_tag.GetTag() == "HorseBtn")
 				{
-					p_ecs.GetComponent<Audio>(GetScriptEntityID())[0].should_play = true;
+					p_ecs.GetComponent<Audio>(GetScriptEntityID())[randSoundIndex].should_play = true;
 					p_Scene->setSceneToLoad("Assets/Scene/HorseScene.json");// switch to horse scene
 				}
 
 				if (ID_tag.GetTag() == "OwlBtn")
 				{
-					p_ecs.GetComponent<Audio>(GetScriptEntityID())[0].should_play = true;
+					p_ecs.GetComponent<Audio>(GetScriptEntityID())[randSoundIndex].should_play = true;
 					p_Scene->setSceneToLoad("Assets/Scene/OwlScene.json");// switch to owl scene
 				}
 
