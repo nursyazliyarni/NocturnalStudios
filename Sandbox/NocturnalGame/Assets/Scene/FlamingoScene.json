@@ -81,7 +81,8 @@
                 "AudioArrCount": 1,
                 "BGM Volume": 1.0,
                 "SFX Volume": 1.0,
-                "Master Volume": 1.0
+                "Master Volume": 1.0,
+                "RandomFromArray": false
             },
             {},
             {},
@@ -388,10 +389,31 @@
                     "Channel": 3,
                     "IsLooping": false
                 },
-                "AudioArrCount": 1,
+                "1": {
+                    "AudioPath": "SFX_Static_02.wav",
+                    "Channel": 3,
+                    "IsLooping": false
+                },
+                "2": {
+                    "AudioPath": "SFX_Static_03.wav",
+                    "Channel": 3,
+                    "IsLooping": false
+                },
+                "3": {
+                    "AudioPath": "SFX_Static_04.wav",
+                    "Channel": 3,
+                    "IsLooping": false
+                },
+                "4": {
+                    "AudioPath": "SFX_Static_05.wav",
+                    "Channel": 3,
+                    "IsLooping": false
+                },
+                "AudioArrCount": 5,
                 "BGM Volume": 1.0,
                 "SFX Volume": 1.0,
-                "Master Volume": 1.0
+                "Master Volume": 1.0,
+                "RandomFromArray": true
             },
             {},
             {},
@@ -469,10 +491,31 @@
                     "Channel": 3,
                     "IsLooping": false
                 },
-                "AudioArrCount": 1,
+                "1": {
+                    "AudioPath": "SFX_Static_02.wav",
+                    "Channel": 3,
+                    "IsLooping": false
+                },
+                "2": {
+                    "AudioPath": "SFX_Static_03.wav",
+                    "Channel": 3,
+                    "IsLooping": false
+                },
+                "3": {
+                    "AudioPath": "SFX_Static_04.wav",
+                    "Channel": 3,
+                    "IsLooping": false
+                },
+                "4": {
+                    "AudioPath": "SFX_Static_05.wav",
+                    "Channel": 3,
+                    "IsLooping": false
+                },
+                "AudioArrCount": 5,
                 "BGM Volume": 1.0,
                 "SFX Volume": 1.0,
-                "Master Volume": 1.0
+                "Master Volume": 1.0,
+                "RandomFromArray": true
             },
             {},
             {},
@@ -545,14 +588,35 @@
             },
             {
                 "0": {
+                    "AudioPath": "SFX_Static_01.wav",
+                    "Channel": 3,
+                    "IsLooping": false
+                },
+                "1": {
                     "AudioPath": "SFX_Static_02.wav",
                     "Channel": 3,
                     "IsLooping": false
                 },
-                "AudioArrCount": 1,
+                "2": {
+                    "AudioPath": "SFX_Static_03.wav",
+                    "Channel": 3,
+                    "IsLooping": false
+                },
+                "3": {
+                    "AudioPath": "SFX_Static_04.wav",
+                    "Channel": 3,
+                    "IsLooping": false
+                },
+                "4": {
+                    "AudioPath": "SFX_Static_05.wav",
+                    "Channel": 3,
+                    "IsLooping": false
+                },
+                "AudioArrCount": 5,
                 "BGM Volume": 1.0,
                 "SFX Volume": 1.0,
-                "Master Volume": 1.0
+                "Master Volume": 1.0,
+                "RandomFromArray": true
             },
             {},
             {},
@@ -626,14 +690,35 @@
             },
             {
                 "0": {
+                    "AudioPath": "SFX_Static_01.wav",
+                    "Channel": 3,
+                    "IsLooping": false
+                },
+                "1": {
+                    "AudioPath": "SFX_Static_02.wav",
+                    "Channel": 3,
+                    "IsLooping": false
+                },
+                "2": {
                     "AudioPath": "SFX_Static_03.wav",
                     "Channel": 3,
                     "IsLooping": false
                 },
-                "AudioArrCount": 1,
+                "3": {
+                    "AudioPath": "SFX_Static_04.wav",
+                    "Channel": 3,
+                    "IsLooping": false
+                },
+                "4": {
+                    "AudioPath": "SFX_Static_05.wav",
+                    "Channel": 3,
+                    "IsLooping": false
+                },
+                "AudioArrCount": 5,
                 "BGM Volume": 1.0,
                 "SFX Volume": 1.0,
-                "Master Volume": 1.0
+                "Master Volume": 1.0,
+                "RandomFromArray": true
             },
             {},
             {},
