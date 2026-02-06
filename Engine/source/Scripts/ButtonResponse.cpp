@@ -201,12 +201,24 @@ namespace NocturnalEngine
 
 			if (ID_tag.GetTag() == "No")
 			{
-				spt.SetTexture("BlankArrow");//to be change
+				//spt.SetTexture("BlankArrow");//to be change
+
+				if (entercollider)
+				{
+					transform.ScaleBy(1.2f);
+					entercollider = false;
+				}
 			}
 
 			if (ID_tag.GetTag() == "Yes")
 			{
-				spt.SetTexture("BlankArrow");//to be change
+				//spt.SetTexture("BlankArrow");//to be change
+
+				if (entercollider)
+				{
+					transform.ScaleBy(1.2f);
+					entercollider = false;
+				}
 			}
 
 			if (curr_state == button_state::release)// when mouse button is release, call the button functions, release is selected to prevent function from calling when mouse is held down 
@@ -529,11 +541,23 @@ namespace NocturnalEngine
 			if (ID_tag.GetTag() == "No")
 			{
 				spt.SetTexture("BlankArrow");
+
+				if (leftcollider)
+				{
+					transform.ScaleBy(1.f / 1.2f);
+					leftcollider = false;
+				}
 			}
 
 			if (ID_tag.GetTag() == "Yes")
 			{
 				spt.SetTexture("BlankArrow");
+
+				if (leftcollider)
+				{
+					transform.ScaleBy(1.f / 1.2f);
+					leftcollider = false;
+				}
 			}
 		}
 
