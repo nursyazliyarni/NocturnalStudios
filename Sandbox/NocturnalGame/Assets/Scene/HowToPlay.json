@@ -15,7 +15,7 @@
         "Entities": 11
     },
     "EntitySignatures": [
-        "00000000000000000000000001111001",
+        "00000000000000000000000011111001",
         "00000000000000000000000001111101",
         "00000000000000000000000001111101",
         "00000000000000000000000001111101",
@@ -62,7 +62,18 @@
                 "Tag": "HowToPlay",
                 "TargetTag": ""
             },
-            {},
+            {
+                "0": {
+                    "AudioPath": "BGM_Iris_Luminara_Loop.wav",
+                    "Channel": 2,
+                    "IsLooping": true
+                },
+                "AudioArrCount": 1,
+                "BGM Volume": 0.75,
+                "SFX Volume": 0.75,
+                "Master Volume": 0.75,
+                "RandomFromArray": false
+            },
             {},
             {},
             {},
