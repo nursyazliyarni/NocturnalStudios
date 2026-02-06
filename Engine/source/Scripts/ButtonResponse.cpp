@@ -205,6 +205,7 @@ namespace NocturnalEngine
 
 			if (curr_state == button_state::release)// when mouse button is release, call the button functions, release is selected to prevent function from calling when mouse is held down 
 			{
+#if 0
 				if (p_GUI->Check_HTP() == true)
 				{
 					// Find the Manual entity
@@ -242,7 +243,7 @@ namespace NocturnalEngine
 							manualSprite.SetTexture("sanityhtp");*/
 					}
 				}
-
+#endif
 				if (ID_tag.GetTag() == "Start" && p_GUI->Check_HTP() == false)
 				{
 
@@ -371,6 +372,16 @@ namespace NocturnalEngine
 				{
 					p_ecs.GetComponent<Audio>(GetScriptEntityID())[0].should_play = true;
 					p_GameManager.SetSceneToSwitch("Owl");// switch to owl scene
+				}
+
+				if (ID_tag.GetTag() == "OverviewTab")
+				{
+					p_Scene->setSceneToLoad("Assets/Scene/HowToPlay.json");
+				}
+
+				if (ID_tag.GetTag() == "FlamingoTab")
+				{
+					p_Scene->setSceneToLoad("Assets/Scene/Manual_Flamingo.json");
 				}
 			}
 

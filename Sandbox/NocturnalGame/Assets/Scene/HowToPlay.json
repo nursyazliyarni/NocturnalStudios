@@ -16,8 +16,8 @@
     },
     "EntitySignatures": [
         "00000000000000000000000011111001",
-        "00000000000000000000000001011101",
-        "00000000000000000000000001011101",
+        "00000000000000000000000001111101",
+        "00000000000000000000000001111101",
         "00000000000000000000000001011101",
         "00000000000000000000000001011101",
         "00000000000000000000000001011101",
@@ -70,7 +70,8 @@
                 "AudioArrCount": 1,
                 "BGM Volume": 0.75,
                 "SFX Volume": 0.75,
-                "Master Volume": 0.75
+                "Master Volume": 0.75,
+                "RandomFromArray": false
             },
             {},
             {},
@@ -119,7 +120,10 @@
                 "MaxIndex": 0,
                 "LayeringOrder": 0
             },
-            {},
+            {
+                "0": "ButtonResponse",
+                "ScriptCount": 1
+            },
             {
                 "Tag": "OverviewTab",
                 "TargetTag": ""
@@ -172,7 +176,10 @@
                 "MaxIndex": 0,
                 "LayeringOrder": 0
             },
-            {},
+            {
+                "0": "ButtonResponse",
+                "ScriptCount": 1
+            },
             {
                 "Tag": "FlamingoTab",
                 "TargetTag": ""
