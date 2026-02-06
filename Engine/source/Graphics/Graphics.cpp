@@ -7,7 +7,7 @@
 		once render class is up.
 	
     Primary Author:
-         LAU XIANG YANG (95%)
+         Rishika Bimal Attodi (95%)
 		- Created the graphics class and its function specification.
     Secondary Author:
          Nur Syazliyarni (5%)

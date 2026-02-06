@@ -8,7 +8,7 @@
 		To maintain as less draw call as possible
 	
     Primary Author:
-         LAU XIANG YANG (100%)
+         Rishika Bimal Attodi (100%)
 		- Created the renderer class and its function specification.
 
     All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.

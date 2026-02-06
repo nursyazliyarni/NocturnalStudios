@@ -7,7 +7,7 @@
 		and set the world coordinates to view coordinates
 	
     Primary Author:
-         LAU XIANG YANG (100%)
+        Rishika Bimal Attodi (100%)
 		- Created the camera2D class and its function specification.
 
     All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
