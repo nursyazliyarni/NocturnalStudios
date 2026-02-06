@@ -47,7 +47,7 @@ namespace NocturnalEngine
 				return "Owl";
 				break;
 			}
-			return "I don't fucking know";
+			return "I don't know";
 		}
 
 		AnimalAttributes();
