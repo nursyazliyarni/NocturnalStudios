@@ -27,6 +27,7 @@
 #include "Input/Input.h"
 #include "Scripts/GlobalGameManager.h"
 #include "Math/Random.h"
+#include "Scripts/TabButton.h"
 
 
 namespace NocturnalEngine
@@ -210,7 +211,6 @@ namespace NocturnalEngine
 
 			if (curr_state == button_state::release)// when mouse button is release, call the button functions, release is selected to prevent function from calling when mouse is held down 
 			{
-
 				if (ID_tag.GetTag() == "Start" && p_GUI->Check_HTP() == false)
 				{
 
@@ -339,6 +339,28 @@ namespace NocturnalEngine
 				{
 					p_ecs.GetComponent<Audio>(GetScriptEntityID())[0].should_play = true;
 					p_GameManager.SetSceneToSwitch("Owl");// switch to owl scene
+				}
+
+				if (ID_tag.GetTag() == "OverviewTab")
+				{
+					p_Scene->setSceneToLoad("Assets/Scene/HowToPlay.json");
+				}
+
+				if (ID_tag.GetTag() == "FlamingoTab")
+				{
+					p_Scene->setSceneToLoad("Assets/Scene/Manual_Flamingo.json");
+				}
+				if(ID_tag.GetTag()=="SealTab")
+				{
+					p_Scene->setSceneToLoad("Assets/Scene/Manual_Seal.json");
+				}
+				if (ID_tag.GetTag() == "HorseTab")
+				{
+					p_Scene->setSceneToLoad("Assets/Scene/Manual_Horse.json");
+				}
+				if (ID_tag.GetTag() == "OwlTab")
+				{
+					p_Scene->setSceneToLoad("Assets/Scene/Manual_Owl.json");
 				}
 			}
 
