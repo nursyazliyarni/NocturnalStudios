@@ -6,8 +6,12 @@
 		The HealthBar system manages the displaying of Various Healthbars of Anumals Bars of an 
 
 	Primary Author:
-		 ANG YU XUAN (100%)
-		- Created the HealthBar class and its function specification.
+		 ANG YU XUAN (70%)
+		- Created the HealthBar.h file and its function specification.
+	Secondary Author:
+		Sarah (30%)
+		- Update the HealthBar logic script to make sure all healthBars for each alive animals are
+		  still updated even though there is only 1 scene that is loaded and running at a time.
 
 	All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
 *------------------------------------------------------------------------------------------------*/

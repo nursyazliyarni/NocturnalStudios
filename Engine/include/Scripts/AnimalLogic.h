@@ -9,8 +9,13 @@
 		 for the AnimalLogic components.
 
 	Primary Author:
-		 ANG YU XUAN (100%)
-		- Created the AnimalLogic.h file and its function specification.
+		 ANG YU XUAN (70%)
+		- Created the AnimalLogic class and its function specification.
+    Secondary Author:
+         Nur Syazliyarni (5%)
+        - Adjusted health decay behavior per animal.
+		Sarah (25%)
+		- Make improvements and fix error with this AnimalLogic script.
 
 	All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
 *------------------------------------------------------------------------------------------------*/

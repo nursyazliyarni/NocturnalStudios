@@ -9,8 +9,11 @@
 		 for the DragAndDrop components.
 
 	Primary Author:
-		 LAYCOCK ENHUI SARAH (100%)
-		- Created the DragAndDrop.h file and its function specification.
+		 ANG YU XUAN (70%)
+		- Created the DragAndDrop class and its function specification.
+	Secondary Author:
+		Sarah (30%)
+		- Update the dragANDdrop logic script for each specific item types such as FOOD,MEDICINE AND TOY.
 
 	All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
 *------------------------------------------------------------------------------------------------*/

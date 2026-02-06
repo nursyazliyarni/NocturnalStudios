@@ -6,7 +6,7 @@
 		Contains the attributes related to animals in the ECS
 		
     Primary Author:
-         LAU XIANG YANG (100%)
+         Ang Yu Xuan (100%)
 		- Created the AnimalAttributes.h file and its function specification.
 
     All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.

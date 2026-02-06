@@ -6,7 +6,7 @@
 		This file is used to serialize and deserialize items attributes components for ECS.
 	
     Primary Author:
-         LAU XIANG YANG (100%)
+         Ang Yu Xuan (100%)
 		- Created the items attributes class and its function specification.
 
     All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.

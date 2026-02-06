@@ -9,8 +9,12 @@
 		 for the HealthBar components.
 
 	Primary Author:
-		 ANG YU XUAN (100%)
+		 ANG YU XUAN (70%)
 		- Created the HealthBar.h file and its function specification.
+	Secondary Author:
+		Sarah (30%)
+		- Update the HealthBar logic script to make sure all healthBars for each alive animals are
+		  still updated even though there is only 1 scene that is loaded and running at a time.
 
 	All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
 *------------------------------------------------------------------------------------------------*/

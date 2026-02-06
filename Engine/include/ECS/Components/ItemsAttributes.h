@@ -7,7 +7,7 @@
 		used in the ECS
 		
     Primary Author:
-         LAU XIANG YANG (100%)
+         Ang Yu Xuan (100%)
 		- Created the ItemsAttributes.h file and its function specification.
 
     All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.

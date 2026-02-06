@@ -8,13 +8,17 @@
         properties of the components and save them accordingly.
 	
     Primary Author:
-         LAU XIANG YANG (93%)
+         LAU XIANG YANG (84%)
 		- Created the LevelEditor class and its function specification.
     Secondary Author:
          Nur Syazliyarni (8%)
         - Added gizmo visibility toggle in the Scene viewer.
         - Updated Text component UI usage in the inspector.
         - Added RevealTargetOnClick script to the editor script list.
+        Ang Yu Xuan (8%)
+        - Adding in AnimalAttributes Component and ItemAttributes Component UI 
+          onto the inspector of the level editor.
+
 
     All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
 *------------------------------------------------------------------------------------------------*/
