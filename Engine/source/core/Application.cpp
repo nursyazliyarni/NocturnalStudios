@@ -144,11 +144,24 @@ Application constructor
 			bool isHowToPlayScene = false;
 			for (Entity entity = 0; entity < p_ecs.GetTotalEntities(); ++entity)
 			{
-				if (p_ecs.HaveComponent<NameTag>(entity) &&
-					p_ecs.GetComponent<NameTag>(entity).GetNameTag() == "HTPBackground")
+				if (!p_ecs.HaveComponent<Tag>(entity))
 				{
-					isHowToPlayScene = true;
-					break;
+					continue;
+				}
+
+				if (p_ecs.GetComponent<Tag>(entity).GetTag() != "HowToPlay")
+				{
+					continue;
+				}
+
+				if (p_ecs.HaveComponent<NameTag>(entity))
+				{
+					const std::string& name = p_ecs.GetComponent<NameTag>(entity).GetNameTag();
+					if (name == "HTPBackground" || name == "Background")
+					{
+						isHowToPlayScene = true;
+						break;
+					}
 				}
 			}
 
