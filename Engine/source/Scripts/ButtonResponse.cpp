@@ -201,12 +201,12 @@ namespace NocturnalEngine
 
 			if (ID_tag.GetTag() == "No")
 			{
-				spt.SetTexture("NO_B");//to be change
+				spt.SetTexture("BlankArrow");//to be change
 			}
 
 			if (ID_tag.GetTag() == "Yes")
 			{
-				spt.SetTexture("YES_B");//to be change
+				spt.SetTexture("BlankArrow");//to be change
 			}
 
 			if (curr_state == button_state::release)// when mouse button is release, call the button functions, release is selected to prevent function from calling when mouse is held down 
@@ -434,12 +434,12 @@ namespace NocturnalEngine
 
 				if (ID_tag.GetTag() == "No")
 				{
-					spt.SetTexture("NO_R");
+					spt.SetTexture("BlankArrow");
 				}
 
 				if (ID_tag.GetTag() == "Yes")
 				{
-					spt.SetTexture("YES_R");
+					spt.SetTexture("BlankArrow");
 				}
 
 			}
@@ -528,12 +528,12 @@ namespace NocturnalEngine
 
 			if (ID_tag.GetTag() == "No")
 			{
-				spt.SetTexture("NO_Y");
+				spt.SetTexture("BlankArrow");
 			}
 
 			if (ID_tag.GetTag() == "Yes")
 			{
-				spt.SetTexture("YES_Y");
+				spt.SetTexture("BlankArrow");
 			}
 		}
 
