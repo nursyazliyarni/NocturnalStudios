@@ -362,6 +362,10 @@ namespace NocturnalEngine
 				{
 					p_Scene->setSceneToLoad("Assets/Scene/Manual_Owl.json");
 				}
+				if (ID_tag.GetTag() == "XButton")
+				{
+					p_Scene->setSceneToLoad("Assets/Scene/Menu.json");
+				}
 			}
 
 			if (curr_state == button_state::click)
