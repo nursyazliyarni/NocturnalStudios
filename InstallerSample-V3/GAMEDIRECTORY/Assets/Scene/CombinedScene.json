@@ -118,7 +118,7 @@
             },
             {
                 "TextureName": "flamingo_spritesheet",
-                "Index_X": 2,
+                "Index_X": 4,
                 "Index_Y": 0,
                 "Ucoordinates": 528.0,
                 "Vcoordinates": 528.0,
@@ -339,7 +339,7 @@
             },
             {},
             {
-                "ColliderType1": 5,
+                "ColliderType1": 2,
                 "ColliderType2": 0,
                 "minX1": -1.0,
                 "minX2": 0.0,
@@ -353,7 +353,7 @@
                 "offsetX2": 0.0,
                 "offsetY1": 0.0,
                 "offsetY2": 0.0,
-                "radius1": 0.0,
+                "radius1": 0.05000000074505806,
                 "radius2": 0.0
             },
             {
@@ -419,7 +419,7 @@
             },
             {},
             {
-                "ColliderType1": 5,
+                "ColliderType1": 2,
                 "ColliderType2": 0,
                 "minX1": -1.0,
                 "minX2": 0.0,
@@ -433,7 +433,7 @@
                 "offsetX2": 0.0,
                 "offsetY1": 0.0,
                 "offsetY2": 0.0,
-                "radius1": 0.0,
+                "radius1": 0.05000000074505806,
                 "radius2": 0.0
             },
             {
@@ -499,7 +499,7 @@
             },
             {},
             {
-                "ColliderType1": 5,
+                "ColliderType1": 2,
                 "ColliderType2": 0,
                 "minX1": -1.0,
                 "minX2": 0.0,
@@ -513,7 +513,7 @@
                 "offsetX2": 0.0,
                 "offsetY1": 0.0,
                 "offsetY2": 0.0,
-                "radius1": 0.0,
+                "radius1": 0.05000000074505806,
                 "radius2": 0.0
             },
             {
@@ -579,7 +579,7 @@
             },
             {},
             {
-                "ColliderType1": 5,
+                "ColliderType1": 2,
                 "ColliderType2": 0,
                 "minX1": -1.0,
                 "minX2": 0.0,
@@ -593,7 +593,7 @@
                 "offsetX2": 0.0,
                 "offsetY1": 0.0,
                 "offsetY2": 0.0,
-                "radius1": 0.0,
+                "radius1": 0.05000000074505806,
                 "radius2": 0.0
             },
             {
@@ -659,7 +659,7 @@
             },
             {},
             {
-                "ColliderType1": 4,
+                "ColliderType1": 2,
                 "ColliderType2": 0,
                 "minX1": 0.05000000074505806,
                 "minX2": 0.0,
@@ -673,7 +673,7 @@
                 "offsetX2": 0.0,
                 "offsetY1": 0.0,
                 "offsetY2": 0.0,
-                "radius1": 0.0,
+                "radius1": 0.05000000074505806,
                 "radius2": 0.0
             },
             {
@@ -1393,7 +1393,7 @@
             },
             {
                 "TextureName": "flamingo_spritesheet",
-                "Index_X": 2,
+                "Index_X": 4,
                 "Index_Y": 0,
                 "Ucoordinates": 528.0,
                 "Vcoordinates": 528.0,
@@ -1749,7 +1749,7 @@
             },
             {
                 "TextureName": "sealSpritesheet",
-                "Index_X": 1,
+                "Index_X": 2,
                 "Index_Y": 0,
                 "Ucoordinates": 530.0,
                 "Vcoordinates": 254.5,
