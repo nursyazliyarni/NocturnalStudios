@@ -1,3 +1,18 @@
+
+/*!------------------------------------------------------------------------------------------------
+	File: TabButton.cpp
+	Project: NocturnalStudio
+
+	Brief:
+		 This file contains the Tab Button class definitions for tabbing through
+		 How To Play manual.
+
+	Primary Author:
+		 Chang Qi Xuan Celest (100%)
+		- Created the function definitions for button tabbing for How To Play scene.
+
+	All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
 //#include "pch.h"
 //#include "Scripts/TabButton.h"
 //#include "ECS/ECS.h"

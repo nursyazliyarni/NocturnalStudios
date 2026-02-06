@@ -10,7 +10,7 @@
 		on the specific collider types of the entities involved.
 	
     Primary Author:
-         LAU XIANG YANG (100%)
+         Chang Qi Xuan Celest (100%)
 		- Created the CollisionSystem class and its function specification.
 
     All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.

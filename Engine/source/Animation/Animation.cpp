@@ -6,7 +6,7 @@
 		This file sets the frame data for each sprite based on delta time to create animation.
 	
     Primary Author:
-         LAU XIANG YANG (100%)
+         Chang Qi Xuan Celest (100%)
 		- Created the animation class and its function specification.
 
     All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
