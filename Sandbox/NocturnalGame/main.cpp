@@ -134,9 +134,9 @@ int main(int argc, char* argv[])
     ShowWindow(hWnd, SW_SHOW);
 #else
     // Hide console in Release
-    //HWND hWnd = GetConsoleWindow();
-    //if (hWnd)
-    //    ShowWindow(hWnd, SW_HIDE);
+    HWND hWnd = GetConsoleWindow();
+    if (hWnd)
+        ShowWindow(hWnd, SW_HIDE);
 #endif
 	// temporary memory leak check to set break point on specific allocation
 	//_CrtSetBreakAlloc();
