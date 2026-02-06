@@ -15,15 +15,15 @@
         "Entities": 10
     },
     "EntitySignatures": [
-        "00000000000000000000000011111001",
+        "00000000000000000000000001111001",
         "00000000000000000000000001111101",
         "00000000000000000000000001111101",
-        "00000000000000000000000001011101",
-        "00000000000000000000000001011101",
-        "00000000000000000000000001011101",
-        "00000000000000000000000001011101",
-        "00000000000000000000000001011101",
-        "00000000000000000000000001011101",
+        "00000000000000000000000001111101",
+        "00000000000000000000000001111101",
+        "00000000000000000000000001111101",
+        "00000000000000000000000001111101",
+        "00000000000000000000000001111101",
+        "00000000000000000000000001111101",
         "00000000000000000000000000011001"
     ],
     "Components": {
@@ -61,18 +61,7 @@
                 "Tag": "HowToPlay",
                 "TargetTag": ""
             },
-            {
-                "0": {
-                    "AudioPath": "BGM_Iris_Luminara_Loop.wav",
-                    "Channel": 2,
-                    "IsLooping": true
-                },
-                "AudioArrCount": 1,
-                "BGM Volume": 0.75,
-                "SFX Volume": 0.75,
-                "Master Volume": 0.75,
-                "RandomFromArray": false
-            },
+            {},
             {},
             {},
             {},
@@ -232,7 +221,10 @@
                 "MaxIndex": 0,
                 "LayeringOrder": 0
             },
-            {},
+            {
+                "0": "ButtonResponse",
+                "ScriptCount": 1
+            },
             {
                 "Tag": "SealTab",
                 "TargetTag": ""
@@ -285,7 +277,10 @@
                 "MaxIndex": 0,
                 "LayeringOrder": 0
             },
-            {},
+            {
+                "0": "ButtonResponse",
+                "ScriptCount": 1
+            },
             {
                 "Tag": "HorseTab",
                 "TargetTag": ""
@@ -338,7 +333,10 @@
                 "MaxIndex": 0,
                 "LayeringOrder": 0
             },
-            {},
+            {
+                "0": "ButtonResponse",
+                "ScriptCount": 1
+            },
             {
                 "Tag": "OwlTab",
                 "TargetTag": ""
@@ -391,7 +389,10 @@
                 "MaxIndex": 0,
                 "LayeringOrder": 0
             },
-            {},
+            {
+                "0": "ButtonResponse",
+                "ScriptCount": 1
+            },
             {
                 "Tag": "HealthTab",
                 "TargetTag": ""
@@ -444,7 +445,10 @@
                 "MaxIndex": 0,
                 "LayeringOrder": 0
             },
-            {},
+            {
+                "0": "ButtonResponse",
+                "ScriptCount": 1
+            },
             {
                 "Tag": "HungerTab",
                 "TargetTag": ""
@@ -497,7 +501,9 @@
                 "MaxIndex": 0,
                 "LayeringOrder": 0
             },
-            {},
+            {
+                "ScriptCount": 0
+            },
             {
                 "Tag": "SanityTab",
                 "TargetTag": ""

@@ -205,45 +205,6 @@ namespace NocturnalEngine
 
 			if (curr_state == button_state::release)// when mouse button is release, call the button functions, release is selected to prevent function from calling when mouse is held down 
 			{
-#if 0
-				if (p_GUI->Check_HTP() == true)
-				{
-					// Find the Manual entity
-					Entity manualEntity = -1;
-					for (Entity e = 0; e < p_ecs.GetTotalEntities(); ++e)
-					{
-						if (p_ecs.HaveComponent<NameTag>(e) &&
-							p_ecs.GetComponent<NameTag>(e).GetNameTag() == "Manual")
-						{
-							manualEntity = e;
-							break;
-						}
-					}
-
-					// Change the Manual texture based on which tab was clicked
-					if (manualEntity != -1 && p_ecs.HaveComponent<Sprite>(manualEntity))
-					{
-						auto& manualSprite = p_ecs.GetComponent<Sprite>(manualEntity);
-
-						if (ID_tag.GetTag() == "OverviewTab")
-							manualSprite.SetTexture("overviewhtp");
-						else if (ID_tag.GetTag() == "FlamingoTab")
-							manualSprite.SetTexture("flamingohtp");
-						else if (ID_tag.GetTag() == "SealTab")
-							manualSprite.SetTexture("sealhtp");
-						else if (ID_tag.GetTag() == "HorseTab")
-							manualSprite.SetTexture("horsehtp");
-						else if (ID_tag.GetTag() == "OwlTab")
-							manualSprite.SetTexture("owlhtp");
-						/*else if (ID_tag.GetTag() == "HealthTab")
-							manualSprite.SetTexture("healthhtp");
-						else if (ID_tag.GetTag() == "HungerTab")
-							manualSprite.SetTexture("hungerhtp");
-						else if (ID_tag.GetTag() == "SanityTab")
-							manualSprite.SetTexture("sanityhtp");*/
-					}
-				}
-#endif
 				if (ID_tag.GetTag() == "Start" && p_GUI->Check_HTP() == false)
 				{
 
@@ -382,6 +343,18 @@ namespace NocturnalEngine
 				if (ID_tag.GetTag() == "FlamingoTab")
 				{
 					p_Scene->setSceneToLoad("Assets/Scene/Manual_Flamingo.json");
+				}
+				if(ID_tag.GetTag()=="SealTab")
+				{
+					p_Scene->setSceneToLoad("Assets/Scene/Manual_Seal.json");
+				}
+				if (ID_tag.GetTag() == "HorseTab")
+				{
+					p_Scene->setSceneToLoad("Assets/Scene/Manual_Horse.json");
+				}
+				if (ID_tag.GetTag() == "OwlTab")
+				{
+					p_Scene->setSceneToLoad("Assets/Scene/Manual_Owl.json");
 				}
 			}
 
