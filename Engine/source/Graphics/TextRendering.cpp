@@ -6,13 +6,17 @@
 		This file render text using texture atlas and glm
 	
     Primary Author:
-         LAU XIANG YANG (90%)
+         LAU XIANG YANG (87%)
 		- Created the text rendering class and its function specification.
     Secondary Author:
          Nur Syazliyarni (5%)
         - Added Text component rendering support.
         Ang Yu Xuan (5%)
         - Modify RenderText function to make it accept newline character and - sign
+        LAYCOCK ENHUI SARAH
+        - Added proper handling of newlines, rendering of rotated text, 
+          conditional coloration of characters using specific characters
+
         
     All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
 *------------------------------------------------------------------------------------------------*/

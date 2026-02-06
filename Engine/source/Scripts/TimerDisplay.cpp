@@ -3,8 +3,8 @@
 	Project: NocturnalStudio
 
 	Brief:
-		The TimerDisplay system manages the displaying of Various TimerDisplays of Anumals Bars of an
-
+		The TimerDisplay converts elapsed gametime to ingame time and then displays it into a text
+		component
 	Primary Author:
 		 LAYCOCK ENHUI SARAH (100%)
 		- Created the TimerDisplay class and its function specification.

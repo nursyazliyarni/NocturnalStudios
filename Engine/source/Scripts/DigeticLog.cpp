@@ -3,7 +3,8 @@
 	Project: NocturnalStudio
 
 	Brief:
-		The DigeticLog system manages the displaying of Various DigeticLogs of Anumals Bars of an
+		The DigeticLog system manages the displaying of the ingame log which tracks animals statuses
+		low hwalth, death etc
 
 	Primary Author:
 		 LAYCOCK ENHUI SARAH (100%)

@@ -7,8 +7,14 @@
         for managing button responses within the engine.
 	
     Primary Author:
-         LAU XIANG YANG (100%)
+         LAU XIANG YANG (99%)
 		- Created the ButtonResponse class and its function specification.
+	Seconday Author(s):
+		LAYCOCK ENHUI SARAH (1%)
+		- Added random sound functionality for specific ingame buttons so 
+		  that they play a random sound instead of one singular sound
+		- updated the collision logic so it will actually work with the colliders
+		  and and accept circle colliders
 
     All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
 *------------------------------------------------------------------------------------------------*/

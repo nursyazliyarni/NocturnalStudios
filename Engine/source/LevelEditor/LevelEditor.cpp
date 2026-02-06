@@ -8,7 +8,7 @@
         properties of the components and save them accordingly.
 	
     Primary Author:
-         LAU XIANG YANG (84%)
+         LAU XIANG YANG (74%)
 		- Created the LevelEditor class and its function specification.
     Secondary Author:
          Nur Syazliyarni (8%)
@@ -18,6 +18,14 @@
         Ang Yu Xuan (8%)
         - Adding in AnimalAttributes Component and ItemAttributes Component UI 
           onto the inspector of the level editor.
+        LAYCOCK ENHUI SARAH (10%)
+        - Added functionality for content browser, allowing for tetxures to be 
+          selected and viewed directly in content browser instead of opening up 
+          a seperate tab in imgui. 
+        - Added scene saving functionality
+        - Added placing textures directly into game scenes as entities via dragging
+          & dropping from the content browser
+        - loading of scenes directly from the content browser
 
 
     All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.

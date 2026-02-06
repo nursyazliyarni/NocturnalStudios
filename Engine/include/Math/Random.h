@@ -21,14 +21,14 @@ namespace NocturnalEngine
 {
     namespace Random
     {
-        // This function creates the engine ONCE and reuses it forever
+        //singleTON
         inline std::mt19937& Engine()
         {
             static std::mt19937 engine(std::random_device{}());
             return engine;
         }
 
-        // Generic random number in range [min, max]
+        // random range its max inclusive for int but max exclusive for floats
         template<typename T>
         inline T Range(T min, T max)
         {

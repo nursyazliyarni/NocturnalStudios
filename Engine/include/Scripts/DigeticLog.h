@@ -4,9 +4,8 @@
 	Project: NocturnalStudio
 
 	Brief:
-		 This file contains the DigeticLog class declaration
-		 which is responsible for managing DigeticLog functionalities within the engine
-		 for the DigeticLog components.
+		The DigeticLog system manages the displaying of the ingame log which tracks animals statuses
+		low hwalth, death etc
 
 	Primary Author:
 		 LAYCOCK ENHUI SARAH (100%)

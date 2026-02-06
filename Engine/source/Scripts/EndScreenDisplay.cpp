@@ -3,7 +3,8 @@
 	Project: NocturnalStudio
 
 	Brief:
-		The EndScreenDisplay system manages the displaying of Various EndScreenDisplays of Anumals Bars of an
+		The EndScreenDisplay system manages the displaying of the Win/lose game. It adds stats,
+		and then makes the stuff slide in fancily. Its attached to the bachground object
 
 	Primary Author:
 		 LAYCOCK ENHUI SARAH (100%)

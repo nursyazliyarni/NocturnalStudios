@@ -1,11 +1,11 @@
 /*!------------------------------------------------------------------------------------------------
-    File: GameManager.h
+    File: GlobalGameManager.h
     Project: NocturnalStudio
 
     Brief:
-        This file contains the system declaration for the collision system to
-        detect collision between two entities and calculate the appropriate physics
-        response.
+        This file contains the Game manager which is responsible for handling logic
+        of animals that are currently not being diaplayed in the current scene but
+        are still in the game
 
     Primary Author:
          LAYCOCK ENHUI SARAH (100%)
@@ -34,21 +34,16 @@ namespace NocturnalEngine {
 
         static GameManager& GetInstance();
         /*!*************************************************************************
-        This function initialises the system. As there are no data members that require
-        initialization, this function is empty
+        This function initialises the system. 
         ****************************************************************************/
          void Init() ;
         /*!*************************************************************************
-        This function runs the logic of the system. It checks the list of entities with
-        a collision component in pairs to see which of them are colliding. If two objects
-        are colliding, collision response is dictated by the type of collider the object
-        has
+        This function runs the logic of the gamemanager. It handles the animals that 
+        are not in the current scene and the logic that goes witht hem
         ****************************************************************************/
          void Update(float dt) ;
         /*!*************************************************************************
-        This function ends the system. As there are no data members that require
-        initialization, there are no data members that need to be un-initialised.
-        Therefore this function is empty
+        This function ends the system. 
         ****************************************************************************/
          void ResetSystem(bool editorMode = false) ;
 
