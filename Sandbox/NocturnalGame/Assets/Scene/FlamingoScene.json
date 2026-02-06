@@ -80,7 +80,7 @@
                 },
                 "AudioArrCount": 1,
                 "BGM Volume": 1.0,
-                "SFX Volume": 1.0,
+                "SFX Volume": 0.5730000138282776,
                 "Master Volume": 1.0,
                 "RandomFromArray": false
             },
@@ -122,7 +122,7 @@
             },
             {
                 "TextureName": "flamingo_spritesheet",
-                "Index_X": 4,
+                "Index_X": 0,
                 "Index_Y": 0,
                 "Ucoordinates": 528.0,
                 "Vcoordinates": 528.0,
@@ -411,7 +411,7 @@
                 },
                 "AudioArrCount": 5,
                 "BGM Volume": 1.0,
-                "SFX Volume": 1.0,
+                "SFX Volume": 0.5730000138282776,
                 "Master Volume": 1.0,
                 "RandomFromArray": true
             },
@@ -513,7 +513,7 @@
                 },
                 "AudioArrCount": 5,
                 "BGM Volume": 1.0,
-                "SFX Volume": 1.0,
+                "SFX Volume": 0.5730000138282776,
                 "Master Volume": 1.0,
                 "RandomFromArray": true
             },
@@ -614,7 +614,7 @@
                 },
                 "AudioArrCount": 5,
                 "BGM Volume": 1.0,
-                "SFX Volume": 1.0,
+                "SFX Volume": 0.5730000138282776,
                 "Master Volume": 1.0,
                 "RandomFromArray": true
             },
@@ -716,7 +716,7 @@
                 },
                 "AudioArrCount": 5,
                 "BGM Volume": 1.0,
-                "SFX Volume": 1.0,
+                "SFX Volume": 0.5730000138282776,
                 "Master Volume": 1.0,
                 "RandomFromArray": true
             },
