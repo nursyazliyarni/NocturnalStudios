@@ -97,8 +97,9 @@
                 },
                 "AudioArrCount": 1,
                 "BGM Volume": 1.0,
-                "SFX Volume": 1.0,
-                "Master Volume": 1.0
+                "SFX Volume": 0.5730000138282776,
+                "Master Volume": 1.0,
+                "RandomFromArray": false
             },
             {},
             {},
@@ -254,7 +255,7 @@
                 },
                 "AudioArrCount": 5,
                 "BGM Volume": 1.0,
-                "SFX Volume": 1.0,
+                "SFX Volume": 0.5730000138282776,
                 "Master Volume": 1.0,
                 "RandomFromArray": true
             },
@@ -356,7 +357,7 @@
                 },
                 "AudioArrCount": 5,
                 "BGM Volume": 1.0,
-                "SFX Volume": 1.0,
+                "SFX Volume": 0.5730000138282776,
                 "Master Volume": 1.0,
                 "RandomFromArray": true
             },
@@ -458,7 +459,7 @@
                 },
                 "AudioArrCount": 5,
                 "BGM Volume": 1.0,
-                "SFX Volume": 1.0,
+                "SFX Volume": 0.5730000138282776,
                 "Master Volume": 1.0,
                 "RandomFromArray": true
             },
@@ -560,7 +561,7 @@
                 },
                 "AudioArrCount": 5,
                 "BGM Volume": 1.0,
-                "SFX Volume": 1.0,
+                "SFX Volume": 0.5730000138282776,
                 "Master Volume": 1.0,
                 "RandomFromArray": true
             },

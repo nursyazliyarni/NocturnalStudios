@@ -61,7 +61,7 @@ namespace NocturnalEngine {
         // set size to load glyphs as
         FT_Set_Pixel_Sizes(face, 0, fontsize);
 
-        float ladv = (face->size->metrics.height >> 6);
+        float ladv = static_cast<float>(face->size->metrics.height >> 6);
         // disable byte-alignment restriction
         glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
         // then for the first 128 ASCII characters, pre-load/compile their characters and store them
@@ -115,6 +115,7 @@ namespace NocturnalEngine {
     ****************************************************************************/
     void Font::RenderText(const std::string& text, glm::vec2 position, int line_height, float scale, Camera2D& camera, glm::vec3 color,float rot)
 	{
+		UNREFERENCED_PARAMETER(line_height);
         // activate corresponding render state	
         TextShader->Bind();
         TextShader->SetUniform("u_ViewProjection", camera.GetViewProjectionMatrix());
