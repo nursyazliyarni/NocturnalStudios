@@ -145,7 +145,7 @@ Application constructor
 			for (Entity entity = 0; entity < p_ecs.GetTotalEntities(); ++entity)
 			{
 				if (p_ecs.HaveComponent<NameTag>(entity) &&
-					p_ecs.GetComponent<NameTag>(entity).GetNameTag() == "HowToPlayBackground")
+					p_ecs.GetComponent<NameTag>(entity).GetNameTag() == "HTPBackground")
 				{
 					isHowToPlayScene = true;
 					break;
