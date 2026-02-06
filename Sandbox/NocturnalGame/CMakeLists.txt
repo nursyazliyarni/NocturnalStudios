@@ -16,6 +16,9 @@ target_compile_definitions(NocturnalGame PUBLIC
 
 if (MSVC)
   target_compile_options(NocturnalGame PRIVATE /W4 /MP)
+   target_link_options(NocturnalGame PRIVATE
+    "$<$<CONFIG:Release>:/SUBSYSTEM:WINDOWS>"
+    "$<$<CONFIG:Release>:/ENTRY:mainCRTStartup>")
 endif()
 
 
