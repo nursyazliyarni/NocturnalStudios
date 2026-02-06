@@ -56,9 +56,20 @@ namespace NocturnalEngine
                     audio[i].triggered = true;
                 }
                 if (audio[i].is_Looping == true && audio[i].is_Playing == false) {
-                    //play sound
-                    audio[i].mChannel = p_Audio->PlaySound("Assets/Audio/" + audio[i].mAudioPath, audio[i].mChannelGroup);
-                    audio[i].triggered = true;
+                    // For BGM, check if it's already playing (persisted from previous scene)
+                    std::string fullPath = "Assets/Audio/" + audio[i].mAudioPath;
+                    if (audio[i].mChannelGroup == Audio::AudioType::BGM && p_Audio->IsBGMPathPlaying(fullPath))
+                    {
+                        // BGM is already playing from previous scene, just update our tracking
+                        audio[i].is_Playing = true;
+                        audio[i].triggered = true;
+                    }
+                    else
+                    {
+                        //play sound
+                        audio[i].mChannel = p_Audio->PlaySound(fullPath, audio[i].mChannelGroup);
+                        audio[i].triggered = true;
+                    }
                 }
                 if (audio[i].should_stop == true) {
                     p_Audio->StopChannel(audio[i].mChannel);

@@ -35,6 +35,10 @@ class CAudioEngine
 
     FMOD::ChannelGroup* BGM, * SFX, * Master;
     FMOD::Sound* Msound;
+    
+    // Track currently playing BGM path to prevent restart on scene transitions
+    std::string mCurrentBGMPath;
+    int mCurrentBGMChannelId = -1;
 public:
     std::map<int, FMOD::Channel*> mChannelMap;
 
@@ -65,6 +69,11 @@ public:
     FMOD::ChannelGroup* GetMasterChannelGroup() { return Master; }
     FMOD::ChannelGroup* GetBGMChannelGroup() { return BGM; }
     FMOD::ChannelGroup* GetSFXChannelGroup() { return SFX; }
+    
+    // BGM persistence across scene transitions
+    bool IsBGMPathPlaying(const std::string& strSoundPath) const;
+    const std::string& GetCurrentBGMPath() const { return mCurrentBGMPath; }
+    void ClearBGMTracking();
 };
 
 #endif

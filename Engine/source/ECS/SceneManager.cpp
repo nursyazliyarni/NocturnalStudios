@@ -377,7 +377,6 @@ namespace NocturnalEngine
 
 void NocturnalEngine::SceneManager::setSceneToLoad(std::string s)
 {
-	p_Audio->StopChannel(CAudioEngine::channel_groups::bgm);
 	sceneToLoad = s;
 }
 

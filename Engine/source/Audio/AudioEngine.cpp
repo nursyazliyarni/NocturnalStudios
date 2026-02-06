@@ -64,6 +64,22 @@ FMOD API play sound using loaded audio
 ****************************************************************************/
 int CAudioEngine::PlaySound(const std::string& strSoundName, NocturnalEngine::Audio::AudioType chgrp)
 {
+    // For BGM, check if the same track is already playing
+    if (chgrp == NocturnalEngine::Audio::AudioType::BGM)
+    {
+        if (IsBGMPathPlaying(strSoundName))
+        {
+            // BGM is already playing, return the existing channel ID
+            return mCurrentBGMChannelId;
+        }
+        else if (!mCurrentBGMPath.empty() && mCurrentBGMPath != strSoundName)
+        {
+            // Different BGM is being requested, stop the current one
+            StopChannel(mCurrentBGMChannelId);
+            ClearBGMTracking();
+        }
+    }
+
     auto tFoundIt = mSoundMap.find(strSoundName);
     FMOD::Sound* pSound;
 
@@ -92,6 +108,9 @@ int CAudioEngine::PlaySound(const std::string& strSoundName, NocturnalEngine::Au
         }
         if (chgrp == NocturnalEngine::Audio::AudioType::BGM) {
             pChannel->setChannelGroup(BGM);
+            // Track the BGM path and channel for persistence
+            mCurrentBGMPath = strSoundName;
+            mCurrentBGMChannelId = nChannelId;
         }
         if (chgrp == NocturnalEngine::Audio::AudioType::SFX) {
             pChannel->setChannelGroup(SFX);
@@ -135,11 +154,13 @@ void CAudioEngine::StopChannel(channel_groups chan)
     if (chan == channel_groups::master)
     {
         Master->stop();
+        ClearBGMTracking(); // BGM is part of master
     }
 
     else if (chan == channel_groups::bgm)
     {
         BGM->stop();
+        ClearBGMTracking();
     }
 
     else if (chan == channel_groups::sfx)
@@ -337,6 +358,41 @@ float CAudioEngine::GetVolumeByChannel(FMOD::ChannelGroup* ch)
     float ret = 0;
     ch->getVolume(&ret);
     return ret;
+}
+
+/*!*************************************************************************
+Checks if a specific BGM path is currently playing
+****************************************************************************/
+bool CAudioEngine::IsBGMPathPlaying(const std::string& strSoundPath) const
+{
+    // Check if we have a tracked BGM and if it matches the requested path
+    if (mCurrentBGMPath.empty() || mCurrentBGMPath != strSoundPath)
+    {
+        return false;
+    }
+    
+    // Verify the channel is still actually playing
+    if (mCurrentBGMChannelId >= 0)
+    {
+        auto it = mChannelMap.find(mCurrentBGMChannelId);
+        if (it != mChannelMap.end())
+        {
+            bool isPlaying = false;
+            it->second->isPlaying(&isPlaying);
+            return isPlaying;
+        }
+    }
+    
+    return false;
+}
+
+/*!*************************************************************************
+Clears BGM tracking (call when BGM should be stopped/reset)
+****************************************************************************/
+void CAudioEngine::ClearBGMTracking()
+{
+    mCurrentBGMPath.clear();
+    mCurrentBGMChannelId = -1;
 }
 
 
