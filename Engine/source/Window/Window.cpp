@@ -67,28 +67,23 @@ namespace NocturnalEngine{
 		//set initialize window width & height to current (to be set in rapidjson file)
 		m_windowData.m_CurrentWidth = m_windowData.m_Width;
 		m_windowData.m_CurrentHeight = m_windowData.m_Height;
-#if DEBUG
+
 		//create window
 		m_window = glfwCreateWindow(m_windowData.m_CurrentWidth,
 			m_windowData.m_CurrentHeight,
 			m_windowData.Title.c_str(),
 			NULL, NULL);
-
-#else	
+#if !DEBUG		
 		const GLFWvidmode* mode = glfwGetVideoMode(m_monitor);
 		m_windowData.m_Width = mode->width;
 		m_windowData.m_Height = mode->height;
-	
-		glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
-		
-		m_window = glfwCreateWindow(mode->width,
-			mode->height,
-			m_windowData.Title.c_str(),
-			NULL, NULL);
-		
+
+		glfwSetWindowMonitor(
+			m_window, m_monitor,
+			0, 0,
+			m_windowData.m_Width, m_windowData.m_Height, 0);
 #endif			
 		glfwMakeContextCurrent(m_window);
-		glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 		glfwSetWindowUserPointer(m_window, &m_windowData);
 
 		if (!m_window)
@@ -116,15 +111,6 @@ namespace NocturnalEngine{
 		glfwSetDropCallback(m_window, drop_callback);
 #if !DEBUG
 		glfwSetWindowFocusCallback(m_window, OnWindowFocus);
-		glfwMakeContextCurrent(m_window);
-
-		glfwShowWindow(m_window);
-		glfwFocusWindow(m_window);
-
-		glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-
-		if (glfwRawMouseMotionSupported())
-			glfwSetInputMode(m_window, GLFW_RAW_MOUSE_MOTION, GLFW_FALSE);
 #endif
 		/* Make the window's context current */
 	}
