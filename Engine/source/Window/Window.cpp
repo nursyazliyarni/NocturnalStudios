@@ -79,7 +79,7 @@ namespace NocturnalEngine{
 		m_windowData.m_Height = mode->height;
 
 		glfwSetWindowMonitor(
-			m_window, m_monitor,
+			m_window, NULL,
 			0, 0,
 			m_windowData.m_Width, m_windowData.m_Height, 0);
 #endif			
@@ -110,7 +110,7 @@ namespace NocturnalEngine{
 		glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 		glfwSetDropCallback(m_window, drop_callback);
 #if !DEBUG
-		glfwSetWindowFocusCallback(m_window, OnWindowFocus);
+		//glfwSetWindowFocusCallback(m_window, OnWindowFocus);
 #endif
 		/* Make the window's context current */
 	}
