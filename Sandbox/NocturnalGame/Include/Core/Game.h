@@ -43,7 +43,7 @@ namespace NocturnalEngine {
                 p_GameManager.ToggleSceneManagement();
             }
 
-            p_GameManager.SetState(GameManager::GameState::STARTING);
+            p_GameManager.SetState(GameManager::GameState::PLAYING);
         }
 
         void OnExitPlayMode(bool isEditor) override {

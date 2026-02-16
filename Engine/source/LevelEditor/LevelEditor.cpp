@@ -361,6 +361,7 @@ namespace NocturnalEngine {
                     if (mGameConfig) {  // Null check still works
                         if (mGameConfig->IsPlayableScene(mCurrentScene)) {
                             p_Scene->isGameplay = true;
+                            
                         }
                         mGameConfig->OnEnterPlayMode(mCurrentScene);
                     }

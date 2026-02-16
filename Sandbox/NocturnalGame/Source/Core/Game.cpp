@@ -21,6 +21,8 @@ namespace NocturnalEngine {
     void NocturnalGameLayer::Init() {
         m_gameConfig = LuminaraZoo();
         ServiceLocator::Get().ProvideConfig(&m_gameConfig);
+
+        p_GameManager.Init();
     }
     void NocturnalGameLayer::Update(float dt) {
         bool isHowToPlayScene = false;
@@ -62,29 +64,32 @@ namespace NocturnalEngine {
                 }
                 p_GUI->sub_menu = false;
                 p_Scene->setSceneToLoad("Assets/Scene/Menu.json");
+            }
 
-                if (p_Input->KeyPressed(GLFW_KEY_F3))
+            p_GameManager.Update(dt);
+
+            if (p_Input->KeyPressed(GLFW_KEY_F3))
+            {
+                for (Entity i = 0; i < p_ecs.GetTotalEntities(); ++i)
                 {
-                    for (Entity i = 0; i < p_ecs.GetTotalEntities(); ++i)
+
+
+                    if (p_ecs.HaveComponent<Logic>(i) && p_ecs.GetComponent<Logic>(i).GetScriptByName("DialogueManager") != nullptr)
                     {
-
-
-                        if (p_ecs.HaveComponent<Logic>(i) && p_ecs.GetComponent<Logic>(i).GetScriptByName("DialogueManager") != nullptr)
-                        {
-                            p_ecs.GetComponent<Logic>(i).GetScriptByName("DialogueManager")->mScriptPause = true;
-                        }
-
+                        p_ecs.GetComponent<Logic>(i).GetScriptByName("DialogueManager")->mScriptPause = true;
                     }
-                }
-                for (Entity entity = 0; entity < p_ecs.GetTotalEntities(); entity++)
-                {
-                    if (p_ecs.HaveComponent<NameTag>(entity) && p_ecs.GetComponent<NameTag>(entity).GetNameTag() == "Splash Screen")
-                    {
-                        if (p_ecs.GetComponent<Transform>(entity).GetScale().x > 3.5f)
-                            p_Scene->setSceneToLoad("Assets/Scene/Menu.json");
-                    }
+
                 }
             }
+            for (Entity entity = 0; entity < p_ecs.GetTotalEntities(); entity++)
+            {
+                if (p_ecs.HaveComponent<NameTag>(entity) && p_ecs.GetComponent<NameTag>(entity).GetNameTag() == "Splash Screen")
+                {
+                    if (p_ecs.GetComponent<Transform>(entity).GetScale().x > 3.5f)
+                        p_Scene->setSceneToLoad("Assets/Scene/Menu.json");
+                }
+            }
+           
         }
     }
     void NocturnalGameLayer::Shutdown() {
