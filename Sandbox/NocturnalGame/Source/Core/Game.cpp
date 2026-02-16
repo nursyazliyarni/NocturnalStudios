@@ -23,6 +23,10 @@ namespace NocturnalEngine {
         ServiceLocator::Get().ProvideConfig(&m_gameConfig);
 
         p_GameManager.Init();
+
+#if !DEBUG
+        p_Scene->setSceneToLoad("Assets/Scene/Menu.json");
+#endif
     }
     void NocturnalGameLayer::Update(float dt) {
         
