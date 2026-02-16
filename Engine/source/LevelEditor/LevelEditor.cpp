@@ -1812,7 +1812,7 @@ namespace NocturnalEngine {
                         }
                         ImGui::SameLine();
                         if (ImGui::Button("Delete")) {
-                            logic.DeleteScript(mScriptList[current_script]);
+                            logic.DeleteScript(scriptNames[current_script]);
                         }
                         ImGui::Text("Inserted Scripts:");
                         for (int i = 0; i < logic.GetScriptNames().size(); i++) {
