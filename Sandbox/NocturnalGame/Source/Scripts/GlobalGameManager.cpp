@@ -167,6 +167,7 @@ namespace NocturnalEngine {
 
         if (p_Scene->isGameplay)
         {
+            
             if (IsNewSceneManagement() && !combinedSceneSetup) CombinedSceneStart();
             if (IsNewSceneManagement())CombinedSceneUpdate(dt);
             for (std::pair<const std::string,AnimalAttributes>& sceneAnimalPair:sceneAnimalMap)

@@ -25,6 +25,7 @@ namespace NocturnalEngine {
         p_GameManager.Init();
     }
     void NocturnalGameLayer::Update(float dt) {
+        
         bool isHowToPlayScene = false;
         for (Entity entity = 0; entity < p_ecs.GetTotalEntities(); ++entity)
         {
@@ -47,50 +48,50 @@ namespace NocturnalEngine {
                     break;
                 }
             }
-
-            if (p_Editor->is_ShowWindow == false &&
-                p_Input->KeyPressed(GLFW_KEY_ESCAPE) &&
-                (p_Scene->isGameplay || p_GUI->check_pause() || isHowToPlayScene))
-            {
-                const bool shouldResetGameplayState = (p_Scene->isGameplay || p_GUI->check_pause());
-                if (shouldResetGameplayState)
-                {
-                    p_GameManager.ResetSystem(false);
-                }
-
-                if (p_GUI->check_pause())
-                {
-                    p_GUI->toggle_pause();
-                }
-                p_GUI->sub_menu = false;
-                p_Scene->setSceneToLoad("Assets/Scene/Menu.json");
-            }
-
-            p_GameManager.Update(dt);
-
-            if (p_Input->KeyPressed(GLFW_KEY_F3))
-            {
-                for (Entity i = 0; i < p_ecs.GetTotalEntities(); ++i)
-                {
-
-
-                    if (p_ecs.HaveComponent<Logic>(i) && p_ecs.GetComponent<Logic>(i).GetScriptByName("DialogueManager") != nullptr)
-                    {
-                        p_ecs.GetComponent<Logic>(i).GetScriptByName("DialogueManager")->mScriptPause = true;
-                    }
-
-                }
-            }
-            for (Entity entity = 0; entity < p_ecs.GetTotalEntities(); entity++)
-            {
-                if (p_ecs.HaveComponent<NameTag>(entity) && p_ecs.GetComponent<NameTag>(entity).GetNameTag() == "Splash Screen")
-                {
-                    if (p_ecs.GetComponent<Transform>(entity).GetScale().x > 3.5f)
-                        p_Scene->setSceneToLoad("Assets/Scene/Menu.json");
-                }
-            }
-           
         }
+        if (p_Editor->is_ShowWindow == false &&
+            p_Input->KeyPressed(GLFW_KEY_ESCAPE) &&
+            (p_Scene->isGameplay || p_GUI->check_pause() || isHowToPlayScene))
+        {
+            const bool shouldResetGameplayState = (p_Scene->isGameplay || p_GUI->check_pause());
+            if (shouldResetGameplayState)
+            {
+                p_GameManager.ResetSystem(false);
+            }
+
+            if (p_GUI->check_pause())
+            {
+                p_GUI->toggle_pause();
+            }
+            p_GUI->sub_menu = false;
+            p_Scene->setSceneToLoad("Assets/Scene/Menu.json");
+        }
+
+        p_GameManager.Update(dt);
+
+        if (p_Input->KeyPressed(GLFW_KEY_F3))
+        {
+            for (Entity i = 0; i < p_ecs.GetTotalEntities(); ++i)
+            {
+
+
+                if (p_ecs.HaveComponent<Logic>(i) && p_ecs.GetComponent<Logic>(i).GetScriptByName("DialogueManager") != nullptr)
+                {
+                    p_ecs.GetComponent<Logic>(i).GetScriptByName("DialogueManager")->mScriptPause = true;
+                }
+
+            }
+        }
+        for (Entity entity = 0; entity < p_ecs.GetTotalEntities(); entity++)
+        {
+            if (p_ecs.HaveComponent<NameTag>(entity) && p_ecs.GetComponent<NameTag>(entity).GetNameTag() == "Splash Screen")
+            {
+                if (p_ecs.GetComponent<Transform>(entity).GetScale().x > 3.5f)
+                    p_Scene->setSceneToLoad("Assets/Scene/Menu.json");
+            }
+        }
+           
+        
     }
     void NocturnalGameLayer::Shutdown() {
         
