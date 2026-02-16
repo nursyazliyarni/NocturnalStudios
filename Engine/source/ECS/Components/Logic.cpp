@@ -108,7 +108,7 @@ Deserialize for Logic Component
 		}
 
 		// Use factory to create scripts
-		std::shared_ptr<IScriptRegistry> factory = ServiceLocator::Get().GetScriptRegistry();
+		IScriptRegistry* factory = ServiceLocator::Get().GetScriptRegistry();
 
 		for (const std::string& scriptName : mScriptNameVector)
 		{

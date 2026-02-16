@@ -24,25 +24,25 @@ namespace NocturnalEngine{
             return instance;
         }
 
-        void ProvideScriptRegistry(std::shared_ptr < IScriptRegistry> registry) {
+        void ProvideScriptRegistry( IScriptRegistry* registry) {
             m_scriptRegistry = registry;
         }
 
-        std::shared_ptr < IScriptRegistry> GetScriptRegistry() const {
+        IScriptRegistry* GetScriptRegistry() const {
             return m_scriptRegistry;
         }
 
-        void ProvideConfig(std::shared_ptr < IGameConfig> config) {
+        void ProvideConfig(IGameConfig* config) {
             m_gameConfig = config;
         }
 
-        std::shared_ptr < IGameConfig> GetGameConfig() const {
+        IGameConfig* GetGameConfig() const {
             return m_gameConfig;
         }
 
     private:
         ServiceLocator() = default;
-        std::shared_ptr < IScriptRegistry> m_scriptRegistry = nullptr;
-        std::shared_ptr < IGameConfig> m_gameConfig = nullptr;
+        IScriptRegistry* m_scriptRegistry = nullptr;
+        IGameConfig* m_gameConfig = nullptr;
     };
 }

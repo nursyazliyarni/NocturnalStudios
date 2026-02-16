@@ -109,8 +109,8 @@ namespace NocturnalEngine {
 	private:
 		
 		Window* mWindow{nullptr};
-		std::shared_ptr < IScriptRegistry> mScriptRegistry;
-		std::shared_ptr < IGameConfig> mGameConfig;
+		IScriptRegistry* mScriptRegistry;
+		IGameConfig* mGameConfig;
 		ImGuiDockNodeFlags mDockSpaceFlags{};
 		static std::unique_ptr<LevelEditor> mInstance;
 		

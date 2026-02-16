@@ -14,6 +14,7 @@
 *------------------------------------------------------------------------------------------------*/
 #include "pch.h"
 #include "ECS/ECS.h"
+#pragma once
 namespace NocturnalEngine {
     
     class IScriptRegistry {
