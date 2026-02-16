@@ -16,4 +16,5 @@ endif()
 add_subdirectory(Engine)
 add_subdirectory(Sandbox)
 
+
 set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT NocturnalGame)

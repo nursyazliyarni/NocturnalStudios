@@ -24,7 +24,7 @@
 #include "Core/MemoryManager.h"
 #include <unordered_map>
 #include <array>
-#include "Scripts/GlobalGameManager.h"
+//#include //"Scripts/GlobalGameManager.h"
 
 namespace NocturnalEngine
 {
@@ -471,7 +471,7 @@ void NocturnalEngine::SceneManager::checkForSceneToLoad()
 			if (sceneToLoad == "Assets/Scene/CombinedScene.json")
 			{
 				isGameplay = true;
-				p_GameManager.ToggleSceneManagement();
+				//p_GameManager.ToggleSceneManagement();
 				Graphic::camera.SetZoomLevel(1.0f);
 				Graphic::camera.SetPosition({ 0.0f,0.0f,0.0f });
 			}
@@ -503,7 +503,7 @@ void NocturnalEngine::SceneManager::checkForSceneToLoad()
 				NocturnalEngine::Graphic::layerEnabled[l] = true;
 		}
 
-		p_GameManager.SetState(GameManager::GameState::PLAYING);
+		//p_GameManager.SetState(GameManager::GameState::PLAYING);
 		sceneToLoad = "";
 	}
 }
