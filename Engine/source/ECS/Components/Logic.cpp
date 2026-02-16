@@ -17,22 +17,9 @@
 
 #include "pch.h"
 #include "ECS/Components/Logic.h"
-#include "Scripts/ButtonResponse.h"
-#include "Scripts/ScenerioScript.h"
-#include "Scripts/SliderScript.h"
-#include "Scripts/AudioManager.h"
-#include "Scripts/PauseMenu.h"
-#include "Scripts/BackgroundAudio.h"
-#include "Scripts/CutScene.h"
-#include "Scripts/DialogueManager.h"
-#include "Scripts/DragAndDrop.h"
-#include "Scripts/HealthBar.h"
-#include "Scripts/AnimalLogic.h"
-#include "Scripts/TimerDisplay.h"
-#include "Scripts/DigeticLog.h"
-#include "Scripts/RevealTargetOnClick.h"
-#include "Scripts/PainSpotSpawner.h"
-#include "Scripts/EndScreenDisplay.h"
+#include "System/ServiceLocator.h"
+#include "Scripts/IScriptRegistry.h"
+
 
 
 namespace NocturnalEngine
@@ -107,83 +94,36 @@ namespace NocturnalEngine
 	}
 
 	/*!*************************************************************************
-	Deserialize for Logic Component
-	****************************************************************************/
+Deserialize for Logic Component
+****************************************************************************/
 	bool Logic::Deserialize(const rapidjson::Value& obj)
 	{
 		int scriptCount = obj.HasMember("ScriptCount") && obj["ScriptCount"].IsNumber() ? obj["ScriptCount"].GetInt() : 0;
-		if (scriptCount <= 0)return true;
-		for (int i = 0; i < obj["ScriptCount"].GetInt(); ++i)
+		if (scriptCount <= 0) return true;
+
+		// Load script names from JSON
+		for (int i = 0; i < scriptCount; ++i)
 		{
 			mScriptNameVector.push_back(obj[std::to_string(i).c_str()].GetString());
 		}
-		for (size_t j = 0; j < mScriptNameVector.size(); ++j)
+
+		// Use factory to create scripts
+		std::shared_ptr<IScriptRegistry> factory = ServiceLocator::Get().GetScriptRegistry();
+
+		for (const std::string& scriptName : mScriptNameVector)
 		{
-			if (mScriptNameVector[j] == "ButtonResponse")
+			IScript* script = factory->CreateScript(scriptName);
+			if (script)
 			{
-				mScriptsVector.push_back(new ButtonResponse());
+				mScriptsVector.push_back(script);
 			}
-			if (mScriptNameVector[j] == "ScenerioScript")
+			else
 			{
-				mScriptsVector.push_back(new ScenerioScript());
-			}
-			if (mScriptNameVector[j] == "AudioManager")
-			{
-				mScriptsVector.push_back(new AudioManager());
-			}
-			if (mScriptNameVector[j] == "BackgroundAudio")
-			{
-				mScriptsVector.push_back(new BackgroundAudio());
-			}
-			if (mScriptNameVector[j] == "SliderScript")
-			{
-				mScriptsVector.push_back(new SliderScript());
-			}
-			if (mScriptNameVector[j] == "PauseMenu")
-			{
-				mScriptsVector.push_back(new PauseMenu());
-			}
-			if (mScriptNameVector[j] == "CutScene")
-			{
-				mScriptsVector.push_back(new CutScene());
-			}
-			if (mScriptNameVector[j] == "DialogueManager")
-			{
-				mScriptsVector.push_back(new DialogueManager());
-			}
-			if (mScriptNameVector[j] == "DragAndDrop")
-			{
-				mScriptsVector.push_back(new DragAndDrop());
-			}
-			if (mScriptNameVector[j] == "HealthBar")
-			{
-				mScriptsVector.push_back(new HealthBar());
-			}
-			if (mScriptNameVector[j] == "AnimalLogic")
-			{
-				mScriptsVector.push_back(new AnimalLogic());
-			}
-			if (mScriptNameVector[j] == "TimerDisplay")
-			{
-				mScriptsVector.push_back(new TimerDisplay());
-			}
-			if (mScriptNameVector[j] == "DigeticLog")
-			{
-				mScriptsVector.push_back(new DigeticLog());
-			}
-			if (mScriptNameVector[j] == "RevealTargetOnClick")
-			{
-				mScriptsVector.push_back(new RevealTargetOnClick());
-			}
-			if (mScriptNameVector[j] == "PainSpotSpawner")
-			{
-				mScriptsVector.push_back(new PainSpotSpawner());
-			}
-			if (mScriptNameVector[j] == "EndScreenDisplay")
-			{
-				mScriptsVector.push_back(new EndScreenDisplay());
+				// Optional: Log warning for unknown script
+				NOCTURNAL_ENGINE_WARN("Unknown script type in scene file: {}", scriptName);
 			}
 		}
+
 		return true;
 	}
 

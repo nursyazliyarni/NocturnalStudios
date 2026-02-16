@@ -1,15 +1,15 @@
 /*!------------------------------------------------------------------------------------------------
-    File: SliderScript.h
+    File: ButtonResponse.h
     Project: NocturnalStudio
 
 	Brief:
-		 This file contains the SliderScript class declaration
-		 which is responsible for handling slider interactions and responses within the engine 
-		 for the slider components.
+		 This file contains the ButtonResponse class declaration
+		 which is responsible for handling button interactions and responses within the engine 
+		 for the button components.
 
     Primary Author:
          LAU XIANG YANG (100%)
-		- Created the SliderScript.h file and its function specification.
+		- Created the ButtonResponse.h file and its function specification.
 
     All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
 *------------------------------------------------------------------------------------------------*/
@@ -22,13 +22,13 @@
 #include "Window/Window.h"
 #include "ECS/Types.h"
 #include "ECS/ECS.h"
-#include <vector>
+#include "Logic/States/IStates.h"
 namespace NocturnalEngine {
-	class SliderScript : public IScript
+	class ButtonResponse : public IScript
 	{
 	public:
-		SliderScript() = default;
-		~SliderScript() = default;
+		ButtonResponse() : clicked{ false }, selected{ false }, initial_hover{ true }, how_to_play{ false } {};
+		~ButtonResponse() = default;
 		/*!*************************************************************************
 		This function initialises the script. As there are no data members that require
 		initialization, this function is empty
@@ -41,45 +41,64 @@ namespace NocturnalEngine {
 		****************************************************************************/
 		virtual void Update(float Frametime) override;
 		/*!*************************************************************************
-		This function ends the script by deleting the pointer to this scriptv
+		This function ends the script by deleting the pointer to this script
 		****************************************************************************/
 		virtual void End() override;
 		/*!*************************************************************************
 		This function clones the script by allocating and constructing a copy of this
 		script and returning it
 		****************************************************************************/
-		virtual SliderScript* Clone() const override;
+		virtual ButtonResponse* Clone() const override;
 		/*!*************************************************************************
 		This function returns the purpose of the script as a flag for when it is called
 		****************************************************************************/
 		virtual std::string GetScriptName() override;
 
-		virtual void SetScriptEntityID(Entity& entity) override { entityID = entity; }
-
-		virtual Entity& GetScriptEntityID() override { return entityID; }
+		bool Requirements(Entity e) override {
+			if (p_ecs.HaveComponent<Collider>(e) && p_ecs.HaveComponent<Tag>(e)&& p_ecs.HaveComponent<Sprite>(e))return true;
+			return false;
+		}
 
 		/*!*************************************************************************
-		This function check if the mouse is within the bounding box of the button
+		This function check if the mouse is within the bounding box of the button 
 		****************************************************************************/
 		bool is_within_box(glm::vec2 cur, Collider box, Transform trans);
 
-		bool clicked{};
-		bool selected{};
-		bool SliderCali{};
-		bool limitset{};
-		bool ingame{};
+		virtual void SetScriptEntityID(Entity& entity) override { entityID = entity; }
+
+		virtual Entity& GetScriptEntityID() override { return entityID; }
+		
+		bool clicked = false;
+		bool selected = false;
+		bool Action = false;
+
+		enum class button_state
+		{
+			idle,
+			select,
+			click,
+			release,
+		};
 
 	private:
-		struct slider_bb
+		struct button_bb
 		{
 			vec2D min;
 			vec2D max;
 		};
-		vec2D def_position{};
-		slider_bb limit{};
+		button_bb Button_BoundingBox{};
+		button_state curr_state{ button_state::idle};
+		bool HTP {false};
+		bool initial_hover;
+		bool how_to_play;
+		bool entercollider{false},leftcollider{ false };
 
-
-
+		
+	
 	};
 }
 
+
+		
+
+		

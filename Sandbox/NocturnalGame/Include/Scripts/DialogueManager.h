@@ -1,69 +1,94 @@
 /*!------------------------------------------------------------------------------------------------
-    File: AudioManager.h
+    File: DialogueManager.h
     Project: NocturnalStudio
 
 	Brief:
-		This file contains the AudioManager class declaration
-		which is responsible for managing audio-related functionalities
-		such as background music and sound effects within the engine.
+		 This file contains the DialogueManager class declaration
+		 which is responsible for managing dialogue functionalities within the engine 
+		 for the dialogue components.
 
     Primary Author:
          LAU XIANG YANG (100%)
-		- Created the AudioManager.h file and its function specification.
+		- Created the DialogueManager.h file and its function specification.
 
     All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
 *------------------------------------------------------------------------------------------------*/
 
+
 #pragma once
-#include "IScript.h"
-#include "GLFW/glfw3.h"
+#include "Scripts/IScript.h"
 #include "Input/Input.h"
-#include "Math/physics.h"
+#include "GUI/GUI.h"
+#include "Graphics/Camera2D.h"
 
 namespace NocturnalEngine
 {
 	/*!*************************************************************************
-	Class for Audio Manager Script
+	Class for Dialogue Manager Script
 	****************************************************************************/
-	class AudioManager : public IScript
+	class DialogueManager : public IScript
 	{
 	public:
 		/*!*************************************************************************
-		Default constructor for Audio Manager
+		Default constructor for Dialogue Manager
 		****************************************************************************/
-		AudioManager();
+		DialogueManager() : mDialogues{ "Dialogue1", "Dialogue2", "Dialogue3", "Dialogue4","Tutorial1","Tutorial2","Tutorial3",
+										"Tutorial4","Tutorial5","Tutorial6","Dialogue7","Dialogue8","Dialogue9","Dialogue10",
+										"Dialogue11","Dialogue12" },
+			counter{ 0 }, MaxCounter{ 4 } {}
 		/*!*************************************************************************
-		Default destructor for HUD Controller
+		Default destructor for Dialogue Manager
 		****************************************************************************/
-		~AudioManager() = default;
+		~DialogueManager() = default;
 		/*!*************************************************************************
-		Returns a new copy of Audio Manager Script
+		Returns a new copy of Dialogue Manager Script
 		****************************************************************************/
-		virtual AudioManager* Clone() const override;
+		virtual DialogueManager* Clone() const override
+		{
+			return new DialogueManager(*this);
+		}
 		/*!*************************************************************************
-		Start State of Audio Manager Script
+		Start State of DialogueManager Script
 		****************************************************************************/
-		virtual void Start() override;
+		virtual void Start() override
+		{
+		}
 		/*!*************************************************************************
-		Update Loop of HUD Controller Script
+		Update Loop of DialogueManager Script
 		****************************************************************************/
-		virtual void Update(float Frametime) override;
+		virtual void Update(float Frametime) override
+		{
+
+			UNREFERENCED_PARAMETER(Frametime);
+
+		}
 		/*!*************************************************************************
-		End State for HUD Controller
+		End State for DialogueManager
 		****************************************************************************/
-		virtual void End() override;
+		virtual void End() override
+		{
+			
+		}
+
+		bool Requirements(Entity e) override {
+			if (p_ecs.HaveComponent<Sprite>(e))return true;
+			return false;
+		}
 		/*!*************************************************************************
 		Returns the name of Script
 		****************************************************************************/
-		virtual std::string GetScriptName();
+		virtual std::string GetScriptName() override
+		{
+			return "DialogueManager";
+		}
 
 		virtual void SetScriptEntityID(Entity& entity) override { entityID = entity; }
 
 		virtual Entity& GetScriptEntityID() override { return entityID; }
-		
+
+		int counter;
 	private:
-		float BGMvol;
-		float SFXvol;
-		float Mastervol;
+		std::string mDialogues[16];
+		int MaxCounter;
 	};
 }

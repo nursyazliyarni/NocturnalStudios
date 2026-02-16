@@ -24,6 +24,8 @@
 #pragma once
 #include "Window/Window.h"
 #include "ResourceManager/ResourceManager.h"
+#include "Scripts/IScriptRegistry.h"
+#include "core/IGameConfig.h"
 #define p_Editor NocturnalEngine::LevelEditor::GetInstance()
 
 namespace NocturnalEngine {
@@ -107,6 +109,8 @@ namespace NocturnalEngine {
 	private:
 		
 		Window* mWindow{nullptr};
+		std::shared_ptr < IScriptRegistry> mScriptRegistry;
+		std::shared_ptr < IGameConfig> mGameConfig;
 		ImGuiDockNodeFlags mDockSpaceFlags{};
 		static std::unique_ptr<LevelEditor> mInstance;
 		

@@ -43,6 +43,13 @@ namespace NocturnalEngine {
 		This function ends the script by deleting the pointer to this script
 		****************************************************************************/
 		virtual void End() override;
+
+		bool Requirements(Entity e) override {
+			if (p_ecs.HaveComponent<Collider>(e) && p_ecs.HaveComponent<Tag>(e)
+				&& p_ecs.HaveComponent<Sprite>(e))return true;
+			return false;
+		}
+
 		/*!*************************************************************************
 		This function clones the script by allocating and constructing a copy of this
 		script and returning it

@@ -1,3 +1,17 @@
+/*!------------------------------------------------------------------------------------------------
+    File: PauseMenu.h
+    Project: NocturnalStudio
+
+	Brief:
+		 This file contains the PauseMenu class declaration
+		 which is responsible for handling pause menu interactions and responses within the engine 
+
+    Primary Author:
+         LAU XIANG YANG (100%)
+		- Created the PauseMenu.h file and its function specification.
+
+    All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
 
 #pragma once
 #include "pch.h"

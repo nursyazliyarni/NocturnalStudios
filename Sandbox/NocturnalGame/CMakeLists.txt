@@ -1,11 +1,15 @@
 project(NocturnalGame LANGUAGES C CXX)
 
 file(GLOB_RECURSE GAME_SRC CONFIGURE_DEPENDS
-  "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp" "${CMAKE_CURRENT_SOURCE_DIR}/*.cxx"
+  "${CMAKE_CURRENT_SOURCE_DIR}/source/*.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/source/*.cxx"
 )
+
 file(GLOB_RECURSE GAME_HDR CONFIGURE_DEPENDS
-  "${CMAKE_CURRENT_SOURCE_DIR}/*.h"   "${CMAKE_CURRENT_SOURCE_DIR}/*.hpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/include/*.h"
+  "${CMAKE_CURRENT_SOURCE_DIR}/include/*.hpp"
 )
+
 
 add_executable(NocturnalGame ${GAME_SRC} ${GAME_HDR})
 target_link_libraries(NocturnalGame PRIVATE Engine)

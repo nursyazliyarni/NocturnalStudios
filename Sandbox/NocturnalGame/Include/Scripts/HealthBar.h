@@ -1,0 +1,91 @@
+
+/*!------------------------------------------------------------------------------------------------
+	File: HealthBar.h
+	Project: NocturnalStudio
+
+	Brief:
+		 This file contains the HealthBar class declaration
+		 which is responsible for managing HealthBar functionalities within the engine
+		 for the HealthBar components.
+
+	Primary Author:
+		 ANG YU XUAN (70%)
+		- Created the HealthBar.h file and its function specification.
+	Secondary Author:
+		Sarah (30%)
+		- Update the HealthBar logic script to make sure all healthBars for each alive animals are
+		  still updated even though there is only 1 scene that is loaded and running at a time.
+
+	All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
+
+#include "pch.h"
+#include "Scripts/IScript.h"
+#include "Input/Input.h"
+
+
+
+namespace NocturnalEngine
+{
+	/*!*************************************************************************
+	Class for Drag & Drop Script
+	****************************************************************************/
+	class HealthBar : public IScript
+	{
+	public:
+		
+
+		/*!*************************************************************************
+		Default constructor for Drag & Drop
+		****************************************************************************/
+		HealthBar() :linkedAnimal{ 0 }, origin{} {}
+		/*!*************************************************************************
+		Default destructor for Drag & Drop
+		****************************************************************************/
+		~HealthBar() = default;
+		/*!*************************************************************************
+		Returns a new copy of Drag & Drop Script
+		****************************************************************************/
+		virtual HealthBar* Clone() const override
+		{
+			return new HealthBar(*this);
+		}
+		/*!*************************************************************************
+		Start State of Drag & Drop Script
+		****************************************************************************/
+		virtual void Start() override;
+		/*!*************************************************************************
+		Update Loop of Drag & Drop Script
+		****************************************************************************/
+		virtual void Update(float Frametime) override;
+		/*!*************************************************************************
+		End State for Drag & Drop
+		****************************************************************************/
+		virtual void End() override;
+
+		bool Requirements(Entity e) override {
+			if (p_ecs.HaveComponent<Sprite>(e) && p_ecs.HaveComponent<HUDComponent>(e))return true;
+			return false;
+		}
+
+		/*!*************************************************************************
+		Returns the name of Script
+		****************************************************************************/
+		virtual std::string GetScriptName() override
+		{
+			return "HealthBar";
+		}
+
+		virtual void SetScriptEntityID(Entity& entity) override { entityID = entity; }
+
+		virtual Entity& GetScriptEntityID() override { return entityID; }
+
+	private:
+		Entity linkedAnimal;
+		Transform origin;
+		
+
+		int findAnimalTries{};
+		void FindAnimal();
+	};
+}

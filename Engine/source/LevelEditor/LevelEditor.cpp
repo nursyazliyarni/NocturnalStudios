@@ -37,6 +37,7 @@
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
 #include <ImGuizmo.h>
+#include "GUI/GUI.h"
 
 #include "LevelEditor/LevelEditor.h"
 #include "Timer/Time.h"
@@ -55,25 +56,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/quaternion.hpp>
 
-#include "Scripts/ButtonResponse.h"
-#include "Scripts/ScenerioScript.h"
-#include "Scripts/AudioManager.h"
-
-#include "Scripts/BackgroundAudio.h"
-#include "Scripts/SliderScript.h"
-#include "Scripts/PauseMenu.h"
-#include "Scripts/CutScene.h"
-#include "Scripts/DialogueManager.h"
-#include "Scripts/DragAndDrop.h"
-#include "Scripts/HealthBar.h"
-#include "Scripts/AnimalLogic.h"
-#include "Scripts/TimerDisplay.h"
-#include "Scripts/DigeticLog.h"
-#include "Scripts/RevealTargetOnClick.h"
-#include "Scripts/PainSpotSpawner.h"
-#include "Scripts/EndScreenDisplay.h"
-
-#include "Scripts/GlobalGameManager.h"
+#include "System/ServiceLocator.h"
 
 
 #include <unordered_map>
@@ -149,6 +132,8 @@ namespace NocturnalEngine {
 
         LoadSceneFromFile();
 
+        mGameConfig= ServiceLocator::Get().GetGameConfig();
+        mScriptRegistry = ServiceLocator::Get().GetScriptRegistry();
         LoadScriptsFromFile();
         // Seed undo history with the initial editor state.
         PushUndoSnapshot();
@@ -370,23 +355,15 @@ namespace NocturnalEngine {
             {
                 if (ImGui::Button("Close Editor/Play"))
                 {
-				    is_ShowWindow = false;
+                    is_ShowWindow = false;
+
                     
-                    std::vector<std::string> playablescenes = {
-                       "FlamingoScene.json",
-                       "HorseScene.json",
-                       "SealScene.json",
-                       "OwlScene.json",
-                       "CombinedScene.json"};
-                    for (std::string s : playablescenes)
-                    {
-                        if (s == mCurrentScene) { p_Scene->isGameplay = true; break; }
-                        
+                    if (mGameConfig) {  // Null check still works
+                        if (mGameConfig->IsPlayableScene(mCurrentScene)) {
+                            p_Scene->isGameplay = true;
+                        }
+                        mGameConfig->OnEnterPlayMode(mCurrentScene);
                     }
-                    if (mCurrentScene == "CombinedScene.json")p_GameManager.ToggleSceneManagement();
-                    else if (p_GameManager.IsNewSceneManagement())p_GameManager.ToggleSceneManagement();
-                    
-                    p_GameManager.SetState(GameManager::GameState::STARTING);
                 }
             }
             else
@@ -395,7 +372,7 @@ namespace NocturnalEngine {
                 {
                     is_ShowWindow = true;
                     p_Scene->isGameplay = false;
-                    p_GameManager.ResetSystem(true);
+                    mGameConfig->OnExitPlayMode(true);
                    
                     
                     
@@ -1140,118 +1117,6 @@ namespace NocturnalEngine {
 
             ImGui::Checkbox("Show physics colliders", &mDebugDraw);
 
-            //ImGui::Separator();
-            //ImGui::Text("Layering System (Only shows used layers)");
-            //ImGui::Text("Top draws first (behind). Bottom draws last (in front).");
-            //ImGui::Separator();
-
-            //// 1) Collect which layers are actually used by sprites in the scene
-            //std::vector<int> usedLayers;
-            //usedLayers.reserve(NocturnalEngine::Graphic::MAX_LAYERS);
-
-            //for (Entity e = 0; e < p_ecs.GetTotalEntities(); ++e)
-            //{
-            //    if (!p_ecs.HaveComponent<Sprite>(e)) continue;
-
-            //    int l = p_ecs.GetComponent<Sprite>(e).LayerOrder;
-            //    if (l < 0) l = 0;
-            //    if (l >= NocturnalEngine::Graphic::MAX_LAYERS) l = NocturnalEngine::Graphic::MAX_LAYERS - 1;
-
-            //    usedLayers.push_back(l);
-            //}
-
-            //// If no sprites exist yet, at least show layer 0
-            //if (usedLayers.empty())
-            //    usedLayers.push_back(0);
-
-            //// Unique + sort
-            //std::sort(usedLayers.begin(), usedLayers.end());
-            //usedLayers.erase(std::unique(usedLayers.begin(), usedLayers.end()), usedLayers.end());
-
-            //// 2) Build the visible list in CURRENT draw order (so UI reflects current draw order)
-            //std::vector<int> visibleLayers;
-            //visibleLayers.reserve(usedLayers.size());
-
-            //for (int i = 0; i < NocturnalEngine::Graphic::MAX_LAYERS; ++i)
-            //{
-            //    int layer = NocturnalEngine::Graphic::layerDrawOrder[i];
-
-            //    if (std::binary_search(usedLayers.begin(), usedLayers.end(), layer))
-            //        visibleLayers.push_back(layer);
-            //}
-
-            //// 3) UI: drag to reorder ONLY visible layers,
-            //// but we update the REAL global array: Graphic::layerDrawOrder[]
-            //for (int visIdx = 0; visIdx < (int)visibleLayers.size(); ++visIdx)
-            //{
-            //    int layer = visibleLayers[visIdx];
-            //    ImGui::PushID(visIdx);
-
-            //    ImGui::Checkbox("##enable", &NocturnalEngine::Graphic::layerEnabled[layer]);
-            //    ImGui::SameLine();
-
-            //    std::string label = "Layer " + std::to_string(layer);
-            //    ImGui::Selectable(label.c_str(), false);
-
-            //    // Drag source: drag by visible index
-            //    if (ImGui::BeginDragDropSource())
-            //    {
-            //        ImGui::SetDragDropPayload("LAYER_REORDER_VISIBLE", &visIdx, sizeof(int));
-            //        ImGui::Text("Move %s", label.c_str());
-            //        ImGui::EndDragDropSource();
-            //    }
-
-            //    // Drop target
-            //    if (ImGui::BeginDragDropTarget())
-            //    {
-            //        if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("LAYER_REORDER_VISIBLE"))
-            //        {
-            //            int srcVisIdx = *(const int*)payload->Data;
-            //            int dstVisIdx = visIdx;
-
-            //            if (srcVisIdx != dstVisIdx &&
-            //                srcVisIdx >= 0 && srcVisIdx < (int)visibleLayers.size() &&
-            //                dstVisIdx >= 0 && dstVisIdx < (int)visibleLayers.size())
-            //            {
-            //                int movingLayer = visibleLayers[srcVisIdx];
-            //                int dstLayer = visibleLayers[dstVisIdx];
-
-            //                // Find their positions in the GLOBAL drawOrder array
-            //                int srcGlobal = -1, dstGlobal = -1;
-            //                for (int g = 0; g < NocturnalEngine::Graphic::MAX_LAYERS; ++g)
-            //                {
-            //                    if (NocturnalEngine::Graphic::layerDrawOrder[g] == movingLayer) srcGlobal = g;
-            //                    if (NocturnalEngine::Graphic::layerDrawOrder[g] == dstLayer)    dstGlobal = g;
-            //                }
-
-            //                if (srcGlobal != -1 && dstGlobal != -1)
-            //                {
-            //                    // Stable "move" in global draw order
-            //                    int temp = NocturnalEngine::Graphic::layerDrawOrder[srcGlobal];
-
-            //                    if (srcGlobal < dstGlobal)
-            //                    {
-            //                        for (int k = srcGlobal; k < dstGlobal; ++k)
-            //                            NocturnalEngine::Graphic::layerDrawOrder[k] = NocturnalEngine::Graphic::layerDrawOrder[k + 1];
-            //                        NocturnalEngine::Graphic::layerDrawOrder[dstGlobal] = temp;
-            //                    }
-            //                    else
-            //                    {
-            //                        for (int k = srcGlobal; k > dstGlobal; --k)
-            //                            NocturnalEngine::Graphic::layerDrawOrder[k] = NocturnalEngine::Graphic::layerDrawOrder[k - 1];
-            //                        NocturnalEngine::Graphic::layerDrawOrder[dstGlobal] = temp;
-            //                    }
-            //                }
-            //            }
-            //        }
-            //        ImGui::EndDragDropTarget();
-            //    }
-
-            //    ImGui::PopID();
-            //}
-
-
-
             mSystemRunTime[0] = Timer::GetInstance().GetDT(Systems::COLLISION) / Timer::GetInstance().GetGlobalDT();
             mSystemRunTime[1] = Timer::GetInstance().GetDT(Systems::GRAPHIC) / Timer::GetInstance().GetGlobalDT();
             mSystemRunTime[2] = Timer::GetInstance().GetDT(Systems::PHYSICS) / Timer::GetInstance().GetGlobalDT();
@@ -1903,7 +1768,7 @@ namespace NocturnalEngine {
                 }
 
                 //Logic
-                if (p_ecs.HaveComponent<Logic>(selectedEntity))
+                if (p_ecs.HaveComponent<Logic>(selectedEntity)&&mScriptRegistry)
                 {
                     if (ImGui::CollapsingHeader("Logic", ImGuiTreeNodeFlags_None))
                     {
@@ -1914,10 +1779,11 @@ namespace NocturnalEngine {
                         const size_t aSize = 30;
                         const char* logicList[aSize];
                         std::vector<const char*> sList;
+                        std::vector<std::string> scriptNames = mScriptRegistry->GetAvailableScripts();
 
-                        for (int i = 0; i < mScriptList.size(); i++)
+                        for (int i = 0; i <scriptNames.size(); i++)
                         {
-                            sList.push_back(mScriptList[i].c_str()); 
+                            sList.push_back(scriptNames[i].c_str()); 
                         }
                         std::copy(sList.begin(), sList.end(), logicList);
 
@@ -1928,82 +1794,17 @@ namespace NocturnalEngine {
                             bool can_addScript = true; 
                             for (int i = 0; i < logic.GetScriptNames().size(); i++) 
                             {
-                                if (logic.GetScriptNames()[i] == mScriptList[current_script]) 
+                                if (logic.GetScriptNames()[i] == scriptNames[current_script])
                                 {
                                     can_addScript = false;
                                 }
                             }
                             if (can_addScript == true)
                             {
-                                if (p_ecs.HaveComponent<NameTag>(selectedEntity) && p_ecs.HaveComponent<Transform>(selectedEntity))
-                                {
-                                    if (mScriptList[current_script] == "ButtonResponse" && p_ecs.HaveComponent<Collider>(selectedEntity) && p_ecs.HaveComponent<Tag>(selectedEntity)
-                                                                                        && p_ecs.HaveComponent<Sprite>(selectedEntity))
-                                    {
-                                        logic.InsertScript(new ButtonResponse(), selectedEntity);
-                                    }
-
-                                    if (mScriptList[current_script] == "PauseMenu" && p_ecs.HaveComponent<Collider>(selectedEntity) && p_ecs.HaveComponent<Tag>(selectedEntity)
-                                                                                   && p_ecs.HaveComponent<Sprite>(selectedEntity))
-                                    {
-                                        logic.InsertScript(new PauseMenu(), selectedEntity);
-                                    }
-                                    if (mScriptList[current_script] == "ScenerioScript")
-                                    {
-                                        logic.InsertScript(new ScenerioScript(), selectedEntity);
-                                    }
-                                    if (mScriptList[current_script] == "AudioManager" && p_ecs.HaveComponent<Audio>(selectedEntity))
-                                    {
-                                        logic.InsertScript(new AudioManager(), selectedEntity);
-                                    }
-                                    if (mScriptList[current_script] == "BackgroundAudio" && p_ecs.HaveComponent<Audio>(selectedEntity))
-                                    {
-                                        logic.InsertScript(new BackgroundAudio(), selectedEntity);
-                                    }
-                                    if (mScriptList[current_script] == "SliderScript" && p_ecs.HaveComponent<Collider>(selectedEntity) && p_ecs.HaveComponent<Tag>(selectedEntity)
-                                                                                      && p_ecs.HaveComponent<Sprite>(selectedEntity) && p_ecs.HaveComponent<NameTag>(selectedEntity))
-                                    {
-                                        logic.InsertScript(new SliderScript(), selectedEntity);
-                                    }
-                                    if (mScriptList[current_script] == "CutScene" && p_ecs.HaveComponent<Sprite>(selectedEntity) && p_ecs.HaveComponent<NameTag>(selectedEntity))
-                                    {
-                                        logic.InsertScript(new CutScene(), selectedEntity);
-                                    }
-                                    if (mScriptList[current_script] == "DialogueManager" && p_ecs.HaveComponent<Sprite>(selectedEntity))
-                                    {
-                                        logic.InsertScript(new DialogueManager(), selectedEntity);
-                                    }
-                                    if (mScriptList[current_script] == "DragAndDrop" && p_ecs.HaveComponent<Sprite>(selectedEntity)&& p_ecs.HaveComponent<ItemsAttributes>(selectedEntity))
-                                    {
-                                        logic.InsertScript(new DragAndDrop(), selectedEntity);
-                                    }
-                                    if (mScriptList[current_script] == "HealthBar" && p_ecs.HaveComponent<Sprite>(selectedEntity)&& p_ecs.HaveComponent<HUDComponent>(selectedEntity))
-                                    {
-                                        logic.InsertScript(new HealthBar(), selectedEntity);
-                                    }
-                                    if (mScriptList[current_script] == "AnimalLogic" && p_ecs.HaveComponent<AnimalAttributes>(selectedEntity))
-                                    {
-                                        logic.InsertScript(new AnimalLogic(), selectedEntity);
-                                    }
-                                    if (mScriptList[current_script] == "TimerDisplay" && p_ecs.HaveComponent<Text>(selectedEntity))
-                                    {
-                                        logic.InsertScript(new TimerDisplay(), selectedEntity);
-                                    }
-                                    if (mScriptList[current_script] == "DigeticLog" && p_ecs.HaveComponent<Text>(selectedEntity))
-                                    {
-                                        logic.InsertScript(new DigeticLog(), selectedEntity);
-                                    }
-                                    if (mScriptList[current_script] == "RevealTargetOnClick" && p_ecs.HaveComponent<Collider>(selectedEntity))
-                                    {
-                                        logic.InsertScript(new RevealTargetOnClick(), selectedEntity);
-                                    }
-                                    if (mScriptList[current_script] == "PainSpotSpawner" && p_ecs.HaveComponent<AnimalAttributes>(selectedEntity))
-                                    {
-                                        logic.InsertScript(new PainSpotSpawner(), selectedEntity);
-                                    }
-                                    if (mScriptList[current_script] == "EndScreenDisplay")
-                                    {
-                                        logic.InsertScript(new EndScreenDisplay(), selectedEntity);
+                                if (mScriptRegistry->CanAttachScript(scriptNames[current_script], selectedEntity)) {
+                                    IScript* script = mScriptRegistry->CreateScript(scriptNames[current_script]);
+                                    if (script) {
+                                        logic.InsertScript(script, selectedEntity);
                                     }
                                 }
                             }

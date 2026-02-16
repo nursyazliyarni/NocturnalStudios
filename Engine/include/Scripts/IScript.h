@@ -69,8 +69,12 @@ namespace NocturnalEngine
 
 		bool mScriptPause{ false };
 
+		virtual bool Requirements(Entity) = 0;
+
 	protected:
 		Entity entityID{};
+
 		bool mScriptInit{ false };
+
 	};
 }
