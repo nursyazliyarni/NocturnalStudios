@@ -16,6 +16,7 @@ namespace NocturnalEngine
         void Update(float dt) override;
         void End() override;
         bool Requirements(Entity e) override {
+            UNREFERENCED_PARAMETER(e);
             return true;
         }
         virtual std::string GetScriptName() override

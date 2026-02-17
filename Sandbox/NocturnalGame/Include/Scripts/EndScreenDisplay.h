@@ -57,6 +57,7 @@ namespace NocturnalEngine
 		virtual void End() override;
 
 		bool Requirements(Entity e) override {
+			UNREFERENCED_PARAMETER(e);
 			return true;
 		}
 
