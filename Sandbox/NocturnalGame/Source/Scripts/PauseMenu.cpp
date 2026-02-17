@@ -262,7 +262,7 @@ namespace NocturnalEngine
 		//////////code to set all entity to when the game is set out of pause state/////////////////////////////////////
 		else if (p_GUI->check_pause() == false)
 		{
-			spt.SetTexture("UI/Blank");
+			spt.SetTexture("Characters/Blank");
 		}
 
 	}

@@ -504,20 +504,20 @@ namespace NocturnalEngine
 			}
 			if (ID_tag.GetTag() == "RestartT")
 			{
-				spt.SetTexture("UI/Blank");
+				spt.SetTexture("Characters/Blank");
 			}
 			if (ID_tag.GetTag() == "QuitT")
 			{
-				spt.SetTexture("UI/Blank");
+				spt.SetTexture("Characters/Blank");
 			}
 			if (ID_tag.GetTag() == "ProceedT")
 			{
-				spt.SetTexture("UI/Blank");
+				spt.SetTexture("Characters/Blank");
 			}
 
 			if (ID_tag.GetTag() == "HowToPlay")
 			{
-				spt.SetTexture("UI/BlankArrow");
+				spt.SetTexture("Characters/BlankArrow");
 				if (leftcollider)
 				{
 					transform.ScaleBy(1.f / 1.2f);

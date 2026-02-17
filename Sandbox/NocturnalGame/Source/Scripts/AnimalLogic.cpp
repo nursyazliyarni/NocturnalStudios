@@ -102,7 +102,7 @@ namespace NocturnalEngine {
 			LogLowHealth(aA);
 		}
 		else if (aA.isEscaped&&!spriteDeactivated) {
-			p_ecs.GetComponent<Sprite>(entityID).SetTexture("Blank");
+			p_ecs.GetComponent<Sprite>(entityID).SetTexture("Characters/Blank");
 			spriteDeactivated = true;
 		}
 		else if (p_GameManager.GetGameState() == GameManager::GameState::ENDING) {
