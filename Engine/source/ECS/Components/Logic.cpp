@@ -109,7 +109,10 @@ Deserialize for Logic Component
 
 		// Use factory to create scripts
 		IScriptRegistry* factory = ServiceLocator::Get().GetScriptRegistry();
-
+		if (!factory) { 
+			NOCTURNAL_ENGINE_WARN("Script Factory is missing!"); 
+			return false;
+		}
 		for (const std::string& scriptName : mScriptNameVector)
 		{
 			IScript* script = factory->CreateScript(scriptName);
@@ -119,7 +122,7 @@ Deserialize for Logic Component
 			}
 			else
 			{
-				// Optional: Log warning for unknown script
+				// Log warning for unknown script
 				NOCTURNAL_ENGINE_WARN("Unknown script type in scene file: {}", scriptName);
 			}
 		}
