@@ -229,6 +229,14 @@ void CAudioEngine::Init()
 
     //load all audio files from audio folder
     std::string audio_path = "Assets/Audio/";
+
+    if (!std::filesystem::exists(audio_path))
+    {
+        NOCTURNAL_ENGINE_WARN("Assets/Audio/ folder missing! Creating it...");
+        std::filesystem::create_directories(audio_path);
+        return;
+    }
+
     for (auto const& dir_entry : std::filesystem::directory_iterator{ audio_path }) //iterate files in Audio folder
     {
         //checks if given file status or path corresponds to a regular file

@@ -72,43 +72,43 @@ namespace NocturnalEngine
 			//////////code to set idle sprite when the game is set into a pause state/////////////////////////////////////
 			if (ID_tag.GetTag() == "PauseMenuBG")
 			{
-				spt.SetTexture("PAUSED");
+				spt.SetTexture("UI/PAUSED");
 			}
 			if (ID_tag.GetTag() == "Resume")
 			{
-				spt.SetTexture("ResumeGame_Yellow");
+				spt.SetTexture("UI/ResumeGame_Yellow");
 
 			}
 			if (ID_tag.GetTag() == "Quit")
 			{
-				spt.SetTexture("ExitToMainMenu_Yellow");
+				spt.SetTexture("UI/ExitToMainMenu_Yellow");
 
 			}
 			if (ID_tag.GetTag() == "Options")
 			{
-				spt.SetTexture("Option_Yellow");
+				spt.SetTexture("UI/Option_Yellow");
 
 			}
 			if (ID_tag.GetTag() == "HTP")
 			{
-				spt.SetTexture("HTP_Yellow");
+				spt.SetTexture("UI/HTP_Yellow");
 
 			}
 
 
 			if (ID_tag.GetTag() == "Back")
 			{
-				spt.SetTexture("BACK_Y");
+				spt.SetTexture("UI/BACK_Y");
 			}
 
 			if (ID_tag.GetTag() == "No")
 			{
-				spt.SetTexture("NO_Y");
+				spt.SetTexture("UI/NO_Y");
 			}
 
 			if (ID_tag.GetTag() == "Yes")
 			{
-				spt.SetTexture("YES_Y");
+				spt.SetTexture("UI/YES_Y");
 			}
 
 			//////////code to set idle sprite when the game is set into a pause state/////////////////////////////////////
@@ -136,34 +136,34 @@ namespace NocturnalEngine
 			{
 				if (ID_tag.GetTag() == "Resume" && !(p_Input->MousePressed(GLFW_MOUSE_BUTTON_LEFT)))
 				{
-					spt.SetTexture("ResumeGame_Blue");
+					spt.SetTexture("UI/ResumeGame_Blue");
 				}
 				if (ID_tag.GetTag() == "Quit" && !(p_Input->MousePressed(GLFW_MOUSE_BUTTON_LEFT)))
 				{
-					spt.SetTexture("ExitToMainMenu_Blue");
+					spt.SetTexture("UI/ExitToMainMenu_Blue");
 				}
 				if (ID_tag.GetTag() == "Options" && !(p_Input->MousePressed(GLFW_MOUSE_BUTTON_LEFT)))
 				{
-					spt.SetTexture("Option_Blue"); //to be updated
+					spt.SetTexture("UI/Option_Blue"); //to be updated
 				}
 				if (ID_tag.GetTag() == "HTP" && !(p_Input->MousePressed(GLFW_MOUSE_BUTTON_LEFT)))
 				{
-					spt.SetTexture("HTP_Blue"); //to be updated
+					spt.SetTexture("UI/HTP_Blue"); //to be updated
 				}
 
 				if (ID_tag.GetTag() == "Back")
 				{
-					spt.SetTexture("BACK_B");//to be change
+					spt.SetTexture("UI/BACK_B");//to be change
 				}
 
 				if (ID_tag.GetTag() == "No")
 				{
-					spt.SetTexture("NO_B");//to be change
+					spt.SetTexture("UI/NO_B");//to be change
 				}
 
 				if (ID_tag.GetTag() == "Yes")
 				{
-					spt.SetTexture("YES_B");//to be change
+					spt.SetTexture("UI/YES_B");//to be change
 				}
 
 				if (curr_state == button_state::release) // when mouse button is release, call the button functions, release is selected to prevent function from calling when mouse is held down 
@@ -215,43 +215,43 @@ namespace NocturnalEngine
 				{
 					if (ID_tag.GetTag() == "Resume")
 					{
-						spt.SetTexture("ResumeGame_Red");
+						spt.SetTexture("UI/ResumeGame_Red");
 					}
 
 					if (ID_tag.GetTag() == "Quit")
 					{
-						spt.SetTexture("ExitToMainMenu_Red");
+						spt.SetTexture("UI/ExitToMainMenu_Red");
 					}
 
 					if (ID_tag.GetTag() == "Back")
 					{
-						spt.SetTexture("BACK_R");
+						spt.SetTexture("UI/BACK_R");
 					}
 
 					if (ID_tag.GetTag() == "No")
 					{
-						spt.SetTexture("NO_R");
+						spt.SetTexture("UI/NO_R");
 					}
 
 					if (ID_tag.GetTag() == "Yes")
 					{
-						spt.SetTexture("YES_R");
+						spt.SetTexture("UI/YES_R");
 					}
 
 					if (ID_tag.GetTag() == "Options")
 					{
-						spt.SetTexture("Option_Red");
+						spt.SetTexture("UI/Option_Red");
 					}
 
 					if (ID_tag.GetTag() == "HTP")
 					{
-						spt.SetTexture("HTP_Red");
+						spt.SetTexture("UI/HTP_Red");
 					}
 
 
 					if (ID_tag.GetTag() == "PAUSED")
 					{
-						spt.SetTexture("Restart_Click");
+						spt.SetTexture("UI/Restart_Click");
 					}
 
 				}
@@ -262,7 +262,7 @@ namespace NocturnalEngine
 		//////////code to set all entity to when the game is set out of pause state/////////////////////////////////////
 		else if (p_GUI->check_pause() == false)
 		{
-			spt.SetTexture("Blank");
+			spt.SetTexture("UI/Blank");
 		}
 
 	}

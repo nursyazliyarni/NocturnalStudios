@@ -53,7 +53,7 @@
                 "NameTag": "Main Menu BackGround"
             },
             {
-                "TextureName": "menu_bg",
+                "TextureName": "UI/menu_bg",
                 "Index_X": 0,
                 "Index_Y": 0,
                 "Ucoordinates": 512.0,
@@ -121,7 +121,7 @@
                 "NameTag": "StartSign"
             },
             {
-                "TextureName": "BlankArrow",
+                "TextureName": "UI/BlankArrow",
                 "Index_X": 0,
                 "Index_Y": 0,
                 "Ucoordinates": 512.0,
@@ -208,7 +208,7 @@
                 "NameTag": "HTPSign"
             },
             {
-                "TextureName": "BlankArrow",
+                "TextureName": "UI/BlankArrow",
                 "Index_X": 0,
                 "Index_Y": 0,
                 "Ucoordinates": 512.0,
@@ -295,7 +295,7 @@
                 "NameTag": "OptionsSign"
             },
             {
-                "TextureName": "BlankArrow",
+                "TextureName": "UI/BlankArrow",
                 "Index_X": 0,
                 "Index_Y": 0,
                 "Ucoordinates": 512.0,
@@ -382,7 +382,7 @@
                 "NameTag": "QuitSign"
             },
             {
-                "TextureName": "BlankArrow",
+                "TextureName": "UI/BlankArrow",
                 "Index_X": 0,
                 "Index_Y": 0,
                 "Ucoordinates": 512.0,

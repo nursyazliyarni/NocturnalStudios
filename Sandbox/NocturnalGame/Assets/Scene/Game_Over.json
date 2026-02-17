@@ -51,7 +51,7 @@
                 "NameTag": "Main Menu BackGround"
             },
             {
-                "TextureName": "menu_bg",
+                "TextureName": "UI/menu_bg",
                 "Index_X": 0,
                 "Index_Y": 0,
                 "Ucoordinates": 512.0,
@@ -118,7 +118,7 @@
                 "NameTag": "MainMenu"
             },
             {
-                "TextureName": "MM_Y",
+                "TextureName": "UI/MM_Y",
                 "Index_X": 0,
                 "Index_Y": 0,
                 "Ucoordinates": 512.0,
@@ -190,7 +190,7 @@
                 "NameTag": "Restart"
             },
             {
-                "TextureName": "RESTART_Y",
+                "TextureName": "UI/RESTART_Y",
                 "Index_X": 0,
                 "Index_Y": 0,
                 "Ucoordinates": 512.0,

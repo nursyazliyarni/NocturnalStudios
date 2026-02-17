@@ -101,6 +101,14 @@ namespace NocturnalEngine {
     {
         if (!window || !window->GetWindow()) return;
         mWindow = window;
+
+        if (!std::filesystem::exists(mAssetsPath))
+        {
+            NOCTURNAL_ENGINE_WARN("Assets/ folder missing! Creating it...");
+            std::filesystem::create_directories(mAssetsPath);
+            
+        }
+
         // Ensure the snapshot folder exists and starts clean each run.
         std::filesystem::create_directories(mUndoDirectory);
         for (const auto& entry : std::filesystem::directory_iterator(mUndoDirectory))
@@ -267,6 +275,17 @@ namespace NocturnalEngine {
     void LevelEditor::LoadTextureFromFile()
     {
         std::string path = "Assets/Textures";
+
+        if (!std::filesystem::exists(path))
+        {
+            NOCTURNAL_ENGINE_WARN(path+" folder missing! Creating it...");
+            std::filesystem::create_directories(path);
+            if (!std::filesystem::exists(path)) {
+                NOCTURNAL_ENGINE_WARN("Assets/Audio/ Failed to create! Audio Init aborted...");
+                return;
+            }
+        }
+
         for (auto const& dir_entry : std::filesystem::directory_iterator{ path })
         {
             //Checks if the given file status or path corresponds to a regular file
@@ -287,6 +306,17 @@ namespace NocturnalEngine {
     void LevelEditor::LoadAudioFromFile()
     {
         std::string audio_path = "Assets/Audio";
+
+        if (!std::filesystem::exists(audio_path))
+        {
+            NOCTURNAL_ENGINE_WARN("Assets/Audio/ folder missing! Creating it...");
+            std::filesystem::create_directories(audio_path);
+            if (!std::filesystem::exists(audio_path)) {
+                NOCTURNAL_ENGINE_WARN("Assets/Audio/ Failed to create! Audio Init aborted...");
+                return;
+            }
+        }
+
         for (auto const& dir_entry : std::filesystem::directory_iterator{ audio_path }) //iterate files in Audio folder
         {
             //checks if given file status or path corresponds to a regular file
@@ -2387,7 +2417,16 @@ namespace NocturnalEngine {
    ****************************************************************************/
     void LevelEditor::insertTextureFilePath(std::string in)
     {
+
+        if (!std::filesystem::exists(in))
+        {
+            NOCTURNAL_ENGINE_WARN("Assets/Audio/ folder missing! Creating it...");
+            std::filesystem::create_directories(in);
+            return;
+        }
+
         auto const& dir_entry = std::filesystem::directory_iterator( in );
+
         for (const auto& entry : dir_entry)
         {
             if (entry.path().extension() == ".png") {

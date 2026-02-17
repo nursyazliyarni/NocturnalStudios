@@ -73,7 +73,7 @@ namespace NocturnalEngine
         p_ecs.AddComponent<Transform>(spot, t);
 
         Sprite s;
-        s.SetTexture("painSpot");
+        s.SetTexture("UI/painSpot");
         s.SetLayerOrder(0);
         p_ecs.AddComponent<Sprite>(spot, s);
 
