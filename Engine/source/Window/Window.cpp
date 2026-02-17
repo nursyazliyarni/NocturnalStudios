@@ -68,21 +68,14 @@ namespace NocturnalEngine{
 		m_windowData.m_CurrentWidth = m_windowData.m_Width;
 		m_windowData.m_CurrentHeight = m_windowData.m_Height;
 
+		glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE); // Hide on creation
+
 		//create window
 		m_window = glfwCreateWindow(m_windowData.m_CurrentWidth,
 			m_windowData.m_CurrentHeight,
 			m_windowData.Title.c_str(),
 			NULL, NULL);
-#if !DEBUG		
-		const GLFWvidmode* mode = glfwGetVideoMode(m_monitor);
-		m_windowData.m_Width = mode->width;
-		m_windowData.m_Height = mode->height;
-
-		glfwSetWindowMonitor(
-			m_window, NULL,
-			0, 0,
-			m_windowData.m_Width, m_windowData.m_Height, 0);
-#endif			
+		
 		glfwMakeContextCurrent(m_window);
 		glfwSetWindowUserPointer(m_window, &m_windowData);
 
@@ -115,6 +108,22 @@ namespace NocturnalEngine{
 		/* Make the window's context current */
 	}
 
+
+	void Window::Show() {
+
+#if !DEBUG		
+		const GLFWvidmode* mode = glfwGetVideoMode(m_monitor);
+		m_windowData.m_Width = mode->width;
+		m_windowData.m_Height = mode->height;
+
+		glfwSetWindowMonitor(
+			m_window, NULL,
+			0, 0,
+			m_windowData.m_Width, m_windowData.m_Height, 0);
+#endif	
+		// Finally show the window
+		glfwShowWindow(m_window);
+	}
 	/*!*************************************************************************
 	Update loop of window
 	****************************************************************************/

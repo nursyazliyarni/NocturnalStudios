@@ -115,7 +115,7 @@ EngineCore constructor
 		}
 		mPosUpdate->Init();
 
-		
+		m_window->Show();
 
 #if !DEBUG
 

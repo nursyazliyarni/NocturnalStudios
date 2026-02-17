@@ -53,6 +53,9 @@ namespace NocturnalEngine {
 		
 		//Initialize
 		virtual void Init() override;
+
+		//Show- to be displayed after all other systems needed are ready
+		void Show();
 		//update
 		virtual void Update(float frametime) override;
 
