@@ -517,7 +517,7 @@ namespace NocturnalEngine
 
 			if (ID_tag.GetTag() == "HowToPlay")
 			{
-				spt.SetTexture("Characters/BlankArrow");
+				spt.SetTexture("UI/BlankArrow");
 				if (leftcollider)
 				{
 					transform.ScaleBy(1.f / 1.2f);
