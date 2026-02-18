@@ -16,6 +16,9 @@
 #include "Components/IComponent.h"
 #include "ECS/Types.h"
 #include "ECS.h"
+#include "Serialization/JSONserialization.h"
+
+
 
 
 namespace NocturnalEngine {
@@ -36,6 +39,9 @@ namespace NocturnalEngine {
 
             //Deserialize and add in one step
             std::function<bool(Entity, const rapidjson::Value&)> deserializeAndAddFunc{};
+
+            //Serialize
+            std::function<bool(Entity, rapidjson::PrettyWriter<rapidjson::StringBuffer>* writer)> serializeFunc{};
 
             //Editor Display func
             std::function<void(Entity)> displayInEditor{};
@@ -66,7 +72,7 @@ namespace NocturnalEngine {
                 };
 
 
-            //Deserialize and add in one step - much cleaner!
+            //Deserialize and add in one step 
             desc.deserializeAndAddFunc = [this](Entity e, const rapidjson::Value& obj) -> bool {
                 T component{};
                 component.SetComponentEntityID(e);
@@ -77,6 +83,12 @@ namespace NocturnalEngine {
                 }
                 return false;
                 };
+
+            //Deserialize and add in one step 
+            desc.serializeFunc = [this](Entity e, rapidjson::PrettyWriter<rapidjson::StringBuffer>* writer) -> bool {
+                T& component{ GetECS().template GetComponent<T>(e) };
+                return component.Serialize(writer);
+             };
 
             desc.displayInEditor = [this](Entity e) {
                 if (GetECS().template HaveComponent<T>(e))

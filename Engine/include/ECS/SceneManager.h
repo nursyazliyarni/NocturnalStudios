@@ -66,6 +66,10 @@ namespace NocturnalEngine
 
 		std::string sceneToLoad;
 
+		bool NewDeserialize(const rapidjson::Value& obj);
+		bool OldDeserialize(const rapidjson::Value& obj);
+		bool NewSerialize(rapidjson::PrettyWriter<rapidjson::StringBuffer>* writer) const;
+
 
 	};
 }
