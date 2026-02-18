@@ -41,13 +41,13 @@ namespace NocturnalEngine
 		void SetCurrHeight(unsigned int CurrHeight) { mCurrentHeight = CurrHeight; }
 
 	private:
-		std::string mTitle;
-		unsigned int mWidth,
-			mHeight,
-			mCurrentWidth,
-			mCurrentHeight;
-		float MasterVol;
-		float BGMVol;
-		float SFXVol;
+		std::string mTitle{};
+		unsigned int mWidth{},
+			mHeight{},
+			mCurrentWidth{},
+			mCurrentHeight{};
+		float MasterVol{};
+		float BGMVol{};
+		float SFXVol{};
 	};
 }

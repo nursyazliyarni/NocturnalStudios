@@ -52,6 +52,7 @@
 
 #include "ECS/Components/Components.h"
 #include "ECS/SceneManager.h"
+#include "ECS/EngineComponentReg.h"
 #include "Core/MemoryManager.h"
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/quaternion.hpp>
@@ -1392,250 +1393,49 @@ namespace NocturnalEngine {
                 if (ImGui::Button("Add Component"))
                     ImGui::OpenPopup("Add Component");
 
+                //Add component section
                 if (ImGui::BeginPopup("Add Component"))
                 {
 
-                    if (ImGui::MenuItem("Transform"))
+                    for (std::pair<const std::string, ComponentRegistry::ComponentDescriptor> compdesc:p_ECompReg.GetAll())
                     {
-                        if (!p_ecs.HaveComponent<Transform>(selectedEntity))
+                        if (ImGui::MenuItem(compdesc.first.c_str()))
                         {
-                            PushUndoSnapshotAndInvalidateRedo();
-                            p_ecs.AddComponent<Transform>(selectedEntity, C_TransformComponent);
+                            if (!compdesc.second.hasFunc(selectedEntity))
+                            {
+                                PushUndoSnapshotAndInvalidateRedo();
+                                compdesc.second.addFunc(selectedEntity);
+                            }
+                            ImGui::CloseCurrentPopup();
                         }
-                        ImGui::CloseCurrentPopup();
-                    }
-                    if (ImGui::MenuItem("Sprite"))
-                    {
-                        if (!p_ecs.HaveComponent<Sprite>(selectedEntity))
-                        {
-                            PushUndoSnapshotAndInvalidateRedo();
-                            p_ecs.AddComponent<Sprite>(selectedEntity, C_SpriteComponent);
-                        }
-                        ImGui::CloseCurrentPopup();
-                    }
-                    if (ImGui::MenuItem("Collider"))
-                    {
-                        if (!p_ecs.HaveComponent<Collider>(selectedEntity))
-                        {
-                            PushUndoSnapshotAndInvalidateRedo();
-                            p_ecs.AddComponent<Collider>(selectedEntity, C_ColliderComponent);
-                        }
-                        ImGui::CloseCurrentPopup();
-                    }
-                    if (ImGui::MenuItem("RigidBody"))
-                    {
-                        if (!p_ecs.HaveComponent<RigidBody>(selectedEntity))
-                        {
-                            PushUndoSnapshotAndInvalidateRedo();
-                            p_ecs.AddComponent<RigidBody>(selectedEntity, C_RigidBodyComponent);
-                        }
-                        ImGui::CloseCurrentPopup();
-                    }
-                    if (ImGui::MenuItem("Logic"))
-                    {
-                        if (!p_ecs.HaveComponent<Logic>(selectedEntity))
-                        {
-                            PushUndoSnapshotAndInvalidateRedo();
-                            p_ecs.AddComponent<Logic>(selectedEntity, C_LogicComponent);
-                        }
-                        ImGui::CloseCurrentPopup();
-                    }
-                    if (ImGui::MenuItem("Audio"))
-                    {
-                        if (!p_ecs.HaveComponent<Audio>(selectedEntity))
-                        {
-                            PushUndoSnapshotAndInvalidateRedo();
-                            p_ecs.AddComponent<Audio>(selectedEntity, C_AudioComponent);
-                        }
-                        ImGui::CloseCurrentPopup();
-                    }
-                    if (ImGui::MenuItem("Tag"))
-                    {
-                        if (!p_ecs.HaveComponent<Tag>(selectedEntity))
-                        {
-                            PushUndoSnapshotAndInvalidateRedo();
-                            p_ecs.AddComponent<Tag>(selectedEntity, C_TagComponent);
-                        }
-                        ImGui::CloseCurrentPopup();
-                    }
-                    if (ImGui::MenuItem("HUD"))
-                    {
-                        if (!p_ecs.HaveComponent<HUDComponent>(selectedEntity))
-                        {
-                            PushUndoSnapshotAndInvalidateRedo();
-                            p_ecs.AddComponent<HUDComponent>(selectedEntity, C_HUDComponent);
-                        }
-                        ImGui::CloseCurrentPopup();
-                    }
-                    if (ImGui::MenuItem("Text"))
-                    {
-                        if (!p_ecs.HaveComponent<Text>(selectedEntity))
-                        {
-                            PushUndoSnapshotAndInvalidateRedo();
-                            p_ecs.AddComponent<Text>(selectedEntity, C_TextComponent);
-                        }
-                        ImGui::CloseCurrentPopup();
-                    }
-                    if (ImGui::MenuItem("Animal Attributes"))
-                    {
-                        if (!p_ecs.HaveComponent<AnimalAttributes>(selectedEntity))
-                        {
-                            PushUndoSnapshotAndInvalidateRedo();
-                            p_ecs.AddComponent<AnimalAttributes>(selectedEntity, C_AnimalAttributesComponent);
-                        }
-                        ImGui::CloseCurrentPopup();
-                    }
-                    if (ImGui::MenuItem("Items Attributes"))
-                    {
-                        if (!p_ecs.HaveComponent<ItemsAttributes>(selectedEntity))
-                        {
-                            PushUndoSnapshotAndInvalidateRedo();
-                            p_ecs.AddComponent<ItemsAttributes>(selectedEntity, C_ItemsAttributesComponent);
-                        }
-                        ImGui::CloseCurrentPopup();
-                    }
-                    if (ImGui::MenuItem("Draggable"))
-                    {
-                        if (!p_ecs.HaveComponent<Draggable>(selectedEntity))
-                        {
-                            PushUndoSnapshotAndInvalidateRedo();
-                            p_ecs.AddComponent<Draggable>(selectedEntity, C_DraggableComponent);
-                        }
-                        ImGui::CloseCurrentPopup();
                     }
                     ImGui::EndPopup();
                 }
-                //Check and change the name of the Entity
-                if (p_ecs.HaveComponent<NameTag>(selectedEntity))
+
+                for (std::pair<const std::string, ComponentRegistry::ComponentDescriptor> compdesc:p_ECompReg.GetAll())
                 {
-                    p_ecs.GetComponent<NameTag>(selectedEntity).ToEditor();
+                    if (compdesc.second.hasFunc(selectedEntity))
+                    {
+                        compdesc.second.displayInEditor(selectedEntity);
+                    }
                 }
-                //If Entity have Transform Component
-                if (p_ecs.HaveComponent<Transform>(selectedEntity))
-                {
-                    p_ecs.GetComponent<Transform>(selectedEntity).ToEditor();
-                    
-                }
-                //Sprite Component
-                if (p_ecs.HaveComponent<Sprite>(selectedEntity))
-                {
-                    p_ecs.GetComponent<Sprite>(selectedEntity).ToEditor();
-                    
-                }
-                //Text Component
-                if (p_ecs.HaveComponent<Text>(selectedEntity))
-                {
-                    p_ecs.GetComponent<Text>(selectedEntity).ToEditor();
-                }
-                //Collider Component
-                if (p_ecs.HaveComponent<Collider>(selectedEntity))
-                {
-                    p_ecs.GetComponent<Collider>(selectedEntity).ToEditor();
-                }
-                //Logic
-                if (p_ecs.HaveComponent<Logic>(selectedEntity)&&mScriptRegistry)
-                {
-                    p_ecs.GetComponent<Logic>(selectedEntity).ToEditor();
-                }
-                //Rigid Component
-                if (p_ecs.HaveComponent<RigidBody>(selectedEntity))
-                {
-                    p_ecs.GetComponent<RigidBody>(selectedEntity).ToEditor();
-                }
-                //Audio Component
-                if (p_ecs.HaveComponent<Audio>(selectedEntity))
-                {
-                    p_ecs.GetComponent<Audio>(selectedEntity).ToEditor();
-                }
-                //Tag Component
-                if (p_ecs.HaveComponent<Tag>(selectedEntity))
-                {
-                    p_ecs.GetComponent<Tag>(selectedEntity).ToEditor();
-                }
-                //HUD Component
-                if (p_ecs.HaveComponent<HUDComponent>(selectedEntity))
-                {
-                    p_ecs.GetComponent<HUDComponent>(selectedEntity).ToEditor();
-                }
-                //If Entity have Animal Attibutes Component
-                if (p_ecs.HaveComponent<AnimalAttributes>(selectedEntity))
-                {
-                    p_ecs.GetComponent<AnimalAttributes>(selectedEntity).ToEditor();
-                }
-                //If Entity have Item Attibutes Component
-                if (p_ecs.HaveComponent<ItemsAttributes>(selectedEntity))
-                {
-                    p_ecs.GetComponent<ItemsAttributes>(selectedEntity).ToEditor();
-                }
-                //Draggable
-                if (p_ecs.HaveComponent<Draggable>(selectedEntity))
-                {
-                    p_ecs.GetComponent<Draggable>(selectedEntity).ToEditor();
-                }
+
                 if (ImGui::Button("Delete Component"))
                     ImGui::OpenPopup("Delete Component");
 
                 if (ImGui::BeginPopup("Delete Component"))
                 {
-                    if (ImGui::MenuItem("Transform") && p_ecs.HaveComponent<Transform>(selectedEntity))
+                    for (std::pair<const std::string, ComponentRegistry::ComponentDescriptor> compdesc : p_ECompReg.GetAll())
                     {
-                        PushUndoSnapshotAndInvalidateRedo();
-                        p_ecs.RemoveComponent<Transform>(selectedEntity);
-                        ImGui::CloseCurrentPopup();
-                    }
-                    if (ImGui::MenuItem("Sprite") && p_ecs.HaveComponent<Sprite>(selectedEntity))
-                    {
-                        PushUndoSnapshotAndInvalidateRedo();
-                        p_ecs.RemoveComponent<Sprite>(selectedEntity);
-                        ImGui::CloseCurrentPopup();
-                    }
-                    if (ImGui::MenuItem("Collider") && p_ecs.HaveComponent<Collider>(selectedEntity))
-                    {
-                        PushUndoSnapshotAndInvalidateRedo();
-                        p_ecs.RemoveComponent<Collider>(selectedEntity);
-                        ImGui::CloseCurrentPopup();
-                    }
-                    if (ImGui::MenuItem("RigidBody") && p_ecs.HaveComponent<RigidBody>(selectedEntity))
-                    {
-                        PushUndoSnapshotAndInvalidateRedo();
-                        p_ecs.RemoveComponent<RigidBody>(selectedEntity);
-                        ImGui::CloseCurrentPopup();
-                    }
-                    if (ImGui::MenuItem("Logic") && p_ecs.HaveComponent<Logic>(selectedEntity))
-                    {
-                        PushUndoSnapshotAndInvalidateRedo();
-                        p_ecs.RemoveComponent<Logic>(selectedEntity);
-                        ImGui::CloseCurrentPopup();
-                    }
-                    if (ImGui::MenuItem("Audio") && p_ecs.HaveComponent<Audio>(selectedEntity))
-                    {
-                        PushUndoSnapshotAndInvalidateRedo();
-                        p_ecs.RemoveComponent<Audio>(selectedEntity);
-                        ImGui::CloseCurrentPopup();
-                    }
-                    if (ImGui::MenuItem("Tag") && p_ecs.HaveComponent<Tag>(selectedEntity))
-                    {
-                        PushUndoSnapshotAndInvalidateRedo();
-                        p_ecs.RemoveComponent<Tag>(selectedEntity);
-                        ImGui::CloseCurrentPopup();
-                    }
-                    if (ImGui::MenuItem("HUD") && p_ecs.HaveComponent<HUDComponent>(selectedEntity))
-                    {
-                        PushUndoSnapshotAndInvalidateRedo();
-                        p_ecs.RemoveComponent<HUDComponent>(selectedEntity);
-                        ImGui::CloseCurrentPopup();
-                    }
-                    if (ImGui::MenuItem("Text") && p_ecs.HaveComponent<Text>(selectedEntity))
-                    {
-                        PushUndoSnapshotAndInvalidateRedo();
-                        p_ecs.RemoveComponent<Text>(selectedEntity);
-                        ImGui::CloseCurrentPopup();
-                    }
-                    if (ImGui::MenuItem("Draggable") && p_ecs.HaveComponent<Draggable>(selectedEntity))
-                    {
-                        PushUndoSnapshotAndInvalidateRedo();
-                        p_ecs.RemoveComponent<Draggable>(selectedEntity);
-                        ImGui::CloseCurrentPopup();
+                        if (ImGui::MenuItem(compdesc.first.c_str()))
+                        {
+                            if (compdesc.second.hasFunc(selectedEntity))
+                            {
+                                PushUndoSnapshotAndInvalidateRedo();
+                                compdesc.second.removeFunc(selectedEntity);
+                            }
+                            ImGui::CloseCurrentPopup();
+                        }
                     }
                     ImGui::EndPopup();
                 }

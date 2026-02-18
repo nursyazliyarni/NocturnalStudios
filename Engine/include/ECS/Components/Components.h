@@ -50,3 +50,7 @@
 #define C_ItemsAttributesComponent NocturnalEngine::ItemsAttributes::ItemsAttributes()
 #define C_DraggableComponent NocturnalEngine::Draggable::Draggable()
 #define C_TextComponent NocturnalEngine::Text::Text()
+
+
+
+

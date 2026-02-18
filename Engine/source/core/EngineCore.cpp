@@ -25,6 +25,7 @@
 #include "Timer/Time.h"
 #include "Timer/Fps.h"
 #include "ECS/ECS.h"
+#include "ECS/EngineComponentReg.h"
 #include "ECS/SceneManager.h"
 #include "Audio/AudioEngine.h"
 #include "Logic/LogicSystem.h"
@@ -72,6 +73,8 @@ EngineCore constructor
 		Window* m_window = new Window;
 		m_window->Init();
 		p_Audio->Init();
+
+		p_ECompReg.RegisterAllEngineComponents();
 
 		if (m_GameLayer) {
 			m_GameLayer->Init();
