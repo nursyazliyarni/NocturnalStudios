@@ -14,6 +14,7 @@
 
 #include "pch.h"
 #include "ECS/Components/Draggable.h"
+#include <imgui.h>
 
 namespace NocturnalEngine
 {
@@ -21,6 +22,13 @@ namespace NocturnalEngine
 	Ctor for NameTag
 	****************************************************************************/
 	Draggable::Draggable() : isTarget{ false } {}
+
+	void Draggable::ToEditor() {
+		if (ImGui::CollapsingHeader("Draggable", ImGuiTreeNodeFlags_None)) {
+			
+			ImGui::Checkbox("Is Target", &IsTarget());
+		}
+	}
 
 	/*!*************************************************************************
 	Deserialize NameTag Component

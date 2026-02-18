@@ -39,18 +39,20 @@ namespace NocturnalEngine
 		};
 
 		struct Colpiece {
-			ColliderType mCol;
-			vec2D mCollisionNormal;
-			vec2D mMin;
-			vec2D mMax;
-			vec2D mOffset;
-			int mHit;
-			float mRadius;
-			bool is_Alive;
+			ColliderType mCol{};
+			vec2D mCollisionNormal{};
+			vec2D mMin{};
+			vec2D mMax{};
+			vec2D mOffset{};
+			int mHit{};
+			float mRadius{};
+			bool is_Alive{};
 		};
 
 		Collider();
 		~Collider() = default;
+
+		void ToEditor()override;
 		/*!*************************************************************************
 		This function de-serializes the level colliders from the given level json file
 		****************************************************************************/
@@ -77,6 +79,6 @@ namespace NocturnalEngine
 		void SetComponentEntityID(Entity& entity) { entityID = entity; }
 
 	private:
-		Colpiece mColArr[2];
+		Colpiece mColArr[2]{};
 	};
 }

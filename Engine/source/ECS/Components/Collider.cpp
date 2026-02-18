@@ -14,6 +14,7 @@
 
 #include "pch.h"
 #include "ECS/Components/Collider.h"
+#include <imgui.h>
 
 namespace NocturnalEngine
 {
@@ -34,6 +35,99 @@ namespace NocturnalEngine
 			mColArr[i].mRadius = 0;
 			mColArr[i].is_Alive = true;
 		}
+	}
+
+	void Collider::ToEditor() {
+        if (ImGui::CollapsingHeader("Collider", ImGuiTreeNodeFlags_None))
+        {
+            //selection for collider type
+            auto& colliderType = mColArr[0].mCol;
+            int colliderIndex = static_cast<int>(colliderType);
+            const char* colliderNames = "none\0circle\0bubble\0line\0rect\0box\0bossball\0button";
+            ImGui::Text("Collider 1 Type"); ImGui::SameLine();
+            ImGui::Combo("##test", &colliderIndex, colliderNames);
+            colliderType = static_cast<Collider::ColliderType>(colliderIndex);
+
+            //positioning the offset
+            auto& colliderOffset = mColArr[0].mOffset;
+            ImGui::PushItemWidth(100.0f);
+
+            ImGui::Text("OffSet   "); ImGui::SameLine();
+            ImGui::Text("X"); ImGui::SameLine();
+
+            ImGui::DragFloat("##colliderOffsetX", (float*)&colliderOffset.x, 0.05f); ImGui::SameLine();
+            ImGui::PushID(1);
+            ImGui::Text("Y"); ImGui::SameLine();
+            ImGui::DragFloat("##colliderOffsetY", (float*)&colliderOffset.y, 0.05f);
+            ImGui::PopID();
+
+            //size of the collider
+            if (mColArr[0].mCol == Collider::ColliderType::circle || mColArr[0].mCol == Collider::ColliderType::bubble ||
+                mColArr[0].mCol == Collider::ColliderType::bossball)
+            {
+                auto& colliderSize = mColArr[0].mRadius;
+                ImGui::Text("Radius   "); ImGui::SameLine();
+                ImGui::DragFloat("##Radius", (float*)&colliderSize, 0.05f);
+            }
+            else if (mColArr[0].mCol == Collider::ColliderType::rect || mColArr[0].mCol == Collider::ColliderType::box)
+            {
+                ImGui::Text("Minimum "); ImGui::SameLine();
+                ImGui::Text("X"); ImGui::SameLine();
+                ImGui::DragFloat("##MinimumX", (float*)&mColArr[0].mMin.x, 0.05f); ImGui::SameLine();
+                ImGui::Text("Y"); ImGui::SameLine();
+                ImGui::DragFloat("##MinimumY", (float*)&mColArr[0].mMin.y, 0.05f);
+
+                ImGui::Text("Maximum "); ImGui::SameLine();
+                ImGui::Text("X"); ImGui::SameLine();
+                ImGui::DragFloat("##MaximumX", (float*)&mColArr[0].mMax.x, 0.05f); ImGui::SameLine();
+                ImGui::Text("Y"); ImGui::SameLine();
+                ImGui::DragFloat("##MaximumY", (float*)&mColArr[0].mMax.y, 0.05f);
+            }
+
+            //selection for collider 2 type
+            auto& colliderType1 = mColArr[1].mCol;
+            int colliderIndex1 = static_cast<int>(colliderType1);
+            const char* colliderNames1 = "none\0circle\0bubble\0line\0rect\0box\0button";
+            ImGui::Text("Collider 2 Type"); ImGui::SameLine();
+            ImGui::Combo("###test", &colliderIndex1, colliderNames1);
+            ImGui::PushItemWidth(100.0f);
+            colliderType1 = static_cast<Collider::ColliderType>(colliderIndex1);
+
+            //positioning the offset
+            auto& colliderOffset1 = mColArr[1].mOffset;
+
+            ImGui::Text("OffSet   "); ImGui::SameLine();
+            ImGui::Text("X"); ImGui::SameLine();
+
+            ImGui::DragFloat("###colliderOffsetX", (float*)&colliderOffset1.x, 0.05f); ImGui::SameLine();
+            ImGui::PushID(1);
+            ImGui::Text("Y"); ImGui::SameLine();
+            ImGui::DragFloat("###colliderOffsetY", (float*)&colliderOffset1.y, 0.05f);
+            ImGui::PopID();
+
+            //size of the collider
+            if (mColArr[1].mCol == Collider::ColliderType::circle || mColArr[1].mCol == Collider::ColliderType::bubble ||
+                mColArr[1].mCol == Collider::ColliderType::bossball)
+            {
+                auto& colliderSize1 = mColArr[1].mRadius;
+                ImGui::Text("Radius   "); ImGui::SameLine();
+                ImGui::DragFloat("###Radius", (float*)&colliderSize1, 0.05f);
+            }
+            else if (mColArr[1].mCol == Collider::ColliderType::rect || mColArr[1].mCol == Collider::ColliderType::box)
+            {
+                ImGui::Text("Minimum "); ImGui::SameLine();
+                ImGui::Text("X"); ImGui::SameLine();
+                ImGui::DragFloat("###MinimumX", (float*)&mColArr[1].mMin.x, 0.05f); ImGui::SameLine();
+                ImGui::Text("Y"); ImGui::SameLine();
+                ImGui::DragFloat("###MinimumY", (float*)&mColArr[1].mMin.y, 0.05f);
+
+                ImGui::Text("Maximum "); ImGui::SameLine();
+                ImGui::Text("X"); ImGui::SameLine();
+                ImGui::DragFloat("###MaximumX", (float*)&mColArr[1].mMax.x, 0.05f); ImGui::SameLine();
+                ImGui::Text("Y"); ImGui::SameLine();
+                ImGui::DragFloat("###MaximumY", (float*)&mColArr[1].mMax.y, 0.05f);
+            }
+        }
 	}
 	/*!*************************************************************************
 	This function de-serializes the level colliders from the given level json file

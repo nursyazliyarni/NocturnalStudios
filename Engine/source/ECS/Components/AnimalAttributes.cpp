@@ -14,10 +14,68 @@
 
 #include "pch.h"
 #include "ECS/Components/AnimalAttributes.h"
-
+#include <imgui.h>
 NocturnalEngine::AnimalAttributes::AnimalAttributes() : current_health(0.0), maxHealth(0.0),
 current_hunger(0.0), maxHunger(0.0), current_sanity(0.0), maxSanity(0.0),healthDecayRate(0.0), 
 hungerDecayRate(0.0), sanityDecayRate(0.0) {}
+
+void NocturnalEngine::AnimalAttributes::ToEditor() {
+    if (ImGui::CollapsingHeader("Animal Attributes", ImGuiTreeNodeFlags_None)) {
+        ImGui::PushItemWidth(100.0f);
+        ImGui::Text("Max Health"); ImGui::SameLine();
+        if (ImGui::InputDouble("##Max Health", &maxHealth))
+        {
+
+            current_health = glm::clamp(maxHealth, 0.0, 9999.9999);
+        }
+
+        ImGui::Text("Max Hunger"); ImGui::SameLine();
+        if (ImGui::InputDouble("##Max Hunger", &maxHunger))
+        {
+
+            current_hunger = glm::clamp(maxHunger, 0.0, 9999.9999);
+        }
+
+        ImGui::Text("Max Sanity"); ImGui::SameLine();
+        if (ImGui::InputDouble("##Max Sanity", &maxSanity))
+        {
+
+            current_sanity = glm::clamp(maxSanity, 0.0, 9999.9999);
+        }
+        ImGui::Text("Current Health"); ImGui::SameLine();
+        if (ImGui::InputDouble("##Current Health", &current_health))
+        {
+
+            current_health = glm::clamp(current_health, 0.0, maxHealth);
+        }
+
+        ImGui::Text("Current Hunger"); ImGui::SameLine();
+        if (ImGui::InputDouble("##Current Hunger", &current_hunger))
+        {
+
+            current_hunger = glm::clamp(current_hunger, 0.0, maxHunger);
+        }
+
+        ImGui::Text("Current Sanity"); ImGui::SameLine();
+        if (ImGui::InputDouble("##Current Sanity", &current_sanity))
+        {
+
+            current_sanity = glm::clamp(current_sanity, 0.0, maxSanity);
+        }
+
+        ImGui::Text("Health Decay Rate"); ImGui::SameLine();
+        ImGui::InputDouble("##Health Decay Rate", &healthDecayRate);
+
+        ImGui::Text("Hunger Decay Rate"); ImGui::SameLine();
+        ImGui::InputDouble("##Hunger Decay Rate", &hungerDecayRate);
+
+        ImGui::Text("Sanity Decay Rate"); ImGui::SameLine();
+        ImGui::InputDouble("##Sanity Decay Rate", &sanityDecayRate);
+
+        ImGui::Checkbox("Is Alive", &is_alive);
+    }
+}
+
 
 bool NocturnalEngine::AnimalAttributes::Deserialize(const rapidjson::Value& obj)
 {

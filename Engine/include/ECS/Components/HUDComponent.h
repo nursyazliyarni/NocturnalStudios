@@ -35,6 +35,9 @@ namespace NocturnalEngine {
 		~HUDComponent() = default;
 		virtual bool Deserialize(const rapidjson::Value& obj);
 		virtual bool Serialize(rapidjson::PrettyWriter<rapidjson::StringBuffer>* writer) const;
+
+		void ToEditor()override;
+
 		/*!*************************************************************************
 		Retrieves Component Entity ID
 		****************************************************************************/
