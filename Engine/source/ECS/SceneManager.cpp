@@ -21,6 +21,7 @@
 #include "ECS/SceneManager.h"
 #include "Graphics/Graphics.h"
 #include "Audio/AudioEngine.h"
+#include "ECS/EngineComponentReg.h"
 #include "Core/MemoryManager.h"
 #include <unordered_map>
 #include <array>
@@ -70,177 +71,19 @@ namespace NocturnalEngine
 		sceneToLoad = "";
 	}
 
-	//NEW DESERIALIZE
+
+	//DESERIALIZE
 	bool SceneManager::Deserialize(const rapidjson::Value& obj)
 	{
-		// default
-		for (int i = 0; i < NocturnalEngine::Graphic::MAX_LAYERS; ++i)
-			NocturnalEngine::Graphic::layerDrawOrder[i] = i;
+		changeScene();
 
-		// load if exists
-		if (obj.HasMember("LayerDrawOrder") && obj["LayerDrawOrder"].IsArray())
+		if (obj.HasMember("EntitySignatures"))
 		{
-			const auto& arr = obj["LayerDrawOrder"].GetArray();
-			int n = (int)arr.Size();
-			if (n > NocturnalEngine::Graphic::MAX_LAYERS) n = NocturnalEngine::Graphic::MAX_LAYERS;
-
-			for (int i = 0; i < n; ++i)
-				NocturnalEngine::Graphic::layerDrawOrder[i] = arr[i].GetInt();
+			return OldDeserialize(obj);
 		}
-
-
-		for (Entity i = 0; i < p_ecs.GetTotalEntities(); ++i)
-		{
-			if (p_ecs.HaveComponent<Logic>(i))
-			{
-				p_ecs.GetComponent<Logic>(i).EndAllScripts();
-			}
+		else {
+			return NewDeserialize(obj);
 		}
-
-		p_ecs.ClearAllComponents();
-		p_ecs.ResetAllEntitySignatures();
-		p_ecs.ResetEntities();
-		if (p_MemoryManager.IsEnabled())
-		{
-			p_ecs.PrepareMemoryForEntities(obj["Number of Entities"]["Entities"].GetUint());
-		}
-		p_ecs.SetTotalEntitiesForWorldBuild(obj["Number of Entities"]["Entities"].GetUint());
-		auto aliveTotal = obj["Number of Entities"]["Entities"].GetUint();
-		Entity j = 0;
-		while (j < aliveTotal)
-		{
-			Signature signature(obj["EntitySignatures"][j].GetString());
-			p_ecs.SetEntitySignature(j, signature);
-			for (ComponentType CompID = 0; CompID < p_ecs.GetTotalRegisteredComponents(); ++CompID)
-			{
-				if (p_ecs.GetEntitySignature(j).test(CompID))
-				{
-					//if (!obj["Components"].HasMember("std::to_string(j).c_str()")|| obj["Components"]["std::to_string(j).c_str()"].Size()< static_cast<int>(CompID))break;
-					if (p_ecs.GetComponentTypeName(CompID) == "Transform")
-					{
-						Transform transform;
-						transform.SetComponentEntityID(j);
-						
-						if (transform.Deserialize(obj["Components"][std::to_string(j).c_str()][static_cast<int>(CompID)].GetObj()))
-						{
-							p_ecs.AddComponent<Transform>(j, transform);
-						}
-					}
-					if (p_ecs.GetComponentTypeName(CompID) == "RigidBody")
-					{
-						RigidBody rigidbody;
-						rigidbody.SetComponentEntityID(j);
-						if (rigidbody.Deserialize(obj["Components"][std::to_string(j).c_str()][static_cast<int>(CompID)].GetObj()))
-						{
-							p_ecs.AddComponent<RigidBody>(j, rigidbody);
-						}
-					}
-					if (p_ecs.GetComponentTypeName(CompID) == "Collider")
-					{
-						Collider collider;
-						collider.SetComponentEntityID(j);
-						if (collider.Deserialize(obj["Components"][std::to_string(j).c_str()][static_cast<int>(CompID)].GetObj()))
-						{
-							p_ecs.AddComponent<Collider>(j, collider);
-						}
-					}
-					if (p_ecs.GetComponentTypeName(CompID) == "NameTag")
-					{
-						NameTag nametag;
-						nametag.SetComponentEntityID(j);
-						if (nametag.Deserialize(obj["Components"][std::to_string(j).c_str()][static_cast<int>(CompID)].GetObj()))
-						{
-							p_ecs.AddComponent<NameTag>(j, nametag);
-						}
-					}
-					if (p_ecs.GetComponentTypeName(CompID) == "Sprite")
-					{
-						Sprite sprite;
-						sprite.SetComponentEntityID(j);
-						if (sprite.Deserialize(obj["Components"][std::to_string(j).c_str()][static_cast<int>(CompID)].GetObj()))
-						{
-							p_ecs.AddComponent<Sprite>(j, sprite);
-						}
-					}
-					if (p_ecs.GetComponentTypeName(CompID) == "Logic")
-					{
-						Logic logic;
-						logic.SetComponentEntityID(j);
-						if (logic.Deserialize(obj["Components"][std::to_string(j).c_str()][static_cast<int>(CompID)].GetObj()))
-						{
-							p_ecs.AddComponent<Logic>(j, logic);
-						}
-					}
-					if (p_ecs.GetComponentTypeName(CompID) == "Tag")
-					{
-						Tag tag;
-						tag.SetComponentEntityID(j);
-
-						if (tag.Deserialize(obj["Components"][std::to_string(j).c_str()][static_cast<int>(CompID)].GetObj()))
-						{
-							p_ecs.AddComponent<Tag>(j, tag);
-						}
-					}
-					if (p_ecs.GetComponentTypeName(CompID) == "Audio")
-					{
-						Audio mAudio;
-						mAudio.SetComponentEntityID(j);
-						if (mAudio.Deserialize(obj["Components"][std::to_string(j).c_str()][static_cast<int>(CompID)].GetObj()))
-						{
-							p_ecs.AddComponent<Audio>(j, mAudio);
-						}
-					}
-					if (p_ecs.GetComponentTypeName(CompID) == "HUDComponent")
-					{
-						HUDComponent mHUD;
-						mHUD.SetComponentEntityID(j);
-						if (mHUD.Deserialize(obj["Components"][std::to_string(j).c_str()][static_cast<int>(CompID)].GetObj()))
-						{
-							p_ecs.AddComponent<HUDComponent>(j, mHUD);
-						}
-					}
-					if (p_ecs.GetComponentTypeName(CompID) == "AnimalAttributes")
-					{
-						AnimalAttributes animalAttr;
-						animalAttr.SetComponentEntityID(j);
-						if (animalAttr.Deserialize(obj["Components"][std::to_string(j).c_str()][static_cast<int>(CompID)].GetObj()))
-						{
-							p_ecs.AddComponent<AnimalAttributes>(j, animalAttr);
-						}
-					}
-					if (p_ecs.GetComponentTypeName(CompID) == "ItemsAttributes")
-					{
-						ItemsAttributes itemAttr;
-						itemAttr.SetComponentEntityID(j);
-						if (itemAttr.Deserialize(obj["Components"][std::to_string(j).c_str()][static_cast<int>(CompID)].GetObj()))
-						{
-							p_ecs.AddComponent<ItemsAttributes>(j, itemAttr);
-						}
-					}
-					if (p_ecs.GetComponentTypeName(CompID) == "Draggable")
-					{
-						Draggable draggable;
-						draggable.SetComponentEntityID(j);
-
-						if (draggable.Deserialize(obj["Components"][std::to_string(j).c_str()][static_cast<int>(CompID)].GetObj()))
-						{
-							p_ecs.AddComponent<Draggable>(j, draggable);
-						}
-					}
-					if (p_ecs.GetComponentTypeName(CompID) == "Text")
-					{
-						Text text;
-						text.SetComponentEntityID(j);
-						if (text.Deserialize(obj["Components"][std::to_string(j).c_str()][static_cast<int>(CompID)].GetObj()))
-						{
-							p_ecs.AddComponent<Text>(j, text);
-						}
-					}
-				}
-			}
-			++j;
-		}
-		return true;
 	}
 
 
@@ -251,7 +94,9 @@ namespace NocturnalEngine
 	****************************************************************************/
 	bool SceneManager::Serialize(rapidjson::PrettyWriter<rapidjson::StringBuffer>* writer) const
 	{
-		writer->StartObject();
+		return NewSerialize(writer);
+
+		/*writer->StartObject();
 		writer->Key("LayerDrawOrder");
 		writer->StartArray();
 		for (int i = 0; i < NocturnalEngine::Graphic::MAX_LAYERS; ++i)
@@ -262,20 +107,6 @@ namespace NocturnalEngine
 		writer->Key("Entities");
 		writer->Uint(p_ecs.GetTotalEntities());
 		writer->EndObject();
-
-		/*writer->Key("EntityToIndexMap");
-		writer->StartObject();
-		for (ComponentType i = 0; i < p_ecs.GetTotalRegisteredComponents(); ++i)
-		{
-			writer->Key(p_ecs.GetComponentTypeName(i).c_str());
-			writer->StartArray();
-			for (auto j = p_ecs.GetEntityToIndexMapECS(i).begin(); j != p_ecs.GetEntityToIndexMapECS(i).end(); ++j)
-			{
-				writer->Uint64(*j);
-			}
-			writer->EndArray();
-		}
-		writer->EndObject();*/
 
 		writer->Key("EntitySignatures");
 		writer->StartArray();
@@ -371,7 +202,7 @@ namespace NocturnalEngine
 		writer->EndObject();
 
 		writer->EndObject();
-		return true;
+		return true;*/
 	}
 }
 
@@ -519,4 +350,257 @@ void NocturnalEngine::SceneManager::changeScene()
 	p_ecs.ClearAllComponents();
 	p_ecs.ResetAllEntitySignatures();
 	p_ecs.ResetEntities();
+}
+
+bool NocturnalEngine::SceneManager::NewDeserialize(const rapidjson::Value& obj) {
+	for (int i = 0; i < NocturnalEngine::Graphic::MAX_LAYERS; ++i)
+		NocturnalEngine::Graphic::layerDrawOrder[i] = i;
+
+	// load if exists
+	if (obj.HasMember("LayerDrawOrder") && obj["LayerDrawOrder"].IsArray())
+	{
+		const auto& arr = obj["LayerDrawOrder"].GetArray();
+		int n = (int)arr.Size();
+		if (n > NocturnalEngine::Graphic::MAX_LAYERS) n = NocturnalEngine::Graphic::MAX_LAYERS;
+
+		for (int i = 0; i < n; ++i)
+			NocturnalEngine::Graphic::layerDrawOrder[i] = arr[i].GetInt();
+	}
+	
+
+
+	if (obj.HasMember("Entities")&&obj["Entities"].IsArray())
+	{
+		if (p_MemoryManager.IsEnabled())
+		{
+			p_ecs.PrepareMemoryForEntities(obj["Entities"].Size());
+		}
+
+		const std::map<std::string, ComponentRegistry::ComponentDescriptor>& ecr = p_ECompReg.GetAll();
+		for (const rapidjson::Value& ent:obj["Entities"].GetArray())
+		{
+			if (!ent.HasMember("Components") || !ent["Components"].IsArray())continue;
+			Entity e = p_ecs.CreateEntity();
+
+			for (const rapidjson::Value& comps : ent["Components"].GetArray())
+			{
+				if (!comps.HasMember("Component")||!comps["Component"].IsString())continue;
+
+				std::string componentName = comps["Component"].GetString();
+				if (!ecr.contains(componentName)) continue;
+				ecr.at(componentName).deserializeAndAddFunc(e, comps);
+				
+			}
+
+		}
+	}
+	return true;
+}
+
+bool NocturnalEngine::SceneManager::OldDeserialize(const rapidjson::Value& obj) {
+	// default
+	for (int i = 0; i < NocturnalEngine::Graphic::MAX_LAYERS; ++i)
+		NocturnalEngine::Graphic::layerDrawOrder[i] = i;
+
+	// load if exists
+	if (obj.HasMember("LayerDrawOrder") && obj["LayerDrawOrder"].IsArray())
+	{
+		const auto& arr = obj["LayerDrawOrder"].GetArray();
+		int n = (int)arr.Size();
+		if (n > NocturnalEngine::Graphic::MAX_LAYERS) n = NocturnalEngine::Graphic::MAX_LAYERS;
+
+		for (int i = 0; i < n; ++i)
+			NocturnalEngine::Graphic::layerDrawOrder[i] = arr[i].GetInt();
+	}
+
+	if (p_MemoryManager.IsEnabled())
+	{
+		p_ecs.PrepareMemoryForEntities(obj["Number of Entities"]["Entities"].GetUint());
+	}
+	p_ecs.SetTotalEntitiesForWorldBuild(obj["Number of Entities"]["Entities"].GetUint());
+	auto aliveTotal = obj["Number of Entities"]["Entities"].GetUint();
+	Entity j = 0;
+	while (j < aliveTotal)
+	{
+		Signature signature(obj["EntitySignatures"][j].GetString());
+		p_ecs.SetEntitySignature(j, signature);
+		for (ComponentType CompID = 0; CompID < p_ecs.GetTotalRegisteredComponents(); ++CompID)
+		{
+			if (p_ecs.GetEntitySignature(j).test(CompID))
+			{
+				//if (!obj["Components"].HasMember("std::to_string(j).c_str()")|| obj["Components"]["std::to_string(j).c_str()"].Size()< static_cast<int>(CompID))break;
+				if (p_ecs.GetComponentTypeName(CompID) == "Transform")
+				{
+					Transform transform;
+					transform.SetComponentEntityID(j);
+
+					if (transform.Deserialize(obj["Components"][std::to_string(j).c_str()][static_cast<int>(CompID)].GetObj()))
+					{
+						p_ecs.AddComponent<Transform>(j, transform);
+					}
+				}
+				if (p_ecs.GetComponentTypeName(CompID) == "RigidBody")
+				{
+					RigidBody rigidbody;
+					rigidbody.SetComponentEntityID(j);
+					if (rigidbody.Deserialize(obj["Components"][std::to_string(j).c_str()][static_cast<int>(CompID)].GetObj()))
+					{
+						p_ecs.AddComponent<RigidBody>(j, rigidbody);
+					}
+				}
+				if (p_ecs.GetComponentTypeName(CompID) == "Collider")
+				{
+					Collider collider;
+					collider.SetComponentEntityID(j);
+					if (collider.Deserialize(obj["Components"][std::to_string(j).c_str()][static_cast<int>(CompID)].GetObj()))
+					{
+						p_ecs.AddComponent<Collider>(j, collider);
+					}
+				}
+				if (p_ecs.GetComponentTypeName(CompID) == "NameTag")
+				{
+					NameTag nametag;
+					nametag.SetComponentEntityID(j);
+					if (nametag.Deserialize(obj["Components"][std::to_string(j).c_str()][static_cast<int>(CompID)].GetObj()))
+					{
+						p_ecs.AddComponent<NameTag>(j, nametag);
+					}
+				}
+				if (p_ecs.GetComponentTypeName(CompID) == "Sprite")
+				{
+					Sprite sprite;
+					sprite.SetComponentEntityID(j);
+					if (sprite.Deserialize(obj["Components"][std::to_string(j).c_str()][static_cast<int>(CompID)].GetObj()))
+					{
+						p_ecs.AddComponent<Sprite>(j, sprite);
+					}
+				}
+				if (p_ecs.GetComponentTypeName(CompID) == "Logic")
+				{
+					Logic logic;
+					logic.SetComponentEntityID(j);
+					if (logic.Deserialize(obj["Components"][std::to_string(j).c_str()][static_cast<int>(CompID)].GetObj()))
+					{
+						p_ecs.AddComponent<Logic>(j, logic);
+					}
+				}
+				if (p_ecs.GetComponentTypeName(CompID) == "Tag")
+				{
+					Tag tag;
+					tag.SetComponentEntityID(j);
+
+					if (tag.Deserialize(obj["Components"][std::to_string(j).c_str()][static_cast<int>(CompID)].GetObj()))
+					{
+						p_ecs.AddComponent<Tag>(j, tag);
+					}
+				}
+				if (p_ecs.GetComponentTypeName(CompID) == "Audio")
+				{
+					Audio mAudio;
+					mAudio.SetComponentEntityID(j);
+					if (mAudio.Deserialize(obj["Components"][std::to_string(j).c_str()][static_cast<int>(CompID)].GetObj()))
+					{
+						p_ecs.AddComponent<Audio>(j, mAudio);
+					}
+				}
+				if (p_ecs.GetComponentTypeName(CompID) == "HUDComponent")
+				{
+					HUDComponent mHUD;
+					mHUD.SetComponentEntityID(j);
+					if (mHUD.Deserialize(obj["Components"][std::to_string(j).c_str()][static_cast<int>(CompID)].GetObj()))
+					{
+						p_ecs.AddComponent<HUDComponent>(j, mHUD);
+					}
+				}
+				if (p_ecs.GetComponentTypeName(CompID) == "AnimalAttributes")
+				{
+					AnimalAttributes animalAttr;
+					animalAttr.SetComponentEntityID(j);
+					if (animalAttr.Deserialize(obj["Components"][std::to_string(j).c_str()][static_cast<int>(CompID)].GetObj()))
+					{
+						p_ecs.AddComponent<AnimalAttributes>(j, animalAttr);
+					}
+				}
+				if (p_ecs.GetComponentTypeName(CompID) == "ItemsAttributes")
+				{
+					ItemsAttributes itemAttr;
+					itemAttr.SetComponentEntityID(j);
+					if (itemAttr.Deserialize(obj["Components"][std::to_string(j).c_str()][static_cast<int>(CompID)].GetObj()))
+					{
+						p_ecs.AddComponent<ItemsAttributes>(j, itemAttr);
+					}
+				}
+				if (p_ecs.GetComponentTypeName(CompID) == "Draggable")
+				{
+					Draggable draggable;
+					draggable.SetComponentEntityID(j);
+
+					if (draggable.Deserialize(obj["Components"][std::to_string(j).c_str()][static_cast<int>(CompID)].GetObj()))
+					{
+						p_ecs.AddComponent<Draggable>(j, draggable);
+					}
+				}
+				if (p_ecs.GetComponentTypeName(CompID) == "Text")
+				{
+					Text text;
+					text.SetComponentEntityID(j);
+					if (text.Deserialize(obj["Components"][std::to_string(j).c_str()][static_cast<int>(CompID)].GetObj()))
+					{
+						p_ecs.AddComponent<Text>(j, text);
+					}
+				}
+			}
+		}
+		++j;
+	}
+	return true;
+}
+
+bool NocturnalEngine::SceneManager::NewSerialize(rapidjson::PrettyWriter<rapidjson::StringBuffer>* writer) const{
+	writer->StartObject();
+	writer->Key("LayerDrawOrder");
+	writer->StartArray();
+	for (int i = 0; i < NocturnalEngine::Graphic::MAX_LAYERS; ++i)
+		writer->Int(NocturnalEngine::Graphic::layerDrawOrder[i]);
+	writer->EndArray();
+
+	if (p_ecs.GetAliveEntities() == 0)return true;
+
+	writer->Key("Entities");
+	writer->StartArray();
+
+
+	std::set<Entity> aliveTotal =p_ecs.GetAliveEntitiesSet();
+	for (Entity j:aliveTotal)
+	{
+		// Skip entities with no components
+		if (!p_ecs.GetEntitySignature(j).any())
+			continue;
+
+		writer->StartObject();
+		writer->Key("ID");
+		writer->Int(static_cast<int>(j));
+		writer->Key("Components");
+		writer->StartArray();
+		for (std::pair<const std::string,ComponentRegistry::ComponentDescriptor> comp: p_ECompReg.GetAll())
+		{
+			if (comp.second.hasFunc(j))
+			{
+				writer->StartObject();
+				writer->Key("Component");
+				writer->String(comp.first.c_str());
+				comp.second.serializeFunc(j,writer);
+				writer->EndObject();
+				
+			}
+		}
+		writer->EndArray();
+		writer->EndObject(); // components
+	}
+	
+	writer->EndArray();
+
+	writer->EndObject();
+	return true;
+
 }
