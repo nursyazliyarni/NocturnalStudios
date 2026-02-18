@@ -1,5 +1,5 @@
 /*!------------------------------------------------------------------------------------------------
-    File: Components.cpp
+    File: ComponentsRegistry.cpp
     Project: NocturnalStudio
 
 	Brief:

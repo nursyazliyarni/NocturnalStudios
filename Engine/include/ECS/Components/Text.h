@@ -23,6 +23,7 @@ namespace NocturnalEngine
     public:
         Text();
         ~Text() = default;
+        void ToEditor()override;
 
         void SetContent(const std::string& text) { mContent = text; }
         std::string& GetContent() { return mContent; }

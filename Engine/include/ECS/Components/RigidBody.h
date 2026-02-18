@@ -27,6 +27,7 @@ namespace NocturnalEngine
 		~RigidBody() = default;
 		virtual bool Deserialize(const rapidjson::Value& obj);
 		virtual bool Serialize(rapidjson::PrettyWriter<rapidjson::StringBuffer>* writer) const;
+		void ToEditor()override;
 
 		vec2D& GetAccel() { return mAccel; }
 		vec2D& GetVel() { return mVelocity; }

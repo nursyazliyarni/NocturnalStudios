@@ -17,6 +17,7 @@
 #include "IComponent.h"
 #include "pch.h"
 
+
 namespace NocturnalEngine
 {
 	class ItemsAttributes : public IComponent
@@ -27,6 +28,7 @@ namespace NocturnalEngine
 
 		virtual bool Deserialize(const rapidjson::Value& obj);
 		virtual bool Serialize(rapidjson::PrettyWriter<rapidjson::StringBuffer>* writer) const;
+		void ToEditor()override;
 		/*!*************************************************************************
 		Retrieves Component Entity ID
 		****************************************************************************/

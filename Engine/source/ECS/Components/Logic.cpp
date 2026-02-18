@@ -19,6 +19,7 @@
 #include "ECS/Components/Logic.h"
 #include "System/ServiceLocator.h"
 #include "Scripts/IScriptRegistry.h"
+#include <imgui.h>
 
 
 
@@ -28,6 +29,67 @@ namespace NocturnalEngine
 	Ctor for Logic Component
 	****************************************************************************/
 	Logic::Logic() { entityID = GetComponentEntityID(); }
+
+	void Logic::ToEditor() {
+		//This is called ONCE ever, then cached
+		static IScriptRegistry* scriptRegistry =
+			ServiceLocator::Get().GetScriptRegistry();
+
+		if (!scriptRegistry) {
+			NOCTURNAL_ENGINE_WARN("Script Registry not Initalized!");
+			return;
+		}
+
+		if (ImGui::CollapsingHeader("Logic", ImGuiTreeNodeFlags_None))
+		{
+
+			static ImGuiComboFlags flags = 0;
+			static int current_script = 0;
+			const size_t aSize = 30;
+			const char* logicList[aSize];
+			std::vector<const char*> sList;
+			std::vector<std::string> scriptNames = scriptRegistry->GetAvailableScripts();
+
+			for (int i = 0; i < scriptNames.size(); i++)
+			{
+				sList.push_back(scriptNames[i].c_str());
+			}
+			std::copy(sList.begin(), sList.end(), logicList);
+
+			ImGui::Combo("Logic Scripts", &current_script, logicList, static_cast<int>(sList.size()), static_cast<int>(sList.size()));
+
+			if (ImGui::Button("Add"))
+			{
+				bool can_addScript = true;
+				for (int i = 0; i < GetScriptNames().size(); i++)
+				{
+					if (GetScriptNames()[i] == scriptNames[current_script])
+					{
+						can_addScript = false;
+					}
+				}
+				if (can_addScript == true)
+				{
+					if (scriptRegistry->CanAttachScript(scriptNames[current_script], entityID)) {
+						IScript* script = scriptRegistry->CreateScript(scriptNames[current_script]);
+						if (script) {
+							InsertScript(script, entityID);
+						}
+					}
+				}
+			}
+			ImGui::SameLine();
+			if (ImGui::Button("Delete")) {
+				DeleteScript(scriptNames[current_script]);
+			}
+			ImGui::Text("Inserted Scripts:");
+			for (int i = 0; i < GetScriptNames().size(); i++) {
+				//display the names of all scripts in the entity
+				ImGui::Text("% s", GetScriptNames()[i].c_str());
+			}
+		}
+	}
+
 
 	/*!*************************************************************************
 	Copy Ctor

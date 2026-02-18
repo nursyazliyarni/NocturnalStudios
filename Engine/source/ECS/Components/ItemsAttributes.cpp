@@ -14,8 +14,31 @@
 
 #include "pch.h"
 #include "ECS/Components/ItemsAttributes.h"
+#include <imgui.h>
 
 NocturnalEngine::ItemsAttributes::ItemsAttributes() :type{ ItemType::FOOD}, gain_amount { 0 }, is_dragging{ false } {}
+
+void NocturnalEngine::ItemsAttributes::ToEditor() {
+    if (ImGui::CollapsingHeader("Items Attributes", ImGuiTreeNodeFlags_None)) {
+        static const char* ItemTypeNames[] = {
+            "Food",
+            "Medicine",
+            "Toy"
+        };
+
+        int current = static_cast<int>(type);
+
+        if (ImGui::Combo("Item Type", &current,
+            ItemTypeNames,
+            IM_ARRAYSIZE(ItemTypeNames)))
+        {
+            type = static_cast<ItemsAttributes::ItemType>(current);
+        }
+        ImGui::PushItemWidth(100.0f);
+        ImGui::Text("gain amount"); ImGui::SameLine();
+        ImGui::InputDouble("##gain amount", &gain_amount);
+    }
+}
 
 bool NocturnalEngine::ItemsAttributes::Deserialize(const rapidjson::Value& obj)
 {

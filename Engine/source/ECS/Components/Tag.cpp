@@ -14,6 +14,7 @@
 
 #include "pch.h"
 #include "ECS/Components/Tag.h"
+#include <imgui.h>
 
 namespace NocturnalEngine
 {
@@ -21,6 +22,19 @@ namespace NocturnalEngine
 	Ctor for Tag Component
 	****************************************************************************/
 	Tag::Tag() : mTag{"Untagged"}, mTargetTag{""} {}
+
+	void Tag::ToEditor() {
+		if (ImGui::CollapsingHeader("TAG", ImGuiTreeNodeFlags_None))
+		{
+			char buffer1[256];
+			memset(buffer1, 0, sizeof(buffer1));
+			strcpy_s(buffer1, sizeof(buffer1), mTag.c_str());
+			if (ImGui::InputText("Tag", buffer1, sizeof(buffer1)))
+			{
+				mTag = std::string(buffer1);
+			}
+		}
+	}
 
 	/*!*************************************************************************
 	Deserialize for Tag Component

@@ -42,6 +42,7 @@ namespace NocturnalEngine
 		~Audio() = default;
 		virtual bool Deserialize(const rapidjson::Value& obj);
 		virtual bool Serialize(rapidjson::PrettyWriter<rapidjson::StringBuffer>* writer) const;
+		void ToEditor()override;
 		
 		std::vector<AudioPiece>& GetArr() { return AudioArr; }
 		void SetArr(std::vector<AudioPiece> in) { AudioArr = in; }
@@ -72,5 +73,7 @@ namespace NocturnalEngine
 		float sfxVol;
 		float masterVol;
 		bool randomFromArray{ false };
+
+		std::vector < std::pair<std::string, std::filesystem::directory_entry>> LoadAudioFromFiles();
 	};
 }

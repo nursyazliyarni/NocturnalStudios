@@ -30,6 +30,7 @@ namespace NocturnalEngine
 		Logic& operator= (const Logic& rhs);
 		Logic(Logic&& rhs) noexcept; // move ctor
 		Logic& operator=(Logic&& rhs) noexcept; // move assign
+		void ToEditor()override;
 		~Logic();
 
 		std::vector<IScript*>& GetScript() { return mScriptsVector; }

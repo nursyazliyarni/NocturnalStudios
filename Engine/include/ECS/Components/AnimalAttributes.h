@@ -54,7 +54,11 @@ namespace NocturnalEngine
 		~AnimalAttributes() = default;
 
 		virtual bool Deserialize(const rapidjson::Value& obj);
+
 		virtual bool Serialize(rapidjson::PrettyWriter<rapidjson::StringBuffer>* writer) const;
+
+		virtual void ToEditor() override;
+
 		/*!*************************************************************************
 		Retrieves Component Entity ID
 		****************************************************************************/

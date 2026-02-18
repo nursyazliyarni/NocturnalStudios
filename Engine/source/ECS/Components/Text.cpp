@@ -14,6 +14,8 @@
 
 #include "pch.h"
 #include "ECS/Components/Text.h"
+#include "ResourceManager/ResourceManager.h"
+#include <imgui.h>
 
 namespace NocturnalEngine
 {
@@ -30,6 +32,53 @@ namespace NocturnalEngine
         , mPosition{ 0.0f, 0.0f }
         , line_height{0}
     {
+    }
+
+    void Text::ToEditor() {
+        if (ImGui::CollapsingHeader("Text", ImGuiTreeNodeFlags_None))
+        {
+
+            char buffer[1024];
+            memset(buffer, 0, sizeof(buffer));
+            strcpy_s(buffer, sizeof(buffer), GetContent().c_str());
+            if (ImGui::InputTextMultiline("Content", buffer, sizeof(buffer), ImVec2(0, 80)))
+            {
+                SetContent(std::string(buffer));
+            }
+
+            auto& fontName = GetFont();
+            ImGui::Text("Font"); ImGui::SameLine();
+            ImGui::SetNextItemWidth(180.0f);
+            if (ImGui::BeginCombo("##textfont", fontName.c_str()))
+            {
+                for (auto& [name, font] : ResourceManager::fonts)
+                {
+                    bool selected = (name == fontName);
+                    if (ImGui::Selectable(name.c_str(), selected))
+                    {
+                        fontName = name;
+                    }
+                    if (selected)
+                        ImGui::SetItemDefaultFocus();
+                }
+                ImGui::EndCombo();
+            }
+
+            ImGui::DragFloat("Size", &GetSize(), 0.1f, 1.0f, 200.0f);
+            ImGui::ColorEdit4("Color", GetColor());
+            ImGui::Checkbox("World Space", &GetWorldSpace());
+            ImGui::Checkbox("Center", &GetCenter());
+
+            ImGui::Text("Position");
+            ImGui::Text("X"); ImGui::SameLine();
+            ImGui::DragFloat("##TextPosX", &GetPosition()[0], 0.01f);
+            ImGui::Text("Y"); ImGui::SameLine();
+            ImGui::DragFloat("##TextPosY", &GetPosition()[1], 0.01f);
+            ImGui::Text("Rotation"); ImGui::SameLine();
+            ImGui::DragFloat("##TextRot", &Rot(), 5.f, 0.f, 360.f);
+            ImGui::Text("Line Height"); ImGui::SameLine();
+            ImGui::DragInt("##Line Height", &Get_line_height(), 1);
+        }
     }
 
     /*!*************************************************************************
