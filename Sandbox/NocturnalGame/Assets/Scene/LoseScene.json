@@ -42,7 +42,7 @@
                 "NameTag": "BackGround"
             },
             {
-                "TextureName": "blackbg",
+                "TextureName": "UI/blackbg",
                 "Index_X": 0,
                 "Index_Y": 0,
                 "Ucoordinates": 512.0,
@@ -93,7 +93,7 @@
                 "NameTag": "FileBG"
             },
             {
-                "TextureName": "FileBacking",
+                "TextureName": "UI/FileBacking",
                 "Index_X": 0,
                 "Index_Y": 0,
                 "Ucoordinates": 512.0,
@@ -126,7 +126,7 @@
                 "NameTag": "Paper"
             },
             {
-                "TextureName": "LosePaper",
+                "TextureName": "UI/LosePaper",
                 "Index_X": 0,
                 "Index_Y": 0,
                 "Ucoordinates": 512.0,
@@ -398,7 +398,7 @@
                 "NameTag": "RestartButton"
             },
             {
-                "TextureName": "Xmark",
+                "TextureName": "UI/Xmark",
                 "Index_X": 0,
                 "Index_Y": 0,
                 "Ucoordinates": 512.0,
@@ -454,7 +454,7 @@
                 "NameTag": "QuitButton"
             },
             {
-                "TextureName": "Xmark",
+                "TextureName": "UI/Xmark",
                 "Index_X": 0,
                 "Index_Y": 0,
                 "Ucoordinates": 512.0,

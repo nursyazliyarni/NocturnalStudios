@@ -70,7 +70,7 @@
                 "NameTag": "SealBG"
             },
             {
-                "TextureName": "sealScene",
+                "TextureName": "Environment/sealScene",
                 "Index_X": 0,
                 "Index_Y": 0,
                 "Ucoordinates": 512.0,
@@ -141,7 +141,7 @@
                 "NameTag": "Seal"
             },
             {
-                "TextureName": "sealSpritesheet",
+                "TextureName": "Characters/sealSpritesheet",
                 "Index_X": 2,
                 "Index_Y": 0,
                 "Ucoordinates": 530.0,
@@ -214,7 +214,7 @@
                 "NameTag": "FlamingoBtn"
             },
             {
-                "TextureName": "cameraButtonUnlit",
+                "TextureName": "UI/cameraButtonUnlit",
                 "Index_X": 0,
                 "Index_Y": 0,
                 "Ucoordinates": 512.0,
@@ -316,7 +316,7 @@
                 "NameTag": "OwlBtn"
             },
             {
-                "TextureName": "cameraButtonUnlit",
+                "TextureName": "UI/cameraButtonUnlit",
                 "Index_X": 0,
                 "Index_Y": 0,
                 "Ucoordinates": 512.0,
@@ -418,7 +418,7 @@
                 "NameTag": "HorseBtn"
             },
             {
-                "TextureName": "cameraButtonUnlit",
+                "TextureName": "UI/cameraButtonUnlit",
                 "Index_X": 0,
                 "Index_Y": 0,
                 "Ucoordinates": 512.0,
@@ -520,7 +520,7 @@
                 "NameTag": "InventoryBtn"
             },
             {
-                "TextureName": "cameraButtonUnlit",
+                "TextureName": "UI/cameraButtonUnlit",
                 "Index_X": 0,
                 "Index_Y": 0,
                 "Ucoordinates": 512.0,
@@ -591,7 +591,7 @@
                 "NameTag": "CameraHighlight"
             },
             {
-                "TextureName": "cameraHighlight",
+                "TextureName": "UI/cameraHighlight",
                 "Index_X": 0,
                 "Index_Y": 0,
                 "Ucoordinates": 512.0,
@@ -641,7 +641,7 @@
                 "NameTag": "SealFood"
             },
             {
-                "TextureName": "Food",
+                "TextureName": "Play/Food",
                 "Index_X": 0,
                 "Index_Y": 0,
                 "Ucoordinates": 512.0,
@@ -701,7 +701,7 @@
                 "NameTag": "SealMedicine"
             },
             {
-                "TextureName": "Medicine",
+                "TextureName": "Play/Medicine",
                 "Index_X": 0,
                 "Index_Y": 0,
                 "Ucoordinates": 512.0,
@@ -761,7 +761,7 @@
                 "NameTag": "SealToy"
             },
             {
-                "TextureName": "Seal_Toy",
+                "TextureName": "Play/Seal_Toy",
                 "Index_X": 0,
                 "Index_Y": 0,
                 "Ucoordinates": 512.0,
@@ -804,7 +804,7 @@
                 "NameTag": "HealthIcon"
             },
             {
-                "TextureName": "health",
+                "TextureName": "UI/health",
                 "Index_X": 0,
                 "Index_Y": 0,
                 "Ucoordinates": 512.0,
@@ -837,7 +837,7 @@
                 "NameTag": "HungerIcon"
             },
             {
-                "TextureName": "hunger",
+                "TextureName": "UI/hunger",
                 "Index_X": 0,
                 "Index_Y": 0,
                 "Ucoordinates": 512.0,
@@ -870,7 +870,7 @@
                 "NameTag": "SanityIcon"
             },
             {
-                "TextureName": "sanity",
+                "TextureName": "UI/sanity",
                 "Index_X": 0,
                 "Index_Y": 0,
                 "Ucoordinates": 512.0,
@@ -903,7 +903,7 @@
                 "NameTag": "HealthBar"
             },
             {
-                "TextureName": "health bar",
+                "TextureName": "UI/health bar",
                 "Index_X": 0,
                 "Index_Y": 0,
                 "Ucoordinates": 512.0,
@@ -943,7 +943,7 @@
                 "NameTag": "HungerBar"
             },
             {
-                "TextureName": "hunger bar",
+                "TextureName": "UI/hunger bar",
                 "Index_X": 0,
                 "Index_Y": 0,
                 "Ucoordinates": 512.0,
@@ -983,7 +983,7 @@
                 "NameTag": "SanityBar"
             },
             {
-                "TextureName": "sanity bar",
+                "TextureName": "UI/sanity bar",
                 "Index_X": 0,
                 "Index_Y": 0,
                 "Ucoordinates": 512.0,
@@ -1156,7 +1156,7 @@
                 "NameTag": "Target"
             },
             {
-                "TextureName": "target",
+                "TextureName": "UI/target",
                 "Index_X": 0,
                 "Index_Y": 0,
                 "Ucoordinates": 512.0,
@@ -1192,7 +1192,7 @@
                 "NameTag": "LogObj"
             },
             {
-                "TextureName": "PlaceholderLogbg",
+                "TextureName": "UI/PlaceholderLogbg",
                 "Index_X": 0,
                 "Index_Y": 0,
                 "Ucoordinates": 512.0,

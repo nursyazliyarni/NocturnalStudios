@@ -40,7 +40,7 @@
                 },
                 {
                     "Component": "Sprite",
-                    "TextureName": "flamingoScene",
+                    "TextureName": "Environment/flamingoScene",
                     "Index_X": 0,
                     "Index_Y": 0,
                     "Ucoordinates": 512.0,
@@ -116,7 +116,7 @@
                 },
                 {
                     "Component": "Sprite",
-                    "TextureName": "flamingo_spritesheet",
+                    "TextureName": "Characters/flamingo_spritesheet",
                     "Index_X": 2,
                     "Index_Y": 0,
                     "Ucoordinates": 528.0,
@@ -180,7 +180,7 @@
                 },
                 {
                     "Component": "Sprite",
-                    "TextureName": "Food",
+                    "TextureName": "Play/Food",
                     "Index_X": 0,
                     "Index_Y": 0,
                     "Ucoordinates": 512.0,
@@ -239,7 +239,7 @@
                 },
                 {
                     "Component": "Sprite",
-                    "TextureName": "Medicine",
+                    "TextureName": "Play/Medicine",
                     "Index_X": 0,
                     "Index_Y": 0,
                     "Ucoordinates": 512.0,
@@ -298,7 +298,7 @@
                 },
                 {
                     "Component": "Sprite",
-                    "TextureName": "flamingo_toy",
+                    "TextureName": "Play/flamingo_toy",
                     "Index_X": 0,
                     "Index_Y": 0,
                     "Ucoordinates": 512.0,
@@ -385,7 +385,7 @@
                 },
                 {
                     "Component": "Sprite",
-                    "TextureName": "cameraButtonUnlit",
+                    "TextureName": "UI/cameraButtonUnlit",
                     "Index_X": 0,
                     "Index_Y": 0,
                     "Ucoordinates": 512.0,
@@ -493,7 +493,7 @@
                 },
                 {
                     "Component": "Sprite",
-                    "TextureName": "cameraButtonUnlit",
+                    "TextureName": "UI/cameraButtonUnlit",
                     "Index_X": 0,
                     "Index_Y": 0,
                     "Ucoordinates": 512.0,
@@ -600,7 +600,7 @@
                 },
                 {
                     "Component": "Sprite",
-                    "TextureName": "cameraButtonUnlit",
+                    "TextureName": "UI/cameraButtonUnlit",
                     "Index_X": 0,
                     "Index_Y": 0,
                     "Ucoordinates": 512.0,
@@ -708,7 +708,7 @@
                 },
                 {
                     "Component": "Sprite",
-                    "TextureName": "cameraButtonUnlit",
+                    "TextureName": "UI/cameraButtonUnlit",
                     "Index_X": 0,
                     "Index_Y": 0,
                     "Ucoordinates": 512.0,
@@ -742,7 +742,7 @@
                 },
                 {
                     "Component": "Sprite",
-                    "TextureName": "cameraHighlight",
+                    "TextureName": "UI/cameraHighlight",
                     "Index_X": 0,
                     "Index_Y": 0,
                     "Ucoordinates": 512.0,
@@ -771,7 +771,7 @@
                 },
                 {
                     "Component": "Sprite",
-                    "TextureName": "health",
+                    "TextureName": "UI/health",
                     "Index_X": 0,
                     "Index_Y": 0,
                     "Ucoordinates": 512.0,
@@ -800,7 +800,7 @@
                 },
                 {
                     "Component": "Sprite",
-                    "TextureName": "hunger",
+                    "TextureName": "UI/hunger",
                     "Index_X": 0,
                     "Index_Y": 0,
                     "Ucoordinates": 512.0,
@@ -829,7 +829,7 @@
                 },
                 {
                     "Component": "Sprite",
-                    "TextureName": "sanity",
+                    "TextureName": "UI/sanity",
                     "Index_X": 0,
                     "Index_Y": 0,
                     "Ucoordinates": 512.0,
@@ -869,7 +869,7 @@
                 },
                 {
                     "Component": "Sprite",
-                    "TextureName": "health bar",
+                    "TextureName": "UI/health bar",
                     "Index_X": 0,
                     "Index_Y": 0,
                     "Ucoordinates": 512.0,
@@ -909,7 +909,7 @@
                 },
                 {
                     "Component": "Sprite",
-                    "TextureName": "hunger bar",
+                    "TextureName": "UI/hunger bar",
                     "Index_X": 0,
                     "Index_Y": 0,
                     "Ucoordinates": 512.0,
@@ -949,7 +949,7 @@
                 },
                 {
                     "Component": "Sprite",
-                    "TextureName": "sanity bar",
+                    "TextureName": "UI/sanity bar",
                     "Index_X": 0,
                     "Index_Y": 0,
                     "Ucoordinates": 512.0,
@@ -1091,7 +1091,7 @@
                 },
                 {
                     "Component": "Sprite",
-                    "TextureName": "target",
+                    "TextureName": "UI/target",
                     "Index_X": 0,
                     "Index_Y": 0,
                     "Ucoordinates": 512.0,
@@ -1130,7 +1130,7 @@
                 },
                 {
                     "Component": "Sprite",
-                    "TextureName": "PlaceholderLogbg",
+                    "TextureName": "UI/PlaceholderLogbg",
                     "Index_X": 0,
                     "Index_Y": 0,
                     "Ucoordinates": 512.0,

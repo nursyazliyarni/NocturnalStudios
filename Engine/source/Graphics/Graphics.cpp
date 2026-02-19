@@ -55,22 +55,45 @@ namespace NocturnalEngine {
 		ResourceManager::LoadShader("ImpactShader", "Assets/Shaders/Impact.shader");
 		
 		LoadIconsTexture("Assets/Text/Icons.txt");
-		std::string path = {"Assets/Textures/"};
-		std::string folderpath[] = {"Characters", "Environment", "UI", "CutScene", "Dialogues", "Play","How To Play"};
-		
-		for (const auto& i : folderpath)
+		std::string path = "Assets/Textures/";
+		if (!std::filesystem::exists(path))
 		{
-			std::filesystem::path currentPath = path + i;
-			auto currentFolders = std::filesystem::directory_iterator(currentPath);
-			for (const auto& entry : currentFolders)
+			NOCTURNAL_ENGINE_WARN("Assets/Textures/ folder missing! Creating it...");
+			std::filesystem::create_directories(path);
+		}
+		else
+		{
+			//recursive_directory_iterator goes through ALL subfolders
+			for (const auto& entry : std::filesystem::recursive_directory_iterator(path))
 			{
+				// Skip directories, only process files
+				if (!entry.is_regular_file())
+					continue;
+
+				// Only load image files
+				auto ext = entry.path().extension().string();
+				std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
+				if (ext != ".png" && ext != ".jpg" && ext != ".jpeg")
+					continue;
+
 				std::string gs = entry.path().generic_string();
-				std::size_t pos = gs.find_last_of("/");
-				std::size_t pos1 = gs.find(".");
-				std::string Imagename = gs.substr(pos + 1, pos1 - pos - 1);
-				ResourceManager::LoadTexture(Imagename, gs);
+
+				// Use relative path as key to avoid name collisions
+				// e.g. "Characters/Cat" instead of just "Cat"
+				std::string relativePath = std::filesystem::relative(
+					entry.path(),
+					std::filesystem::path(path)
+				).generic_string();
+
+				// Remove extension from key
+				std::string key = relativePath.substr(0, relativePath.find_last_of('.'));
+				// key = "Characters/Cat" or "UI/Menus/Main" etc.
+
+				ResourceManager::LoadTexture(key, gs);
+				//NOCTURNAL_ENGINE_INFO("Loaded texture: {}", key);
 			}
 		}
+
 		std::string fontPath = "Assets/fonts";
 		if (std::filesystem::exists(fontPath))
 		{

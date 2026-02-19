@@ -86,7 +86,7 @@ namespace NocturnalEngine
 
 		//if (spt.GetTexture() == "HowToPlay" && p_Input->KeyPressed(GLFW_KEY_ESCAPE)) //if how to play screen in on and escape is pressed, return screen back to button mode
 		//{
-		//	spt.SetTexture("htp_button_Idle");
+		//	spt.SetTexture("UI/htp_button_Idle");
 		//	transform.SetPos({ 0.0f,-0.25f });
 		//	transform.SetScale(1.0f, 0.2f);
 		//	p_GUI->toggle_HTP(); // toggle HTP off 
@@ -124,7 +124,7 @@ namespace NocturnalEngine
 
 			if (ID_tag.GetTag() == "Start" && !(p_Input->MousePressed(GLFW_MOUSE_BUTTON_LEFT)))
 			{
-				//spt.SetTexture("Start_Hover");
+				//spt.SetTexture("UI/Start_Hover");
 				if (entercollider)
 				{
 					transform.ScaleBy(1.2f);
@@ -134,7 +134,7 @@ namespace NocturnalEngine
 
 			if (ID_tag.GetTag() == "Quit" && !(p_Input->MousePressed(GLFW_MOUSE_BUTTON_LEFT)))
 			{
-				//spt.SetTexture("Quit_Hover");
+				//spt.SetTexture("UI/Quit_Hover");
 				if (entercollider)
 				{
 					transform.ScaleBy(1.2f);
@@ -144,7 +144,7 @@ namespace NocturnalEngine
 
 			if (ID_tag.GetTag() == "Options" && !(p_Input->MousePressed(GLFW_MOUSE_BUTTON_LEFT)))
 			{
-				//spt.SetTexture("Options_Hover");
+				//spt.SetTexture("UI/Options_Hover");
 				if (entercollider)
 				{
 					transform.ScaleBy(1.2f);
@@ -154,7 +154,7 @@ namespace NocturnalEngine
 
 			if (ID_tag.GetTag() == "HowToPlay" && spt.GetTexture() != "HowToPlay" && !(p_Input->MousePressed(GLFW_MOUSE_BUTTON_LEFT)))
 			{
-				//spt.SetTexture("htp_button_Hover");
+				//spt.SetTexture("UI/htp_button_Hover");
 				if (entercollider)
 				{
 					transform.ScaleBy(1.2f);
@@ -164,44 +164,44 @@ namespace NocturnalEngine
 
 			if (ID_tag.GetTag() == "MainMenu" && !(p_Input->MousePressed(GLFW_MOUSE_BUTTON_LEFT)))
 			{
-				spt.SetTexture("MM_B");
+				spt.SetTexture("UI/MM_B");
 			}
 
 			if (ID_tag.GetTag() == "Restart" && !(p_Input->MousePressed(GLFW_MOUSE_BUTTON_LEFT)))
 			{
-				spt.SetTexture("RESTART_B");
+				spt.SetTexture("UI/RESTART_B");
 			}
 			if (ID_tag.GetTag() == "RestartT" && !(p_Input->MousePressed(GLFW_MOUSE_BUTTON_LEFT)))
 			{
-				spt.SetTexture("Xmark");
+				spt.SetTexture("UI/Xmark");
 			}
 			if (ID_tag.GetTag() == "ProceedT" && !(p_Input->MousePressed(GLFW_MOUSE_BUTTON_LEFT)))
 			{
-				spt.SetTexture("Xmark");
+				spt.SetTexture("UI/Xmark");
 			}
 			if (ID_tag.GetTag() == "QuitT" && !(p_Input->MousePressed(GLFW_MOUSE_BUTTON_LEFT)))
 			{
-				spt.SetTexture("Xmark");
+				spt.SetTexture("UI/Xmark");
 			}
 
 			if (ID_tag.GetTag() == "Resume" && !(p_Input->MousePressed(GLFW_MOUSE_BUTTON_LEFT)))
 			{
-				spt.SetTexture("Resume_Hover");
+				spt.SetTexture("UI/Resume_Hover");
 			}
 
 			if (ID_tag.GetTag() == "PRestart" && !(p_Input->MousePressed(GLFW_MOUSE_BUTTON_LEFT)))
 			{
-				spt.SetTexture("Restart_Hover");
+				spt.SetTexture("UI/Restart_Hover");
 			}
 
 			if (ID_tag.GetTag() == "Back")
 			{
-				spt.SetTexture("BACK_B");//to be change
+				spt.SetTexture("UI/BACK_B");//to be change
 			}
 
 			if (ID_tag.GetTag() == "No")
 			{
-				//spt.SetTexture("BlankArrow");//to be change
+				//spt.SetTexture("UI/BlankArrow");//to be change
 
 				if (entercollider)
 				{
@@ -212,7 +212,7 @@ namespace NocturnalEngine
 
 			if (ID_tag.GetTag() == "Yes")
 			{
-				//spt.SetTexture("BlankArrow");//to be change
+				//spt.SetTexture("UI/BlankArrow");//to be change
 
 				if (entercollider)
 				{
@@ -390,68 +390,68 @@ namespace NocturnalEngine
 				if (ID_tag.GetTag() == "Start" && p_GUI->Check_HTP() == false)
 				{
 					//	p_GUI->toggle_menu();
-					//spt.SetTexture("Start_Click");
+					//spt.SetTexture("UI/Start_Click");
 					//transform.ScaleBy(-0.1f);
 				}
 
 				if (ID_tag.GetTag() == "Quit" && p_GUI->Check_HTP() == false)
 				{
-					//spt.SetTexture("Quit_Click");
+					//spt.SetTexture("UI/Quit_Click");
 					//transform.ScaleBy(-0.1f);
 				}
 
 				if (ID_tag.GetTag() == "MainMenu" && p_GUI->Check_HTP() == false)
 				{
-					spt.SetTexture("MM_R");
+					spt.SetTexture("UI/MM_R");
 
 				}
 
 				if (ID_tag.GetTag() == "Restart" && p_GUI->Check_HTP() == false)
 				{
-					spt.SetTexture("RESTART_R");
+					spt.SetTexture("UI/RESTART_R");
 
 				}
 
 				if (ID_tag.GetTag() == "HowToPlay")
 				{
-					//spt.SetTexture("htp_button_Click");
+					//spt.SetTexture("UI/htp_button_Click");
 				}
 
 				if (ID_tag.GetTag() == "Options" && p_GUI->Check_HTP() == false)
 				{
-					//spt.SetTexture("Options_Click");
+					//spt.SetTexture("UI/Options_Click");
 					//transform.ScaleBy(-0.1f);
 				}
 
 				if (ID_tag.GetTag() == "Resume")
 				{
-					spt.SetTexture("Resume_Click");
+					spt.SetTexture("UI/Resume_Click");
 
 				}
 				if (ID_tag.GetTag() == "PRestart")
 				{
-					spt.SetTexture("Restart_Click");
+					spt.SetTexture("UI/Restart_Click");
 				}
 
 				if (ID_tag.GetTag() == "Mute")
 				{
-					spt.SetTexture("Mute_Click");
+					spt.SetTexture("UI/Mute_Click");
 				}
 
 				if (ID_tag.GetTag() == "Back")
 				{
-					spt.SetTexture("BACK_R");
+					spt.SetTexture("UI/BACK_R");
 				}
 
 
 				if (ID_tag.GetTag() == "No")
 				{
-					spt.SetTexture("BlankArrow");
+					spt.SetTexture("UI/BlankArrow");
 				}
 
 				if (ID_tag.GetTag() == "Yes")
 				{
-					spt.SetTexture("BlankArrow");
+					spt.SetTexture("UI/BlankArrow");
 				}
 
 			}
@@ -465,7 +465,7 @@ namespace NocturnalEngine
 
 			if (ID_tag.GetTag() == "Start")
 			{
-				spt.SetTexture("BlankArrow");
+				spt.SetTexture("UI/BlankArrow");
 				if (leftcollider)
 				{
 					transform.ScaleBy(1.f/1.2f);
@@ -476,7 +476,7 @@ namespace NocturnalEngine
 
 			if (ID_tag.GetTag() == "Quit")
 			{
-				spt.SetTexture("BlankArrow");
+				spt.SetTexture("UI/BlankArrow");
 				if (leftcollider)
 				{
 					transform.ScaleBy(1.f / 1.2f);
@@ -485,7 +485,7 @@ namespace NocturnalEngine
 			}
 			if (ID_tag.GetTag() == "Options")
 			{
-				spt.SetTexture("BlankArrow");
+				spt.SetTexture("UI/BlankArrow");
 				if (leftcollider)
 				{
 					transform.ScaleBy(1.f / 1.2f);
@@ -495,29 +495,29 @@ namespace NocturnalEngine
 
 			if (ID_tag.GetTag() == "MainMenu")
 			{
-				spt.SetTexture("MM_Y");
+				spt.SetTexture("UI/MM_Y");
 			}
 
 			if (ID_tag.GetTag() == "Restart")
 			{
-				spt.SetTexture("RESTART_Y");
+				spt.SetTexture("UI/RESTART_Y");
 			}
 			if (ID_tag.GetTag() == "RestartT")
 			{
-				spt.SetTexture("Blank");
+				spt.SetTexture("Characters/Blank");
 			}
 			if (ID_tag.GetTag() == "QuitT")
 			{
-				spt.SetTexture("Blank");
+				spt.SetTexture("Characters/Blank");
 			}
 			if (ID_tag.GetTag() == "ProceedT")
 			{
-				spt.SetTexture("Blank");
+				spt.SetTexture("Characters/Blank");
 			}
 
 			if (ID_tag.GetTag() == "HowToPlay")
 			{
-				spt.SetTexture("BlankArrow");
+				spt.SetTexture("UI/BlankArrow");
 				if (leftcollider)
 				{
 					transform.ScaleBy(1.f / 1.2f);
@@ -527,20 +527,20 @@ namespace NocturnalEngine
 
 			if (ID_tag.GetTag() == "Resume")
 			{
-				spt.SetTexture("Resume_Idle");
+				spt.SetTexture("UI/Resume_Idle");
 			}
 			if (ID_tag.GetTag() == "PRestart")
 			{
-				spt.SetTexture("Restart_Idle");
+				spt.SetTexture("UI/Restart_Idle");
 			}
 			if (ID_tag.GetTag() == "Back")
 			{
-				spt.SetTexture("BACK_Y");
+				spt.SetTexture("UI/BACK_Y");
 			}
 
 			if (ID_tag.GetTag() == "No")
 			{
-				spt.SetTexture("BlankArrow");
+				spt.SetTexture("UI/BlankArrow");
 
 				if (leftcollider)
 				{
@@ -551,7 +551,7 @@ namespace NocturnalEngine
 
 			if (ID_tag.GetTag() == "Yes")
 			{
-				spt.SetTexture("BlankArrow");
+				spt.SetTexture("UI/BlankArrow");
 
 				if (leftcollider)
 				{
