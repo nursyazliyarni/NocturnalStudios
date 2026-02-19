@@ -111,7 +111,7 @@
                 "NameTag": "OverviewTag"
             },
             {
-                "TextureName": "HowToPlay/overviewtag",
+                "TextureName": "How To Play/overviewtag",
                 "Index_X": 0,
                 "Index_Y": 0,
                 "Ucoordinates": 512.0,
@@ -167,7 +167,7 @@
                 "NameTag": "FlamingoTag"
             },
             {
-                "TextureName": "HowToPlay/flamingotag",
+                "TextureName": "How To Play/flamingotag",
                 "Index_X": 0,
                 "Index_Y": 0,
                 "Ucoordinates": 512.0,
@@ -223,7 +223,7 @@
                 "NameTag": "SealTag"
             },
             {
-                "TextureName": "HowToPlay/sealtag",
+                "TextureName": "How To Play/sealtag",
                 "Index_X": 0,
                 "Index_Y": 0,
                 "Ucoordinates": 512.0,
@@ -279,7 +279,7 @@
                 "NameTag": "HorseTag"
             },
             {
-                "TextureName": "HowToPlay/horsetag",
+                "TextureName": "How To Play/horsetag",
                 "Index_X": 0,
                 "Index_Y": 0,
                 "Ucoordinates": 512.0,
@@ -335,7 +335,7 @@
                 "NameTag": "OwlTag"
             },
             {
-                "TextureName": "HowToPlay/owltag",
+                "TextureName": "How To Play/owltag",
                 "Index_X": 0,
                 "Index_Y": 0,
                 "Ucoordinates": 512.0,
@@ -391,7 +391,7 @@
                 "NameTag": "HealthTag"
             },
             {
-                "TextureName": "HowToPlay/healthtag",
+                "TextureName": "How To Play/healthtag",
                 "Index_X": 0,
                 "Index_Y": 0,
                 "Ucoordinates": 512.0,
@@ -447,7 +447,7 @@
                 "NameTag": "HungerTag"
             },
             {
-                "TextureName": "HowToPlay/hungertag",
+                "TextureName": "How To Play/hungertag",
                 "Index_X": 0,
                 "Index_Y": 0,
                 "Ucoordinates": 512.0,
@@ -503,7 +503,7 @@
                 "NameTag": "SanityTag"
             },
             {
-                "TextureName": "HowToPlay/sanitytag",
+                "TextureName": "How To Play/sanitytag",
                 "Index_X": 0,
                 "Index_Y": 0,
                 "Ucoordinates": 512.0,
@@ -542,7 +542,7 @@
                 "NameTag": "Manual"
             },
             {
-                "TextureName": "HowToPlay/owlhtp",
+                "TextureName": "How To Play/owlhtp",
                 "Index_X": 0,
                 "Index_Y": 0,
                 "Ucoordinates": 512.0,

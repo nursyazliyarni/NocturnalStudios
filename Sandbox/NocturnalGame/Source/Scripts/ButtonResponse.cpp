@@ -86,7 +86,7 @@ namespace NocturnalEngine
 
 		//if (spt.GetTexture() == "HowToPlay" && p_Input->KeyPressed(GLFW_KEY_ESCAPE)) //if how to play screen in on and escape is pressed, return screen back to button mode
 		//{
-		//	spt.SetTexture("htp_button_Idle");
+		//	spt.SetTexture("UI/htp_button_Idle");
 		//	transform.SetPos({ 0.0f,-0.25f });
 		//	transform.SetScale(1.0f, 0.2f);
 		//	p_GUI->toggle_HTP(); // toggle HTP off 

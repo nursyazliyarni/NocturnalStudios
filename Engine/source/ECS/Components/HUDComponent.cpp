@@ -51,8 +51,9 @@ namespace NocturnalEngine {
 	****************************************************************************/
 	bool HUDComponent::Deserialize(const rapidjson::Value& obj)
 	{
-		mType = static_cast<ElementType>(obj["ElementType"].GetInt());
-		offset = vec2D(obj["offsetX"].GetFloat(), obj["offsetY"].GetFloat());
+		if(obj.HasMember("ElementType")&& obj["ElementType"].IsInt())mType = static_cast<ElementType>(obj["ElementType"].GetInt());
+		if (obj.HasMember("offsetX") && obj["offsetX"].IsNumber()&&
+			obj.HasMember("offsetY") && obj["offsetY"].IsNumber())offset = vec2D(obj["offsetX"].GetFloat(), obj["offsetY"].GetFloat());
 		return true;
 	}
 

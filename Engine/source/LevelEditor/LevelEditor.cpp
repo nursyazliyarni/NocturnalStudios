@@ -787,10 +787,20 @@ namespace NocturnalEngine {
                 //dealing w diff filenames
                 auto ext = directorypath.extension().string();
                 std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower); // lowercase for safety
+
                 if (ext == ".png")
                 {
-                    std::string texName = filename;
-                    texName.erase(filename.find_last_of('.'));
+                    std::string gs = directorypath.generic_string();
+
+                    // Use relative path as key to avoid name collisions
+                    // e.g. "Characters/Cat" instead of just "Cat"
+                    std::string relativePath = std::filesystem::relative(
+                        directorypath,
+                        std::filesystem::path("Assets/Textures/")
+                    ).generic_string();
+
+                    // Remove extension from key
+                    std::string texName = relativePath.substr(0, relativePath.find_last_of('.'));
 
                     auto tex = ResourceManager::GetTexture(texName);
                     if (!tex) tex = ResourceManager::GetIcon(texName);
@@ -816,7 +826,7 @@ namespace NocturnalEngine {
                         if (ImGui::IsItemHovered())
                         {
                             ImGui::BeginTooltip();
-                            std::string str = texName + " " + "(" + std::to_string(tex->GetWidth()) + "x" +
+                            std::string str = texName.substr(texName.find_last_of('/')+1,texName.length()- (texName.find_last_of('/')+1)) + " " + "(" + std::to_string(tex->GetWidth()) + "x" +
                                 std::to_string(tex->GetHeight()) + ")";
                             ImGui::Text(str.c_str());
                             ImGui::EndTooltip();

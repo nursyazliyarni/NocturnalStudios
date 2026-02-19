@@ -55,7 +55,7 @@ namespace NocturnalEngine {
 		ResourceManager::LoadShader("ImpactShader", "Assets/Shaders/Impact.shader");
 		
 		LoadIconsTexture("Assets/Text/Icons.txt");
-		std::string path = {"Assets/Textures/"};
+		std::string path = "Assets/Textures/";
 		if (!std::filesystem::exists(path))
 		{
 			NOCTURNAL_ENGINE_WARN("Assets/Textures/ folder missing! Creating it...");
@@ -63,7 +63,7 @@ namespace NocturnalEngine {
 		}
 		else
 		{
-			// recursive_directory_iterator goes through ALL subfolders
+			//recursive_directory_iterator goes through ALL subfolders
 			for (const auto& entry : std::filesystem::recursive_directory_iterator(path))
 			{
 				// Skip directories, only process files
@@ -77,17 +77,23 @@ namespace NocturnalEngine {
 					continue;
 
 				std::string gs = entry.path().generic_string();
+
+				// Use relative path as key to avoid name collisions
+				// e.g. "Characters/Cat" instead of just "Cat"
 				std::string relativePath = std::filesystem::relative(
 					entry.path(),
 					std::filesystem::path(path)
 				).generic_string();
 
+				// Remove extension from key
 				std::string key = relativePath.substr(0, relativePath.find_last_of('.'));
+				// key = "Characters/Cat" or "UI/Menus/Main" etc.
 
 				ResourceManager::LoadTexture(key, gs);
 				//NOCTURNAL_ENGINE_INFO("Loaded texture: {}", key);
 			}
 		}
+
 		std::string fontPath = "Assets/fonts";
 		if (std::filesystem::exists(fontPath))
 		{
