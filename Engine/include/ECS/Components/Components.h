@@ -29,8 +29,6 @@
 #include "Tag.h"
 #include "Audio.h"
 #include "HUDComponent.h"
-#include "AnimalAttributes.h"
-#include "ItemsAttributes.h"
 #include "Draggable.h"
 #include "Text.h"
 
@@ -45,9 +43,7 @@
 #define C_LogicComponent NocturnalEngine::Logic::Logic()
 #define C_TagComponent NocturnalEngine::Tag::Tag()
 #define C_AudioComponent NocturnalEngine::Audio::Audio()
-#define C_HUDComponent NocturnalEngine::HUDComponent::HUDComponent()
-#define C_AnimalAttributesComponent NocturnalEngine::AnimalAttributes::AnimalAttributes()
-#define C_ItemsAttributesComponent NocturnalEngine::ItemsAttributes::ItemsAttributes()
+#define C_HUDComponent NocturnalEngine::HUDComponent::HUDComponent())
 #define C_DraggableComponent NocturnalEngine::Draggable::Draggable()
 #define C_TextComponent NocturnalEngine::Text::Text()
 

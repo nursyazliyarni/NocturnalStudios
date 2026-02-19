@@ -13,7 +13,7 @@
 *------------------------------------------------------------------------------------------------*/
 
 #pragma once
-#include "IComponent.h"
+#include "ECS/Components/IComponent.h"
 #include "ECS/SceneManager.h"
 #include "pch.h"
 

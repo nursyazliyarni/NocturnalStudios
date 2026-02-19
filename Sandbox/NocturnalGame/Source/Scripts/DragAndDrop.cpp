@@ -22,6 +22,8 @@
 #include "ECS/Components/Transform.h"
 #include "ECS/Components/Collider.h"
 #include "ECS/Components/Draggable.h"
+#include "ECS/Components/ItemsAttributes.h"
+#include "ECS/Components/AnimalAttributes.h"
 #include "GUI/GUI.h"
 #include "Scripts/GlobalGameManager.h"
 

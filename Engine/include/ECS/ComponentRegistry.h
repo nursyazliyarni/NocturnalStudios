@@ -18,9 +18,6 @@
 #include "ECS.h"
 #include "Serialization/JSONserialization.h"
 
-
-
-
 namespace NocturnalEngine {
     class ECS;
     class ComponentRegistry {
@@ -104,7 +101,7 @@ namespace NocturnalEngine {
             return mComponents;
         }
 
-    private:
+    protected:
         ECS& GetECS();
         
         std::map<std::string, ComponentDescriptor> mComponents{};

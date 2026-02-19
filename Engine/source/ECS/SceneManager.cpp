@@ -23,6 +23,7 @@
 #include "Audio/AudioEngine.h"
 #include "ECS/EngineComponentReg.h"
 #include "Core/MemoryManager.h"
+#include "System/ServiceLocator.h"
 #include <unordered_map>
 #include <array>
 
@@ -55,19 +56,17 @@ namespace NocturnalEngine
 	****************************************************************************/
 	void SceneManager::Init()
 	{
-		p_ecs.RegisterComponent<Transform>();
-		p_ecs.RegisterComponent<RigidBody>();
-		p_ecs.RegisterComponent<Collider>();
-		p_ecs.RegisterComponent<NameTag>();
-		p_ecs.RegisterComponent<Sprite>();
-		p_ecs.RegisterComponent<Logic>();
-		p_ecs.RegisterComponent<Tag>();
-		p_ecs.RegisterComponent<Audio>();
-		p_ecs.RegisterComponent<HUDComponent>();
-		p_ecs.RegisterComponent<AnimalAttributes>();
-		p_ecs.RegisterComponent<ItemsAttributes>();
-		p_ecs.RegisterComponent<Draggable>();
-		p_ecs.RegisterComponent<Text>();
+		p_ecs.RegisterComponent<Transform>(); //0
+		p_ecs.RegisterComponent<RigidBody>();//1
+		p_ecs.RegisterComponent<Collider>();//2
+		p_ecs.RegisterComponent<NameTag>();//3
+		p_ecs.RegisterComponent<Sprite>();//4
+		p_ecs.RegisterComponent<Logic>();//5
+		p_ecs.RegisterComponent<Tag>();//6
+		p_ecs.RegisterComponent<Audio>();//7
+		p_ecs.RegisterComponent<HUDComponent>();//8
+		p_ecs.RegisterComponent<Draggable>();//9
+		p_ecs.RegisterComponent<Text>();//10
 		sceneToLoad = "";
 	}
 
@@ -96,113 +95,7 @@ namespace NocturnalEngine
 	{
 		return NewSerialize(writer);
 
-		/*writer->StartObject();
-		writer->Key("LayerDrawOrder");
-		writer->StartArray();
-		for (int i = 0; i < NocturnalEngine::Graphic::MAX_LAYERS; ++i)
-			writer->Int(NocturnalEngine::Graphic::layerDrawOrder[i]);
-		writer->EndArray();
-		writer->Key("Number of Entities");
-		writer->StartObject();
-		writer->Key("Entities");
-		writer->Uint(p_ecs.GetTotalEntities());
-		writer->EndObject();
 
-		writer->Key("EntitySignatures");
-		writer->StartArray();
-		auto aliveTotal = p_ecs.GetTotalEntities();
-		Entity aliveCount = 0;
-		Entity iterEntity = 0;
-		while (aliveCount < aliveTotal)
-		{
-			writer->String(p_ecs.GetEntitySignature(iterEntity).to_string().c_str());
-			if (p_ecs.GetEntitySignature(iterEntity).any())
-			{
-				aliveCount++;
-			}
-			iterEntity++;
-		}
-		writer->EndArray();
-
-		writer->Key("Components");
-		writer->StartObject();
-		aliveTotal = p_ecs.GetTotalEntities();
-		Entity j = 0;
-		while (j < aliveTotal)
-		{
-			writer->Key(std::to_string(j).c_str());
-			writer->StartArray();
-			for (ComponentType compID = 0; compID < p_ecs.GetTotalRegisteredComponents(); ++compID)
-			{
-				writer->StartObject();
-				if (p_ecs.GetEntitySignature(j).any())
-				{
-					if (p_ecs.GetEntitySignature(j).test(compID))
-					{
-						//ADD COMPONENTS HERE FOR SERIALIZE
-						if (p_ecs.GetComponentTypeName(compID) == "Transform")
-						{
-							p_ecs.GetComponent<Transform>(j).Serialize(writer);
-						}
-						if (p_ecs.GetComponentTypeName(compID) == "RigidBody")
-						{
-							p_ecs.GetComponent<RigidBody>(j).Serialize(writer);
-						}
-						if (p_ecs.GetComponentTypeName(compID) == "Collider")
-						{
-							p_ecs.GetComponent<Collider>(j).Serialize(writer);
-						}
-						if (p_ecs.GetComponentTypeName(compID) == "NameTag")
-						{
-							p_ecs.GetComponent<NameTag>(j).Serialize(writer);
-						}
-						if (p_ecs.GetComponentTypeName(compID) == "Sprite")
-						{
-							p_ecs.GetComponent<Sprite>(j).Serialize(writer);
-						}
-						if (p_ecs.GetComponentTypeName(compID) == "Text")
-						{
-							p_ecs.GetComponent<Text>(j).Serialize(writer);
-						}
-						if (p_ecs.GetComponentTypeName(compID) == "Logic")
-						{
-							p_ecs.GetComponent<Logic>(j).Serialize(writer);
-						}
-						if (p_ecs.GetComponentTypeName(compID) == "Tag")
-						{
-							p_ecs.GetComponent<Tag>(j).Serialize(writer);
-						}
-						if (p_ecs.GetComponentTypeName(compID) == "Audio")
-						{
-							p_ecs.GetComponent<Audio>(j).Serialize(writer);
-						}
-						if (p_ecs.GetComponentTypeName(compID) == "HUDComponent")
-						{
-							p_ecs.GetComponent<HUDComponent>(j).Serialize(writer);
-						}
-						if (p_ecs.GetComponentTypeName(compID) == "AnimalAttributes")
-						{
-							p_ecs.GetComponent<AnimalAttributes>(j).Serialize(writer);
-						}
-						if (p_ecs.GetComponentTypeName(compID) == "ItemsAttributes")
-						{
-							p_ecs.GetComponent<ItemsAttributes>(j).Serialize(writer);
-						}
-						if (p_ecs.GetComponentTypeName(compID) == "Draggable")
-						{
-							p_ecs.GetComponent<Draggable>(j).Serialize(writer);
-						}
-					}
-				}
-				writer->EndObject();
-			}
-			writer->EndArray();
-			++j;
-		}
-		writer->EndObject();
-
-		writer->EndObject();
-		return true;*/
 	}
 }
 
@@ -377,6 +270,14 @@ bool NocturnalEngine::SceneManager::NewDeserialize(const rapidjson::Value& obj) 
 		}
 
 		const std::map<std::string, ComponentRegistry::ComponentDescriptor>& ecr = p_ECompReg.GetAll();
+
+		ComponentRegistry* gameComp = ServiceLocator::Get().GetGameComponents();
+		const std::map<std::string, ComponentRegistry::ComponentDescriptor>* gcr =
+			gameComp
+			? &gameComp->GetAll()
+			: nullptr;
+
+
 		for (const rapidjson::Value& ent:obj["Entities"].GetArray())
 		{
 			if (!ent.HasMember("Components") || !ent["Components"].IsArray())continue;
@@ -387,8 +288,14 @@ bool NocturnalEngine::SceneManager::NewDeserialize(const rapidjson::Value& obj) 
 				if (!comps.HasMember("Component")||!comps["Component"].IsString())continue;
 
 				std::string componentName = comps["Component"].GetString();
-				if (!ecr.contains(componentName)) continue;
-				ecr.at(componentName).deserializeAndAddFunc(e, comps);
+				if (ecr.contains(componentName)) {
+					ecr.at(componentName).deserializeAndAddFunc(e, comps);
+				}
+				else if (gcr && gcr->contains(componentName)) 
+				{
+					gcr->at(componentName).deserializeAndAddFunc(e, comps);
+				}
+				
 				
 			}
 
@@ -418,6 +325,12 @@ bool NocturnalEngine::SceneManager::OldDeserialize(const rapidjson::Value& obj) 
 		p_ecs.PrepareMemoryForEntities(obj["Number of Entities"]["Entities"].GetUint());
 	}
 	p_ecs.SetTotalEntitiesForWorldBuild(obj["Number of Entities"]["Entities"].GetUint());
+
+	ComponentRegistry* gameComp = ServiceLocator::Get().GetGameComponents();
+	const std::map<std::string, ComponentRegistry::ComponentDescriptor>* gcr =
+		gameComp
+		? &gameComp->GetAll()
+		: nullptr;
 	auto aliveTotal = obj["Number of Entities"]["Entities"].GetUint();
 	Entity j = 0;
 	while (j < aliveTotal)
@@ -428,7 +341,6 @@ bool NocturnalEngine::SceneManager::OldDeserialize(const rapidjson::Value& obj) 
 		{
 			if (p_ecs.GetEntitySignature(j).test(CompID))
 			{
-				//if (!obj["Components"].HasMember("std::to_string(j).c_str()")|| obj["Components"]["std::to_string(j).c_str()"].Size()< static_cast<int>(CompID))break;
 				if (p_ecs.GetComponentTypeName(CompID) == "Transform")
 				{
 					Transform transform;
@@ -512,24 +424,6 @@ bool NocturnalEngine::SceneManager::OldDeserialize(const rapidjson::Value& obj) 
 						p_ecs.AddComponent<HUDComponent>(j, mHUD);
 					}
 				}
-				if (p_ecs.GetComponentTypeName(CompID) == "AnimalAttributes")
-				{
-					AnimalAttributes animalAttr;
-					animalAttr.SetComponentEntityID(j);
-					if (animalAttr.Deserialize(obj["Components"][std::to_string(j).c_str()][static_cast<int>(CompID)].GetObj()))
-					{
-						p_ecs.AddComponent<AnimalAttributes>(j, animalAttr);
-					}
-				}
-				if (p_ecs.GetComponentTypeName(CompID) == "ItemsAttributes")
-				{
-					ItemsAttributes itemAttr;
-					itemAttr.SetComponentEntityID(j);
-					if (itemAttr.Deserialize(obj["Components"][std::to_string(j).c_str()][static_cast<int>(CompID)].GetObj()))
-					{
-						p_ecs.AddComponent<ItemsAttributes>(j, itemAttr);
-					}
-				}
 				if (p_ecs.GetComponentTypeName(CompID) == "Draggable")
 				{
 					Draggable draggable;
@@ -549,10 +443,16 @@ bool NocturnalEngine::SceneManager::OldDeserialize(const rapidjson::Value& obj) 
 						p_ecs.AddComponent<Text>(j, text);
 					}
 				}
+				if (gcr&&gcr->contains(p_ecs.GetComponentTypeName(CompID)))
+				{
+					gcr->at(p_ecs.GetComponentTypeName(CompID)).deserializeAndAddFunc(j, obj["Components"][std::to_string(j).c_str()][static_cast<int>(CompID)].GetObj());
+				}
+
 			}
 		}
 		++j;
 	}
+	//std::cout << "Deserialize done\n";
 	return true;
 }
 
@@ -594,6 +494,23 @@ bool NocturnalEngine::SceneManager::NewSerialize(rapidjson::PrettyWriter<rapidjs
 				
 			}
 		}
+
+		if (ComponentRegistry *meow=ServiceLocator::Get().GetGameComponents())
+		{
+			for (std::pair<const std::string, ComponentRegistry::ComponentDescriptor> comp : meow->GetAll())
+			{
+				if (comp.second.hasFunc(j))
+				{
+					writer->StartObject();
+					writer->Key("Component");
+					writer->String(comp.first.c_str());
+					comp.second.serializeFunc(j, writer);
+					writer->EndObject();
+
+				}
+			}
+		}
+		
 		writer->EndArray();
 		writer->EndObject(); // components
 	}

@@ -21,6 +21,8 @@
 #include "pch.h"
 #include "Scripts/IScript.h"
 #include "Input/Input.h"
+#include "ECS/Components/ItemsAttributes.h"
+
 
 
 namespace NocturnalEngine
