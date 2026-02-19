@@ -788,7 +788,7 @@ namespace NocturnalEngine {
                 auto ext = directorypath.extension().string();
                 std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower); // lowercase for safety
 
-                if (ext == ".png")
+                if (ext == ".png" || ext == ".jpg" || ext == ".jpeg")
                 {
                     std::string gs = directorypath.generic_string();
 
