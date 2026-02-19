@@ -21,6 +21,7 @@
 #include "Scripts/AnimalLogic.h"
 #include "ECS/ECS.h"
 #include "Scripts/GlobalGameManager.h"
+#include "ECS/Components/AnimalAttributes.h"
 
 
 namespace NocturnalEngine {

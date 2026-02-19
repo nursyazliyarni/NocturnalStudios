@@ -22,6 +22,7 @@
 
 #include "pch.h"
 #include "Scripts/IScript.h"
+#include "ECS/Components/AnimalAttributes.h"
 
 
 namespace NocturnalEngine

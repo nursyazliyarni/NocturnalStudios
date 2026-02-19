@@ -18,6 +18,7 @@
 #include "ECS/Components/Components.h"
 #include "pch.h"
 #include "System/System.h"
+#include "ECS/Components/AnimalAttributes.h"
 
 #define p_GameManager NocturnalEngine::GameManager::GetInstance()
 

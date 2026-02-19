@@ -14,7 +14,7 @@
 *------------------------------------------------------------------------------------------------*/
 
 #pragma once
-#include "IComponent.h"
+#include "ECS/Components/IComponent.h"
 #include "pch.h"
 
 

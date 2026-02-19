@@ -26,8 +26,6 @@ namespace NocturnalEngine{
         RegisterComponent<Audio>("Audio");
         RegisterComponent<Text>("Text");
         RegisterComponent<HUDComponent>("HUDComponent");
-        RegisterComponent<AnimalAttributes>("AnimalAttributes");
-        RegisterComponent<ItemsAttributes>("ItemsAttributes");
         RegisterComponent<Draggable>("Draggable");
         RegisterComponent<Logic>("Logic");
     }

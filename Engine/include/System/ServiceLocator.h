@@ -16,6 +16,7 @@
 namespace NocturnalEngine{
     class IScriptRegistry; // Forward declare
     class IGameConfig;
+    class ComponentRegistry;
 
     class ServiceLocator {
     public:
@@ -40,9 +41,18 @@ namespace NocturnalEngine{
             return m_gameConfig;
         }
 
+        void ProvideGameComponents(ComponentRegistry* comps) {
+            m_gameComponents = comps;
+        }
+
+        ComponentRegistry* GetGameComponents() const {
+            return m_gameComponents;
+        }
+
     private:
         ServiceLocator() = default;
         IScriptRegistry* m_scriptRegistry = nullptr;
         IGameConfig* m_gameConfig = nullptr;
+        ComponentRegistry* m_gameComponents = nullptr;
     };
 }

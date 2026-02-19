@@ -141,6 +141,10 @@
             {},
             {},
             {
+                "isTarget": true
+            },
+            {},
+            {
                 "Current Health": 96.8499998357147,
                 "Max Health": 100.0,
                 "Current Hunger": 89.49999945238233,
@@ -151,10 +155,6 @@
                 "Hunger Decay Rate": 1.0,
                 "Sanity Decay Rate": 1.0,
                 "IS_alive": true
-            },
-            {},
-            {
-                "isTarget": true
             },
             {}
         ],

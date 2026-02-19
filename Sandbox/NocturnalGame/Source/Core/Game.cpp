@@ -16,11 +16,16 @@
 #include "System/ServiceLocator.h"
 #include "LevelEditor/LevelEditor.h"
 #include "GUI/GUI.h"
+#include "ECS/SceneManager.h"
+#include "ECS/GameComponentReg.h"
 namespace NocturnalEngine {
     
     void NocturnalGameLayer::Init() {
         m_gameConfig = LuminaraZoo();
         ServiceLocator::Get().ProvideConfig(&m_gameConfig);
+
+        GameComponentRegistry::GetInstance()->RegisterAllGameComponents();
+        ServiceLocator::Get().ProvideGameComponents(GameComponentRegistry::GetInstance());
 
         p_GameManager.Init();
 

@@ -14,6 +14,7 @@
 
 #pragma once
 #include "Scripts/IScript.h"
+#include "ECS/Components/AnimalAttributes.h"
 
 namespace NocturnalEngine
 {
