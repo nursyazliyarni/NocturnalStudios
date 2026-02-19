@@ -1,4 +1,4 @@
-/*!------------------------------------------------------------------------------------------------
+﻿/*!------------------------------------------------------------------------------------------------
     File: LevelEditor.cpp
     Project: NocturnalStudio
 
@@ -68,6 +68,7 @@
 #include <cstdint>
 
 
+
 namespace NocturnalEngine {
 
     static std::unordered_map<std::string,
@@ -100,6 +101,7 @@ namespace NocturnalEngine {
     ****************************************************************************/
     void LevelEditor::Init(Window* window)
     {
+
         if (!window || !window->GetWindow()) return;
         mWindow = window;
 
@@ -110,6 +112,7 @@ namespace NocturnalEngine {
             
         }
 
+       
         // Ensure the snapshot folder exists and starts clean each run.
         std::filesystem::create_directories(mUndoDirectory);
         for (const auto& entry : std::filesystem::directory_iterator(mUndoDirectory))
@@ -182,6 +185,10 @@ namespace NocturnalEngine {
         // Check keyboard shortcuts before drawing UI.
         HandleUndoRedoShortcuts();
         MainMenuBar();
+
+        // Draw modals outside BeginMainMenuBar
+        if (mshowNewProjectPopup) DrawNewProjectPopup();
+        if (mshowOpenProjectPopup) DrawOpenProjectPopup();
 
         if (is_ShowWindow)
         { 
@@ -368,6 +375,21 @@ namespace NocturnalEngine {
     {
         if (ImGui::BeginMainMenuBar())
         {
+            if (ImGui::BeginMenu("File"))
+            {
+                if (ImGui::MenuItem("New Project"))
+                {
+                    if (is_ShowWindow) { mshowNewProjectPopup = true; 
+                    mSelectedProjPath = std::filesystem::current_path().parent_path();
+                    mBrowsingPath = std::filesystem::current_path().parent_path();
+                    }
+                }
+                if (ImGui::MenuItem("Open Project"))
+                {
+                    if (is_ShowWindow) mshowOpenProjectPopup = true;
+                }
+                ImGui::EndMenu();
+            }
             // Basic edit menu for manual undo/redo actions.
             if (ImGui::BeginMenu("Edit"))
             {
@@ -397,6 +419,7 @@ namespace NocturnalEngine {
                         mGameConfig->OnEnterPlayMode(mCurrentScene);
                     }
                 }
+               
             }
             else
             {
@@ -1756,6 +1779,260 @@ namespace NocturnalEngine {
             if (entry.path().extension() == ".png") {
 
             }
+        }
+    }
+
+    void LevelEditor::DrawNewProjectPopup() {
+        ImGui::OpenPopup("New Project");
+
+        // Center the modal
+        ImVec2 center = ImGui::GetMainViewport()->GetCenter();
+        ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+        ImGui::SetNextWindowSize(ImVec2(500, 300), ImGuiCond_Appearing);
+
+        if (ImGui::BeginPopupModal("New Project", &mshowNewProjectPopup))
+        {
+            ImGui::Text("Create New Project");
+            ImGui::Separator();
+            ImGui::Spacing();
+
+            // Project name input
+            static char projectName[128] = "";
+            ImGui::Text("Project Name:");
+            ImGui::SetNextItemWidth(-1);
+            ImGui::InputText("##ProjectName", projectName, sizeof(projectName));
+
+            ImGui::Spacing();
+
+            std::filesystem::path relativePath = std::filesystem::relative(mSelectedProjPath, mBrowsingPath.parent_path());
+            std::string pathStr = relativePath.string() + "\\";
+
+            size_t copyLen = std::min(pathStr.size(), sizeof(selectedPathDisplayBuffer) - 1);
+            strncpy(selectedPathDisplayBuffer, pathStr.c_str(), copyLen);
+            selectedPathDisplayBuffer[copyLen] = '\0';
+
+            // Project location
+            ImGui::Text("Location:");
+            ImGui::SetNextItemWidth(-FLT_MIN - 60);
+            ImGui::InputText("##ProjectPath", selectedPathDisplayBuffer, sizeof(selectedPathDisplayBuffer));
+            ImGui::SameLine();
+            if (ImGui::Button("Browse")) { 
+                mfileBrowsing = true; 
+                currPath.clear();
+                currPath = mBrowsingPath;
+                
+            }
+
+            if (mfileBrowsing)
+            {
+                StupidFileBrowser();
+            }
+
+            ImGui::Spacing();
+
+            // Preview full path
+            ImGui::TextDisabled("Full path: %s%s", selectedPathDisplayBuffer, projectName);
+
+            ImGui::Spacing();
+            ImGui::Separator();
+            ImGui::Spacing();
+
+            // Validate input
+            bool nameIsValid = strlen(projectName) > 0;
+            std::string fullPath = std::string(selectedPathDisplayBuffer) + projectName;
+            bool pathExists = std::filesystem::exists(fullPath);
+
+            if (pathExists)
+            {
+                ImGui::TextColored(ImVec4(1, 0, 0, 1),
+                    "Warning: Project '%s' already exists!", projectName);
+            }
+
+            // Create button
+            if (!nameIsValid || pathExists)
+                ImGui::BeginDisabled();
+
+            if (ImGui::Button("Create Project", ImVec2(120, 0)))
+            {
+                if (CreateNewProject(projectName, std::string(selectedPathDisplayBuffer)))
+                {
+                    mshowNewProjectPopup = false;
+                    memset(projectName, 0, sizeof(projectName));
+                }
+            }
+
+            if (!nameIsValid || pathExists)
+                ImGui::EndDisabled();
+
+            ImGui::SameLine();
+
+            if (ImGui::Button("Cancel", ImVec2(120, 0)))
+            {
+                mshowNewProjectPopup = false;
+                memset(projectName, 0, sizeof(projectName));
+            }
+
+            ImGui::EndPopup();
+        }
+    }
+    void LevelEditor::DrawOpenProjectPopup() {
+
+    }
+    bool LevelEditor::CreateNewProject(const std::string& name, const std::string& basePath) {
+        return false;
+    }
+    void LevelEditor::StupidFileBrowser() {
+        ImGui::OpenPopup("Browse");
+
+        // Center the modal
+        ImVec2 center = ImGui::GetMainViewport()->GetCenter();
+        ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+        ImGui::SetNextWindowSize(ImVec2(700, 500), ImGuiCond_Appearing);
+
+        if (ImGui::BeginPopupModal("Browse", &mfileBrowsing))
+        {
+                
+                std::filesystem::path path = mBrowsingPath;
+                std::string folderName = path.filename().string();
+                ImGui::Text("\\%s", folderName.c_str());
+
+                ImGui::Separator();
+                float childHeight = ImGui::GetContentRegionAvail().y - 75.0f; // Leave space for Cancel button
+                ImGui::BeginChild("SidebarChild", ImVec2(0, childHeight), false, ImGuiWindowFlags_None);
+
+                if (ImGui::IsWindowHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Right))
+                {
+                    showFoldernameInput = false;
+                }
+                else if (ImGui::IsWindowHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Left)) {
+                    currPath = mBrowsingPath;
+                }
+                //our current working directory is sandbox/Gamename so go up one
+                DrawDirectoryTree(mBrowsingPath);
+
+                if (!showFoldernameInput&&ImGui::BeginPopupContextWindow("SidebarContextMenu"))
+                {
+                    NewFolderPopupThingy(mBrowsingPath);
+                    ImGui::EndPopup();
+                }
+                ImGui::EndChild();
+                ImGui::Separator();
+                ImGui::Text("Selected Folder:");
+                ImGui::SameLine();
+                if (!currPath.empty())
+                {
+                    std::filesystem::path relativePath = std::filesystem::relative(currPath, mBrowsingPath.parent_path());
+                    std::string pathStr = relativePath.string()+"\\";
+
+                    size_t copyLen = std::min(pathStr.size(), sizeof(currPathDisplayBuffer) - 1);
+                    strncpy(currPathDisplayBuffer, pathStr.c_str(), copyLen);
+                    currPathDisplayBuffer[copyLen] = '\0'; 
+                }
+                ImGui::InputText("##SelectedDirForNewFile", currPathDisplayBuffer, sizeof(currPathDisplayBuffer), ImGuiInputTextFlags_ReadOnly);
+                if (ImGui::Button("Confirm", ImVec2(120, 0)))
+                {
+                    mSelectedProjPath = currPath;
+                    mfileBrowsing = false;
+
+                }
+                ImGui::SameLine();
+                if (ImGui::Button("Cancel", ImVec2(120, 0)))
+                {
+                    mfileBrowsing = false;
+                
+                }
+  
+            
+            ImGui::EndPopup();
+        }
+    }
+    void LevelEditor::DrawDirectoryTree(const std::filesystem::path& path)
+    {
+        for (const auto& entry : std::filesystem::directory_iterator(path))
+        {
+            if (!entry.is_directory())
+                continue;
+
+            const auto& dirPath = entry.path();
+            std::string folderName = dirPath.filename().string();
+            bool isSelected = (dirPath == currPath);
+
+            if (isSelected)
+            {
+                ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0.3f, 0.5f, 0.8f, 0.8f)); // Blue highlight
+                ImGui::PushStyleColor(ImGuiCol_HeaderHovered, ImVec4(0.4f, 0.6f, 0.9f, 0.8f));
+                ImGui::PushStyleColor(ImGuiCol_HeaderActive, ImVec4(0.5f, 0.7f, 1.0f, 0.8f));
+            }
+
+            ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow;
+            if (isSelected) flags |= ImGuiTreeNodeFlags_Selected;
+
+            bool opened = ImGui::TreeNodeEx(folderName.c_str(), flags);
+
+            if (isSelected)
+            {
+                ImGui::PopStyleColor(3);
+            }
+            // If clicked, update curr path
+            if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
+            {
+                currPath = dirPath;
+            }
+
+            if (ImGui::BeginPopupContextItem(folderName.c_str()))
+            {
+                showFoldernameInput = true;
+                    
+                NewFolderPopupThingy(entry.path());
+
+                if (ImGui::Selectable("Delete"))
+                {
+                    std::filesystem::remove_all(entry.path());
+                    showFoldernameInput = false;
+                }
+
+                ImGui::EndPopup();
+            }
+            
+
+            if (opened)
+            {
+                DrawDirectoryTree(dirPath); // recursive call
+                ImGui::TreePop();
+            }
+        }
+    }
+    void LevelEditor::NewFolderPopupThingy(std::filesystem::path newFolderParent) {
+        ImGui::Text("New Folder");
+        ImGui::SameLine();  // show next to menu / item
+        ImGui::PushItemWidth(150);  // width of textbox
+
+        bool shouldCreate = ImGui::InputText("##newfolder", folderNameBuffer, sizeof(folderNameBuffer), ImGuiInputTextFlags_EnterReturnsTrue);
+
+        ImGui::PopItemWidth();
+        ImGui::SameLine();
+        if (ImGui::Button("OK"))
+        {
+            shouldCreate = true;
+        }
+        if (shouldCreate)
+        {
+            newFolderName.clear();
+            newFolderName = folderNameBuffer;
+            // create folder
+            if (!newFolderName.empty())
+            {
+                if (!std::filesystem::exists(newFolderParent / newFolderName)) {
+                    try {
+                        std::filesystem::create_directory(newFolderParent / newFolderName);
+                    }
+                    catch (const std::filesystem::filesystem_error& e) {
+                        NOCTURNAL_ENGINE_WARN(e.what());
+                    }
+                }
+
+            }
+            showFoldernameInput = false;
         }
     }
 }
