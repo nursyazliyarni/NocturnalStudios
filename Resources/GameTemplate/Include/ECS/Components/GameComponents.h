@@ -1,6 +1,6 @@
 /*!------------------------------------------------------------------------------------------------
     File: GameComponents.h
-    Project: NocturnalStudio
+    Project: TEMPLATE_PROJECT_NAME
 
     Brief:
         This file contains all the Various Components to be used in the ECS
@@ -9,8 +9,6 @@
         deserialize its data
 
     Primary Author:
-         LAU XIANG YANG (95%)
-        - Created the Components.h file and its function specification.
 
     All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
 *------------------------------------------------------------------------------------------------*/

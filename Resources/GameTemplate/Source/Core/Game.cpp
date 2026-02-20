@@ -1,13 +1,12 @@
 /*!------------------------------------------------------------------------------------------------
-    File: Game.h
-    Project: NocturnalStudio
+    File: Game.cpp
+    Project: TEMPLATE_PROJECT_NAME
 
     Brief:
-        This file contains the declaration of EngineCore class.
+        This file contains the declaration of Game class.
 
     Primary Author:
-         LAYCOCK ENHUI SARAH (100%)
-        - Created the EngineCore class and its function specification.
+
 
     All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
 *------------------------------------------------------------------------------------------------*/
@@ -21,7 +20,7 @@
 namespace NocturnalEngine {
     
     void NocturnalGameLayer::Init() {
-        m_gameConfig = NewGame();
+        m_gameConfig = TEMPLATE_PROJECT_NAME();
         ServiceLocator::Get().ProvideConfig(&m_gameConfig);
 
         GameComponentRegistry::GetInstance()->RegisterAllGameComponents();

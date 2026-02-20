@@ -1,6 +1,6 @@
 /*!------------------------------------------------------------------------------------------------
 	File: NewProjectMaker.h
-	Project: NocturnalStudio
+	Game Project: NocturnalStudio
 
 	Brief:
 
@@ -15,9 +15,10 @@
 namespace NocturnalEngine {
     bool ProjectMaker::CreateNewProject(const std::string& name, const std::filesystem::path& basePath, bool setNewAsStartup) {
 
-
+        std::filesystem::path templatePath = rootDir / "Resources" / "GameTemplate";
         std::filesystem::path projectPath = basePath / name;
-        
+      
+
         try
         {
             // 1. Check if template exists
@@ -30,16 +31,16 @@ namespace NocturnalEngine {
             // 2. Create project directory
             if (std::filesystem::exists(projectPath))
             {
-                NOCTURNAL_ENGINE_ERROR("Project '{}' already exists!", name);
+                NOCTURNAL_ENGINE_ERROR("Game Project '{}' already exists!", name);
                 return false;
             }
 
-            NOCTURNAL_ENGINE_INFO("Creating project: {}", projectPath.string());
+            //NOCTURNAL_ENGINE_INFO("Creating project: {}", projectPath.string());
 
             // 3. Copy entire template folder recursively
             std::filesystem::copy(templatePath, projectPath,std::filesystem::copy_options::recursive);
 
-            NOCTURNAL_ENGINE_INFO("Copied template to: {}", projectPath.string());
+           // NOCTURNAL_ENGINE_INFO("Copied template to: {}", projectPath.string());
 
             // 4. Update project-specific files 
             UpdateProjectFiles(projectPath, name);
@@ -48,10 +49,10 @@ namespace NocturnalEngine {
 
             if(setNewAsStartup)UpdateRootCMake(projectPath, name);
 
-            NOCTURNAL_ENGINE_INFO("Project '{}' created successfully!", name);
+           // NOCTURNAL_ENGINE_INFO("Game Project '{}' created successfully!", name);
 
             // 6. Optional: Open the new project
-            // LoadProject(projectPath);
+            RebuildCmake();
 
             return true;
         }
@@ -65,7 +66,7 @@ namespace NocturnalEngine {
 
     void ProjectMaker::UpdateRootCMake(const std::filesystem::path& projectPath,const std::string& projectName)
     {
-        std::filesystem::path rootCMake = std::filesystem::current_path().parent_path().parent_path()/"CMakeLists.txt";
+        std::filesystem::path rootCMake =rootDir/"CMakeLists.txt";
 
         if (!std::filesystem::exists(rootCMake))
         {
@@ -96,7 +97,7 @@ namespace NocturnalEngine {
             std::ofstream outFile(rootCMake);
             outFile << content;
 
-            NOCTURNAL_ENGINE_INFO("Updated startup project to: {}", projectName);
+            //NOCTURNAL_ENGINE_INFO("Updated startup project to: {}", projectName);
         }
         else
         {
@@ -105,28 +106,22 @@ namespace NocturnalEngine {
     }
     void ProjectMaker::UpdateProjectFiles(const std::filesystem::path& projectPath,const std::string& projectName)
     {
-        // Update CMakeLists.txt with project name
-        std::filesystem::path cmakePath = projectPath / "CMakeLists.txt";
-
-        if (std::filesystem::exists(cmakePath))
+        for (const auto& entry : std::filesystem::recursive_directory_iterator(projectPath))
         {
-            std::ifstream inFile(cmakePath);
-            std::string content((std::istreambuf_iterator<char>(inFile)),
-                std::istreambuf_iterator<char>());
-            inFile.close();
+            if (!entry.is_regular_file())
+                continue;
 
-            // Replace placeholder project name
-            size_t pos = 0;
-            while ((pos = content.find("TEMPLATE_PROJECT_NAME", pos)) != std::string::npos)
+            std::string ext = entry.path().extension().string();
+            std::transform(ext.begin(), ext.end(), ext.begin(),
+                [](unsigned char c) { return std::tolower(c); });
+
+            // Only modify source/include files
+            if (ext == ".cpp" || ext == ".h" || ext == ".hpp" ||
+                ext == ".c" || ext == ".json" || ext == ".cmake" ||
+                ext == ".txt")
             {
-                content.replace(pos, strlen("TEMPLATE_PROJECT_NAME"), projectName);
-                pos += projectName.length();
+                ReplaceInFile(entry.path(), "TEMPLATE_PROJECT_NAME", projectName);
             }
-
-            std::ofstream outFile(cmakePath);
-            outFile << content;
-
-            NOCTURNAL_ENGINE_INFO("Updated CMakeLists.txt with project name: {}", projectName);
         }
 
         // Create a default scene with project name
@@ -145,7 +140,7 @@ namespace NocturnalEngine {
                          })";
         sceneFile.close();
 
-        NOCTURNAL_ENGINE_INFO("Created default scene: {}", defaultScene.string());
+        //NOCTURNAL_ENGINE_INFO("Created default scene: {}", defaultScene.string());
     }
 
     std::string ProjectMaker::ValidateProjectName(const std::string s) {
@@ -161,5 +156,43 @@ namespace NocturnalEngine {
         while (!newProjName.empty()&&newProjName.back() == '_')newProjName.pop_back();
         return newProjName;
     }
+    void ProjectMaker::RebuildCmake() {
+        std::filesystem::path buildDir = rootDir / "build";
+        std::string command = "cmake -S " + rootDir.string() + " -B "+buildDir.string();
+        system(command.c_str());
+    }
+    bool ProjectMaker::IsNotAnotherGameDirectory(const std::filesystem::path& projectPath) {
+        std::filesystem::path checkPath = projectPath;
+        while (checkPath!=rootDir/"Sandbox")
+        {
+            if (std::filesystem::exists(checkPath / "CMakeLists.txt"))return false;
+            else checkPath = checkPath.parent_path();
+        }
+        return true;
+    }
 
+    void ProjectMaker::ReplaceInFile(const std::filesystem::path& filePath,
+        const std::string& search,
+        const std::string& replace)
+    {
+        std::ifstream inFile(filePath);
+        if (!inFile.is_open())
+            return;
+
+        std::string content((std::istreambuf_iterator<char>(inFile)),
+            std::istreambuf_iterator<char>());
+        inFile.close();
+
+        size_t pos = 0;
+        while ((pos = content.find(search, pos)) != std::string::npos)
+        {
+            content.replace(pos, search.length(), replace);
+            pos += replace.length();
+        }
+
+        std::ofstream outFile(filePath);
+        outFile << content;
+    }
+
+    
 }

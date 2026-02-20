@@ -1,6 +1,6 @@
 ﻿/*!------------------------------------------------------------------------------------------------
     File: LevelEditor.cpp
-    Project: NocturnalStudio
+    Game Project: NocturnalStudio
 
 	Brief:
         The level editor utilises Dear ImGui and OpenGL to create a editor interface
@@ -191,6 +191,7 @@ namespace NocturnalEngine {
         // Draw modals outside BeginMainMenuBar
         if (mshowNewProjectPopup) DrawNewProjectPopup();
         if (mshowOpenProjectPopup) DrawOpenProjectPopup();
+        if (needCloseToRload)ShowReloadPrompt();
 
         if (is_ShowWindow)
         { 
@@ -379,14 +380,16 @@ namespace NocturnalEngine {
         {
             if (ImGui::BeginMenu("File"))
             {
-                if (ImGui::MenuItem("New Project"))
+                if (ImGui::MenuItem("New Game Project"))
                 {
                     if (is_ShowWindow) { mshowNewProjectPopup = true; 
                     mSelectedProjPath = std::filesystem::current_path().parent_path();
                     mBrowsingPath = std::filesystem::current_path().parent_path();
+                    fixedProjName = "";
+                    notInsideAnotherProjFolder = true;
                     }
                 }
-                if (ImGui::MenuItem("Open Project"))
+                if (ImGui::MenuItem("Open Game Project"))
                 {
                     if (is_ShowWindow) mshowOpenProjectPopup = true;
                 }
@@ -1785,22 +1788,22 @@ namespace NocturnalEngine {
     }
 
     void LevelEditor::DrawNewProjectPopup() {
-        ImGui::OpenPopup("New Project");
+        ImGui::OpenPopup("New Game");
 
         // Center the modal
         ImVec2 center = ImGui::GetMainViewport()->GetCenter();
         ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
         ImGui::SetNextWindowSize(ImVec2(500, 300), ImGuiCond_Appearing);
 
-        if (ImGui::BeginPopupModal("New Project", &mshowNewProjectPopup))
+        if (ImGui::BeginPopupModal("New Game", &mshowNewProjectPopup))
         {
-            ImGui::Text("Create New Project");
+            ImGui::Text("Create New Game");
             ImGui::Separator();
             ImGui::Spacing();
 
-            // Project name input
+            // Game Project name input
             static char projectName[128] = "";
-            ImGui::Text("Project Name:");
+            ImGui::Text("Game Project Name:");
             ImGui::SetNextItemWidth(-1);
             projNameUpdate=ImGui::InputText("##ProjectName", projectName, sizeof(projectName));
 
@@ -1813,7 +1816,7 @@ namespace NocturnalEngine {
             strncpy(selectedPathDisplayBuffer, pathStr.c_str(), copyLen);
             selectedPathDisplayBuffer[copyLen] = '\0';
 
-            // Project location
+            // Game Project location
             ImGui::Text("Location:");
             ImGui::SetNextItemWidth(-FLT_MIN - 60);
             ImGui::InputText("##ProjectPath", selectedPathDisplayBuffer, sizeof(selectedPathDisplayBuffer),ImGuiInputTextFlags_ReadOnly);
@@ -1833,16 +1836,17 @@ namespace NocturnalEngine {
 
             ImGui::Spacing();
 
-            static std::string fixedProjName{ };
+            
             if (strlen(projectName) > 0 && projNameUpdate) { 
                 fixedProjName = p_ProjMaker.ValidateProjectName({ projectName });
+                notInsideAnotherProjFolder = p_ProjMaker.IsNotAnotherGameDirectory(mSelectedProjPath / fixedProjName);
                 projNameUpdate = false;
             }
 
             // Preview full path
-            ImGui::TextDisabled("Project Path: %s%s", selectedPathDisplayBuffer, fixedProjName.c_str());
+            ImGui::TextDisabled("Game Project Path: %s%s", selectedPathDisplayBuffer, fixedProjName.c_str());
 
-            ImGui::Checkbox("Set New Project as startup project", &setNewAsStartup);
+            ImGui::Checkbox("Set New Game Project as startup project", &setNewAsStartup);
             ImGui::Spacing();
             ImGui::Separator();
             ImGui::Spacing();
@@ -1852,31 +1856,39 @@ namespace NocturnalEngine {
             std::string fullPath = std::string(selectedPathDisplayBuffer) + fixedProjName;
             bool pathExists = std::filesystem::exists(fullPath);
 
+            if (!notInsideAnotherProjFolder)
+            {
+                ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1, 0, 0, 1)); // red
+                ImGui::TextWrapped("Warning: '%s' is inside another Game Project folder!", fullPath.c_str());
+                ImGui::PopStyleColor();
+            }
             if (pathExists)
             {
-                ImGui::TextColored(ImVec4(1, 0, 0, 1),
-                    "Warning: Project '%s' already exists!", fixedProjName.c_str());
+                ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1, 0, 0, 1)); // red
+                ImGui::TextWrapped("Warning: Game Project '%s' already exists!", fixedProjName.c_str());
+                ImGui::PopStyleColor();
             }
 
             // Create button
-            if (!nameIsValid || pathExists)
+            if (!nameIsValid || pathExists||!notInsideAnotherProjFolder)
                 ImGui::BeginDisabled();
 
-            if (ImGui::Button("Create Project", ImVec2(120, 0)))
+            if (ImGui::Button("Create Game Project"))
             {
                 if (p_ProjMaker.CreateNewProject(fixedProjName,mSelectedProjPath,setNewAsStartup ))
                 {
                     mshowNewProjectPopup = false;
+                    needCloseToRload = true;
                     memset(projectName, 0, sizeof(projectName));
                 }
             }
 
-            if (!nameIsValid || pathExists)
+            if (!nameIsValid || pathExists|| !notInsideAnotherProjFolder)
                 ImGui::EndDisabled();
 
             ImGui::SameLine();
 
-            if (ImGui::Button("Cancel", ImVec2(120, 0)))
+            if (ImGui::Button("Cancel"))
             {
                 mshowNewProjectPopup = false;
                 memset(projectName, 0, sizeof(projectName));
@@ -1940,6 +1952,7 @@ namespace NocturnalEngine {
                 if (ImGui::Button("Confirm", ImVec2(120, 0)))
                 {
                     mSelectedProjPath = currPath;
+                    notInsideAnotherProjFolder = p_ProjMaker.IsNotAnotherGameDirectory(mSelectedProjPath / fixedProjName);
                     mfileBrowsing = false;
 
                 }
@@ -2041,6 +2054,40 @@ namespace NocturnalEngine {
 
             }
             showFoldernameInput = false;
+        }
+    }
+    void LevelEditor::ShowReloadPrompt() {
+        ImGui::OpenPopup("Notice");
+
+        // Center the modal
+        ImVec2 center = ImGui::GetMainViewport()->GetCenter();
+        ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+        ImGui::SetNextWindowSize(ImVec2(500, 200), ImGuiCond_Appearing);
+
+        if (ImGui::BeginPopupModal("Notice", &needCloseToRload))
+        {
+            
+            ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0, 1, 0, 1)); // red
+            ImGui::TextWrapped("New Game Project files have been generated. Please Exit the editor to reload.");
+            ImGui::PopStyleColor(); 
+            CenterNextItem(ImGui::CalcTextSize("Warning: all unsaved files will be lost!").x);
+            ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1, 0, 0, 1)); // red
+            ImGui::TextWrapped("Warning: all unsaved files will be lost!");
+            ImGui::PopStyleColor();
+
+            CenterNextItem(ImGui::CalcTextSize("Exit Editor   Close").x);
+            ImGui::Spacing();
+            if (ImGui::Button("Exit Editor"))
+            {
+                gameShouldClose = true;
+                needCloseToRload = false;
+            }
+            ImGui::SameLine();
+            if (ImGui::Button("Close"))
+            {
+                needCloseToRload = false;
+            }
+            ImGui::EndPopup();
         }
     }
     

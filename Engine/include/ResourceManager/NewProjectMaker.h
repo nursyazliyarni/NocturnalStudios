@@ -1,6 +1,6 @@
 /*!------------------------------------------------------------------------------------------------
 	File: NewProjectMaker.h
-	Project: NocturnalStudio
+	Game Project: NocturnalStudio
 
 	Brief:
 		
@@ -23,11 +23,15 @@ namespace NocturnalEngine{
 
 		bool CreateNewProject(const std::string& name, const std::filesystem::path& basePath,bool setNewAsStartup=true);
 		std::string ValidateProjectName(const std::string s);
+		bool IsNotAnotherGameDirectory(const std::filesystem::path& projectPath);
 	private:
 		ProjectMaker() = default;
 		void UpdateRootCMake(const std::filesystem::path& projectPath, const std::string& projectName);
 		void UpdateProjectFiles(const std::filesystem::path& projectPath, const std::string& projectName);
+		void RebuildCmake();
+		
+		void ReplaceInFile(const std::filesystem::path& filePath,const std::string& search,const std::string& replace);
 
-		std::filesystem::path templatePath{ std::filesystem::current_path().parent_path().parent_path() / "Resources" / "GameTemplate" };
+		std::filesystem::path rootDir{ std::filesystem::current_path().parent_path().parent_path()  };
 	};
 }

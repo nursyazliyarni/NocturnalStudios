@@ -1,6 +1,6 @@
 /*!------------------------------------------------------------------------------------------------
     File: Game.h
-    Project: NocturnalStudio
+    Project: TEMPLATE_PROJECT_NAME
 
     Brief:
         This file contains the declaration of Game class.
@@ -16,9 +16,9 @@
 #include "core/IGameConfig.h"
 #include "Factories/ScriptFactory.h"
 namespace NocturnalEngine {
-    class NewGame : public IGameConfig {
+    class TEMPLATE_PROJECT_NAME : public IGameConfig {
     public:
-        NewGame() {
+        TEMPLATE_PROJECT_NAME() {
             // Define your playable scenes
             mPlayableScenes = {};
         }
@@ -49,7 +49,7 @@ namespace NocturnalEngine {
         void RegisterScripts() override;
     private:
         ScriptFactory m_scriptFactory;
-        NewGame m_gameConfig;
+        TEMPLATE_PROJECT_NAME m_gameConfig;
     };
 }
 

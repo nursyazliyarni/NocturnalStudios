@@ -1,13 +1,12 @@
 /*!------------------------------------------------------------------------------------------------
     File: GameComponents.cpp
-    Project: NocturnalStudio
+    Project: TEMPLATE_PROJECT_NAME
 
     Brief:
 
 
     Primary Author:
-         LAU XIANG YANG (100%)
-        - Created the file.
+
 
     All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
 *------------------------------------------------------------------------------------------------*/

@@ -69,11 +69,14 @@ namespace NocturnalEngine{
 		m_windowData.m_CurrentHeight = m_windowData.m_Height;
 
 		glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE); // Hide on creation
-
+		std::string winTitle = m_windowData.Title;
+#if DEBUG
+		winTitle = "[NocturnalEngine] Editing " + winTitle;
+#endif
 		//create window
 		m_window = glfwCreateWindow(m_windowData.m_CurrentWidth,
 			m_windowData.m_CurrentHeight,
-			m_windowData.Title.c_str(),
+			winTitle.c_str(),
 			NULL, NULL);
 		
 		glfwMakeContextCurrent(m_window);
@@ -188,6 +191,10 @@ namespace NocturnalEngine{
 				}
 				else NOCTURNAL_ENGINE_INFO("The name convention for this png {0} is wrong", filename.string().c_str());
 
+				if (!std::filesystem::exists(folder)||!std::filesystem::is_directory(folder))
+				{
+					std::filesystem::create_directory(folder);
+				}
 				std::filesystem::copy(std::filesystem::path(paths[i]), folder / filename);
 			}
 			else

@@ -1,6 +1,6 @@
 /*!------------------------------------------------------------------------------------------------
     File: GameComponentTemplate.cpp
-    Project: NocturnalStudio
+    Project: TEMPLATE_PROJECT_NAME
 
 	Brief:
 		This file is used to serialize and deserialize animal attribute components for ECS.

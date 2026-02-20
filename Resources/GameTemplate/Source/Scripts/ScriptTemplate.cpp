@@ -1,6 +1,6 @@
 /*!------------------------------------------------------------------------------------------------
 	File: ScriptTemplate.cpp
-	Project: NocturnalStudio
+	Project: TEMPLATE_PROJECT_NAME
 
 	Brief:
 		The ScriptTemplate system manages the displaying of Various ScriptTemplates of Anumals Bars of an

@@ -1,6 +1,6 @@
 /*!------------------------------------------------------------------------------------------------
     File: GameComponentTemplate.h
-    Project: NocturnalStudio
+    Project: TEMPLATE_PROJECT_NAME
 
 	Brief:
 		

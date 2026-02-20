@@ -124,7 +124,7 @@ EngineCore constructor
 
 #endif
 		
-		while (!glfwWindowShouldClose(m_window->GetWindow()) && !end_state) //game loop
+		while (!glfwWindowShouldClose(m_window->GetWindow()) && !end_state) //engine loop
 		{
 			FramePerSec::GetInstance().StartFrameCount();
 			Timer::GetInstance().Start(Systems::API);
@@ -183,6 +183,7 @@ EngineCore constructor
 #endif 
 			FramePerSec::GetInstance().EndFrameCount();
 			Timer::GetInstance().Update(Systems::API);
+			end_state = p_Editor->ShouldEnd();
 		}
 		mLogic->End();
 
