@@ -59,6 +59,7 @@
 
 #include "System/ServiceLocator.h"
 
+#include "ResourceManager/NewProjectMaker.h"
 
 #include <unordered_map>
 #include <array>
@@ -66,6 +67,7 @@
 #include <algorithm>
 #include <chrono>
 #include <cstdint>
+
 
 
 
@@ -1800,7 +1802,7 @@ namespace NocturnalEngine {
             static char projectName[128] = "";
             ImGui::Text("Project Name:");
             ImGui::SetNextItemWidth(-1);
-            ImGui::InputText("##ProjectName", projectName, sizeof(projectName));
+            projNameUpdate=ImGui::InputText("##ProjectName", projectName, sizeof(projectName));
 
             ImGui::Spacing();
 
@@ -1814,7 +1816,8 @@ namespace NocturnalEngine {
             // Project location
             ImGui::Text("Location:");
             ImGui::SetNextItemWidth(-FLT_MIN - 60);
-            ImGui::InputText("##ProjectPath", selectedPathDisplayBuffer, sizeof(selectedPathDisplayBuffer));
+            ImGui::InputText("##ProjectPath", selectedPathDisplayBuffer, sizeof(selectedPathDisplayBuffer),ImGuiInputTextFlags_ReadOnly);
+            
             ImGui::SameLine();
             if (ImGui::Button("Browse")) { 
                 mfileBrowsing = true; 
@@ -1830,22 +1833,29 @@ namespace NocturnalEngine {
 
             ImGui::Spacing();
 
-            // Preview full path
-            ImGui::TextDisabled("Full path: %s%s", selectedPathDisplayBuffer, projectName);
+            static std::string fixedProjName{ };
+            if (strlen(projectName) > 0 && projNameUpdate) { 
+                fixedProjName = p_ProjMaker.ValidateProjectName({ projectName });
+                projNameUpdate = false;
+            }
 
+            // Preview full path
+            ImGui::TextDisabled("Project Path: %s%s", selectedPathDisplayBuffer, fixedProjName.c_str());
+
+            ImGui::Checkbox("Set New Project as startup project", &setNewAsStartup);
             ImGui::Spacing();
             ImGui::Separator();
             ImGui::Spacing();
 
             // Validate input
-            bool nameIsValid = strlen(projectName) > 0;
-            std::string fullPath = std::string(selectedPathDisplayBuffer) + projectName;
+            bool nameIsValid = fixedProjName.length() > 0;
+            std::string fullPath = std::string(selectedPathDisplayBuffer) + fixedProjName;
             bool pathExists = std::filesystem::exists(fullPath);
 
             if (pathExists)
             {
                 ImGui::TextColored(ImVec4(1, 0, 0, 1),
-                    "Warning: Project '%s' already exists!", projectName);
+                    "Warning: Project '%s' already exists!", fixedProjName.c_str());
             }
 
             // Create button
@@ -1854,7 +1864,7 @@ namespace NocturnalEngine {
 
             if (ImGui::Button("Create Project", ImVec2(120, 0)))
             {
-                if (CreateNewProject(projectName, std::string(selectedPathDisplayBuffer)))
+                if (p_ProjMaker.CreateNewProject(fixedProjName,mSelectedProjPath,setNewAsStartup ))
                 {
                     mshowNewProjectPopup = false;
                     memset(projectName, 0, sizeof(projectName));
@@ -1878,9 +1888,7 @@ namespace NocturnalEngine {
     void LevelEditor::DrawOpenProjectPopup() {
 
     }
-    bool LevelEditor::CreateNewProject(const std::string& name, const std::string& basePath) {
-        return false;
-    }
+    
     void LevelEditor::StupidFileBrowser() {
         ImGui::OpenPopup("Browse");
 
@@ -2035,4 +2043,5 @@ namespace NocturnalEngine {
             showFoldernameInput = false;
         }
     }
+    
 }

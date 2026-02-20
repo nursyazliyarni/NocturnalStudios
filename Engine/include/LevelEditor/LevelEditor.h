@@ -169,16 +169,16 @@ namespace NocturnalEngine {
 		std::size_t mMaxUndoSteps{ 20 }; // Maximum number of history entries kept.
 		bool mStartedGizmoDrag{ false }; // Prevents duplicate snapshots during one gizmo drag.
 
-		bool mshowNewProjectPopup{ false }, mshowOpenProjectPopup{ false }, mfileBrowsing{ false }, showFoldernameInput{ false };
+		bool mshowNewProjectPopup{ false }, mshowOpenProjectPopup{ false }, mfileBrowsing{ false }, showFoldernameInput{ false }, setNewAsStartup{ true }, projNameUpdate{ false };
 		std::filesystem::path mBrowsingPath{}, currPath{}, mSelectedProjPath{};
 		std::string newFolderName{};
 		char folderNameBuffer[128] = "",currPathDisplayBuffer[128]="",selectedPathDisplayBuffer[256]="";
 		// Draw modals outside BeginMainMenuBar
 		void DrawNewProjectPopup();
 		void DrawOpenProjectPopup();
-		bool CreateNewProject(const std::string& name, const std::string& basePath);
 		void StupidFileBrowser();
 		void DrawDirectoryTree(const std::filesystem::path& path);
 		void NewFolderPopupThingy(std::filesystem::path newFolderParent );
+		
 	};
 }
