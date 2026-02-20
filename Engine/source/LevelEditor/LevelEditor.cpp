@@ -148,6 +148,7 @@ namespace NocturnalEngine {
 
         mGameConfig= ServiceLocator::Get().GetGameConfig();
         mScriptRegistry = ServiceLocator::Get().GetScriptRegistry();
+        mgameComponents = ServiceLocator::Get().GetGameComponents();
         LoadScriptsFromFile();
         // Seed undo history with the initial editor state.
         PushUndoSnapshot();
@@ -389,10 +390,10 @@ namespace NocturnalEngine {
                     notInsideAnotherProjFolder = true;
                     }
                 }
-                if (ImGui::MenuItem("Open Game Project"))
+                /*if (ImGui::MenuItem("Open Game Project"))
                 {
                     if (is_ShowWindow) mshowOpenProjectPopup = true;
-                }
+                }*/
                 ImGui::EndMenu();
             }
             // Basic edit menu for manual undo/redo actions.
@@ -1469,6 +1470,22 @@ namespace NocturnalEngine {
                             ImGui::CloseCurrentPopup();
                         }
                     }
+
+                    if (mgameComponents)
+                    {
+                        for (std::pair<const std::string, ComponentRegistry::ComponentDescriptor> compdesc : mgameComponents->GetAll())
+                        {
+                            if (ImGui::MenuItem(compdesc.first.c_str()))
+                            {
+                                if (!compdesc.second.hasFunc(selectedEntity))
+                                {
+                                    PushUndoSnapshotAndInvalidateRedo();
+                                    compdesc.second.addFunc(selectedEntity);
+                                }
+                                ImGui::CloseCurrentPopup();
+                            }
+                        }
+                    }
                     ImGui::EndPopup();
                 }
 
@@ -1479,7 +1496,16 @@ namespace NocturnalEngine {
                         compdesc.second.displayInEditor(selectedEntity);
                     }
                 }
-
+                if (mgameComponents)
+                {
+                    for (std::pair<const std::string, ComponentRegistry::ComponentDescriptor> compdesc : mgameComponents->GetAll())
+                    {
+                        if (compdesc.second.hasFunc(selectedEntity))
+                        {
+                            compdesc.second.displayInEditor(selectedEntity);
+                        }
+                    }
+                }
                 if (ImGui::Button("Delete Component"))
                     ImGui::OpenPopup("Delete Component");
 
@@ -1495,6 +1521,21 @@ namespace NocturnalEngine {
                                 compdesc.second.removeFunc(selectedEntity);
                             }
                             ImGui::CloseCurrentPopup();
+                        }
+                    }
+                    if (mgameComponents)
+                    {
+                        for (std::pair<const std::string, ComponentRegistry::ComponentDescriptor> compdesc : mgameComponents->GetAll())
+                        {
+                            if (ImGui::MenuItem(compdesc.first.c_str()))
+                            {
+                                if (compdesc.second.hasFunc(selectedEntity))
+                                {
+                                    PushUndoSnapshotAndInvalidateRedo();
+                                    compdesc.second.removeFunc(selectedEntity);
+                                }
+                                ImGui::CloseCurrentPopup();
+                            }
                         }
                     }
                     ImGui::EndPopup();
