@@ -16,7 +16,7 @@
 #pragma once
 
 namespace NocturnalEngine {
-
+	static unsigned int sMissingTextureID=1;
 	class Texture
 	{
 	public:

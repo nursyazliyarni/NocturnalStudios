@@ -54,6 +54,7 @@ namespace NocturnalEngine {
 		ResourceManager::LoadShader("LineShader", EngineAssetPath.string() + "/Shaders/Line.shader");
 		ResourceManager::LoadShader("CircleShader", EngineAssetPath.string() + "/Shaders/Circle.shader");
 		ResourceManager::LoadShader("ImpactShader", EngineAssetPath.string() + "/Shaders/Impact.shader");
+		sMissingTextureID = ResourceManager::LoadTexture("ERROR_MISSINGTEX", EngineAssetPath.string() + "/Textures/Evil.png")->GetRendererID();
 		
 		LoadIconsTexture(EngineAssetPath.string() + "/Text/Icons.txt");
 		std::string path = "Assets/Textures/";

@@ -41,6 +41,12 @@ namespace NocturnalEngine {
 	****************************************************************************/
 	void Texture::Bind(unsigned int slot) const
 	{
+		if (mRendererID == 0) // 0 means uninitialized/invalid in OpenGL
+		{
+			// Bind your missing texture instead
+			glBindTextureUnit(slot, sMissingTextureID); // or however you store it
+			return;
+		}
 		glBindTextureUnit(slot, mRendererID);
 	}
 
@@ -94,6 +100,12 @@ namespace NocturnalEngine {
 			glTextureSubImage2D(mRendererID, 0, 0, 0, mWidth, mHeight, mImageFormat, GL_UNSIGNED_BYTE, data);
 
 			stbi_image_free(data);
+		}
+		else
+		{
+			// stbi_load failed - path doesn't exist or file is corrupt
+			NOCTURNAL_ENGINE_WARN("Texture failed to load: {0}, using missing texture", path);
+			mRendererID = sMissingTextureID; // your pre-generated fallback texture ID
 		}
 	}
 
