@@ -22,9 +22,11 @@
 #include "Graphics/Shader.h"
 #include "Graphics/TextRendering.h"
 #include "Audio/AudioEngine.h"
+#include <filesystem>
+
 
 namespace NocturnalEngine {
-
+	static std::filesystem::path EngineAssetPath{ std::filesystem::current_path().parent_path().parent_path() / "Resources" / "EngineAssets" };
 	class ResourceManager
 	{
 	public:
@@ -74,5 +76,7 @@ namespace NocturnalEngine {
 
 		//loads Icons texture
 		static std::shared_ptr<Texture> LoadIconsFromFile(const std::string& filepath);
+
+
 	};
 }

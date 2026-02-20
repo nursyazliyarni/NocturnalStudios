@@ -30,6 +30,7 @@
 #include "ECS/SceneManager.h"
 
 namespace NocturnalEngine {
+	
 	/*!*************************************************************************
 	Load Icon from filepath using resource manager
 	****************************************************************************/
@@ -38,7 +39,7 @@ namespace NocturnalEngine {
 		std::ifstream ifs(filename.c_str());
 		std::string name, textPath;
 		while (ifs >> name >> textPath)
-			ResourceManager::LoadIcons(name.c_str(), textPath.c_str());
+			ResourceManager::LoadIcons(name.c_str(), (EngineAssetPath.string()+textPath).c_str());
 
 		ifs.close();
 	}
@@ -49,12 +50,12 @@ namespace NocturnalEngine {
 	void Graphic::Init()
 	{
 		
-		ResourceManager::LoadShader("QuadShader", "Assets/Shaders/texture.shader");
-		ResourceManager::LoadShader("LineShader", "Assets/Shaders/Line.shader");
-		ResourceManager::LoadShader("CircleShader", "Assets/Shaders/Circle.shader");
-		ResourceManager::LoadShader("ImpactShader", "Assets/Shaders/Impact.shader");
+		ResourceManager::LoadShader("QuadShader", EngineAssetPath.string() + "/Shaders/texture.shader");
+		ResourceManager::LoadShader("LineShader", EngineAssetPath.string() + "/Shaders/Line.shader");
+		ResourceManager::LoadShader("CircleShader", EngineAssetPath.string() + "/Shaders/Circle.shader");
+		ResourceManager::LoadShader("ImpactShader", EngineAssetPath.string() + "/Shaders/Impact.shader");
 		
-		LoadIconsTexture("Assets/Text/Icons.txt");
+		LoadIconsTexture(EngineAssetPath.string() + "/Text/Icons.txt");
 		std::string path = "Assets/Textures/";
 		if (!std::filesystem::exists(path))
 		{

@@ -183,7 +183,7 @@ EngineCore constructor
 #endif 
 			FramePerSec::GetInstance().EndFrameCount();
 			Timer::GetInstance().Update(Systems::API);
-			end_state = p_Editor->ShouldEnd();
+			if(!end_state)end_state = p_Editor->ShouldEnd();
 		}
 		mLogic->End();
 
