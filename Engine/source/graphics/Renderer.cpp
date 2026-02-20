@@ -547,77 +547,42 @@ Overload function for Draw Quad using vec3 position with texture
 	****************************************************************************/
 	void Renderer::DrawQuad(const Mat4x4& transform, const MultiRefs<Texture>& texture)
 	{
-		if (texture && texture->GetRendererID() != 0)
+		MultiRefs<Texture> resolvedTex = texture && texture->GetRendererID() != 0 ? 
+			texture : ResourceManager::GetTexture("ERROR_MISSINGTEX");
+		
+		float textureIndex = 0.0f;
+		for (unsigned int i = 1; i < r_Data.TextureUnitIndex; i++)
 		{
-			float textureIndex = 0.0f;
-			for (unsigned int i = 1; i < r_Data.TextureUnitIndex; i++)
+			if (*r_Data.TextureUnits[i] == *resolvedTex)
 			{
-				if (*r_Data.TextureUnits[i] == *texture)
-				{
-					textureIndex = (float)i;
-					break;
-				}
+				textureIndex = (float)i;
+				break;
 			}
-
-			if (textureIndex == 0.0f)
-			{
-				if (r_Data.TextureUnitIndex >= 32)
-					NextBatch();
-
-				textureIndex = (float)r_Data.TextureUnitIndex;
-				r_Data.TextureUnits[r_Data.TextureUnitIndex] = texture;
-				r_Data.TextureUnitIndex++;
-			}
-			constexpr glm::vec2 textureCoors[] = { { 0.0f , 0.0f }, { 1.f, 0.0f }, { 1.f, 1.0f },{ 0.f,1.0f} };
-			constexpr size_t quadCount = 4;
-			for (size_t i = 0; i < quadCount; i++)
-			{
-				r_Data.QuadVertexBufferPtr->Position = transform * r_Data.QuadVertexPosition[i];
-				r_Data.QuadVertexBufferPtr->Color = { 1.0f, 1.0f, 1.0f, 1.0f };
-				r_Data.QuadVertexBufferPtr->TexCoord = NocturnalEngine::vec2D(textureCoors[i].x, textureCoors[i].y);
-				r_Data.QuadVertexBufferPtr->TextureIndex = textureIndex;
-				r_Data.QuadVertexBufferPtr++;
-			}
-			r_Data.QuadIndexCount += 6;
-
-			r_Data.Infos.n_Quad++;
 		}
-		else {
 
-			MultiRefs<Texture> fallbacktex{ ResourceManager::GetTexture("ERROR_MISSINGTEX") }; // your fallback
-			float textureIndex = 0.0f;
-			for (unsigned int i = 1; i < r_Data.TextureUnitIndex; i++)
-			{
-				if (*r_Data.TextureUnits[i] == *fallbacktex)
-				{
-					textureIndex = (float)i;
-					break;
-				}
-			}
+		if (textureIndex == 0.0f)
+		{
+			if (r_Data.TextureUnitIndex >= 32)
+				NextBatch();
 
-			if (textureIndex == 0.0f)
-			{
-				if (r_Data.TextureUnitIndex >= 32)
-					NextBatch();
-
-				textureIndex = (float)r_Data.TextureUnitIndex;
-				r_Data.TextureUnits[r_Data.TextureUnitIndex] = fallbacktex;
-				r_Data.TextureUnitIndex++;
-			}
-			constexpr glm::vec2 textureCoors[] = { { 0.0f , 0.0f }, { 1.f, 0.0f }, { 1.f, 1.0f },{ 0.f,1.0f} };
-			constexpr size_t quadCount = 4;
-			for (size_t i = 0; i < quadCount; i++)
-			{
-				r_Data.QuadVertexBufferPtr->Position = transform * r_Data.QuadVertexPosition[i];
-				r_Data.QuadVertexBufferPtr->Color = { 1.0f, 1.0f, 1.0f, 1.0f };
-				r_Data.QuadVertexBufferPtr->TexCoord = NocturnalEngine::vec2D(textureCoors[i].x, textureCoors[i].y);
-				r_Data.QuadVertexBufferPtr->TextureIndex = textureIndex;
-				r_Data.QuadVertexBufferPtr++;
-			}
-			r_Data.QuadIndexCount += 6;
-
-			r_Data.Infos.n_Quad++;
+			textureIndex = (float)r_Data.TextureUnitIndex;
+			r_Data.TextureUnits[r_Data.TextureUnitIndex] = resolvedTex;
+			r_Data.TextureUnitIndex++;
 		}
+		constexpr glm::vec2 textureCoors[] = { { 0.0f , 0.0f }, { 1.f, 0.0f }, { 1.f, 1.0f },{ 0.f,1.0f} };
+		constexpr size_t quadCount = 4;
+		for (size_t i = 0; i < quadCount; i++)
+		{
+			r_Data.QuadVertexBufferPtr->Position = transform * r_Data.QuadVertexPosition[i];
+			r_Data.QuadVertexBufferPtr->Color = { 1.0f, 1.0f, 1.0f, 1.0f };
+			r_Data.QuadVertexBufferPtr->TexCoord = NocturnalEngine::vec2D(textureCoors[i].x, textureCoors[i].y);
+			r_Data.QuadVertexBufferPtr->TextureIndex = textureIndex;
+			r_Data.QuadVertexBufferPtr++;
+		}
+		r_Data.QuadIndexCount += 6;
+
+		r_Data.Infos.n_Quad++;
+		
 	}
 	/*!*************************************************************************
 	Overload function for Draw Quad using vec2 position with no texture just shader and rotation 
