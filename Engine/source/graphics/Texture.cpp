@@ -61,7 +61,7 @@ namespace NocturnalEngine {
 	/*!*************************************************************************
 	Generate texture from file
 	****************************************************************************/
-	void Texture::GenTexture(const std::string& path)
+	void Texture::GenTexture(const std::string& path, bool filteringNearest)
 	{
 		int width, height, channels;
 		stbi_set_flip_vertically_on_load(1);
@@ -91,8 +91,16 @@ namespace NocturnalEngine {
 			glCreateTextures(GL_TEXTURE_2D, 1, &mRendererID);
 			glTextureStorage2D(mRendererID, 1, mInnerFormat, mWidth, mHeight);
 
-			glTextureParameteri(mRendererID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-			glTextureParameteri(mRendererID, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			if (filteringNearest)
+			{
+				glTextureParameteri(mRendererID, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+				glTextureParameteri(mRendererID, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+			}
+			else
+			{
+				glTextureParameteri(mRendererID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+				glTextureParameteri(mRendererID, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			}
 
 			glTextureParameteri(mRendererID, GL_TEXTURE_WRAP_S, GL_REPEAT);
 			glTextureParameteri(mRendererID, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -123,6 +131,7 @@ namespace NocturnalEngine {
 		glTextureParameteri(mRendererID, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		glTextureParameteri(mRendererID, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	}
+
 
 	/*!*************************************************************************
 	Set texture data

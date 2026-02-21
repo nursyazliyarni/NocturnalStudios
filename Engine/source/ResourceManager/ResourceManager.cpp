@@ -30,9 +30,9 @@ namespace NocturnalEngine {
 	/*!*************************************************************************
 	Load texture
 	****************************************************************************/
-	std::shared_ptr<Texture> ResourceManager::LoadTexture(std::string name, const std::string& filepath)
+	std::shared_ptr<Texture> ResourceManager::LoadTexture(std::string name, const std::string& filepath, bool loadByNearest)
 	{
-		return textures[name] = ResourceManager::LoadTextureFromFile(filepath);
+		return textures[name] = ResourceManager::LoadTextureFromFile(filepath,loadByNearest);
 	}
 
 	/*!*************************************************************************
@@ -46,10 +46,10 @@ namespace NocturnalEngine {
 	/*!*************************************************************************
 	Load texture from filepath
 	****************************************************************************/
-	std::shared_ptr<Texture> ResourceManager::LoadTextureFromFile(const std::string& filepath)
+	std::shared_ptr<Texture> ResourceManager::LoadTextureFromFile(const std::string& filepath, bool loadByNearest )
 	{
 		auto m_texture = std::make_shared<Texture>();
-		m_texture->GenTexture(filepath);
+		m_texture->GenTexture(filepath,loadByNearest);
 		return m_texture;
 	}
 

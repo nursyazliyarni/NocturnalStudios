@@ -122,7 +122,7 @@
                 },
                 {
                     "Component": "Sprite",
-                    "TextureName": "Characters/horse",
+                    "TextureName": "Characters/hore",
                     "Index_X": 0,
                     "Index_Y": 0,
                     "Ucoordinates": 512.0,

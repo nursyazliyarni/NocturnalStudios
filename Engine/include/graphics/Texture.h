@@ -14,7 +14,7 @@
 *------------------------------------------------------------------------------------------------*/
 
 #pragma once
-
+#include <GL/glew.h>
 namespace NocturnalEngine {
 	static unsigned int sMissingTextureID=1;
 	class Texture
@@ -24,7 +24,7 @@ namespace NocturnalEngine {
 		~Texture();
 		void Bind(unsigned int slot = 0) const; //  specify the slot to bind texture to
 		void UnBind() const;
-		void GenTexture(const std::string& path);
+		void GenTexture(const std::string& path,bool filteringNearest=false);
 		void GenTexture(unsigned int width, unsigned int height);
 		/* accessor functions for the width, height, bpp */
 
@@ -44,7 +44,7 @@ namespace NocturnalEngine {
 		unsigned int mRendererID = 0;		//ID of the texture object
 		unsigned int mWidth, mHeight;	//width and height of the loaded image in pixels
 		unsigned int mWrapS, mWrapT;	// wrapping mode on S and T axis
-		unsigned int mFilterMin, mFilterMax; // filtering mode if texture pixels > or < screen pixels( 1648 by 720 )
+		unsigned int mFilterMin{ GL_LINEAR }, mFilterMax{ GL_LINEAR }; // filtering mode if texture pixels > or < screen pixels( 1648 by 720 )
 		unsigned int mInnerFormat, mImageFormat;
 	};
 }

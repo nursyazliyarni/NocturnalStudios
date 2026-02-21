@@ -37,7 +37,7 @@ namespace NocturnalEngine {
 		static std::unordered_map<std::string, std::shared_ptr<Texture>> Icons;
 	public:
 		//load texture from file
-		static std::shared_ptr<Texture> LoadTexture(std::string name, const std::string& filepath);
+		static std::shared_ptr<Texture> LoadTexture(std::string name, const std::string& filepath, bool loadByNearest = false);
 		static std::shared_ptr<Texture> GetTexture(std::string name);
 		static std::shared_ptr<Texture> GenTexture(unsigned int width, unsigned int height);
 		
@@ -66,7 +66,7 @@ namespace NocturnalEngine {
 		static std::shared_ptr<CAudioEngine> LoadAudioFromFile(const std::string& filepath);
 		
 		//loads texture
-		static std::shared_ptr<Texture> LoadTextureFromFile(const std::string& filepath);
+		static std::shared_ptr<Texture> LoadTextureFromFile(const std::string& filepath,bool loadByNearest=false);
 
 		// generates shader from file
 		static std::shared_ptr<Shader> LoadShaderFromFile(const std::string& filepath);
