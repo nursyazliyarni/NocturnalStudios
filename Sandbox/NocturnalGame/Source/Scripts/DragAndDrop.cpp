@@ -197,7 +197,7 @@ namespace NocturnalEngine {
 		
 	}
 
-	Entity DragAndDrop::DestroyDupeItem() {
+	Entity DragAndDrop::DestroyDupeItem() const {
 		if (dupeItem != 0)
 		{
 			p_ecs.DestroyEntity(dupeItem);

@@ -113,7 +113,7 @@ namespace NocturnalEngine {
 	void HealthBar::End()
 	{
 		//this resets the origin when reloading a scene
-		p_ecs.GetComponent<Transform>(entityID) = origin;
+		if(p_ecs.HaveComponent<Transform>(entityID))p_ecs.GetComponent<Transform>(entityID) = origin;
 	}
 
 	void HealthBar::FindAnimal() {

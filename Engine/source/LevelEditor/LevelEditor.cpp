@@ -710,7 +710,7 @@ namespace NocturnalEngine {
                     selectedEntity = (Entity)Picker::Pick(NocturnalEngine::Graphic::mcamera, sortedMultimap);
             }
             else
-                selectedEntity = 0;
+                selectedEntity = MAX_ENTITIES;
           
         }
 
@@ -721,7 +721,7 @@ namespace NocturnalEngine {
                 // Snapshot before entity delete.
                 PushUndoSnapshotAndInvalidateRedo();
                 p_ecs.DestroyEntity(selectedEntity);
-                selectedEntity = {};
+                selectedEntity = MAX_ENTITIES;
             }
         }
     }
@@ -923,7 +923,7 @@ namespace NocturnalEngine {
                             mRedoStack.clear();
                             // Keep one baseline snapshot for the loaded scene.
                             PushUndoSnapshot();
-                            selectedEntity = {};
+                            selectedEntity = MAX_ENTITIES;
 
                             //  RESTORE layer state for newly loaded scene 
                             auto it = gSceneLayerState.find(mCurrentScene);
@@ -1383,7 +1383,7 @@ namespace NocturnalEngine {
                         // Snapshot before destroy.
                         PushUndoSnapshotAndInvalidateRedo();
                         p_ecs.DestroyEntity(selectedEntity);
-                        selectedEntity = {};
+                        selectedEntity = MAX_ENTITIES;
                     }
                 }
                 ImGui::SameLine();
@@ -1397,43 +1397,32 @@ namespace NocturnalEngine {
                         selectedEntity = CloneEntity; // when the entity is destroy there is no current selected entity
                     }
                 }
-
-                auto aliveTotal = p_ecs.GetTotalEntities();
                 
-                Entity aliveCount = 0;
-                Entity iterEntity = 0;
-                while (aliveCount < aliveTotal)
+                for (Entity e:p_ecs.GetAliveEntitiesSet())
                 {
-                    if (p_ecs.HaveComponent<NameTag>(iterEntity))
+                    if (p_ecs.HaveComponent<NameTag>(e))
                     {
-                        
-                        const auto& tag = p_ecs.GetComponent<NameTag>(iterEntity).GetNameTag();
+                        std::string& tag = p_ecs.GetComponent<NameTag>(e).GetNameTag();
 
-                        ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_Selected | ImGuiTreeNodeFlags_OpenOnArrow;
-                        bool opened = ImGui::TreeNodeEx((void*)(uint64_t)(uint32_t)iterEntity, flags, tag.c_str());
+                        ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow;
+                        if (selectedEntity == e)
+                            flags |= ImGuiTreeNodeFlags_Selected;
+
+                        bool opened = ImGui::TreeNodeEx((void*)(uint64_t)(uint32_t)e, flags, tag.c_str());
 
                         if (ImGui::IsItemClicked())
-                            selectedEntity = iterEntity;
+                            selectedEntity = e;
 
                         if (opened)
                             ImGui::TreePop();
-
-                        aliveCount++;
-                    }
-                    else {
-                        NameTag nt;
-                        nt.SetComponentEntityID(iterEntity);
-                        nt.SetNameTag("Entity " + std::to_string(iterEntity));
-                        p_ecs.AddComponent<NameTag>(iterEntity, nt);
-                        aliveCount++;
+                        ImGui::Separator();
                     }
 
-                    iterEntity++;
                 }
             }
 
             if (ImGui::IsMouseDown(0) && ImGui::IsWindowHovered())
-                selectedEntity = {};
+                selectedEntity = MAX_ENTITIES;
             ImGui::End();
         }
 
@@ -1730,7 +1719,7 @@ namespace NocturnalEngine {
         if (!p_Scene->DeserializeFromFile(snapshotPath))
             return false;
 
-        selectedEntity = {};
+        selectedEntity = MAX_ENTITIES;
         return true;
     }
 
