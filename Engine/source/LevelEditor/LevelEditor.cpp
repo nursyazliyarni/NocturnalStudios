@@ -2111,12 +2111,9 @@ namespace NocturnalEngine {
             ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0, 1, 0, 1)); // red
             ImGui::TextWrapped("New Game Project files have been generated. Please Exit the editor to reload.");
             ImGui::PopStyleColor(); 
-            CenterNextItem(ImGui::CalcTextSize("Warning: all unsaved files will be lost!").x);
             ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1, 0, 0, 1)); // red
             ImGui::TextWrapped("Warning: all unsaved files will be lost!");
             ImGui::PopStyleColor();
-
-            CenterNextItem(ImGui::CalcTextSize("Exit Editor   Close").x);
             ImGui::Spacing();
             if (ImGui::Button("Exit Editor"))
             {
