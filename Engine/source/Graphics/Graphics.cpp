@@ -96,23 +96,26 @@ namespace NocturnalEngine {
 			}
 		}
 
-		std::string fontPath = "Assets/fonts";
-		if (std::filesystem::exists(fontPath))
-		{
-			for (const auto& entry : std::filesystem::directory_iterator(fontPath))
+		std::string fontPaths[]{ {EngineAssetPath.string() + "/Fonts" }, "Assets/Fonts"};
+		for(std::string fontPath:fontPaths){
+			if (std::filesystem::exists(fontPath))
 			{
-				if (!entry.is_regular_file())
-					continue;
-
-				auto ext = entry.path().extension().string();
-				std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
-				if (ext != ".ttf" && ext != ".otf")
-					continue;
-
-				std::string fontName = entry.path().stem().string();
-				if (!ResourceManager::GetFont(fontName))
+				for (const auto& entry : std::filesystem::directory_iterator(fontPath))
 				{
-					ResourceManager::LoadFont(fontName, entry.path().generic_string());
+					if (!entry.is_regular_file())
+						continue;
+
+					auto ext = entry.path().extension().string();
+					std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
+					if (ext != ".ttf" && ext != ".otf")
+						continue;
+
+					std::string fontName = entry.path().stem().string();
+					if (!ResourceManager::GetFont(fontName))
+					{
+						ResourceManager::LoadFont(fontName, entry.path().generic_string());
+						
+					}
 				}
 			}
 		}
