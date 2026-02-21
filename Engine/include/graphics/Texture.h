@@ -14,7 +14,6 @@
 *------------------------------------------------------------------------------------------------*/
 
 #pragma once
-#include <GL/glew.h>
 namespace NocturnalEngine {
 	static unsigned int sMissingTextureID=1;
 	class Texture
@@ -44,7 +43,7 @@ namespace NocturnalEngine {
 		unsigned int mRendererID = 0;		//ID of the texture object
 		unsigned int mWidth, mHeight;	//width and height of the loaded image in pixels
 		unsigned int mWrapS, mWrapT;	// wrapping mode on S and T axis
-		unsigned int mFilterMin{ GL_LINEAR }, mFilterMax{ GL_LINEAR }; // filtering mode if texture pixels > or < screen pixels( 1648 by 720 )
+		unsigned int mFilterMin, mFilterMax; // filtering mode if texture pixels > or < screen pixels( 1648 by 720 )
 		unsigned int mInnerFormat, mImageFormat;
 	};
 }
