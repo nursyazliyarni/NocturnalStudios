@@ -96,7 +96,7 @@ namespace NocturnalEngine {
 			}
 		}
 
-		std::string fontPaths[]{ {EngineAssetPath.string() + "/Fonts" }, "Assets/Fonts"};
+		std::string fontPaths[]{ {EngineAssetPath.string() + "/Fonts" }, "Assets/Fonts","Assets/fonts" };
 		for(std::string fontPath:fontPaths){
 			if (std::filesystem::exists(fontPath))
 			{
