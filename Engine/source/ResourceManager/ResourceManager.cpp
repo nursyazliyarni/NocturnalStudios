@@ -21,7 +21,6 @@
 #include "ResourceManager/ResourceManager.h"
 
 namespace NocturnalEngine {
-
 	std::unordered_map <std::string, std::shared_ptr<Texture>> ResourceManager::textures;
 	std::unordered_map <std::string, std::shared_ptr<Shader>> ResourceManager::shaders;
 	std::unordered_map <std::string, std::shared_ptr<Font>> ResourceManager::fonts;
