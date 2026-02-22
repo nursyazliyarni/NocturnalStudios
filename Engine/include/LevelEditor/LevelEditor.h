@@ -24,7 +24,6 @@
 #pragma once
 #include "Window/Window.h"
 #include "ResourceManager/ResourceManager.h"
-#include "Scripts/IScriptRegistry.h"
 #include "ECS/ComponentRegistry.h"
 #include "core/IGameConfig.h"
 
@@ -48,9 +47,9 @@ namespace NocturnalEngine {
 		void LoadSaveScene();
 		void SceneViewer();
 		void ContentBrowser();
-		void Logger();
+		void Logger() const;
 		void Profiler();
-		void Layering();
+		void Layering() const;
 		void Hierarchy();
 		void Inspector();
 		void HandleUndoRedoShortcuts(); // Handles Ctrl+Z / Ctrl+Y / Ctrl+Shift+Z every frame.
@@ -113,7 +112,7 @@ namespace NocturnalEngine {
 	private:
 		
 		Window* mWindow{nullptr};
-		IScriptRegistry* mScriptRegistry;
+		//if this exists (fetches at init) this will contain all the components defined by the game side
 		ComponentRegistry* mgameComponents{};
 		IGameConfig* mGameConfig;
 		ImGuiDockNodeFlags mDockSpaceFlags{};
@@ -173,24 +172,56 @@ namespace NocturnalEngine {
 		std::size_t mMaxUndoSteps{ 20 }; // Maximum number of history entries kept.
 		bool mStartedGizmoDrag{ false }; // Prevents duplicate snapshots during one gizmo drag.
 
-		bool mshowNewProjectPopup{ false }, mshowOpenProjectPopup{ false }, mfileBrowsing{ false }, showFoldernameInput{ false }, setNewAsStartup{ true }, projNameUpdate{ false }, notInsideAnotherProjFolder{ true }, needCloseToRload{ false }, gameShouldClose{ false };
+		bool mshowNewProjectPopup{ false }, //to show the user the prompt for making a new project
+			mshowOpenProjectPopup{ false }, //unused, for loading up project
+			mfileBrowsing{ false }, // if the user is browsing for where to place the new file
+			showFoldernameInput{ false }, //do i still need this actualy idk
+			setNewAsStartup{ true }, //if we want to set the new project as our startup file
+			projNameUpdate{ false }, //to prevent polling of the projectmaker, this will be set to true whenever the user changes the name they wanna set their project to.
+			notInsideAnotherProjFolder{ true }, //so that the user doesnt accidentally create a game inside another game
+			needCloseToRload{ false }, //to show the popup prompting the user to reload
+			gameShouldClose{ false }; //sets should end in enginecore
 		std::filesystem::path mBrowsingPath{}, currPath{}, mSelectedProjPath{};
 		std::string newFolderName{}, fixedProjName{};
 		char folderNameBuffer[128] = "",currPathDisplayBuffer[128]="",selectedPathDisplayBuffer[256]="";
-		// Draw modals outside BeginMainMenuBar
+		
+
+		/*!*************************************************************************
+		This draws the modal which prompts the user to select a path and set a name
+		for their new project
+		****************************************************************************/
 		void DrawNewProjectPopup();
+
+		/*!*************************************************************************
+		This draws the modal which prompts the user to open a Project. Since the
+		editor is not able to do that yet, this is not implemented
+		****************************************************************************/
 		void DrawOpenProjectPopup();
+
+		/*!*************************************************************************
+		This is the file browser used for selecting a directory to load the project 
+		into. I might chantge it so that if i ever implement the open project 
+		function i can use it for both
+		****************************************************************************/
 		void StupidFileBrowser();
+
+		/*!*************************************************************************
+		This draws the directory tree. Its recursive but only if the directory is open
+		****************************************************************************/
 		void DrawDirectoryTree(const std::filesystem::path& path);
+
+		/*!*************************************************************************
+		This is a little popup function for the file browser if u right click the
+		folder or the explorer u can make a new folder
+		****************************************************************************/
 		void NewFolderPopupThingy(std::filesystem::path newFolderParent );
 
+		/*!*************************************************************************
+		This just notifies the user that they need to close the engine in order to
+		load the project
+		****************************************************************************/
 		void ShowReloadPrompt();
 
-		void CenterNextItem(float width)
-		{
-			float avail = ImGui::GetContentRegionAvail().x;
-			ImGui::SetCursorPosX(ImGui::GetCursorPosX() + (avail - width) * 0.5f);
-		}
 		
 	};
 }

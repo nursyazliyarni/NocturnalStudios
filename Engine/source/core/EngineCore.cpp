@@ -44,6 +44,7 @@ EngineCore constructor
 		
 		_set_abort_behavior(0, _CALL_REPORTFAULT);
 		p_ecs.Init();
+		p_ECompReg.RegisterAllEngineComponents();
 		p_Scene->Init();
 		FramePerSec::GetInstance().InitFrame();
 	}
@@ -74,7 +75,6 @@ EngineCore constructor
 		m_window->Init();
 		p_Audio->Init();
 
-		p_ECompReg.RegisterAllEngineComponents();
 
 		if (m_GameLayer) {
 			m_GameLayer->Init();

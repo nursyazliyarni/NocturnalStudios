@@ -13,6 +13,14 @@
 #include "ResourceManager/NewProjectMaker.h"
 
 namespace NocturnalEngine {
+    /*!*************************************************************************
+    Function called by LevelEditor once the user has decided where and what they
+    they want their new game prokect to be. Creates new file, configures the
+    text files in the game to all have the selected game name (must be validated by
+    ValidateProjectName) and then if the user wants edits the root cmake file to
+    make it so that the next time they open the solution thenew game is set as the
+    Startup project
+    ****************************************************************************/
     bool ProjectMaker::CreateNewProject(const std::string& name, const std::filesystem::path& basePath, bool setNewAsStartup) {
 
         std::filesystem::path templatePath = rootDir / "Resources" / "GameTemplate";
@@ -35,12 +43,9 @@ namespace NocturnalEngine {
                 return false;
             }
 
-            //NOCTURNAL_ENGINE_INFO("Creating project: {}", projectPath.string());
-
             // 3. Copy entire template folder recursively
             std::filesystem::copy(templatePath, projectPath,std::filesystem::copy_options::recursive);
 
-           // NOCTURNAL_ENGINE_INFO("Copied template to: {}", projectPath.string());
 
             // 4. Update project-specific files 
             UpdateProjectFiles(projectPath, name);
@@ -49,9 +54,7 @@ namespace NocturnalEngine {
 
             if(setNewAsStartup)UpdateRootCMake(projectPath, name);
 
-           // NOCTURNAL_ENGINE_INFO("Game Project '{}' created successfully!", name);
-
-            // 6. Optional: Open the new project
+            // 6. Rebuild CMake
             RebuildCmake();
 
             return true;
@@ -63,8 +66,10 @@ namespace NocturnalEngine {
         }
     }
 
-
-    void ProjectMaker::UpdateRootCMake(const std::filesystem::path& projectPath,const std::string& projectName)
+    /*!*************************************************************************
+    Updates the CMake at the root directory so that the new file will be the startup
+    ****************************************************************************/
+    void ProjectMaker::UpdateRootCMake(const std::filesystem::path& projectPath,const std::string& projectName) const
     {
         std::filesystem::path rootCMake =rootDir/"CMakeLists.txt";
 
@@ -104,6 +109,11 @@ namespace NocturnalEngine {
             NOCTURNAL_ENGINE_WARN("Could not find marker '# ADD_NEW_PROJECTS_HERE' in root CMakeLists.txt");
         }
     }
+
+    /*!*************************************************************************
+    Iterates through all text files and replaces the string TEMPLATE_PROJECT_NAME
+    with the project's name. also adds a default scene
+    ****************************************************************************/
     void ProjectMaker::UpdateProjectFiles(const std::filesystem::path& projectPath,const std::string& projectName)
     {
         for (const auto& entry : std::filesystem::recursive_directory_iterator(projectPath))
@@ -139,10 +149,12 @@ namespace NocturnalEngine {
                         "Entities": []
                          })";
         sceneFile.close();
-
-        //NOCTURNAL_ENGINE_INFO("Created default scene: {}", defaultScene.string());
     }
 
+    /*!*************************************************************************
+    This makes sure the user's input name is ok (it removes trailing whitespaces
+    and replaces all other whitespaces with underscores)
+    ****************************************************************************/
     std::string ProjectMaker::ValidateProjectName(const std::string s) {
 
         std::string newProjName = s;
@@ -156,12 +168,22 @@ namespace NocturnalEngine {
         while (!newProjName.empty()&&newProjName.back() == '_')newProjName.pop_back();
         return newProjName;
     }
+
+    /*!*************************************************************************
+    Runs a system call to rebuild the root cmake
+    ****************************************************************************/
     void ProjectMaker::RebuildCmake() {
         std::filesystem::path buildDir = rootDir / "build";
         std::string command = "cmake -S " + rootDir.string() + " -B "+buildDir.string();
         system(command.c_str());
     }
-    bool ProjectMaker::IsNotAnotherGameDirectory(const std::filesystem::path& projectPath) {
+
+
+    /*!*************************************************************************
+    This checks if theres already another cmake file in any of the folders the
+    user wants to generate the new game folder in
+    ****************************************************************************/
+    bool ProjectMaker::IsNotAnotherGameDirectory(const std::filesystem::path& projectPath) const{
         std::filesystem::path checkPath = projectPath;
         while (checkPath!=rootDir/"Sandbox")
         {
@@ -171,9 +193,12 @@ namespace NocturnalEngine {
         return true;
     }
 
-    void ProjectMaker::ReplaceInFile(const std::filesystem::path& filePath,
-        const std::string& search,
-        const std::string& replace)
+    /*!*************************************************************************
+    A helper function for UpdateProjectFiles to help replace strings
+    opens up the file and replacesall instances of search with replace
+    then writes to the file
+    ****************************************************************************/
+    void ProjectMaker::ReplaceInFile(const std::filesystem::path& filePath, const std::string& search, const std::string& replace)
     {
         std::ifstream inFile(filePath);
         if (!inFile.is_open())

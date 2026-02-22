@@ -3,11 +3,11 @@
     Project: NocturnalStudio
 
     Brief:
-        This file enabled injection of a game into0 notcurnalengine
+        This file enabled injection of a game into the main engine
 
     Primary Author:
          LAYCOCK ENHUI SARAH (100%)
-        - Created the IGameLayer class and its rerspective functoiond
+        - Created the IGameConfig class and its rerspective functions
 
 
     All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.

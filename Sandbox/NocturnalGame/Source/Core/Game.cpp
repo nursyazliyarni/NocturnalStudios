@@ -1,13 +1,13 @@
 /*!------------------------------------------------------------------------------------------------
-    File: Game.h
+    File: Game.cpp
     Project: NocturnalStudio
 
     Brief:
-        This file contains the declaration of EngineCore class.
+        This file contains the declaration of Game class. This is any logic that the game will run on 
 
     Primary Author:
          LAYCOCK ENHUI SARAH (100%)
-        - Created the EngineCore class and its function specification.
+        - Created the Game class and its function specification.
 
     All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
 *------------------------------------------------------------------------------------------------*/

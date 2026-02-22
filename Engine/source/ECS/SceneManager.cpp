@@ -8,11 +8,13 @@
 		saved into a json file for future loading
 	
     Primary Author:
-         LAU XIANG YANG (95%)
+         LAU XIANG YANG (80%)
 		- Created the scene manager and its function specification.
     Secondary Author:
          Nur Syazliyarni (5%)
         - Added Text component handling in scene load/save.
+		LAYCOCK ENHUI SARAH (15%)
+		- Redid the serialization and deserialization
 
     All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
 *------------------------------------------------------------------------------------------------*/
@@ -30,7 +32,7 @@
 
 namespace NocturnalEngine
 {
-	// Unique pointer to instance of Scene
+	//Unique pointer to instance of Scene
 	std::unique_ptr<SceneManager> SceneManager::m_instance;
 
 	static std::unordered_map<std::string,
@@ -52,26 +54,17 @@ namespace NocturnalEngine
 	}
 
 	/*!*************************************************************************
-	Initialize all registered components
+	Initialize the scenemanager
 	****************************************************************************/
 	void SceneManager::Init()
 	{
-		p_ecs.RegisterComponent<Transform>(); //0
-		p_ecs.RegisterComponent<RigidBody>();//1
-		p_ecs.RegisterComponent<Collider>();//2
-		p_ecs.RegisterComponent<NameTag>();//3
-		p_ecs.RegisterComponent<Sprite>();//4
-		p_ecs.RegisterComponent<Logic>();//5
-		p_ecs.RegisterComponent<Tag>();//6
-		p_ecs.RegisterComponent<Audio>();//7
-		p_ecs.RegisterComponent<HUDComponent>();//8
-		p_ecs.RegisterComponent<Draggable>();//9
-		p_ecs.RegisterComponent<Text>();//10
 		sceneToLoad = "";
 	}
 
 
-	//DESERIALIZE
+	/*!*************************************************************************
+	Deserialize- has backwards compatability with the old method of serialization
+	****************************************************************************/
 	bool SceneManager::Deserialize(const rapidjson::Value& obj)
 	{
 		changeScene();
@@ -86,8 +79,6 @@ namespace NocturnalEngine
 	}
 
 
-	//Due to restrictions of not using RTTR, components type cannot be deduced at runtime and hence needs to be checked manually
-	//Will work on improving serialization further
 	/*!*************************************************************************
 	Serializes ECS entities and data to JSON file to save ECS (File saving)
 	****************************************************************************/
@@ -200,7 +191,7 @@ void NocturnalEngine::SceneManager::checkForSceneToLoad()
 			}
 		}
 
-		// SAVE current scene layer state before switching away
+		//SAVE current scene layer state before switching away
 		if (!gCurrentScenePath.empty())
 		{
 			auto& saved = gSceneLayerState_Runtime[gCurrentScenePath];
@@ -213,7 +204,7 @@ void NocturnalEngine::SceneManager::checkForSceneToLoad()
 
 		gCurrentScenePath = sceneToLoad;
 
-		//  RESTORE layer state for newly loaded scene 
+		// RESTORE layer state for newly loaded scene 
 		auto it = gSceneLayerState_Runtime.find(gCurrentScenePath);
 		if (it != gSceneLayerState_Runtime.end())
 		{
@@ -245,11 +236,15 @@ void NocturnalEngine::SceneManager::changeScene()
 	p_ecs.ResetEntities();
 }
 
+/*!*************************************************************************
+This new deserialize makes use of the component registry to process the scene
+files
+****************************************************************************/
 bool NocturnalEngine::SceneManager::NewDeserialize(const rapidjson::Value& obj) {
 	for (int i = 0; i < NocturnalEngine::Graphic::MAX_LAYERS; ++i)
 		NocturnalEngine::Graphic::layerDrawOrder[i] = i;
 
-	// load if exists
+	//load if exists
 	if (obj.HasMember("LayerDrawOrder") && obj["LayerDrawOrder"].IsArray())
 	{
 		const auto& arr = obj["LayerDrawOrder"].GetArray();
@@ -269,10 +264,10 @@ bool NocturnalEngine::SceneManager::NewDeserialize(const rapidjson::Value& obj) 
 			p_ecs.PrepareMemoryForEntities(obj["Entities"].Size());
 		}
 
-		const std::map<std::string, ComponentRegistry::ComponentDescriptor>& ecr = p_ECompReg.GetAll();
+		const std::unordered_map<std::string, ComponentRegistry::ComponentDescriptor>& ecr = p_ECompReg.GetAll();
 
 		ComponentRegistry* gameComp = ServiceLocator::Get().GetGameComponents();
-		const std::map<std::string, ComponentRegistry::ComponentDescriptor>* gcr =
+		const std::unordered_map<std::string, ComponentRegistry::ComponentDescriptor>* gcr =
 			gameComp
 			? &gameComp->GetAll()
 			: nullptr;
@@ -305,11 +300,11 @@ bool NocturnalEngine::SceneManager::NewDeserialize(const rapidjson::Value& obj) 
 }
 
 bool NocturnalEngine::SceneManager::OldDeserialize(const rapidjson::Value& obj) {
-	// default
+	//default
 	for (int i = 0; i < NocturnalEngine::Graphic::MAX_LAYERS; ++i)
 		NocturnalEngine::Graphic::layerDrawOrder[i] = i;
 
-	// load if exists
+	//load if exists
 	if (obj.HasMember("LayerDrawOrder") && obj["LayerDrawOrder"].IsArray())
 	{
 		const auto& arr = obj["LayerDrawOrder"].GetArray();
@@ -327,7 +322,7 @@ bool NocturnalEngine::SceneManager::OldDeserialize(const rapidjson::Value& obj) 
 	p_ecs.SetTotalEntitiesForWorldBuild(obj["Number of Entities"]["Entities"].GetUint());
 
 	ComponentRegistry* gameComp = ServiceLocator::Get().GetGameComponents();
-	const std::map<std::string, ComponentRegistry::ComponentDescriptor>* gcr =
+	const std::unordered_map<std::string, ComponentRegistry::ComponentDescriptor>* gcr =
 		gameComp
 		? &gameComp->GetAll()
 		: nullptr;
@@ -456,48 +451,67 @@ bool NocturnalEngine::SceneManager::OldDeserialize(const rapidjson::Value& obj) 
 	return true;
 }
 
+/*!*************************************************************************
+NewSerialize serializes the scene into a hopefully more readable json file
+than the old serialize did
+****************************************************************************/
 bool NocturnalEngine::SceneManager::NewSerialize(rapidjson::PrettyWriter<rapidjson::StringBuffer>* writer) const{
+
 	writer->StartObject();
+	//layer draw order
 	writer->Key("LayerDrawOrder");
 	writer->StartArray();
 	for (int i = 0; i < NocturnalEngine::Graphic::MAX_LAYERS; ++i)
 		writer->Int(NocturnalEngine::Graphic::layerDrawOrder[i]);
 	writer->EndArray();
 
-	if (p_ecs.GetAliveEntities() == 0)return true;
-
+	//Begin entity array
 	writer->Key("Entities");
 	writer->StartArray();
 
+	//if no entities, just end array and return
+	if (p_ecs.GetAliveEntities() == 0) {
+		writer->EndArray();
+		writer->EndObject();
+		return true;
+	}
 
 	std::set<Entity> aliveTotal =p_ecs.GetAliveEntitiesSet();
 	for (Entity j:aliveTotal)
 	{
-		// Skip entities with no components
+		//Skip entities with no components
 		if (!p_ecs.GetEntitySignature(j).any())
 			continue;
-
+		//Start entity object
 		writer->StartObject();
+		//ID, not actually used when deserializing but for users to see better
 		writer->Key("ID");
 		writer->Int(static_cast<int>(j));
+
+		//Start Component array
 		writer->Key("Components");
 		writer->StartArray();
-		for (std::pair<const std::string,ComponentRegistry::ComponentDescriptor> comp: p_ECompReg.GetAll())
+
+		//Engine components
+		for (std::pair<const std::string, const ComponentRegistry::ComponentDescriptor> comp: p_ECompReg.GetAll())
 		{
 			if (comp.second.hasFunc(j))
 			{
 				writer->StartObject();
+				//component name always comes first,
 				writer->Key("Component");
 				writer->String(comp.first.c_str());
+				// then start writing down the component
 				comp.second.serializeFunc(j,writer);
 				writer->EndObject();
 				
 			}
 		}
 
+		//Game components
 		if (ComponentRegistry *meow=ServiceLocator::Get().GetGameComponents())
 		{
-			for (std::pair<const std::string, ComponentRegistry::ComponentDescriptor> comp : meow->GetAll())
+			for (std::pair<const std::string, const ComponentRegistry::ComponentDescriptor> comp : meow->GetAll())
 			{
 				if (comp.second.hasFunc(j))
 				{
@@ -511,11 +525,11 @@ bool NocturnalEngine::SceneManager::NewSerialize(rapidjson::PrettyWriter<rapidjs
 			}
 		}
 		
-		writer->EndArray();
-		writer->EndObject(); // components
+		writer->EndArray(); //components
+		writer->EndObject(); //entity
 	}
 	
-	writer->EndArray();
+	writer->EndArray(); //entity array
 
 	writer->EndObject();
 	return true;

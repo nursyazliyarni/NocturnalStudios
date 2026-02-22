@@ -1,13 +1,14 @@
 /*!------------------------------------------------------------------------------------------------
-    File: ScriptFactory.h
-    Project: NocturnalStudio
+    File: ScriptFactory.cpp
+    Project: NocturnalGame
 
     Brief:
-        This file enables injection of scripts into the leveleditor
+        This file is where the user registers the scripts. These scripts will be used by the logic
+        component in the engine to attach to entities
 
     Primary Author:
          LAYCOCK ENHUI SARAH (100%)
-        - Created the ScriptFactory class and its rerspective functoiond
+        - Created the ScriptFactory class and its rerspective functions
 
 
     All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
@@ -35,6 +36,9 @@
 
 namespace NocturnalEngine {
 
+    /*!*************************************************************************
+    Registers all the game scripts in the script registry
+    ****************************************************************************/
     void ScriptFactory::RegisterAllGameScripts() {
         
             RegisterScriptType<ButtonResponse>();

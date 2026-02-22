@@ -8,17 +8,17 @@
         properties of the components and save them accordingly.
 	
     Primary Author:
-         LAU XIANG YANG (74%)
+         LAU XIANG YANG (70%)
 		- Created the LevelEditor class and its function specification.
     Secondary Author:
-         Nur Syazliyarni (8%)
+         Nur Syazliyarni (5%)
         - Added gizmo visibility toggle in the Scene viewer.
         - Updated Text component UI usage in the inspector.
         - Added RevealTargetOnClick script to the editor script list.
-        Ang Yu Xuan (8%)
+        Ang Yu Xuan (5%)
         - Adding in AnimalAttributes Component and ItemAttributes Component UI 
           onto the inspector of the level editor.
-        LAYCOCK ENHUI SARAH (10%)
+        LAYCOCK ENHUI SARAH (20%)
         - Added functionality for content browser, allowing for tetxures to be 
           selected and viewed directly in content browser instead of opening up 
           a seperate tab in imgui. 
@@ -26,6 +26,16 @@
         - Added placing textures directly into game scenes as entities via dragging
           & dropping from the content browser
         - loading of scenes directly from the content browser
+        (22/02/2026)
+        - Added the capability to make a new game project. This includes a popup modal, a file
+          browser, and a prompt for the user to close the window afterwards.
+        - Made the inspector loop much cleaner - the leveleditor now calls the component
+          registry and iterates through it to display. When adding a new component, you 
+          no longer need to edit the leveleditor file. You must make sure to populate
+          the ToEditor() function in yout component. Check each component's cpp file to
+          see how its done.
+        - Changed the logic for deleting entities so that it no longer behaves weirdly when 
+          deleting the top item in the list.
 
 
     All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
@@ -147,7 +157,6 @@ namespace NocturnalEngine {
         LoadSceneFromFile();
 
         mGameConfig= ServiceLocator::Get().GetGameConfig();
-        mScriptRegistry = ServiceLocator::Get().GetScriptRegistry();
         mgameComponents = ServiceLocator::Get().GetGameComponents();
         LoadScriptsFromFile();
         // Seed undo history with the initial editor state.
@@ -1030,7 +1039,7 @@ namespace NocturnalEngine {
     /*!*************************************************************************
    Logger, can toggle between types of messages you want to view
    ****************************************************************************/
-    void LevelEditor::Logger()
+    void LevelEditor::Logger() const
     {
         if (is_ShowWindow)
         {
@@ -1249,7 +1258,7 @@ namespace NocturnalEngine {
 
 
 
-    void LevelEditor::Layering()
+    void LevelEditor::Layering() const
     {
         if (!is_ShowWindow) return;
 
@@ -1366,14 +1375,16 @@ namespace NocturnalEngine {
         if (is_ShowWindow)
         {
             ImGui::Begin("Hierarchy");
-            if (ImGui::Button("Create Entity") && p_ecs.GetTotalEntities() != MAX_ENTITIES)
+            Entity totalEntities = p_ecs.GetTotalEntities();
+
+            if (ImGui::Button("Create Entity") && totalEntities != MAX_ENTITIES)
             {
                 // Snapshot before create.
                 PushUndoSnapshotAndInvalidateRedo();
                 p_ecs.AddComponent<NameTag>(p_ecs.CreateEntity(), C_NameTagComponent);
             }
 
-            if (p_ecs.GetTotalEntities() > 0)
+            if (totalEntities > 0)
             {
                 ImGui::SameLine();
                 if (ImGui::Button("Destroy Entity"))
@@ -1398,13 +1409,14 @@ namespace NocturnalEngine {
                     }
                 }
                 
+                //loops through each alive entity and shows it in the heirarchy. Tree node in the futre in case of parenting
                 for (Entity e:p_ecs.GetAliveEntitiesSet())
                 {
                     if (p_ecs.HaveComponent<NameTag>(e))
                     {
                         std::string& tag = p_ecs.GetComponent<NameTag>(e).GetNameTag();
 
-                        ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow;
+                        ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow|ImGuiTreeNodeFlags_SpanAvailWidth;
                         if (selectedEntity == e)
                             flags |= ImGuiTreeNodeFlags_Selected;
 
@@ -1443,26 +1455,34 @@ namespace NocturnalEngine {
                 if (ImGui::Button("Add Component"))
                     ImGui::OpenPopup("Add Component");
 
-                //Add component section
+                //Add component section, this is a popup
                 if (ImGui::BeginPopup("Add Component"))
                 {
+                    ImGui::SeparatorText("Engine Components");
 
-                    for (std::pair<const std::string, ComponentRegistry::ComponentDescriptor> compdesc:p_ECompReg.GetAll())
+                    //iterates through every component registered into the engine's component registry
+                    for (std::pair<const std::string, const ComponentRegistry::ComponentDescriptor> compdesc:p_ECompReg.GetAll())
                     {
                         if (ImGui::MenuItem(compdesc.first.c_str()))
                         {
-                            if (!compdesc.second.hasFunc(selectedEntity))
+                            if (!compdesc.second.hasFunc(selectedEntity)) //if the entity doesnt have the component
                             {
                                 PushUndoSnapshotAndInvalidateRedo();
-                                compdesc.second.addFunc(selectedEntity);
+                                compdesc.second.addFunc(selectedEntity); //this calls the adder function
                             }
                             ImGui::CloseCurrentPopup();
                         }
                     }
-
+                    
+                    //if
                     if (mgameComponents)
                     {
-                        for (std::pair<const std::string, ComponentRegistry::ComponentDescriptor> compdesc : mgameComponents->GetAll())
+                        // Add a separator line here to seperate the game components from engine components
+                        const std::unordered_map<std::string, ComponentRegistry::ComponentDescriptor>& gameCompsMap = mgameComponents->GetAll();
+                        if(!gameCompsMap.empty())ImGui::SeparatorText("Game Components");
+
+                        //iterates through all the game components
+                        for (std::pair<const std::string, const ComponentRegistry::ComponentDescriptor> compdesc : gameCompsMap)
                         {
                             if (ImGui::MenuItem(compdesc.first.c_str()))
                             {
@@ -1478,16 +1498,19 @@ namespace NocturnalEngine {
                     ImGui::EndPopup();
                 }
 
-                for (std::pair<const std::string, ComponentRegistry::ComponentDescriptor> compdesc:p_ECompReg.GetAll())
+                //iterates through all the engine's game components and displays them
+                for (std::pair<const std::string, const ComponentRegistry::ComponentDescriptor> compdesc:p_ECompReg.GetAll())
                 {
                     if (compdesc.second.hasFunc(selectedEntity))
                     {
                         compdesc.second.displayInEditor(selectedEntity);
                     }
                 }
+
+                //iterates through all the game components and shows them 
                 if (mgameComponents)
                 {
-                    for (std::pair<const std::string, ComponentRegistry::ComponentDescriptor> compdesc : mgameComponents->GetAll())
+                    for (std::pair<const std::string, const ComponentRegistry::ComponentDescriptor> compdesc : mgameComponents->GetAll())
                     {
                         if (compdesc.second.hasFunc(selectedEntity))
                         {
@@ -1495,12 +1518,14 @@ namespace NocturnalEngine {
                         }
                     }
                 }
+
                 if (ImGui::Button("Delete Component"))
                     ImGui::OpenPopup("Delete Component");
 
                 if (ImGui::BeginPopup("Delete Component"))
                 {
-                    for (std::pair<const std::string, ComponentRegistry::ComponentDescriptor> compdesc : p_ECompReg.GetAll())
+                    ImGui::SeparatorText("Engine Components");
+                    for (std::pair<const std::string, const ComponentRegistry::ComponentDescriptor> compdesc : p_ECompReg.GetAll())
                     {
                         if (ImGui::MenuItem(compdesc.first.c_str()))
                         {
@@ -1514,7 +1539,10 @@ namespace NocturnalEngine {
                     }
                     if (mgameComponents)
                     {
-                        for (std::pair<const std::string, ComponentRegistry::ComponentDescriptor> compdesc : mgameComponents->GetAll())
+                        // Add a separator line here to seperate the game components from engine components
+                        const std::unordered_map<std::string, ComponentRegistry::ComponentDescriptor>& gameCompsMap = mgameComponents->GetAll();
+                        if (!gameCompsMap.empty())ImGui::SeparatorText("Game Components");
+                        for (std::pair<const std::string, const ComponentRegistry::ComponentDescriptor> compdesc : gameCompsMap)
                         {
                             if (ImGui::MenuItem(compdesc.first.c_str()))
                             {
@@ -1817,10 +1845,15 @@ namespace NocturnalEngine {
         }
     }
 
+
+    /*!*************************************************************************
+    This draws the modal which prompts the user to select a path and set a name
+    for their new project
+    ****************************************************************************/
     void LevelEditor::DrawNewProjectPopup() {
         ImGui::OpenPopup("New Game");
 
-        // Center the modal
+        // Centers the modal
         ImVec2 center = ImGui::GetMainViewport()->GetCenter();
         ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
         ImGui::SetNextWindowSize(ImVec2(500, 300), ImGuiCond_Appearing);
@@ -1831,7 +1864,7 @@ namespace NocturnalEngine {
             ImGui::Separator();
             ImGui::Spacing();
 
-            // Game Project name input
+            // Prompt user to input Project name here
             static char projectName[128] = "";
             ImGui::Text("Game Project Name:");
             ImGui::SetNextItemWidth(-1);
@@ -1846,11 +1879,12 @@ namespace NocturnalEngine {
             strncpy(selectedPathDisplayBuffer, pathStr.c_str(), copyLen);
             selectedPathDisplayBuffer[copyLen] = '\0';
 
-            // Game Project location
+            // project path, readonly because i am way too lazy to check everytime user types in
             ImGui::Text("Location:");
             ImGui::SetNextItemWidth(-FLT_MIN - 60);
             ImGui::InputText("##ProjectPath", selectedPathDisplayBuffer, sizeof(selectedPathDisplayBuffer),ImGuiInputTextFlags_ReadOnly);
             
+            //this opens up the file browser
             ImGui::SameLine();
             if (ImGui::Button("Browse")) { 
                 mfileBrowsing = true; 
@@ -1859,6 +1893,7 @@ namespace NocturnalEngine {
                 
             }
 
+
             if (mfileBrowsing)
             {
                 StupidFileBrowser();
@@ -1866,7 +1901,7 @@ namespace NocturnalEngine {
 
             ImGui::Spacing();
 
-            
+            //hopefully to prevent polling 
             if (strlen(projectName) > 0 && projNameUpdate) { 
                 fixedProjName = p_ProjMaker.ValidateProjectName({ projectName });
                 notInsideAnotherProjFolder = p_ProjMaker.IsNotAnotherGameDirectory(mSelectedProjPath / fixedProjName);
@@ -1876,16 +1911,18 @@ namespace NocturnalEngine {
             // Preview full path
             ImGui::TextDisabled("Game Project Path: %s%s", selectedPathDisplayBuffer, fixedProjName.c_str());
 
+            //if we want to modify the root cmake file
             ImGui::Checkbox("Set New Game Project as startup project", &setNewAsStartup);
             ImGui::Spacing();
             ImGui::Separator();
             ImGui::Spacing();
 
-            // Validate input
+            // Validates input
             bool nameIsValid = fixedProjName.length() > 0;
             std::string fullPath = std::string(selectedPathDisplayBuffer) + fixedProjName;
             bool pathExists = std::filesystem::exists(fullPath);
 
+            //checks if inside another project folder (if theres another cmake file in there)
             if (!notInsideAnotherProjFolder)
             {
                 ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1, 0, 0, 1)); // red
@@ -1927,10 +1964,20 @@ namespace NocturnalEngine {
             ImGui::EndPopup();
         }
     }
+
+    /*!*************************************************************************
+    This draws the modal which prompts the user to open a Project. Since the 
+    editor is not able to do that yet, this is not implemented
+    ****************************************************************************/
     void LevelEditor::DrawOpenProjectPopup() {
 
     }
     
+    /*!*************************************************************************
+    Sorry I named this when i was angry this is the file browser used for selecting
+    a directory to load the project into. I might chantge it so that if i ever 
+    implement the open project function i can use it for both
+    ****************************************************************************/
     void LevelEditor::StupidFileBrowser() {
         ImGui::OpenPopup("Browse");
 
@@ -1950,6 +1997,7 @@ namespace NocturnalEngine {
                 float childHeight = ImGui::GetContentRegionAvail().y - 75.0f; // Leave space for Cancel button
                 ImGui::BeginChild("SidebarChild", ImVec2(0, childHeight), false, ImGuiWindowFlags_None);
 
+                //Check for oif we need to do the new fol;der input
                 if (ImGui::IsWindowHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Right))
                 {
                     showFoldernameInput = false;
@@ -1966,9 +2014,13 @@ namespace NocturnalEngine {
                     ImGui::EndPopup();
                 }
                 ImGui::EndChild();
+                //end of scrollable section
+
                 ImGui::Separator();
                 ImGui::Text("Selected Folder:");
                 ImGui::SameLine();
+
+
                 if (!currPath.empty())
                 {
                     std::filesystem::path relativePath = std::filesystem::relative(currPath, mBrowsingPath.parent_path());
@@ -1978,6 +2030,8 @@ namespace NocturnalEngine {
                     strncpy(currPathDisplayBuffer, pathStr.c_str(), copyLen);
                     currPathDisplayBuffer[copyLen] = '\0'; 
                 }
+
+                //shows our currently selected path, if confirm it closes and performs a check else itll just close
                 ImGui::InputText("##SelectedDirForNewFile", currPathDisplayBuffer, sizeof(currPathDisplayBuffer), ImGuiInputTextFlags_ReadOnly);
                 if (ImGui::Button("Confirm", ImVec2(120, 0)))
                 {
@@ -1997,6 +2051,10 @@ namespace NocturnalEngine {
             ImGui::EndPopup();
         }
     }
+
+    /*!*************************************************************************
+    This draws the directory tree. Its recursive but only if the directory is open 
+    ****************************************************************************/
     void LevelEditor::DrawDirectoryTree(const std::filesystem::path& path)
     {
         for (const auto& entry : std::filesystem::directory_iterator(path))
@@ -2030,17 +2088,20 @@ namespace NocturnalEngine {
                 currPath = dirPath;
             }
 
+            //this hold priority over the other right click to add a new folder, u  can also delete
+            //might need to add a check if u can delete lol
+            //actually i should just remove the delete part LOL
             if (ImGui::BeginPopupContextItem(folderName.c_str()))
             {
                 showFoldernameInput = true;
                     
                 NewFolderPopupThingy(entry.path());
 
-                if (ImGui::Selectable("Delete"))
+                /*if (ImGui::Selectable("Delete"))
                 {
                     std::filesystem::remove_all(entry.path());
                     showFoldernameInput = false;
-                }
+                }*/
 
                 ImGui::EndPopup();
             }
@@ -2053,19 +2114,27 @@ namespace NocturnalEngine {
             }
         }
     }
+
+    /*!*************************************************************************
+    This is a little popup function for the file browser if u right click the 
+    folder or the explorer u can make a new folder
+    ****************************************************************************/
     void LevelEditor::NewFolderPopupThingy(std::filesystem::path newFolderParent) {
         ImGui::Text("New Folder");
-        ImGui::SameLine();  // show next to menu / item
+        ImGui::SameLine();  // show next to "New Folder"
         ImGui::PushItemWidth(150);  // width of textbox
 
+        //only creates if u press enter
         bool shouldCreate = ImGui::InputText("##newfolder", folderNameBuffer, sizeof(folderNameBuffer), ImGuiInputTextFlags_EnterReturnsTrue);
 
         ImGui::PopItemWidth();
         ImGui::SameLine();
         if (ImGui::Button("OK"))
         {
-            shouldCreate = true;
+            shouldCreate = true; // or if u press ok
         }
+
+        //the actual creation code
         if (shouldCreate)
         {
             newFolderName.clear();
@@ -2086,26 +2155,34 @@ namespace NocturnalEngine {
             showFoldernameInput = false;
         }
     }
+
+    /*!*************************************************************************
+    This just notifies the user that they need to close the engine in order to 
+    load the project
+    ****************************************************************************/
     void LevelEditor::ShowReloadPrompt() {
         ImGui::OpenPopup("Notice");
 
         // Center the modal
         ImVec2 center = ImGui::GetMainViewport()->GetCenter();
         ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
-        ImGui::SetNextWindowSize(ImVec2(500, 200), ImGuiCond_Appearing);
+        ImGui::SetNextWindowSize(ImVec2(500, 125), ImGuiCond_Appearing);
 
         if (ImGui::BeginPopupModal("Notice", &needCloseToRload))
         {
             
-            ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0, 1, 0, 1)); // red
+            ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0, 1, 0, 1)); // green
             ImGui::TextWrapped("New Game Project files have been generated. Please Exit the editor to reload.");
             ImGui::PopStyleColor(); 
+
             ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1, 0, 0, 1)); // red
             ImGui::TextWrapped("Warning: all unsaved files will be lost!");
             ImGui::PopStyleColor();
+
             ImGui::Spacing();
             if (ImGui::Button("Exit Editor"))
             {
+                //closes ther game
                 gameShouldClose = true;
                 needCloseToRload = false;
             }

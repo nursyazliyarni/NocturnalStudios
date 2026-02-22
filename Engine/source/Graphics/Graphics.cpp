@@ -7,11 +7,15 @@
 		once render class is up.
 	
     Primary Author:
-         Rishika Bimal Attodi (95%)
+         Rishika Bimal Attodi (85%)
 		- Created the graphics class and its function specification.
     Secondary Author:
          Nur Syazliyarni (5%)
         - Added Text component rendering path in the graphics loop.
+		LAYCOCK ENHUI SARAH (10%)
+		- Changed it so that the loading in of textures isnt dependent on hardcoded folder
+		  paths
+		- Added engine asset loading (Icons, Default fonts, shaders, missing texture)
 
     All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
 *------------------------------------------------------------------------------------------------*/
@@ -81,7 +85,7 @@ namespace NocturnalEngine {
 				std::string gs = entry.path().generic_string();
 
 				// Use relative path as key to avoid name collisions
-				// e.g. "Characters/Cat" instead of just "Cat"
+				// e.g. "Characters/horse" instead of just "horse"
 				std::string relativePath = std::filesystem::relative(
 					entry.path(),
 					std::filesystem::path(path)

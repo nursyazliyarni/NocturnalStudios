@@ -3,11 +3,12 @@
 	Project: NocturnalStudio
 
 	Brief:
-		This file is used to serialize and deserialize name tag components for ECS.
+		This file contains the base class which has functions used to serialize and deserialize 
+        components for ECS.It also allows them to be displayed in the editor
 
 	Primary Author:
 		 LAYCOCK ENHUI SARAH (100%)
-		- Created the draggable class and its function specification.
+		- Created the ComponentRegistry class
 
 	All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
 *------------------------------------------------------------------------------------------------*/
@@ -20,8 +21,15 @@
 
 namespace NocturnalEngine {
     class ECS;
+    /*!*************************************************************************
+    The component registry makes it much easier for the various systems of the
+    game engine to operate on componentsx
+    ****************************************************************************/
     class ComponentRegistry {
     public:
+        /*!*************************************************************************
+        These are the fuctions that all components have in their base class declaration
+        ****************************************************************************/
         struct ComponentDescriptor {
             std::string name{};
 
@@ -46,8 +54,13 @@ namespace NocturnalEngine {
 
         ComponentRegistry() = default;
 
+        /*!*************************************************************************
+        This registers a component into the component registry's map. The user has
+        to provide the registry the name they want the component to have
+        ****************************************************************************/
         template<typename T>
         void RegisterComponent(const std::string& name) {
+
             ComponentDescriptor desc;
             desc.name = name;
 
@@ -69,7 +82,7 @@ namespace NocturnalEngine {
                 };
 
 
-            //Deserialize and add in one step 
+            //Deserialize and add to entity
             desc.deserializeAndAddFunc = [this](Entity e, const rapidjson::Value& obj) -> bool {
                 T component{};
                 component.SetComponentEntityID(e);
@@ -81,12 +94,13 @@ namespace NocturnalEngine {
                 return false;
                 };
 
-            //Deserialize and add in one step 
+            //serialize
             desc.serializeFunc = [this](Entity e, rapidjson::PrettyWriter<rapidjson::StringBuffer>* writer) -> bool {
                 T& component{ GetECS().template GetComponent<T>(e) };
                 return component.Serialize(writer);
              };
 
+            //show in leveleditor
             desc.displayInEditor = [this](Entity e) {
                 if (GetECS().template HaveComponent<T>(e))
                 {
@@ -94,16 +108,19 @@ namespace NocturnalEngine {
                 }
                 };
 
-            mComponents[name] = desc;
+            mComponents.emplace(name, desc);
         }
 
-        const std::map<std::string, ComponentDescriptor>& GetAll() const {
+        /*!*************************************************************************
+        Returns a const reference to the component map
+        ****************************************************************************/
+        const std::unordered_map<std::string, ComponentDescriptor>& GetAll() const {
             return mComponents;
         }
 
     protected:
         ECS& GetECS();
         
-        std::map<std::string, ComponentDescriptor> mComponents{};
+        std::unordered_map<std::string, ComponentDescriptor> mComponents{};
     };
 }
