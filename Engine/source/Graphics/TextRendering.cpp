@@ -36,7 +36,7 @@ namespace NocturnalEngine {
 	void Font::Init()
 	{
         //loads from engine resource path naow
-		TextShader = ResourceManager::LoadShader("text", EngineAssetPath.string() + "/Shaders/text.shader");;
+		TextShader = ResourceManager::LoadShader("text", "Assets/Shaders/text.shader");;
 		glGenVertexArrays(1, &mVao);
 		glGenBuffers(1, &mVbo);
 		glBindVertexArray(mVao);
