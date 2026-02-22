@@ -358,26 +358,7 @@ namespace NocturnalEngine {
     ****************************************************************************/
     void LevelEditor::LoadScriptsFromFile()
     {
-#if DEBUG
-        // std::string scriptPath = "../ExoEngine/src/ExoEngine/Scripts";
-        std::string scriptPath = "../../Engine/include/Scripts";
-#else
-        std::string scriptPath = "Assets/Scripts"; //for release mode
-#endif
-        for (auto const& dir_entry : std::filesystem::directory_iterator{ scriptPath })
-        {
-            if (!dir_entry.is_regular_file())
-            {
-                continue;
-            }
-            if (*(dir_entry.path().filename().string().end() - 1) == 'h')
-            {
-                std::string in = dir_entry.path().filename().string();
-                in.pop_back();
-                in.pop_back();
-                mScriptList.emplace_back(in);
-            }
-        }
+
     }
 
     /*!*************************************************************************
