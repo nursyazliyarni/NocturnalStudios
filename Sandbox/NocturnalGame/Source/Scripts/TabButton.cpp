@@ -23,7 +23,7 @@
 //{
 //    static Entity FindByName(const std::string& name)
 //    {
-//        for (Entity e = 0; e < p_ecs.GetTotalEntities(); ++e)
+//        for (Entity e = 0; e < p_ecs.GetTotalSceneEntities(); ++e)
 //        {
 //            if (p_ecs.HaveComponent<NameTag>(e) &&
 //                p_ecs.GetComponent<NameTag>(e).GetNameTag() == name)

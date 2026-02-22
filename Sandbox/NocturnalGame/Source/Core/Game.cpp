@@ -36,7 +36,7 @@ namespace NocturnalEngine {
     void NocturnalGameLayer::Update(float dt) {
         
         bool isHowToPlayScene = false;
-        for (Entity entity = 0; entity < p_ecs.GetTotalEntities(); ++entity)
+        for (Entity entity = 0; entity < p_ecs.GetTotalSceneEntities(); ++entity)
         {
             if (!p_ecs.HaveComponent<Tag>(entity))
             {
@@ -80,7 +80,7 @@ namespace NocturnalEngine {
 
         if (p_Input->KeyPressed(GLFW_KEY_F3))
         {
-            for (Entity i = 0; i < p_ecs.GetTotalEntities(); ++i)
+            for (Entity i = 0; i < p_ecs.GetTotalSceneEntities(); ++i)
             {
 
 
@@ -91,7 +91,7 @@ namespace NocturnalEngine {
 
             }
         }
-        for (Entity entity = 0; entity < p_ecs.GetTotalEntities(); entity++)
+        for (Entity entity = 0; entity < p_ecs.GetTotalSceneEntities(); entity++)
         {
             if (p_ecs.HaveComponent<NameTag>(entity) && p_ecs.GetComponent<NameTag>(entity).GetNameTag() == "Splash Screen")
             {

@@ -40,14 +40,25 @@ namespace NocturnalEngine
 		/*!*************************************************************************
 		Grabs a new id from the queue and return it
 		****************************************************************************/
-		Entity CreateEntity()
+		Entity CreateEntity(bool isPrefab=false)
 		{
-			assert(mLivingEntityCount < MAX_ENTITIES && "Too many entities in existence.");
+			assert(mTotalEntityCount < MAX_ENTITIES && "Too many entities in existence.");
 			// Take an ID from the front of the queue
 			Entity id = mAvailableEntities.top();
 			mAvailableEntities.pop();	//Removes elements from the front of the queue
-			mAliveEntities.insert(id);
-			++mLivingEntityCount;	//Dictates how many entities are alive
+			mIsPrefab[id] = isPrefab;
+
+			if (!isPrefab)
+			{
+				mAliveEntities.insert(id);
+				++mLivingEntityCount;	//Dictates how many entities are alive
+			}
+			else 
+			{
+				mPrefabEntities.insert(id);
+				++mPrefabEntityCount;	//Dictates how many entities are alive
+			}
+			++mTotalEntityCount;
 
 			return id;
 		}
@@ -62,8 +73,17 @@ namespace NocturnalEngine
 			// Put the destroyed ID at the back of the queue
 			mSignatures[entity].reset();
 			mAvailableEntities.push(entity);
-			mAliveEntities.erase(entity);
-			--mLivingEntityCount;
+			if (mIsPrefab[entity])
+			{
+				mPrefabEntities.erase(entity);
+				--mPrefabEntityCount;
+				mIsPrefab[entity] = false;
+			}
+			else {
+				mAliveEntities.erase(entity);
+				--mLivingEntityCount;
+			}
+			--mTotalEntityCount;
 		}
 
 		/*!*************************************************************************
@@ -92,7 +112,7 @@ namespace NocturnalEngine
 		/*!*************************************************************************
 		Returns the Total Entities in existence (both destroyed + alive)
 		****************************************************************************/
-		Entity GetTotalEntities()
+		Entity GetTotalSceneEntities()
 		{
 			return mLivingEntityCount;
 		}
@@ -116,6 +136,10 @@ namespace NocturnalEngine
 			return mAliveEntities;
 		}
 
+		const std::bitset<MAX_ENTITIES>& GetPrefabBitset() const {
+			return mIsPrefab;
+		}
+
 		std::array<Signature, MAX_ENTITIES>& GetEntitySignatureArray()
 		{
 			return mSignatures;
@@ -123,7 +147,9 @@ namespace NocturnalEngine
 
 		void ResetAllEntitySignatures()
 		{
-			mSignatures.fill(0);
+			for (Entity e = 0; e < MAX_ENTITIES; e++)
+				if (!mIsPrefab[e])
+					mSignatures[e] = 0;
 		}
 
 		
@@ -135,10 +161,15 @@ namespace NocturnalEngine
 		// Array of signatures where the index corresponds to the entity ID
 		std::array<Signature, MAX_ENTITIES> mSignatures{};
 
+		std::bitset<MAX_ENTITIES> mIsPrefab{};
+
 		// Total living entities - used to keep limits on how many exist
-		Entity mLivingEntityCount{};
+		Entity mLivingEntityCount{}, mPrefabEntityCount{}, mTotalEntityCount{};
 
 		// Alive entities that are still in use
 		std::set<Entity> mAliveEntities;
+
+		//Storage for prefab entities, arent cleared out when scenes are reset.
+		std::set<Entity> mPrefabEntities;
 	};
 }

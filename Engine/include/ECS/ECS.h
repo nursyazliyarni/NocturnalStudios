@@ -55,11 +55,11 @@ namespace NocturnalEngine
 		/*!*************************************************************************
 		Pulls a new entity ID from queue and return it
 		****************************************************************************/
-		Entity CreateEntity()
+		Entity CreateEntity(bool isPrefab=false)
 		{
-			if (p_MemoryManager.IsEnabled() == false) return mEntityManager->CreateEntity();
+			if (p_MemoryManager.IsEnabled() == false) return mEntityManager->CreateEntity(isPrefab);
 
-			Entity id = mEntityManager->CreateEntity();
+			Entity id = mEntityManager->CreateEntity(isPrefab);
 			void* slot = p_MemoryManager.Allocate(sizeof(Entity));
 			mEntityMemory[id] = slot;
 			if (slot)
@@ -93,7 +93,7 @@ namespace NocturnalEngine
 		****************************************************************************/
 		void ClearAllComponents()
 		{
-			mComponentManager->ClearAllComponents();
+			mComponentManager->ClearAllComponents(mEntityManager->GetPrefabBitset());
 		}
 
 		/*!*************************************************************************
@@ -144,9 +144,9 @@ namespace NocturnalEngine
 		/*!*************************************************************************
 		Returns the number of live entities
 		****************************************************************************/
-		Entity GetTotalEntities()
+		Entity GetTotalSceneEntities()
 		{
-			return mEntityManager->GetTotalEntities();
+			return mEntityManager->GetTotalSceneEntities();
 		}
 
 		/*!*************************************************************************

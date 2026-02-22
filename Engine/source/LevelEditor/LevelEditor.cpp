@@ -705,13 +705,13 @@ namespace NocturnalEngine {
         ImGui::End();
         ImGui::PopStyleVar();
         std::multimap<float, Transform*> sortedMultimap;
-        for (Entity entity = 0; entity < p_ecs.GetTotalEntities(); entity++)
+        for (Entity entity = 0; entity < p_ecs.GetTotalSceneEntities(); entity++)
         {
             if(p_ecs.HaveComponent<Transform>(entity))
                 sortedMultimap.insert({ p_ecs.GetComponent<Transform>(entity).GetRot(),
                             &p_ecs.GetComponent<Transform>(entity) });
         }
-        if (p_ecs.GetTotalEntities() != 0 && p_Input->MousePressed(GLFW_MOUSE_BUTTON_LEFT) && (!mShowGizmos || !ImGuizmo::IsOver())) // Allow picking when gizmos are hidden
+        if (p_ecs.GetTotalSceneEntities() != 0 && p_Input->MousePressed(GLFW_MOUSE_BUTTON_LEFT) && (!mShowGizmos || !ImGuizmo::IsOver())) // Allow picking when gizmos are hidden
         {
             if (selectedEntity >= 0 && selectedEntity < MAX_ENTITIES)//no entity selected will remain to the previous selected entity
             {
@@ -1271,7 +1271,7 @@ namespace NocturnalEngine {
         std::vector<int> usedLayers;
         usedLayers.reserve(NocturnalEngine::Graphic::MAX_LAYERS);
 
-        for (Entity e = 0; e < p_ecs.GetTotalEntities(); ++e)
+        for (Entity e = 0; e < p_ecs.GetTotalSceneEntities(); ++e)
         {
             if (!p_ecs.HaveComponent<Sprite>(e)) continue;
 
@@ -1375,7 +1375,7 @@ namespace NocturnalEngine {
         if (is_ShowWindow)
         {
             ImGui::Begin("Hierarchy");
-            Entity totalEntities = p_ecs.GetTotalEntities();
+            Entity totalEntities = p_ecs.GetTotalSceneEntities();
 
             if (ImGui::Button("Create Entity") && totalEntities != MAX_ENTITIES)
             {
@@ -1398,7 +1398,7 @@ namespace NocturnalEngine {
                     }
                 }
                 ImGui::SameLine();
-                if (ImGui::Button("Clone Entity") && p_ecs.GetTotalEntities() != 0)// there is entity alive
+                if (ImGui::Button("Clone Entity") && p_ecs.GetTotalSceneEntities() != 0)// there is entity alive
                 {
                     if (selectedEntity != MAX_ENTITIES)
                     {
@@ -1449,7 +1449,7 @@ namespace NocturnalEngine {
         if (is_ShowWindow)
         {
             ImGui::Begin("Inspector");
-            if (selectedEntity < MAX_ENTITIES && selectedEntity >= 0 && p_ecs.GetTotalEntities() != 0)// if the selectedEntityExist
+            if (selectedEntity < MAX_ENTITIES && selectedEntity >= 0 && p_ecs.GetTotalSceneEntities() != 0)// if the selectedEntityExist
             {
                 //create component for the selected entity 
                 if (ImGui::Button("Add Component"))
@@ -1642,7 +1642,7 @@ namespace NocturnalEngine {
             float f4 = p_Audio->GetVolumeByChannel(p_Audio->GetBGMChannelGroup());
             float f5 = p_Audio->GetVolumeByChannel(p_Audio->GetSFXChannelGroup());
             
-            for (Entity i = 0; i < p_ecs.GetTotalEntities(); ++i) 
+            for (Entity i = 0; i < p_ecs.GetTotalSceneEntities(); ++i) 
             {
                 if (p_ecs.HaveComponent<Audio>(i)) 
                 {
@@ -1670,7 +1670,7 @@ namespace NocturnalEngine {
             }
             p_Audio->SetVolumeByChannel(p_Audio->GetSFXChannelGroup(), f5);
 
-            for (Entity i = 0; i < p_ecs.GetTotalEntities(); ++i)
+            for (Entity i = 0; i < p_ecs.GetTotalSceneEntities(); ++i)
             {
                 if (p_ecs.HaveComponent<Audio>(i))
                 {

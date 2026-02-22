@@ -31,7 +31,7 @@ namespace NocturnalEngine
 		virtual std::array<Entity, MAX_ENTITIES>& GetIndexToEntityMap() = 0;
 		virtual const size_t GetEntitySize() = 0;
 		virtual void ClearForWorldBuild() = 0;
-		virtual void Clear() = 0;
+		virtual void Clear(const std::bitset<MAX_ENTITIES>& isPrefab) = 0;
 	};
 
 	template<typename T>
@@ -130,13 +130,13 @@ namespace NocturnalEngine
 			std::fill(mIndexToEntityMap.begin(), mIndexToEntityMap.end(), MAX_ENTITIES);
 		}
 
-		void Clear()
+		void Clear(const std::bitset<MAX_ENTITIES>& isPrefab)
 		{
 			std::vector<Entity> entitiesToRemove;
 			for (size_t i = 0; i < mSize; ++i)
 			{
 				Entity entity = mIndexToEntityMap[i];
-				if (entity != MAX_ENTITIES)
+				if (entity != MAX_ENTITIES && !isPrefab[entity])
 				{
 					entitiesToRemove.push_back(entity);
 				}
@@ -145,9 +145,6 @@ namespace NocturnalEngine
 			{
 				RemoveData(*it);
 			}
-			std::fill(mEntityToIndexMap.begin(), mEntityToIndexMap.end(), MAX_ENTITIES);
-			std::fill(mIndexToEntityMap.begin(), mIndexToEntityMap.end(), MAX_ENTITIES);
-			mSize = 0;
 		}
 
 	private:

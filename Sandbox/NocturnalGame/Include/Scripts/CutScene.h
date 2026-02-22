@@ -50,7 +50,7 @@ namespace NocturnalEngine
 		****************************************************************************/
 		virtual void Start() override
 		{
-			for (Entity i = 0; i < p_ecs.GetTotalEntities(); ++i)
+			for (Entity i = 0; i < p_ecs.GetTotalSceneEntities(); ++i)
 			{
 				if (p_ecs.GetComponent<NameTag>(i).GetNameTag() == "CutScene Controller")
 				{

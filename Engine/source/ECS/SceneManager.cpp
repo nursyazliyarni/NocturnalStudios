@@ -223,7 +223,7 @@ void NocturnalEngine::SceneManager::checkForSceneToLoad()
 
 void NocturnalEngine::SceneManager::changeScene()
 {
-	for (Entity i = 0; i < p_ecs.GetTotalEntities(); ++i)
+	for (Entity i = 0; i < p_ecs.GetTotalSceneEntities(); ++i)
 	{
 		if (p_ecs.HaveComponent<Logic>(i))
 		{
