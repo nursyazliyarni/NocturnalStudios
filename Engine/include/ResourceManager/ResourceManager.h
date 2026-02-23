@@ -26,11 +26,9 @@
 
 
 namespace NocturnalEngine {
-//#if DEBUG
-//	static std::filesystem::path EngineAssetPath{ std::filesystem::current_path().parent_path().parent_path() / "Resources" / "EngineAssets" };
-//#else
+
 	extern std::filesystem::path EngineAssetPath;
-//#endif
+
 	class ResourceManager
 	{
 	public:

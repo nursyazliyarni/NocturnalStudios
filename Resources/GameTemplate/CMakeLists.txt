@@ -15,6 +15,20 @@ file(GLOB_RECURSE GAME_HDR CONFIGURE_DEPENDS
 # Create executable
 add_executable(TEMPLATE_PROJECT_NAME ${GAME_SRC} ${GAME_HDR})
 
+# Copy Engine Assets
+add_custom_command(TARGET TEMPLATE_PROJECT_NAME POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+    "${CMAKE_SOURCE_DIR}/Resources/EngineAssets"
+    "$<TARGET_FILE_DIR:TEMPLATE_PROJECT_NAME>/EngineAssets"
+)
+
+# Copy game assets
+add_custom_command(TARGET TEMPLATE_PROJECT_NAME POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+    "${CMAKE_CURRENT_SOURCE_DIR}/Assets"
+    "$<TARGET_FILE_DIR:TEMPLATE_PROJECT_NAME>/Assets"
+)
+
 # Include directories for game headers
 target_include_directories(TEMPLATE_PROJECT_NAME PRIVATE
   "${CMAKE_CURRENT_SOURCE_DIR}/Include"
