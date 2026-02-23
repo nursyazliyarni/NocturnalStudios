@@ -187,7 +187,11 @@ namespace NocturnalEngine {
 	}
 	void ResourceManager::SetEngineResources() {
 
-		std::filesystem::path exePath = std::filesystem::current_path().parent_path();
+		std::filesystem::path exePath = std::filesystem::current_path();
+		if (exePath.has_extension()&&exePath.extension().string() ==".exe")
+		{
+			 exePath = std::filesystem::current_path().parent_path();
+		}
 		std::filesystem::path relativeToExe = exePath / "Assets"/"Resources"/"EngineAssets";
 
 		if (std::filesystem::exists(relativeToExe)) {
