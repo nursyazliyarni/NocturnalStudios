@@ -26,7 +26,11 @@
 
 
 namespace NocturnalEngine {
-	static std::filesystem::path EngineAssetPath{ std::filesystem::current_path().parent_path().parent_path() / "Resources" / "EngineAssets" };
+//#if DEBUG
+//	static std::filesystem::path EngineAssetPath{ std::filesystem::current_path().parent_path().parent_path() / "Resources" / "EngineAssets" };
+//#else
+	extern std::filesystem::path EngineAssetPath;
+//#endif
 	class ResourceManager
 	{
 	public:
@@ -58,6 +62,8 @@ namespace NocturnalEngine {
 		
 		//load different type of fonts from file tff
 		static void clear();
+
+		static void SetEngineResources();
 	private:
 		
 	private:

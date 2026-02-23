@@ -15,6 +15,20 @@ file(GLOB_RECURSE GAME_HDR CONFIGURE_DEPENDS
 # Create executable
 add_executable(NocturnalGame ${GAME_SRC} ${GAME_HDR})
 
+# Copy Engine Assets
+add_custom_command(TARGET NocturnalGame POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+    "${CMAKE_SOURCE_DIR}/Resources/EngineAssets"
+    "$<TARGET_FILE_DIR:NocturnalGame>/EngineAssets"
+)
+
+# Copy game assets
+add_custom_command(TARGET NocturnalGame POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+    "${CMAKE_CURRENT_SOURCE_DIR}/Assets"
+    "$<TARGET_FILE_DIR:NocturnalGame>/Assets"
+)
+
 # Include directories for game headers
 target_include_directories(NocturnalGame PRIVATE
   "${CMAKE_CURRENT_SOURCE_DIR}/Include"

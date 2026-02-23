@@ -21,6 +21,7 @@
 #include "ResourceManager/ResourceManager.h"
 
 namespace NocturnalEngine {
+	std::filesystem::path EngineAssetPath{std::filesystem::current_path().parent_path().parent_path()/"Resources"/"EngineAssets"};
 	std::unordered_map <std::string, std::shared_ptr<Texture>> ResourceManager::textures;
 	std::unordered_map <std::string, std::shared_ptr<Shader>> ResourceManager::shaders;
 	std::unordered_map <std::string, std::shared_ptr<Font>> ResourceManager::fonts;
@@ -184,4 +185,23 @@ namespace NocturnalEngine {
 		shaders.clear();
 		fonts.clear();
 	}
+	void ResourceManager::SetEngineResources() {
+
+		std::filesystem::path exePath = std::filesystem::current_path().parent_path();
+		std::filesystem::path relativeToExe = exePath / "EngineAssets";
+
+		if (std::filesystem::exists(relativeToExe)) {
+			EngineAssetPath = relativeToExe;
+			return;
+		}
+
+		// Second try: traverse up to find NocturnalStudios (running from VS)
+		std::filesystem::path search = std::filesystem::current_path();
+		while (search.filename() != "NocturnalStudios") {
+			if (search == search.parent_path()) return; // hit root, not found
+			search = search.parent_path();
+		}
+		EngineAssetPath = search / "Resources" / "EngineAssets";
+	}
+
 }

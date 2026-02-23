@@ -43,6 +43,9 @@ EngineCore constructor
 	{
 		
 		_set_abort_behavior(0, _CALL_REPORTFAULT);
+#if !DEBUG
+		ResourceManager::SetEngineResources();
+#endif
 		p_ecs.Init();
 		p_ECompReg.RegisterAllEngineComponents();
 		p_Scene->Init();

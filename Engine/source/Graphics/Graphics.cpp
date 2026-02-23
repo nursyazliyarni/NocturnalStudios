@@ -53,7 +53,6 @@ namespace NocturnalEngine {
 	****************************************************************************/
 	void Graphic::Init()
 	{
-		
 		ResourceManager::LoadShader("QuadShader", EngineAssetPath.string() + "/Shaders/texture.shader");
 		ResourceManager::LoadShader("LineShader", EngineAssetPath.string() + "/Shaders/Line.shader");
 		ResourceManager::LoadShader("CircleShader", EngineAssetPath.string() + "/Shaders/Circle.shader");
@@ -131,14 +130,14 @@ namespace NocturnalEngine {
 		Renderer::Init();
 		if (!ResourceManager::GetFont("KernlGrotesk"))
 		{
-			ResourceManager::LoadFont("KernlGrotesk", "Assets/fonts/KernlGrotesk.otf");
+			ResourceManager::LoadFont("KernlGrotesk", "Assets/Fonts/KernlGrotesk.otf");
 		}
 		mFont = ResourceManager::GetFont("KernlGrotesk");
 		if (!mFont)
 		{
 			mFont = std::make_shared<Font>();
 			mFont->Init();
-			mFont->Load("Assets/fonts/KernlGrotesk.otf");
+			mFont->Load("Assets/Fonts/KernlGrotesk.otf");
 		}
 
 		for (int i = 0; i < Graphic::MAX_LAYERS; ++i)
