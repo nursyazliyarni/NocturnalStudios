@@ -22,6 +22,7 @@
 #include "ECS/ECS.h"
 #include "Scripts/GlobalGameManager.h"
 #include "ECS/Components/AnimalAttributes.h"
+#include "Math/Random.h"
 
 
 namespace NocturnalEngine {
@@ -41,6 +42,9 @@ namespace NocturnalEngine {
 
 			// in addition, the gamemanager also saves the above gS as the current gamestate
 			aA=p_GameManager.LoadPersistentValues(name);
+
+			//fetch checkperiod
+			checkPeriod = p_GameManager.GetCheckPeriod();
 		}
 	}
 
@@ -54,41 +58,29 @@ namespace NocturnalEngine {
 		//a safeguard in case
 		if (!p_ecs.HaveComponent<AnimalAttributes>(entityID))return;
 
+		//3.0 base health decay rate
+
+		//Flamingo's health decreases faster based on its hunger. If hunger is above 70%, health decreases at a rate of 0.5.
+		//If hunger is below 30%, health decreases at 2x the rate
+
+		//horse is just 1.5x faster
+
+
+
 		AnimalAttributes& aA{ p_ecs.GetComponent<AnimalAttributes>(entityID) };
-		if (p_GameManager.GetGameState() == GameManager::GameState::STARTING)
-		{
-			aA.SetDefault();
-		}
+
+		
+
 
 		if (!aA.isEscaped&&aA.is_alive&&p_GameManager.GetGameState() != GameManager::GameState::ENDING) {
-			aA.current_hunger -= aA.hungerDecayRate * static_cast<double>(Frametime) * 2.0;
 
-			// Adjust health decay based on animal type and hunger state
-			const double baseHealthMultiplier = 3.0; // much faster overall
-			double healthMultiplier = baseHealthMultiplier;
-			if (p_ecs.HaveComponent<NameTag>(entityID))
-			{
-				const std::string& name = p_GameManager.IsNewSceneManagement()?aA.WhatKindOfAnimalIsThis():p_ecs.GetComponent<NameTag>(entityID).GetNameTag();
-				const double hungerRatio = (aA.maxHunger > 0.0) ? (aA.current_hunger / aA.maxHunger) : 0.0;
-				const double lowHungerThreshold = 0.30;   // below 30% is "low"
-				const double highHungerThreshold = 0.70;  // above 70% is "normal+"
+			//hunger>hp>sanity
+			CheckAndDecreaseStats(time.hunger, chance.hunger, aA.hungerDecayRate, aA.current_hunger, Frametime);
+			
 
-				if (name == "Flamingo")
-				{
-					if (hungerRatio < lowHungerThreshold)
-						healthMultiplier = 2.0; // faster when hungry
-					else if (hungerRatio > highHungerThreshold)
-						healthMultiplier = 0.5; // slower when well fed
-				}
-				else if (name == "Horse")
-				{
-					healthMultiplier = 1.5; // faster health decay
-				}
-				// Seal and Owl remain at normal decay (1.0)
-			}
 
-			aA.current_health -= aA.healthDecayRate * static_cast<double>(Frametime) * healthMultiplier;
-			aA.current_sanity -= aA.sanityDecayRate * static_cast<double>(Frametime);
+			//aA.current_health -= aA.healthDecayRate * static_cast<double>(Frametime);
+			//aA.current_sanity -= aA.sanityDecayRate * static_cast<double>(Frametime);
 
 			if (aA.current_sanity <= 0)
 			{
@@ -193,5 +185,26 @@ namespace NocturnalEngine {
 		// Transform& t{ p_ecs.GetComponent<Transform>(entityID) };
 
 	}
-
+	void AnimalLogic::CheckAndDecreaseStats(float& time, float& chance, double decayRate, double& attributeValue,float frametime) {
+		if (decayRate <= 0.0)decayRate = 1.0;
+		if (time >= checkPeriod / decayRate)
+		{
+			//std::cout << "Checking\n";
+			float bruh{ Random::Range(0.f, 100.f) };
+			if ( bruh<= chance)
+			{
+				//std::cout << bruh << "\n";
+				attributeValue -= 10.0;
+				chance = 10.f;
+			}
+			else {
+				chance += 10.f;
+			}
+			time = 0.f;
+		}
+		else
+		{
+			time += frametime;
+		}
+	}
 }

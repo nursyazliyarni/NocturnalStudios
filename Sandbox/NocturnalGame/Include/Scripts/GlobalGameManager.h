@@ -73,6 +73,8 @@ namespace NocturnalEngine {
          //returns how much we have to multiply seconds by for timer
          float GetTimeScale() const{ return 21600.f/winRequirement; }
 
+         float GetCheckPeriod()const { return winRequirement/72.f; }
+
          float GetTimeElapsed() const{ return gameTimeElapsed; }
 
          bool HasLogBeenUpdated();

@@ -178,7 +178,7 @@ namespace NocturnalEngine {
                 // The code should be the exact same
                 if (sceneAnimalPair.first!=currScene&& !sceneAnimalPair.second.isEscaped &&sceneAnimalPair.second.is_alive)
                 {
-                    sceneAnimalPair.second.current_hunger -= sceneAnimalPair.second.hungerDecayRate * static_cast<double>( dt) * 2.0;
+                    //sceneAnimalPair.second.current_hunger -= sceneAnimalPair.second.hungerDecayRate * static_cast<double>( dt) * 2.0;
                     // Adjust health decay based on animal type and hunger state
                     const double baseHealthMultiplier = 3.0; // much faster overall
                     double healthMultiplier = baseHealthMultiplier;
@@ -199,8 +199,8 @@ namespace NocturnalEngine {
                         healthMultiplier = 1.5; // faster health decay
                     }
                         // Seal and Owl remain at normal decay (1.0)
-                    sceneAnimalPair.second.current_health -= sceneAnimalPair.second.healthDecayRate * static_cast<double>(dt) * healthMultiplier;
-                    sceneAnimalPair.second.current_sanity -= sceneAnimalPair.second.sanityDecayRate * static_cast<double>(dt);
+                    //sceneAnimalPair.second.current_health -= sceneAnimalPair.second.healthDecayRate * static_cast<double>(dt) * healthMultiplier;
+                    //sceneAnimalPair.second.current_sanity -= sceneAnimalPair.second.sanityDecayRate * static_cast<double>(dt);
 
                     
                     if (sceneAnimalPair.second.current_sanity <= 0)
