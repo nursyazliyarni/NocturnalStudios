@@ -59,6 +59,7 @@
 #include "Graphics/FrameBuffer.h"
 #include "Core/Log.h"
 #include "Audio/AudioEngine.h"
+#include "Animation/Animation.h"
 
 #include "ECS/Components/Components.h"
 #include "ECS/SceneManager.h"
@@ -216,6 +217,7 @@ namespace NocturnalEngine {
             Inspector();
             SceneViewer();
             AudioEditor();
+            AnimationEditor();
         }
 
     }
@@ -1740,6 +1742,78 @@ namespace NocturnalEngine {
 
             ImGui::End();
         }
+    }
+
+    void LevelEditor::AnimationEditor()
+    {
+        if (!is_ShowWindow)
+            return;
+
+        ImGui::Begin("Animation Editor");
+
+        if (selectedEntity == MAX_ENTITIES || !p_ecs.HaveComponent<Sprite>(selectedEntity))
+        {
+            ImGui::Text("Select an entity with a Sprite component.");
+            ImGui::End();
+            return;
+        }
+
+        Sprite& sprite = p_ecs.GetComponent<Sprite>(selectedEntity);
+
+        ImGui::Checkbox("SpriteSheet", &sprite.is_SpriteSheet); ImGui::SameLine();
+        ImGui::Checkbox("Animated", &sprite.is_Animated);
+
+        const std::string& textureName = sprite.GetTexture();
+        ImGui::Text("Texture: %s", textureName.c_str());
+
+        if (!sprite.is_SpriteSheet)
+        {
+            ImGui::Text("Enable SpriteSheet to edit frame timings.");
+            ImGui::End();
+            return;
+        }
+
+        int maxFrames = sprite.GetMaxIndex();
+        auto texIt = ResourceManager::textures.find(textureName);
+        if (texIt != ResourceManager::textures.end() && texIt->second)
+        {
+            const int texFrames = static_cast<int>(texIt->second->GetWidth() / 512);
+            if (texFrames > 0)
+                maxFrames = texFrames;
+        }
+
+        ImGui::Text("Frames: %d", maxFrames);
+
+        if (ImGui::Button("Sync Frames"))
+        {
+            sprite.GetMaxIndex() = maxFrames > 0 ? maxFrames : 1;
+            auto& times = sprite.GetDisplayTime();
+            if ((int)times.size() != sprite.GetMaxIndex())
+                times.resize(sprite.GetMaxIndex(), 0.1f);
+        }
+
+        if (sprite.GetMaxIndex() <= 0)
+            sprite.GetMaxIndex() = maxFrames > 0 ? maxFrames : 1;
+
+        auto& times = sprite.GetDisplayTime();
+        if ((int)times.size() != sprite.GetMaxIndex())
+            times.resize(sprite.GetMaxIndex(), 0.1f);
+
+        bool changed = false;
+        for (int i = 0; i < sprite.GetMaxIndex(); ++i)
+        {
+            std::string label = "Frame " + std::to_string(i);
+            if (ImGui::DragFloat(label.c_str(), &times[i], 0.005f, 0.0f, 10.0f, "%.3f s"))
+                changed = true;
+        }
+
+        if (sprite.is_Animated && !textureName.empty())
+        {
+            if (changed || Animation::spriteContainer.find(textureName) == Animation::spriteContainer.end())
+                Animation::spriteContainer[textureName] = times;
+        }
+
+        ImGui::End();
     }
 
     void LevelEditor::HandleUndoRedoShortcuts()

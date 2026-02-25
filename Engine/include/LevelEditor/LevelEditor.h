@@ -58,6 +58,7 @@ namespace NocturnalEngine {
 		void LoadAudioFromFile();
 		void LoadScriptsFromFile();
 		void AudioEditor();
+		void AnimationEditor();
 		void insertAudioFilePath(std::string in);
 		void insertTextureFilePath(std::string on);
 
