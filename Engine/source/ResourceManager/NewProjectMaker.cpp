@@ -71,6 +71,7 @@ namespace NocturnalEngine {
     ****************************************************************************/
     void ProjectMaker::UpdateRootCMake(const std::filesystem::path& projectPath,const std::string& projectName) const
     {
+		UNREFERENCED_PARAMETER(projectPath);
         std::filesystem::path rootCMake =rootDir/"CMakeLists.txt";
 
         if (!std::filesystem::exists(rootCMake))
