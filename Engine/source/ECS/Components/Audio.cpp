@@ -82,6 +82,55 @@ void NocturnalEngine::Audio::ToEditor() {
         if (ImGui::Button("Remove Audio")) {
             AudioArr.erase(AudioArr.begin() + current_audio);
         }
+
+        // Audio Effects section
+        ImGui::Separator();
+        if (ImGui::TreeNode("Audio Effects"))
+        {
+            AudioEffectSettings& fx = effectSettings;
+
+            // Low-pass filter
+            ImGui::Checkbox("Low-Pass Filter", &fx.lowpassEnabled);
+            if (fx.lowpassEnabled)
+            {
+                ImGui::SliderFloat("LP Cutoff (Hz)", &fx.lowpassCutoff, 10.0f, 22000.0f, "%.0f");
+                ImGui::SliderFloat("LP Resonance", &fx.lowpassResonance, 1.0f, 10.0f, "%.1f");
+            }
+
+            // High-pass filter
+            ImGui::Checkbox("High-Pass Filter", &fx.highpassEnabled);
+            if (fx.highpassEnabled)
+            {
+                ImGui::SliderFloat("HP Cutoff (Hz)", &fx.highpassCutoff, 10.0f, 22000.0f, "%.0f");
+                ImGui::SliderFloat("HP Resonance", &fx.highpassResonance, 1.0f, 10.0f, "%.1f");
+            }
+
+            // Echo / Delay
+            ImGui::Checkbox("Echo / Delay", &fx.echoEnabled);
+            if (fx.echoEnabled)
+            {
+                ImGui::SliderFloat("Echo Delay (ms)", &fx.echoDelay, 1.0f, 5000.0f, "%.0f");
+                ImGui::SliderFloat("Echo Feedback (%%)", &fx.echoFeedback, 0.0f, 100.0f, "%.0f");
+                ImGui::SliderFloat("Echo Dry Level (dB)", &fx.echoDryLevel, -80.0f, 10.0f, "%.1f");
+                ImGui::SliderFloat("Echo Wet Level (dB)", &fx.echoWetLevel, -80.0f, 10.0f, "%.1f");
+            }
+
+            // Reverb
+            ImGui::Checkbox("Reverb", &fx.reverbEnabled);
+            if (fx.reverbEnabled)
+            {
+                ImGui::SliderFloat("Decay Time (ms)", &fx.reverbDecayTime, 100.0f, 20000.0f, "%.0f");
+                ImGui::SliderFloat("Early Delay (ms)", &fx.reverbEarlyDelay, 0.0f, 300.0f, "%.1f");
+                ImGui::SliderFloat("Late Delay (ms)", &fx.reverbLateDelay, 0.0f, 100.0f, "%.1f");
+                ImGui::SliderFloat("HF Reference (Hz)", &fx.reverbHFReference, 20.0f, 20000.0f, "%.0f");
+                ImGui::SliderFloat("Diffusion (%%)", &fx.reverbDiffusion, 0.0f, 100.0f, "%.0f");
+                ImGui::SliderFloat("Density (%%)", &fx.reverbDensity, 0.0f, 100.0f, "%.0f");
+                ImGui::SliderFloat("Reverb Wet (dB)", &fx.reverbWetLevel, -80.0f, 20.0f, "%.1f");
+                ImGui::SliderFloat("Reverb Dry (dB)", &fx.reverbDryLevel, -80.0f, 20.0f, "%.1f");
+            }
+
+            ImGui::TreePop();
+        }
     }
 }
 
@@ -107,6 +156,35 @@ bool NocturnalEngine::Audio::Deserialize(const rapidjson::Value& obj)
 	sfxVol = (float)obj["SFX Volume"].GetDouble();
 	masterVol = (float)obj["Master Volume"].GetDouble();
 	if (obj.HasMember("RandomFromArray") && obj["RandomFromArray"].IsBool())randomFromArray = obj["RandomFromArray"].GetBool();
+
+	// Deserialize audio effect settings
+	if (obj.HasMember("Effects") && obj["Effects"].IsObject())
+	{
+		const auto& fx = obj["Effects"].GetObj();
+		if (fx.HasMember("LowpassEnabled"))   effectSettings.lowpassEnabled   = fx["LowpassEnabled"].GetBool();
+		if (fx.HasMember("LowpassCutoff"))    effectSettings.lowpassCutoff    = (float)fx["LowpassCutoff"].GetDouble();
+		if (fx.HasMember("LowpassResonance")) effectSettings.lowpassResonance = (float)fx["LowpassResonance"].GetDouble();
+
+		if (fx.HasMember("HighpassEnabled"))   effectSettings.highpassEnabled   = fx["HighpassEnabled"].GetBool();
+		if (fx.HasMember("HighpassCutoff"))    effectSettings.highpassCutoff    = (float)fx["HighpassCutoff"].GetDouble();
+		if (fx.HasMember("HighpassResonance")) effectSettings.highpassResonance = (float)fx["HighpassResonance"].GetDouble();
+
+		if (fx.HasMember("EchoEnabled"))  effectSettings.echoEnabled  = fx["EchoEnabled"].GetBool();
+		if (fx.HasMember("EchoDelay"))    effectSettings.echoDelay    = (float)fx["EchoDelay"].GetDouble();
+		if (fx.HasMember("EchoFeedback")) effectSettings.echoFeedback = (float)fx["EchoFeedback"].GetDouble();
+		if (fx.HasMember("EchoDryLevel")) effectSettings.echoDryLevel = (float)fx["EchoDryLevel"].GetDouble();
+		if (fx.HasMember("EchoWetLevel")) effectSettings.echoWetLevel = (float)fx["EchoWetLevel"].GetDouble();
+
+		if (fx.HasMember("ReverbEnabled"))     effectSettings.reverbEnabled     = fx["ReverbEnabled"].GetBool();
+		if (fx.HasMember("ReverbDecayTime"))   effectSettings.reverbDecayTime   = (float)fx["ReverbDecayTime"].GetDouble();
+		if (fx.HasMember("ReverbEarlyDelay"))  effectSettings.reverbEarlyDelay  = (float)fx["ReverbEarlyDelay"].GetDouble();
+		if (fx.HasMember("ReverbLateDelay"))   effectSettings.reverbLateDelay   = (float)fx["ReverbLateDelay"].GetDouble();
+		if (fx.HasMember("ReverbHFReference")) effectSettings.reverbHFReference = (float)fx["ReverbHFReference"].GetDouble();
+		if (fx.HasMember("ReverbDiffusion"))   effectSettings.reverbDiffusion   = (float)fx["ReverbDiffusion"].GetDouble();
+		if (fx.HasMember("ReverbDensity"))     effectSettings.reverbDensity     = (float)fx["ReverbDensity"].GetDouble();
+		if (fx.HasMember("ReverbWetLevel"))    effectSettings.reverbWetLevel    = (float)fx["ReverbWetLevel"].GetDouble();
+		if (fx.HasMember("ReverbDryLevel"))    effectSettings.reverbDryLevel    = (float)fx["ReverbDryLevel"].GetDouble();
+	}
 	return true;
 }
 
@@ -140,6 +218,32 @@ bool NocturnalEngine::Audio::Serialize(rapidjson::PrettyWriter<rapidjson::String
 	writer->Double(masterVol);
 	writer->Key("RandomFromArray");
 	writer->Bool(randomFromArray);
+
+	// Serialize audio effect settings
+	writer->Key("Effects");
+	writer->StartObject();
+	writer->Key("LowpassEnabled");   writer->Bool(effectSettings.lowpassEnabled);
+	writer->Key("LowpassCutoff");    writer->Double(effectSettings.lowpassCutoff);
+	writer->Key("LowpassResonance"); writer->Double(effectSettings.lowpassResonance);
+	writer->Key("HighpassEnabled");   writer->Bool(effectSettings.highpassEnabled);
+	writer->Key("HighpassCutoff");    writer->Double(effectSettings.highpassCutoff);
+	writer->Key("HighpassResonance"); writer->Double(effectSettings.highpassResonance);
+	writer->Key("EchoEnabled");  writer->Bool(effectSettings.echoEnabled);
+	writer->Key("EchoDelay");    writer->Double(effectSettings.echoDelay);
+	writer->Key("EchoFeedback"); writer->Double(effectSettings.echoFeedback);
+	writer->Key("EchoDryLevel"); writer->Double(effectSettings.echoDryLevel);
+	writer->Key("EchoWetLevel"); writer->Double(effectSettings.echoWetLevel);
+	writer->Key("ReverbEnabled");     writer->Bool(effectSettings.reverbEnabled);
+	writer->Key("ReverbDecayTime");   writer->Double(effectSettings.reverbDecayTime);
+	writer->Key("ReverbEarlyDelay");  writer->Double(effectSettings.reverbEarlyDelay);
+	writer->Key("ReverbLateDelay");   writer->Double(effectSettings.reverbLateDelay);
+	writer->Key("ReverbHFReference"); writer->Double(effectSettings.reverbHFReference);
+	writer->Key("ReverbDiffusion");   writer->Double(effectSettings.reverbDiffusion);
+	writer->Key("ReverbDensity");     writer->Double(effectSettings.reverbDensity);
+	writer->Key("ReverbWetLevel");    writer->Double(effectSettings.reverbWetLevel);
+	writer->Key("ReverbDryLevel");    writer->Double(effectSettings.reverbDryLevel);
+	writer->EndObject();
+
 	return true;
 }
 
