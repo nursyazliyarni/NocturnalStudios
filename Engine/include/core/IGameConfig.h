@@ -29,6 +29,7 @@ namespace NocturnalEngine {
         // Called when exiting play mode
         virtual void OnExitPlayMode(bool ) = 0;
 
+        std::string mainMenuScene{};
         
     };
 

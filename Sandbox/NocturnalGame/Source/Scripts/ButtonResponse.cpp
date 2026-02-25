@@ -228,17 +228,20 @@ namespace NocturnalEngine
 
 					Graphic::mcamera->SetZoomLevel(1.0f);
 					p_Scene->setSceneToLoad("Assets/Scene/FlamingoScene.json");
+					p_GameManager.SetState(GameManager::GameState::PLAYING);
 				}
 
 				if (ID_tag.GetTag() == "Restart")
 				{
 					p_Scene->setSceneToLoad("Assets/Scene/FlamingoScene.json");//reset the game level in game over
+					p_GameManager.SetState(GameManager::GameState::PLAYING);
 				}
 				if (ID_tag.GetTag() == "RestartT")
 				{
 					p_GameManager.ResetStats();
 					
 					p_Scene->setSceneToLoad("Assets/Scene/FlamingoScene.json");//reset the game level in game over
+					p_GameManager.SetState(GameManager::GameState::PLAYING);
 				}
 				if (ID_tag.GetTag() == "ProceedT")
 				{
@@ -275,6 +278,7 @@ namespace NocturnalEngine
 				{
 					Graphic::mcamera->SetZoomLevel(0.25f);
 					p_Scene->setSceneToLoad("Assets/Scene/FlamingoScene.json");// restart the game in pause
+					p_GameManager.SetState(GameManager::GameState::PLAYING);
 				}
 
 				if (ID_tag.GetTag() == "Mute")

@@ -28,6 +28,7 @@ namespace NocturnalEngine {
                 "OwlScene.json",
                 "CombinedScene.json"
             };
+            mainMenuScene = "Assets/Scene/Menu.json";
         }
 
         bool IsPlayableScene(const std::string& sceneName) const override {
