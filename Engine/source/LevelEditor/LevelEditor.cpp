@@ -402,7 +402,7 @@ namespace NocturnalEngine {
 
             if (is_ShowWindow)
             {
-                if (ImGui::Button("Close Editor/Play"))
+                if (ImGui::Button("Play"))
                 {
                     is_ShowWindow = false;
 
@@ -419,12 +419,14 @@ namespace NocturnalEngine {
             }
             else
             {
-                if (ImGui::Button("Open Editor/Stop"))
+                if (ImGui::Button("Stop"))
                 {
                     is_ShowWindow = true;
                     p_Scene->isGameplay = false;
                     mGameConfig->OnExitPlayMode(true);
-                   
+                    p_Scene->setSceneToLoad("Assets/Scene/Menu.json");
+                    p_Audio->StopChannel(CAudioEngine::channel_groups::master);
+                    
                     
                     
                 }
