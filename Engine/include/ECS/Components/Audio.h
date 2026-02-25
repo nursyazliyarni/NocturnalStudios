@@ -15,6 +15,34 @@
 #pragma once
 #include "IComponent.h"
 #pragma warning( disable : 26495 )
+
+struct AudioEffectSettings
+{
+	bool  lowpassEnabled{ false };
+	float lowpassCutoff{ 5000.0f };
+	float lowpassResonance{ 1.0f };
+
+	bool  highpassEnabled{ false };
+	float highpassCutoff{ 10.0f };
+	float highpassResonance{ 1.0f };
+
+	bool  echoEnabled{ false };
+	float echoDelay{ 500.0f };
+	float echoFeedback{ 50.0f };
+	float echoDryLevel{ 0.0f };
+	float echoWetLevel{ -6.0f };
+
+	bool  reverbEnabled{ false };
+	float reverbDecayTime{ 1500.0f };
+	float reverbEarlyDelay{ 7.0f };
+	float reverbLateDelay{ 11.0f };
+	float reverbHFReference{ 5000.0f };
+	float reverbDiffusion{ 100.0f };
+	float reverbDensity{ 100.0f };
+	float reverbWetLevel{ -6.0f };
+	float reverbDryLevel{ 0.0f };
+};
+
 namespace NocturnalEngine
 {
 
@@ -67,12 +95,17 @@ namespace NocturnalEngine
 		void SetMasterVolume(float vol) { masterVol = vol; }
 
 		bool IsRandomized()const { return randomFromArray; }
+
+		AudioEffectSettings& GetEffectSettings() { return effectSettings; }
+		const AudioEffectSettings& GetEffectSettings() const { return effectSettings; }
+		void SetEffectSettings(const AudioEffectSettings& s) { effectSettings = s; }
 	private:
 		std::vector<AudioPiece> AudioArr;
 		float bgmVol;
 		float sfxVol;
 		float masterVol;
 		bool randomFromArray{ false };
+		AudioEffectSettings effectSettings;
 
 		std::vector < std::pair<std::string, std::filesystem::directory_entry>> LoadAudioFromFiles();
 	};

@@ -1660,6 +1660,82 @@ namespace NocturnalEngine {
                     p_ecs.GetComponent<Audio>(i).SetSFXVolume(f5);
                 }
             }
+
+            // Audio Effects (DSP) controls
+            ImGui::Separator();
+            if (ImGui::CollapsingHeader("Audio Effects (DSP)"))
+            {
+                static AudioEffectSettings editorFx;
+                static bool fxInitialized = false;
+
+                // Sync from first Audio component found in scene on first open
+                if (!fxInitialized)
+                {
+                    for (Entity ei = 0; ei < p_ecs.GetTotalSceneEntities(); ++ei)
+                    {
+                        if (p_ecs.HaveComponent<Audio>(ei))
+                        {
+                            editorFx = p_ecs.GetComponent<Audio>(ei).GetEffectSettings();
+                            break;
+                        }
+                    }
+                    editorFx = p_Audio->GetCurrentEffects();
+                    fxInitialized = true;
+                }
+
+                // Low-pass filter
+                ImGui::Checkbox("Low-Pass Filter##Editor", &editorFx.lowpassEnabled);
+                if (editorFx.lowpassEnabled)
+                {
+                    ImGui::SliderFloat("LP Cutoff (Hz)##Editor", &editorFx.lowpassCutoff, 10.0f, 22000.0f, "%.0f");
+                    ImGui::SliderFloat("LP Resonance##Editor", &editorFx.lowpassResonance, 1.0f, 10.0f, "%.1f");
+                }
+
+                // High-pass filter
+                ImGui::Checkbox("High-Pass Filter##Editor", &editorFx.highpassEnabled);
+                if (editorFx.highpassEnabled)
+                {
+                    ImGui::SliderFloat("HP Cutoff (Hz)##Editor", &editorFx.highpassCutoff, 10.0f, 22000.0f, "%.0f");
+                    ImGui::SliderFloat("HP Resonance##Editor", &editorFx.highpassResonance, 1.0f, 10.0f, "%.1f");
+                }
+
+                // Echo / Delay
+                ImGui::Checkbox("Echo / Delay##Editor", &editorFx.echoEnabled);
+                if (editorFx.echoEnabled)
+                {
+                    ImGui::SliderFloat("Echo Delay (ms)##Editor", &editorFx.echoDelay, 1.0f, 5000.0f, "%.0f");
+                    ImGui::SliderFloat("Echo Feedback (%%)##Editor", &editorFx.echoFeedback, 0.0f, 100.0f, "%.0f");
+                    ImGui::SliderFloat("Echo Dry (dB)##Editor", &editorFx.echoDryLevel, -80.0f, 10.0f, "%.1f");
+                    ImGui::SliderFloat("Echo Wet (dB)##Editor", &editorFx.echoWetLevel, -80.0f, 10.0f, "%.1f");
+                }
+
+                // Reverb
+                ImGui::Checkbox("Reverb##Editor", &editorFx.reverbEnabled);
+                if (editorFx.reverbEnabled)
+                {
+                    ImGui::SliderFloat("Decay Time (ms)##Editor", &editorFx.reverbDecayTime, 100.0f, 20000.0f, "%.0f");
+                    ImGui::SliderFloat("Early Delay (ms)##Editor", &editorFx.reverbEarlyDelay, 0.0f, 300.0f, "%.1f");
+                    ImGui::SliderFloat("Late Delay (ms)##Editor", &editorFx.reverbLateDelay, 0.0f, 100.0f, "%.1f");
+                    ImGui::SliderFloat("HF Reference (Hz)##Editor", &editorFx.reverbHFReference, 20.0f, 20000.0f, "%.0f");
+                    ImGui::SliderFloat("Diffusion (%%)##Editor", &editorFx.reverbDiffusion, 0.0f, 100.0f, "%.0f");
+                    ImGui::SliderFloat("Density (%%)##Editor", &editorFx.reverbDensity, 0.0f, 100.0f, "%.0f");
+                    ImGui::SliderFloat("Reverb Wet (dB)##Editor", &editorFx.reverbWetLevel, -80.0f, 20.0f, "%.1f");
+                    ImGui::SliderFloat("Reverb Dry (dB)##Editor", &editorFx.reverbDryLevel, -80.0f, 20.0f, "%.1f");
+                }
+
+                // Apply effects to audio engine in real-time
+                p_Audio->ApplyEffects(editorFx);
+
+                // Propagate editor effect settings back to all Audio components in the scene
+                for (Entity ei = 0; ei < p_ecs.GetTotalSceneEntities(); ++ei)
+                {
+                    if (p_ecs.HaveComponent<Audio>(ei))
+                    {
+                        p_ecs.GetComponent<Audio>(ei).SetEffectSettings(editorFx);
+                    }
+                }
+            }
+
             ImGui::End();
         }
     }
