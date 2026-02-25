@@ -402,6 +402,22 @@ namespace NocturnalEngine {
                 ImGui::EndMenu();
             }
 
+            {
+                const bool canUndo = !mUndoStack.empty();
+                const bool canRedo = !mRedoStack.empty();
+                ImGui::BeginDisabled(!canUndo);
+                if (ImGui::Button("Undo"))
+                    ApplyUndo();
+                ImGui::EndDisabled();
+
+                ImGui::SameLine();
+
+                ImGui::BeginDisabled(!canRedo);
+                if (ImGui::Button("Redo"))
+                    ApplyRedo();
+                ImGui::EndDisabled();
+            }
+
             if (is_ShowWindow)
             {
                 if (ImGui::Button("Play"))
