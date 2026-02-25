@@ -45,6 +45,8 @@ namespace NocturnalEngine {
 
 			//fetch checkperiod
 			checkPeriod = p_GameManager.GetCheckPeriod();
+
+			if (p_ecs.HaveComponent<Sprite>(entityID))ogSpritename = p_ecs.GetComponent<Sprite>(entityID).GetTexture();
 		}
 	}
 
@@ -77,7 +79,15 @@ namespace NocturnalEngine {
 			//hunger>hp>sanity
 			CheckAndDecreaseStats(time.hunger, chance.hunger, aA.hungerDecayRate, aA.current_hunger, Frametime);
 			
+			double hpDecay = aA.healthDecayRate;
+			if (aA.WhatKindOfAnimalIsThis() == "Flamingo")
+			{
+				if (aA.current_hunger > aA.maxHunger * 0.7)hpDecay * 0.5;
+				else if (aA.current_hunger <= aA.maxHunger * 0.3)hpDecay * 2.0;
+			}
 
+
+			CheckAndDecreaseStats(time.hp, chance.hp, hpDecay, aA.current_health, Frametime);
 
 			//aA.current_health -= aA.healthDecayRate * static_cast<double>(Frametime);
 			//aA.current_sanity -= aA.sanityDecayRate * static_cast<double>(Frametime);
@@ -128,45 +138,62 @@ namespace NocturnalEngine {
 
 		if (aA.current_health <= aA.maxHealth / 2.0 && aA.healthWarnLevel<1)
 		{
-			p_GameManager.AddLogEntry("WARNING! " + animalName + "'s Health is below 50%!");
+			Sprite::Coordinates ind = p_ecs.GetComponent<Sprite>(entityID).GetIndex();
+			if (!ogSpritename.empty())p_ecs.GetComponent<Sprite>(entityID).SetTexture(ogSpritename + "_sick");
+			p_ecs.GetComponent<Sprite>(entityID).SetIndex(ind.x,ind.y);
+			p_ecs.GetComponent<Sprite>(entityID).internaltimer = 0.f;
+			
+			//p_GameManager.AddLogEntry("WARNING! " + animalName + "'s Health is below 50%!");
 			aA.healthWarnLevel++;
 		}
 		else if (aA.current_health <= aA.maxHealth / 5.0 && aA.healthWarnLevel < 2) 
 		{
-			p_GameManager.AddLogEntry("WARNING! " + animalName + "'s Health is below 20%!");
+			//p_GameManager.AddLogEntry("WARNING! " + animalName + "'s Health is below 20%!");
 			aA.healthWarnLevel++;
 			p_GameManager.AddCrit();
 		}
 		else if (aA.current_health > aA.maxHealth / 2.0 && aA.healthWarnLevel!=0) {
+
 			aA.healthWarnLevel = 0;
+			if (!ogSpritename.empty())p_ecs.GetComponent<Sprite>(entityID).SetTexture(ogSpritename);
 		}
 		if (aA.current_hunger <= aA.maxHunger / 2.0 && aA.hungerWarnLevel<1)
 		{
-			p_GameManager.AddLogEntry("WARNING! " + animalName + "'s Hunger is below 50%!");
+			Sprite::Coordinates ind = p_ecs.GetComponent<Sprite>(entityID).GetIndex();
+			if (!ogSpritename.empty())p_ecs.GetComponent<Sprite>(entityID).SetTexture(ogSpritename + "_hungry");
+			//p_GameManager.AddLogEntry("WARNING! " + animalName + "'s Hunger is below 50%!");
+			p_ecs.GetComponent<Sprite>(entityID).SetIndex(ind.x, ind.y);
+			p_ecs.GetComponent<Sprite>(entityID).internaltimer = 0.f;
 			aA.hungerWarnLevel++;
 		}
 		else if (aA.current_hunger <= aA.maxHunger / 5.0 && aA.hungerWarnLevel < 2)
 		{
-			p_GameManager.AddLogEntry("WARNING! " + animalName + "'s Hunger is below 20%!");
+			//p_GameManager.AddLogEntry("WARNING! " + animalName + "'s Hunger is below 20%!");
 			aA.hungerWarnLevel++;
 			p_GameManager.AddCrit();
 		}
 		else if (aA.current_hunger > aA.maxHunger / 2.0 && aA.hungerWarnLevel!=0) {
 			aA.hungerWarnLevel = 0;
+			if (!ogSpritename.empty())p_ecs.GetComponent<Sprite>(entityID).SetTexture(ogSpritename);
 		}
 		if (aA.current_sanity <= aA.maxSanity / 2.0 && aA.sanityWarnLevel<1)
 		{
-			p_GameManager.AddLogEntry("WARNING! " + animalName + "'s Sanity is below 50%!");
+			Sprite::Coordinates ind = p_ecs.GetComponent<Sprite>(entityID).GetIndex();
+			if (!ogSpritename.empty())p_ecs.GetComponent<Sprite>(entityID).SetTexture(ogSpritename + "_crazy");
+			//p_GameManager.AddLogEntry("WARNING! " + animalName + "'s Sanity is below 50%!");
+			p_ecs.GetComponent<Sprite>(entityID).SetIndex(ind.x, ind.y);
+			p_ecs.GetComponent<Sprite>(entityID).internaltimer = 0.f;
 			aA.sanityWarnLevel++;
 		}
 		else if (aA.current_sanity <= aA.maxSanity / 5.0 && aA.sanityWarnLevel < 2)
 		{
-			p_GameManager.AddLogEntry("WARNING! " + animalName + "'s Sanity is below 20%!");
+			//p_GameManager.AddLogEntry("WARNING! " + animalName + "'s Sanity is below 20%!");
 			aA.sanityWarnLevel++;
 			p_GameManager.AddCrit();
 		}
 		else if (aA.current_sanity > aA.maxSanity / 2.0 && aA.sanityWarnLevel!=0) {
 			aA.sanityWarnLevel = 0;
+			if (!ogSpritename.empty())p_ecs.GetComponent<Sprite>(entityID).SetTexture(ogSpritename);
 		}
 
 		if (!aA.is_alive)

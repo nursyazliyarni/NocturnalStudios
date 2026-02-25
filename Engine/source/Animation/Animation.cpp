@@ -36,6 +36,7 @@ namespace NocturnalEngine {
 		std::unordered_map <std::string, std::vector <float>> ::const_iterator got = spriteContainer.find(sprite.GetTexture());
 		if (got == spriteContainer.end())// always check the sprite container whether there is any data for the current texture. if no, prompt the user
 		{
+			spriteContainer.emplace(sprite.GetTexture(), sprite.GetDisplayTime());
 		}
 		else
 		{

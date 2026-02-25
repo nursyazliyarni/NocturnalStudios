@@ -90,7 +90,7 @@ namespace NocturnalEngine
 		TimeSinceCheck time;
 
 		float checkPeriod{};
-
+		std::string ogSpritename{};
 		void CheckAndDecreaseStats(float& time,float& chance,double decayRate,double& attributeValue, float frametime);
 
 		void LogLowHealth(AnimalAttributes& aA);
