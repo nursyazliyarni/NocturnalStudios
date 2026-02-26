@@ -267,7 +267,7 @@ namespace NocturnalEngine
 
 				if (ID_tag.GetTag() == "Options" && p_GUI->Check_HTP() == false)
 				{
-					p_Scene->setSceneToLoad("Assets/Scene/Menu.json");// escape to  the option menu
+					p_Scene->setSceneToLoad("Assets/Scene/Option.json");// escape to  the option menu
 				}
 
 				if (ID_tag.GetTag() == "MainMenu" && p_GUI->Check_HTP() == false)
