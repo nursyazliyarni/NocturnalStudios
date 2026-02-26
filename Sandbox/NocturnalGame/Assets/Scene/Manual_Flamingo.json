@@ -83,8 +83,7 @@
                     "Component": "Logic",
                     "0": "AudioManager",
                     "1": "BackgroundAudio",
-                    "2": "TabButton",
-                    "ScriptCount": 3
+                    "ScriptCount": 2
                 }
             ]
         },
