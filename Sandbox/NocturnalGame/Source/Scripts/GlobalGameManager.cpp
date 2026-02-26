@@ -347,6 +347,7 @@ namespace NocturnalEngine {
         }
         else if (sceneAnimalPair.second.aA.current_health <= sceneAnimalPair.second.aA.maxHealth / 5.0 && sceneAnimalPair.second.aA.healthWarnLevel < 2)
         {
+            p_GameManager.AddLogEntry("Body Temperature of " + sceneAnimalPair.first + " is critical");
             //AddLogEntry("WARNING! " + sceneAnimalPair.first + "'s Health is below 20%!");
             sceneAnimalPair.second.aA.healthWarnLevel++;
             AddCrit();
@@ -361,6 +362,7 @@ namespace NocturnalEngine {
         }
         else if (sceneAnimalPair.second.aA.current_hunger <= sceneAnimalPair.second.aA.maxHunger / 5.0 && sceneAnimalPair.second.aA.hungerWarnLevel < 2)
         {
+            p_GameManager.AddLogEntry(sceneAnimalPair.first + " has not been fed for " + std::to_string(Random::Range(120, 180)) + " minutes");
             //AddLogEntry("WARNING! " + sceneAnimalPair.first + "'s Hunger is below 20%!");
             sceneAnimalPair.second.aA.hungerWarnLevel++;
             AddCrit();
@@ -375,6 +377,7 @@ namespace NocturnalEngine {
         }
         else if (sceneAnimalPair.second.aA.current_sanity <= sceneAnimalPair.second.aA.maxSanity / 5.0 && sceneAnimalPair.second.aA.sanityWarnLevel < 2)
         {
+            p_GameManager.AddLogEntry("Banging noises detected from " + sceneAnimalPair.first + "'s enclosure");
             //AddLogEntry("WARNING! " + sceneAnimalPair.first + "'s Sanity is below 20%!");
             sceneAnimalPair.second.aA.sanityWarnLevel++;
             AddCrit();
@@ -385,7 +388,7 @@ namespace NocturnalEngine {
 
         if (!sceneAnimalPair.second.aA.is_alive)
         {
-            //AddLogEntry(sceneAnimalPair.first + " is dead.");
+            AddLogEntry(sceneAnimalPair.first + " is not moving");
         }
         if (sceneAnimalPair.second.aA.isEscaped)
         {

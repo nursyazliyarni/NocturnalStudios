@@ -139,7 +139,11 @@ namespace NocturnalEngine {
 	void AnimalLogic::ChangeAnim(AnimalAttributes& aA) {
 		if (ogSpritename.empty())return;
 
-
+		Sprite::Coordinates ind = p_ecs.GetComponent<Sprite>(entityID).GetIndex();
+		if (!ogSpritename.empty())p_ecs.GetComponent<Sprite>(entityID).SetTexture(ogSpritename + "_hungry");
+		//p_GameManager.AddLogEntry("WARNING! " + animalName + "'s Hunger is below 50%!");
+		p_ecs.GetComponent<Sprite>(entityID).SetIndex(ind.x, ind.y);
+		p_ecs.GetComponent<Sprite>(entityID).internaltimer = 0.f;
 
 	}
 
@@ -148,19 +152,14 @@ namespace NocturnalEngine {
 
 		if (aA.current_health <= aA.maxHealth / 2.0 && aA.healthWarnLevel<1)
 		{
-			Sprite::Coordinates ind = p_ecs.GetComponent<Sprite>(entityID).GetIndex();
-			if (!ogSpritename.empty())p_ecs.GetComponent<Sprite>(entityID).SetTexture(ogSpritename + "_sick");
-			p_ecs.GetComponent<Sprite>(entityID).SetIndex(ind.x,ind.y);
-			p_ecs.GetComponent<Sprite>(entityID).internaltimer = 0.f;
-			
-			//p_GameManager.AddLogEntry("WARNING! " + animalName + "'s Health is below 50%!");
+
 			aA.healthWarnLevel++;
 		}
 		else if (aA.current_health <= aA.maxHealth / 5.0 && aA.healthWarnLevel < 2) 
 		{
-			//p_GameManager.AddLogEntry("WARNING! " + animalName + "'s Health is below 20%!");
-			aA.healthWarnLevel++;
+			p_GameManager.AddLogEntry("Body Temperature of " + animalName + " is critical");
 			p_GameManager.AddCrit();
+			aA.healthWarnLevel++;
 		}
 		else if (aA.current_health > aA.maxHealth / 2.0 && aA.healthWarnLevel!=0) {
 
@@ -169,46 +168,36 @@ namespace NocturnalEngine {
 		}
 		if (aA.current_hunger <= aA.maxHunger / 2.0 && aA.hungerWarnLevel<1)
 		{
-			Sprite::Coordinates ind = p_ecs.GetComponent<Sprite>(entityID).GetIndex();
-			if (!ogSpritename.empty())p_ecs.GetComponent<Sprite>(entityID).SetTexture(ogSpritename + "_hungry");
-			//p_GameManager.AddLogEntry("WARNING! " + animalName + "'s Hunger is below 50%!");
-			p_ecs.GetComponent<Sprite>(entityID).SetIndex(ind.x, ind.y);
-			p_ecs.GetComponent<Sprite>(entityID).internaltimer = 0.f;
+
 			aA.hungerWarnLevel++;
 		}
 		else if (aA.current_hunger <= aA.maxHunger / 5.0 && aA.hungerWarnLevel < 2)
 		{
-			//p_GameManager.AddLogEntry("WARNING! " + animalName + "'s Hunger is below 20%!");
+			p_GameManager.AddLogEntry(animalName + " has not been fed for "+std::to_string(Random::Range(120,180))+ " minutes");
 			aA.hungerWarnLevel++;
 			p_GameManager.AddCrit();
 		}
 		else if (aA.current_hunger > aA.maxHunger / 2.0 && aA.hungerWarnLevel!=0) {
 			aA.hungerWarnLevel = 0;
-			if (!ogSpritename.empty())p_ecs.GetComponent<Sprite>(entityID).SetTexture(ogSpritename);
 		}
 		if (aA.current_sanity <= aA.maxSanity / 2.0 && aA.sanityWarnLevel<1)
 		{
-			Sprite::Coordinates ind = p_ecs.GetComponent<Sprite>(entityID).GetIndex();
-			if (!ogSpritename.empty())p_ecs.GetComponent<Sprite>(entityID).SetTexture(ogSpritename + "_crazy");
-			//p_GameManager.AddLogEntry("WARNING! " + animalName + "'s Sanity is below 50%!");
-			p_ecs.GetComponent<Sprite>(entityID).SetIndex(ind.x, ind.y);
-			p_ecs.GetComponent<Sprite>(entityID).internaltimer = 0.f;
 			aA.sanityWarnLevel++;
 		}
 		else if (aA.current_sanity <= aA.maxSanity / 5.0 && aA.sanityWarnLevel < 2)
 		{
-			//p_GameManager.AddLogEntry("WARNING! " + animalName + "'s Sanity is below 20%!");
+			p_GameManager.AddLogEntry("Banging noises detected from "+animalName+"'s enclosure");
 			aA.sanityWarnLevel++;
 			p_GameManager.AddCrit();
 		}
 		else if (aA.current_sanity > aA.maxSanity / 2.0 && aA.sanityWarnLevel!=0) {
 			aA.sanityWarnLevel = 0;
-			if (!ogSpritename.empty())p_ecs.GetComponent<Sprite>(entityID).SetTexture(ogSpritename);
+
 		}
 
 		if (!aA.is_alive)
 		{
-			p_GameManager.AddLogEntry( animalName + " is dead.");
+			p_GameManager.AddLogEntry( animalName + " is not moving");
 		}
 		if (aA.isEscaped)
 		{
