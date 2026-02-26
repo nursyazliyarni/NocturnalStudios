@@ -18,6 +18,8 @@
 #include "GUI/GUI.h"
 #include "ECS/SceneManager.h"
 #include "core/Log.h"
+#include "Math/Random.h"
+#include "Scripts/AnimalLogic.h"
 
 namespace NocturnalEngine {
 
@@ -57,14 +59,14 @@ namespace NocturnalEngine {
         defaultAttributes.SetDefault();
 
         sceneAnimalMap.emplace("Flamingo", defaultAttributes);
-        sceneAnimalMap["Flamingo"].animalType = AnimalAttributes::AnimalType::FLAMINGO;
+        sceneAnimalMap["Flamingo"].aA.SetAnimalType(AnimalAttributes::AnimalType::FLAMINGO);
         sceneAnimalMap.emplace("Horse", defaultAttributes);
-        sceneAnimalMap["Horse"].animalType = AnimalAttributes::AnimalType::HOESE;
+        sceneAnimalMap["Horse"].aA.SetAnimalType(AnimalAttributes::AnimalType::HOESE);
         sceneAnimalMap.emplace("Owl", defaultAttributes);
-        sceneAnimalMap["Owl"].animalType = AnimalAttributes::AnimalType::OWL;
-        sceneAnimalMap["Owl"].hungerDecayRate = 1.5; //owl special hunger
+        sceneAnimalMap["Owl"].aA.SetAnimalType(AnimalAttributes::AnimalType::OWL);
+        sceneAnimalMap["Owl"].aA.hungerDecayRate = 1.5; //owl special hunger
         sceneAnimalMap.emplace("Seal", defaultAttributes);
-        sceneAnimalMap["Seal"].animalType = AnimalAttributes::AnimalType::SEAL;
+        sceneAnimalMap["Seal"].aA.SetAnimalType(AnimalAttributes::AnimalType::SEAL);
         currState=  GameManager::GameState::PLAYING;
         deadAnimals = 0;
     }
@@ -141,7 +143,7 @@ namespace NocturnalEngine {
                 }
             }
 
-            sceneAnimalMap[name] = p_ecs.GetComponent<AnimalAttributes>(animal);
+            sceneAnimalMap[name] = { p_ecs.GetComponent<AnimalAttributes>(animal) };
 
             p_ecs.DestroyEntity(animal);
             p_ecs.DestroyEntity(animalBG);
@@ -170,51 +172,47 @@ namespace NocturnalEngine {
             
             if (IsNewSceneManagement() && !combinedSceneSetup) CombinedSceneStart();
             if (IsNewSceneManagement())CombinedSceneUpdate(dt);
-            for (std::pair<const std::string,AnimalAttributes>& sceneAnimalPair:sceneAnimalMap)
+            for (std::pair<const std::string,AnimalData>& sceneAnimalPair:sceneAnimalMap)
             {
                 //this processes the other animals in the 
                 // background to give the illusion of persistent data
                 //For the animal currently in scene, refer to Scripts/AnimalLogic.cpp
                 // The code should be the exact same
-                if (sceneAnimalPair.first!=currScene&& !sceneAnimalPair.second.isEscaped &&sceneAnimalPair.second.is_alive)
+                if (sceneAnimalPair.first!=currScene&& !sceneAnimalPair.second.aA.isEscaped &&sceneAnimalPair.second.aA.is_alive)
                 {
-                    //sceneAnimalPair.second.current_hunger -= sceneAnimalPair.second.hungerDecayRate * static_cast<double>( dt) * 2.0;
-                    // Adjust health decay based on animal type and hunger state
-                    const double baseHealthMultiplier = 3.0; // much faster overall
-                    double healthMultiplier = baseHealthMultiplier;
-
-                    const double hungerRatio = (sceneAnimalPair.second.maxHunger > 0.0) ? (sceneAnimalPair.second.current_hunger / sceneAnimalPair.second.maxHunger) : 0.0;
-                    const double lowHungerThreshold = 0.30;   // below 30% is "low"
-                    const double highHungerThreshold = 0.70;  // above 70% is "normal+"
-
-                    if (sceneAnimalPair.second.WhatKindOfAnimalIsThis() == "Flamingo")
-                    {
-                        if (hungerRatio < lowHungerThreshold)
-                            healthMultiplier = 2.0; // faster when hungry
-                        else if (hungerRatio > highHungerThreshold)
-                            healthMultiplier = 0.5; // slower when well fed
-                    }
-                    else if (sceneAnimalPair.second.WhatKindOfAnimalIsThis() == "Horse")
-                    {
-                        healthMultiplier = 1.5; // faster health decay
-                    }
-                        // Seal and Owl remain at normal decay (1.0)
-                    //sceneAnimalPair.second.current_health -= sceneAnimalPair.second.healthDecayRate * static_cast<double>(dt) * healthMultiplier;
-                    //sceneAnimalPair.second.current_sanity -= sceneAnimalPair.second.sanityDecayRate * static_cast<double>(dt);
-
                     
-                    if (sceneAnimalPair.second.current_sanity <= 0)
-                    {
-                        sceneAnimalPair.second.isEscaped = true;
-                        escapedAnimals++;
-                    }
-                    if (sceneAnimalPair.second.current_hunger <= 0 || sceneAnimalPair.second.current_health <= 0) {
-                        sceneAnimalPair.second.is_alive = false;
-                        
-                        deadAnimals++;
-                    }
+                        //hunger>hp>sanity
+                        CheckAndDecreaseStats(sceneAnimalPair.second.hungerT, sceneAnimalPair.second.hungerD, sceneAnimalPair.second.aA.hungerDecayRate, sceneAnimalPair.second.aA.current_hunger, dt);
+
+                        double hpDecay = sceneAnimalPair.second.aA.healthDecayRate, decreaseScale = 1.0;
+                        if (sceneAnimalPair.second.aA.WhatKindOfAnimalIsThis() == "Flamingo")
+                        {
+                            if (sceneAnimalPair.second.aA.current_hunger > sceneAnimalPair.second.aA.maxHunger * 0.7) { hpDecay * 0.5; decreaseScale = 0.7; }
+                            else if (sceneAnimalPair.second.aA.current_hunger <= sceneAnimalPair.second.aA.maxHunger * 0.3) { hpDecay * 2.0; decreaseScale = 2.0; }
+                        }
+                        if (sceneAnimalPair.second.aA.WhatKindOfAnimalIsThis() == "Horse")
+                        {
+                            if (sceneAnimalPair.second.aA.current_hunger <= sceneAnimalPair.second.aA.maxHunger * 0.8) { hpDecay * 1.5; decreaseScale = 1.5; }
+                        }
+
+                        CheckAndDecreaseStats(sceneAnimalPair.second.hpT, sceneAnimalPair.second.hpD, hpDecay, sceneAnimalPair.second.aA.current_health, dt);
+
+                        sceneAnimalPair.second.aA.current_sanity -= sceneAnimalPair.second.aA.sanityDecayRate * static_cast<double>(dt);
+
+                        if (sceneAnimalPair.second.aA.current_sanity <= 0)
+                        {
+                            sceneAnimalPair.second.aA.isEscaped = true;
+
+                            p_GameManager.AddEscape();
+                        }
+                        if (sceneAnimalPair.second.aA.current_hunger <= 0 || sceneAnimalPair.second.aA.current_health <= 0) {
+                            sceneAnimalPair.second.aA.is_alive = false;
+                            p_GameManager.AddDeath();
+                        }
+                        LogLowHealth(sceneAnimalPair);
+                    
                 
-                    LogLowHealth(sceneAnimalPair);
+                    
                 }
             }
 
@@ -233,7 +231,7 @@ namespace NocturnalEngine {
         
     
 
-    AnimalAttributes GameManager::LoadPersistentValues(std::string gs) {
+    GameManager::AnimalData GameManager::LoadPersistentValues(std::string gs) {
         targetVisibility = false;
         auto it = sceneAnimalMap.find(gs);
         if (it != sceneAnimalMap.end()) {
@@ -243,7 +241,8 @@ namespace NocturnalEngine {
         else {
             AnimalAttributes defaultAttributes{};
             defaultAttributes.SetDefault();
-            return defaultAttributes;
+            AnimalData da{ defaultAttributes };
+            return da;
         }
     }
     /*!*************************************************************************
@@ -256,11 +255,11 @@ namespace NocturnalEngine {
 
         AnimalAttributes defaultAttributes{};
         defaultAttributes.SetDefault();
-        for (std::pair<const std::string, AnimalAttributes>& sceneAnimalPair : sceneAnimalMap)
+        for (std::pair<const std::string, AnimalData>& sceneAnimalPair : sceneAnimalMap)
         {
-            sceneAnimalPair.second = defaultAttributes;
+            sceneAnimalPair.second.aA = defaultAttributes;
             if (sceneAnimalPair.first == "Owl") {
-                sceneAnimalPair.second.hungerDecayRate = 1.5f;//owl special hunger
+                sceneAnimalPair.second.aA.hungerDecayRate = 1.5f;//owl special hunger
             }
         }
         gameTimeElapsed = 0.f;
@@ -276,7 +275,7 @@ namespace NocturnalEngine {
         targetVisibility = false;
     }
 
-    void GameManager::SaveAnimalAttributesToCurrentScene(AnimalAttributes aA) {
+    void GameManager::SaveAnimalAttributesToCurrentScene(AnimalData aA) {
         if (currState == GameManager::GameState::ENDING)return;
         auto it = sceneAnimalMap.find(currScene);
 
@@ -337,60 +336,60 @@ namespace NocturnalEngine {
         diegeticLogUpdated = false;
     }
 
-    void GameManager::LogLowHealth(std::pair<const std::string, AnimalAttributes>& sceneAnimalPair) {
+    void GameManager::LogLowHealth(std::pair<const std::string, AnimalData>& sceneAnimalPair) {
         
 
 
-        if (sceneAnimalPair.second.current_health <= sceneAnimalPair.second.maxHealth / 2.0 && sceneAnimalPair.second.healthWarnLevel < 1)
+        if (sceneAnimalPair.second.aA.current_health <= sceneAnimalPair.second.aA.maxHealth / 2.0 && sceneAnimalPair.second.aA.healthWarnLevel < 1)
         {
-            AddLogEntry("WARNING! " + sceneAnimalPair.first + "'s Health is below 50%!");
-            sceneAnimalPair.second.healthWarnLevel++;
+            //AddLogEntry("WARNING! " + sceneAnimalPair.first + "'s Health is below 50%!");
+            sceneAnimalPair.second.aA.healthWarnLevel++;
         }
-        else if (sceneAnimalPair.second.current_health <= sceneAnimalPair.second.maxHealth / 5.0 && sceneAnimalPair.second.healthWarnLevel < 2)
+        else if (sceneAnimalPair.second.aA.current_health <= sceneAnimalPair.second.aA.maxHealth / 5.0 && sceneAnimalPair.second.aA.healthWarnLevel < 2)
         {
-            AddLogEntry("WARNING! " + sceneAnimalPair.first + "'s Health is below 20%!");
-            sceneAnimalPair.second.healthWarnLevel++;
+            //AddLogEntry("WARNING! " + sceneAnimalPair.first + "'s Health is below 20%!");
+            sceneAnimalPair.second.aA.healthWarnLevel++;
             AddCrit();
         }
-        else if (sceneAnimalPair.second.current_health > sceneAnimalPair.second.maxHealth / 2.0 && sceneAnimalPair.second.healthWarnLevel != 0) {
-            sceneAnimalPair.second.healthWarnLevel = 0;
+        else if (sceneAnimalPair.second.aA.current_health > sceneAnimalPair.second.aA.maxHealth / 2.0 && sceneAnimalPair.second.aA.healthWarnLevel != 0) {
+            sceneAnimalPair.second.aA.healthWarnLevel = 0;
         }
-        if (sceneAnimalPair.second.current_hunger <= sceneAnimalPair.second.maxHunger / 2.0 && sceneAnimalPair.second.hungerWarnLevel < 1)
+        if (sceneAnimalPair.second.aA.current_hunger <= sceneAnimalPair.second.aA.maxHunger / 2.0 && sceneAnimalPair.second.aA.hungerWarnLevel < 1)
         {
-            AddLogEntry("WARNING! " + sceneAnimalPair.first + "'s Hunger is below 50%!");
-            sceneAnimalPair.second.hungerWarnLevel++;
+            //AddLogEntry("WARNING! " + sceneAnimalPair.first + "'s Hunger is below 50%!");
+            sceneAnimalPair.second.aA.hungerWarnLevel++;
         }
-        else if (sceneAnimalPair.second.current_hunger <= sceneAnimalPair.second.maxHunger / 5.0 && sceneAnimalPair.second.hungerWarnLevel < 2)
+        else if (sceneAnimalPair.second.aA.current_hunger <= sceneAnimalPair.second.aA.maxHunger / 5.0 && sceneAnimalPair.second.aA.hungerWarnLevel < 2)
         {
-            AddLogEntry("WARNING! " + sceneAnimalPair.first + "'s Hunger is below 20%!");
-            sceneAnimalPair.second.hungerWarnLevel++;
+            //AddLogEntry("WARNING! " + sceneAnimalPair.first + "'s Hunger is below 20%!");
+            sceneAnimalPair.second.aA.hungerWarnLevel++;
             AddCrit();
         }
-        else if (sceneAnimalPair.second.current_hunger > sceneAnimalPair.second.maxHunger / 2.0 && sceneAnimalPair.second.hungerWarnLevel != 0) {
-            sceneAnimalPair.second.hungerWarnLevel = 0;
+        else if (sceneAnimalPair.second.aA.current_hunger > sceneAnimalPair.second.aA.maxHunger / 2.0 && sceneAnimalPair.second.aA.hungerWarnLevel != 0) {
+            sceneAnimalPair.second.aA.hungerWarnLevel = 0;
         }
-        if (sceneAnimalPair.second.current_sanity <= sceneAnimalPair.second.maxSanity / 2.0 && sceneAnimalPair.second.sanityWarnLevel < 1)
+        if (sceneAnimalPair.second.aA.current_sanity <= sceneAnimalPair.second.aA.maxSanity / 2.0 && sceneAnimalPair.second.aA.sanityWarnLevel < 1)
         {
-            AddLogEntry("WARNING! " + sceneAnimalPair.first + "'s Sanity is below 50%!");
-            sceneAnimalPair.second.sanityWarnLevel++;
+            //AddLogEntry("WARNING! " + sceneAnimalPair.first + "'s Sanity is below 50%!");
+            sceneAnimalPair.second.aA.sanityWarnLevel++;
         }
-        else if (sceneAnimalPair.second.current_sanity <= sceneAnimalPair.second.maxSanity / 5.0 && sceneAnimalPair.second.sanityWarnLevel < 2)
+        else if (sceneAnimalPair.second.aA.current_sanity <= sceneAnimalPair.second.aA.maxSanity / 5.0 && sceneAnimalPair.second.aA.sanityWarnLevel < 2)
         {
-            AddLogEntry("WARNING! " + sceneAnimalPair.first + "'s Sanity is below 20%!");
-            sceneAnimalPair.second.sanityWarnLevel++;
+            //AddLogEntry("WARNING! " + sceneAnimalPair.first + "'s Sanity is below 20%!");
+            sceneAnimalPair.second.aA.sanityWarnLevel++;
             AddCrit();
         }
-        else if (sceneAnimalPair.second.current_sanity > sceneAnimalPair.second.maxSanity / 2.0 && sceneAnimalPair.second.sanityWarnLevel != 0) {
-            sceneAnimalPair.second.sanityWarnLevel = 0;
+        else if (sceneAnimalPair.second.aA.current_sanity > sceneAnimalPair.second.aA.maxSanity / 2.0 && sceneAnimalPair.second.aA.sanityWarnLevel != 0) {
+            sceneAnimalPair.second.aA.sanityWarnLevel = 0;
         }
 
-        if (!sceneAnimalPair.second.is_alive)
+        if (!sceneAnimalPair.second.aA.is_alive)
         {
-            AddLogEntry(sceneAnimalPair.first + " is dead.");
+            //AddLogEntry(sceneAnimalPair.first + " is dead.");
         }
-        if (sceneAnimalPair.second.isEscaped)
+        if (sceneAnimalPair.second.aA.isEscaped)
         {
-            AddLogEntry(sceneAnimalPair.first + " has breached containment.");
+           // AddLogEntry(sceneAnimalPair.first + " has breached containment.");
         }
     }
 
@@ -398,7 +397,7 @@ namespace NocturnalEngine {
         UNREFERENCED_PARAMETER(dt);
         if (innerState==2) //ending, save animaldata to the corresponding array
         {
-            sceneAnimalMap[currScene] = p_ecs.GetComponent<AnimalAttributes>(animalE);
+            sceneAnimalMap[currScene].aA = p_ecs.GetComponent<AnimalAttributes>(animalE);
             p_ecs.GetComponent<Audio>(cageBGE).GetArr()[combinedSceneMap[currScene].bgAudioInd].is_Playing = false;
             currScene = nextScene;
             innerState = 0;
@@ -411,7 +410,7 @@ namespace NocturnalEngine {
                 p_ecs.GetComponent<Transform>(animalE) = it->second.aTransform;
                 p_ecs.GetComponent<Sprite>(animalE) = it->second.aniSprite;
                 p_ecs.GetComponent<Collider>(animalE) = it->second.aCollider;
-                p_ecs.GetComponent<AnimalAttributes>(animalE) = sceneAnimalMap[currScene];
+                p_ecs.GetComponent<AnimalAttributes>(animalE) = sceneAnimalMap[currScene].aA;
 
                 p_ecs.GetComponent<Sprite>(cageBGE) = it->second.bgSprite;
                 
@@ -448,6 +447,29 @@ namespace NocturnalEngine {
         {
             nextScene = seekScene;
             innerState = 2;
+        }
+    }
+
+    void GameManager::CheckAndDecreaseStats(float& time, float& chance, double decayRate, double& attributeValue, float frametime, double decreaseScale) {
+        if (decayRate <= 0.0)decayRate = 1.0;
+        if (time >= (winRequirement / 72.f) / decayRate)
+        {
+            //std::cout << "Checking\n";
+            float bruh{ Random::Range(0.f, 100.f) };
+            if (bruh <= chance)
+            {
+                //std::cout << bruh << "\n";
+                attributeValue -= Random::Range(5.f, 15.f) * decreaseScale;
+                chance = 10.f;
+            }
+            else {
+                chance += 10.f;
+            }
+            time = 0.f;
+        }
+        else
+        {
+            time += frametime;
         }
     }
 }

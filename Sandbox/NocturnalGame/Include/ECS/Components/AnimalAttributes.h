@@ -28,8 +28,17 @@ namespace NocturnalEngine
 			SEAL,
 			OWL
 		};
+		enum class PriorityAnimation {
+			NORMAL,
+			HUNGRY,
+			SICK,
+			CRAZY
+		};
+	private:
 		AnimalType animalType{ AnimalType::FLAMINGO };
-
+		PriorityAnimation anim{ PriorityAnimation::NORMAL };
+	public:
+		void SetAnimalType(AnimalType a) { animalType = a; }
 		std::string WhatKindOfAnimalIsThis() {
 
 			switch (animalType)
@@ -49,6 +58,9 @@ namespace NocturnalEngine
 			}
 			return "I don't know";
 		}
+
+		PriorityAnimation GetAnimState()const { return anim; }
+		void SetAnimState(PriorityAnimation a) { anim = a; }
 
 		AnimalAttributes();
 		~AnimalAttributes() = default;
@@ -90,5 +102,6 @@ namespace NocturnalEngine
 		bool is_alive,isEscaped;
 
 		int healthWarnLevel{ 0 }, hungerWarnLevel{ 0 }, sanityWarnLevel{ 0 };
+		int animInnerState{ 0 };
 	};
 }

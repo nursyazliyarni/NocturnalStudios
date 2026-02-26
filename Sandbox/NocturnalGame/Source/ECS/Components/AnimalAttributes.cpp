@@ -21,6 +21,13 @@ hungerDecayRate(0.0), sanityDecayRate(0.0) {}
 
 void NocturnalEngine::AnimalAttributes::ToEditor() {
     if (ImGui::CollapsingHeader("Animal Attributes", ImGuiTreeNodeFlags_None)) {
+        const char* animalTypeNames[] = { "Flamingo", "Horse", "Seal", "Owl" };
+        int currentAnimal = static_cast<int>(animalType);
+
+        if (ImGui::Combo("Animal Type", &currentAnimal, animalTypeNames, IM_ARRAYSIZE(animalTypeNames)))
+        {
+            animalType = static_cast<AnimalType>(currentAnimal);
+        }
         ImGui::PushItemWidth(100.0f);
         ImGui::Text("Max Health"); ImGui::SameLine();
         if (ImGui::InputDouble("##Max Health", &maxHealth))
@@ -79,6 +86,7 @@ void NocturnalEngine::AnimalAttributes::ToEditor() {
 
 bool NocturnalEngine::AnimalAttributes::Deserialize(const rapidjson::Value& obj)
 {
+    if (obj.HasMember("Animal Type") && obj["Animal Type"].IsInt())animalType = static_cast<AnimalType>(obj["Animal Type"].GetInt());
 	if (obj.HasMember("Current Health") && obj["Current Health"].IsNumber())current_health = obj["Current Health"].GetDouble();
 	if (obj.HasMember("Max Health") && obj["Max Health"].IsNumber())maxHealth = obj["Max Health"].GetDouble();
 	if (obj.HasMember("Current Hunger") && obj["Current Hunger"].IsNumber())current_hunger = obj["Current Hunger"].GetDouble();
@@ -94,6 +102,8 @@ bool NocturnalEngine::AnimalAttributes::Deserialize(const rapidjson::Value& obj)
 
 bool NocturnalEngine::AnimalAttributes::Serialize(rapidjson::PrettyWriter<rapidjson::StringBuffer>* writer) const
 {
+    writer->Key("Animal Type");
+    writer->Int(static_cast<int>(animalType));
 	writer->Key("Current Health");
 	writer->Double(current_health);
 	writer->Key("Max Health");

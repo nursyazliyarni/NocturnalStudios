@@ -39,14 +39,16 @@ namespace NocturnalEngine {
 			AnimalAttributes& aA{ p_ecs.GetComponent<AnimalAttributes>(entityID) };
 
 			orgXPos = p_ecs.GetComponent<Transform>(entityID).GetPos().x;
-
+			GameManager::AnimalData aD= p_GameManager.LoadPersistentValues(name);
 			// in addition, the gamemanager also saves the above gS as the current gamestate
-			aA=p_GameManager.LoadPersistentValues(name);
+			aA = aD.aA;
+			chance = { aD.hungerD, aD.hpD, aD.sanityD };
+			time = { aD.hungerT, aD.hpT, aD.sanityT };
 
 			//fetch checkperiod
 			checkPeriod = p_GameManager.GetCheckPeriod();
 
-			if (p_ecs.HaveComponent<Sprite>(entityID))ogSpritename = p_ecs.GetComponent<Sprite>(entityID).GetTexture();
+			if (p_ecs.HaveComponent<Sprite>(entityID)&&nameT.GetNameTag() == "Flamingo")ogSpritename = p_ecs.GetComponent<Sprite>(entityID).GetTexture();
 		}
 	}
 
@@ -79,18 +81,20 @@ namespace NocturnalEngine {
 			//hunger>hp>sanity
 			CheckAndDecreaseStats(time.hunger, chance.hunger, aA.hungerDecayRate, aA.current_hunger, Frametime);
 			
-			double hpDecay = aA.healthDecayRate;
+			double hpDecay = aA.healthDecayRate,decreaseScale = 1.0;
 			if (aA.WhatKindOfAnimalIsThis() == "Flamingo")
 			{
-				if (aA.current_hunger > aA.maxHunger * 0.7)hpDecay * 0.5;
-				else if (aA.current_hunger <= aA.maxHunger * 0.3)hpDecay * 2.0;
+				if (aA.current_hunger > aA.maxHunger * 0.7) { hpDecay * 0.5; decreaseScale = 0.7; }
+				else if (aA.current_hunger <= aA.maxHunger * 0.3) { hpDecay * 2.0; decreaseScale = 2.0; }
 			}
-
+			if (aA.WhatKindOfAnimalIsThis() == "Horse")
+			{
+				if (aA.current_hunger<= aA.maxHunger * 0.8) { hpDecay * 1.5; decreaseScale = 1.5; }
+			}
 
 			CheckAndDecreaseStats(time.hp, chance.hp, hpDecay, aA.current_health, Frametime);
 
-			//aA.current_health -= aA.healthDecayRate * static_cast<double>(Frametime);
-			//aA.current_sanity -= aA.sanityDecayRate * static_cast<double>(Frametime);
+			aA.current_sanity -= aA.sanityDecayRate * static_cast<double>(Frametime);
 
 			if (aA.current_sanity <= 0)
 			{
@@ -110,7 +114,7 @@ namespace NocturnalEngine {
 		}
 		else if (p_GameManager.GetGameState() == GameManager::GameState::ENDING) {
 			aA.SetDefault();
-			p_GameManager.SaveAnimalAttributesToCurrentScene(aA);
+			p_GameManager.SaveAnimalAttributesToCurrentScene({ aA,chance.hunger,chance.hp,chance.sanity,time.hunger,time.hp,time.sanity });
 		}
 		
 
@@ -127,11 +131,17 @@ namespace NocturnalEngine {
 		{
 			aA.SetDefault();
 		}
-		p_GameManager.SaveAnimalAttributesToCurrentScene(aA);
+		p_GameManager.SaveAnimalAttributesToCurrentScene({ aA,chance.hunger,chance.hp,chance.sanity,time.hunger,time.hp,time.sanity });
 		
 
 	}
 
+	void AnimalLogic::ChangeAnim(AnimalAttributes& aA) {
+		if (ogSpritename.empty())return;
+
+
+
+	}
 
 	void AnimalLogic::LogLowHealth(AnimalAttributes& aA) {
 		std::string animalName = p_ecs.GetComponent<NameTag>(entityID).GetNameTag() == "Animal" ? aA.WhatKindOfAnimalIsThis() : p_ecs.GetComponent<NameTag>(entityID).GetNameTag();
@@ -212,7 +222,7 @@ namespace NocturnalEngine {
 		// Transform& t{ p_ecs.GetComponent<Transform>(entityID) };
 
 	}
-	void AnimalLogic::CheckAndDecreaseStats(float& time, float& chance, double decayRate, double& attributeValue,float frametime) {
+	void AnimalLogic::CheckAndDecreaseStats(float& time, float& chance, double decayRate, double& attributeValue,float frametime, double decreaseScale) {
 		if (decayRate <= 0.0)decayRate = 1.0;
 		if (time >= checkPeriod / decayRate)
 		{
@@ -221,7 +231,7 @@ namespace NocturnalEngine {
 			if ( bruh<= chance)
 			{
 				//std::cout << bruh << "\n";
-				attributeValue -= 10.0;
+				attributeValue -= Random::Range(5.f, 15.f)*decreaseScale;
 				chance = 10.f;
 			}
 			else {

@@ -19,19 +19,27 @@
 #include "pch.h"
 #include "System/System.h"
 #include "ECS/Components/AnimalAttributes.h"
+//#include "Scripts/AnimalLogic.h"
 
 #define p_GameManager NocturnalEngine::GameManager::GetInstance()
 
 namespace NocturnalEngine {
+
     class GameManager {
     public:
 
+        struct AnimalData
+        {
+            AnimalAttributes aA{};
+            float  hungerD {10.f }, hpD{ 10.f }, sanityD{ 10.f };
+            float  hungerT{ 0.f }, hpT{ 0.f }, sanityT{ 0.f };
+        };
         enum class GameState {
             STARTING,
             PLAYING,
             ENDING
         };
-        AnimalAttributes LoadPersistentValues(std::string gs);
+        AnimalData LoadPersistentValues(std::string gs);
 
         static GameManager& GetInstance();
         /*!*************************************************************************
@@ -54,7 +62,7 @@ namespace NocturnalEngine {
              under20 = 0;
          }
 
-         void SaveAnimalAttributesToCurrentScene(AnimalAttributes aA);
+         void SaveAnimalAttributesToCurrentScene(AnimalData aA);
 
          GameState GetGameState()const { return currState; }
 
@@ -103,14 +111,15 @@ namespace NocturnalEngine {
 
         void LoseGame();
         void WinGame();
-        void LogLowHealth(std::pair < const std ::string , AnimalAttributes > & sceneAnimalPair);
+        void LogLowHealth(std::pair < const std ::string , AnimalData > & sceneAnimalPair);
 
 
         float gameTimeElapsed{}, winRequirement{120.f}; //in seconds
 
         std::string currScene;
         GameState currState;
-        std::unordered_map < std::string, AnimalAttributes> sceneAnimalMap;
+
+        std::unordered_map < std::string, AnimalData> sceneAnimalMap;
         int deadAnimals, deathLimit{ 3 }, maxDiegeticLogEntries{ 40 }, escapedAnimals{ 0 }, under20{ 0 };
         std::deque<std::string> diegeticLogEntries;
 
@@ -134,6 +143,7 @@ namespace NocturnalEngine {
         void CombinedSceneStart();
         void CombinedSceneUpdate(float dt);
         Entity GetEntityByName(const std::string name);
+        void CheckAndDecreaseStats(float& time, float& chance, double decayRate, double& attributeValue, float frametime, double decreaseScale=1.0);
 
 
     };

@@ -16,17 +16,17 @@
             "ID": 0,
             "Components": [
                 {
-                    "Component": "Audio",
-                    "0": {
-                        "AudioPath": "BGM_Ambience_Horse_01.wav",
-                        "Channel": 2,
-                        "IsLooping": false
-                    },
-                    "AudioArrCount": 1,
-                    "BGM Volume": 1.0,
-                    "SFX Volume": 0.578000009059906,
-                    "Master Volume": 1.0,
-                    "RandomFromArray": false
+                    "Component": "Tag",
+                    "Tag": "Untagged",
+                    "TargetTag": ""
+                },
+                {
+                    "Component": "Transform",
+                    "posX": 0.0,
+                    "posY": 0.0,
+                    "scaleX": 3.6449999809265137,
+                    "scaleY": 1.9999960660934448,
+                    "Rot": 0.0
                 },
                 {
                     "Component": "Collider",
@@ -48,12 +48,6 @@
                     "radius2": 0.0
                 },
                 {
-                    "Component": "Logic",
-                    "0": "AudioManager",
-                    "1": "BackgroundAudio",
-                    "ScriptCount": 2
-                },
-                {
                     "Component": "NameTag",
                     "NameTag": "HorseBG"
                 },
@@ -70,23 +64,64 @@
                     "LayeringOrder": 0
                 },
                 {
-                    "Component": "Tag",
-                    "Tag": "Untagged",
-                    "TargetTag": ""
+                    "Component": "Audio",
+                    "0": {
+                        "AudioPath": "BGM_Ambience_Horse_01.wav",
+                        "Channel": 2,
+                        "IsLooping": false
+                    },
+                    "AudioArrCount": 1,
+                    "BGM Volume": 1.0,
+                    "SFX Volume": 0.578000009059906,
+                    "Master Volume": 1.0,
+                    "RandomFromArray": false,
+                    "Effects": {
+                        "LowpassEnabled": false,
+                        "LowpassCutoff": 5000.0,
+                        "LowpassResonance": 1.0,
+                        "HighpassEnabled": false,
+                        "HighpassCutoff": 10.0,
+                        "HighpassResonance": 1.0,
+                        "EchoEnabled": false,
+                        "EchoDelay": 500.0,
+                        "EchoFeedback": 50.0,
+                        "EchoDryLevel": 0.0,
+                        "EchoWetLevel": -6.0,
+                        "ReverbEnabled": false,
+                        "ReverbDecayTime": 1500.0,
+                        "ReverbEarlyDelay": 7.0,
+                        "ReverbLateDelay": 11.0,
+                        "ReverbHFReference": 5000.0,
+                        "ReverbDiffusion": 100.0,
+                        "ReverbDensity": 100.0,
+                        "ReverbWetLevel": -6.0,
+                        "ReverbDryLevel": 0.0
+                    }
                 },
                 {
-                    "Component": "Transform",
-                    "posX": 0.0,
-                    "posY": 0.0,
-                    "scaleX": 3.6449999809265137,
-                    "scaleY": 1.9999960660934448,
-                    "Rot": 0.0
+                    "Component": "Logic",
+                    "0": "AudioManager",
+                    "1": "BackgroundAudio",
+                    "ScriptCount": 2
                 }
             ]
         },
         {
             "ID": 1,
             "Components": [
+                {
+                    "Component": "Tag",
+                    "Tag": "Horse",
+                    "TargetTag": ""
+                },
+                {
+                    "Component": "Transform",
+                    "posX": -0.9539999961853027,
+                    "posY": 0.0560000017285347,
+                    "scaleX": 0.9879999756813049,
+                    "scaleY": 1.0360000133514404,
+                    "Rot": 0.0
+                },
                 {
                     "Component": "Collider",
                     "ColliderType1": 5,
@@ -107,22 +142,12 @@
                     "radius2": 0.0
                 },
                 {
-                    "Component": "Draggable",
-                    "isTarget": true
-                },
-                {
-                    "Component": "Logic",
-                    "0": "AnimalLogic",
-                    "1": "PainSpotSpawner",
-                    "ScriptCount": 2
-                },
-                {
                     "Component": "NameTag",
                     "NameTag": "Horse"
                 },
                 {
                     "Component": "Sprite",
-                    "TextureName": "Characters/hore",
+                    "TextureName": "Characters/horse",
                     "Index_X": 0,
                     "Index_Y": 0,
                     "Ucoordinates": 512.0,
@@ -133,20 +158,18 @@
                     "LayeringOrder": 0
                 },
                 {
-                    "Component": "Tag",
-                    "Tag": "Horse",
-                    "TargetTag": ""
+                    "Component": "Logic",
+                    "0": "AnimalLogic",
+                    "1": "PainSpotSpawner",
+                    "ScriptCount": 2
                 },
                 {
-                    "Component": "Transform",
-                    "posX": -0.9539999961853027,
-                    "posY": 0.0560000017285347,
-                    "scaleX": 0.9879999756813049,
-                    "scaleY": 1.0360000133514404,
-                    "Rot": 0.0
+                    "Component": "Draggable",
+                    "isTarget": true
                 },
                 {
                     "Component": "AnimalAttributes",
+                    "Animal Type": 1,
                     "Current Health": 100.0,
                     "Max Health": 100.0,
                     "Current Hunger": 100.0,
@@ -164,37 +187,17 @@
             "ID": 2,
             "Components": [
                 {
-                    "Component": "Audio",
-                    "0": {
-                        "AudioPath": "SFX_Static_01.wav",
-                        "Channel": 3,
-                        "IsLooping": false
-                    },
-                    "1": {
-                        "AudioPath": "SFX_Static_02.wav",
-                        "Channel": 3,
-                        "IsLooping": false
-                    },
-                    "2": {
-                        "AudioPath": "SFX_Static_03.wav",
-                        "Channel": 3,
-                        "IsLooping": false
-                    },
-                    "3": {
-                        "AudioPath": "SFX_Static_04.wav",
-                        "Channel": 3,
-                        "IsLooping": false
-                    },
-                    "4": {
-                        "AudioPath": "SFX_Static_05.wav",
-                        "Channel": 3,
-                        "IsLooping": false
-                    },
-                    "AudioArrCount": 5,
-                    "BGM Volume": 1.0,
-                    "SFX Volume": 0.578000009059906,
-                    "Master Volume": 1.0,
-                    "RandomFromArray": true
+                    "Component": "Tag",
+                    "Tag": "FlamingoBtn",
+                    "TargetTag": ""
+                },
+                {
+                    "Component": "Transform",
+                    "posX": 0.40032678842544556,
+                    "posY": 0.2418299913406372,
+                    "scaleX": 0.13472461700439453,
+                    "scaleY": 0.12401483952999115,
+                    "Rot": 0.0
                 },
                 {
                     "Component": "Collider",
@@ -214,12 +217,6 @@
                     "offsetY2": 0.0,
                     "radius1": 0.05000000074505806,
                     "radius2": 0.0
-                },
-                {
-                    "Component": "Logic",
-                    "0": "ButtonResponse",
-                    "1": "AudioManager",
-                    "ScriptCount": 2
                 },
                 {
                     "Component": "NameTag",
@@ -238,40 +235,6 @@
                     "LayeringOrder": 0
                 },
                 {
-                    "Component": "Tag",
-                    "Tag": "FlamingoBtn",
-                    "TargetTag": ""
-                },
-                {
-                    "Component": "Text",
-                    "Content": "1",
-                    "Font": "ChauPhilomeneOne-Regular",
-                    "Size": 32.5,
-                    "ColorR": 0.0,
-                    "ColorG": 0.0,
-                    "ColorB": 0.0,
-                    "ColorA": 1.0,
-                    "PosX": 0.38749998807907104,
-                    "PosY": 0.2280000001192093,
-                    "Rotation": 0.0,
-                    "Line Height": 0,
-                    "WorldSpace": false,
-                    "Center": false
-                },
-                {
-                    "Component": "Transform",
-                    "posX": 0.40032678842544556,
-                    "posY": 0.2418299913406372,
-                    "scaleX": 0.13472461700439453,
-                    "scaleY": 0.12401483952999115,
-                    "Rot": 0.0
-                }
-            ]
-        },
-        {
-            "ID": 3,
-            "Components": [
-                {
                     "Component": "Audio",
                     "0": {
                         "AudioPath": "SFX_Static_01.wav",
@@ -302,7 +265,69 @@
                     "BGM Volume": 1.0,
                     "SFX Volume": 0.578000009059906,
                     "Master Volume": 1.0,
-                    "RandomFromArray": true
+                    "RandomFromArray": true,
+                    "Effects": {
+                        "LowpassEnabled": false,
+                        "LowpassCutoff": 5000.0,
+                        "LowpassResonance": 1.0,
+                        "HighpassEnabled": false,
+                        "HighpassCutoff": 10.0,
+                        "HighpassResonance": 1.0,
+                        "EchoEnabled": false,
+                        "EchoDelay": 500.0,
+                        "EchoFeedback": 50.0,
+                        "EchoDryLevel": 0.0,
+                        "EchoWetLevel": -6.0,
+                        "ReverbEnabled": false,
+                        "ReverbDecayTime": 1500.0,
+                        "ReverbEarlyDelay": 7.0,
+                        "ReverbLateDelay": 11.0,
+                        "ReverbHFReference": 5000.0,
+                        "ReverbDiffusion": 100.0,
+                        "ReverbDensity": 100.0,
+                        "ReverbWetLevel": -6.0,
+                        "ReverbDryLevel": 0.0
+                    }
+                },
+                {
+                    "Component": "Logic",
+                    "0": "ButtonResponse",
+                    "1": "AudioManager",
+                    "ScriptCount": 2
+                },
+                {
+                    "Component": "Text",
+                    "Content": "1",
+                    "Font": "ChauPhilomeneOne-Regular",
+                    "Size": 32.5,
+                    "ColorR": 0.0,
+                    "ColorG": 0.0,
+                    "ColorB": 0.0,
+                    "ColorA": 1.0,
+                    "PosX": 0.38749998807907104,
+                    "PosY": 0.2280000001192093,
+                    "Rotation": 0.0,
+                    "Line Height": 0,
+                    "WorldSpace": false,
+                    "Center": false
+                }
+            ]
+        },
+        {
+            "ID": 3,
+            "Components": [
+                {
+                    "Component": "Tag",
+                    "Tag": "SealBtn",
+                    "TargetTag": ""
+                },
+                {
+                    "Component": "Transform",
+                    "posX": 0.40032678842544556,
+                    "posY": 0.11358354985713959,
+                    "scaleX": 0.12510144710540771,
+                    "scaleY": 0.11588465422391891,
+                    "Rot": 0.0
                 },
                 {
                     "Component": "Collider",
@@ -322,12 +347,6 @@
                     "offsetY2": 0.0,
                     "radius1": 0.05000000074505806,
                     "radius2": 0.0
-                },
-                {
-                    "Component": "Logic",
-                    "0": "ButtonResponse",
-                    "1": "AudioManager",
-                    "ScriptCount": 2
                 },
                 {
                     "Component": "NameTag",
@@ -346,40 +365,6 @@
                     "LayeringOrder": 0
                 },
                 {
-                    "Component": "Tag",
-                    "Tag": "SealBtn",
-                    "TargetTag": ""
-                },
-                {
-                    "Component": "Text",
-                    "Content": "2",
-                    "Font": "ChauPhilomeneOne-Regular",
-                    "Size": 32.5,
-                    "ColorR": 0.0,
-                    "ColorG": 0.0,
-                    "ColorB": 0.0,
-                    "ColorA": 1.0,
-                    "PosX": 0.38749998807907104,
-                    "PosY": 0.09799999743700027,
-                    "Rotation": 0.0,
-                    "Line Height": 0,
-                    "WorldSpace": false,
-                    "Center": false
-                },
-                {
-                    "Component": "Transform",
-                    "posX": 0.40032678842544556,
-                    "posY": 0.11358354985713959,
-                    "scaleX": 0.12510144710540771,
-                    "scaleY": 0.11588465422391891,
-                    "Rot": 0.0
-                }
-            ]
-        },
-        {
-            "ID": 4,
-            "Components": [
-                {
                     "Component": "Audio",
                     "0": {
                         "AudioPath": "SFX_Static_01.wav",
@@ -410,7 +395,69 @@
                     "BGM Volume": 1.0,
                     "SFX Volume": 0.578000009059906,
                     "Master Volume": 1.0,
-                    "RandomFromArray": true
+                    "RandomFromArray": true,
+                    "Effects": {
+                        "LowpassEnabled": false,
+                        "LowpassCutoff": 5000.0,
+                        "LowpassResonance": 1.0,
+                        "HighpassEnabled": false,
+                        "HighpassCutoff": 10.0,
+                        "HighpassResonance": 1.0,
+                        "EchoEnabled": false,
+                        "EchoDelay": 500.0,
+                        "EchoFeedback": 50.0,
+                        "EchoDryLevel": 0.0,
+                        "EchoWetLevel": -6.0,
+                        "ReverbEnabled": false,
+                        "ReverbDecayTime": 1500.0,
+                        "ReverbEarlyDelay": 7.0,
+                        "ReverbLateDelay": 11.0,
+                        "ReverbHFReference": 5000.0,
+                        "ReverbDiffusion": 100.0,
+                        "ReverbDensity": 100.0,
+                        "ReverbWetLevel": -6.0,
+                        "ReverbDryLevel": 0.0
+                    }
+                },
+                {
+                    "Component": "Logic",
+                    "0": "ButtonResponse",
+                    "1": "AudioManager",
+                    "ScriptCount": 2
+                },
+                {
+                    "Component": "Text",
+                    "Content": "2",
+                    "Font": "ChauPhilomeneOne-Regular",
+                    "Size": 32.5,
+                    "ColorR": 0.0,
+                    "ColorG": 0.0,
+                    "ColorB": 0.0,
+                    "ColorA": 1.0,
+                    "PosX": 0.38749998807907104,
+                    "PosY": 0.09799999743700027,
+                    "Rotation": 0.0,
+                    "Line Height": 0,
+                    "WorldSpace": false,
+                    "Center": false
+                }
+            ]
+        },
+        {
+            "ID": 4,
+            "Components": [
+                {
+                    "Component": "Tag",
+                    "Tag": "OwlBtn",
+                    "TargetTag": ""
+                },
+                {
+                    "Component": "Transform",
+                    "posX": 0.40032678842544556,
+                    "posY": -0.1454678773880005,
+                    "scaleX": 0.13472461700439453,
+                    "scaleY": 0.12255587428808212,
+                    "Rot": 0.0
                 },
                 {
                     "Component": "Collider",
@@ -430,12 +477,6 @@
                     "offsetY2": 0.0,
                     "radius1": 0.05000000074505806,
                     "radius2": 0.0
-                },
-                {
-                    "Component": "Logic",
-                    "0": "ButtonResponse",
-                    "1": "AudioManager",
-                    "ScriptCount": 2
                 },
                 {
                     "Component": "NameTag",
@@ -454,9 +495,65 @@
                     "LayeringOrder": 0
                 },
                 {
-                    "Component": "Tag",
-                    "Tag": "OwlBtn",
-                    "TargetTag": ""
+                    "Component": "Audio",
+                    "0": {
+                        "AudioPath": "SFX_Static_01.wav",
+                        "Channel": 3,
+                        "IsLooping": false
+                    },
+                    "1": {
+                        "AudioPath": "SFX_Static_02.wav",
+                        "Channel": 3,
+                        "IsLooping": false
+                    },
+                    "2": {
+                        "AudioPath": "SFX_Static_03.wav",
+                        "Channel": 3,
+                        "IsLooping": false
+                    },
+                    "3": {
+                        "AudioPath": "SFX_Static_04.wav",
+                        "Channel": 3,
+                        "IsLooping": false
+                    },
+                    "4": {
+                        "AudioPath": "SFX_Static_05.wav",
+                        "Channel": 3,
+                        "IsLooping": false
+                    },
+                    "AudioArrCount": 5,
+                    "BGM Volume": 1.0,
+                    "SFX Volume": 0.578000009059906,
+                    "Master Volume": 1.0,
+                    "RandomFromArray": true,
+                    "Effects": {
+                        "LowpassEnabled": false,
+                        "LowpassCutoff": 5000.0,
+                        "LowpassResonance": 1.0,
+                        "HighpassEnabled": false,
+                        "HighpassCutoff": 10.0,
+                        "HighpassResonance": 1.0,
+                        "EchoEnabled": false,
+                        "EchoDelay": 500.0,
+                        "EchoFeedback": 50.0,
+                        "EchoDryLevel": 0.0,
+                        "EchoWetLevel": -6.0,
+                        "ReverbEnabled": false,
+                        "ReverbDecayTime": 1500.0,
+                        "ReverbEarlyDelay": 7.0,
+                        "ReverbLateDelay": 11.0,
+                        "ReverbHFReference": 5000.0,
+                        "ReverbDiffusion": 100.0,
+                        "ReverbDensity": 100.0,
+                        "ReverbWetLevel": -6.0,
+                        "ReverbDryLevel": 0.0
+                    }
+                },
+                {
+                    "Component": "Logic",
+                    "0": "ButtonResponse",
+                    "1": "AudioManager",
+                    "ScriptCount": 2
                 },
                 {
                     "Component": "Text",
@@ -473,20 +570,60 @@
                     "Line Height": 0,
                     "WorldSpace": false,
                     "Center": false
-                },
-                {
-                    "Component": "Transform",
-                    "posX": 0.40032678842544556,
-                    "posY": -0.1454678773880005,
-                    "scaleX": 0.13472461700439453,
-                    "scaleY": 0.12255587428808212,
-                    "Rot": 0.0
                 }
             ]
         },
         {
             "ID": 5,
             "Components": [
+                {
+                    "Component": "Tag",
+                    "Tag": "InventoryBtn",
+                    "TargetTag": ""
+                },
+                {
+                    "Component": "Transform",
+                    "posX": 0.40032678842544556,
+                    "posY": -0.28433525562286377,
+                    "scaleX": 0.13472461700439453,
+                    "scaleY": 0.12255587428808212,
+                    "Rot": 0.0
+                },
+                {
+                    "Component": "Collider",
+                    "ColliderType1": 2,
+                    "ColliderType2": 0,
+                    "minX1": -1.0,
+                    "minX2": 0.0,
+                    "minY1": -0.6600000262260437,
+                    "minY2": 0.0,
+                    "maxX1": 1.0,
+                    "maxX2": 0.0,
+                    "maxY1": 0.6600000262260437,
+                    "maxY2": 0.0,
+                    "offsetX1": 0.0,
+                    "offsetX2": 0.0,
+                    "offsetY1": 0.0,
+                    "offsetY2": 0.0,
+                    "radius1": 0.05000000074505806,
+                    "radius2": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "InventoryBtn"
+                },
+                {
+                    "Component": "Sprite",
+                    "TextureName": "UI/cameraButtonUnlit",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": false,
+                    "MaxIndex": 0,
+                    "LayeringOrder": 0
+                },
                 {
                     "Component": "Audio",
                     "0": {
@@ -518,67 +655,49 @@
                     "BGM Volume": 1.0,
                     "SFX Volume": 0.578000009059906,
                     "Master Volume": 1.0,
-                    "RandomFromArray": true
-                },
-                {
-                    "Component": "Collider",
-                    "ColliderType1": 2,
-                    "ColliderType2": 0,
-                    "minX1": -1.0,
-                    "minX2": 0.0,
-                    "minY1": -0.6600000262260437,
-                    "minY2": 0.0,
-                    "maxX1": 1.0,
-                    "maxX2": 0.0,
-                    "maxY1": 0.6600000262260437,
-                    "maxY2": 0.0,
-                    "offsetX1": 0.0,
-                    "offsetX2": 0.0,
-                    "offsetY1": 0.0,
-                    "offsetY2": 0.0,
-                    "radius1": 0.05000000074505806,
-                    "radius2": 0.0
+                    "RandomFromArray": true,
+                    "Effects": {
+                        "LowpassEnabled": false,
+                        "LowpassCutoff": 5000.0,
+                        "LowpassResonance": 1.0,
+                        "HighpassEnabled": false,
+                        "HighpassCutoff": 10.0,
+                        "HighpassResonance": 1.0,
+                        "EchoEnabled": false,
+                        "EchoDelay": 500.0,
+                        "EchoFeedback": 50.0,
+                        "EchoDryLevel": 0.0,
+                        "EchoWetLevel": -6.0,
+                        "ReverbEnabled": false,
+                        "ReverbDecayTime": 1500.0,
+                        "ReverbEarlyDelay": 7.0,
+                        "ReverbLateDelay": 11.0,
+                        "ReverbHFReference": 5000.0,
+                        "ReverbDiffusion": 100.0,
+                        "ReverbDensity": 100.0,
+                        "ReverbWetLevel": -6.0,
+                        "ReverbDryLevel": 0.0
+                    }
                 },
                 {
                     "Component": "Logic",
                     "0": "ButtonResponse",
                     "1": "AudioManager",
                     "ScriptCount": 2
-                },
-                {
-                    "Component": "NameTag",
-                    "NameTag": "InventoryBtn"
-                },
-                {
-                    "Component": "Sprite",
-                    "TextureName": "UI/cameraButtonUnlit",
-                    "Index_X": 0,
-                    "Index_Y": 0,
-                    "Ucoordinates": 512.0,
-                    "Vcoordinates": 512.0,
-                    "IsSpriteSheet": false,
-                    "IsAnimated": false,
-                    "MaxIndex": 0,
-                    "LayeringOrder": 0
-                },
-                {
-                    "Component": "Tag",
-                    "Tag": "InventoryBtn",
-                    "TargetTag": ""
-                },
-                {
-                    "Component": "Transform",
-                    "posX": 0.40032678842544556,
-                    "posY": -0.28433525562286377,
-                    "scaleX": 0.13472461700439453,
-                    "scaleY": 0.12255587428808212,
-                    "Rot": 0.0
                 }
             ]
         },
         {
             "ID": 6,
             "Components": [
+                {
+                    "Component": "Transform",
+                    "posX": 0.1090199276804924,
+                    "posY": 0.023660331964492798,
+                    "scaleX": 4.071832180023193,
+                    "scaleY": 2.111469030380249,
+                    "Rot": 0.0
+                },
                 {
                     "Component": "NameTag",
                     "NameTag": "CameraHighlight"
@@ -594,20 +713,20 @@
                     "IsAnimated": false,
                     "MaxIndex": 0,
                     "LayeringOrder": 0
-                },
-                {
-                    "Component": "Transform",
-                    "posX": 0.1090199276804924,
-                    "posY": 0.023660331964492798,
-                    "scaleX": 4.071832180023193,
-                    "scaleY": 2.111469030380249,
-                    "Rot": 0.0
                 }
             ]
         },
         {
             "ID": 7,
             "Components": [
+                {
+                    "Component": "Transform",
+                    "posX": -1.3370000123977661,
+                    "posY": -0.6959999799728394,
+                    "scaleX": 0.30000001192092896,
+                    "scaleY": 0.30000001192092896,
+                    "Rot": 0.0
+                },
                 {
                     "Component": "Collider",
                     "ColliderType1": 5,
@@ -628,11 +747,6 @@
                     "radius2": 0.0
                 },
                 {
-                    "Component": "Logic",
-                    "0": "DragAndDrop",
-                    "ScriptCount": 1
-                },
-                {
                     "Component": "NameTag",
                     "NameTag": "horse food"
                 },
@@ -649,12 +763,9 @@
                     "LayeringOrder": 0
                 },
                 {
-                    "Component": "Transform",
-                    "posX": -1.3370000123977661,
-                    "posY": -0.6959999799728394,
-                    "scaleX": 0.30000001192092896,
-                    "scaleY": 0.30000001192092896,
-                    "Rot": 0.0
+                    "Component": "Logic",
+                    "0": "DragAndDrop",
+                    "ScriptCount": 1
                 },
                 {
                     "Component": "ItemsAttributes",
@@ -667,6 +778,14 @@
         {
             "ID": 8,
             "Components": [
+                {
+                    "Component": "Transform",
+                    "posX": -0.6019999980926514,
+                    "posY": -0.722000002861023,
+                    "scaleX": 0.25,
+                    "scaleY": 0.25,
+                    "Rot": 0.0
+                },
                 {
                     "Component": "Collider",
                     "ColliderType1": 5,
@@ -687,11 +806,6 @@
                     "radius2": 0.0
                 },
                 {
-                    "Component": "Logic",
-                    "0": "RevealTargetOnClick",
-                    "ScriptCount": 1
-                },
-                {
                     "Component": "NameTag",
                     "NameTag": "horse medicine"
                 },
@@ -708,12 +822,9 @@
                     "LayeringOrder": 0
                 },
                 {
-                    "Component": "Transform",
-                    "posX": -0.6019999980926514,
-                    "posY": -0.722000002861023,
-                    "scaleX": 0.25,
-                    "scaleY": 0.25,
-                    "Rot": 0.0
+                    "Component": "Logic",
+                    "0": "RevealTargetOnClick",
+                    "ScriptCount": 1
                 },
                 {
                     "Component": "ItemsAttributes",
@@ -726,6 +837,14 @@
         {
             "ID": 9,
             "Components": [
+                {
+                    "Component": "Transform",
+                    "posX": 0.050999999046325684,
+                    "posY": -0.7060701847076416,
+                    "scaleX": 0.3499999940395355,
+                    "scaleY": 0.3499999940395355,
+                    "Rot": 0.0
+                },
                 {
                     "Component": "Collider",
                     "ColliderType1": 5,
@@ -746,11 +865,6 @@
                     "radius2": 0.0
                 },
                 {
-                    "Component": "Logic",
-                    "0": "DragAndDrop",
-                    "ScriptCount": 1
-                },
-                {
                     "Component": "NameTag",
                     "NameTag": "horse toy"
                 },
@@ -767,12 +881,9 @@
                     "LayeringOrder": 0
                 },
                 {
-                    "Component": "Transform",
-                    "posX": 0.050999999046325684,
-                    "posY": -0.7060701847076416,
-                    "scaleX": 0.3499999940395355,
-                    "scaleY": 0.3499999940395355,
-                    "Rot": 0.0
+                    "Component": "Logic",
+                    "0": "DragAndDrop",
+                    "ScriptCount": 1
                 },
                 {
                     "Component": "ItemsAttributes",
@@ -785,6 +896,14 @@
         {
             "ID": 10,
             "Components": [
+                {
+                    "Component": "Transform",
+                    "posX": 0.6753605604171753,
+                    "posY": 0.12399999797344208,
+                    "scaleX": 0.21751198172569275,
+                    "scaleY": 0.21751198172569275,
+                    "Rot": 0.0
+                },
                 {
                     "Component": "NameTag",
                     "NameTag": "HealthIcon"
@@ -800,20 +919,20 @@
                     "IsAnimated": false,
                     "MaxIndex": 0,
                     "LayeringOrder": 1
-                },
-                {
-                    "Component": "Transform",
-                    "posX": 0.6753605604171753,
-                    "posY": 0.12399999797344208,
-                    "scaleX": 0.21751198172569275,
-                    "scaleY": 0.21751198172569275,
-                    "Rot": 0.0
                 }
             ]
         },
         {
             "ID": 11,
             "Components": [
+                {
+                    "Component": "Transform",
+                    "posX": 0.6753605604171753,
+                    "posY": -0.029999999329447746,
+                    "scaleX": 0.21751198172569275,
+                    "scaleY": 0.21751198172569275,
+                    "Rot": 0.0
+                },
                 {
                     "Component": "NameTag",
                     "NameTag": "HungerIcon"
@@ -829,20 +948,20 @@
                     "IsAnimated": false,
                     "MaxIndex": 0,
                     "LayeringOrder": 1
-                },
-                {
-                    "Component": "Transform",
-                    "posX": 0.6753605604171753,
-                    "posY": -0.029999999329447746,
-                    "scaleX": 0.21751198172569275,
-                    "scaleY": 0.21751198172569275,
-                    "Rot": 0.0
                 }
             ]
         },
         {
             "ID": 12,
             "Components": [
+                {
+                    "Component": "Transform",
+                    "posX": 0.6753605604171753,
+                    "posY": -0.1679999977350235,
+                    "scaleX": 0.21751198172569275,
+                    "scaleY": 0.21751198172569275,
+                    "Rot": 0.0
+                },
                 {
                     "Component": "NameTag",
                     "NameTag": "SanityIcon"
@@ -858,14 +977,6 @@
                     "IsAnimated": false,
                     "MaxIndex": 0,
                     "LayeringOrder": 1
-                },
-                {
-                    "Component": "Transform",
-                    "posX": 0.6753605604171753,
-                    "posY": -0.1679999977350235,
-                    "scaleX": 0.21751198172569275,
-                    "scaleY": 0.21751198172569275,
-                    "Rot": 0.0
                 }
             ]
         },
@@ -873,15 +984,12 @@
             "ID": 13,
             "Components": [
                 {
-                    "Component": "HUDComponent",
-                    "ElementType": 2,
-                    "offsetX": 0.0,
-                    "offsetY": 0.0
-                },
-                {
-                    "Component": "Logic",
-                    "0": "HealthBar",
-                    "ScriptCount": 1
+                    "Component": "Transform",
+                    "posX": 1.1399999856948853,
+                    "posY": 0.11400000005960464,
+                    "scaleX": 0.8989999890327454,
+                    "scaleY": 0.0689999982714653,
+                    "Rot": 0.0
                 },
                 {
                     "Component": "NameTag",
@@ -900,12 +1008,15 @@
                     "LayeringOrder": 0
                 },
                 {
-                    "Component": "Transform",
-                    "posX": 1.1399999856948853,
-                    "posY": 0.11400000005960464,
-                    "scaleX": 0.8989999890327454,
-                    "scaleY": 0.0689999982714653,
-                    "Rot": 0.0
+                    "Component": "Logic",
+                    "0": "HealthBar",
+                    "ScriptCount": 1
+                },
+                {
+                    "Component": "HUDComponent",
+                    "ElementType": 2,
+                    "offsetX": 0.0,
+                    "offsetY": 0.0
                 }
             ]
         },
@@ -913,15 +1024,12 @@
             "ID": 14,
             "Components": [
                 {
-                    "Component": "HUDComponent",
-                    "ElementType": 3,
-                    "offsetX": 0.0,
-                    "offsetY": 0.0
-                },
-                {
-                    "Component": "Logic",
-                    "0": "HealthBar",
-                    "ScriptCount": 1
+                    "Component": "Transform",
+                    "posX": 1.1399999856948853,
+                    "posY": -0.02500000037252903,
+                    "scaleX": 0.8989999890327454,
+                    "scaleY": 0.0689999982714653,
+                    "Rot": 0.0
                 },
                 {
                     "Component": "NameTag",
@@ -940,12 +1048,15 @@
                     "LayeringOrder": 0
                 },
                 {
-                    "Component": "Transform",
-                    "posX": 1.1399999856948853,
-                    "posY": -0.02500000037252903,
-                    "scaleX": 0.8989999890327454,
-                    "scaleY": 0.0689999982714653,
-                    "Rot": 0.0
+                    "Component": "Logic",
+                    "0": "HealthBar",
+                    "ScriptCount": 1
+                },
+                {
+                    "Component": "HUDComponent",
+                    "ElementType": 3,
+                    "offsetX": 0.0,
+                    "offsetY": 0.0
                 }
             ]
         },
@@ -953,15 +1064,12 @@
             "ID": 15,
             "Components": [
                 {
-                    "Component": "HUDComponent",
-                    "ElementType": 4,
-                    "offsetX": 0.0,
-                    "offsetY": 0.0
-                },
-                {
-                    "Component": "Logic",
-                    "0": "HealthBar",
-                    "ScriptCount": 1
+                    "Component": "Transform",
+                    "posX": 1.1399999856948853,
+                    "posY": -0.15299999713897705,
+                    "scaleX": 0.8989999890327454,
+                    "scaleY": 0.0689999982714653,
+                    "Rot": 0.0
                 },
                 {
                     "Component": "NameTag",
@@ -980,12 +1088,15 @@
                     "LayeringOrder": 0
                 },
                 {
-                    "Component": "Transform",
-                    "posX": 1.1399999856948853,
-                    "posY": -0.15299999713897705,
-                    "scaleX": 0.8989999890327454,
-                    "scaleY": 0.0689999982714653,
-                    "Rot": 0.0
+                    "Component": "Logic",
+                    "0": "HealthBar",
+                    "ScriptCount": 1
+                },
+                {
+                    "Component": "HUDComponent",
+                    "ElementType": 4,
+                    "offsetX": 0.0,
+                    "offsetY": 0.0
                 }
             ]
         },
@@ -993,13 +1104,21 @@
             "ID": 16,
             "Components": [
                 {
-                    "Component": "Logic",
-                    "0": "TimerDisplay",
-                    "ScriptCount": 1
+                    "Component": "Transform",
+                    "posX": -1.469074010848999,
+                    "posY": 0.7428621053695679,
+                    "scaleX": 1.0,
+                    "scaleY": 1.0,
+                    "Rot": 0.0
                 },
                 {
                     "Component": "NameTag",
                     "NameTag": "TimerDisplay"
+                },
+                {
+                    "Component": "Logic",
+                    "0": "TimerDisplay",
+                    "ScriptCount": 1
                 },
                 {
                     "Component": "Text",
@@ -1016,20 +1135,20 @@
                     "Line Height": 0,
                     "WorldSpace": true,
                     "Center": false
-                },
-                {
-                    "Component": "Transform",
-                    "posX": -1.469074010848999,
-                    "posY": 0.7428621053695679,
-                    "scaleX": 1.0,
-                    "scaleY": 1.0,
-                    "Rot": 0.0
                 }
             ]
         },
         {
             "ID": 17,
             "Components": [
+                {
+                    "Component": "Transform",
+                    "posX": 0.0,
+                    "posY": 0.0,
+                    "scaleX": 3.6449999809265137,
+                    "scaleY": 1.9999960660934448,
+                    "Rot": 0.0
+                },
                 {
                     "Component": "NameTag",
                     "NameTag": "horse_title"
@@ -1049,7 +1168,12 @@
                     "Line Height": 50,
                     "WorldSpace": false,
                     "Center": false
-                },
+                }
+            ]
+        },
+        {
+            "ID": 18,
+            "Components": [
                 {
                     "Component": "Transform",
                     "posX": 0.0,
@@ -1057,12 +1181,7 @@
                     "scaleX": 3.6449999809265137,
                     "scaleY": 1.9999960660934448,
                     "Rot": 0.0
-                }
-            ]
-        },
-        {
-            "ID": 18,
-            "Components": [
+                },
                 {
                     "Component": "NameTag",
                     "NameTag": "horse enclosure"
@@ -1082,7 +1201,12 @@
                     "Line Height": 50,
                     "WorldSpace": false,
                     "Center": false
-                },
+                }
+            ]
+        },
+        {
+            "ID": 19,
+            "Components": [
                 {
                     "Component": "Transform",
                     "posX": 0.0,
@@ -1090,12 +1214,7 @@
                     "scaleX": 3.6449999809265137,
                     "scaleY": 1.9999960660934448,
                     "Rot": 0.0
-                }
-            ]
-        },
-        {
-            "ID": 19,
-            "Components": [
+                },
                 {
                     "Component": "NameTag",
                     "NameTag": "horse_intro"
@@ -1115,20 +1234,25 @@
                     "Line Height": 62,
                     "WorldSpace": false,
                     "Center": false
-                },
-                {
-                    "Component": "Transform",
-                    "posX": 0.0,
-                    "posY": 0.0,
-                    "scaleX": 3.6449999809265137,
-                    "scaleY": 1.9999960660934448,
-                    "Rot": 0.0
                 }
             ]
         },
         {
             "ID": 20,
             "Components": [
+                {
+                    "Component": "Tag",
+                    "Tag": "target",
+                    "TargetTag": ""
+                },
+                {
+                    "Component": "Transform",
+                    "posX": 0.0,
+                    "posY": 0.0,
+                    "scaleX": 0.20000000298023224,
+                    "scaleY": 0.20000000298023224,
+                    "Rot": 0.0
+                },
                 {
                     "Component": "NameTag",
                     "NameTag": "Target"
@@ -1144,19 +1268,6 @@
                     "IsAnimated": false,
                     "MaxIndex": 0,
                     "LayeringOrder": 4
-                },
-                {
-                    "Component": "Tag",
-                    "Tag": "target",
-                    "TargetTag": ""
-                },
-                {
-                    "Component": "Transform",
-                    "posX": 0.0,
-                    "posY": 0.0,
-                    "scaleX": 0.20000000298023224,
-                    "scaleY": 0.20000000298023224,
-                    "Rot": 0.0
                 }
             ]
         },
@@ -1164,9 +1275,12 @@
             "ID": 21,
             "Components": [
                 {
-                    "Component": "Logic",
-                    "0": "DigeticLog",
-                    "ScriptCount": 1
+                    "Component": "Transform",
+                    "posX": 1.0999298095703125,
+                    "posY": -0.54035484790802,
+                    "scaleX": 0.9850000143051147,
+                    "scaleY": 0.5099999904632568,
+                    "Rot": 0.0
                 },
                 {
                     "Component": "NameTag",
@@ -1185,6 +1299,11 @@
                     "LayeringOrder": 0
                 },
                 {
+                    "Component": "Logic",
+                    "0": "DigeticLog",
+                    "ScriptCount": 1
+                },
+                {
                     "Component": "Text",
                     "Content": "[00:00:00] This is a Log entry",
                     "Font": "Jersey10Charted-Regular",
@@ -1199,14 +1318,6 @@
                     "Line Height": 0,
                     "WorldSpace": true,
                     "Center": false
-                },
-                {
-                    "Component": "Transform",
-                    "posX": 1.0999298095703125,
-                    "posY": -0.54035484790802,
-                    "scaleX": 0.9850000143051147,
-                    "scaleY": 0.5099999904632568,
-                    "Rot": 0.0
                 }
             ]
         }
