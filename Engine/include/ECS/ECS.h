@@ -173,13 +173,22 @@ namespace NocturnalEngine
 		/*!*************************************************************************
 		Resets all the entities for Scene build
 		****************************************************************************/
-		void ResetEntities()
+		void ResetEntities(bool withPrefabs=false)
 		{
 			auto aliveset = mEntityManager->GetAliveEntities();
+			std::bitset<MAX_ENTITIES> bitset= mEntityManager->GetPrefabBitset();
 			
 			for (const auto& iter : aliveset)
 			{
-				DestroyEntity(iter);
+				if (withPrefabs)
+				{
+					DestroyEntity(iter);
+				}
+				else if (!bitset[iter]) 
+				{
+					DestroyEntity(iter);
+				}
+				
 			}
 			
 		}
