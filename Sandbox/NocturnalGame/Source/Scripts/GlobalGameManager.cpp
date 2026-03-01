@@ -362,7 +362,7 @@ namespace NocturnalEngine {
         }
         else if (sceneAnimalPair.second.aA.current_hunger <= sceneAnimalPair.second.aA.maxHunger / 5.0 && sceneAnimalPair.second.aA.hungerWarnLevel < 2)
         {
-            p_GameManager.AddLogEntry(sceneAnimalPair.first + " has not been fed for " + std::to_string(Random::Range(120, 180)) + " minutes");
+            p_GameManager.AddLogEntry(sceneAnimalPair.first + " has not been fed for " + std::to_string(Random::Range(60, 180)) + " minutes");
             //AddLogEntry("WARNING! " + sceneAnimalPair.first + "'s Hunger is below 20%!");
             sceneAnimalPair.second.aA.hungerWarnLevel++;
             AddCrit();
@@ -392,7 +392,7 @@ namespace NocturnalEngine {
         }
         if (sceneAnimalPair.second.aA.isEscaped)
         {
-           // AddLogEntry(sceneAnimalPair.first + " has breached containment.");
+           AddLogEntry(sceneAnimalPair.first + " has breached containment.");
         }
     }
 

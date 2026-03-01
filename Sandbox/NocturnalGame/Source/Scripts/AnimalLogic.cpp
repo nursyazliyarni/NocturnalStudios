@@ -173,7 +173,7 @@ namespace NocturnalEngine {
 		}
 		else if (aA.current_hunger <= aA.maxHunger / 5.0 && aA.hungerWarnLevel < 2)
 		{
-			p_GameManager.AddLogEntry(animalName + " has not been fed for "+std::to_string(Random::Range(120,180))+ " minutes");
+			p_GameManager.AddLogEntry(animalName + " has not been fed for "+std::to_string(Random::Range(60,180))+ " minutes");
 			aA.hungerWarnLevel++;
 			p_GameManager.AddCrit();
 		}
