@@ -84,12 +84,12 @@ namespace NocturnalEngine {
 			double hpDecay = aA.healthDecayRate,decreaseScale = 1.0;
 			if (aA.WhatKindOfAnimalIsThis() == "Flamingo")
 			{
-				if (aA.current_hunger > aA.maxHunger * 0.7) { hpDecay * 0.5; decreaseScale = 0.7; }
-				else if (aA.current_hunger <= aA.maxHunger * 0.3) { hpDecay * 2.0; decreaseScale = 2.0; }
+				if (aA.current_hunger > aA.maxHunger * 0.7) { hpDecay *= 0.5; decreaseScale = 0.7; }
+				else if (aA.current_hunger <= aA.maxHunger * 0.3) { hpDecay *= 2.0; decreaseScale = 2.0; }
 			}
 			if (aA.WhatKindOfAnimalIsThis() == "Horse")
 			{
-				if (aA.current_hunger<= aA.maxHunger * 0.8) { hpDecay * 1.5; decreaseScale = 1.5; }
+				if (aA.current_hunger<= aA.maxHunger * 0.8) { hpDecay *= 1.5; decreaseScale = 1.5; }
 			}
 
 			CheckAndDecreaseStats(time.hp, chance.hp, hpDecay, aA.current_health, Frametime);
@@ -137,6 +137,7 @@ namespace NocturnalEngine {
 	}
 
 	void AnimalLogic::ChangeAnim(AnimalAttributes& aA) {
+		UNREFERENCED_PARAMETER(aA);
 		if (ogSpritename.empty())return;
 
 		Sprite::Coordinates ind = p_ecs.GetComponent<Sprite>(entityID).GetIndex();
@@ -211,26 +212,26 @@ namespace NocturnalEngine {
 		// Transform& t{ p_ecs.GetComponent<Transform>(entityID) };
 
 	}
-	void AnimalLogic::CheckAndDecreaseStats(float& time, float& chance, double decayRate, double& attributeValue,float frametime, double decreaseScale) {
+	void AnimalLogic::CheckAndDecreaseStats(float& times, float& chances, double decayRate, double& attributeValue,float frametime, double decreaseScale) {
 		if (decayRate <= 0.0)decayRate = 1.0;
-		if (time >= checkPeriod / decayRate)
+		if (times >= checkPeriod / decayRate)
 		{
 			//std::cout << "Checking\n";
 			float bruh{ Random::Range(0.f, 100.f) };
-			if ( bruh<= chance)
+			if ( bruh<= chances)
 			{
 				//std::cout << bruh << "\n";
 				attributeValue -= Random::Range(5.f, 15.f)*decreaseScale;
-				chance = 10.f;
+				chances = 10.f;
 			}
 			else {
-				chance += 10.f;
+				chances += 10.f;
 			}
-			time = 0.f;
+			times = 0.f;
 		}
 		else
 		{
-			time += frametime;
+			times += frametime;
 		}
 	}
 }

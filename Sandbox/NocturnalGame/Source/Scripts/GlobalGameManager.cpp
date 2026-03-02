@@ -187,12 +187,12 @@ namespace NocturnalEngine {
                         double hpDecay = sceneAnimalPair.second.aA.healthDecayRate, decreaseScale = 1.0;
                         if (sceneAnimalPair.second.aA.WhatKindOfAnimalIsThis() == "Flamingo")
                         {
-                            if (sceneAnimalPair.second.aA.current_hunger > sceneAnimalPair.second.aA.maxHunger * 0.7) { hpDecay * 0.5; decreaseScale = 0.7; }
-                            else if (sceneAnimalPair.second.aA.current_hunger <= sceneAnimalPair.second.aA.maxHunger * 0.3) { hpDecay * 2.0; decreaseScale = 2.0; }
+                            if (sceneAnimalPair.second.aA.current_hunger > sceneAnimalPair.second.aA.maxHunger * 0.7) { hpDecay *= 0.5; decreaseScale = 0.7; }
+                            else if (sceneAnimalPair.second.aA.current_hunger <= sceneAnimalPair.second.aA.maxHunger * 0.3) { hpDecay *= 2.0; decreaseScale = 2.0; }
                         }
                         if (sceneAnimalPair.second.aA.WhatKindOfAnimalIsThis() == "Horse")
                         {
-                            if (sceneAnimalPair.second.aA.current_hunger <= sceneAnimalPair.second.aA.maxHunger * 0.8) { hpDecay * 1.5; decreaseScale = 1.5; }
+                            if (sceneAnimalPair.second.aA.current_hunger <= sceneAnimalPair.second.aA.maxHunger * 0.8) { hpDecay *= 1.5; decreaseScale = 1.5; }
                         }
 
                         CheckAndDecreaseStats(sceneAnimalPair.second.hpT, sceneAnimalPair.second.hpD, hpDecay, sceneAnimalPair.second.aA.current_health, dt);
