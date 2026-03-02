@@ -17,8 +17,12 @@
 
 namespace NocturnalEngine
 {
-	bool PrefabManager::CloneToList(Entity id) {
+	bool PrefabManager::CloneToList(Entity id,std::string name) {
+		if (!p_ecs.HaveComponent<NameTag>(id))return false;
+		if (name.empty())name = p_ecs.GetComponent<NameTag>(id).GetNameTag();
 
+		Entity newEntity{ p_ecs.CloneEntity(id,true) };
+		return AddPrefab(name, newEntity);
 	}
 
 	bool PrefabManager::MakeFromJson(const std::string& fileName) {
@@ -26,11 +30,14 @@ namespace NocturnalEngine
 		return DeserializeFromFile(fileName);
 	}
 
-	bool PrefabManager::SaveToJson(const std::string& prefabName) {
+	bool PrefabManager::SaveToJson(const std::string& prefabName,Entity e) {
 
 		prefabToSave = prefabName;
+		prefabToSaveEntity = e;
+		if (!DoesPrefabExist(prefabName)) return false;
 		bool retVal= SerializeToFile("Assets/Prefabs/" + prefabName + ".json");
 		prefabToSave = "";
+		prefabToSaveEntity = MAX_ENTITIES;
 		return retVal;
 	}
 
@@ -41,7 +48,7 @@ namespace NocturnalEngine
 		std::string prefabName = obj["Name"].GetString();
 		if (DoesPrefabExist(prefabName))return false;
 
-		Entity prefabEntity = p_ecs.CreateEntity();
+		Entity prefabEntity = p_ecs.CreateEntity(true);
 
 		const rapidjson::Value::ConstArray compArr = obj["Components"].GetArray();
 		
@@ -78,11 +85,51 @@ namespace NocturnalEngine
 	}
 
 	bool PrefabManager::Serialize(rapidjson::PrettyWriter<rapidjson::StringBuffer>* writer) const{
-		return SerializeWithName(writer, prefabToSave);
+		return SerializeWithName(writer, prefabToSave,prefabToSaveEntity);
 	}
 
-	bool PrefabManager::SerializeWithName(rapidjson::PrettyWriter<rapidjson::StringBuffer>* writer, const std::string& prefabName) const{
-		return false;
+	bool PrefabManager::SerializeWithName(rapidjson::PrettyWriter<rapidjson::StringBuffer>* writer, const std::string& prefabName,Entity e) const{
+		writer->StartObject();
+		writer->Key("Name");
+		writer->String(prefabName.c_str());
+
+		writer->Key("Components");
+		writer->StartArray();
+		//Engine components
+		for (std::pair<const std::string, const ComponentRegistry::ComponentDescriptor> comp : p_ECompReg.GetAll())
+		{
+			if (comp.second.hasFunc(e))
+			{
+				writer->StartObject();
+				//component name always comes first,
+				writer->Key("Component");
+				writer->String(comp.first.c_str());
+				// then start writing down the component
+				comp.second.serializeFunc(e, writer);
+				writer->EndObject();
+
+			}
+		}
+
+		//Game components
+		if (ComponentRegistry* meow = ServiceLocator::Get().GetGameComponents())
+		{
+			for (std::pair<const std::string, const ComponentRegistry::ComponentDescriptor> comp : meow->GetAll())
+			{
+				if (comp.second.hasFunc(e))
+				{
+					writer->StartObject();
+					writer->Key("Component");
+					writer->String(comp.first.c_str());
+					comp.second.serializeFunc(e, writer);
+					writer->EndObject();
+
+				}
+			}
+		}
+		writer->EndArray();
+		writer->EndObject();
+		return true;
 	}
 
 }

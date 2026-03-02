@@ -34,11 +34,11 @@ namespace NocturnalEngine
 			return true;
 		}
 
-		bool CloneToList(Entity id);
+		bool CloneToList(Entity id, std::string name="");
 
 		bool MakeFromJson(const std::string& fileName);
 
-		bool SaveToJson(const std::string& prefabName);
+		bool SaveToJson(const std::string& prefabName,Entity e);
 		/*!*************************************************************************
 		Deserializes ECS entities and data from JSON file to build ECS (File loading)
 		****************************************************************************/
@@ -48,12 +48,13 @@ namespace NocturnalEngine
 		****************************************************************************/
 		virtual bool Serialize(rapidjson::PrettyWriter<rapidjson::StringBuffer>* writer) const override;
 	private:
-		bool SerializeWithName(rapidjson::PrettyWriter<rapidjson::StringBuffer>* writer, const std::string& prefabName)const;
+		bool SerializeWithName(rapidjson::PrettyWriter<rapidjson::StringBuffer>* writer, const std::string& prefabName,Entity e)const;
 
 		PrefabManager() = default;
 		std::vector<Entity> prefabList{};
 		std::map<std::string, Entity> prefabNameMap{};
 
-		std::string prefabToSave;
+		std::string prefabToSave{};
+		Entity prefabToSaveEntity{ MAX_ENTITIES };
 	};
 }

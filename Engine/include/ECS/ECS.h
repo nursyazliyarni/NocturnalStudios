@@ -99,16 +99,16 @@ namespace NocturnalEngine
 		/*!*************************************************************************
 		Clones the Entity and all its available components
 		****************************************************************************/
-		Entity CloneEntity(Entity entity)
+		Entity CloneEntity(Entity entity,bool isPrefab=false)
 		{
 			Entity newEntity;
 			if (p_MemoryManager.IsEnabled())
 			{
-				newEntity = CreateEntity();
+				newEntity = CreateEntity(isPrefab);
 			}
 			else
 			{
-				newEntity = mEntityManager->CreateEntity();
+				newEntity = mEntityManager->CreateEntity(isPrefab);
 			}
 			
 			mEntityManager->SetSignature(newEntity, GetEntitySignature(entity));
