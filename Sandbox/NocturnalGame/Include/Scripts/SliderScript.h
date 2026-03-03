@@ -85,7 +85,7 @@ namespace NocturnalEngine {
 		vec2D def_position{};
 		slider_bb limit{};
 
-
+		float masterPercentage{ 100.f }, backgroundPercentage{ 100.f }, effectPrecentage{ 100.f };
 
 	};
 }
