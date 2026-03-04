@@ -53,20 +53,43 @@ namespace NocturnalEngine {
     initialization, this function is empty
     ****************************************************************************/
     void GameManager::Init() {
-        //this is default for the sake of the game working, 
-        // when serialization is fixed, It will be able to detect 
-        AnimalAttributes defaultAttributes{};
-        defaultAttributes.SetDefault();
+        if (!levelConfig.SetupLevelData("Assets/LevelPreset")||levelConfig.GetLevels().find(levelNum)==levelConfig.GetLevels().end()) {
+            AnimalAttributes defaultAttributes{};
+            defaultAttributes.SetDefault();
 
-        sceneAnimalMap.emplace("Flamingo", defaultAttributes);
-        sceneAnimalMap["Flamingo"].aA.SetAnimalType(AnimalAttributes::AnimalType::FLAMINGO);
-        sceneAnimalMap.emplace("Horse", defaultAttributes);
-        sceneAnimalMap["Horse"].aA.SetAnimalType(AnimalAttributes::AnimalType::HOESE);
-        sceneAnimalMap.emplace("Owl", defaultAttributes);
-        sceneAnimalMap["Owl"].aA.SetAnimalType(AnimalAttributes::AnimalType::OWL);
-        sceneAnimalMap["Owl"].aA.hungerDecayRate = 1.5; //owl special hunger
-        sceneAnimalMap.emplace("Seal", defaultAttributes);
-        sceneAnimalMap["Seal"].aA.SetAnimalType(AnimalAttributes::AnimalType::SEAL);
+            sceneAnimalMap.emplace("Flamingo", defaultAttributes);
+            sceneAnimalMap["Flamingo"].aA.SetAnimalType(AnimalAttributes::AnimalType::FLAMINGO);
+            sceneAnimalMap.emplace("Horse", defaultAttributes);
+            sceneAnimalMap["Horse"].aA.SetAnimalType(AnimalAttributes::AnimalType::HOESE);
+            sceneAnimalMap.emplace("Owl", defaultAttributes);
+            sceneAnimalMap["Owl"].aA.SetAnimalType(AnimalAttributes::AnimalType::OWL);
+            sceneAnimalMap["Owl"].aA.hungerDecayRate = 1.5; //owl special hunger
+            sceneAnimalMap.emplace("Seal", defaultAttributes);
+            sceneAnimalMap["Seal"].aA.SetAnimalType(AnimalAttributes::AnimalType::SEAL);
+        }
+        else {
+            const LevelConfig::LevelData& leveldat = levelConfig.GetLevels().at(levelNum);
+            for (const std::pair<const LevelConfig::AnimalRef,AnimalAttributes>& animal:leveldat)
+            {
+                AnimalData aD{};
+                aD.aA = animal.second;
+                switch (animal.first)
+                {
+                case LevelConfig::AnimalRef::FLAMINGO:
+                    sceneAnimalMap.emplace("Flamingo", aD);
+                    break;
+                case LevelConfig::AnimalRef::SEAL:
+                    sceneAnimalMap.emplace("Seal", aD);
+                    break;
+                case LevelConfig::AnimalRef::HORSE:
+                    sceneAnimalMap.emplace("Horse", aD);
+                    break;
+                case LevelConfig::AnimalRef::OWL:
+                    sceneAnimalMap.emplace("Owl", aD);
+                    break;
+                }
+            }
+        }
         currState=  GameManager::GameState::PLAYING;
         deadAnimals = 0;
     }
@@ -474,5 +497,73 @@ namespace NocturnalEngine {
         {
             time += frametime;
         }
+    }
+
+    bool LevelConfig::SetupLevelData(const std::string& folderPath) {
+        if (!std::filesystem::exists(folderPath)||!std::filesystem::is_directory(folderPath))return false;
+        
+        std::filesystem::directory_iterator folder{ folderPath };
+        for (const std::filesystem::directory_entry& file:folder)
+        {
+            std::filesystem::path filePath{ file.path() };
+            if (!filePath.has_extension())continue;
+
+            std::string ext = filePath.extension().string();
+            std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
+
+            if (ext == ".json") {
+                DeserializeFromFile(filePath.string());
+            }
+        }
+        return true;
+    }
+    bool LevelConfig::Deserialize(const rapidjson::Value& obj) {
+        if (!obj.HasMember("LevelIndex") || !obj["LevelIndex"].IsInt())return false;
+
+        int levelIndex = obj["LevelIndex"].GetInt();
+
+        if (levelList.find(levelIndex) != levelList.end())return false; //if u can find a level with that value then skip
+        LevelData leveldat{};
+
+        if (obj.HasMember("LevelData")&&obj["LevelData"].IsArray())
+        {
+
+             const rapidjson::Value::ConstArray arr = obj["LevelData"].GetArray();
+
+             for (const rapidjson::Value& animal:arr)
+             {
+                 if (!animal.HasMember("Animal")||(!animal["Animal"].IsInt()&&!animal["Animal"].IsString())) continue;
+                 AnimalRef aR{};
+                 if (animal["Animal"].IsInt())aR = static_cast<AnimalRef>(animal["Animal"].GetInt());
+                 if (animal["Animal"].IsString()) {
+                     std::string animaltype= animal["Animal"].GetString();
+                     std::transform(animaltype.begin(), animaltype.end(), animaltype.begin(), ::tolower);
+                     if (animaltype == "flamingo")aR = FLAMINGO; 
+                     if (animaltype == "seal")aR = SEAL;
+                     if (animaltype == "horse")aR = HORSE;
+                     if (animaltype == "owl")aR = OWL;
+                 }
+
+                 if (aR == IDK) continue;
+
+                 if (!animal.HasMember("Attributes") || !animal["Attributes"].IsObject())continue;
+                 AnimalAttributes aA{};
+                 if (!aA.Deserialize(animal["Attributes"])) continue;
+                 else leveldat.emplace(aR, aA);
+                 std::cout << "levelData emplaced\n";
+             }
+        }
+
+        for (int i = 1; i < 5; i++)
+        {
+            if (leveldat.find(static_cast<AnimalRef>(i)) != leveldat.end())continue;
+            AnimalAttributes a{};
+            a.SetDefault();
+            a.SetAnimalType(i - 1);
+            leveldat.emplace(static_cast<AnimalRef>(i), a);
+        }
+
+        levelList.emplace(levelIndex, leveldat);
+        return true; 
     }
 }

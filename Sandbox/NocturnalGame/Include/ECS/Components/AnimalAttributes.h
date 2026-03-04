@@ -24,8 +24,8 @@ namespace NocturnalEngine
 	public:
 		enum class AnimalType {
 			FLAMINGO,
+			SEAL, 
 			HOESE,
-			SEAL,
 			OWL
 		};
 		enum class PriorityAnimation {
@@ -38,6 +38,15 @@ namespace NocturnalEngine
 		AnimalType animalType{ AnimalType::FLAMINGO };
 		PriorityAnimation anim{ PriorityAnimation::NORMAL };
 	public:
+		void SetAnimalType(int a) {
+			switch (a) {
+			case 1: animalType = AnimalType::FLAMINGO; break;
+			case 2: animalType = AnimalType::SEAL;     break;
+			case 3: animalType = AnimalType::HOESE;    break;
+			case 4: animalType = AnimalType::OWL;      break;
+			default:animalType = AnimalType::FLAMINGO; break;
+			}
+		}
 		void SetAnimalType(AnimalType a) { animalType = a; }
 		std::string WhatKindOfAnimalIsThis() {
 
@@ -99,7 +108,7 @@ namespace NocturnalEngine
 		double healthDecayRate;
 		double hungerDecayRate;
 		double sanityDecayRate;
-		bool is_alive,isEscaped;
+		bool is_alive, isEscaped{ false };
 
 		int healthWarnLevel{ 0 }, hungerWarnLevel{ 0 }, sanityWarnLevel{ 0 };
 		int animInnerState{ 0 };

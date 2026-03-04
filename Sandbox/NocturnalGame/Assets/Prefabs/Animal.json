@@ -1,0 +1,77 @@
+{
+    "Name": "Animal",
+    "Components": [
+        {
+            "Component": "Transform",
+            "posX": -0.9560700058937073,
+            "posY": 0.2460063397884369,
+            "scaleX": 1.0,
+            "scaleY": 1.0,
+            "Rot": 0.0
+        },
+        {
+            "Component": "Collider",
+            "ColliderType1": 5,
+            "ColliderType2": 5,
+            "minX1": -0.10000000149011612,
+            "minX2": 0.20000000298023224,
+            "minY1": 0.05000000074505806,
+            "minY2": 0.10000000149011612,
+            "maxX1": 0.20000000298023224,
+            "maxX2": 0.20000000298023224,
+            "maxY1": 0.36000001430511475,
+            "maxY2": 0.10000000149011612,
+            "offsetX1": 0.0,
+            "offsetX2": -0.05000000074505806,
+            "offsetY1": 0.05000000074505806,
+            "offsetY2": 0.05000000074505806,
+            "radius1": 0.0,
+            "radius2": 0.0
+        },
+        {
+            "Component": "NameTag",
+            "NameTag": "Flamingo"
+        },
+        {
+            "Component": "Sprite",
+            "TextureName": "Characters/flamingo_spritesheet",
+            "Index_X": 0,
+            "Index_Y": 0,
+            "Ucoordinates": 528.0,
+            "Vcoordinates": 528.0,
+            "IsSpriteSheet": true,
+            "IsAnimated": true,
+            "MaxIndex": 5,
+            "DisplayTime 0": 0.125,
+            "DisplayTime 1": 0.125,
+            "DisplayTime 2": 0.125,
+            "DisplayTime 3": 0.125,
+            "DisplayTime 4": 0.125,
+            "LayeringOrder": 0
+        },
+        {
+            "Component": "Logic",
+            "0": "AnimalLogic",
+            "1": "PainSpotSpawner",
+            "ScriptCount": 2
+        },
+        {
+            "Component": "Draggable",
+            "isTarget": true
+        },
+        {
+            "Component": "AnimalAttributes",
+            "Animal Type": 0,
+            "Current Health": 94.95833307038993,
+            "Max Health": 100.0,
+            "Current Hunger": 79.8333322815597,
+            "Max Hunger": 100.0,
+            "Current Sanity": 98.2833332438022,
+            "Max Sanity": 100.0,
+            "Health Decay Rate": 1.0,
+            "Hunger Decay Rate": 1.0,
+            "Sanity Decay Rate": 1.0,
+            "IS_alive": true
+        }
+    ]
+}

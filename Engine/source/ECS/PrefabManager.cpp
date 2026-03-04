@@ -22,7 +22,9 @@ namespace NocturnalEngine
 		if (name.empty())name = p_ecs.GetComponent<NameTag>(id).GetNameTag();
 
 		Entity newEntity{ p_ecs.CloneEntity(id,true) };
-		return AddPrefab(name, newEntity);
+		bool returnV =AddPrefab(name, newEntity);
+		if (returnV)SaveToJson(name, newEntity);
+		return returnV;
 	}
 
 	bool PrefabManager::MakeFromJson(const std::string& fileName) {

@@ -25,6 +25,34 @@
 
 namespace NocturnalEngine {
 
+    class LevelConfig:public JSONSerializer {
+    public:
+        enum AnimalRef
+        {
+            IDK = 0,
+            FLAMINGO = 1,
+            SEAL = 2,
+            HORSE = 3,
+            OWL = 4
+        };
+
+        
+        typedef std::map<AnimalRef, AnimalAttributes> LevelData;
+        
+        
+        bool SetupLevelData(const std::string& folderPath);
+
+        virtual bool Deserialize(const rapidjson::Value& obj) override;
+
+        virtual bool Serialize(rapidjson::PrettyWriter<rapidjson::StringBuffer>* writer) const override { UNREFERENCED_PARAMETER(writer); return true; }
+
+        const std::map<int,LevelData>& GetLevels() const { return levelList; }
+
+    private:
+        std::map<int,LevelData> levelList{};
+    };
+
+
     class GameManager {
     public:
 
@@ -67,6 +95,8 @@ namespace NocturnalEngine {
          GameState GetGameState()const { return currState; }
 
          void SetState(GameState s) { currState = s; }
+
+         unsigned int CurrentLevel() const { return levelNum; }
         
          void AddDeath() { deadAnimals++; }
 
@@ -101,6 +131,8 @@ namespace NocturnalEngine {
 
          void SetSceneToSwitch(std::string);
     private:
+
+        LevelConfig levelConfig{};
 
         GameManager();
         ~GameManager();
@@ -143,6 +175,9 @@ namespace NocturnalEngine {
         void CombinedSceneStart();
         void CombinedSceneUpdate(float dt);
         Entity GetEntityByName(const std::string name);
+
+        unsigned int levelNum{1};
+
         void CheckAndDecreaseStats(float& time, float& chance, double decayRate, double& attributeValue, float frametime, double decreaseScale=1.0);
 
 

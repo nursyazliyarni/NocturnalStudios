@@ -111,6 +111,7 @@ namespace NocturnalEngine {
 		else if (aA.isEscaped&&!spriteDeactivated) {
 			p_ecs.GetComponent<Sprite>(entityID).SetTexture("Characters/Blank");
 			spriteDeactivated = true;
+			std::cout << "Escaped\n";
 		}
 		else if (p_GameManager.GetGameState() == GameManager::GameState::ENDING) {
 			aA.SetDefault();
