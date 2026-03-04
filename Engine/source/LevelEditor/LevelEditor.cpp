@@ -408,6 +408,12 @@ namespace NocturnalEngine {
                 ImGui::TextUnformatted("Ctrl+Z / Ctrl+Y");
             }
 
+            const char* playLabel = is_ShowWindow ? "Play" : "Stop";
+            const float buttonWidth = ImGui::CalcTextSize(playLabel).x + ImGui::GetStyle().FramePadding.x * 2.0f;
+            const float centeredX = (ImGui::GetWindowSize().x - buttonWidth) * 0.5f;
+            if (centeredX > ImGui::GetCursorPosX())
+                ImGui::SetCursorPosX(centeredX);
+
             if (is_ShowWindow)
             {
                 if (ImGui::Button("Play"))
