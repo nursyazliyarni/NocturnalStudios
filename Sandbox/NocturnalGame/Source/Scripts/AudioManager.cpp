@@ -91,7 +91,7 @@ namespace NocturnalEngine
                     }
                 }
                 if (audio[i].should_stop == true) {
-                    p_Audio->StopChannel(audio[i].mChannel);
+                    p_Audio->FadeOutAndStopChannel(audio[i].mChannel);
                     audio[i].is_Playing = false;
                     audio[i].triggered = false;
                     audio[i].should_stop = false;

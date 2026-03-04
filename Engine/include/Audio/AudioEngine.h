@@ -87,6 +87,23 @@ public:
     // Audio effects (DSP) management
     void ApplyEffects(const AudioEffectSettings& settings);
     const AudioEffectSettings& GetCurrentEffects() const { return mCurrentEffects; }
+
+    // Audio fade-out for smooth transitions
+    static constexpr float DEFAULT_FADE_DURATION = 0.5f;
+    void FadeOutChannel(int channelID, float fadeDurationSeconds = DEFAULT_FADE_DURATION);
+    void FadeOutAndStopChannel(int channelID, float fadeDurationSeconds = DEFAULT_FADE_DURATION);
+    void FadeOutChannelGroup(channel_groups chan, float fadeDurationSeconds = DEFAULT_FADE_DURATION);
+
+private:
+    // Channels that are fading out and should be stopped once the fade completes
+    struct FadeOutInfo
+    {
+        int channelId;
+        unsigned long long stopAtDspClock;
+    };
+    std::vector<FadeOutInfo> mPendingFadeStops;
+    void ProcessPendingFadeStops();
+    unsigned long long GetSampleRateFromSystem() const;
 };
 
 #endif
