@@ -253,7 +253,7 @@ namespace NocturnalEngine
 				{
 					p_GameManager.ResetStats();
 
-					p_Scene->setSceneToLoad("Assets/Scene/Menu.json");//reset the game level in game over
+					p_GameManager.NextLevel();
 				}
 
 				if (ID_tag.GetTag() == "Quit" && p_GUI->Check_HTP() == false)

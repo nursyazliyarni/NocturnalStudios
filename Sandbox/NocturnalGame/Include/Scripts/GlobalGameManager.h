@@ -90,6 +90,8 @@ namespace NocturnalEngine {
              under20 = 0;
          }
 
+         void NextLevel();
+
          void SaveAnimalAttributesToCurrentScene(AnimalData aA);
 
          GameState GetGameState()const { return currState; }
@@ -146,13 +148,13 @@ namespace NocturnalEngine {
         void LogLowHealth(std::pair < const std ::string , AnimalData > & sceneAnimalPair);
 
 
-        float gameTimeElapsed{}, winRequirement{120.f}; //in seconds
+        float gameTimeElapsed{}, winRequirement{20.f}; //in seconds
 
         std::string currScene;
         GameState currState;
 
         std::unordered_map < std::string, AnimalData> sceneAnimalMap;
-        int deadAnimals, deathLimit{ 3 }, maxDiegeticLogEntries{ 40 }, escapedAnimals{ 0 }, under20{ 0 };
+        int deadAnimals, deathLimit{ 5 }, maxDiegeticLogEntries{ 40 }, escapedAnimals{ 0 }, under20{ 0 };
         std::deque<std::string> diegeticLogEntries;
 
         bool diegeticLogUpdated{ true }, targetVisibility{ false };
@@ -176,7 +178,9 @@ namespace NocturnalEngine {
         void CombinedSceneUpdate(float dt);
         Entity GetEntityByName(const std::string name);
 
-        unsigned int levelNum{1};
+        unsigned int levelNum{ 1 }, levelCount{ 3 };
+        bool levelDataLoaded{ false };
+        bool LevelDataToMap(int levelN);
 
         void CheckAndDecreaseStats(float& time, float& chance, double decayRate, double& attributeValue, float frametime, double decreaseScale=1.0);
 

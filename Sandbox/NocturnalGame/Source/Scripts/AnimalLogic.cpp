@@ -92,7 +92,7 @@ namespace NocturnalEngine {
 				if (aA.current_hunger<= aA.maxHunger * 0.8) { hpDecay *= 1.5; decreaseScale = 1.5; }
 			}
 
-			CheckAndDecreaseStats(time.hp, chance.hp, hpDecay, aA.current_health, Frametime);
+			CheckAndDecreaseStats(time.hp, chance.hp, hpDecay, aA.current_health, Frametime,decreaseScale);
 
 			aA.current_sanity -= aA.sanityDecayRate * static_cast<double>(Frametime);
 
@@ -214,7 +214,7 @@ namespace NocturnalEngine {
 
 	}
 	void AnimalLogic::CheckAndDecreaseStats(float& times, float& chances, double decayRate, double& attributeValue,float frametime, double decreaseScale) {
-		if (decayRate <= 0.0)decayRate = 1.0;
+		if (decayRate <= 0.0)decayRate = 0.00000001;
 		if (times >= checkPeriod / decayRate)
 		{
 			//std::cout << "Checking\n";

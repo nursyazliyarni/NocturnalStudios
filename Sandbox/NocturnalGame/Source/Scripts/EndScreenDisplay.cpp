@@ -41,7 +41,7 @@ namespace NocturnalEngine {
 		fileT=p_ecs.GetComponent<Transform>(fileBG);
 		p_ecs.GetComponent<Transform>(fileBG).MoveX(-2.f);
 
-
+		if (p_ecs.HaveComponent<Text>(dayE))p_ecs.GetComponent<Text>(dayE).SetContent("Day " + std::to_string(p_GameManager.CurrentLevel()));
 		if (GetEntityByName("Payout")!=0&&p_ecs.HaveComponent<Text>( GetEntityByName("Payout")))
 		{
 			int basePay = 300;

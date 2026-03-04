@@ -66,30 +66,12 @@ namespace NocturnalEngine {
             sceneAnimalMap["Owl"].aA.hungerDecayRate = 1.5; //owl special hunger
             sceneAnimalMap.emplace("Seal", defaultAttributes);
             sceneAnimalMap["Seal"].aA.SetAnimalType(AnimalAttributes::AnimalType::SEAL);
+            levelDataLoaded = true;
         }
         else {
-            const LevelConfig::LevelData& leveldat = levelConfig.GetLevels().at(levelNum);
-            for (const std::pair<const LevelConfig::AnimalRef,AnimalAttributes>& animal:leveldat)
-            {
-                AnimalData aD{};
-                aD.aA = animal.second;
-                switch (animal.first)
-                {
-                case LevelConfig::AnimalRef::FLAMINGO:
-                    sceneAnimalMap.emplace("Flamingo", aD);
-                    break;
-                case LevelConfig::AnimalRef::SEAL:
-                    sceneAnimalMap.emplace("Seal", aD);
-                    break;
-                case LevelConfig::AnimalRef::HORSE:
-                    sceneAnimalMap.emplace("Horse", aD);
-                    break;
-                case LevelConfig::AnimalRef::OWL:
-                    sceneAnimalMap.emplace("Owl", aD);
-                    break;
-                }
-            }
+            LevelDataToMap(levelNum);
         }
+
         currState=  GameManager::GameState::PLAYING;
         deadAnimals = 0;
     }
@@ -192,7 +174,7 @@ namespace NocturnalEngine {
 
         if (p_Scene->isGameplay)
         {
-            
+            if (!levelDataLoaded && !levelConfig.GetLevels().empty())LevelDataToMap(levelNum);
             if (IsNewSceneManagement() && !combinedSceneSetup) CombinedSceneStart();
             if (IsNewSceneManagement())CombinedSceneUpdate(dt);
             for (std::pair<const std::string,AnimalData>& sceneAnimalPair:sceneAnimalMap)
@@ -218,7 +200,7 @@ namespace NocturnalEngine {
                             if (sceneAnimalPair.second.aA.current_hunger <= sceneAnimalPair.second.aA.maxHunger * 0.8) { hpDecay *= 1.5; decreaseScale = 1.5; }
                         }
 
-                        CheckAndDecreaseStats(sceneAnimalPair.second.hpT, sceneAnimalPair.second.hpD, hpDecay, sceneAnimalPair.second.aA.current_health, dt);
+                        CheckAndDecreaseStats(sceneAnimalPair.second.hpT, sceneAnimalPair.second.hpD, hpDecay, sceneAnimalPair.second.aA.current_health, dt,decreaseScale);
 
                         sceneAnimalPair.second.aA.current_sanity -= sceneAnimalPair.second.aA.sanityDecayRate * static_cast<double>(dt);
 
@@ -252,7 +234,35 @@ namespace NocturnalEngine {
     }
 
         
-    
+    bool GameManager::LevelDataToMap(int levelN) {
+        const std::map<int, LevelConfig::LevelData>& lvlDataMap = levelConfig.GetLevels();
+        if (lvlDataMap.empty() || lvlDataMap.find(levelN) == lvlDataMap.end())return false;
+
+        const LevelConfig::LevelData& leveldat = lvlDataMap.at(levelN);
+        sceneAnimalMap.clear();
+        for (const std::pair<const LevelConfig::AnimalRef, AnimalAttributes>& animal : leveldat)
+        {
+            AnimalData aD{};
+            aD.aA = animal.second;
+            switch (animal.first)
+            {
+            case LevelConfig::AnimalRef::FLAMINGO:
+                sceneAnimalMap.emplace("Flamingo", aD);
+                break;
+            case LevelConfig::AnimalRef::SEAL:
+                sceneAnimalMap.emplace("Seal", aD);
+                break;
+            case LevelConfig::AnimalRef::HORSE:
+                sceneAnimalMap.emplace("Horse", aD);
+                break;
+            case LevelConfig::AnimalRef::OWL:
+                sceneAnimalMap.emplace("Owl", aD);
+                break;
+            }
+        }
+        levelDataLoaded = true;
+        return true;
+    }
 
     GameManager::AnimalData GameManager::LoadPersistentValues(std::string gs) {
         targetVisibility = false;
@@ -310,6 +320,24 @@ namespace NocturnalEngine {
         else {
             it->second = aA;
         }
+    }
+
+    void GameManager::NextLevel() {
+        unsigned int maxlvls = std::min(levelCount, static_cast<unsigned int>(levelConfig.GetLevels().size()));
+        p_GameManager.ResetStats();
+        levelDataLoaded = false;
+        if (levelNum<maxlvls)
+        {
+            levelNum++;
+            LevelDataToMap(levelNum);
+            p_Scene->setSceneToLoad("Assets/Scene/FlamingoScene.json");// restart the game in pause
+            SetState(GameManager::GameState::PLAYING);
+        }
+        else {
+            levelNum = 1;
+            p_Scene->setSceneToLoad("Assets/Scene/Menu.json");//reset the game level in game over
+        }
+
     }
 
     void GameManager::LoseGame() {
@@ -477,7 +505,7 @@ namespace NocturnalEngine {
     }
 
     void GameManager::CheckAndDecreaseStats(float& time, float& chance, double decayRate, double& attributeValue, float frametime, double decreaseScale) {
-        if (decayRate <= 0.0)decayRate = 1.0;
+        if (decayRate <= 0.0)decayRate = 0.00000001;
         if (time >= (winRequirement / 72.f) / decayRate)
         {
             //std::cout << "Checking\n";
