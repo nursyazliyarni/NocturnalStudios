@@ -55,6 +55,7 @@
 #include "Graphics/Renderer.h"
 #include "Graphics/Graphics.h"
 #include "LevelEditor/Picker.h"
+#include "ECS/PrefabManager.h"
 
 #include "Graphics/FrameBuffer.h"
 #include "Core/Log.h"
@@ -1425,6 +1426,23 @@ namespace NocturnalEngine {
 
                         if (ImGui::IsItemClicked())
                             selectedEntity = e;
+                        if (ImGui::BeginPopupContextItem())
+                        {
+
+                            ImGui::Text("Create Prefab");
+                            ImGui::InputText("Name (optional)", prefabNameBuffer, sizeof(prefabNameBuffer), ImGuiInputTextFlags_EnterReturnsTrue);
+
+                            if (ImGui::Button("Create"))
+                            {
+                                std::string prefabName = prefabNameBuffer;
+                                if(PrefabManager::GetInstance().CloneToList(e, prefabName))std::cout<<"Prefab cloned\n";
+
+                                prefabNameBuffer[0] = '\0'; // clear buffer
+                                ImGui::CloseCurrentPopup();
+                            }
+
+                            ImGui::EndPopup();
+                        }
 
                         if (opened)
                             ImGui::TreePop();
@@ -1432,6 +1450,8 @@ namespace NocturnalEngine {
                     }
 
                 }
+
+                
             }
 
             if (ImGui::IsMouseDown(0) && ImGui::IsWindowHovered())

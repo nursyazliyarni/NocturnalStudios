@@ -185,6 +185,8 @@ namespace NocturnalEngine {
 		std::filesystem::path mBrowsingPath{}, currPath{}, mSelectedProjPath{};
 		std::string newFolderName{}, fixedProjName{};
 		char folderNameBuffer[128] = "",currPathDisplayBuffer[128]="",selectedPathDisplayBuffer[256]="";
+
+		char prefabNameBuffer[128] = "";
 		
 
 		/*!*************************************************************************
