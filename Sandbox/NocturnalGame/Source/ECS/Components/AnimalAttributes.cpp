@@ -19,7 +19,8 @@ NocturnalEngine::AnimalAttributes::AnimalAttributes() : current_health(0.0), max
 current_hunger(0.0), maxHunger(0.0), current_sanity(0.0), maxSanity(0.0),healthDecayRate(0.0), 
 hungerDecayRate(0.0), sanityDecayRate(0.0) {}
 
-void NocturnalEngine::AnimalAttributes::ToEditor() {
+bool NocturnalEngine::AnimalAttributes::ToEditor() {
+    bool changed = false;
     if (ImGui::CollapsingHeader("Animal Attributes", ImGuiTreeNodeFlags_None)) {
         const char* animalTypeNames[] = { "Flamingo", "Horse", "Seal", "Owl" };
         int currentAnimal = static_cast<int>(animalType);
@@ -27,6 +28,7 @@ void NocturnalEngine::AnimalAttributes::ToEditor() {
         if (ImGui::Combo("Animal Type", &currentAnimal, animalTypeNames, IM_ARRAYSIZE(animalTypeNames)))
         {
             animalType = static_cast<AnimalType>(currentAnimal);
+            changed = true;
         }
         ImGui::PushItemWidth(100.0f);
         ImGui::Text("Max Health"); ImGui::SameLine();
@@ -34,6 +36,7 @@ void NocturnalEngine::AnimalAttributes::ToEditor() {
         {
 
             current_health = glm::clamp(maxHealth, 0.0, 9999.9999);
+            changed = true;
         }
 
         ImGui::Text("Max Hunger"); ImGui::SameLine();
@@ -41,6 +44,7 @@ void NocturnalEngine::AnimalAttributes::ToEditor() {
         {
 
             current_hunger = glm::clamp(maxHunger, 0.0, 9999.9999);
+            changed = true;
         }
 
         ImGui::Text("Max Sanity"); ImGui::SameLine();
@@ -48,12 +52,14 @@ void NocturnalEngine::AnimalAttributes::ToEditor() {
         {
 
             current_sanity = glm::clamp(maxSanity, 0.0, 9999.9999);
+            changed = true;
         }
         ImGui::Text("Current Health"); ImGui::SameLine();
         if (ImGui::InputDouble("##Current Health", &current_health))
         {
 
             current_health = glm::clamp(current_health, 0.0, maxHealth);
+            changed = true;
         }
 
         ImGui::Text("Current Hunger"); ImGui::SameLine();
@@ -61,6 +67,7 @@ void NocturnalEngine::AnimalAttributes::ToEditor() {
         {
 
             current_hunger = glm::clamp(current_hunger, 0.0, maxHunger);
+            changed = true;
         }
 
         ImGui::Text("Current Sanity"); ImGui::SameLine();
@@ -68,19 +75,21 @@ void NocturnalEngine::AnimalAttributes::ToEditor() {
         {
 
             current_sanity = glm::clamp(current_sanity, 0.0, maxSanity);
+            changed = true;
         }
 
         ImGui::Text("Health Decay Rate"); ImGui::SameLine();
-        ImGui::InputDouble("##Health Decay Rate", &healthDecayRate);
+        changed |= ImGui::InputDouble("##Health Decay Rate", &healthDecayRate);
 
         ImGui::Text("Hunger Decay Rate"); ImGui::SameLine();
-        ImGui::InputDouble("##Hunger Decay Rate", &hungerDecayRate);
+        changed |= ImGui::InputDouble("##Hunger Decay Rate", &hungerDecayRate);
 
         ImGui::Text("Sanity Decay Rate"); ImGui::SameLine();
-        ImGui::InputDouble("##Sanity Decay Rate", &sanityDecayRate);
+        changed |= ImGui::InputDouble("##Sanity Decay Rate", &sanityDecayRate);
 
-        ImGui::Checkbox("Is Alive", &is_alive);
+        changed |= ImGui::Checkbox("Is Alive", &is_alive);
     }
+    return changed;
 }
 
 

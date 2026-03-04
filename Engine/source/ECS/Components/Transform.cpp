@@ -23,32 +23,34 @@ namespace NocturnalEngine
 	****************************************************************************/
 	Transform::Transform() : mPosition{ vec2D(0.0f,0.0f) }, mScale{ vec2D(1.0f,1.0f) }, mRot{ 0.0f } {}
 
-	void Transform::ToEditor() {
+	bool Transform::ToEditor() {
+		bool changed = false;
 		if (ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_None))
 		{
 			//position
 			ImGui::PushItemWidth(100.0f);
 			ImGui::Text("Position"); ImGui::SameLine();
 			ImGui::Text("X"); ImGui::SameLine();                    //set a "x" to indicate x-axis
-			ImGui::DragFloat("##PositionX", (float*)&mPosition.x, 0.005f); ImGui::SameLine(); //char name , pass float pointer to position vec2D which hold x and y, the scaling value in imgui
+			changed |= ImGui::DragFloat("##PositionX", (float*)&mPosition.x, 0.005f); ImGui::SameLine(); //char name , pass float pointer to position vec2D which hold x and y, the scaling value in imgui
 			ImGui::PushID(1);
 			ImGui::Text("Y"); ImGui::SameLine();
-			ImGui::DragFloat("##PositionY", (float*)&mPosition.y, 0.005f);
+			changed |= ImGui::DragFloat("##PositionY", (float*)&mPosition.y, 0.005f);
 			ImGui::PopID();
 
 			//scale
 			ImGui::Text("Scale   "); ImGui::SameLine();
 			ImGui::Text("X"); ImGui::SameLine();                    //set a "x" to indicate x-axis
-			ImGui::DragFloat("##Scale", (float*)&mScale.x, 0.005f); ImGui::SameLine(); //char name , pass float pointer to position vec2D which hold x and y, the scaling value in imgui
+			changed |= ImGui::DragFloat("##Scale", (float*)&mScale.x, 0.005f); ImGui::SameLine(); //char name , pass float pointer to position vec2D which hold x and y, the scaling value in imgui
 			ImGui::PushID(2);
 			ImGui::Text("Y"); ImGui::SameLine();
-			ImGui::DragFloat("##Scale", (float*)&mScale.y, 0.005f);
+			changed |= ImGui::DragFloat("##Scale", (float*)&mScale.y, 0.005f);
 			ImGui::PopID();
 
 			//rotation
 			ImGui::Text("Rotation Z"); ImGui::SameLine();
-			ImGui::DragFloat("##", (float*)&mRot, 1.0f);
+			changed |= ImGui::DragFloat("##", (float*)&mRot, 1.0f);
 		}
+		return changed;
 	}
 
 

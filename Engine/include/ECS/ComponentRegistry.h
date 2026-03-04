@@ -49,7 +49,7 @@ namespace NocturnalEngine {
             std::function<bool(Entity, rapidjson::PrettyWriter<rapidjson::StringBuffer>* writer)> serializeFunc{};
 
             //Editor Display func
-            std::function<void(Entity)> displayInEditor{};
+            std::function<bool(Entity)> displayInEditor{};
         };
 
         ComponentRegistry() = default;
@@ -101,11 +101,12 @@ namespace NocturnalEngine {
              };
 
             //show in leveleditor
-            desc.displayInEditor = [this](Entity e) {
+            desc.displayInEditor = [this](Entity e) -> bool {
                 if (GetECS().template HaveComponent<T>(e))
                 {
-                    GetECS().template GetComponent<T>(e).ToEditor();
+                    return GetECS().template GetComponent<T>(e).ToEditor();
                 }
+                return false;
                 };
 
             mComponents.emplace(name, desc);

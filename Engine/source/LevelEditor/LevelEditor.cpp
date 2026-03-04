@@ -138,6 +138,7 @@ namespace NocturnalEngine {
         mUndoStack.clear();
         mRedoStack.clear();
         mStartedGizmoDrag = false;
+        mInspectorEditDirty = false;
         
         IMGUI_CHECKVERSION();
 
@@ -389,22 +390,8 @@ namespace NocturnalEngine {
                 }*/
                 ImGui::EndMenu();
             }
-            // Basic edit menu for manual undo/redo actions.
-            if (ImGui::BeginMenu("Edit"))
             {
-                const bool canUndo = !mUndoStack.empty();
-                const bool canRedo = !mRedoStack.empty();
-
-                if (ImGui::MenuItem("Undo", "Ctrl+Z", false, canUndo))
-                    ApplyUndo();
-                if (ImGui::MenuItem("Redo", "Ctrl+Y", false, canRedo))
-                    ApplyRedo();
-
-                ImGui::EndMenu();
-            }
-
-            {
-                const bool canUndo = !mUndoStack.empty();
+                const bool canUndo = mUndoStack.size() > 1;
                 const bool canRedo = !mRedoStack.empty();
                 ImGui::BeginDisabled(!canUndo);
                 if (ImGui::Button("Undo"))
@@ -417,7 +404,16 @@ namespace NocturnalEngine {
                 if (ImGui::Button("Redo"))
                     ApplyRedo();
                 ImGui::EndDisabled();
+
+                ImGui::SameLine();
+                ImGui::TextUnformatted("Ctrl+Z / Ctrl+Y");
             }
+
+            const char* playLabel = is_ShowWindow ? "Play" : "Stop";
+            const float buttonWidth = ImGui::CalcTextSize(playLabel).x + ImGui::GetStyle().FramePadding.x * 2.0f;
+            const float centeredX = (ImGui::GetWindowSize().x - buttonWidth) * 0.5f;
+            if (centeredX > ImGui::GetCursorPosX())
+                ImGui::SetCursorPosX(centeredX);
 
             if (is_ShowWindow)
             {
@@ -585,6 +581,7 @@ namespace NocturnalEngine {
                 sprite.SetTexture(*(const std::string*)payload->Data);
                 p_ecs.AddComponent<Sprite>(newEntity, sprite);
                 selectedEntity = newEntity;
+                PushUndoSnapshotAndInvalidateRedo();
             }
             ImGui::EndDragDropTarget();
         }
@@ -672,15 +669,9 @@ namespace NocturnalEngine {
                     , glm::value_ptr(cameraProj), (ImGuizmo::OPERATION)mGizmoType,
                     ImGuizmo::WORLD, glm::value_ptr(transform));
 
-                if (ImGuizmo::IsUsing() && !mStartedGizmoDrag)
-                {
-                    // Snapshot once when drag starts (not every frame).
-                    PushUndoSnapshotAndInvalidateRedo();
-                    mStartedGizmoDrag = true;
-                }
-
                 if (ImGuizmo::IsUsing())
                 {
+                    mStartedGizmoDrag = true;
                     glm::vec3 decompTrans, decompRot, decompScale;
 
                     ImGuizmo::DecomposeMatrixToComponents(glm::value_ptr(transform),
@@ -695,6 +686,7 @@ namespace NocturnalEngine {
                 }
                 else if (mStartedGizmoDrag)
                 {
+                    PushUndoSnapshotAndInvalidateRedo();
                     mStartedGizmoDrag = false;
                 }
             }
@@ -729,10 +721,9 @@ namespace NocturnalEngine {
         {
             if (selectedEntity >= 0 && selectedEntity < MAX_ENTITIES)
             {
-                // Snapshot before entity delete.
-                PushUndoSnapshotAndInvalidateRedo();
                 p_ecs.DestroyEntity(selectedEntity);
                 selectedEntity = MAX_ENTITIES;
+                PushUndoSnapshotAndInvalidateRedo();
             }
         }
     }
@@ -932,6 +923,7 @@ namespace NocturnalEngine {
                                 std::filesystem::remove(path);
                             mUndoStack.clear();
                             mRedoStack.clear();
+                            mInspectorEditDirty = false;
                             // Keep one baseline snapshot for the loaded scene.
                             PushUndoSnapshot();
                             selectedEntity = MAX_ENTITIES;
@@ -1381,9 +1373,8 @@ namespace NocturnalEngine {
 
             if (ImGui::Button("Create Entity") && totalEntities != MAX_ENTITIES)
             {
-                // Snapshot before create.
-                PushUndoSnapshotAndInvalidateRedo();
                 p_ecs.AddComponent<NameTag>(p_ecs.CreateEntity(), C_NameTagComponent);
+                PushUndoSnapshotAndInvalidateRedo();
             }
 
             if (totalEntities > 0)
@@ -1393,10 +1384,9 @@ namespace NocturnalEngine {
                 {
                     if (selectedEntity != MAX_ENTITIES)
                     {
-                        // Snapshot before destroy.
-                        PushUndoSnapshotAndInvalidateRedo();
                         p_ecs.DestroyEntity(selectedEntity);
                         selectedEntity = MAX_ENTITIES;
+                        PushUndoSnapshotAndInvalidateRedo();
                     }
                 }
                 ImGui::SameLine();
@@ -1404,10 +1394,9 @@ namespace NocturnalEngine {
                 {
                     if (selectedEntity != MAX_ENTITIES)
                     {
-                        // Snapshot before clone.
-                        PushUndoSnapshotAndInvalidateRedo();
                         Entity CloneEntity = p_ecs.CloneEntity(selectedEntity);
                         selectedEntity = CloneEntity; // when the entity is destroy there is no current selected entity
+                        PushUndoSnapshotAndInvalidateRedo();
                     }
                 }
                 
@@ -1488,8 +1477,8 @@ namespace NocturnalEngine {
                         {
                             if (!compdesc.second.hasFunc(selectedEntity)) //if the entity doesnt have the component
                             {
-                                PushUndoSnapshotAndInvalidateRedo();
                                 compdesc.second.addFunc(selectedEntity); //this calls the adder function
+                                PushUndoSnapshotAndInvalidateRedo();
                             }
                             ImGui::CloseCurrentPopup();
                         }
@@ -1509,8 +1498,8 @@ namespace NocturnalEngine {
                             {
                                 if (!compdesc.second.hasFunc(selectedEntity))
                                 {
-                                    PushUndoSnapshotAndInvalidateRedo();
                                     compdesc.second.addFunc(selectedEntity);
+                                    PushUndoSnapshotAndInvalidateRedo();
                                 }
                                 ImGui::CloseCurrentPopup();
                             }
@@ -1519,12 +1508,13 @@ namespace NocturnalEngine {
                     ImGui::EndPopup();
                 }
 
+                bool inspectorChanged = false;
                 //iterates through all the engine's game components and displays them
                 for (std::pair<const std::string, const ComponentRegistry::ComponentDescriptor> compdesc:p_ECompReg.GetAll())
                 {
                     if (compdesc.second.hasFunc(selectedEntity))
                     {
-                        compdesc.second.displayInEditor(selectedEntity);
+                        inspectorChanged |= compdesc.second.displayInEditor(selectedEntity);
                     }
                 }
 
@@ -1535,9 +1525,18 @@ namespace NocturnalEngine {
                     {
                         if (compdesc.second.hasFunc(selectedEntity))
                         {
-                            compdesc.second.displayInEditor(selectedEntity);
+                            inspectorChanged |= compdesc.second.displayInEditor(selectedEntity);
                         }
                     }
+                }
+
+                if (inspectorChanged)
+                    mInspectorEditDirty = true;
+
+                if (mInspectorEditDirty && !ImGui::IsAnyItemActive())
+                {
+                    PushUndoSnapshotAndInvalidateRedo();
+                    mInspectorEditDirty = false;
                 }
 
                 if (ImGui::Button("Delete Component"))
@@ -1552,8 +1551,8 @@ namespace NocturnalEngine {
                         {
                             if (compdesc.second.hasFunc(selectedEntity))
                             {
-                                PushUndoSnapshotAndInvalidateRedo();
                                 compdesc.second.removeFunc(selectedEntity);
+                                PushUndoSnapshotAndInvalidateRedo();
                             }
                             ImGui::CloseCurrentPopup();
                         }
@@ -1569,8 +1568,8 @@ namespace NocturnalEngine {
                             {
                                 if (compdesc.second.hasFunc(selectedEntity))
                                 {
-                                    PushUndoSnapshotAndInvalidateRedo();
                                     compdesc.second.removeFunc(selectedEntity);
+                                    PushUndoSnapshotAndInvalidateRedo();
                                 }
                                 ImGui::CloseCurrentPopup();
                             }
@@ -1594,6 +1593,7 @@ namespace NocturnalEngine {
     {
         if (is_ShowWindow)
         {
+            static bool audioComponentEditDirty = false;
             std::vector<const char*> audiofilenames;
             const size_t arraysize = 100;
             const char* audioFileList[arraysize];
@@ -1658,6 +1658,9 @@ namespace NocturnalEngine {
             }
 
             static int item_current = 1;
+            UNREFERENCED_PARAMETER(item_current);
+            bool hasAudioComponent = false;
+            bool audioComponentChanged = false;
 
             float f1 = p_Audio->GetVolumeByChannel(p_Audio->GetMasterChannelGroup());
             float f4 = p_Audio->GetVolumeByChannel(p_Audio->GetBGMChannelGroup());
@@ -1667,16 +1670,17 @@ namespace NocturnalEngine {
             {
                 if (p_ecs.HaveComponent<Audio>(i)) 
                 {
+                    hasAudioComponent = true;
                     f1 = p_ecs.GetComponent<Audio>(i).GetMasterVolume();
                     f4 = p_ecs.GetComponent<Audio>(i).GetBGMVolume();
                     f5 = p_ecs.GetComponent<Audio>(i).GetSFXVolume();
                 }
             }
             //set voulume slider
-            ImGui::SliderFloat("Master Volume", &f1, 0.0f, 1.0f, "Min - Max %.3f");
+            audioComponentChanged |= ImGui::SliderFloat("Master Volume", &f1, 0.0f, 1.0f, "Min - Max %.3f");
             p_Audio->SetVolumeByChannel(p_Audio->GetMasterChannelGroup(), f1);
 
-            ImGui::SliderFloat("BGM vol", &f4, 0.0f, 1.0f, "Min - Max %.3f");
+            audioComponentChanged |= ImGui::SliderFloat("BGM vol", &f4, 0.0f, 1.0f, "Min - Max %.3f");
             if (f4 > f1)
             {
                 f4 = f1;
@@ -1684,7 +1688,7 @@ namespace NocturnalEngine {
             p_Audio->SetVolumeByChannel(p_Audio->GetBGMChannelGroup(), f4);
 
 
-            ImGui::SliderFloat("SFX vol", &f5, 0.0f, 1.0f, "Min - Max %.3f");
+            audioComponentChanged |= ImGui::SliderFloat("SFX vol", &f5, 0.0f, 1.0f, "Min - Max %.3f");
             if (f5 > f1)
             {
                 f5 = f1;
@@ -1724,43 +1728,43 @@ namespace NocturnalEngine {
                 }
 
                 // Low-pass filter
-                ImGui::Checkbox("Low-Pass Filter##Editor", &editorFx.lowpassEnabled);
+                audioComponentChanged |= ImGui::Checkbox("Low-Pass Filter##Editor", &editorFx.lowpassEnabled);
                 if (editorFx.lowpassEnabled)
                 {
-                    ImGui::SliderFloat("LP Cutoff (Hz)##Editor", &editorFx.lowpassCutoff, 10.0f, 22000.0f, "%.0f");
-                    ImGui::SliderFloat("LP Resonance##Editor", &editorFx.lowpassResonance, 1.0f, 10.0f, "%.1f");
+                    audioComponentChanged |= ImGui::SliderFloat("LP Cutoff (Hz)##Editor", &editorFx.lowpassCutoff, 10.0f, 22000.0f, "%.0f");
+                    audioComponentChanged |= ImGui::SliderFloat("LP Resonance##Editor", &editorFx.lowpassResonance, 1.0f, 10.0f, "%.1f");
                 }
 
                 // High-pass filter
-                ImGui::Checkbox("High-Pass Filter##Editor", &editorFx.highpassEnabled);
+                audioComponentChanged |= ImGui::Checkbox("High-Pass Filter##Editor", &editorFx.highpassEnabled);
                 if (editorFx.highpassEnabled)
                 {
-                    ImGui::SliderFloat("HP Cutoff (Hz)##Editor", &editorFx.highpassCutoff, 10.0f, 22000.0f, "%.0f");
-                    ImGui::SliderFloat("HP Resonance##Editor", &editorFx.highpassResonance, 1.0f, 10.0f, "%.1f");
+                    audioComponentChanged |= ImGui::SliderFloat("HP Cutoff (Hz)##Editor", &editorFx.highpassCutoff, 10.0f, 22000.0f, "%.0f");
+                    audioComponentChanged |= ImGui::SliderFloat("HP Resonance##Editor", &editorFx.highpassResonance, 1.0f, 10.0f, "%.1f");
                 }
 
                 // Echo / Delay
-                ImGui::Checkbox("Echo / Delay##Editor", &editorFx.echoEnabled);
+                audioComponentChanged |= ImGui::Checkbox("Echo / Delay##Editor", &editorFx.echoEnabled);
                 if (editorFx.echoEnabled)
                 {
-                    ImGui::SliderFloat("Echo Delay (ms)##Editor", &editorFx.echoDelay, 1.0f, 5000.0f, "%.0f");
-                    ImGui::SliderFloat("Echo Feedback (%%)##Editor", &editorFx.echoFeedback, 0.0f, 100.0f, "%.0f");
-                    ImGui::SliderFloat("Echo Dry (dB)##Editor", &editorFx.echoDryLevel, -80.0f, 10.0f, "%.1f");
-                    ImGui::SliderFloat("Echo Wet (dB)##Editor", &editorFx.echoWetLevel, -80.0f, 10.0f, "%.1f");
+                    audioComponentChanged |= ImGui::SliderFloat("Echo Delay (ms)##Editor", &editorFx.echoDelay, 1.0f, 5000.0f, "%.0f");
+                    audioComponentChanged |= ImGui::SliderFloat("Echo Feedback (%%)##Editor", &editorFx.echoFeedback, 0.0f, 100.0f, "%.0f");
+                    audioComponentChanged |= ImGui::SliderFloat("Echo Dry (dB)##Editor", &editorFx.echoDryLevel, -80.0f, 10.0f, "%.1f");
+                    audioComponentChanged |= ImGui::SliderFloat("Echo Wet (dB)##Editor", &editorFx.echoWetLevel, -80.0f, 10.0f, "%.1f");
                 }
 
                 // Reverb
-                ImGui::Checkbox("Reverb##Editor", &editorFx.reverbEnabled);
+                audioComponentChanged |= ImGui::Checkbox("Reverb##Editor", &editorFx.reverbEnabled);
                 if (editorFx.reverbEnabled)
                 {
-                    ImGui::SliderFloat("Decay Time (ms)##Editor", &editorFx.reverbDecayTime, 100.0f, 20000.0f, "%.0f");
-                    ImGui::SliderFloat("Early Delay (ms)##Editor", &editorFx.reverbEarlyDelay, 0.0f, 300.0f, "%.1f");
-                    ImGui::SliderFloat("Late Delay (ms)##Editor", &editorFx.reverbLateDelay, 0.0f, 100.0f, "%.1f");
-                    ImGui::SliderFloat("HF Reference (Hz)##Editor", &editorFx.reverbHFReference, 20.0f, 20000.0f, "%.0f");
-                    ImGui::SliderFloat("Diffusion (%%)##Editor", &editorFx.reverbDiffusion, 0.0f, 100.0f, "%.0f");
-                    ImGui::SliderFloat("Density (%%)##Editor", &editorFx.reverbDensity, 0.0f, 100.0f, "%.0f");
-                    ImGui::SliderFloat("Reverb Wet (dB)##Editor", &editorFx.reverbWetLevel, -80.0f, 20.0f, "%.1f");
-                    ImGui::SliderFloat("Reverb Dry (dB)##Editor", &editorFx.reverbDryLevel, -80.0f, 20.0f, "%.1f");
+                    audioComponentChanged |= ImGui::SliderFloat("Decay Time (ms)##Editor", &editorFx.reverbDecayTime, 100.0f, 20000.0f, "%.0f");
+                    audioComponentChanged |= ImGui::SliderFloat("Early Delay (ms)##Editor", &editorFx.reverbEarlyDelay, 0.0f, 300.0f, "%.1f");
+                    audioComponentChanged |= ImGui::SliderFloat("Late Delay (ms)##Editor", &editorFx.reverbLateDelay, 0.0f, 100.0f, "%.1f");
+                    audioComponentChanged |= ImGui::SliderFloat("HF Reference (Hz)##Editor", &editorFx.reverbHFReference, 20.0f, 20000.0f, "%.0f");
+                    audioComponentChanged |= ImGui::SliderFloat("Diffusion (%%)##Editor", &editorFx.reverbDiffusion, 0.0f, 100.0f, "%.0f");
+                    audioComponentChanged |= ImGui::SliderFloat("Density (%%)##Editor", &editorFx.reverbDensity, 0.0f, 100.0f, "%.0f");
+                    audioComponentChanged |= ImGui::SliderFloat("Reverb Wet (dB)##Editor", &editorFx.reverbWetLevel, -80.0f, 20.0f, "%.1f");
+                    audioComponentChanged |= ImGui::SliderFloat("Reverb Dry (dB)##Editor", &editorFx.reverbDryLevel, -80.0f, 20.0f, "%.1f");
                 }
 
                 // Apply effects to audio engine in real-time
@@ -1776,12 +1780,22 @@ namespace NocturnalEngine {
                 }
             }
 
+            if (hasAudioComponent && audioComponentChanged)
+                audioComponentEditDirty = true;
+
+            if (audioComponentEditDirty && !ImGui::IsAnyItemActive())
+            {
+                PushUndoSnapshotAndInvalidateRedo();
+                audioComponentEditDirty = false;
+            }
+
             ImGui::End();
         }
     }
 
     void LevelEditor::AnimationEditor()
     {
+        static bool animationEditDirty = false;
         if (!is_ShowWindow)
             return;
 
@@ -1796,8 +1810,9 @@ namespace NocturnalEngine {
 
         Sprite& sprite = p_ecs.GetComponent<Sprite>(selectedEntity);
 
-        ImGui::Checkbox("SpriteSheet", &sprite.is_SpriteSheet); ImGui::SameLine();
-        ImGui::Checkbox("Animated", &sprite.is_Animated);
+        bool changed = false;
+        changed |= ImGui::Checkbox("SpriteSheet", &sprite.is_SpriteSheet); ImGui::SameLine();
+        changed |= ImGui::Checkbox("Animated", &sprite.is_Animated);
 
         const std::string& textureName = sprite.GetTexture();
         ImGui::Text("Texture: %s", textureName.c_str());
@@ -1826,6 +1841,7 @@ namespace NocturnalEngine {
             auto& times = sprite.GetDisplayTime();
             if ((int)times.size() != sprite.GetMaxIndex())
                 times.resize(sprite.GetMaxIndex(), 0.1f);
+            changed = true;
         }
 
         if (sprite.GetMaxIndex() <= 0)
@@ -1835,7 +1851,6 @@ namespace NocturnalEngine {
         if ((int)times.size() != sprite.GetMaxIndex())
             times.resize(sprite.GetMaxIndex(), 0.1f);
 
-        bool changed = false;
         for (int i = 0; i < sprite.GetMaxIndex(); ++i)
         {
             std::string label = "Frame " + std::to_string(i);
@@ -1847,6 +1862,15 @@ namespace NocturnalEngine {
         {
             if (changed || Animation::spriteContainer.find(textureName) == Animation::spriteContainer.end())
                 Animation::spriteContainer[textureName] = times;
+        }
+
+        if (changed)
+            animationEditDirty = true;
+
+        if (animationEditDirty && !ImGui::IsAnyItemActive())
+        {
+            PushUndoSnapshotAndInvalidateRedo();
+            animationEditDirty = false;
         }
 
         ImGui::End();
@@ -1863,7 +1887,7 @@ namespace NocturnalEngine {
         {
             if (io.KeyShift)
                 ApplyRedo();
-            else
+            else if (mUndoStack.size() > 1)
                 ApplyUndo();
         }
         else if (io.KeyCtrl && ImGui::IsKeyPressed(ImGuiKey_Y, false))
@@ -1912,33 +1936,38 @@ namespace NocturnalEngine {
         if (!std::filesystem::exists(snapshotPath))
             return false;
 
+        const Entity previousSelection = selectedEntity;
+
         // Replace world state with snapshot contents.
         if (!p_Scene->DeserializeFromFile(snapshotPath))
             return false;
 
-        selectedEntity = MAX_ENTITIES;
+        if (previousSelection < MAX_ENTITIES &&
+            p_ecs.GetAliveEntitiesSet().contains(previousSelection))
+        {
+            selectedEntity = previousSelection;
+        }
+        else
+        {
+            selectedEntity = MAX_ENTITIES;
+        }
         return true;
     }
 
     void LevelEditor::ApplyUndo()
     {
-        if (mUndoStack.empty())
+        if (mUndoStack.size() <= 1)
             return;
 
-        // Save current state so user can redo to it.
-        const std::string redoSnapshot = CreateSnapshotFilePath();
-        if (!p_Scene->SerializeToFile(redoSnapshot))
-            return;
-
-        const std::string undoSnapshot = mUndoStack.back();
+        const std::string redoSnapshot = mUndoStack.back();
         mUndoStack.pop_back();
+        const std::string& undoSnapshot = mUndoStack.back();
         if (!LoadSnapshot(undoSnapshot))
         {
-            std::filesystem::remove(redoSnapshot);
+            mUndoStack.push_back(redoSnapshot);
             return;
         }
-        // Consumed undo snapshot can be deleted.
-        std::filesystem::remove(undoSnapshot);
+        mInspectorEditDirty = false;
 
         mRedoStack.push_back(redoSnapshot);
         while (mRedoStack.size() > mMaxUndoSteps)
@@ -1954,22 +1983,15 @@ namespace NocturnalEngine {
         if (mRedoStack.empty())
             return;
 
-        // Save current state so user can undo this redo.
-        const std::string undoSnapshot = CreateSnapshotFilePath();
-        if (!p_Scene->SerializeToFile(undoSnapshot))
-            return;
-
         const std::string redoSnapshot = mRedoStack.back();
         mRedoStack.pop_back();
         if (!LoadSnapshot(redoSnapshot))
         {
-            std::filesystem::remove(undoSnapshot);
+            mRedoStack.push_back(redoSnapshot);
             return;
         }
-        // Consumed redo snapshot can be deleted.
-        std::filesystem::remove(redoSnapshot);
-
-        mUndoStack.push_back(undoSnapshot);
+        mInspectorEditDirty = false;
+        mUndoStack.push_back(redoSnapshot);
         while (mUndoStack.size() > mMaxUndoSteps)
         {
             // Enforce history cap.

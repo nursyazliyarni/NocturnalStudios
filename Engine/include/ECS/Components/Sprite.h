@@ -32,7 +32,7 @@ namespace NocturnalEngine {
 		~Sprite() = default;
 		virtual bool Deserialize(const rapidjson::Value & obj);
 		virtual bool Serialize(rapidjson::PrettyWriter<rapidjson::StringBuffer>*writer) const;
-		void ToEditor()override;
+		bool ToEditor()override;
 
 		void SetTexture(const std::string& name) { mTextureName = name; }
 		std::string &GetTexture() { return mTextureName; }
