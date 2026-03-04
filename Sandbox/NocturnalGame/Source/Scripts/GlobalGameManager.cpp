@@ -550,7 +550,7 @@ namespace NocturnalEngine {
                  AnimalAttributes aA{};
                  if (!aA.Deserialize(animal["Attributes"])) continue;
                  else leveldat.emplace(aR, aA);
-                 std::cout << "levelData emplaced\n";
+                 //std::cout << "levelData emplaced\n";
              }
         }
 
