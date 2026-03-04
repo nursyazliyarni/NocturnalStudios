@@ -19,8 +19,8 @@
                     "Component": "Transform",
                     "posX": 0.0,
                     "posY": 0.0,
-                    "scaleX": 3.744187593460083,
-                    "scaleY": 2.0799994468688965,
+                    "scaleX": 3.6449999809265137,
+                    "scaleY": 2.0,
                     "Rot": 0.0
                 },
                 {
@@ -29,7 +29,7 @@
                 },
                 {
                     "Component": "Sprite",
-                    "TextureName": "UI/Are_You_Sure",
+                    "TextureName": "UI/menu_bg",
                     "Index_X": 0,
                     "Index_Y": 0,
                     "Ucoordinates": 512.0,
@@ -548,11 +548,11 @@
                 },
                 {
                     "Component": "Transform",
-                    "posX": -1.2373498678207397,
-                    "posY": -0.6452816724777222,
-                    "scaleX": 1.2049977779388428,
-                    "scaleY": 0.6080169677734375,
-                    "Rot": 0.0
+                    "posX": 1.1330000162124634,
+                    "posY": -0.7269999980926514,
+                    "scaleX": 0.8169999718666077,
+                    "scaleY": 0.4390000104904175,
+                    "Rot": 180.0
                 },
                 {
                     "Component": "Collider",
@@ -579,7 +579,7 @@
                 },
                 {
                     "Component": "Sprite",
-                    "TextureName": "UI/BACK_Y",
+                    "TextureName": "UI/BlankArrow",
                     "Index_X": 0,
                     "Index_Y": 0,
                     "Ucoordinates": 512.0,
@@ -590,10 +590,66 @@
                     "LayeringOrder": 0
                 },
                 {
+                    "Component": "Audio",
+                    "0": {
+                        "AudioPath": "UI ButtonClick.wav",
+                        "Channel": 3,
+                        "IsLooping": false
+                    },
+                    "1": {
+                        "AudioPath": "UI_Hover.wav",
+                        "Channel": 3,
+                        "IsLooping": false
+                    },
+                    "AudioArrCount": 2,
+                    "BGM Volume": 1.0,
+                    "SFX Volume": 1.0,
+                    "Master Volume": 1.0,
+                    "RandomFromArray": false,
+                    "Effects": {
+                        "LowpassEnabled": false,
+                        "LowpassCutoff": 5000.0,
+                        "LowpassResonance": 1.0,
+                        "HighpassEnabled": false,
+                        "HighpassCutoff": 10.0,
+                        "HighpassResonance": 1.0,
+                        "EchoEnabled": false,
+                        "EchoDelay": 500.0,
+                        "EchoFeedback": 50.0,
+                        "EchoDryLevel": 0.0,
+                        "EchoWetLevel": -6.0,
+                        "ReverbEnabled": false,
+                        "ReverbDecayTime": 1500.0,
+                        "ReverbEarlyDelay": 7.0,
+                        "ReverbLateDelay": 11.0,
+                        "ReverbHFReference": 5000.0,
+                        "ReverbDiffusion": 100.0,
+                        "ReverbDensity": 100.0,
+                        "ReverbWetLevel": -6.0,
+                        "ReverbDryLevel": 0.0
+                    }
+                },
+                {
                     "Component": "Logic",
                     "0": "ButtonResponse",
                     "1": "AudioManager",
                     "ScriptCount": 2
+                },
+                {
+                    "Component": "Text",
+                    "Content": "Back",
+                    "Font": "ExcelsiorSans",
+                    "Size": 92.0,
+                    "ColorR": 0.27843138575553894,
+                    "ColorG": 0.1921568661928177,
+                    "ColorB": 0.07450980693101883,
+                    "ColorA": 1.0,
+                    "PosX": 1.0199999809265137,
+                    "PosY": -0.7699999809265137,
+                    "Rotation": 0.0,
+                    "Line Height": 0,
+                    "WorldSpace": false,
+                    "Center": false
                 }
             ]
         }

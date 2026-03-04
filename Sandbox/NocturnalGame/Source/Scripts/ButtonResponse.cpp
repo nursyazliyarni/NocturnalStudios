@@ -196,7 +196,13 @@ namespace NocturnalEngine
 
 			if (ID_tag.GetTag() == "Back")
 			{
-				spt.SetTexture("UI/BACK_B");//to be change
+				spt.SetTexture("UI/BlankArrow");//to be change
+
+				if (entercollider)
+				{
+					transform.ScaleBy(1.2f);
+					entercollider = false;
+				}
 			}
 
 			if (ID_tag.GetTag() == "No")
@@ -444,7 +450,7 @@ namespace NocturnalEngine
 
 				if (ID_tag.GetTag() == "Back")
 				{
-					spt.SetTexture("UI/BACK_R");
+					spt.SetTexture("UI/BlankArrow");
 				}
 
 
@@ -539,7 +545,13 @@ namespace NocturnalEngine
 			}
 			if (ID_tag.GetTag() == "Back")
 			{
-				spt.SetTexture("UI/BACK_Y");
+				spt.SetTexture("UI/BlankArrow");
+
+				if (leftcollider)
+				{
+					transform.ScaleBy(1.f / 1.2f);
+					leftcollider = false;
+				}
 			}
 
 			if (ID_tag.GetTag() == "No")
