@@ -26,7 +26,7 @@ namespace NocturnalEngine
 		virtual bool Deserialize(const rapidjson::Value& obj);
 		virtual bool Serialize(rapidjson::PrettyWriter<rapidjson::StringBuffer>* writer) const;
 
-		void ToEditor()override;
+		bool ToEditor()override;
 
 		void SetNameTag(std::string name) { mName = name; }
 		std::string& GetNameTag() { return mName; }

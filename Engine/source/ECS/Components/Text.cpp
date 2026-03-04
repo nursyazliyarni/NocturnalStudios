@@ -34,7 +34,8 @@ namespace NocturnalEngine
     {
     }
 
-    void Text::ToEditor() {
+    bool Text::ToEditor() {
+        bool changed = false;
         if (ImGui::CollapsingHeader("Text", ImGuiTreeNodeFlags_None))
         {
 
@@ -44,6 +45,7 @@ namespace NocturnalEngine
             if (ImGui::InputTextMultiline("Content", buffer, sizeof(buffer), ImVec2(0, 80)))
             {
                 SetContent(std::string(buffer));
+                changed = true;
             }
 
             auto& fontName = GetFont();
@@ -57,6 +59,7 @@ namespace NocturnalEngine
                     if (ImGui::Selectable(name.c_str(), selected))
                     {
                         fontName = name;
+                        changed = true;
                     }
                     if (selected)
                         ImGui::SetItemDefaultFocus();
@@ -64,21 +67,22 @@ namespace NocturnalEngine
                 ImGui::EndCombo();
             }
 
-            ImGui::DragFloat("Size", &GetSize(), 0.1f, 1.0f, 200.0f);
-            ImGui::ColorEdit4("Color", GetColor());
-            ImGui::Checkbox("World Space", &GetWorldSpace());
-            ImGui::Checkbox("Center", &GetCenter());
+            changed |= ImGui::DragFloat("Size", &GetSize(), 0.1f, 1.0f, 200.0f);
+            changed |= ImGui::ColorEdit4("Color", GetColor());
+            changed |= ImGui::Checkbox("World Space", &GetWorldSpace());
+            changed |= ImGui::Checkbox("Center", &GetCenter());
 
             ImGui::Text("Position");
             ImGui::Text("X"); ImGui::SameLine();
-            ImGui::DragFloat("##TextPosX", &GetPosition()[0], 0.01f);
+            changed |= ImGui::DragFloat("##TextPosX", &GetPosition()[0], 0.01f);
             ImGui::Text("Y"); ImGui::SameLine();
-            ImGui::DragFloat("##TextPosY", &GetPosition()[1], 0.01f);
+            changed |= ImGui::DragFloat("##TextPosY", &GetPosition()[1], 0.01f);
             ImGui::Text("Rotation"); ImGui::SameLine();
-            ImGui::DragFloat("##TextRot", &Rot(), 5.f, 0.f, 360.f);
+            changed |= ImGui::DragFloat("##TextRot", &Rot(), 5.f, 0.f, 360.f);
             ImGui::Text("Line Height"); ImGui::SameLine();
-            ImGui::DragInt("##Line Height", &Get_line_height(), 1);
+            changed |= ImGui::DragInt("##Line Height", &Get_line_height(), 1);
         }
+        return changed;
     }
 
     /*!*************************************************************************

@@ -28,7 +28,7 @@ namespace NocturnalEngine
 
 		virtual bool Serialize(rapidjson::PrettyWriter<rapidjson::StringBuffer>* writer) const;
 
-		virtual void ToEditor() override;
+		virtual bool ToEditor() override;
 
 		/*!*************************************************************************
 		Retrieves Component Entity ID

@@ -24,7 +24,8 @@ namespace NocturnalEngine
 	NameTag::NameTag() : mName{"none"} {}
 
 
-	void NameTag::ToEditor() {
+	bool NameTag::ToEditor() {
+		bool changed = false;
 		if (ImGui::CollapsingHeader("Name", ImGuiTreeNodeFlags_None))
 		{
 			char buffer[256];
@@ -33,8 +34,10 @@ namespace NocturnalEngine
 			if (ImGui::InputText("name", buffer, sizeof(buffer)))
 			{
 				mName = std::string(buffer);
+				changed = true;
 			}
 		}
+		return changed;
 	}
 
 	/*!*************************************************************************

@@ -52,7 +52,7 @@ namespace NocturnalEngine
 		Collider();
 		~Collider() = default;
 
-		void ToEditor()override;
+		bool ToEditor()override;
 		/*!*************************************************************************
 		This function de-serializes the level colliders from the given level json file
 		****************************************************************************/

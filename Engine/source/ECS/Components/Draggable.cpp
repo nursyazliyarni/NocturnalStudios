@@ -23,11 +23,13 @@ namespace NocturnalEngine
 	****************************************************************************/
 	Draggable::Draggable() : isTarget{ false } {}
 
-	void Draggable::ToEditor() {
+	bool Draggable::ToEditor() {
+		bool changed = false;
 		if (ImGui::CollapsingHeader("Draggable", ImGuiTreeNodeFlags_None)) {
 			
-			ImGui::Checkbox("Is Target", &IsTarget());
+			changed |= ImGui::Checkbox("Is Target", &IsTarget());
 		}
+		return changed;
 	}
 
 	/*!*************************************************************************

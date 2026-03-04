@@ -30,14 +30,15 @@ namespace NocturnalEngine
 	****************************************************************************/
 	Logic::Logic() { entityID = GetComponentEntityID(); }
 
-	void Logic::ToEditor() {
+	bool Logic::ToEditor() {
+		bool changed = false;
 		//This is called ONCE ever, then cached
 		static IScriptRegistry* scriptRegistry =
 			ServiceLocator::Get().GetScriptRegistry();
 
 		if (!scriptRegistry) {
 			NOCTURNAL_ENGINE_WARN("Script Registry not Initalized!");
-			return;
+			return false;
 		}
 
 		if (ImGui::CollapsingHeader("Logic", ImGuiTreeNodeFlags_None))
@@ -56,7 +57,7 @@ namespace NocturnalEngine
 			}
 			std::copy(sList.begin(), sList.end(), logicList);
 
-			ImGui::Combo("Logic Scripts", &current_script, logicList, static_cast<int>(sList.size()), static_cast<int>(sList.size()));
+			changed |= ImGui::Combo("Logic Scripts", &current_script, logicList, static_cast<int>(sList.size()), static_cast<int>(sList.size()));
 
 			if (ImGui::Button("Add"))
 			{
@@ -74,6 +75,7 @@ namespace NocturnalEngine
 						IScript* script = scriptRegistry->CreateScript(scriptNames[current_script]);
 						if (script) {
 							InsertScript(script, entityID);
+							changed = true;
 						}
 					}
 				}
@@ -81,6 +83,7 @@ namespace NocturnalEngine
 			ImGui::SameLine();
 			if (ImGui::Button("Delete")) {
 				DeleteScript(scriptNames[current_script]);
+				changed = true;
 			}
 			ImGui::Text("Inserted Scripts:");
 			for (int i = 0; i < GetScriptNames().size(); i++) {
@@ -88,6 +91,7 @@ namespace NocturnalEngine
 				ImGui::Text("% s", GetScriptNames()[i].c_str());
 			}
 		}
+		return changed;
 	}
 
 

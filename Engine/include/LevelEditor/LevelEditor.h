@@ -172,6 +172,7 @@ namespace NocturnalEngine {
 		std::filesystem::path mUndoDirectory{ "Assets/Scene/.editor_undo" }; // Temporary folder for editor snapshots.
 		std::size_t mMaxUndoSteps{ 30 }; // Maximum number of history entries kept.
 		bool mStartedGizmoDrag{ false }; // Prevents duplicate snapshots during one gizmo drag.
+		bool mInspectorEditDirty{ false }; // Tracks inspector edits until the active widget is released.
 
 		bool mshowNewProjectPopup{ false }, //to show the user the prompt for making a new project
 			mshowOpenProjectPopup{ false }, //unused, for loading up project

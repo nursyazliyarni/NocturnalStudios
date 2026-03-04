@@ -18,7 +18,8 @@
 
 NocturnalEngine::ItemsAttributes::ItemsAttributes() :type{ ItemType::FOOD}, gain_amount { 0 }, is_dragging{ false } {}
 
-void NocturnalEngine::ItemsAttributes::ToEditor() {
+bool NocturnalEngine::ItemsAttributes::ToEditor() {
+    bool changed = false;
     if (ImGui::CollapsingHeader("Items Attributes", ImGuiTreeNodeFlags_None)) {
         static const char* ItemTypeNames[] = {
             "Food",
@@ -33,11 +34,13 @@ void NocturnalEngine::ItemsAttributes::ToEditor() {
             IM_ARRAYSIZE(ItemTypeNames)))
         {
             type = static_cast<ItemsAttributes::ItemType>(current);
+            changed = true;
         }
         ImGui::PushItemWidth(100.0f);
         ImGui::Text("gain amount"); ImGui::SameLine();
-        ImGui::InputDouble("##gain amount", &gain_amount);
+        changed |= ImGui::InputDouble("##gain amount", &gain_amount);
     }
+    return changed;
 }
 
 bool NocturnalEngine::ItemsAttributes::Deserialize(const rapidjson::Value& obj)

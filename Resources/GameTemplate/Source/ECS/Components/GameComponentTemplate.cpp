@@ -16,10 +16,11 @@
 #include <imgui.h>
 NocturnalEngine::GameComponentTemplate::GameComponentTemplate()  {}
 
-void NocturnalEngine::GameComponentTemplate::ToEditor() {
+bool NocturnalEngine::GameComponentTemplate::ToEditor() {
     if (ImGui::CollapsingHeader("GameComponentTemplate", ImGuiTreeNodeFlags_None)) {
         
     }
+    return false;
 }
 
 

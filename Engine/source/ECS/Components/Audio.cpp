@@ -21,12 +21,13 @@ Constructor for audio component
 ****************************************************************************/
 NocturnalEngine::Audio::Audio() : AudioArr(), bgmVol{ 1.0f }, sfxVol{ 1.0f }, masterVol{ 1.0f } {}
 
-void NocturnalEngine::Audio::ToEditor() {
+bool NocturnalEngine::Audio::ToEditor() {
+    bool changed = false;
 
     static std::vector < std::pair<std::string, std::filesystem::directory_entry>> audioFileCache = LoadAudioFromFiles();
     if (audioFileCache.empty()) {
         NOCTURNAL_ENGINE_WARN("NO Audio files in cache!");
-        return;
+        return false;
     }
 
 
@@ -43,7 +44,7 @@ void NocturnalEngine::Audio::ToEditor() {
         }
         std::copy(audiofilenames.begin(), audiofilenames.end(), audioFileList);
         ImGui::Text("Loaded Audio Files:");
-        ImGui::Combo("##Audio Files", &currentfile, audioFileList, static_cast<int>(audiofilenames.size()), static_cast<int>(audiofilenames.size()));
+        changed |= ImGui::Combo("##Audio Files", &currentfile, audioFileList, static_cast<int>(audiofilenames.size()), static_cast<int>(audiofilenames.size()));
         //list out audio file paths in component
         static ImGuiComboFlags flags = 0;
         static int current_audio = 0;
@@ -55,13 +56,13 @@ void NocturnalEngine::Audio::ToEditor() {
         }
         std::copy(sList.begin(), sList.end(), AudioList);
         ImGui::Text("Inserted Audio Files:");
-        ImGui::Combo("##Audio In Component", &current_audio, AudioList, static_cast<int>(sList.size()), static_cast<int>(sList.size()));
+        changed |= ImGui::Combo("##Audio In Component", &current_audio, AudioList, static_cast<int>(sList.size()), static_cast<int>(sList.size()));
         //edit channel group
         if (AudioArr.size() > current_audio) {
             ImGui::Text("Inserted Audio Channel Group:");
             const char* ChList = "None\0Master\0BGM\0SFX";
             int ChIndex = static_cast<int>(AudioArr[current_audio].mChannelGroup);
-            ImGui::Combo("###why is this named tes", &ChIndex, ChList);
+            changed |= ImGui::Combo("###why is this named tes", &ChIndex, ChList);
             ImGui::PushItemWidth(100.0f);
             AudioArr[current_audio].mChannelGroup = static_cast<Audio::AudioType>(ChIndex);
         }
@@ -76,11 +77,13 @@ void NocturnalEngine::Audio::ToEditor() {
             nAud.should_stop = false;
             nAud.is_Playing = false;
             AudioArr.push_back(nAud);
+            changed = true;
         }
         ImGui::SameLine();
         //option to remove audio from array
         if (ImGui::Button("Remove Audio")) {
             AudioArr.erase(AudioArr.begin() + current_audio);
+            changed = true;
         }
 
         // Audio Effects section
@@ -90,48 +93,49 @@ void NocturnalEngine::Audio::ToEditor() {
             AudioEffectSettings& fx = effectSettings;
 
             // Low-pass filter
-            ImGui::Checkbox("Low-Pass Filter", &fx.lowpassEnabled);
+            changed |= ImGui::Checkbox("Low-Pass Filter", &fx.lowpassEnabled);
             if (fx.lowpassEnabled)
             {
-                ImGui::SliderFloat("LP Cutoff (Hz)", &fx.lowpassCutoff, 10.0f, 22000.0f, "%.0f");
-                ImGui::SliderFloat("LP Resonance", &fx.lowpassResonance, 1.0f, 10.0f, "%.1f");
+                changed |= ImGui::SliderFloat("LP Cutoff (Hz)", &fx.lowpassCutoff, 10.0f, 22000.0f, "%.0f");
+                changed |= ImGui::SliderFloat("LP Resonance", &fx.lowpassResonance, 1.0f, 10.0f, "%.1f");
             }
 
             // High-pass filter
-            ImGui::Checkbox("High-Pass Filter", &fx.highpassEnabled);
+            changed |= ImGui::Checkbox("High-Pass Filter", &fx.highpassEnabled);
             if (fx.highpassEnabled)
             {
-                ImGui::SliderFloat("HP Cutoff (Hz)", &fx.highpassCutoff, 10.0f, 22000.0f, "%.0f");
-                ImGui::SliderFloat("HP Resonance", &fx.highpassResonance, 1.0f, 10.0f, "%.1f");
+                changed |= ImGui::SliderFloat("HP Cutoff (Hz)", &fx.highpassCutoff, 10.0f, 22000.0f, "%.0f");
+                changed |= ImGui::SliderFloat("HP Resonance", &fx.highpassResonance, 1.0f, 10.0f, "%.1f");
             }
 
             // Echo / Delay
-            ImGui::Checkbox("Echo / Delay", &fx.echoEnabled);
+            changed |= ImGui::Checkbox("Echo / Delay", &fx.echoEnabled);
             if (fx.echoEnabled)
             {
-                ImGui::SliderFloat("Echo Delay (ms)", &fx.echoDelay, 1.0f, 5000.0f, "%.0f");
-                ImGui::SliderFloat("Echo Feedback (%%)", &fx.echoFeedback, 0.0f, 100.0f, "%.0f");
-                ImGui::SliderFloat("Echo Dry Level (dB)", &fx.echoDryLevel, -80.0f, 10.0f, "%.1f");
-                ImGui::SliderFloat("Echo Wet Level (dB)", &fx.echoWetLevel, -80.0f, 10.0f, "%.1f");
+                changed |= ImGui::SliderFloat("Echo Delay (ms)", &fx.echoDelay, 1.0f, 5000.0f, "%.0f");
+                changed |= ImGui::SliderFloat("Echo Feedback (%%)", &fx.echoFeedback, 0.0f, 100.0f, "%.0f");
+                changed |= ImGui::SliderFloat("Echo Dry Level (dB)", &fx.echoDryLevel, -80.0f, 10.0f, "%.1f");
+                changed |= ImGui::SliderFloat("Echo Wet Level (dB)", &fx.echoWetLevel, -80.0f, 10.0f, "%.1f");
             }
 
             // Reverb
-            ImGui::Checkbox("Reverb", &fx.reverbEnabled);
+            changed |= ImGui::Checkbox("Reverb", &fx.reverbEnabled);
             if (fx.reverbEnabled)
             {
-                ImGui::SliderFloat("Decay Time (ms)", &fx.reverbDecayTime, 100.0f, 20000.0f, "%.0f");
-                ImGui::SliderFloat("Early Delay (ms)", &fx.reverbEarlyDelay, 0.0f, 300.0f, "%.1f");
-                ImGui::SliderFloat("Late Delay (ms)", &fx.reverbLateDelay, 0.0f, 100.0f, "%.1f");
-                ImGui::SliderFloat("HF Reference (Hz)", &fx.reverbHFReference, 20.0f, 20000.0f, "%.0f");
-                ImGui::SliderFloat("Diffusion (%%)", &fx.reverbDiffusion, 0.0f, 100.0f, "%.0f");
-                ImGui::SliderFloat("Density (%%)", &fx.reverbDensity, 0.0f, 100.0f, "%.0f");
-                ImGui::SliderFloat("Reverb Wet (dB)", &fx.reverbWetLevel, -80.0f, 20.0f, "%.1f");
-                ImGui::SliderFloat("Reverb Dry (dB)", &fx.reverbDryLevel, -80.0f, 20.0f, "%.1f");
+                changed |= ImGui::SliderFloat("Decay Time (ms)", &fx.reverbDecayTime, 100.0f, 20000.0f, "%.0f");
+                changed |= ImGui::SliderFloat("Early Delay (ms)", &fx.reverbEarlyDelay, 0.0f, 300.0f, "%.1f");
+                changed |= ImGui::SliderFloat("Late Delay (ms)", &fx.reverbLateDelay, 0.0f, 100.0f, "%.1f");
+                changed |= ImGui::SliderFloat("HF Reference (Hz)", &fx.reverbHFReference, 20.0f, 20000.0f, "%.0f");
+                changed |= ImGui::SliderFloat("Diffusion (%%)", &fx.reverbDiffusion, 0.0f, 100.0f, "%.0f");
+                changed |= ImGui::SliderFloat("Density (%%)", &fx.reverbDensity, 0.0f, 100.0f, "%.0f");
+                changed |= ImGui::SliderFloat("Reverb Wet (dB)", &fx.reverbWetLevel, -80.0f, 20.0f, "%.1f");
+                changed |= ImGui::SliderFloat("Reverb Dry (dB)", &fx.reverbDryLevel, -80.0f, 20.0f, "%.1f");
             }
 
             ImGui::TreePop();
         }
     }
+    return changed;
 }
 
 /*!*************************************************************************
