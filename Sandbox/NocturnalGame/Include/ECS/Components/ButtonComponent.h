@@ -51,14 +51,14 @@ namespace NocturnalEngine
 		float cameraZoom{};
 		std::string altSceneSwitch{};
 
-		ButtonComponent() {}
+		ButtonComponent();
 		~ButtonComponent() = default;
 
-		virtual bool Deserialize(const rapidjson::Value& obj) {}
+		virtual bool Deserialize(const rapidjson::Value& obj);
 
-		virtual bool Serialize(rapidjson::PrettyWriter<rapidjson::StringBuffer>* writer) const {}
+		virtual bool Serialize(rapidjson::PrettyWriter<rapidjson::StringBuffer>* writer) const;
 
-		virtual bool ToEditor() override {}
+		virtual bool ToEditor() override;
 
 		/*!*************************************************************************
 		Retrieves Component Entity ID

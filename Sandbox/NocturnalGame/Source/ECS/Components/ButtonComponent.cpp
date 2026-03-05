@@ -132,6 +132,61 @@ namespace NocturnalEngine {
     bool ButtonComponent::Serialize(rapidjson::PrettyWriter<rapidjson::StringBuffer>* writer) const
     {
     
+        writer->StartObject();
+
+        // GoToScene
+        writer->Key("GoToSceneFlag");       writer->Bool((flag & (1 << 0)) != 0);
+        writer->Key("GoToScene");           writer->String(gotoScene.c_str());
+
+        // AudioOnHover
+        writer->Key("AudioOnHoverFlag");    writer->Bool((flag & (1 << 1)) != 0);
+        writer->Key("AudioOnHoverRandom");  writer->Bool(hoverAudioRandom);
+
+        // AudioOnClick
+        writer->Key("AudioOnClickFlag");    writer->Bool((flag & (1 << 2)) != 0);
+        writer->Key("AudioOnClickRandom");  writer->Bool(clickAudioRandom);
+
+        // TexChangeOnHover
+        writer->Key("TexChangeOnHoverFlag"); writer->Bool((flag & (1 << 3)) != 0);
+        writer->Key("TexChangeOnHover");    writer->String(hoverTexture.c_str());
+
+        // TexChangeOnClick
+        writer->Key("TexChangeOnClickFlag"); writer->Bool((flag & (1 << 4)) != 0);
+        writer->Key("TexChangeOnClick");    writer->String(clickTexture.c_str());
+
+        // ScaleOnHover
+        writer->Key("ScaleOnHoverFlag");    writer->Bool((flag & (1 << 5)) != 0);
+        writer->Key("ScaleOnHover");        writer->Double(static_cast<double>(hoverScale));
+
+        // SetGameState
+        writer->Key("SetGameStateFlag");    writer->Bool((flag & (1 << 6)) != 0);
+        const char* stateStr = "STARTING";
+        if (stateToSet == GameManState::PLAYING) stateStr = "PLAYING";
+        else if (stateToSet == GameManState::ENDING)  stateStr = "ENDING";
+        else if (stateToSet == GameManState::PAUSED)  stateStr = "PAUSED";
+        writer->Key("SetGameState");        writer->String(stateStr);
+
+        // ResetStats
+        writer->Key("ResetStatsFlag");      writer->Bool((flag & (1 << 7)) != 0);
+
+        // NextLevel
+        writer->Key("NextLevelFlag");       writer->Bool((flag & (1 << 8)) != 0);
+
+        // SetCameraZoom
+        writer->Key("SetCameraZoomFlag");   writer->Bool((flag & (1 << 9)) != 0);
+        writer->Key("SetCameraZoom");       writer->Double(static_cast<double>(cameraZoom));
+
+        // MuteAudio
+        writer->Key("MuteAudioFlag");       writer->Bool((flag & (1 << 10)) != 0);
+
+        // AltSceneSwitch
+        writer->Key("AltSceneSwitchFlag");  writer->Bool((flag & (1 << 11)) != 0);
+        writer->Key("AltSceneSwitch");      writer->String(altSceneSwitch.c_str());
+
+        // ExitGame
+        writer->Key("ExitGameFlag");        writer->Bool((flag & (1 << 12)) != 0);
+
+        writer->EndObject();
         return true;
     }
 }
