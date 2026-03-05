@@ -34,7 +34,7 @@
                 },
                 {
                     "Component": "Sprite",
-                    "TextureName": "Environment/flamingoScene",
+                    "TextureName": "UI/blackbg",
                     "Index_X": 0,
                     "Index_Y": 0,
                     "Ucoordinates": 512.0,
@@ -124,7 +124,7 @@
                 {
                     "Component": "Sprite",
                     "TextureName": "Characters/flamingo_spritesheet",
-                    "Index_X": 2,
+                    "Index_X": 3,
                     "Index_Y": 0,
                     "Ucoordinates": 528.0,
                     "Vcoordinates": 528.0,
@@ -136,7 +136,7 @@
                     "DisplayTime 2": 0.125,
                     "DisplayTime 3": 0.125,
                     "DisplayTime 4": 0.125,
-                    "LayeringOrder": 0
+                    "LayeringOrder": 1
                 },
                 {
                     "Component": "Logic",
@@ -208,7 +208,7 @@
                     "IsSpriteSheet": false,
                     "IsAnimated": false,
                     "MaxIndex": 0,
-                    "LayeringOrder": 0
+                    "LayeringOrder": 2
                 },
                 {
                     "Component": "Logic",
@@ -267,7 +267,7 @@
                     "IsSpriteSheet": false,
                     "IsAnimated": false,
                     "MaxIndex": 0,
-                    "LayeringOrder": 0
+                    "LayeringOrder": 2
                 },
                 {
                     "Component": "Logic",
@@ -326,7 +326,7 @@
                     "IsSpriteSheet": false,
                     "IsAnimated": false,
                     "MaxIndex": 0,
-                    "LayeringOrder": 0
+                    "LayeringOrder": 2
                 },
                 {
                     "Component": "Logic",
@@ -390,7 +390,7 @@
                     "IsSpriteSheet": false,
                     "IsAnimated": false,
                     "MaxIndex": 0,
-                    "LayeringOrder": 0
+                    "LayeringOrder": 2
                 },
                 {
                     "Component": "Audio",
@@ -520,7 +520,7 @@
                     "IsSpriteSheet": false,
                     "IsAnimated": false,
                     "MaxIndex": 0,
-                    "LayeringOrder": 0
+                    "LayeringOrder": 2
                 },
                 {
                     "Component": "Audio",
@@ -650,7 +650,7 @@
                     "IsSpriteSheet": false,
                     "IsAnimated": false,
                     "MaxIndex": 0,
-                    "LayeringOrder": 0
+                    "LayeringOrder": 2
                 },
                 {
                     "Component": "Audio",
@@ -779,7 +779,7 @@
                     "IsSpriteSheet": false,
                     "IsAnimated": false,
                     "MaxIndex": 0,
-                    "LayeringOrder": 0
+                    "LayeringOrder": 2
                 },
                 {
                     "Component": "Audio",
@@ -869,7 +869,7 @@
                     "IsSpriteSheet": false,
                     "IsAnimated": false,
                     "MaxIndex": 0,
-                    "LayeringOrder": 0
+                    "LayeringOrder": 1
                 }
             ]
         },
@@ -898,7 +898,7 @@
                     "IsSpriteSheet": false,
                     "IsAnimated": false,
                     "MaxIndex": 0,
-                    "LayeringOrder": 1
+                    "LayeringOrder": 3
                 }
             ]
         },
@@ -927,7 +927,7 @@
                     "IsSpriteSheet": false,
                     "IsAnimated": false,
                     "MaxIndex": 0,
-                    "LayeringOrder": 1
+                    "LayeringOrder": 3
                 }
             ]
         },
@@ -956,7 +956,7 @@
                     "IsSpriteSheet": false,
                     "IsAnimated": false,
                     "MaxIndex": 0,
-                    "LayeringOrder": 1
+                    "LayeringOrder": 3
                 }
             ]
         },
@@ -985,7 +985,7 @@
                     "IsSpriteSheet": false,
                     "IsAnimated": false,
                     "MaxIndex": 0,
-                    "LayeringOrder": 0
+                    "LayeringOrder": 2
                 },
                 {
                     "Component": "Logic",
@@ -1025,7 +1025,7 @@
                     "IsSpriteSheet": false,
                     "IsAnimated": false,
                     "MaxIndex": 0,
-                    "LayeringOrder": 0
+                    "LayeringOrder": 2
                 },
                 {
                     "Component": "Logic",
@@ -1065,7 +1065,7 @@
                     "IsSpriteSheet": false,
                     "IsAnimated": false,
                     "MaxIndex": 0,
-                    "LayeringOrder": 0
+                    "LayeringOrder": 2
                 },
                 {
                     "Component": "Logic",
@@ -1252,7 +1252,7 @@
                     "IsSpriteSheet": false,
                     "IsAnimated": false,
                     "MaxIndex": 0,
-                    "LayeringOrder": 0
+                    "LayeringOrder": 2
                 },
                 {
                     "Component": "Logic",
@@ -1302,7 +1302,7 @@
                     "IsSpriteSheet": false,
                     "IsAnimated": false,
                     "MaxIndex": 0,
-                    "LayeringOrder": 0
+                    "LayeringOrder": 1
                 }
             ]
         },
@@ -1331,7 +1331,7 @@
                     "IsSpriteSheet": false,
                     "IsAnimated": false,
                     "MaxIndex": 0,
-                    "LayeringOrder": 0
+                    "LayeringOrder": 1
                 }
             ]
         },
@@ -1353,6 +1353,222 @@
                 {
                     "Component": "Sprite",
                     "TextureName": "UI/cameraHighlight",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": false,
+                    "MaxIndex": 0,
+                    "LayeringOrder": 1
+                }
+            ]
+        },
+        {
+            "ID": 25,
+            "Components": [
+                {
+                    "Component": "Transform",
+                    "posX": -0.6259999871253967,
+                    "posY": 0.2329999953508377,
+                    "scaleX": 2.2100000381469727,
+                    "scaleY": 1.3849999904632568,
+                    "Rot": -0.17519432306289673
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "Panel"
+                },
+                {
+                    "Component": "Sprite",
+                    "TextureName": "UI/panel",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": false,
+                    "MaxIndex": 0,
+                    "LayeringOrder": 1
+                }
+            ]
+        },
+        {
+            "ID": 26,
+            "Components": [
+                {
+                    "Component": "Transform",
+                    "posX": 0.4000000059604645,
+                    "posY": 0.23999999463558197,
+                    "scaleX": 0.13500000536441803,
+                    "scaleY": 0.12800000607967377,
+                    "Rot": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "FlamingoBtn"
+                },
+                {
+                    "Component": "Sprite",
+                    "TextureName": "UI/cameraButtonLit",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": false,
+                    "MaxIndex": 0,
+                    "LayeringOrder": 2
+                },
+                {
+                    "Component": "Text",
+                    "Content": "1",
+                    "Font": "ChauPhilomeneOne-Regular",
+                    "Size": 32.5,
+                    "ColorR": 0.0,
+                    "ColorG": 0.0,
+                    "ColorB": 0.0,
+                    "ColorA": 1.0,
+                    "PosX": 0.38999998569488525,
+                    "PosY": 0.23000000417232513,
+                    "Rotation": 0.0,
+                    "Line Height": 0,
+                    "WorldSpace": false,
+                    "Center": false
+                }
+            ]
+        },
+        {
+            "ID": 27,
+            "Components": [
+                {
+                    "Component": "Tag",
+                    "Tag": "Untagged",
+                    "TargetTag": ""
+                },
+                {
+                    "Component": "Transform",
+                    "posX": -0.6399999856948853,
+                    "posY": 0.23499999940395355,
+                    "scaleX": 2.059999942779541,
+                    "scaleY": 1.225000023841858,
+                    "Rot": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "Environment"
+                },
+                {
+                    "Component": "Sprite",
+                    "TextureName": "Environment/flamingoCage",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": false,
+                    "MaxIndex": 0,
+                    "LayeringOrder": 0
+                }
+            ]
+        },
+        {
+            "ID": 28,
+            "Components": [
+                {
+                    "Component": "Transform",
+                    "posX": 0.07999999821186066,
+                    "posY": 0.03999999910593033,
+                    "scaleX": 3.9200000762939453,
+                    "scaleY": 2.184999942779541,
+                    "Rot": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "InventoryBar"
+                },
+                {
+                    "Component": "Sprite",
+                    "TextureName": "UI/inventory",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": false,
+                    "MaxIndex": 0,
+                    "LayeringOrder": 1
+                },
+                {
+                    "Component": "Text",
+                    "Content": "INVENTORY",
+                    "Font": "ChauPhilomeneOne-Regular",
+                    "Size": 36.79999923706055,
+                    "ColorR": 0.46568626165390015,
+                    "ColorG": 1.0,
+                    "ColorB": 0.48109906911849976,
+                    "ColorA": 1.0,
+                    "PosX": -0.7599999904632568,
+                    "PosY": -0.5799999833106995,
+                    "Rotation": 0.0,
+                    "Line Height": 0,
+                    "WorldSpace": false,
+                    "Center": false
+                }
+            ]
+        },
+        {
+            "ID": 29,
+            "Components": [
+                {
+                    "Component": "Transform",
+                    "posX": 1.0950000286102295,
+                    "posY": 0.014999999664723873,
+                    "scaleX": 1.190000057220459,
+                    "scaleY": 1.850000023841858,
+                    "Rot": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "LogBar"
+                },
+                {
+                    "Component": "Sprite",
+                    "TextureName": "UI/right panel",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": false,
+                    "MaxIndex": 0,
+                    "LayeringOrder": 1
+                }
+            ]
+        },
+        {
+            "ID": 30,
+            "Components": [
+                {
+                    "Component": "Tag",
+                    "Tag": "Untagged",
+                    "TargetTag": ""
+                },
+                {
+                    "Component": "Transform",
+                    "posX": -0.014999999664723873,
+                    "posY": 0.02500000037252903,
+                    "scaleX": 3.7049999237060547,
+                    "scaleY": 2.109999895095825,
+                    "Rot": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "BgWires"
+                },
+                {
+                    "Component": "Sprite",
+                    "TextureName": "UI/background",
                     "Index_X": 0,
                     "Index_Y": 0,
                     "Ucoordinates": 512.0,
