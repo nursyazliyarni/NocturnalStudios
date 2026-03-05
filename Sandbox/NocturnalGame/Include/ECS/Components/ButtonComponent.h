@@ -15,12 +15,42 @@
 #include "ECS/Components/IComponent.h"
 #include "pch.h"
 
+
 namespace NocturnalEngine
 {
 	class ButtonComponent : public IComponent
 	{
 	public:
-		
+		enum class ButtonFlag {
+			NONE = 0,
+			GOTO_SCENE = 1 << 0,  // Load a target scene
+			AUDIO_ON_HOVER = 1 << 1,  // Play sound on hover
+			AUDIO_ON_CLICK = 1 << 2,  // Play sound on click 
+			TEX_CHANGE_ON_HOVER = 1 << 3,  // Swap texture on hover
+			TEX_CHANGE_ON_CLICK = 1 << 4,  // Swap texture on click
+			SCALE_ON_HOVER = 1 << 5,  // Scale up on hover, revert on leave
+			SET_GAME_STATE = 1 << 6,  // Set a GameState (PLAYING, etc.)
+			RESET_STATS = 1 << 7,  // Call ResetStats()
+			NEXT_LEVEL = 1 << 8,  // ...
+			SET_CAMERA_ZOOM = 1 << 9, // Set camera zoom level
+			MUTE_AUDIO = 1 << 10, // Mute all audio channels
+			ALT_SCENE_SWITCH = 1 << 11, // SetSceneToSwitch() (Alt buttons)
+			EXIT_GAME = 1 << 12  // Call toggle_script to quit
+		};
+		std::string gotoScene{};
+		bool hoverAudioRandom{ false }, clickAudioRandom{ false };
+		std::string hoverTexture{}, clickTexture{};
+		float hoverScale{};
+		enum class GameManState {
+			STARTING,
+			PLAYING,
+			ENDING,
+			PAUSED
+		};
+		GameManState stateToSet{};
+		float cameraZoom{};
+		std::string altSceneSwitch{};
+
 		ButtonComponent() {}
 		~ButtonComponent() = default;
 
@@ -42,12 +72,8 @@ namespace NocturnalEngine
 		
 
 	private:
-		enum class ButtonActions {
-			None = 0,
-			ReadOnly = 1 << 0, // Binary 0001
-			Write = 1 << 1, // Binary 0010
-			Append = 1 << 2, // Binary 0100
-			Binary = 1 << 3  // Binary 1000
-		};
+		int flag{ 0 };
+
+		
 	};
 }
