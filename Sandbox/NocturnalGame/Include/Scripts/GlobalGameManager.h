@@ -65,7 +65,8 @@ namespace NocturnalEngine {
         enum class GameState {
             STARTING,
             PLAYING,
-            ENDING
+            ENDING,
+            PAUSED
         };
         AnimalData LoadPersistentValues(std::string gs);
 
@@ -97,6 +98,10 @@ namespace NocturnalEngine {
          GameState GetGameState()const { return currState; }
 
          void SetState(GameState s) { currState = s; }
+
+         void Pause() { prePauseState = currState; currState = GameState::PAUSED; }
+
+         void UnPause() { currState = prePauseState; }
 
          unsigned int CurrentLevel() const { return levelNum; }
         
@@ -151,7 +156,7 @@ namespace NocturnalEngine {
         float gameTimeElapsed{}, winRequirement{120.f}; //in seconds
 
         std::string currScene;
-        GameState currState;
+        GameState currState, prePauseState;
 
         std::unordered_map < std::string, AnimalData> sceneAnimalMap;
         int deadAnimals, deathLimit{ 3 }, maxDiegeticLogEntries{ 40 }, escapedAnimals{ 0 }, under20{ 0 };

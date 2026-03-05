@@ -74,7 +74,7 @@ namespace NocturnalEngine
 				p_Scene->setSceneToLoad("Assets/Scene/HorseScene.json");
 				return;
 			}
-			if (p_Input->KeyPressed(GLFW_KEY_4) || p_Input->KeyPressed(GLFW_KEY_D))
+			if (p_GameManager.CurrentLevel()>1 && (p_Input->KeyPressed(GLFW_KEY_4) || p_Input->KeyPressed(GLFW_KEY_D)))
 			{
 				p_ecs.GetComponent<Audio>(GetScriptEntityID())[0].should_play = true;
 				p_Scene->setSceneToLoad("Assets/Scene/OwlScene.json");
@@ -333,7 +333,7 @@ namespace NocturnalEngine
 					p_Scene->setSceneToLoad("Assets/Scene/HorseScene.json");// switch to horse scene
 				}
 
-				if (ID_tag.GetTag() == "OwlBtn")
+				if (ID_tag.GetTag() == "OwlBtn"&&p_GameManager.CurrentLevel()>1)
 				{
 					p_ecs.GetComponent<Audio>(GetScriptEntityID())[randSoundIndex].should_play = true;
 					p_Scene->setSceneToLoad("Assets/Scene/OwlScene.json");// switch to owl scene

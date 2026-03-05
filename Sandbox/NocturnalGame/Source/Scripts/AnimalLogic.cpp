@@ -159,7 +159,6 @@ namespace NocturnalEngine {
 		}
 		else if (aA.current_health <= aA.maxHealth / 5.0 && aA.healthWarnLevel < 2) 
 		{
-			p_GameManager.AddLogEntry("Body Temperature of " + animalName + " is critical");
 			p_GameManager.AddCrit();
 			aA.healthWarnLevel++;
 		}
@@ -175,7 +174,6 @@ namespace NocturnalEngine {
 		}
 		else if (aA.current_hunger <= aA.maxHunger / 5.0 && aA.hungerWarnLevel < 2)
 		{
-			p_GameManager.AddLogEntry(animalName + " has not been fed for "+std::to_string(Random::Range(60,180))+ " minutes");
 			aA.hungerWarnLevel++;
 			p_GameManager.AddCrit();
 		}
@@ -188,7 +186,6 @@ namespace NocturnalEngine {
 		}
 		else if (aA.current_sanity <= aA.maxSanity / 5.0 && aA.sanityWarnLevel < 2)
 		{
-			p_GameManager.AddLogEntry("Banging noises detected from "+animalName+"'s enclosure");
 			aA.sanityWarnLevel++;
 			p_GameManager.AddCrit();
 		}
