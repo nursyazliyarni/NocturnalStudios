@@ -1728,7 +1728,8 @@
                 },
                 {
                     "Component": "Logic",
-                    "ScriptCount": 0
+                    "0": "KeysCollectedDisplay",
+                    "ScriptCount": 1
                 },
                 {
                     "Component": "Text",

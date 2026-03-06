@@ -18,6 +18,7 @@
 #include "ECS/Components/Collider.h"
 #include "ECS/Components/Sprite.h"
 #include "GUI/GUI.h"
+#include "Scripts/GlobalGameManager.h"
 #include <algorithm>
 #include <cctype>
 
@@ -46,7 +47,8 @@ namespace NocturnalEngine
         keyT.SetPos(mHiddenPos.x, mHiddenPos.y);
         keyT.SetScale(0.0f, 0.0f);
 
-        mCollected = IsCollected(entityID);
+        mCollectionKeyId = BuildCollectionKey();
+        mCollected = IsCollected(mCollectionKeyId);
         mRevealed = false;
     }
 
@@ -57,6 +59,8 @@ namespace NocturnalEngine
     {
         UNREFERENCED_PARAMETER(dt);
         if (!mHasEnvironment || mCollected)
+            return;
+        if (!IsKeyInteractableForCurrentLevel())
             return;
 
         if (!mInput->MousePressed(GLFW_MOUSE_BUTTON_LEFT))
@@ -244,10 +248,61 @@ namespace NocturnalEngine
         return distance(mouse, mHiddenPos) <= mRevealRadius;
     }
 
-    // Shared collected-list lookup.
-    bool EncryptionKey::IsCollected(Entity key) const
+    bool EncryptionKey::IsKeyInteractableForCurrentLevel() const
     {
-        return std::find(sCollectedKeys.begin(), sCollectedKeys.end(), key) != sCollectedKeys.end();
+        const unsigned int level = p_GameManager.CurrentLevel();
+        // Level 1: only Flamingo scene key is clickable.
+        if (level <= 1)
+            return mCollectionKeyId == "scene:flamingobtn";
+
+        // Level 2+: all animal scene keys are clickable.
+        return true;
+    }
+
+    std::string EncryptionKey::BuildCollectionKey() const
+    {
+        // Prefer scene identity from the currently lit camera button.
+        for (Entity e : p_ecs.GetAliveEntitiesSet())
+        {
+            if (!p_ecs.HaveComponent<NameTag>(e) || !p_ecs.HaveComponent<Sprite>(e))
+                continue;
+
+            std::string tag = p_ecs.GetComponent<NameTag>(e).GetNameTag();
+            std::string texture = p_ecs.GetComponent<Sprite>(e).GetTexture();
+            for (char& ch : tag)
+                ch = static_cast<char>(std::tolower(static_cast<unsigned char>(ch)));
+            for (char& ch : texture)
+                ch = static_cast<char>(std::tolower(static_cast<unsigned char>(ch)));
+
+            if (tag.size() >= 3 && tag.substr(tag.size() - 3) == "btn" &&
+                texture.find("camerabuttonlit") != std::string::npos)
+            {
+                return std::string("scene:") + tag;
+            }
+        }
+
+        // Fallback if expected button setup is missing.
+        for (Entity e : p_ecs.GetAliveEntitiesSet())
+        {
+            if (!p_ecs.HaveComponent<NameTag>(e))
+                continue;
+
+            std::string tag = p_ecs.GetComponent<NameTag>(e).GetNameTag();
+            for (char& ch : tag)
+                ch = static_cast<char>(std::tolower(static_cast<unsigned char>(ch)));
+
+            if (tag == "flamingobtn" || tag == "horsebtn" || tag == "owlbtn" || tag == "sealbtn")
+                return std::string("scene:") + tag;
+        }
+
+        // Final fallback keeps behavior deterministic.
+        return std::string("entity:") + std::to_string(entityID);
+    }
+
+    // Shared collected-list lookup.
+    bool EncryptionKey::IsCollected(const std::string& keyId) const
+    {
+        return sCollectedKeys.find(keyId) != sCollectedKeys.end();
     }
 
     // Add key to shared inventory if capacity allows, then hide it.
@@ -256,9 +311,9 @@ namespace NocturnalEngine
         if (mCollected)
             return;
 
-        if (!IsCollected(entityID) && sCollectedKeys.size() < kMaxKeys)
+        if (!IsCollected(mCollectionKeyId) && sCollectedKeys.size() < kMaxKeys)
         {
-            sCollectedKeys.push_back(entityID);
+            sCollectedKeys.insert(mCollectionKeyId);
         }
 
         if (p_ecs.HaveComponent<Transform>(entityID))

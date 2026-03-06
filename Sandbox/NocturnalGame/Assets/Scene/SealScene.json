@@ -1712,7 +1712,8 @@
                 },
                 {
                     "Component": "Logic",
-                    "ScriptCount": 0
+                    "0": "encryptionkey",
+                    "ScriptCount": 1
                 }
             ]
         },
@@ -1733,7 +1734,8 @@
                 },
                 {
                     "Component": "Logic",
-                    "ScriptCount": 0
+                    "0": "KeysCollectedDisplay",
+                    "ScriptCount": 1
                 },
                 {
                     "Component": "Text",

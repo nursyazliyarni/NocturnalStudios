@@ -19,7 +19,8 @@
 #include "Math/Vmath.h"
 #include "Scripts/IScript.h"
 #include <random>
-#include <vector>
+#include <string>
+#include <unordered_set>
 
 namespace NocturnalEngine
 {
@@ -61,10 +62,14 @@ namespace NocturnalEngine
         bool IsMouseOverKey();
         // Checks click proximity to hidden key location.
         bool IsMouseNearHiddenSpot() const;
+        // Returns whether this scene key is interactable at the current level.
+        bool IsKeyInteractableForCurrentLevel() const;
         // Adds key to shared collection and hides it.
         void CollectKey();
-        // Checks whether this key is already in collected list.
-        bool IsCollected(Entity key) const;
+        // Builds a scene-stable collection id for this key.
+        std::string BuildCollectionKey() const;
+        // Checks whether this key id is already in collected list.
+        bool IsCollected(const std::string& keyId) const;
 
     private:
         InputSystem* mInput{ nullptr };
@@ -76,6 +81,8 @@ namespace NocturnalEngine
         bool mRevealed{ false };
         // Hidden location where key is placed while invisible.
         vec2D mHiddenPos{};
+        // Scene-stable id for cross-scene key tracking.
+        std::string mCollectionKeyId{};
         // Original scale to restore on reveal.
         vec2D mOriginalScale{};
         std::mt19937 mRng{ std::random_device{}() };
@@ -84,7 +91,7 @@ namespace NocturnalEngine
 
         // Shared across all EncryptionKey instances.
         // Acts like the player's collected key inventory.
-        static inline std::vector<Entity> sCollectedKeys{};
+        static inline std::unordered_set<std::string> sCollectedKeys{};
         // Hard cap requested: player can collect at most 4 keys.
         static constexpr size_t kMaxKeys = 4;
     };
