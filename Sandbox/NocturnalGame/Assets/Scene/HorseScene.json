@@ -160,7 +160,7 @@
                 {
                     "Component": "Logic",
                     "0": "AnimalLogic",
-                    "1": "PainSpotSpawner",
+                    "1": "PainSpotDuplicateSpawner",
                     "ScriptCount": 2
                 },
                 {
@@ -839,8 +839,8 @@
             "Components": [
                 {
                     "Component": "Transform",
-                    "posX": 0.050999999046325684,
-                    "posY": -0.7060701847076416,
+                    "posX": -0.17580176889896393,
+                    "posY": -0.09465217590332031,
                     "scaleX": 0.3499999940395355,
                     "scaleY": 0.3499999940395355,
                     "Rot": 0.0
@@ -883,7 +883,8 @@
                 {
                     "Component": "Logic",
                     "0": "DragAndDrop",
-                    "ScriptCount": 1
+                    "1": "ToyHideAndRevealOnClick",
+                    "ScriptCount": 2
                 },
                 {
                     "Component": "ItemsAttributes",
@@ -1449,6 +1450,25 @@
                     "Rot": 0.0
                 },
                 {
+                    "Component": "Collider",
+                    "ColliderType1": 5,
+                    "ColliderType2": 0,
+                    "minX1": 1.9700000286102295,
+                    "minX2": 0.0,
+                    "minY1": 1.225000023841858,
+                    "minY2": 0.0,
+                    "maxX1": 0.0,
+                    "maxX2": 0.0,
+                    "maxY1": 0.0,
+                    "maxY2": 0.0,
+                    "offsetX1": 0.9700000286102295,
+                    "offsetX2": 0.0,
+                    "offsetY1": 0.6200000047683716,
+                    "offsetY2": 0.0,
+                    "radius1": 0.0,
+                    "radius2": 0.0
+                },
+                {
                     "Component": "NameTag",
                     "NameTag": "Environment"
                 },
@@ -1611,6 +1631,54 @@
                     "Line Height": 0,
                     "WorldSpace": false,
                     "Center": false
+                }
+            ]
+        },
+        {
+            "ID": 31,
+            "Components": [
+                {
+                    "Component": "Transform",
+                    "posX": -0.6594700813293457,
+                    "posY": 0.0,
+                    "scaleX": 0.05000000074505806,
+                    "scaleY": 0.05000000074505806,
+                    "Rot": 0.0
+                },
+                {
+                    "Component": "Collider",
+                    "ColliderType1": 5,
+                    "ColliderType2": 0,
+                    "minX1": 0.05000000074505806,
+                    "minX2": 0.0,
+                    "minY1": 0.05000000074505806,
+                    "minY2": 0.0,
+                    "maxX1": 0.0,
+                    "maxX2": 0.0,
+                    "maxY1": 0.0,
+                    "maxY2": 0.0,
+                    "offsetX1": 0.02500000037252903,
+                    "offsetX2": 0.0,
+                    "offsetY1": 0.02500000037252903,
+                    "offsetY2": 0.0,
+                    "radius1": 0.0,
+                    "radius2": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "PainSpot"
+                },
+                {
+                    "Component": "Sprite",
+                    "TextureName": "UI/painSpot",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": false,
+                    "MaxIndex": 0,
+                    "LayeringOrder": 2
                 }
             ]
         }

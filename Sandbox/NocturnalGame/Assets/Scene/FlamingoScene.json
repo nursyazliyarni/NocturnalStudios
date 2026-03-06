@@ -141,7 +141,7 @@
                 {
                     "Component": "Logic",
                     "0": "AnimalLogic",
-                    "1": "PainSpotSpawner",
+                    "1": "PainSpotDuplicateSpawner",
                     "ScriptCount": 2
                 },
                 {
@@ -287,8 +287,8 @@
             "Components": [
                 {
                     "Component": "Transform",
-                    "posX": 0.02384057641029358,
-                    "posY": -0.6656290292739868,
+                    "posX": -0.1607748568058014,
+                    "posY": -0.13524222373962402,
                     "scaleX": 0.4000000059604645,
                     "scaleY": 0.4000000059604645,
                     "Rot": 0.0
@@ -331,7 +331,8 @@
                 {
                     "Component": "Logic",
                     "0": "DragAndDrop",
-                    "ScriptCount": 1
+                    "1": "ToyHideAndRevealOnClick",
+                    "ScriptCount": 2
                 },
                 {
                     "Component": "ItemsAttributes",
@@ -1210,6 +1211,25 @@
                     "Rot": 0.0
                 },
                 {
+                    "Component": "Collider",
+                    "ColliderType1": 5,
+                    "ColliderType2": 0,
+                    "minX1": 0.05000000074505806,
+                    "minX2": 0.0,
+                    "minY1": 0.05000000074505806,
+                    "minY2": 0.0,
+                    "maxX1": 0.0,
+                    "maxX2": 0.0,
+                    "maxY1": 0.0,
+                    "maxY2": 0.0,
+                    "offsetX1": 0.02500000037252903,
+                    "offsetX2": 0.0,
+                    "offsetY1": 0.02500000037252903,
+                    "offsetY2": 0.0,
+                    "radius1": 0.0,
+                    "radius2": 0.0
+                },
+                {
                     "Component": "NameTag",
                     "NameTag": "Target"
                 },
@@ -1455,6 +1475,25 @@
                     "Rot": 0.0
                 },
                 {
+                    "Component": "Collider",
+                    "ColliderType1": 5,
+                    "ColliderType2": 0,
+                    "minX1": 1.9700000286102295,
+                    "minX2": 0.0,
+                    "minY1": 1.225000023841858,
+                    "minY2": 0.0,
+                    "maxX1": 0.0,
+                    "maxX2": 0.0,
+                    "maxY1": 0.0,
+                    "maxY2": 0.0,
+                    "offsetX1": 0.9700000286102295,
+                    "offsetX2": 0.0,
+                    "offsetY1": 0.6200000047683716,
+                    "offsetY2": 0.0,
+                    "radius1": 0.0,
+                    "radius2": 0.0
+                },
+                {
                     "Component": "NameTag",
                     "NameTag": "Environment"
                 },
@@ -1577,6 +1616,54 @@
                     "IsAnimated": false,
                     "MaxIndex": 0,
                     "LayeringOrder": 0
+                }
+            ]
+        },
+        {
+            "ID": 31,
+            "Components": [
+                {
+                    "Component": "Transform",
+                    "posX": -0.8450000286102295,
+                    "posY": 0.20000000298023224,
+                    "scaleX": 0.05000000074505806,
+                    "scaleY": 0.05000000074505806,
+                    "Rot": 0.0
+                },
+                {
+                    "Component": "Collider",
+                    "ColliderType1": 5,
+                    "ColliderType2": 0,
+                    "minX1": 0.05000000074505806,
+                    "minX2": 0.0,
+                    "minY1": 0.05000000074505806,
+                    "minY2": 0.0,
+                    "maxX1": 0.0,
+                    "maxX2": 0.0,
+                    "maxY1": 0.0,
+                    "maxY2": 0.0,
+                    "offsetX1": 0.02500000037252903,
+                    "offsetX2": 0.0,
+                    "offsetY1": 0.02500000037252903,
+                    "offsetY2": 0.0,
+                    "radius1": 0.0,
+                    "radius2": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "PainSpot"
+                },
+                {
+                    "Component": "Sprite",
+                    "TextureName": "UI/painSpot",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": false,
+                    "MaxIndex": 0,
+                    "LayeringOrder": 2
                 }
             ]
         }

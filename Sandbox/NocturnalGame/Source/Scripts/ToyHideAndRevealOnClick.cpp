@@ -1,4 +1,3 @@
-
 #include "pch.h"
 #include "Scripts/ToyHideAndRevealOnClick.h"
 #include "ECS/Components/AnimalAttributes.h"
@@ -8,9 +7,8 @@
 #include "ECS/Components/Collider.h"
 #include "GUI/GUI.h"
 #include "Math/Vmath.h"
-#include <ctime>
-#include <cstdlib>
-
+#include <algorithm>
+#include <cctype>
 
 namespace NocturnalEngine
 {
@@ -19,47 +17,37 @@ namespace NocturnalEngine
     {
     }
 
-
     void ToyHideAndRevealOnClick::Start()
     {
-        // --- AFTER THIS LINE: cache toy original scale ---
-        // (this script is attached to the Toy entity, so entityID is the toy)
-        if (!p_ecs.HaveComponent<Transform>(entityID)) return;
+        // This script is attached to the Toy entity.
+        if (!p_ecs.HaveComponent<Transform>(entityID))
+            return;
 
         auto& toyT = p_ecs.GetComponent<Transform>(entityID);
         mOriginalScale = toyT.GetScale();
 
-        // --- AFTER THIS LINE: cache collider & disable later ---
+        // Cache original collider so we can disable while hidden and restore on reveal.
         if (p_ecs.HaveComponent<Collider>(entityID))
         {
             mHadCollider = true;
             mOriginalCollider = p_ecs.GetComponent<Collider>(entityID);
         }
 
-        // --- AFTER THIS LINE: find BG & pick hidden spot ---
         FindBG();
-        if (!mHasBG) return;
+        if (!mHasBG)
+            return;
 
+        // Pick one random hidden position bounded by Environment collider.
         mHiddenPos = RandomPointInsideBG();
 
-        static bool sSeeded = false;
-        if (!sSeeded)
-        {
-            sSeeded = true;
-            // seed with time so every run is different
-            srand(static_cast<unsigned>(time(nullptr)));
-        }
-
-
-        // --- AFTER THIS LINE: hide toy (scale 0) and move it to hidden pos ---
+        // Hide toy and move it to its hidden position.
         toyT.SetPos(mHiddenPos.x, mHiddenPos.y);
         toyT.SetScale(0.0f, 0.0f);
 
-        // --- AFTER THIS LINE: disable collider so invisible toy can’t be dragged/clicked ---
+        // Disable collider so hidden toy cannot be interacted with.
         if (mHadCollider)
         {
             auto& c = p_ecs.GetComponent<Collider>(entityID);
-            // zero out both slots
             for (int i = 0; i < 2; ++i)
             {
                 c[i].mRadius = 0.0f;
@@ -74,42 +62,32 @@ namespace NocturnalEngine
     void ToyHideAndRevealOnClick::Update(float dt)
     {
         UNREFERENCED_PARAMETER(dt);
-        if (!mHasBG) return;
-        if (!mHidden) return;
+        if (!mHasBG || !mHidden)
+            return;
 
-        // --- AFTER THIS LINE: click to reveal ---
-        if (mInput->MousePressed(GLFW_MOUSE_BUTTON_LEFT))
+        if (mInput->MousePressed(GLFW_MOUSE_BUTTON_LEFT) && IsMouseNearHiddenSpot())
         {
-            if (IsMouseNearHiddenSpot())
-            {
-                // reveal toy
-                auto& toyT = p_ecs.GetComponent<Transform>(entityID);
-                toyT.SetPos(mHiddenPos.x, mHiddenPos.y);
-                toyT.SetScale(mOriginalScale.x, mOriginalScale.y);
+            // Reveal toy at the hidden position.
+            auto& toyT = p_ecs.GetComponent<Transform>(entityID);
+            toyT.SetPos(mHiddenPos.x, mHiddenPos.y);
+            toyT.SetScale(mOriginalScale.x, mOriginalScale.y);
 
-                // restore collider
-                if (mHadCollider)
-                {
-                    p_ecs.GetComponent<Collider>(entityID) = mOriginalCollider;
-                }
+            if (mHadCollider)
+                p_ecs.GetComponent<Collider>(entityID) = mOriginalCollider;
 
-                mHidden = false; // stays visible forever after first find
-            }
+            mHidden = false;
         }
     }
 
     void ToyHideAndRevealOnClick::End()
     {
-        // optional: restore on scene unload
         if (p_ecs.HaveComponent<Transform>(entityID))
         {
             auto& toyT = p_ecs.GetComponent<Transform>(entityID);
             toyT.SetScale(mOriginalScale.x, mOriginalScale.y);
         }
         if (mHadCollider && p_ecs.HaveComponent<Collider>(entityID))
-        {
             p_ecs.GetComponent<Collider>(entityID) = mOriginalCollider;
-        }
     }
 
     void ToyHideAndRevealOnClick::FindBG()
@@ -117,50 +95,120 @@ namespace NocturnalEngine
         mBG = 0;
         mHasBG = false;
 
-        // change "BG" to whatever NameTag you use for your background entity
+        // Use explicit Environment object bounds (requires Transform + Collider).
         for (Entity e : p_ecs.GetAliveEntitiesSet())
         {
-            if (!p_ecs.HaveComponent<NameTag>(e) || !p_ecs.HaveComponent<Transform>(e))
+            if (!p_ecs.HaveComponent<NameTag>(e) || !p_ecs.HaveComponent<Transform>(e) || !p_ecs.HaveComponent<Collider>(e))
                 continue;
 
             std::string tag = p_ecs.GetComponent<NameTag>(e).GetNameTag();
+            for (char& ch : tag)
+                ch = static_cast<char>(std::tolower(static_cast<unsigned char>(ch)));
 
-            // make lowercase
-            for (char& ch : tag) ch = (char)tolower((unsigned char)ch);
-
-            // match anything that contains "bg"
-            if (tag.find("bg") != std::string::npos)
+            if (tag.find("environment") != std::string::npos)
             {
                 mBG = e;
                 mHasBG = true;
                 return;
             }
-
         }
     }
 
-    vec2D ToyHideAndRevealOnClick::RandomPointInsideBG() const
+    vec2D ToyHideAndRevealOnClick::RandomPointInsideBG()
     {
         auto& bgT = p_ecs.GetComponent<Transform>(mBG);
+        auto& bgCol = p_ecs.GetComponent<Collider>(mBG)[0];
+        const vec2D toyHalf = GetToyHalfExtents();
 
-        // assuming BG is a rectangle in screen space
+        // Start with transform bounds as fallback.
         vec2D minP = bgT.GetMinPos();
         vec2D maxP = bgT.GetMaxPos();
 
-        // keep it away from edges a bit
-        float pad = 40.0f;
-        minP.x += pad; minP.y += pad;
-        maxP.x -= pad; maxP.y -= pad;
+        // Prefer collider bounds for environment area.
+        if (bgCol.mCol == Collider::ColliderType::rect || bgCol.mCol == Collider::ColliderType::box)
+        {
+            const vec2D center{ bgT.GetPos().x + bgCol.mOffset.x, bgT.GetPos().y + bgCol.mOffset.y };
+            minP = { center.x - bgCol.mMin.x, center.y - bgCol.mMin.y };
+            maxP = { center.x + bgCol.mMax.x, center.y + bgCol.mMax.y };
+        }
+        else if (bgCol.mCol == Collider::ColliderType::circle ||
+                 bgCol.mCol == Collider::ColliderType::bubble ||
+                 bgCol.mCol == Collider::ColliderType::bossball)
+        {
+            const vec2D center{ bgT.GetPos().x + bgCol.mOffset.x, bgT.GetPos().y + bgCol.mOffset.y };
+            minP = { center.x - bgCol.mRadius, center.y - bgCol.mRadius };
+            maxP = { center.x + bgCol.mRadius, center.y + bgCol.mRadius };
+        }
 
-        // if padding makes the range invalid, remove padding
-        if (maxP.x <= minP.x) { minP.x -= pad; maxP.x += pad; }
-        if (maxP.y <= minP.y) { minP.y -= pad; maxP.y += pad; }
+        // Shrink by toy half-size so full toy stays inside bounds.
+        minP.x += toyHalf.x;
+        minP.y += toyHalf.y;
+        maxP.x -= toyHalf.x;
+        maxP.y -= toyHalf.y;
 
+        if (maxP.x <= minP.x)
+        {
+            const float mid = (minP.x + maxP.x) * 0.5f;
+            minP.x = maxP.x = mid;
+        }
+        if (maxP.y <= minP.y)
+        {
+            const float mid = (minP.y + maxP.y) * 0.5f;
+            minP.y = maxP.y = mid;
+        }
 
-        float rx = minP.x + (float)(rand()) / (float)RAND_MAX * (maxP.x - minP.x);
-        float ry = minP.y + (float)(rand()) / (float)RAND_MAX * (maxP.y - minP.y);
+        std::uniform_real_distribution<float> distX(minP.x, maxP.x);
+        std::uniform_real_distribution<float> distY(minP.y, maxP.y);
+        vec2D candidate{ distX(mRng), distY(mRng) };
 
-        return { rx, ry };
+        // For circular environment collider, reject candidates outside allowed circle.
+        if (bgCol.mCol == Collider::ColliderType::circle ||
+            bgCol.mCol == Collider::ColliderType::bubble ||
+            bgCol.mCol == Collider::ColliderType::bossball)
+        {
+            const vec2D center{ bgT.GetPos().x + bgCol.mOffset.x, bgT.GetPos().y + bgCol.mOffset.y };
+            const float toyRadius = std::max(toyHalf.x, toyHalf.y);
+            const float allowedRadius = std::max(0.0f, bgCol.mRadius - toyRadius);
+
+            for (int i = 0; i < 12; ++i)
+            {
+                if (distance(candidate, center) <= allowedRadius)
+                    return candidate;
+                candidate = { distX(mRng), distY(mRng) };
+            }
+            return center;
+        }
+
+        return candidate;
+    }
+
+    vec2D ToyHideAndRevealOnClick::GetToyHalfExtents()
+    {
+        // Prefer collider dimensions when available.
+        if (mHadCollider)
+        {
+            const auto& c = mOriginalCollider[0];
+
+            if (c.mCol == Collider::ColliderType::circle ||
+                c.mCol == Collider::ColliderType::bubble ||
+                c.mCol == Collider::ColliderType::bossball)
+            {
+                const float r = std::max(c.mRadius, 0.001f);
+                return { r, r };
+            }
+
+            if (c.mCol == Collider::ColliderType::rect || c.mCol == Collider::ColliderType::box)
+            {
+                const float hx = std::max(std::max(std::abs(c.mMin.x), std::abs(c.mMax.x)), 0.001f);
+                const float hy = std::max(std::max(std::abs(c.mMin.y), std::abs(c.mMax.y)), 0.001f);
+                return { hx, hy };
+            }
+        }
+
+        // Fallback to transform scale.
+        const float hx = std::max(std::abs(mOriginalScale.x) * 0.5f, 0.001f);
+        const float hy = std::max(std::abs(mOriginalScale.y) * 0.5f, 0.001f);
+        return { hx, hy };
     }
 
     bool ToyHideAndRevealOnClick::IsMouseNearHiddenSpot() const
