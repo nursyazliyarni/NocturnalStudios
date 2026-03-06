@@ -44,15 +44,19 @@
                     "MaxIndex": 0,
                     "LayeringOrder": 0,
                     "StateManagerEnabled": false,
-                    "StateIdleTexture": "",
-                    "StateHungryTexture": "",
-                    "StateSickTexture": "",
-                    "StateAngryTexture": "",
-                    "StateHungryThreshold": 0.5,
-                    "StateSickThreshold": 0.5,
-                    "StateAngryThreshold": 0.5,
                     "StatePreviewInEditor": false,
-                    "StatePreviewMode": 0
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
                 },
                 {
                     "Component": "Audio",
@@ -133,28 +137,61 @@
                 },
                 {
                     "Component": "Sprite",
-                    "TextureName": "Characters/flamingo_idle",
-                    "Index_X": 0,
+                    "TextureName": "Characters/flamingo_angry",
+                    "Index_X": 1,
                     "Index_Y": 0,
                     "Ucoordinates": 528.0,
                     "Vcoordinates": 528.0,
                     "IsSpriteSheet": true,
                     "IsAnimated": true,
-                    "MaxIndex": 3,
+                    "MaxIndex": 5,
                     "DisplayTime 0": 1.2999999523162842,
                     "DisplayTime 1": 1.2999999523162842,
                     "DisplayTime 2": 1.2999999523162842,
+                    "DisplayTime 3": 1.2999999523162842,
+                    "DisplayTime 4": 1.2999999523162842,
                     "LayeringOrder": 1,
                     "StateManagerEnabled": true,
-                    "StateIdleTexture": "Characters/flamingo_idle",
-                    "StateHungryTexture": "Characters/flamingo_hungry",
-                    "StateSickTexture": "Characters/flamingo_sick",
-                    "StateAngryTexture": "Characters/flamingo_angry",
-                    "StateHungryThreshold": 0.800000011920929,
-                    "StateSickThreshold": 0.8999999761581421,
-                    "StateAngryThreshold": 0.7400000095367432,
                     "StatePreviewInEditor": false,
-                    "StatePreviewMode": 0
+                    "StatePreviewMode": 4,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "Characters/flamingo_idle",
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        },
+                        {
+                            "Name": "Hungry",
+                            "Texture": "Characters/flamingo_hungry",
+                            "Source": 0,
+                            "Compare": 0,
+                            "Threshold": 0.800000011920929,
+                            "Priority": 10,
+                            "Enabled": true
+                        },
+                        {
+                            "Name": "Sick",
+                            "Texture": "Characters/flamingo_sick",
+                            "Source": 1,
+                            "Compare": 0,
+                            "Threshold": 0.8999999761581421,
+                            "Priority": 20,
+                            "Enabled": true
+                        },
+                        {
+                            "Name": "Angry",
+                            "Texture": "Characters/flamingo_angry",
+                            "Source": 2,
+                            "Compare": 0,
+                            "Threshold": 0.7400000095367432,
+                            "Priority": 30,
+                            "Enabled": true
+                        }
+                    ]
                 },
                 {
                     "Component": "Logic",
@@ -228,15 +265,19 @@
                     "MaxIndex": 0,
                     "LayeringOrder": 2,
                     "StateManagerEnabled": false,
-                    "StateIdleTexture": "",
-                    "StateHungryTexture": "",
-                    "StateSickTexture": "",
-                    "StateAngryTexture": "",
-                    "StateHungryThreshold": 0.5,
-                    "StateSickThreshold": 0.5,
-                    "StateAngryThreshold": 0.5,
                     "StatePreviewInEditor": false,
-                    "StatePreviewMode": 0
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
                 },
                 {
                     "Component": "Logic",
@@ -297,15 +338,19 @@
                     "MaxIndex": 0,
                     "LayeringOrder": 2,
                     "StateManagerEnabled": false,
-                    "StateIdleTexture": "",
-                    "StateHungryTexture": "",
-                    "StateSickTexture": "",
-                    "StateAngryTexture": "",
-                    "StateHungryThreshold": 0.5,
-                    "StateSickThreshold": 0.5,
-                    "StateAngryThreshold": 0.5,
                     "StatePreviewInEditor": false,
-                    "StatePreviewMode": 0
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
                 },
                 {
                     "Component": "Logic",
@@ -366,15 +411,19 @@
                     "MaxIndex": 0,
                     "LayeringOrder": 2,
                     "StateManagerEnabled": false,
-                    "StateIdleTexture": "",
-                    "StateHungryTexture": "",
-                    "StateSickTexture": "",
-                    "StateAngryTexture": "",
-                    "StateHungryThreshold": 0.5,
-                    "StateSickThreshold": 0.5,
-                    "StateAngryThreshold": 0.5,
                     "StatePreviewInEditor": false,
-                    "StatePreviewMode": 0
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
                 },
                 {
                     "Component": "Logic",
@@ -441,15 +490,19 @@
                     "MaxIndex": 0,
                     "LayeringOrder": 4,
                     "StateManagerEnabled": false,
-                    "StateIdleTexture": "",
-                    "StateHungryTexture": "",
-                    "StateSickTexture": "",
-                    "StateAngryTexture": "",
-                    "StateHungryThreshold": 0.5,
-                    "StateSickThreshold": 0.5,
-                    "StateAngryThreshold": 0.5,
                     "StatePreviewInEditor": false,
-                    "StatePreviewMode": 0
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
                 },
                 {
                     "Component": "Audio",
@@ -581,15 +634,19 @@
                     "MaxIndex": 0,
                     "LayeringOrder": 4,
                     "StateManagerEnabled": false,
-                    "StateIdleTexture": "",
-                    "StateHungryTexture": "",
-                    "StateSickTexture": "",
-                    "StateAngryTexture": "",
-                    "StateHungryThreshold": 0.5,
-                    "StateSickThreshold": 0.5,
-                    "StateAngryThreshold": 0.5,
                     "StatePreviewInEditor": false,
-                    "StatePreviewMode": 0
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
                 },
                 {
                     "Component": "Audio",
@@ -721,15 +778,19 @@
                     "MaxIndex": 0,
                     "LayeringOrder": 4,
                     "StateManagerEnabled": false,
-                    "StateIdleTexture": "",
-                    "StateHungryTexture": "",
-                    "StateSickTexture": "",
-                    "StateAngryTexture": "",
-                    "StateHungryThreshold": 0.5,
-                    "StateSickThreshold": 0.5,
-                    "StateAngryThreshold": 0.5,
                     "StatePreviewInEditor": false,
-                    "StatePreviewMode": 0
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
                 },
                 {
                     "Component": "Audio",
@@ -860,15 +921,19 @@
                     "MaxIndex": 0,
                     "LayeringOrder": 4,
                     "StateManagerEnabled": false,
-                    "StateIdleTexture": "",
-                    "StateHungryTexture": "",
-                    "StateSickTexture": "",
-                    "StateAngryTexture": "",
-                    "StateHungryThreshold": 0.5,
-                    "StateSickThreshold": 0.5,
-                    "StateAngryThreshold": 0.5,
                     "StatePreviewInEditor": false,
-                    "StatePreviewMode": 0
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
                 },
                 {
                     "Component": "Audio",
@@ -960,15 +1025,19 @@
                     "MaxIndex": 0,
                     "LayeringOrder": 1,
                     "StateManagerEnabled": false,
-                    "StateIdleTexture": "",
-                    "StateHungryTexture": "",
-                    "StateSickTexture": "",
-                    "StateAngryTexture": "",
-                    "StateHungryThreshold": 0.5,
-                    "StateSickThreshold": 0.5,
-                    "StateAngryThreshold": 0.5,
                     "StatePreviewInEditor": false,
-                    "StatePreviewMode": 0
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
                 }
             ]
         },
@@ -999,15 +1068,19 @@
                     "MaxIndex": 0,
                     "LayeringOrder": 3,
                     "StateManagerEnabled": false,
-                    "StateIdleTexture": "",
-                    "StateHungryTexture": "",
-                    "StateSickTexture": "",
-                    "StateAngryTexture": "",
-                    "StateHungryThreshold": 0.5,
-                    "StateSickThreshold": 0.5,
-                    "StateAngryThreshold": 0.5,
                     "StatePreviewInEditor": false,
-                    "StatePreviewMode": 0
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
                 }
             ]
         },
@@ -1038,15 +1111,19 @@
                     "MaxIndex": 0,
                     "LayeringOrder": 3,
                     "StateManagerEnabled": false,
-                    "StateIdleTexture": "",
-                    "StateHungryTexture": "",
-                    "StateSickTexture": "",
-                    "StateAngryTexture": "",
-                    "StateHungryThreshold": 0.5,
-                    "StateSickThreshold": 0.5,
-                    "StateAngryThreshold": 0.5,
                     "StatePreviewInEditor": false,
-                    "StatePreviewMode": 0
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
                 }
             ]
         },
@@ -1077,15 +1154,19 @@
                     "MaxIndex": 0,
                     "LayeringOrder": 3,
                     "StateManagerEnabled": false,
-                    "StateIdleTexture": "",
-                    "StateHungryTexture": "",
-                    "StateSickTexture": "",
-                    "StateAngryTexture": "",
-                    "StateHungryThreshold": 0.5,
-                    "StateSickThreshold": 0.5,
-                    "StateAngryThreshold": 0.5,
                     "StatePreviewInEditor": false,
-                    "StatePreviewMode": 0
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
                 }
             ]
         },
@@ -1116,15 +1197,19 @@
                     "MaxIndex": 0,
                     "LayeringOrder": 2,
                     "StateManagerEnabled": false,
-                    "StateIdleTexture": "",
-                    "StateHungryTexture": "",
-                    "StateSickTexture": "",
-                    "StateAngryTexture": "",
-                    "StateHungryThreshold": 0.5,
-                    "StateSickThreshold": 0.5,
-                    "StateAngryThreshold": 0.5,
                     "StatePreviewInEditor": false,
-                    "StatePreviewMode": 0
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
                 },
                 {
                     "Component": "Logic",
@@ -1166,15 +1251,19 @@
                     "MaxIndex": 0,
                     "LayeringOrder": 2,
                     "StateManagerEnabled": false,
-                    "StateIdleTexture": "",
-                    "StateHungryTexture": "",
-                    "StateSickTexture": "",
-                    "StateAngryTexture": "",
-                    "StateHungryThreshold": 0.5,
-                    "StateSickThreshold": 0.5,
-                    "StateAngryThreshold": 0.5,
                     "StatePreviewInEditor": false,
-                    "StatePreviewMode": 0
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
                 },
                 {
                     "Component": "Logic",
@@ -1216,15 +1305,19 @@
                     "MaxIndex": 0,
                     "LayeringOrder": 2,
                     "StateManagerEnabled": false,
-                    "StateIdleTexture": "",
-                    "StateHungryTexture": "",
-                    "StateSickTexture": "",
-                    "StateAngryTexture": "",
-                    "StateHungryThreshold": 0.5,
-                    "StateSickThreshold": 0.5,
-                    "StateAngryThreshold": 0.5,
                     "StatePreviewInEditor": false,
-                    "StatePreviewMode": 0
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
                 },
                 {
                     "Component": "Logic",
@@ -1403,15 +1496,19 @@
                     "MaxIndex": 0,
                     "LayeringOrder": 4,
                     "StateManagerEnabled": false,
-                    "StateIdleTexture": "",
-                    "StateHungryTexture": "",
-                    "StateSickTexture": "",
-                    "StateAngryTexture": "",
-                    "StateHungryThreshold": 0.5,
-                    "StateSickThreshold": 0.5,
-                    "StateAngryThreshold": 0.5,
                     "StatePreviewInEditor": false,
-                    "StatePreviewMode": 0
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
                 }
             ]
         },
@@ -1442,15 +1539,19 @@
                     "MaxIndex": 0,
                     "LayeringOrder": 2,
                     "StateManagerEnabled": false,
-                    "StateIdleTexture": "",
-                    "StateHungryTexture": "",
-                    "StateSickTexture": "",
-                    "StateAngryTexture": "",
-                    "StateHungryThreshold": 0.5,
-                    "StateSickThreshold": 0.5,
-                    "StateAngryThreshold": 0.5,
                     "StatePreviewInEditor": false,
-                    "StatePreviewMode": 0
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
                 },
                 {
                     "Component": "Logic",
@@ -1502,15 +1603,19 @@
                     "MaxIndex": 0,
                     "LayeringOrder": 1,
                     "StateManagerEnabled": false,
-                    "StateIdleTexture": "",
-                    "StateHungryTexture": "",
-                    "StateSickTexture": "",
-                    "StateAngryTexture": "",
-                    "StateHungryThreshold": 0.5,
-                    "StateSickThreshold": 0.5,
-                    "StateAngryThreshold": 0.5,
                     "StatePreviewInEditor": false,
-                    "StatePreviewMode": 0
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
                 }
             ]
         },
@@ -1541,15 +1646,19 @@
                     "MaxIndex": 0,
                     "LayeringOrder": 1,
                     "StateManagerEnabled": false,
-                    "StateIdleTexture": "",
-                    "StateHungryTexture": "",
-                    "StateSickTexture": "",
-                    "StateAngryTexture": "",
-                    "StateHungryThreshold": 0.5,
-                    "StateSickThreshold": 0.5,
-                    "StateAngryThreshold": 0.5,
                     "StatePreviewInEditor": false,
-                    "StatePreviewMode": 0
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
                 }
             ]
         },
@@ -1580,15 +1689,19 @@
                     "MaxIndex": 0,
                     "LayeringOrder": 1,
                     "StateManagerEnabled": false,
-                    "StateIdleTexture": "",
-                    "StateHungryTexture": "",
-                    "StateSickTexture": "",
-                    "StateAngryTexture": "",
-                    "StateHungryThreshold": 0.5,
-                    "StateSickThreshold": 0.5,
-                    "StateAngryThreshold": 0.5,
                     "StatePreviewInEditor": false,
-                    "StatePreviewMode": 0
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
                 }
             ]
         },
@@ -1619,15 +1732,19 @@
                     "MaxIndex": 0,
                     "LayeringOrder": 3,
                     "StateManagerEnabled": false,
-                    "StateIdleTexture": "",
-                    "StateHungryTexture": "",
-                    "StateSickTexture": "",
-                    "StateAngryTexture": "",
-                    "StateHungryThreshold": 0.5,
-                    "StateSickThreshold": 0.5,
-                    "StateAngryThreshold": 0.5,
                     "StatePreviewInEditor": false,
-                    "StatePreviewMode": 0
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
                 }
             ]
         },
@@ -1658,15 +1775,19 @@
                     "MaxIndex": 0,
                     "LayeringOrder": 4,
                     "StateManagerEnabled": false,
-                    "StateIdleTexture": "",
-                    "StateHungryTexture": "",
-                    "StateSickTexture": "",
-                    "StateAngryTexture": "",
-                    "StateHungryThreshold": 0.5,
-                    "StateSickThreshold": 0.5,
-                    "StateAngryThreshold": 0.5,
                     "StatePreviewInEditor": false,
-                    "StatePreviewMode": 0
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
                 },
                 {
                     "Component": "Text",
@@ -1737,15 +1858,19 @@
                     "MaxIndex": 0,
                     "LayeringOrder": 0,
                     "StateManagerEnabled": false,
-                    "StateIdleTexture": "",
-                    "StateHungryTexture": "",
-                    "StateSickTexture": "",
-                    "StateAngryTexture": "",
-                    "StateHungryThreshold": 0.5,
-                    "StateSickThreshold": 0.5,
-                    "StateAngryThreshold": 0.5,
                     "StatePreviewInEditor": false,
-                    "StatePreviewMode": 0
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
                 }
             ]
         },
@@ -1776,15 +1901,19 @@
                     "MaxIndex": 0,
                     "LayeringOrder": 1,
                     "StateManagerEnabled": false,
-                    "StateIdleTexture": "",
-                    "StateHungryTexture": "",
-                    "StateSickTexture": "",
-                    "StateAngryTexture": "",
-                    "StateHungryThreshold": 0.5,
-                    "StateSickThreshold": 0.5,
-                    "StateAngryThreshold": 0.5,
                     "StatePreviewInEditor": false,
-                    "StatePreviewMode": 0
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
                 },
                 {
                     "Component": "Text",
@@ -1831,15 +1960,19 @@
                     "MaxIndex": 0,
                     "LayeringOrder": 1,
                     "StateManagerEnabled": false,
-                    "StateIdleTexture": "",
-                    "StateHungryTexture": "",
-                    "StateSickTexture": "",
-                    "StateAngryTexture": "",
-                    "StateHungryThreshold": 0.5,
-                    "StateSickThreshold": 0.5,
-                    "StateAngryThreshold": 0.5,
                     "StatePreviewInEditor": false,
-                    "StatePreviewMode": 0
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
                 }
             ]
         },
@@ -1875,15 +2008,19 @@
                     "MaxIndex": 0,
                     "LayeringOrder": 0,
                     "StateManagerEnabled": false,
-                    "StateIdleTexture": "",
-                    "StateHungryTexture": "",
-                    "StateSickTexture": "",
-                    "StateAngryTexture": "",
-                    "StateHungryThreshold": 0.5,
-                    "StateSickThreshold": 0.5,
-                    "StateAngryThreshold": 0.5,
                     "StatePreviewInEditor": false,
-                    "StatePreviewMode": 0
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
                 }
             ]
         },
@@ -1933,15 +2070,19 @@
                     "MaxIndex": 0,
                     "LayeringOrder": 2,
                     "StateManagerEnabled": false,
-                    "StateIdleTexture": "",
-                    "StateHungryTexture": "",
-                    "StateSickTexture": "",
-                    "StateAngryTexture": "",
-                    "StateHungryThreshold": 0.5,
-                    "StateSickThreshold": 0.5,
-                    "StateAngryThreshold": 0.5,
                     "StatePreviewInEditor": false,
-                    "StatePreviewMode": 0
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
                 }
             ]
         },
@@ -1991,15 +2132,19 @@
                     "MaxIndex": 0,
                     "LayeringOrder": 2,
                     "StateManagerEnabled": false,
-                    "StateIdleTexture": "",
-                    "StateHungryTexture": "",
-                    "StateSickTexture": "",
-                    "StateAngryTexture": "",
-                    "StateHungryThreshold": 0.5,
-                    "StateSickThreshold": 0.5,
-                    "StateAngryThreshold": 0.5,
                     "StatePreviewInEditor": false,
-                    "StatePreviewMode": 0
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
                 },
                 {
                     "Component": "Logic",

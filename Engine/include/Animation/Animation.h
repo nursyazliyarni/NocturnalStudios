@@ -25,6 +25,9 @@ namespace NocturnalEngine {
 	    static std::unordered_map<std::string, std::vector<float>> spriteContainer;// to store all animation info
 		Animation();
 		void UpdateAnimation(float deltatime, Sprite& sprite);
+		// Resolve the texture key from sprite state rules using normalized status ratios.
+		static std::string ResolveStateTexture(const Sprite& sprite,
+			double hungerRatio, double healthRatio, double sanityRatio, bool usePreviewMode);
 	private:
 	};
 }

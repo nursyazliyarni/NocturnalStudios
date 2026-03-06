@@ -8,6 +8,8 @@
     Primary Author:
          Nur Syazliyarni (100%)
         - Created logic script for keys
+        - Extended key logic for all animal scenes with stable scene-based key tracking.
+        - Added level-gated key interaction rules.
 
     All content (c) 2026 DigiPen Institute of Technology Singapore, all rights reserved.
 *------------------------------------------------------------------------------------------------*/

@@ -16,12 +16,31 @@
 #pragma once
 #include "IComponent.h"
 #include "glm/glm.hpp"
+#include <string>
+#include <vector>
 
 namespace NocturnalEngine {
 
 	class Sprite : public IComponent
 	{
 	public:
+		struct AnimationStateRule
+		{
+			// User-facing state label shown in editor preview dropdown.
+			std::string name{ "State" };
+			// Texture key from ResourceManager::textures.
+			std::string textureKey{};
+			// 0=Hunger, 1=Health, 2=Sanity, 3=Always.
+			int source{ 3 };
+			// 0=<= threshold, 1=>= threshold.
+			int compare{ 0 };
+			// Normalized threshold [0..1].
+			float threshold{ 0.5f };
+			// Higher number wins when multiple states match.
+			int priority{ 0 };
+			bool enabled{ true };
+		};
+
 		struct Coordinates
 		{
 			int x; int y;
@@ -66,16 +85,10 @@ namespace NocturnalEngine {
 		int LayerOrder; // layering order for rendering
 		// General animation state manager settings shown in Sprite component editor.
 		bool stateManagerEnabled{ false };
-		std::string stateIdleTexture{};
-		std::string stateHungryTexture{};
-		std::string stateSickTexture{};
-		std::string stateAngryTexture{};
-		float stateHungryThreshold{ 0.5f };
-		float stateSickThreshold{ 0.5f };
-		float stateAngryThreshold{ 0.5f };
 		bool statePreviewInEditor{ false };
-		// 0=Auto, 1=Idle, 2=Hungry, 3=Sick, 4=Angry
+		// 0=Auto, n>0 maps to stateRules[n-1].
 		int statePreviewMode{ 0 };
+		std::vector<AnimationStateRule> stateRules{};
 		//altas 
 	private:
 		std::string mTextureName;
