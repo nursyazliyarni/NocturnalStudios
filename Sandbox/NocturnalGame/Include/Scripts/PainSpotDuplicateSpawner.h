@@ -1,15 +1,15 @@
 /*!------------------------------------------------------------------------------------------------
     File: PainSpotDuplicateSpawner.h
-    Project: NocturnalStudio
+    Project: NocturnalStudios
 
     Brief:
         Spawns pain spots by duplicating a scene-authored pain spot template.
 
     Primary Author:
-         Nur Syazliyarni
+         Nur Syazliyarni (100%)
         - Created duplicate-based pain spot spawner script.
 
-    All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+    All content (c) 2026 DigiPen Institute of Technology Singapore, all rights reserved.
 *------------------------------------------------------------------------------------------------*/
 
 #pragma once

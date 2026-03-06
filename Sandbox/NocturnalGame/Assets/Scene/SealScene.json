@@ -151,7 +151,7 @@
                 {
                     "Component": "Sprite",
                     "TextureName": "Characters/sealSpritesheet",
-                    "Index_X": 2,
+                    "Index_X": 1,
                     "Index_Y": 0,
                     "Ucoordinates": 530.0,
                     "Vcoordinates": 254.5,
@@ -1661,6 +1661,77 @@
                     "IsAnimated": false,
                     "MaxIndex": 0,
                     "LayeringOrder": 2
+                }
+            ]
+        },
+        {
+            "ID": 32,
+            "Components": [
+                {
+                    "Component": "Transform",
+                    "posX": -0.2692306637763977,
+                    "posY": 0.0,
+                    "scaleX": 0.10000000149011612,
+                    "scaleY": 0.10000000149011612,
+                    "Rot": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "Key"
+                },
+                {
+                    "Component": "Sprite",
+                    "TextureName": "UI/key",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": false,
+                    "MaxIndex": 0,
+                    "LayeringOrder": 0
+                },
+                {
+                    "Component": "Logic",
+                    "ScriptCount": 0
+                }
+            ]
+        },
+        {
+            "ID": 33,
+            "Components": [
+                {
+                    "Component": "Transform",
+                    "posX": 0.07800000160932541,
+                    "posY": 0.7279999852180481,
+                    "scaleX": 1.0,
+                    "scaleY": 1.0,
+                    "Rot": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "KeysCollected"
+                },
+                {
+                    "Component": "Logic",
+                    "0": "TimerDisplay",
+                    "ScriptCount": 1
+                },
+                {
+                    "Component": "Text",
+                    "Content": "0/4",
+                    "Font": "ChauPhilomeneOne-Regular",
+                    "Size": 35.29999923706055,
+                    "ColorR": 0.8549019694328308,
+                    "ColorG": 0.1764705926179886,
+                    "ColorB": 0.05882352963089943,
+                    "ColorA": 1.0,
+                    "PosX": 0.0,
+                    "PosY": 0.0,
+                    "Rotation": 0.0,
+                    "Line Height": 0,
+                    "WorldSpace": true,
+                    "Center": false
                 }
             ]
         }
