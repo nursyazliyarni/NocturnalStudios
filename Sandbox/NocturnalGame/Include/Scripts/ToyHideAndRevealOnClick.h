@@ -3,6 +3,7 @@
 #include "Input/Input.h"
 #include "Math/Vmath.h"
 #include "Scripts/IScript.h"
+#include <random>
 
 
 namespace NocturnalEngine
@@ -33,7 +34,8 @@ namespace NocturnalEngine
         virtual Entity& GetScriptEntityID() override { return entityID; }
     private:
         void FindBG();
-        vec2D RandomPointInsideBG() const;
+        vec2D RandomPointInsideBG();
+        vec2D GetToyHalfExtents();
         bool IsMouseNearHiddenSpot() const;
 
     private:
@@ -49,6 +51,7 @@ namespace NocturnalEngine
         // Store original collider so we can disable it while hidden
         bool mHadCollider{ false };
         Collider mOriginalCollider{};
+        std::mt19937 mRng{ std::random_device{}() };
 
         float mRevealRadius{ 35.0f }; // tweak
     };

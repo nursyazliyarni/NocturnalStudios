@@ -839,8 +839,8 @@
             "Components": [
                 {
                     "Component": "Transform",
-                    "posX": 0.0733148455619812,
-                    "posY": -0.7060701847076416,
+                    "posX": -0.1430191695690155,
+                    "posY": -0.19778287410736084,
                     "scaleX": 0.30000001192092896,
                     "scaleY": 0.30000001192092896,
                     "Rot": 0.0
@@ -883,7 +883,8 @@
                 {
                     "Component": "Logic",
                     "0": "DragAndDrop",
-                    "ScriptCount": 1
+                    "1": "ToyHideAndRevealOnClick",
+                    "ScriptCount": 2
                 },
                 {
                     "Component": "ItemsAttributes",
@@ -1423,6 +1424,25 @@
                     "scaleX": 2.059999942779541,
                     "scaleY": 1.225000023841858,
                     "Rot": 0.0
+                },
+                {
+                    "Component": "Collider",
+                    "ColliderType1": 5,
+                    "ColliderType2": 0,
+                    "minX1": 1.9700000286102295,
+                    "minX2": 0.0,
+                    "minY1": 1.225000023841858,
+                    "minY2": 0.0,
+                    "maxX1": 0.0,
+                    "maxX2": 0.0,
+                    "maxY1": 0.0,
+                    "maxY2": 0.0,
+                    "offsetX1": 0.9700000286102295,
+                    "offsetX2": 0.0,
+                    "offsetY1": 0.6200000047683716,
+                    "offsetY2": 0.0,
+                    "radius1": 0.0,
+                    "radius2": 0.0
                 },
                 {
                     "Component": "NameTag",

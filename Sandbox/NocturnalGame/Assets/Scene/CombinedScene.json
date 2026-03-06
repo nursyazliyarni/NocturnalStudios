@@ -284,7 +284,8 @@
                 {
                     "Component": "Logic",
                     "0": "DragAndDrop",
-                    "ScriptCount": 1
+                    "1": "ToyHideAndRevealOnClick",
+                    "ScriptCount": 2
                 },
                 {
                     "Component": "HUDComponent",

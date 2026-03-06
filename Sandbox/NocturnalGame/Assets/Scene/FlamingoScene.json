@@ -124,7 +124,7 @@
                 {
                     "Component": "Sprite",
                     "TextureName": "Characters/flamingo_spritesheet",
-                    "Index_X": 0,
+                    "Index_X": 4,
                     "Index_Y": 0,
                     "Ucoordinates": 528.0,
                     "Vcoordinates": 528.0,
@@ -287,8 +287,8 @@
             "Components": [
                 {
                     "Component": "Transform",
-                    "posX": 0.02384057641029358,
-                    "posY": -0.6656290292739868,
+                    "posX": -0.1607748568058014,
+                    "posY": -0.13524222373962402,
                     "scaleX": 0.4000000059604645,
                     "scaleY": 0.4000000059604645,
                     "Rot": 0.0
@@ -331,7 +331,8 @@
                 {
                     "Component": "Logic",
                     "0": "DragAndDrop",
-                    "ScriptCount": 1
+                    "1": "ToyHideAndRevealOnClick",
+                    "ScriptCount": 2
                 },
                 {
                     "Component": "ItemsAttributes",
@@ -1472,6 +1473,25 @@
                     "scaleX": 2.059999942779541,
                     "scaleY": 1.225000023841858,
                     "Rot": 0.0
+                },
+                {
+                    "Component": "Collider",
+                    "ColliderType1": 5,
+                    "ColliderType2": 0,
+                    "minX1": 1.9700000286102295,
+                    "minX2": 0.0,
+                    "minY1": 1.225000023841858,
+                    "minY2": 0.0,
+                    "maxX1": 0.0,
+                    "maxX2": 0.0,
+                    "maxY1": 0.0,
+                    "maxY2": 0.0,
+                    "offsetX1": 0.9700000286102295,
+                    "offsetX2": 0.0,
+                    "offsetY1": 0.6200000047683716,
+                    "offsetY2": 0.0,
+                    "radius1": 0.0,
+                    "radius2": 0.0
                 },
                 {
                     "Component": "NameTag",
