@@ -857,7 +857,7 @@
                     "ColliderType2": 0,
                     "minX1": 0.14000000059604645,
                     "minX2": 0.0,
-                    "minY1": 0.08500000089406967,
+                    "minY1": 0.11699999868869781,
                     "minY2": 0.0,
                     "maxX1": 0.1599999964237213,
                     "maxX2": 0.0,
@@ -1676,6 +1676,25 @@
                     "Rot": 0.0
                 },
                 {
+                    "Component": "Collider",
+                    "ColliderType1": 5,
+                    "ColliderType2": 0,
+                    "minX1": 0.10000000149011612,
+                    "minX2": 0.0,
+                    "minY1": 0.10000000149011612,
+                    "minY2": 0.0,
+                    "maxX1": 0.0,
+                    "maxX2": 0.0,
+                    "maxY1": 0.0,
+                    "maxY2": 0.0,
+                    "offsetX1": 0.04500000178813934,
+                    "offsetX2": 0.0,
+                    "offsetY1": 0.04500000178813934,
+                    "offsetY2": 0.0,
+                    "radius1": 0.0,
+                    "radius2": 0.0
+                },
+                {
                     "Component": "NameTag",
                     "NameTag": "Key"
                 },
@@ -1689,7 +1708,7 @@
                     "IsSpriteSheet": false,
                     "IsAnimated": false,
                     "MaxIndex": 0,
-                    "LayeringOrder": 0
+                    "LayeringOrder": 2
                 },
                 {
                     "Component": "Logic",
@@ -1714,8 +1733,7 @@
                 },
                 {
                     "Component": "Logic",
-                    "0": "TimerDisplay",
-                    "ScriptCount": 1
+                    "ScriptCount": 0
                 },
                 {
                     "Component": "Text",
