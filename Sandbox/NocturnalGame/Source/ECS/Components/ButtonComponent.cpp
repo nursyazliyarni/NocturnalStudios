@@ -14,6 +14,7 @@
 
 #include "pch.h"
 #include "ECS/Components/ButtonComponent.h"
+#include "Graphics/Graphics.h"
 #include <imgui.h>
 
 namespace NocturnalEngine {
@@ -23,7 +24,140 @@ namespace NocturnalEngine {
     bool ButtonComponent::ToEditor() {
         bool changed = false;
         if (ImGui::CollapsingHeader("ButtonComponent", ImGuiTreeNodeFlags_None)) {
-        
+
+            const char* flagNames[]{
+                "GoToScene",        // 1 << 0
+                "AudioOnHover",     // 1 << 1
+                "AudioOnClick",     // 1 << 2
+                "TexChangeOnHover", // 1 << 3
+                "TexChangeOnClick", // 1 << 4
+                "ScaleOnHover",     // 1 << 5
+                "SetGameState",     // 1 << 6
+                "ResetStats",       // 1 << 7
+                "NextLevel",        // 1 << 8
+                "SetCameraZoom",    // 1 << 9
+                "MuteAudio",        // 1 << 10
+                "AltSceneSwitch",   // 1 << 11
+                "ExitGame"          // 1 << 12
+            };
+            ImGui::SeparatorText("Flags");
+            for (int i = 0; i < 13; i++) {
+                bool isSet = (flag & (1 << i)) != 0;
+                if (ImGui::Checkbox(flagNames[i], &isSet)) {
+                    if (isSet) flag |= (1 << i);
+                    else       flag &= ~(1 << i);
+                    changed = true;
+                }
+
+                if (isSet) {
+                    ImGui::Indent();
+                    switch (i) {
+                    case 0: // GoToScene
+                    {
+                        char buf[256]{};
+                        strncpy_s(buf, gotoScene.c_str(), sizeof(buf) - 1);
+                        if (ImGui::InputText("Scene Path##goto", buf, sizeof(buf))) {
+                            gotoScene = buf;
+                            changed = true;
+                        }
+                        break;
+                    }
+                    case 1: // AudioOnHover
+                        if (ImGui::Checkbox("Random##hoverAudio", &hoverAudioRandom))
+                            changed = true;
+                        break;
+                    case 2: // AudioOnClick
+                        if (ImGui::Checkbox("Random##clickAudio", &clickAudioRandom))
+                            changed = true;
+                        break;
+                    case 3: // TexChangeOnHover
+                    {
+
+                        if (ImGui::BeginCombo("##hovertex", hoverTexture.c_str()))
+                        {
+                            for (auto& [str, tex] : ResourceManager::textures)
+                            {
+                                if (ImGui::Selectable(str.c_str()))
+                                {
+                                    hoverTexture = str;
+                                    //NOCTURNAL_ENGINE_INFO("Loaded {0} Sprite", texturePath.c_str());
+                                    changed = true;
+                                }
+                            }
+                            ImGui::EndCombo();
+                        }
+
+                        if (ImGui::BeginDragDropTarget())
+                        {
+                            if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Textures"))
+                            {
+                                hoverTexture = *(const std::string*)payload->Data;
+                                changed = true;
+                            }
+                            ImGui::EndDragDropTarget();
+                        }
+                        break;
+                    }
+                    case 4: // TexChangeOnClick
+                    {
+                        if (ImGui::BeginCombo("##clicktex", clickTexture.c_str()))
+                        {
+                            for (auto& [str, tex] : ResourceManager::textures)
+                            {
+                                if (ImGui::Selectable(str.c_str()))
+                                {
+                                    clickTexture = str;
+                                    //NOCTURNAL_ENGINE_INFO("Loaded {0} Sprite", texturePath.c_str());
+                                    changed = true;
+                                }
+                            }
+                            ImGui::EndCombo();
+                        }
+
+                        if (ImGui::BeginDragDropTarget())
+                        {
+                            if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Textures"))
+                            {
+                                clickTexture = *(const std::string*)payload->Data;
+                                changed = true;
+                            }
+                            ImGui::EndDragDropTarget();
+                        }
+                        break;
+                    }
+                    case 5: // ScaleOnHover
+                        if (ImGui::DragFloat("Hover Scale##scale", &hoverScale, 0.01f, 0.1f, 10.0f))
+                            changed = true;
+                        break;
+                    case 6: // SetGameState
+                    {
+                        const char* stateOptions[] = { "STARTING", "PLAYING", "ENDING", "PAUSED" };
+                        int current = static_cast<int>(stateToSet);
+                        if (ImGui::Combo("Game State##state", &current, stateOptions, 4)) {
+                            stateToSet = static_cast<GameManState>(current);
+                            changed = true;
+                        }
+                        break;
+                    }
+                    case 9: // SetCameraZoom
+                        if (ImGui::DragFloat("Camera Zoom##zoom", &cameraZoom, 0.01f, 0.1f, 10.0f))
+                            changed = true;
+                        break;
+                    case 11: // AltSceneSwitch
+                    {
+                        char buf[256]{};
+                        strncpy_s(buf, altSceneSwitch.c_str(), sizeof(buf) - 1);
+                        if (ImGui::InputText("Alt Scene##alt", buf, sizeof(buf))) {
+                            altSceneSwitch = buf;
+                            changed = true;
+                        }
+                        break;
+                    }
+                    default: break;
+                    }
+                    ImGui::Unindent();
+                }
+            }
         }
         return changed;
     }
@@ -132,7 +266,6 @@ namespace NocturnalEngine {
     bool ButtonComponent::Serialize(rapidjson::PrettyWriter<rapidjson::StringBuffer>* writer) const
     {
     
-        writer->StartObject();
 
         // GoToScene
         writer->Key("GoToSceneFlag");       writer->Bool((flag & (1 << 0)) != 0);
@@ -185,8 +318,7 @@ namespace NocturnalEngine {
 
         // ExitGame
         writer->Key("ExitGameFlag");        writer->Bool((flag & (1 << 12)) != 0);
-
-        writer->EndObject();
+;
         return true;
     }
 }
