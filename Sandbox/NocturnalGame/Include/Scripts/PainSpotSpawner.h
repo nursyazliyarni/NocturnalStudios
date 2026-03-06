@@ -15,6 +15,9 @@
 #pragma once
 #include "Scripts/IScript.h"
 #include "ECS/Components/AnimalAttributes.h"
+#include "ECS/Components/Collider.h"
+#include "ECS/Components/Sprite.h"
+#include "ECS/Components/Transform.h"
 
 namespace NocturnalEngine
 {
@@ -47,6 +50,11 @@ namespace NocturnalEngine
         std::array<double, 4> mThresholds;
 
         std::mt19937 mRng;
+        bool mHasSpotTemplate{ false };
+        bool mTemplateHasCollider{ false };
+        Transform mSpotTemplateTransform{};
+        Sprite mSpotTemplateSprite{};
+        Collider mSpotTemplateCollider{};
 
         // Creates one pain spot entity and stores its offset from the animal.
         void SpawnSpot();

@@ -124,7 +124,7 @@
                 {
                     "Component": "Sprite",
                     "TextureName": "Characters/flamingo_spritesheet",
-                    "Index_X": 4,
+                    "Index_X": 0,
                     "Index_Y": 0,
                     "Ucoordinates": 528.0,
                     "Vcoordinates": 528.0,
@@ -141,7 +141,7 @@
                 {
                     "Component": "Logic",
                     "0": "AnimalLogic",
-                    "1": "PainSpotSpawner",
+                    "1": "PainSpotDuplicateSpawner",
                     "ScriptCount": 2
                 },
                 {
@@ -1210,6 +1210,25 @@
                     "Rot": 0.0
                 },
                 {
+                    "Component": "Collider",
+                    "ColliderType1": 5,
+                    "ColliderType2": 0,
+                    "minX1": 0.05000000074505806,
+                    "minX2": 0.0,
+                    "minY1": 0.05000000074505806,
+                    "minY2": 0.0,
+                    "maxX1": 0.0,
+                    "maxX2": 0.0,
+                    "maxY1": 0.0,
+                    "maxY2": 0.0,
+                    "offsetX1": 0.02500000037252903,
+                    "offsetX2": 0.0,
+                    "offsetY1": 0.02500000037252903,
+                    "offsetY2": 0.0,
+                    "radius1": 0.0,
+                    "radius2": 0.0
+                },
+                {
                     "Component": "NameTag",
                     "NameTag": "Target"
                 },
@@ -1577,6 +1596,54 @@
                     "IsAnimated": false,
                     "MaxIndex": 0,
                     "LayeringOrder": 0
+                }
+            ]
+        },
+        {
+            "ID": 31,
+            "Components": [
+                {
+                    "Component": "Transform",
+                    "posX": -0.8450000286102295,
+                    "posY": 0.20000000298023224,
+                    "scaleX": 0.05000000074505806,
+                    "scaleY": 0.05000000074505806,
+                    "Rot": 0.0
+                },
+                {
+                    "Component": "Collider",
+                    "ColliderType1": 5,
+                    "ColliderType2": 0,
+                    "minX1": 0.05000000074505806,
+                    "minX2": 0.0,
+                    "minY1": 0.05000000074505806,
+                    "minY2": 0.0,
+                    "maxX1": 0.0,
+                    "maxX2": 0.0,
+                    "maxY1": 0.0,
+                    "maxY2": 0.0,
+                    "offsetX1": 0.02500000037252903,
+                    "offsetX2": 0.0,
+                    "offsetY1": 0.02500000037252903,
+                    "offsetY2": 0.0,
+                    "radius1": 0.0,
+                    "radius2": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "PainSpot"
+                },
+                {
+                    "Component": "Sprite",
+                    "TextureName": "UI/painSpot",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": false,
+                    "MaxIndex": 0,
+                    "LayeringOrder": 2
                 }
             ]
         }
