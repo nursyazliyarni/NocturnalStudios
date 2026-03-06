@@ -23,6 +23,8 @@
 #include "Scripts/GlobalGameManager.h"
 #include "ECS/Components/AnimalAttributes.h"
 #include "Math/Random.h"
+#include "ResourceManager/ResourceManager.h"
+#include "LevelEditor/LevelEditor.h"
 
 
 namespace NocturnalEngine {
@@ -48,7 +50,13 @@ namespace NocturnalEngine {
 			//fetch checkperiod
 			checkPeriod = p_GameManager.GetCheckPeriod();
 
-			if (p_ecs.HaveComponent<Sprite>(entityID)&&nameT.GetNameTag() == "Flamingo")ogSpritename = p_ecs.GetComponent<Sprite>(entityID).GetTexture();
+			if (p_ecs.HaveComponent<Sprite>(entityID))
+			{
+				auto& sprite = p_ecs.GetComponent<Sprite>(entityID);
+				ogSpritename = sprite.GetTexture();
+				if (sprite.stateManagerEnabled && !sprite.stateIdleTexture.empty())
+					ogSpritename = sprite.stateIdleTexture;
+			}
 		}
 	}
 
@@ -107,6 +115,7 @@ namespace NocturnalEngine {
 				p_GameManager.AddDeath();
 			}
 			LogLowHealth(aA);
+			ChangeAnim(aA);
 		}
 		else if (aA.isEscaped&&!spriteDeactivated) {
 			p_ecs.GetComponent<Sprite>(entityID).SetTexture("Characters/Blank");
@@ -138,14 +147,100 @@ namespace NocturnalEngine {
 	}
 
 	void AnimalLogic::ChangeAnim(AnimalAttributes& aA) {
-		UNREFERENCED_PARAMETER(aA);
-		if (ogSpritename.empty())return;
+		if (ogSpritename.empty() || !p_ecs.HaveComponent<Sprite>(entityID))
+			return;
+		if (aA.isEscaped || !aA.is_alive)
+			return;
 
-		Sprite::Coordinates ind = p_ecs.GetComponent<Sprite>(entityID).GetIndex();
-		if (!ogSpritename.empty())p_ecs.GetComponent<Sprite>(entityID).SetTexture(ogSpritename + "_hungry");
-		//p_GameManager.AddLogEntry("WARNING! " + animalName + "'s Hunger is below 50%!");
-		p_ecs.GetComponent<Sprite>(entityID).SetIndex(ind.x, ind.y);
-		p_ecs.GetComponent<Sprite>(entityID).internaltimer = 0.f;
+		auto& sprite = p_ecs.GetComponent<Sprite>(entityID);
+		if (!sprite.stateManagerEnabled)
+			return;
+		std::string stateName = "idle";
+		const std::string idleTex = sprite.stateIdleTexture.empty() ? ogSpritename : sprite.stateIdleTexture;
+		const std::string hungryTex = sprite.stateHungryTexture.empty() ? (ogSpritename + "_hungry") : sprite.stateHungryTexture;
+		const std::string sickTex = sprite.stateSickTexture.empty() ? (ogSpritename + "_sick") : sprite.stateSickTexture;
+		const std::string angryTex = sprite.stateAngryTexture.empty() ? (ogSpritename + "_angry") : sprite.stateAngryTexture;
+		std::string desiredTexture = idleTex;
+
+		const double hungerRatio = aA.maxHunger > 0.0 ? (aA.current_hunger / aA.maxHunger) : 1.0;
+		const double healthRatio = aA.maxHealth > 0.0 ? (aA.current_health / aA.maxHealth) : 1.0;
+		const double sanityRatio = aA.maxSanity > 0.0 ? (aA.current_sanity / aA.maxSanity) : 1.0;
+		const double hungryThreshold = glm::clamp(static_cast<double>(sprite.stateHungryThreshold), 0.0, 1.0);
+		const double sickThreshold = glm::clamp(static_cast<double>(sprite.stateSickThreshold), 0.0, 1.0);
+		const double angryThreshold = glm::clamp(static_cast<double>(sprite.stateAngryThreshold), 0.0, 1.0);
+
+		const bool editorPreview = (p_Editor != nullptr) && p_Editor->is_ShowWindow && sprite.statePreviewInEditor && sprite.statePreviewMode > 0;
+		if (editorPreview)
+		{
+			switch (sprite.statePreviewMode)
+			{
+			case 1: stateName = "idle"; break;
+			case 2: stateName = "hungry"; break;
+			case 3: stateName = "sick"; break;
+			case 4: stateName = "angry"; break;
+			default: stateName = "idle"; break;
+			}
+		}
+		else
+		{
+			const double angryScore = sanityRatio <= angryThreshold ? sanityRatio : 2.0;
+			const double sickScore = healthRatio <= sickThreshold ? healthRatio : 2.0;
+			const double hungryScore = hungerRatio <= hungryThreshold ? hungerRatio : 2.0;
+
+			if (angryScore <= sickScore && angryScore <= hungryScore && angryScore <= 1.0)
+			{
+				stateName = "angry";
+			}
+			else if (sickScore <= hungryScore && sickScore <= 1.0)
+			{
+				stateName = "sick";
+			}
+			else if (hungryScore <= 1.0)
+			{
+				stateName = "hungry";
+			}
+		}
+
+		if (stateName == "hungry") desiredTexture = hungryTex;
+		else if (stateName == "sick") desiredTexture = sickTex;
+		else if (stateName == "angry") desiredTexture = angryTex;
+
+		// Guard against invalid texture keys causing null texture dereference in Animation.
+		if (!ResourceManager::GetTexture(desiredTexture))
+		{
+			if (stateName == "hungry")
+			{
+				if (ResourceManager::GetTexture("Characters/flamingo_hungry")) desiredTexture = "Characters/flamingo_hungry";
+				else if (ResourceManager::GetTexture("Characters/flamingo_spritesheet_hungry")) desiredTexture = "Characters/flamingo_spritesheet_hungry";
+				else desiredTexture = idleTex;
+			}
+			else if (stateName == "sick")
+			{
+				if (ResourceManager::GetTexture("Characters/flamingo_sick")) desiredTexture = "Characters/flamingo_sick";
+				else if (ResourceManager::GetTexture("Characters/flamingo_spritesheet_sick")) desiredTexture = "Characters/flamingo_spritesheet_sick";
+				else desiredTexture = idleTex;
+			}
+			else if (stateName == "angry")
+			{
+				if (ResourceManager::GetTexture("Characters/flamingo_angry")) desiredTexture = "Characters/flamingo_angry";
+				else if (ResourceManager::GetTexture("Characters/flamingo_spritesheet_crazy")) desiredTexture = "Characters/flamingo_spritesheet_crazy";
+				else desiredTexture = idleTex;
+			}
+			else
+			{
+				if (ResourceManager::GetTexture("Characters/flamingo_idle")) desiredTexture = "Characters/flamingo_idle";
+				else desiredTexture = idleTex;
+			}
+		}
+
+		if (sprite.GetTexture() != desiredTexture)
+		{
+			sprite.SetTexture(desiredTexture);
+			int x = 0;
+			int y = sprite.GetIndex().y;
+			sprite.SetIndex(x, y);
+			sprite.internaltimer = 0.f;
+		}
 
 	}
 
@@ -165,7 +260,6 @@ namespace NocturnalEngine {
 		else if (aA.current_health > aA.maxHealth / 2.0 && aA.healthWarnLevel!=0) {
 
 			aA.healthWarnLevel = 0;
-			if (!ogSpritename.empty())p_ecs.GetComponent<Sprite>(entityID).SetTexture(ogSpritename);
 		}
 		if (aA.current_hunger <= aA.maxHunger / 2.0 && aA.hungerWarnLevel<1)
 		{

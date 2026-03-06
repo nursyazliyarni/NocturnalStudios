@@ -64,6 +64,18 @@ namespace NocturnalEngine {
 		bool is_Animated;	// if is a spritesheet do we want it to be animated 
 		float internaltimer; // internal timer for animation
 		int LayerOrder; // layering order for rendering
+		// General animation state manager settings shown in Sprite component editor.
+		bool stateManagerEnabled{ false };
+		std::string stateIdleTexture{};
+		std::string stateHungryTexture{};
+		std::string stateSickTexture{};
+		std::string stateAngryTexture{};
+		float stateHungryThreshold{ 0.5f };
+		float stateSickThreshold{ 0.5f };
+		float stateAngryThreshold{ 0.5f };
+		bool statePreviewInEditor{ false };
+		// 0=Auto, 1=Idle, 2=Hungry, 3=Sick, 4=Angry
+		int statePreviewMode{ 0 };
 		//altas 
 	private:
 		std::string mTextureName;

@@ -98,6 +98,58 @@ namespace NocturnalEngine {
 			ImGui::Text("Layering Order: "); ImGui::SameLine();
 			// ImGui::DragInt("##layering", (int*)&sprite.LayerOrder, 1, 0, 8);
 			changed |= ImGui::DragInt("##layering", (int*)&LayerOrder, 1, 0, NocturnalEngine::Graphic::MAX_LAYERS - 1);
+
+			if (ImGui::TreeNode("Animation State Manager"))
+			{
+				changed |= ImGui::Checkbox("Enable State Manager", &stateManagerEnabled);
+				if (stateManagerEnabled)
+				{
+					auto drawStateTexturePicker = [&](const char* label, std::string& textureKey, int id)
+					{
+						ImGui::PushID(id);
+						ImGui::Text("%s", label); ImGui::SameLine();
+						ImGui::SetNextItemWidth(180.0f);
+						if (ImGui::BeginCombo("##StateTexture", textureKey.c_str()))
+						{
+							for (auto& [str, tex] : ResourceManager::textures)
+							{
+								UNREFERENCED_PARAMETER(tex);
+								if (ImGui::Selectable(str.c_str()))
+								{
+									textureKey = str;
+									changed = true;
+								}
+							}
+							ImGui::EndCombo();
+						}
+
+						if (ImGui::BeginDragDropTarget())
+						{
+							if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Textures"))
+							{
+								textureKey = *(const std::string*)payload->Data;
+								changed = true;
+							}
+							ImGui::EndDragDropTarget();
+						}
+						ImGui::PopID();
+					};
+
+					drawStateTexturePicker("Idle Texture", stateIdleTexture, 101);
+					drawStateTexturePicker("Hungry Texture", stateHungryTexture, 102);
+					drawStateTexturePicker("Sick Texture", stateSickTexture, 103);
+					drawStateTexturePicker("Angry Texture", stateAngryTexture, 104);
+
+					changed |= ImGui::SliderFloat("Hungry Threshold", &stateHungryThreshold, 0.0f, 1.0f, "%.2f");
+					changed |= ImGui::SliderFloat("Sick Threshold", &stateSickThreshold, 0.0f, 1.0f, "%.2f");
+					changed |= ImGui::SliderFloat("Angry Threshold", &stateAngryThreshold, 0.0f, 1.0f, "%.2f");
+
+					changed |= ImGui::Checkbox("Preview In Level Editor", &statePreviewInEditor);
+					const char* previewStates[] = { "Auto", "Idle", "Hungry", "Sick", "Angry" };
+					changed |= ImGui::Combo("Preview State", &statePreviewMode, previewStates, IM_ARRAYSIZE(previewStates));
+				}
+				ImGui::TreePop();
+			}
 		}
 		return changed;
 	}
@@ -126,6 +178,16 @@ namespace NocturnalEngine {
 			Animation::spriteContainer.emplace(mTextureName, displayTime);
 		}
 		LayerOrder= int(obj["LayeringOrder"].GetInt());
+		if (obj.HasMember("StateManagerEnabled") && obj["StateManagerEnabled"].IsBool())stateManagerEnabled = obj["StateManagerEnabled"].GetBool();
+		if (obj.HasMember("StateIdleTexture") && obj["StateIdleTexture"].IsString())stateIdleTexture = obj["StateIdleTexture"].GetString();
+		if (obj.HasMember("StateHungryTexture") && obj["StateHungryTexture"].IsString())stateHungryTexture = obj["StateHungryTexture"].GetString();
+		if (obj.HasMember("StateSickTexture") && obj["StateSickTexture"].IsString())stateSickTexture = obj["StateSickTexture"].GetString();
+		if (obj.HasMember("StateAngryTexture") && obj["StateAngryTexture"].IsString())stateAngryTexture = obj["StateAngryTexture"].GetString();
+		if (obj.HasMember("StateHungryThreshold") && obj["StateHungryThreshold"].IsNumber())stateHungryThreshold = obj["StateHungryThreshold"].GetFloat();
+		if (obj.HasMember("StateSickThreshold") && obj["StateSickThreshold"].IsNumber())stateSickThreshold = obj["StateSickThreshold"].GetFloat();
+		if (obj.HasMember("StateAngryThreshold") && obj["StateAngryThreshold"].IsNumber())stateAngryThreshold = obj["StateAngryThreshold"].GetFloat();
+		if (obj.HasMember("StatePreviewInEditor") && obj["StatePreviewInEditor"].IsBool())statePreviewInEditor = obj["StatePreviewInEditor"].GetBool();
+		if (obj.HasMember("StatePreviewMode") && obj["StatePreviewMode"].IsInt())statePreviewMode = obj["StatePreviewMode"].GetInt();
 		return true;
 	}
 
@@ -159,6 +221,26 @@ namespace NocturnalEngine {
 		}
 		writer->Key("LayeringOrder");
 		writer->Int(LayerOrder);
+		writer->Key("StateManagerEnabled");
+		writer->Bool(stateManagerEnabled);
+		writer->Key("StateIdleTexture");
+		writer->String(stateIdleTexture.c_str());
+		writer->Key("StateHungryTexture");
+		writer->String(stateHungryTexture.c_str());
+		writer->Key("StateSickTexture");
+		writer->String(stateSickTexture.c_str());
+		writer->Key("StateAngryTexture");
+		writer->String(stateAngryTexture.c_str());
+		writer->Key("StateHungryThreshold");
+		writer->Double(stateHungryThreshold);
+		writer->Key("StateSickThreshold");
+		writer->Double(stateSickThreshold);
+		writer->Key("StateAngryThreshold");
+		writer->Double(stateAngryThreshold);
+		writer->Key("StatePreviewInEditor");
+		writer->Bool(statePreviewInEditor);
+		writer->Key("StatePreviewMode");
+		writer->Int(statePreviewMode);
 		return true;
 	}
 	
