@@ -56,7 +56,7 @@ namespace NocturnalEngine {
 		virtual std::string GetScriptName() override;
 
 		bool Requirements(Entity e) override {
-			if (p_ecs.HaveComponent<Collider>(e) && p_ecs.HaveComponent<Tag>(e)&& p_ecs.HaveComponent<Sprite>(e))return true;
+			if (p_ecs.HaveComponent<Collider>(e) && p_ecs.HaveComponent<Sprite>(e))return true;
 			return false;
 		}
 
