@@ -63,10 +63,10 @@ namespace NocturnalEngine {
             float  hungerT{ 0.f }, hpT{ 0.f }, sanityT{ 0.f };
         };
         enum class GameState {
-            STARTING,
-            PLAYING,
-            ENDING,
-            PAUSED
+            STARTING=0,
+            PLAYING=1,
+            ENDING=2,
+            PAUSED=3
         };
         AnimalData LoadPersistentValues(std::string gs);
 

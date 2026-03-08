@@ -40,7 +40,6 @@ namespace NocturnalEngine {
                 "AltSceneSwitch",   // 1 << 11
                 "ExitGame"          // 1 << 12
             };
-            ImGui::SeparatorText("Flags");
             for (int i = 0; i < 13; i++) {
                 bool isSet = (flag & (1 << i)) != 0;
                 if (ImGui::Checkbox(flagNames[i], &isSet)) {
@@ -65,10 +64,19 @@ namespace NocturnalEngine {
                     case 1: // AudioOnHover
                         if (ImGui::Checkbox("Random##hoverAudio", &hoverAudioRandom))
                             changed = true;
+                        if (!hoverAudioRandom) {
+                            if (ImGui::InputInt("Hover Audio Index##hoverIdx", &hoverAudioIndex))
+                                changed = true;
+                        }
                         break;
                     case 2: // AudioOnClick
                         if (ImGui::Checkbox("Random##clickAudio", &clickAudioRandom))
                             changed = true;
+                        if (!clickAudioRandom) {
+                            if (ImGui::InputInt("Click Audio Index##clickIdx", &clickAudioIndex))
+                                changed = true;
+                        }
+
                         break;
                     case 3: // TexChangeOnHover
                     {
@@ -206,6 +214,19 @@ namespace NocturnalEngine {
             }
         }
 
+        const char* intVals[]{
+            "HoverAudioIndex",
+            "ClickAudioIndex"
+        };
+        for (int i = 0; i < 2; i++) {
+            if (obj.HasMember(intVals[i]) && obj[intVals[i]].IsInt()) {
+                switch (i) {
+                case 0: hoverAudioIndex = obj[intVals[i]].GetInt(); break;
+                case 1: clickAudioIndex = obj[intVals[i]].GetInt(); break;
+                }
+            }
+        }
+
         const char* stringVals[]{
             "GoToScene",
             "TexChangeOnHover",
@@ -274,10 +295,14 @@ namespace NocturnalEngine {
         // AudioOnHover
         writer->Key("AudioOnHoverFlag");    writer->Bool((flag & (1 << 1)) != 0);
         writer->Key("AudioOnHoverRandom");  writer->Bool(hoverAudioRandom);
+        if (!hoverAudioRandom)
+        {writer->Key("HoverAudioIndex");     writer->Int(hoverAudioIndex);}
 
         // AudioOnClick
         writer->Key("AudioOnClickFlag");    writer->Bool((flag & (1 << 2)) != 0);
         writer->Key("AudioOnClickRandom");  writer->Bool(clickAudioRandom);
+        if (!clickAudioRandom)
+        { writer->Key("ClickAudioIndex");     writer->Int(clickAudioIndex);}
 
         // TexChangeOnHover
         writer->Key("TexChangeOnHoverFlag"); writer->Bool((flag & (1 << 3)) != 0);

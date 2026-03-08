@@ -23,6 +23,7 @@
 #include "ECS/Types.h"
 #include "ECS/ECS.h"
 #include "Logic/States/IStates.h"
+#include "ECS/Components/ButtonComponent.h"
 namespace NocturnalEngine {
 	class ButtonResponse : public IScript
 	{
@@ -88,13 +89,16 @@ namespace NocturnalEngine {
 		};
 		button_bb Button_BoundingBox{};
 		button_state curr_state{ button_state::idle};
+		std::string originalTexture{};
 		bool HTP {false};
 		bool initial_hover;
 		bool how_to_play;
 		bool entercollider{false},leftcollider{ false };
 
-		
-	
+		bool KeyboardSceneSwitch();
+		void PlayAudio(bool hover,const ButtonComponent& button);
+		void ChangeTexture(const std::string& tex);
+		void ScaleButton(float scale, Transform& t);
 	};
 }
 

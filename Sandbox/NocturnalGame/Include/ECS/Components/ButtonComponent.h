@@ -39,17 +39,20 @@ namespace NocturnalEngine
 		};
 		std::string gotoScene{};
 		bool hoverAudioRandom{ false }, clickAudioRandom{ false };
+		int hoverAudioIndex{ 0 }, clickAudioIndex{ 0 };
 		std::string hoverTexture{}, clickTexture{};
 		float hoverScale{};
 		enum class GameManState {
-			STARTING,
-			PLAYING,
-			ENDING,
-			PAUSED
+			STARTING=0,
+			PLAYING=1,
+			ENDING=2,
+			PAUSED=3
 		};
 		GameManState stateToSet{};
 		float cameraZoom{};
 		std::string altSceneSwitch{};
+
+		int Flag() const { return flag; }
 
 		ButtonComponent();
 		~ButtonComponent() = default;
@@ -76,4 +79,17 @@ namespace NocturnalEngine
 
 		
 	};
+	inline bool operator&(int flags, ButtonComponent::ButtonFlag check) {
+		return (flags & static_cast<int>(check)) != 0;
+	}
+	inline int operator|(int flags, ButtonComponent::ButtonFlag check) {
+		return flags | static_cast<int>(check);
+	}
+	inline int operator|=(int& flags, ButtonComponent::ButtonFlag check) {
+		return flags |= static_cast<int>(check);
+	}
+	inline int operator&=(int& flags, ButtonComponent::ButtonFlag check) {
+		return flags &= static_cast<int>(check);
+	}
+	
 }
