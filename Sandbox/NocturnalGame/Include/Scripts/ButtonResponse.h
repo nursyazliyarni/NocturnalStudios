@@ -56,7 +56,7 @@ namespace NocturnalEngine {
 		virtual std::string GetScriptName() override;
 
 		bool Requirements(Entity e) override {
-			if (p_ecs.HaveComponent<Collider>(e) && p_ecs.HaveComponent<Sprite>(e))return true;
+			if (p_ecs.HaveComponent<Collider>(e) && p_ecs.HaveComponent<Sprite>(e)&& p_ecs.HaveComponent<ButtonComponent>(e))return true;
 			return false;
 		}
 
@@ -91,14 +91,16 @@ namespace NocturnalEngine {
 		button_state curr_state{ button_state::idle};
 		std::string originalTexture{};
 		bool HTP {false};
-		bool initial_hover;
+		bool initial_hover{true};
 		bool how_to_play;
-		bool entercollider{false},leftcollider{ false };
+		bool entercollider{false},leftcollider{ true };
 
 		bool KeyboardSceneSwitch();
 		void PlayAudio(bool hover,const ButtonComponent& button);
+		int hoverAudioIndex{};
 		void ChangeTexture(const std::string& tex);
 		void ScaleButton(float scale, Transform& t);
+		void MuteAudio();
 	};
 }
 

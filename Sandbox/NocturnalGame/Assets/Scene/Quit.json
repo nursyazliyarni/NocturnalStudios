@@ -61,7 +61,21 @@
                     "IsSpriteSheet": false,
                     "IsAnimated": false,
                     "MaxIndex": 0,
-                    "LayeringOrder": 0
+                    "LayeringOrder": 0,
+                    "StateManagerEnabled": false,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
                 },
                 {
                     "Component": "Audio",
@@ -128,11 +142,11 @@
                     "ColliderType2": 0,
                     "minX1": 0.41999998688697815,
                     "minX2": 0.0,
-                    "minY1": 0.09000000357627869,
+                    "minY1": 0.12999999523162842,
                     "minY2": 0.0,
-                    "maxX1": 0.41999998688697815,
+                    "maxX1": 0.3700000047683716,
                     "maxX2": 0.0,
-                    "maxY1": 0.07000000029802322,
+                    "maxY1": 0.12999999523162842,
                     "maxY2": 0.0,
                     "offsetX1": 0.0,
                     "offsetX2": 0.0,
@@ -155,7 +169,21 @@
                     "IsSpriteSheet": false,
                     "IsAnimated": false,
                     "MaxIndex": 0,
-                    "LayeringOrder": 0
+                    "LayeringOrder": 0,
+                    "StateManagerEnabled": false,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
                 },
                 {
                     "Component": "Audio",
@@ -218,6 +246,33 @@
                     "Line Height": 0,
                     "WorldSpace": false,
                     "Center": false
+                },
+                {
+                    "Component": "ButtonComponent",
+                    "GoToSceneFlag": false,
+                    "GoToScene": "",
+                    "AudioOnHoverFlag": true,
+                    "AudioOnHoverRandom": false,
+                    "HoverAudioIndex": 1,
+                    "AudioOnClickFlag": true,
+                    "AudioOnClickRandom": false,
+                    "ClickAudioIndex": 0,
+                    "TexChangeOnHoverFlag": false,
+                    "TexChangeOnHover": "",
+                    "TexChangeOnClickFlag": false,
+                    "TexChangeOnClick": "",
+                    "ScaleOnHoverFlag": true,
+                    "ScaleOnHover": 1.100000023841858,
+                    "SetGameStateFlag": false,
+                    "SetGameState": "STARTING",
+                    "ResetStatsFlag": false,
+                    "NextLevelFlag": false,
+                    "SetCameraZoomFlag": false,
+                    "SetCameraZoom": 0.0,
+                    "MuteAudioFlag": false,
+                    "AltSceneSwitchFlag": false,
+                    "AltSceneSwitch": "",
+                    "ExitGameFlag": true
                 }
             ]
         },
@@ -241,13 +296,13 @@
                     "Component": "Collider",
                     "ColliderType1": 4,
                     "ColliderType2": 0,
-                    "minX1": 0.41999998688697815,
+                    "minX1": 0.3700000047683716,
                     "minX2": 0.0,
-                    "minY1": 0.09000000357627869,
+                    "minY1": 0.12999999523162842,
                     "minY2": 0.0,
                     "maxX1": 0.41999998688697815,
                     "maxX2": 0.0,
-                    "maxY1": 0.07000000029802322,
+                    "maxY1": 0.12999999523162842,
                     "maxY2": 0.0,
                     "offsetX1": 0.0,
                     "offsetX2": 0.0,
@@ -270,7 +325,21 @@
                     "IsSpriteSheet": false,
                     "IsAnimated": false,
                     "MaxIndex": 0,
-                    "LayeringOrder": 0
+                    "LayeringOrder": 0,
+                    "StateManagerEnabled": false,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
                 },
                 {
                     "Component": "Audio",
@@ -333,6 +402,33 @@
                     "Line Height": 0,
                     "WorldSpace": false,
                     "Center": false
+                },
+                {
+                    "Component": "ButtonComponent",
+                    "GoToSceneFlag": true,
+                    "GoToScene": "Assets/Scene/Menu.json",
+                    "AudioOnHoverFlag": true,
+                    "AudioOnHoverRandom": false,
+                    "HoverAudioIndex": 1,
+                    "AudioOnClickFlag": true,
+                    "AudioOnClickRandom": false,
+                    "ClickAudioIndex": 0,
+                    "TexChangeOnHoverFlag": false,
+                    "TexChangeOnHover": "",
+                    "TexChangeOnClickFlag": false,
+                    "TexChangeOnClick": "",
+                    "ScaleOnHoverFlag": true,
+                    "ScaleOnHover": 1.100000023841858,
+                    "SetGameStateFlag": false,
+                    "SetGameState": "STARTING",
+                    "ResetStatsFlag": false,
+                    "NextLevelFlag": false,
+                    "SetCameraZoomFlag": false,
+                    "SetCameraZoom": 0.0,
+                    "MuteAudioFlag": false,
+                    "AltSceneSwitchFlag": false,
+                    "AltSceneSwitch": "",
+                    "ExitGameFlag": false
                 }
             ]
         },

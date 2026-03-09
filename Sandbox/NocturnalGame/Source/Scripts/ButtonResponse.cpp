@@ -131,12 +131,15 @@ namespace NocturnalEngine
 				if (buttonFlag & ButtonFlag::TEX_CHANGE_ON_CLICK) ChangeTexture(buttonComponent.clickTexture);
 			}
 		}
-		else {
+		else 
+		{
 			if (!leftcollider) 
 			{
 				if (buttonFlag & ButtonFlag::TEX_CHANGE_ON_HOVER) ChangeTexture(originalTexture);
 
 				if (buttonFlag & ButtonFlag::SCALE_ON_HOVER)ScaleButton(1.f/buttonComponent.hoverScale, transform);
+
+				if (buttonFlag & ButtonFlag::AUDIO_ON_HOVER)MuteAudio();
 
 				leftcollider = true;
 				initial_hover = true;
@@ -212,6 +215,8 @@ namespace NocturnalEngine
 		{
 			if (button.hoverAudioRandom)soundIndex = Random::Range(0, audio.GetSize() - 1);
 			else soundIndex = button.hoverAudioIndex;
+
+			hoverAudioIndex = soundIndex;
 		}
 		else 
 		{
@@ -222,6 +227,15 @@ namespace NocturnalEngine
 		if (audio.GetArr().size() <= soundIndex)return;
 
 		audio[soundIndex].should_play = true;
+	}
+
+	void ButtonResponse::MuteAudio() {
+		if (!p_ecs.HaveComponent<Audio>(entityID)) return;
+
+		Audio& audio{ p_ecs.GetComponent<Audio>(entityID) };
+		if (audio.GetArr().size() <= hoverAudioIndex)return;
+
+		audio[hoverAudioIndex].should_stop = true;
 	}
 
 	void ButtonResponse::ChangeTexture(const std::string& tex) {

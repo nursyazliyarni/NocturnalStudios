@@ -439,7 +439,10 @@ namespace NocturnalEngine {
                     is_ShowWindow = true;
                     p_Scene->isGameplay = false;
                     mGameConfig->OnExitPlayMode(true);
-                    if (!mGameConfig->mainMenuScene.empty())p_Scene->setSceneToLoad(mGameConfig->mainMenuScene);
+                    if (!mGameConfig->mainMenuScene.empty()) { 
+                        p_Scene->setSceneToLoad(mGameConfig->mainMenuScene); 
+                        mCurrentScene = mGameConfig->mainMenuScene;
+                    }
                     p_Audio->StopChannel(CAudioEngine::channel_groups::master);
                     
                     
