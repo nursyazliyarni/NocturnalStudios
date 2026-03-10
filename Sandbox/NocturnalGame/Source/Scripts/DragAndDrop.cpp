@@ -26,6 +26,7 @@
 #include "ECS/Components/AnimalAttributes.h"
 #include "GUI/GUI.h"
 #include "Scripts/GlobalGameManager.h"
+#include "Audio/AudioEngine.h"
 
 namespace NocturnalEngine {
 
@@ -144,7 +145,7 @@ namespace NocturnalEngine {
 
 
 
-
+		
 		if (!isDragging&&!p_GameManager.isTargetVisible())
 		{
 			
@@ -346,6 +347,7 @@ namespace NocturnalEngine {
 				else aa.current_health += ia.gain_amount;
 				break;
 			case ItemsAttributes::ItemType::FOOD:
+				p_Audio->PlaySound("Assets/Audio/Give_Food_v2.wav", Audio::AudioType::SFX);
 				if (aa.current_hunger + ia.gain_amount >= aa.maxHunger)aa.current_hunger = aa.maxHunger;
 				else aa.current_hunger += ia.gain_amount;
 				break;

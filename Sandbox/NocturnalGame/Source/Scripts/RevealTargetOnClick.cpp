@@ -23,6 +23,7 @@
 #include "Math/Vmath.h"
 
 #include "Scripts/GlobalGameManager.h"
+#include "Audio/AudioEngine.h"
 
 namespace NocturnalEngine
 {
@@ -150,6 +151,8 @@ namespace NocturnalEngine
             return;
 
         p_ecs.DestroyEntity(painSpot);
+
+		p_Audio->PlaySound("Assets/Audio/Give_Health_v1.wav", Audio::AudioType::SFX);
 
         if (mOwl == 0 || !p_ecs.HaveComponent<AnimalAttributes>(mOwl))
             return;
