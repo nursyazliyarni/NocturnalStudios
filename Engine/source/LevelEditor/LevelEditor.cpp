@@ -1261,6 +1261,11 @@ namespace NocturnalEngine {
             if (l >= NocturnalEngine::Graphic::MAX_LAYERS) l = NocturnalEngine::Graphic::MAX_LAYERS - 1;
 
             usedLayers.push_back(l);
+            if (p_ecs.HaveComponent<Text>(e)) {
+                int text_layer_order = p_ecs.GetComponent<Text>(e).Get_layering_order();
+                usedLayers.push_back(text_layer_order);
+            }
+            
         }
 
         if (usedLayers.empty())

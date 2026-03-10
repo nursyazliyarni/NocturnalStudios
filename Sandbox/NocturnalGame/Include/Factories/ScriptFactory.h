@@ -66,9 +66,12 @@ namespace NocturnalEngine{
         }
 
         bool CanAttachScript(const std::string& name, Entity entity) const override {
-            if (!p_ecs.HaveComponent<Transform>(entity))return false;
-            if (mScripts.count(name))
+            /*if (!p_ecs.HaveComponent<Transform>(entity)) {
+                return false;
+            }*/
+            if (mScripts.count(name)) {
                 return mScripts.at(name).checkRequirements(entity);
+            }
             return false;
         }
 

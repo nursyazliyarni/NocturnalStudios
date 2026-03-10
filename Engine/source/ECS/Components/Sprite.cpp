@@ -23,12 +23,35 @@ namespace NocturnalEngine {
 	Ctor for Sprite Component
 	****************************************************************************/
 	Sprite::Sprite() : mTextureName("Blank"), Index({ 0,0 }), mUVcooridnates({ 512.0f, 512.0f }),
-		is_SpriteSheet(false), is_Animated(false), mAlpha(1), MaxIndex_X(0),displayTime(GetMaxIndex()), internaltimer(0), LayerOrder(0){}
+		is_SpriteSheet(false), is_Animated(false), mAlpha(1), MaxIndex_X(0), displayTime(GetMaxIndex()),
+		internaltimer(0), LayerOrder(0), SPRITE_type{ texture } {}
 
+	const char* Sprite::sprite_type_ToString(int enum_sprite_type) {
+		switch (enum_sprite_type) {
+		case sprite_type::texture: return "texture";
+		case sprite_type::shape: return "shape";
+		}
+	}
 
 	void Sprite::ToEditor() {
 		if (ImGui::CollapsingHeader("Sprite", ImGuiTreeNodeFlags_None))
 		{
+			ImGui::Text("Texture/Shape"); ImGui::SameLine();
+			if (ImGui::BeginCombo("##Texture/Shape", sprite_type_ToString(SPRITE_type)))
+			{
+				for (unsigned int i{ 0 }; i < sprite_type::sprite_type_count; i++) {
+					sprite_type selected_sprite_type = static_cast<sprite_type>(i);
+					bool is_selected = (SPRITE_type == selected_sprite_type);
+					if (ImGui::Selectable(sprite_type_ToString(selected_sprite_type), is_selected))
+					{
+						SPRITE_type = selected_sprite_type;
+					}
+					if (is_selected)
+						ImGui::SetItemDefaultFocus();
+				}
+				ImGui::EndCombo();
+			}
+
 			ImGui::Checkbox("SpriteSheet", &is_SpriteSheet); ImGui::SameLine();
 			ImGui::Checkbox("Animation", &is_Animated);
 			ImGui::PushItemWidth(100.0f);

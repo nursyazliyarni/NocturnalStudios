@@ -33,6 +33,7 @@
 #include "Scripts/PainSpotSpawner.h"
 #include "Scripts/EndScreenDisplay.h"
 #include "Scripts/ToyHideAndRevealOnClick.h"
+#include "Scripts/Tutorial_Logic.h"
 
 namespace NocturnalEngine {
 
@@ -58,7 +59,7 @@ namespace NocturnalEngine {
             RegisterScriptType<PainSpotSpawner>();
             RegisterScriptType<EndScreenDisplay>();
             RegisterScriptType<ToyHideAndRevealOnClick>();
-        
+            RegisterScriptType<TutorialLogic>();
 
     }
 

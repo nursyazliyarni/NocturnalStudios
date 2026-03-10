@@ -61,8 +61,21 @@ namespace NocturnalEngine
         int& Get_line_height() { return line_height; }
         void Set_line_height(int Line_Height) { line_height = Line_Height; }
 
+        int& Get_layering_order() { return LayerOrder; }
+        void Set_layering_order(int layeringOrder) { LayerOrder = layeringOrder; }
+
+        std::vector<std::string>& GET_mContent_array() { return mContent_array; }
+        const std::string& GET_current_mContent(int index) const { return mContent_array[index]; }
+        std::vector<std::pair<float,float>>& GET_position_vector() { return position_vector; }
+        glm::vec2 GET_current_position(int index) const { return glm::vec2(position_vector[index].first,position_vector[index].second); }
+
+        int& Get_TEXT_type() { return TEXT_type; }
+        void Set_TEXT_type(int enum_text_type) { TEXT_type = enum_text_type; }
+
     private:
+        int TEXT_type;
         std::string mContent;
+        std::vector<std::string> mContent_array;
         std::string mFontName;
         float mSize;
 
@@ -71,8 +84,16 @@ namespace NocturnalEngine
         bool mCenter;
 
         float mPosition[2];   // x, y
+        std::vector<std::pair<float,float>> position_vector; //vector for storing pair of x and y
         float rotation{};
         int line_height;
-        
+        int LayerOrder; // layering order for rendering
+
+        enum text_type {
+            single_text, array_text, text_type_count
+        };
+        const char* text_type_ToString(int enum_text_type);
+        static int current_index;
+        friend class Graphic;
     };
 }

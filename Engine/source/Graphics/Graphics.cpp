@@ -302,6 +302,9 @@ namespace NocturnalEngine {
 		{
 			if (!p_ecs.HaveComponent<Text>(e)) continue;
 			auto& text = p_ecs.GetComponent<Text>(e);
+			int layerId = text.Get_layering_order();
+			if (layerId < 0) layerId = 0;
+			if (layerId >= Graphic::MAX_LAYERS) layerId = Graphic::MAX_LAYERS - 1;
 
 			glm::vec2 pos(0.0f, 0.0f);
 
@@ -328,8 +331,22 @@ namespace NocturnalEngine {
 			std::shared_ptr<Font> font = ResourceManager::GetFont(text.GetFont());
 			if (!font)
 				font = mFont;
-			if (font)
-				font->RenderText(text.GetContent(), pos, text.Get_line_height(), scale, *mcamera, col,text.Rot());
+			if (font) {
+				for (int orderIndex = 0; orderIndex < Graphic::MAX_LAYERS; ++orderIndex) {
+					int layer = Graphic::layerDrawOrder[orderIndex];
+					if (!Graphic::layerEnabled[layer]) continue;
+					if (layerId == orderIndex) {
+						if (text.Get_TEXT_type()==Text::text_type::single_text) //single text
+							font->RenderText(text.GetContent(), pos, text.Get_line_height(), scale, *mcamera, col, text.Rot());
+
+						else { //array of text
+							if (!text.GET_mContent_array().empty())
+								font->RenderText(text.GET_current_mContent(text.current_index), text.GET_current_position(text.current_index), text.Get_line_height(), scale, *mcamera, col, text.Rot());
+						}
+					}
+				}
+			}
+				
 		}
 	
 		p_FrameBuffer->UnBind();
