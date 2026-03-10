@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "ECS/Components/Tutorial_Attributes.h"
+#include "ECS/Components/TutorialAttributes.h"
 #include <imgui.h>
 
 NocturnalEngine::TutorialAttributes::TutorialAttributes() : tutorial_order{  } {}

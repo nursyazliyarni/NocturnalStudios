@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "Scripts/Tutorial_Logic.h"
+#include "Scripts/TutorialLogic.h"
 #include "ECS/ECS.h"
 
 namespace NocturnalEngine {
