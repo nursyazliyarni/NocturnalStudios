@@ -45,7 +45,8 @@ namespace NocturnalEngine
 
     int Text::current_index{0};
 
-    void Text::ToEditor() {
+    bool Text::ToEditor() {
+        bool changed = false;
         if (ImGui::CollapsingHeader("Text", ImGuiTreeNodeFlags_None))
         {
             ImGui::Text("text type");ImGui::SameLine();
@@ -79,6 +80,7 @@ namespace NocturnalEngine
                 ImGui::DragFloat("##TextPosX", &GetPosition()[0], 0.01f);
                 ImGui::Text("Y"); ImGui::SameLine();
                 ImGui::DragFloat("##TextPosY", &GetPosition()[1], 0.01f);
+                changed = true;
             }
 
             else { //array of text
@@ -134,6 +136,7 @@ namespace NocturnalEngine
                     if (ImGui::Selectable(name.c_str(), selected))
                     {
                         fontName = name;
+                        changed = true;
                     }
                     if (selected)
                         ImGui::SetItemDefaultFocus();
@@ -147,12 +150,13 @@ namespace NocturnalEngine
             ImGui::Checkbox("Center", &GetCenter());
             
             ImGui::Text("Rotation"); ImGui::SameLine();
-            ImGui::DragFloat("##TextRot", &Rot(), 5.f, 0.f, 360.f);
+            changed |= ImGui::DragFloat("##TextRot", &Rot(), 5.f, 0.f, 360.f);
             ImGui::Text("Line Height"); ImGui::SameLine();
             ImGui::DragInt("##Line Height", &Get_line_height(), 1);
             ImGui::Text("Layering Order"); ImGui::SameLine();
             ImGui::DragInt("##Layering Order", &LayerOrder, 1, 0, 9);
         }
+        return changed;
     }
 
     /*!*************************************************************************

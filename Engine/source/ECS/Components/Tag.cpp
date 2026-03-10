@@ -23,7 +23,8 @@ namespace NocturnalEngine
 	****************************************************************************/
 	Tag::Tag() : mTag{"Untagged"}, mTargetTag{""} {}
 
-	void Tag::ToEditor() {
+	bool Tag::ToEditor() {
+		bool changed = false;
 		if (ImGui::CollapsingHeader("TAG", ImGuiTreeNodeFlags_None))
 		{
 			char buffer1[256];
@@ -32,8 +33,10 @@ namespace NocturnalEngine
 			if (ImGui::InputText("Tag", buffer1, sizeof(buffer1)))
 			{
 				mTag = std::string(buffer1);
+				changed = true;
 			}
 		}
+		return changed;
 	}
 
 	/*!*************************************************************************

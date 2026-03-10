@@ -9,8 +9,10 @@
 		 ANG YU XUAN (70%)
 		- Created the AnimalLogic class and its function specification.
     Secondary Author:
-         Nur Syazliyarni (5%)
+         Nur Syazliyarni (30%)
         - Adjusted health decay behavior per animal.
+		- Implemented animation-state switching based on animal status bars.
+		- Integrated dynamic state-rule resolution via Animation manager.
 		Sarah (25%)
 		- Make improvements and fix error with this AnimalLogic script.
 
@@ -22,6 +24,9 @@
 #include "ECS/ECS.h"
 #include "Scripts/GlobalGameManager.h"
 #include "ECS/Components/AnimalAttributes.h"
+#include "Animation/Animation.h"
+#include "Math/Random.h"
+#include "LevelEditor/LevelEditor.h"
 
 
 namespace NocturnalEngine {
@@ -38,9 +43,20 @@ namespace NocturnalEngine {
 			AnimalAttributes& aA{ p_ecs.GetComponent<AnimalAttributes>(entityID) };
 
 			orgXPos = p_ecs.GetComponent<Transform>(entityID).GetPos().x;
-
+			GameManager::AnimalData aD= p_GameManager.LoadPersistentValues(name);
 			// in addition, the gamemanager also saves the above gS as the current gamestate
-			aA=p_GameManager.LoadPersistentValues(name);
+			aA = aD.aA;
+			chance = { aD.hungerD, aD.hpD, aD.sanityD };
+			time = { aD.hungerT, aD.hpT, aD.sanityT };
+
+			//fetch checkperiod
+			checkPeriod = p_GameManager.GetCheckPeriod();
+
+			if (p_ecs.HaveComponent<Sprite>(entityID))
+			{
+				auto& sprite = p_ecs.GetComponent<Sprite>(entityID);
+				ogSpritename = sprite.GetTexture();
+			}
 		}
 	}
 
@@ -54,40 +70,38 @@ namespace NocturnalEngine {
 		//a safeguard in case
 		if (!p_ecs.HaveComponent<AnimalAttributes>(entityID))return;
 
+		//3.0 base health decay rate
+
+		//Flamingo's health decreases faster based on its hunger. If hunger is above 70%, health decreases at a rate of 0.5.
+		//If hunger is below 30%, health decreases at 2x the rate
+
+		//horse is just 1.5x faster
+
+
+
 		AnimalAttributes& aA{ p_ecs.GetComponent<AnimalAttributes>(entityID) };
-		if (p_GameManager.GetGameState() == GameManager::GameState::STARTING)
-		{
-			aA.SetDefault();
-		}
+
+		
+
 
 		if (!aA.isEscaped&&aA.is_alive&&p_GameManager.GetGameState() != GameManager::GameState::ENDING) {
-			aA.current_hunger -= aA.hungerDecayRate * static_cast<double>(Frametime) * 2.0;
 
-			// Adjust health decay based on animal type and hunger state
-			const double baseHealthMultiplier = 3.0; // much faster overall
-			double healthMultiplier = baseHealthMultiplier;
-			if (p_ecs.HaveComponent<NameTag>(entityID))
+			//hunger>hp>sanity
+			CheckAndDecreaseStats(time.hunger, chance.hunger, aA.hungerDecayRate, aA.current_hunger, Frametime);
+			
+			double hpDecay = aA.healthDecayRate,decreaseScale = 1.0;
+			if (aA.WhatKindOfAnimalIsThis() == "Flamingo")
 			{
-				const std::string& name = p_GameManager.IsNewSceneManagement()?aA.WhatKindOfAnimalIsThis():p_ecs.GetComponent<NameTag>(entityID).GetNameTag();
-				const double hungerRatio = (aA.maxHunger > 0.0) ? (aA.current_hunger / aA.maxHunger) : 0.0;
-				const double lowHungerThreshold = 0.30;   // below 30% is "low"
-				const double highHungerThreshold = 0.70;  // above 70% is "normal+"
-
-				if (name == "Flamingo")
-				{
-					if (hungerRatio < lowHungerThreshold)
-						healthMultiplier = 2.0; // faster when hungry
-					else if (hungerRatio > highHungerThreshold)
-						healthMultiplier = 0.5; // slower when well fed
-				}
-				else if (name == "Horse")
-				{
-					healthMultiplier = 1.5; // faster health decay
-				}
-				// Seal and Owl remain at normal decay (1.0)
+				if (aA.current_hunger > aA.maxHunger * 0.7) { hpDecay *= 0.5; decreaseScale = 0.7; }
+				else if (aA.current_hunger <= aA.maxHunger * 0.3) { hpDecay *= 2.0; decreaseScale = 2.0; }
+			}
+			if (aA.WhatKindOfAnimalIsThis() == "Horse")
+			{
+				if (aA.current_hunger<= aA.maxHunger * 0.8) { hpDecay *= 1.5; decreaseScale = 1.5; }
 			}
 
-			aA.current_health -= aA.healthDecayRate * static_cast<double>(Frametime) * healthMultiplier;
+			CheckAndDecreaseStats(time.hp, chance.hp, hpDecay, aA.current_health, Frametime,decreaseScale);
+
 			aA.current_sanity -= aA.sanityDecayRate * static_cast<double>(Frametime);
 
 			if (aA.current_sanity <= 0)
@@ -101,14 +115,16 @@ namespace NocturnalEngine {
 				p_GameManager.AddDeath();
 			}
 			LogLowHealth(aA);
+			ChangeAnim(aA);
 		}
 		else if (aA.isEscaped&&!spriteDeactivated) {
 			p_ecs.GetComponent<Sprite>(entityID).SetTexture("Characters/Blank");
 			spriteDeactivated = true;
+			std::cout << "Escaped\n";
 		}
 		else if (p_GameManager.GetGameState() == GameManager::GameState::ENDING) {
 			aA.SetDefault();
-			p_GameManager.SaveAnimalAttributesToCurrentScene(aA);
+			p_GameManager.SaveAnimalAttributesToCurrentScene({ aA,chance.hunger,chance.hp,chance.sanity,time.hunger,time.hp,time.sanity });
 		}
 		
 
@@ -125,37 +141,67 @@ namespace NocturnalEngine {
 		{
 			aA.SetDefault();
 		}
-		p_GameManager.SaveAnimalAttributesToCurrentScene(aA);
+		p_GameManager.SaveAnimalAttributesToCurrentScene({ aA,chance.hunger,chance.hp,chance.sanity,time.hunger,time.hp,time.sanity });
 		
 
 	}
 
+	void AnimalLogic::ChangeAnim(AnimalAttributes& aA) {
+		if (ogSpritename.empty() || !p_ecs.HaveComponent<Sprite>(entityID))
+			return;
+		if (aA.isEscaped || !aA.is_alive)
+			return;
+
+		auto& sprite = p_ecs.GetComponent<Sprite>(entityID);
+		if (!sprite.stateManagerEnabled)
+			return;
+
+		const double hungerRatio = aA.maxHunger > 0.0 ? (aA.current_hunger / aA.maxHunger) : 1.0;
+		const double healthRatio = aA.maxHealth > 0.0 ? (aA.current_health / aA.maxHealth) : 1.0;
+		const double sanityRatio = aA.maxSanity > 0.0 ? (aA.current_sanity / aA.maxSanity) : 1.0;
+
+		const bool editorPreview = (p_Editor != nullptr) && p_Editor->is_ShowWindow &&
+			sprite.statePreviewMode > 0;
+		// Animation manager decides which state texture to use from Sprite rule config.
+		std::string desiredTexture = Animation::ResolveStateTexture(sprite, hungerRatio, healthRatio, sanityRatio, editorPreview);
+		if (desiredTexture.empty())
+			return;
+
+		if (sprite.GetTexture() != desiredTexture)
+		{
+			sprite.SetTexture(desiredTexture);
+			int x = 0;
+			int y = sprite.GetIndex().y;
+			sprite.SetIndex(x, y);
+			sprite.internaltimer = 0.f;
+		}
+
+	}
 
 	void AnimalLogic::LogLowHealth(AnimalAttributes& aA) {
 		std::string animalName = p_ecs.GetComponent<NameTag>(entityID).GetNameTag() == "Animal" ? aA.WhatKindOfAnimalIsThis() : p_ecs.GetComponent<NameTag>(entityID).GetNameTag();
 
 		if (aA.current_health <= aA.maxHealth / 2.0 && aA.healthWarnLevel<1)
 		{
-			p_GameManager.AddLogEntry("WARNING! " + animalName + "'s Health is below 50%!");
+
 			aA.healthWarnLevel++;
 		}
 		else if (aA.current_health <= aA.maxHealth / 5.0 && aA.healthWarnLevel < 2) 
 		{
-			p_GameManager.AddLogEntry("WARNING! " + animalName + "'s Health is below 20%!");
-			aA.healthWarnLevel++;
 			p_GameManager.AddCrit();
+			aA.healthWarnLevel++;
 		}
 		else if (aA.current_health > aA.maxHealth / 2.0 && aA.healthWarnLevel!=0) {
+
 			aA.healthWarnLevel = 0;
 		}
 		if (aA.current_hunger <= aA.maxHunger / 2.0 && aA.hungerWarnLevel<1)
 		{
-			p_GameManager.AddLogEntry("WARNING! " + animalName + "'s Hunger is below 50%!");
+
 			aA.hungerWarnLevel++;
 		}
 		else if (aA.current_hunger <= aA.maxHunger / 5.0 && aA.hungerWarnLevel < 2)
 		{
-			p_GameManager.AddLogEntry("WARNING! " + animalName + "'s Hunger is below 20%!");
 			aA.hungerWarnLevel++;
 			p_GameManager.AddCrit();
 		}
@@ -164,22 +210,21 @@ namespace NocturnalEngine {
 		}
 		if (aA.current_sanity <= aA.maxSanity / 2.0 && aA.sanityWarnLevel<1)
 		{
-			p_GameManager.AddLogEntry("WARNING! " + animalName + "'s Sanity is below 50%!");
 			aA.sanityWarnLevel++;
 		}
 		else if (aA.current_sanity <= aA.maxSanity / 5.0 && aA.sanityWarnLevel < 2)
 		{
-			p_GameManager.AddLogEntry("WARNING! " + animalName + "'s Sanity is below 20%!");
 			aA.sanityWarnLevel++;
 			p_GameManager.AddCrit();
 		}
 		else if (aA.current_sanity > aA.maxSanity / 2.0 && aA.sanityWarnLevel!=0) {
 			aA.sanityWarnLevel = 0;
+
 		}
 
 		if (!aA.is_alive)
 		{
-			p_GameManager.AddLogEntry( animalName + " is dead.");
+			p_GameManager.AddLogEntry( animalName + " is not moving");
 		}
 		if (aA.isEscaped)
 		{
@@ -193,5 +238,26 @@ namespace NocturnalEngine {
 		// Transform& t{ p_ecs.GetComponent<Transform>(entityID) };
 
 	}
-
+	void AnimalLogic::CheckAndDecreaseStats(float& times, float& chances, double decayRate, double& attributeValue,float frametime, double decreaseScale) {
+		if (decayRate <= 0.0)decayRate = 0.00000001;
+		if (times >= checkPeriod / decayRate)
+		{
+			//std::cout << "Checking\n";
+			float bruh{ Random::Range(0.f, 100.f) };
+			if ( bruh<= chances)
+			{
+				//std::cout << bruh << "\n";
+				attributeValue -= Random::Range(5.f, 15.f)*decreaseScale;
+				chances = 10.f;
+			}
+			else {
+				chances += 10.f;
+			}
+			times = 0.f;
+		}
+		else
+		{
+			times += frametime;
+		}
+	}
 }

@@ -30,7 +30,7 @@ namespace NocturnalEngine
 	{
 	public:
 		virtual ~IComponent() = default;
-		virtual void ToEditor() {}
+		virtual bool ToEditor() { return false; }
 		virtual bool Deserialize(const rapidjson::Value& obj) = 0;
 		virtual bool Serialize(rapidjson::PrettyWriter<rapidjson::StringBuffer>* writer) const = 0;
 

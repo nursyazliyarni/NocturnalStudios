@@ -99,15 +99,6 @@ namespace NocturnalEngine
 				{
 					p_Audio->SetVolumeByChannel(p_Audio->GetMasterChannelGroup(), 0.0f); // if it is less than 0.01, set sound to mute
 				}
-				if (p_Audio->GetVolumeByChannel(p_Audio->GetMasterChannelGroup()) < p_Audio->GetVolumeByChannel(p_Audio->GetSFXChannelGroup())) //adjust SFX Volume to ensure volume is equal or less than master at all time
-				{
-					p_Audio->SetVolumeByChannel(p_Audio->GetSFXChannelGroup(), transform.GetPos().x - limit.min.x / (limit.max.x - limit.min.x));
-				}
-
-				if (p_Audio->GetVolumeByChannel(p_Audio->GetMasterChannelGroup()) < p_Audio->GetVolumeByChannel(p_Audio->GetBGMChannelGroup()))//adjust BGM Volume to ensure volume is equal or less than master at all time
-				{
-					p_Audio->SetVolumeByChannel(p_Audio->GetBGMChannelGroup(), transform.GetPos().x - limit.min.x / (limit.max.x - limit.min.x));
-				}
 
 			}
 
@@ -118,11 +109,8 @@ namespace NocturnalEngine
 				{
 					p_Audio->SetVolumeByChannel(p_Audio->GetBGMChannelGroup(), 0.0f);
 				}
-
-				if (p_Audio->GetVolumeByChannel(p_Audio->GetMasterChannelGroup()) < p_Audio->GetVolumeByChannel(p_Audio->GetBGMChannelGroup()))
-				{
-					p_Audio->SetVolumeByChannel(p_Audio->GetMasterChannelGroup(), transform.GetPos().x - limit.min.x / (limit.max.x - limit.min.x));//adjust Master volume when BGM volume is larger than Master
-				}
+				
+				
 			}
 			if (ID_tag.GetTargetTag() == "SFX")
 			{
@@ -132,10 +120,6 @@ namespace NocturnalEngine
 					p_Audio->SetVolumeByChannel(p_Audio->GetSFXChannelGroup(), 0.0f);
 				}
 
-				if (p_Audio->GetVolumeByChannel(p_Audio->GetMasterChannelGroup()) < p_Audio->GetVolumeByChannel(p_Audio->GetSFXChannelGroup()))
-				{
-					p_Audio->SetVolumeByChannel(p_Audio->GetMasterChannelGroup(), transform.GetPos().x - limit.min.x / (limit.max.x - limit.min.x));//adjust Master volume when SFX volume is larger than Master
-				}
 			}
 		}
 	}

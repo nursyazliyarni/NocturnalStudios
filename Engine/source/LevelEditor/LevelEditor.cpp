@@ -55,10 +55,12 @@
 #include "Graphics/Renderer.h"
 #include "Graphics/Graphics.h"
 #include "LevelEditor/Picker.h"
+#include "ECS/PrefabManager.h"
 
 #include "Graphics/FrameBuffer.h"
 #include "Core/Log.h"
 #include "Audio/AudioEngine.h"
+#include "Animation/Animation.h"
 
 #include "ECS/Components/Components.h"
 #include "ECS/SceneManager.h"
@@ -136,6 +138,7 @@ namespace NocturnalEngine {
         mUndoStack.clear();
         mRedoStack.clear();
         mStartedGizmoDrag = false;
+        mInspectorEditDirty = false;
         
         IMGUI_CHECKVERSION();
 
@@ -216,6 +219,7 @@ namespace NocturnalEngine {
             Inspector();
             SceneViewer();
             AudioEditor();
+            AnimationEditor();
         }
 
     }
@@ -386,23 +390,34 @@ namespace NocturnalEngine {
                 }*/
                 ImGui::EndMenu();
             }
-            // Basic edit menu for manual undo/redo actions.
-            if (ImGui::BeginMenu("Edit"))
             {
-                const bool canUndo = !mUndoStack.empty();
+                const bool canUndo = mUndoStack.size() > 1;
                 const bool canRedo = !mRedoStack.empty();
-
-                if (ImGui::MenuItem("Undo", "Ctrl+Z", false, canUndo))
+                ImGui::BeginDisabled(!canUndo);
+                if (ImGui::Button("Undo"))
                     ApplyUndo();
-                if (ImGui::MenuItem("Redo", "Ctrl+Y", false, canRedo))
-                    ApplyRedo();
+                ImGui::EndDisabled();
 
-                ImGui::EndMenu();
+                ImGui::SameLine();
+
+                ImGui::BeginDisabled(!canRedo);
+                if (ImGui::Button("Redo"))
+                    ApplyRedo();
+                ImGui::EndDisabled();
+
+                ImGui::SameLine();
+                ImGui::TextUnformatted("Ctrl+Z / Ctrl+Y");
             }
+
+            const char* playLabel = is_ShowWindow ? "Play" : "Stop";
+            const float buttonWidth = ImGui::CalcTextSize(playLabel).x + ImGui::GetStyle().FramePadding.x * 2.0f;
+            const float centeredX = (ImGui::GetWindowSize().x - buttonWidth) * 0.5f;
+            if (centeredX > ImGui::GetCursorPosX())
+                ImGui::SetCursorPosX(centeredX);
 
             if (is_ShowWindow)
             {
-                if (ImGui::Button("Close Editor/Play"))
+                if (ImGui::Button("Play"))
                 {
                     is_ShowWindow = false;
 
@@ -419,12 +434,17 @@ namespace NocturnalEngine {
             }
             else
             {
-                if (ImGui::Button("Open Editor/Stop"))
+                if (ImGui::Button("Stop"))
                 {
                     is_ShowWindow = true;
                     p_Scene->isGameplay = false;
                     mGameConfig->OnExitPlayMode(true);
-                   
+                    if (!mGameConfig->mainMenuScene.empty()) { 
+                        p_Scene->setSceneToLoad(mGameConfig->mainMenuScene); 
+                        mCurrentScene = mGameConfig->mainMenuScene;
+                    }
+                    p_Audio->StopChannel(CAudioEngine::channel_groups::master);
+                    
                     
                     
                 }
@@ -564,6 +584,7 @@ namespace NocturnalEngine {
                 sprite.SetTexture(*(const std::string*)payload->Data);
                 p_ecs.AddComponent<Sprite>(newEntity, sprite);
                 selectedEntity = newEntity;
+                PushUndoSnapshotAndInvalidateRedo();
             }
             ImGui::EndDragDropTarget();
         }
@@ -651,15 +672,9 @@ namespace NocturnalEngine {
                     , glm::value_ptr(cameraProj), (ImGuizmo::OPERATION)mGizmoType,
                     ImGuizmo::WORLD, glm::value_ptr(transform));
 
-                if (ImGuizmo::IsUsing() && !mStartedGizmoDrag)
-                {
-                    // Snapshot once when drag starts (not every frame).
-                    PushUndoSnapshotAndInvalidateRedo();
-                    mStartedGizmoDrag = true;
-                }
-
                 if (ImGuizmo::IsUsing())
                 {
+                    mStartedGizmoDrag = true;
                     glm::vec3 decompTrans, decompRot, decompScale;
 
                     ImGuizmo::DecomposeMatrixToComponents(glm::value_ptr(transform),
@@ -674,6 +689,7 @@ namespace NocturnalEngine {
                 }
                 else if (mStartedGizmoDrag)
                 {
+                    PushUndoSnapshotAndInvalidateRedo();
                     mStartedGizmoDrag = false;
                 }
             }
@@ -708,10 +724,9 @@ namespace NocturnalEngine {
         {
             if (selectedEntity >= 0 && selectedEntity < MAX_ENTITIES)
             {
-                // Snapshot before entity delete.
-                PushUndoSnapshotAndInvalidateRedo();
                 p_ecs.DestroyEntity(selectedEntity);
                 selectedEntity = MAX_ENTITIES;
+                PushUndoSnapshotAndInvalidateRedo();
             }
         }
     }
@@ -911,6 +926,7 @@ namespace NocturnalEngine {
                                 std::filesystem::remove(path);
                             mUndoStack.clear();
                             mRedoStack.clear();
+                            mInspectorEditDirty = false;
                             // Keep one baseline snapshot for the loaded scene.
                             PushUndoSnapshot();
                             selectedEntity = MAX_ENTITIES;
@@ -1365,9 +1381,8 @@ namespace NocturnalEngine {
 
             if (ImGui::Button("Create Entity") && totalEntities != MAX_ENTITIES)
             {
-                // Snapshot before create.
-                PushUndoSnapshotAndInvalidateRedo();
                 p_ecs.AddComponent<NameTag>(p_ecs.CreateEntity(), C_NameTagComponent);
+                PushUndoSnapshotAndInvalidateRedo();
             }
 
             if (totalEntities > 0)
@@ -1377,10 +1392,9 @@ namespace NocturnalEngine {
                 {
                     if (selectedEntity != MAX_ENTITIES)
                     {
-                        // Snapshot before destroy.
-                        PushUndoSnapshotAndInvalidateRedo();
                         p_ecs.DestroyEntity(selectedEntity);
                         selectedEntity = MAX_ENTITIES;
+                        PushUndoSnapshotAndInvalidateRedo();
                     }
                 }
                 ImGui::SameLine();
@@ -1388,10 +1402,9 @@ namespace NocturnalEngine {
                 {
                     if (selectedEntity != MAX_ENTITIES)
                     {
-                        // Snapshot before clone.
-                        PushUndoSnapshotAndInvalidateRedo();
                         Entity CloneEntity = p_ecs.CloneEntity(selectedEntity);
                         selectedEntity = CloneEntity; // when the entity is destroy there is no current selected entity
+                        PushUndoSnapshotAndInvalidateRedo();
                     }
                 }
                 
@@ -1410,6 +1423,23 @@ namespace NocturnalEngine {
 
                         if (ImGui::IsItemClicked())
                             selectedEntity = e;
+                        if (ImGui::BeginPopupContextItem())
+                        {
+
+                            ImGui::Text("Create Prefab");
+                            ImGui::InputText("Name (optional)", prefabNameBuffer, sizeof(prefabNameBuffer), ImGuiInputTextFlags_EnterReturnsTrue);
+
+                            if (ImGui::Button("Create"))
+                            {
+                                std::string prefabName = prefabNameBuffer;
+                                if(PrefabManager::GetInstance().CloneToList(e, prefabName))std::cout<<"Prefab cloned\n";
+
+                                prefabNameBuffer[0] = '\0'; // clear buffer
+                                ImGui::CloseCurrentPopup();
+                            }
+
+                            ImGui::EndPopup();
+                        }
 
                         if (opened)
                             ImGui::TreePop();
@@ -1417,6 +1447,8 @@ namespace NocturnalEngine {
                     }
 
                 }
+
+                
             }
 
             if (ImGui::IsMouseDown(0) && ImGui::IsWindowHovered())
@@ -1453,8 +1485,8 @@ namespace NocturnalEngine {
                         {
                             if (!compdesc.second.hasFunc(selectedEntity)) //if the entity doesnt have the component
                             {
-                                PushUndoSnapshotAndInvalidateRedo();
                                 compdesc.second.addFunc(selectedEntity); //this calls the adder function
+                                PushUndoSnapshotAndInvalidateRedo();
                             }
                             ImGui::CloseCurrentPopup();
                         }
@@ -1474,8 +1506,8 @@ namespace NocturnalEngine {
                             {
                                 if (!compdesc.second.hasFunc(selectedEntity))
                                 {
-                                    PushUndoSnapshotAndInvalidateRedo();
                                     compdesc.second.addFunc(selectedEntity);
+                                    PushUndoSnapshotAndInvalidateRedo();
                                 }
                                 ImGui::CloseCurrentPopup();
                             }
@@ -1484,12 +1516,13 @@ namespace NocturnalEngine {
                     ImGui::EndPopup();
                 }
 
+                bool inspectorChanged = false;
                 //iterates through all the engine's game components and displays them
                 for (std::pair<const std::string, const ComponentRegistry::ComponentDescriptor> compdesc:p_ECompReg.GetAll())
                 {
                     if (compdesc.second.hasFunc(selectedEntity))
                     {
-                        compdesc.second.displayInEditor(selectedEntity);
+                        inspectorChanged |= compdesc.second.displayInEditor(selectedEntity);
                     }
                 }
 
@@ -1500,9 +1533,18 @@ namespace NocturnalEngine {
                     {
                         if (compdesc.second.hasFunc(selectedEntity))
                         {
-                            compdesc.second.displayInEditor(selectedEntity);
+                            inspectorChanged |= compdesc.second.displayInEditor(selectedEntity);
                         }
                     }
+                }
+
+                if (inspectorChanged)
+                    mInspectorEditDirty = true;
+
+                if (mInspectorEditDirty && !ImGui::IsAnyItemActive())
+                {
+                    PushUndoSnapshotAndInvalidateRedo();
+                    mInspectorEditDirty = false;
                 }
 
                 if (ImGui::Button("Delete Component"))
@@ -1517,8 +1559,8 @@ namespace NocturnalEngine {
                         {
                             if (compdesc.second.hasFunc(selectedEntity))
                             {
-                                PushUndoSnapshotAndInvalidateRedo();
                                 compdesc.second.removeFunc(selectedEntity);
+                                PushUndoSnapshotAndInvalidateRedo();
                             }
                             ImGui::CloseCurrentPopup();
                         }
@@ -1534,8 +1576,8 @@ namespace NocturnalEngine {
                             {
                                 if (compdesc.second.hasFunc(selectedEntity))
                                 {
-                                    PushUndoSnapshotAndInvalidateRedo();
                                     compdesc.second.removeFunc(selectedEntity);
+                                    PushUndoSnapshotAndInvalidateRedo();
                                 }
                                 ImGui::CloseCurrentPopup();
                             }
@@ -1559,6 +1601,7 @@ namespace NocturnalEngine {
     {
         if (is_ShowWindow)
         {
+            static bool audioComponentEditDirty = false;
             std::vector<const char*> audiofilenames;
             const size_t arraysize = 100;
             const char* audioFileList[arraysize];
@@ -1623,6 +1666,9 @@ namespace NocturnalEngine {
             }
 
             static int item_current = 1;
+            UNREFERENCED_PARAMETER(item_current);
+            bool hasAudioComponent = false;
+            bool audioComponentChanged = false;
 
             float f1 = p_Audio->GetVolumeByChannel(p_Audio->GetMasterChannelGroup());
             float f4 = p_Audio->GetVolumeByChannel(p_Audio->GetBGMChannelGroup());
@@ -1632,16 +1678,17 @@ namespace NocturnalEngine {
             {
                 if (p_ecs.HaveComponent<Audio>(i)) 
                 {
+                    hasAudioComponent = true;
                     f1 = p_ecs.GetComponent<Audio>(i).GetMasterVolume();
                     f4 = p_ecs.GetComponent<Audio>(i).GetBGMVolume();
                     f5 = p_ecs.GetComponent<Audio>(i).GetSFXVolume();
                 }
             }
             //set voulume slider
-            ImGui::SliderFloat("Master Volume", &f1, 0.0f, 1.0f, "Min - Max %.3f");
+            audioComponentChanged |= ImGui::SliderFloat("Master Volume", &f1, 0.0f, 1.0f, "Min - Max %.3f");
             p_Audio->SetVolumeByChannel(p_Audio->GetMasterChannelGroup(), f1);
 
-            ImGui::SliderFloat("BGM vol", &f4, 0.0f, 1.0f, "Min - Max %.3f");
+            audioComponentChanged |= ImGui::SliderFloat("BGM vol", &f4, 0.0f, 1.0f, "Min - Max %.3f");
             if (f4 > f1)
             {
                 f4 = f1;
@@ -1649,7 +1696,7 @@ namespace NocturnalEngine {
             p_Audio->SetVolumeByChannel(p_Audio->GetBGMChannelGroup(), f4);
 
 
-            ImGui::SliderFloat("SFX vol", &f5, 0.0f, 1.0f, "Min - Max %.3f");
+            audioComponentChanged |= ImGui::SliderFloat("SFX vol", &f5, 0.0f, 1.0f, "Min - Max %.3f");
             if (f5 > f1)
             {
                 f5 = f1;
@@ -1665,8 +1712,368 @@ namespace NocturnalEngine {
                     p_ecs.GetComponent<Audio>(i).SetSFXVolume(f5);
                 }
             }
+
+            // Audio Effects (DSP) controls
+            ImGui::Separator();
+            if (ImGui::CollapsingHeader("Audio Effects (DSP)"))
+            {
+                static AudioEffectSettings editorFx;
+                static bool fxInitialized = false;
+
+                // Sync from first Audio component found in scene on first open
+                if (!fxInitialized)
+                {
+                    for (Entity ei = 0; ei < p_ecs.GetTotalSceneEntities(); ++ei)
+                    {
+                        if (p_ecs.HaveComponent<Audio>(ei))
+                        {
+                            editorFx = p_ecs.GetComponent<Audio>(ei).GetEffectSettings();
+                            break;
+                        }
+                    }
+                    editorFx = p_Audio->GetCurrentEffects();
+                    fxInitialized = true;
+                }
+
+                // Low-pass filter
+                audioComponentChanged |= ImGui::Checkbox("Low-Pass Filter##Editor", &editorFx.lowpassEnabled);
+                if (editorFx.lowpassEnabled)
+                {
+                    audioComponentChanged |= ImGui::SliderFloat("LP Cutoff (Hz)##Editor", &editorFx.lowpassCutoff, 10.0f, 22000.0f, "%.0f");
+                    audioComponentChanged |= ImGui::SliderFloat("LP Resonance##Editor", &editorFx.lowpassResonance, 1.0f, 10.0f, "%.1f");
+                }
+
+                // High-pass filter
+                audioComponentChanged |= ImGui::Checkbox("High-Pass Filter##Editor", &editorFx.highpassEnabled);
+                if (editorFx.highpassEnabled)
+                {
+                    audioComponentChanged |= ImGui::SliderFloat("HP Cutoff (Hz)##Editor", &editorFx.highpassCutoff, 10.0f, 22000.0f, "%.0f");
+                    audioComponentChanged |= ImGui::SliderFloat("HP Resonance##Editor", &editorFx.highpassResonance, 1.0f, 10.0f, "%.1f");
+                }
+
+                // Echo / Delay
+                audioComponentChanged |= ImGui::Checkbox("Echo / Delay##Editor", &editorFx.echoEnabled);
+                if (editorFx.echoEnabled)
+                {
+                    audioComponentChanged |= ImGui::SliderFloat("Echo Delay (ms)##Editor", &editorFx.echoDelay, 1.0f, 5000.0f, "%.0f");
+                    audioComponentChanged |= ImGui::SliderFloat("Echo Feedback (%%)##Editor", &editorFx.echoFeedback, 0.0f, 100.0f, "%.0f");
+                    audioComponentChanged |= ImGui::SliderFloat("Echo Dry (dB)##Editor", &editorFx.echoDryLevel, -80.0f, 10.0f, "%.1f");
+                    audioComponentChanged |= ImGui::SliderFloat("Echo Wet (dB)##Editor", &editorFx.echoWetLevel, -80.0f, 10.0f, "%.1f");
+                }
+
+                // Reverb
+                audioComponentChanged |= ImGui::Checkbox("Reverb##Editor", &editorFx.reverbEnabled);
+                if (editorFx.reverbEnabled)
+                {
+                    audioComponentChanged |= ImGui::SliderFloat("Decay Time (ms)##Editor", &editorFx.reverbDecayTime, 100.0f, 20000.0f, "%.0f");
+                    audioComponentChanged |= ImGui::SliderFloat("Early Delay (ms)##Editor", &editorFx.reverbEarlyDelay, 0.0f, 300.0f, "%.1f");
+                    audioComponentChanged |= ImGui::SliderFloat("Late Delay (ms)##Editor", &editorFx.reverbLateDelay, 0.0f, 100.0f, "%.1f");
+                    audioComponentChanged |= ImGui::SliderFloat("HF Reference (Hz)##Editor", &editorFx.reverbHFReference, 20.0f, 20000.0f, "%.0f");
+                    audioComponentChanged |= ImGui::SliderFloat("Diffusion (%%)##Editor", &editorFx.reverbDiffusion, 0.0f, 100.0f, "%.0f");
+                    audioComponentChanged |= ImGui::SliderFloat("Density (%%)##Editor", &editorFx.reverbDensity, 0.0f, 100.0f, "%.0f");
+                    audioComponentChanged |= ImGui::SliderFloat("Reverb Wet (dB)##Editor", &editorFx.reverbWetLevel, -80.0f, 20.0f, "%.1f");
+                    audioComponentChanged |= ImGui::SliderFloat("Reverb Dry (dB)##Editor", &editorFx.reverbDryLevel, -80.0f, 20.0f, "%.1f");
+                }
+
+                // Apply effects to audio engine in real-time
+                p_Audio->ApplyEffects(editorFx);
+
+                // Propagate editor effect settings back to all Audio components in the scene
+                for (Entity ei = 0; ei < p_ecs.GetTotalSceneEntities(); ++ei)
+                {
+                    if (p_ecs.HaveComponent<Audio>(ei))
+                    {
+                        p_ecs.GetComponent<Audio>(ei).SetEffectSettings(editorFx);
+                    }
+                }
+            }
+
+            if (hasAudioComponent && audioComponentChanged)
+                audioComponentEditDirty = true;
+
+            if (audioComponentEditDirty && !ImGui::IsAnyItemActive())
+            {
+                PushUndoSnapshotAndInvalidateRedo();
+                audioComponentEditDirty = false;
+            }
+
             ImGui::End();
         }
+    }
+
+    void LevelEditor::AnimationEditor()
+    {
+        static bool animationEditDirty = false;
+        if (!is_ShowWindow)
+            return;
+
+        ImGui::Begin("Animation Editor");
+
+        if (selectedEntity == MAX_ENTITIES || !p_ecs.HaveComponent<Sprite>(selectedEntity))
+        {
+            ImGui::Text("Select an entity with a Sprite component.");
+            ImGui::End();
+            return;
+        }
+
+        Sprite& sprite = p_ecs.GetComponent<Sprite>(selectedEntity);
+
+        bool changed = false;
+        changed |= ImGui::Checkbox("SpriteSheet", &sprite.is_SpriteSheet); ImGui::SameLine();
+        changed |= ImGui::Checkbox("Animated", &sprite.is_Animated);
+
+        const std::string& textureName = sprite.GetTexture();
+        ImGui::Text("Current Sprite Texture: %s", textureName.c_str());
+
+        if (!sprite.is_SpriteSheet)
+        {
+            ImGui::Text("Enable SpriteSheet to edit frame timings.");
+            ImGui::End();
+            return;
+        }
+
+        ImGui::Separator();
+        ImGui::Text("Animation State Manager");
+        changed |= ImGui::Checkbox("Enable State Manager", &sprite.stateManagerEnabled);
+
+        if (sprite.stateManagerEnabled)
+        {
+            // Shared picker used by each rule to select a texture from loaded assets.
+            auto drawStateTexturePicker = [&](const char* label, std::string& textureKey, int id)
+            {
+                ImGui::PushID(id);
+                ImGui::Text("%s", label); ImGui::SameLine();
+                ImGui::SetNextItemWidth(180.0f);
+                if (ImGui::BeginCombo("##StateTexture", textureKey.c_str()))
+                {
+                    for (auto& [str, tex] : ResourceManager::textures)
+                    {
+                        UNREFERENCED_PARAMETER(tex);
+                        if (ImGui::Selectable(str.c_str()))
+                        {
+                            textureKey = str;
+                            changed = true;
+                        }
+                    }
+                    ImGui::EndCombo();
+                }
+
+                if (ImGui::BeginDragDropTarget())
+                {
+                    if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Textures"))
+                    {
+                        textureKey = *(const std::string*)payload->Data;
+                        changed = true;
+                    }
+                    ImGui::EndDragDropTarget();
+                }
+                ImGui::PopID();
+            };
+
+            std::vector<std::string> previewLabels{};
+            previewLabels.emplace_back("Auto");
+            // Preview options mirror the current rule list.
+            for (size_t i = 0; i < sprite.stateRules.size(); ++i)
+            {
+                if (sprite.stateRules[i].name.empty())
+                    previewLabels.emplace_back("State " + std::to_string(i + 1));
+                else
+                    previewLabels.push_back(sprite.stateRules[i].name);
+            }
+            std::vector<const char*> previewItems{};
+            previewItems.reserve(previewLabels.size());
+            for (const std::string& lbl : previewLabels)
+                previewItems.push_back(lbl.c_str());
+            if (!previewItems.empty())
+                changed |= ImGui::Combo("Preview State", &sprite.statePreviewMode, previewItems.data(), static_cast<int>(previewItems.size()));
+
+            if (ImGui::Button("Add State"))
+            {
+                // New rules default to "Always" and current texture for quick setup.
+                Sprite::AnimationStateRule r{};
+                r.name = "State " + std::to_string(sprite.stateRules.size() + 1);
+                r.textureKey = sprite.GetTexture();
+                r.source = 3;
+                r.compare = 0;
+                r.threshold = 0.5f;
+                r.priority = 0;
+                r.enabled = true;
+                sprite.stateRules.push_back(r);
+                changed = true;
+            }
+
+            int deleteIndex = -1;
+            for (size_t i = 0; i < sprite.stateRules.size(); ++i)
+            {
+                auto& rule = sprite.stateRules[i];
+                ImGui::PushID(static_cast<int>(i) + 5100);
+
+                std::string header = "Rule " + std::to_string(i + 1) + ": " + (rule.name.empty() ? "Unnamed" : rule.name);
+                if (ImGui::TreeNode(header.c_str()))
+                {
+                    changed |= ImGui::Checkbox("Enabled", &rule.enabled);
+
+                    char nameBuf[64]{};
+                    strncpy(nameBuf, rule.name.c_str(), sizeof(nameBuf) - 1);
+                    if (ImGui::InputText("State Name", nameBuf, sizeof(nameBuf)))
+                    {
+                        rule.name = nameBuf;
+                        changed = true;
+                    }
+
+                    drawStateTexturePicker("Texture", rule.textureKey, 6000 + static_cast<int>(i));
+
+                    const char* sourceItems[] = { "Hunger", "Health", "Sanity", "Always" };
+                    changed |= ImGui::Combo("Source", &rule.source, sourceItems, IM_ARRAYSIZE(sourceItems));
+
+                    const char* compareItems[] = { "<= Threshold", ">= Threshold" };
+                    changed |= ImGui::Combo("Condition", &rule.compare, compareItems, IM_ARRAYSIZE(compareItems));
+
+                    if (rule.source != 3)
+                        changed |= ImGui::SliderFloat("Threshold", &rule.threshold, 0.0f, 1.0f, "%.2f");
+                    else
+                        ImGui::TextDisabled("Always: threshold ignored");
+
+                    changed |= ImGui::DragInt("Priority", &rule.priority, 1.0f);
+
+                    if (ImGui::Button("Delete State"))
+                        deleteIndex = static_cast<int>(i);
+
+                    ImGui::TreePop();
+                }
+                ImGui::PopID();
+            }
+
+            if (deleteIndex >= 0 && deleteIndex < static_cast<int>(sprite.stateRules.size()))
+            {
+                // Delete after the loop to avoid invalidating references while drawing.
+                sprite.stateRules.erase(sprite.stateRules.begin() + deleteIndex);
+                if (sprite.statePreviewMode > static_cast<int>(sprite.stateRules.size()))
+                    sprite.statePreviewMode = 0;
+                changed = true;
+            }
+
+            // Logic scripts do not run while editor is active, so apply preview texture directly here.
+            if (sprite.statePreviewMode > 0 &&
+                sprite.statePreviewMode <= static_cast<int>(sprite.stateRules.size()))
+            {
+                const auto& previewRule = sprite.stateRules[sprite.statePreviewMode - 1];
+                if (!previewRule.textureKey.empty() && ResourceManager::GetTexture(previewRule.textureKey))
+                {
+                    if (sprite.GetTexture() != previewRule.textureKey)
+                    {
+                        sprite.SetTexture(previewRule.textureKey);
+                        int x = 0;
+                        int y = sprite.GetIndex().y;
+                        sprite.SetIndex(x, y);
+                        sprite.internaltimer = 0.0f;
+                        changed = true;
+                    }
+                }
+            }
+        }
+
+        ImGui::Separator();
+        ImGui::Text("Spritesheet Timing Editor");
+
+        // Build editable spritesheet list from the active sprite texture + state-manager rules.
+        std::vector<std::string> editableTextures{};
+        auto appendUniqueTexture = [&](const std::string& key)
+        {
+            if (key.empty())
+                return;
+            if (std::find(editableTextures.begin(), editableTextures.end(), key) == editableTextures.end())
+                editableTextures.push_back(key);
+        };
+        appendUniqueTexture(textureName);
+        if (sprite.stateManagerEnabled)
+        {
+            for (const auto& rule : sprite.stateRules)
+                appendUniqueTexture(rule.textureKey);
+        }
+
+        if (editableTextures.empty())
+        {
+            ImGui::TextDisabled("No spritesheets available to edit.");
+        }
+        else
+        {
+            static int selectedTimingSheet = 0;
+            if (selectedTimingSheet >= static_cast<int>(editableTextures.size()))
+                selectedTimingSheet = 0;
+
+            std::vector<const char*> timingItems{};
+            timingItems.reserve(editableTextures.size());
+            for (const auto& key : editableTextures)
+                timingItems.push_back(key.c_str());
+
+            changed |= ImGui::Combo("Timing Target", &selectedTimingSheet, timingItems.data(), static_cast<int>(timingItems.size()));
+            const std::string targetTexture = editableTextures[selectedTimingSheet];
+            ImGui::Text("Editing Texture: %s", targetTexture.c_str());
+            if (ImGui::Button("Set Current Sprite To Timing Target"))
+            {
+                if (ResourceManager::GetTexture(targetTexture))
+                {
+                    sprite.SetTexture(targetTexture);
+                    int x = 0;
+                    int y = sprite.GetIndex().y;
+                    sprite.SetIndex(x, y);
+                    sprite.internaltimer = 0.0f;
+                    changed = true;
+                }
+            }
+
+            int maxFrames = 1;
+            auto texIt = ResourceManager::textures.find(targetTexture);
+            if (texIt != ResourceManager::textures.end() && texIt->second)
+            {
+                const int texFrames = static_cast<int>(texIt->second->GetWidth() / 512);
+                if (texFrames > 0)
+                    maxFrames = texFrames;
+            }
+
+            auto& targetTimes = Animation::spriteContainer[targetTexture];
+            if (targetTimes.empty())
+            {
+                // If no data exists yet, bootstrap from current sprite timings or default values.
+                if (targetTexture == textureName && !sprite.GetDisplayTime().empty())
+                    targetTimes = sprite.GetDisplayTime();
+                else
+                    targetTimes.resize(maxFrames, 0.1f);
+            }
+
+            ImGui::Text("Detected Frames: %d", maxFrames);
+            if (ImGui::Button("Sync Frames To Texture Width"))
+            {
+                targetTimes.resize(maxFrames > 0 ? maxFrames : 1, 0.1f);
+                changed = true;
+            }
+
+            for (int i = 0; i < static_cast<int>(targetTimes.size()); ++i)
+            {
+                std::string label = "Frame " + std::to_string(i);
+                if (ImGui::DragFloat(label.c_str(), &targetTimes[i], 0.005f, 0.0f, 10.0f, "%.3f s"))
+                    changed = true;
+            }
+
+            // Keep sprite-local timing in sync when editing the currently assigned sprite texture.
+            if (targetTexture == textureName)
+            {
+                sprite.GetDisplayTime() = targetTimes;
+                sprite.GetMaxIndex() = static_cast<int>(targetTimes.size());
+            }
+        }
+
+        if (changed)
+            animationEditDirty = true;
+
+        if (animationEditDirty && !ImGui::IsAnyItemActive())
+        {
+            PushUndoSnapshotAndInvalidateRedo();
+            animationEditDirty = false;
+        }
+
+        ImGui::End();
     }
 
     void LevelEditor::HandleUndoRedoShortcuts()
@@ -1680,7 +2087,7 @@ namespace NocturnalEngine {
         {
             if (io.KeyShift)
                 ApplyRedo();
-            else
+            else if (mUndoStack.size() > 1)
                 ApplyUndo();
         }
         else if (io.KeyCtrl && ImGui::IsKeyPressed(ImGuiKey_Y, false))
@@ -1729,33 +2136,38 @@ namespace NocturnalEngine {
         if (!std::filesystem::exists(snapshotPath))
             return false;
 
+        const Entity previousSelection = selectedEntity;
+
         // Replace world state with snapshot contents.
         if (!p_Scene->DeserializeFromFile(snapshotPath))
             return false;
 
-        selectedEntity = MAX_ENTITIES;
+        if (previousSelection < MAX_ENTITIES &&
+            p_ecs.GetAliveEntitiesSet().contains(previousSelection))
+        {
+            selectedEntity = previousSelection;
+        }
+        else
+        {
+            selectedEntity = MAX_ENTITIES;
+        }
         return true;
     }
 
     void LevelEditor::ApplyUndo()
     {
-        if (mUndoStack.empty())
+        if (mUndoStack.size() <= 1)
             return;
 
-        // Save current state so user can redo to it.
-        const std::string redoSnapshot = CreateSnapshotFilePath();
-        if (!p_Scene->SerializeToFile(redoSnapshot))
-            return;
-
-        const std::string undoSnapshot = mUndoStack.back();
+        const std::string redoSnapshot = mUndoStack.back();
         mUndoStack.pop_back();
+        const std::string& undoSnapshot = mUndoStack.back();
         if (!LoadSnapshot(undoSnapshot))
         {
-            std::filesystem::remove(redoSnapshot);
+            mUndoStack.push_back(redoSnapshot);
             return;
         }
-        // Consumed undo snapshot can be deleted.
-        std::filesystem::remove(undoSnapshot);
+        mInspectorEditDirty = false;
 
         mRedoStack.push_back(redoSnapshot);
         while (mRedoStack.size() > mMaxUndoSteps)
@@ -1771,22 +2183,15 @@ namespace NocturnalEngine {
         if (mRedoStack.empty())
             return;
 
-        // Save current state so user can undo this redo.
-        const std::string undoSnapshot = CreateSnapshotFilePath();
-        if (!p_Scene->SerializeToFile(undoSnapshot))
-            return;
-
         const std::string redoSnapshot = mRedoStack.back();
         mRedoStack.pop_back();
         if (!LoadSnapshot(redoSnapshot))
         {
-            std::filesystem::remove(undoSnapshot);
+            mRedoStack.push_back(redoSnapshot);
             return;
         }
-        // Consumed redo snapshot can be deleted.
-        std::filesystem::remove(redoSnapshot);
-
-        mUndoStack.push_back(undoSnapshot);
+        mInspectorEditDirty = false;
+        mUndoStack.push_back(redoSnapshot);
         while (mUndoStack.size() > mMaxUndoSteps)
         {
             // Enforce history cap.

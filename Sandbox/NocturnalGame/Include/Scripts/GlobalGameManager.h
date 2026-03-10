@@ -19,19 +19,56 @@
 #include "pch.h"
 #include "System/System.h"
 #include "ECS/Components/AnimalAttributes.h"
+//#include "Scripts/AnimalLogic.h"
 
 #define p_GameManager NocturnalEngine::GameManager::GetInstance()
 
 namespace NocturnalEngine {
+
+    class LevelConfig:public JSONSerializer {
+    public:
+        enum AnimalRef
+        {
+            IDK = 0,
+            FLAMINGO = 1,
+            SEAL = 2,
+            HORSE = 3,
+            OWL = 4
+        };
+
+        
+        typedef std::map<AnimalRef, AnimalAttributes> LevelData;
+        
+        
+        bool SetupLevelData(const std::string& folderPath);
+
+        virtual bool Deserialize(const rapidjson::Value& obj) override;
+
+        virtual bool Serialize(rapidjson::PrettyWriter<rapidjson::StringBuffer>* writer) const override { UNREFERENCED_PARAMETER(writer); return true; }
+
+        const std::map<int,LevelData>& GetLevels() const { return levelList; }
+
+    private:
+        std::map<int,LevelData> levelList{};
+    };
+
+
     class GameManager {
     public:
 
-        enum class GameState {
-            STARTING,
-            PLAYING,
-            ENDING
+        struct AnimalData
+        {
+            AnimalAttributes aA{};
+            float  hungerD {10.f }, hpD{ 10.f }, sanityD{ 10.f };
+            float  hungerT{ 0.f }, hpT{ 0.f }, sanityT{ 0.f };
         };
-        AnimalAttributes LoadPersistentValues(std::string gs);
+        enum class GameState {
+            STARTING=0,
+            PLAYING=1,
+            ENDING=2,
+            PAUSED=3
+        };
+        AnimalData LoadPersistentValues(std::string gs);
 
         static GameManager& GetInstance();
         /*!*************************************************************************
@@ -54,11 +91,19 @@ namespace NocturnalEngine {
              under20 = 0;
          }
 
-         void SaveAnimalAttributesToCurrentScene(AnimalAttributes aA);
+         void NextLevel();
+
+         void SaveAnimalAttributesToCurrentScene(AnimalData aA);
 
          GameState GetGameState()const { return currState; }
 
          void SetState(GameState s) { currState = s; }
+
+         void Pause() { prePauseState = currState; currState = GameState::PAUSED; }
+
+         void UnPause() { currState = prePauseState; }
+
+         unsigned int CurrentLevel() const { return levelNum; }
         
          void AddDeath() { deadAnimals++; }
 
@@ -72,6 +117,8 @@ namespace NocturnalEngine {
 
          //returns how much we have to multiply seconds by for timer
          float GetTimeScale() const{ return 21600.f/winRequirement; }
+
+         float GetCheckPeriod()const { return winRequirement/72.f; }
 
          float GetTimeElapsed() const{ return gameTimeElapsed; }
 
@@ -92,6 +139,8 @@ namespace NocturnalEngine {
          void SetSceneToSwitch(std::string);
     private:
 
+        LevelConfig levelConfig{};
+
         GameManager();
         ~GameManager();
         GameManager(const GameManager&) = delete;
@@ -101,14 +150,15 @@ namespace NocturnalEngine {
 
         void LoseGame();
         void WinGame();
-        void LogLowHealth(std::pair < const std ::string , AnimalAttributes > & sceneAnimalPair);
+        void LogLowHealth(std::pair < const std ::string , AnimalData > & sceneAnimalPair);
 
 
         float gameTimeElapsed{}, winRequirement{120.f}; //in seconds
 
         std::string currScene;
-        GameState currState;
-        std::unordered_map < std::string, AnimalAttributes> sceneAnimalMap;
+        GameState currState, prePauseState;
+
+        std::unordered_map < std::string, AnimalData> sceneAnimalMap;
         int deadAnimals, deathLimit{ 3 }, maxDiegeticLogEntries{ 40 }, escapedAnimals{ 0 }, under20{ 0 };
         std::deque<std::string> diegeticLogEntries;
 
@@ -132,6 +182,12 @@ namespace NocturnalEngine {
         void CombinedSceneStart();
         void CombinedSceneUpdate(float dt);
         Entity GetEntityByName(const std::string name);
+
+        unsigned int levelNum{ 1 }, levelCount{ 3 };
+        bool levelDataLoaded{ false };
+        bool LevelDataToMap(int levelN);
+
+        void CheckAndDecreaseStats(float& time, float& chance, double decayRate, double& attributeValue, float frametime, double decreaseScale=1.0);
 
 
     };

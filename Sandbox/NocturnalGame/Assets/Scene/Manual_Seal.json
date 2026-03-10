@@ -11,611 +11,921 @@
         8,
         9
     ],
-    "Number of Entities": {
-        "Entities": 11
-    },
-    "EntitySignatures": [
-        "00000000000000000000000011111001",
-        "00000000000000000000000001111101",
-        "00000000000000000000000001111101",
-        "00000000000000000000000001111101",
-        "00000000000000000000000001111101",
-        "00000000000000000000000001111101",
-        "00000000000000000000000001111101",
-        "00000000000000000000000001111101",
-        "00000000000000000000000001111101",
-        "00000000000000000000000000011001",
-        "00000000000000000000000001111101"
-    ],
-    "Components": {
-        "0": [
-            {
-                "posX": 0.0,
-                "posY": 0.0,
-                "scaleX": 3.6449999809265137,
-                "scaleY": 1.9999960660934448,
-                "Rot": 0.0
-            },
-            {},
-            {},
-            {
-                "NameTag": "Background"
-            },
-            {
-                "TextureName": "UI/menu_bg",
-                "Index_X": 0,
-                "Index_Y": 0,
-                "Ucoordinates": 512.0,
-                "Vcoordinates": 512.0,
-                "IsSpriteSheet": false,
-                "IsAnimated": false,
-                "MaxIndex": 0,
-                "LayeringOrder": 0
-            },
-            {
-                "0": "AudioManager",
-                "1": "BackgroundAudio",
-                "2": "TabButton",
-                "ScriptCount": 3
-            },
-            {
-                "Tag": "HowToPlay",
-                "TargetTag": ""
-            },
-            {
-                "0": {
-                    "AudioPath": "BGM_Iris_Luminara_Loop.wav",
-                    "Channel": 2,
-                    "IsLooping": true
+    "Entities": [
+        {
+            "ID": 0,
+            "Components": [
+                {
+                    "Component": "Tag",
+                    "Tag": "HowToPlay",
+                    "TargetTag": ""
                 },
-                "AudioArrCount": 1,
-                "BGM Volume": 0.75,
-                "SFX Volume": 0.75,
-                "Master Volume": 0.75,
-                "RandomFromArray": false
-            },
-            {},
-            {},
-            {},
-            {},
-            {}
-        ],
-        "1": [
-            {
-                "posX": -1.1950000524520874,
-                "posY": 0.4449999928474426,
-                "scaleX": 0.3499999940395355,
-                "scaleY": 0.3499999940395355,
-                "Rot": 6.0
-            },
-            {},
-            {
-                "ColliderType1": 4,
-                "ColliderType2": 0,
-                "minX1": 0.15000000596046448,
-                "minX2": 0.0,
-                "minY1": 0.05000000074505806,
-                "minY2": 0.0,
-                "maxX1": 0.20000000298023224,
-                "maxX2": 0.0,
-                "maxY1": 0.05000000074505806,
-                "maxY2": 0.0,
-                "offsetX1": 0.0,
-                "offsetX2": 0.0,
-                "offsetY1": 0.0,
-                "offsetY2": 0.0,
-                "radius1": 0.0,
-                "radius2": 0.0
-            },
-            {
-                "NameTag": "OverviewTag"
-            },
-            {
-                "TextureName": "HowToPlay/overviewtag",
-                "Index_X": 0,
-                "Index_Y": 0,
-                "Ucoordinates": 512.0,
-                "Vcoordinates": 512.0,
-                "IsSpriteSheet": false,
-                "IsAnimated": false,
-                "MaxIndex": 0,
-                "LayeringOrder": 0
-            },
-            {
-                "0": "ButtonResponse",
-                "ScriptCount": 1
-            },
-            {
-                "Tag": "OverviewTab",
-                "TargetTag": ""
-            },
-            {},
-            {},
-            {},
-            {},
-            {},
-            {}
-        ],
-        "2": [
-            {
-                "posX": -1.1200000047683716,
-                "posY": 0.2849999964237213,
-                "scaleX": 0.3499999940395355,
-                "scaleY": 0.3499999940395355,
-                "Rot": 6.0005998611450195
-            },
-            {},
-            {
-                "ColliderType1": 4,
-                "ColliderType2": 0,
-                "minX1": 0.15000000596046448,
-                "minX2": 0.0,
-                "minY1": 0.05000000074505806,
-                "minY2": 0.0,
-                "maxX1": 0.20000000298023224,
-                "maxX2": 0.0,
-                "maxY1": 0.05000000074505806,
-                "maxY2": 0.0,
-                "offsetX1": 0.0,
-                "offsetX2": 0.0,
-                "offsetY1": 0.0,
-                "offsetY2": 0.0,
-                "radius1": 0.0,
-                "radius2": 0.0
-            },
-            {
-                "NameTag": "FlamingoTag"
-            },
-            {
-                "TextureName": "HowToPlay/flamingotag",
-                "Index_X": 0,
-                "Index_Y": 0,
-                "Ucoordinates": 512.0,
-                "Vcoordinates": 512.0,
-                "IsSpriteSheet": false,
-                "IsAnimated": false,
-                "MaxIndex": 0,
-                "LayeringOrder": 0
-            },
-            {
-                "0": "ButtonResponse",
-                "ScriptCount": 1
-            },
-            {
-                "Tag": "FlamingoTab",
-                "TargetTag": ""
-            },
-            {},
-            {},
-            {},
-            {},
-            {},
-            {}
-        ],
-        "3": [
-            {
-                "posX": -1.1100000143051147,
-                "posY": 0.16500000655651093,
-                "scaleX": 0.3499999940395355,
-                "scaleY": 0.3499999940395355,
-                "Rot": 6.0
-            },
-            {},
-            {
-                "ColliderType1": 4,
-                "ColliderType2": 0,
-                "minX1": 0.15000000596046448,
-                "minX2": 0.0,
-                "minY1": 0.05000000074505806,
-                "minY2": 0.0,
-                "maxX1": 0.20000000298023224,
-                "maxX2": 0.0,
-                "maxY1": 0.05000000074505806,
-                "maxY2": 0.0,
-                "offsetX1": 0.0,
-                "offsetX2": 0.0,
-                "offsetY1": 0.0,
-                "offsetY2": 0.0,
-                "radius1": 0.0,
-                "radius2": 0.0
-            },
-            {
-                "NameTag": "SealTag"
-            },
-            {
-                "TextureName": "HowToPlay/sealtag",
-                "Index_X": 0,
-                "Index_Y": 0,
-                "Ucoordinates": 512.0,
-                "Vcoordinates": 512.0,
-                "IsSpriteSheet": false,
-                "IsAnimated": false,
-                "MaxIndex": 0,
-                "LayeringOrder": 0
-            },
-            {
-                "0": "ButtonResponse",
-                "ScriptCount": 1
-            },
-            {
-                "Tag": "SealTab",
-                "TargetTag": ""
-            },
-            {},
-            {},
-            {},
-            {},
-            {},
-            {}
-        ],
-        "4": [
-            {
-                "posX": -1.1100000143051147,
-                "posY": 0.04500000178813934,
-                "scaleX": 0.3499999940395355,
-                "scaleY": 0.3499999940395355,
-                "Rot": 6.0
-            },
-            {},
-            {
-                "ColliderType1": 4,
-                "ColliderType2": 0,
-                "minX1": 0.15000000596046448,
-                "minX2": 0.0,
-                "minY1": 0.05000000074505806,
-                "minY2": 0.0,
-                "maxX1": 0.20000000298023224,
-                "maxX2": 0.0,
-                "maxY1": 0.05000000074505806,
-                "maxY2": 0.0,
-                "offsetX1": 0.0,
-                "offsetX2": 0.0,
-                "offsetY1": 0.0,
-                "offsetY2": 0.0,
-                "radius1": 0.0,
-                "radius2": 0.0
-            },
-            {
-                "NameTag": "HorseTag"
-            },
-            {
-                "TextureName": "HowToPlay/horsetag",
-                "Index_X": 0,
-                "Index_Y": 0,
-                "Ucoordinates": 512.0,
-                "Vcoordinates": 512.0,
-                "IsSpriteSheet": false,
-                "IsAnimated": false,
-                "MaxIndex": 0,
-                "LayeringOrder": 0
-            },
-            {
-                "0": "ButtonResponse",
-                "ScriptCount": 1
-            },
-            {
-                "Tag": "HorseTab",
-                "TargetTag": ""
-            },
-            {},
-            {},
-            {},
-            {},
-            {},
-            {}
-        ],
-        "5": [
-            {
-                "posX": -1.1100000143051147,
-                "posY": -0.07500000298023224,
-                "scaleX": 0.3499999940395355,
-                "scaleY": 0.3499999940395355,
-                "Rot": 6.0
-            },
-            {},
-            {
-                "ColliderType1": 4,
-                "ColliderType2": 0,
-                "minX1": 0.15000000596046448,
-                "minX2": 0.0,
-                "minY1": 0.05000000074505806,
-                "minY2": 0.0,
-                "maxX1": 0.20000000298023224,
-                "maxX2": 0.0,
-                "maxY1": 0.05000000074505806,
-                "maxY2": 0.0,
-                "offsetX1": 0.0,
-                "offsetX2": 0.0,
-                "offsetY1": 0.0,
-                "offsetY2": 0.0,
-                "radius1": 0.0,
-                "radius2": 0.0
-            },
-            {
-                "NameTag": "OwlTag"
-            },
-            {
-                "TextureName": "HowToPlay/owltag",
-                "Index_X": 0,
-                "Index_Y": 0,
-                "Ucoordinates": 512.0,
-                "Vcoordinates": 512.0,
-                "IsSpriteSheet": false,
-                "IsAnimated": false,
-                "MaxIndex": 0,
-                "LayeringOrder": 0
-            },
-            {
-                "0": "ButtonResponse",
-                "ScriptCount": 1
-            },
-            {
-                "Tag": "OwlTab",
-                "TargetTag": ""
-            },
-            {},
-            {},
-            {},
-            {},
-            {},
-            {}
-        ],
-        "6": [
-            {
-                "posX": -1.065000057220459,
-                "posY": -0.23000000417232513,
-                "scaleX": 0.3499999940395355,
-                "scaleY": 0.3499999940395355,
-                "Rot": 6.0
-            },
-            {},
-            {
-                "ColliderType1": 4,
-                "ColliderType2": 0,
-                "minX1": 0.1899999976158142,
-                "minX2": 0.0,
-                "minY1": 0.05000000074505806,
-                "minY2": 0.0,
-                "maxX1": 0.15000000596046448,
-                "maxX2": 0.0,
-                "maxY1": 0.05000000074505806,
-                "maxY2": 0.0,
-                "offsetX1": 0.0,
-                "offsetX2": 0.0,
-                "offsetY1": 0.0,
-                "offsetY2": 0.0,
-                "radius1": 0.0,
-                "radius2": 0.0
-            },
-            {
-                "NameTag": "HealthTag"
-            },
-            {
-                "TextureName": "HowToPlay/healthtag",
-                "Index_X": 0,
-                "Index_Y": 0,
-                "Ucoordinates": 512.0,
-                "Vcoordinates": 512.0,
-                "IsSpriteSheet": false,
-                "IsAnimated": false,
-                "MaxIndex": 0,
-                "LayeringOrder": 0
-            },
-            {
-                "0": "ButtonResponse",
-                "ScriptCount": 1
-            },
-            {
-                "Tag": "HealthTab",
-                "TargetTag": ""
-            },
-            {},
-            {},
-            {},
-            {},
-            {},
-            {}
-        ],
-        "7": [
-            {
-                "posX": -1.065000057220459,
-                "posY": -0.3799999952316284,
-                "scaleX": 0.3499999940395355,
-                "scaleY": 0.3499999940395355,
-                "Rot": 6.0
-            },
-            {},
-            {
-                "ColliderType1": 4,
-                "ColliderType2": 0,
-                "minX1": 0.1899999976158142,
-                "minX2": 0.0,
-                "minY1": 0.05000000074505806,
-                "minY2": 0.0,
-                "maxX1": 0.15000000596046448,
-                "maxX2": 0.0,
-                "maxY1": 0.05000000074505806,
-                "maxY2": 0.0,
-                "offsetX1": 0.0,
-                "offsetX2": 0.0,
-                "offsetY1": 0.0,
-                "offsetY2": 0.0,
-                "radius1": 0.0,
-                "radius2": 0.0
-            },
-            {
-                "NameTag": "HungerTag"
-            },
-            {
-                "TextureName": "HowToPlay/hungertag",
-                "Index_X": 0,
-                "Index_Y": 0,
-                "Ucoordinates": 512.0,
-                "Vcoordinates": 512.0,
-                "IsSpriteSheet": false,
-                "IsAnimated": false,
-                "MaxIndex": 0,
-                "LayeringOrder": 0
-            },
-            {
-                "0": "ButtonResponse",
-                "ScriptCount": 1
-            },
-            {
-                "Tag": "HungerTab",
-                "TargetTag": ""
-            },
-            {},
-            {},
-            {},
-            {},
-            {},
-            {}
-        ],
-        "8": [
-            {
-                "posX": -1.065000057220459,
-                "posY": -0.5249999761581421,
-                "scaleX": 0.3499999940395355,
-                "scaleY": 0.3499999940395355,
-                "Rot": 6.0
-            },
-            {},
-            {
-                "ColliderType1": 4,
-                "ColliderType2": 0,
-                "minX1": 0.1899999976158142,
-                "minX2": 0.0,
-                "minY1": 0.05000000074505806,
-                "minY2": 0.0,
-                "maxX1": 0.15000000596046448,
-                "maxX2": 0.0,
-                "maxY1": 0.05000000074505806,
-                "maxY2": 0.0,
-                "offsetX1": 0.0,
-                "offsetX2": 0.0,
-                "offsetY1": 0.0,
-                "offsetY2": 0.0,
-                "radius1": 0.0,
-                "radius2": 0.0
-            },
-            {
-                "NameTag": "SanityTag"
-            },
-            {
-                "TextureName": "HowToPlay/sanitytag",
-                "Index_X": 0,
-                "Index_Y": 0,
-                "Ucoordinates": 512.0,
-                "Vcoordinates": 512.0,
-                "IsSpriteSheet": false,
-                "IsAnimated": false,
-                "MaxIndex": 0,
-                "LayeringOrder": 0
-            },
-            {
-                "0": "ButtonResponse",
-                "ScriptCount": 1
-            },
-            {
-                "Tag": "SanityTab",
-                "TargetTag": ""
-            },
-            {},
-            {},
-            {},
-            {},
-            {},
-            {}
-        ],
-        "9": [
-            {
-                "posX": 0.1899999976158142,
-                "posY": 0.02500000037252903,
-                "scaleX": 2.984999895095825,
-                "scaleY": 1.7450000047683716,
-                "Rot": 0.0
-            },
-            {},
-            {},
-            {
-                "NameTag": "Manual"
-            },
-            {
-                "TextureName": "HowToPlay/sealhtp",
-                "Index_X": 0,
-                "Index_Y": 0,
-                "Ucoordinates": 512.0,
-                "Vcoordinates": 512.0,
-                "IsSpriteSheet": false,
-                "IsAnimated": false,
-                "MaxIndex": 0,
-                "LayeringOrder": 0
-            },
-            {},
-            {},
-            {},
-            {},
-            {},
-            {},
-            {},
-            {}
-        ],
-        "10": [
-            {
-                "posX": 1.1299999952316284,
-                "posY": 0.6449999809265137,
-                "scaleX": 0.10000000149011612,
-                "scaleY": 0.10000000149011612,
-                "Rot": 0.0
-            },
-            {},
-            {
-                "ColliderType1": 4,
-                "ColliderType2": 0,
-                "minX1": 0.05000000074505806,
-                "minX2": 0.0,
-                "minY1": 0.05000000074505806,
-                "minY2": 0.0,
-                "maxX1": 0.05000000074505806,
-                "maxX2": 0.0,
-                "maxY1": 0.05000000074505806,
-                "maxY2": 0.0,
-                "offsetX1": 0.0,
-                "offsetX2": 0.0,
-                "offsetY1": 0.0,
-                "offsetY2": 0.0,
-                "radius1": 0.0,
-                "radius2": 0.0
-            },
-            {
-                "NameTag": "XButton"
-            },
-            {
-                "TextureName": "UI/Xmark",
-                "Index_X": 0,
-                "Index_Y": 0,
-                "Ucoordinates": 512.0,
-                "Vcoordinates": 512.0,
-                "IsSpriteSheet": false,
-                "IsAnimated": false,
-                "MaxIndex": 0,
-                "LayeringOrder": 0
-            },
-            {
-                "0": "ButtonResponse",
-                "ScriptCount": 1
-            },
-            {
-                "Tag": "XButton",
-                "TargetTag": ""
-            },
-            {},
-            {},
-            {},
-            {},
-            {},
-            {}
-        ]
-    }
+                {
+                    "Component": "Transform",
+                    "posX": 0.0,
+                    "posY": 0.0,
+                    "scaleX": 3.6449999809265137,
+                    "scaleY": 1.9999960660934448,
+                    "Rot": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "Background"
+                },
+                {
+                    "Component": "Sprite",
+                    "TextureName": "UI/menu_bg",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": false,
+                    "MaxIndex": 0,
+                    "LayeringOrder": 0,
+                    "StateManagerEnabled": false,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
+                },
+                {
+                    "Component": "Audio",
+                    "0": {
+                        "AudioPath": "BGM_Iris_Luminara_Loop.wav",
+                        "Channel": 2,
+                        "IsLooping": true
+                    },
+                    "AudioArrCount": 1,
+                    "BGM Volume": 0.75,
+                    "SFX Volume": 0.75,
+                    "Master Volume": 0.75,
+                    "RandomFromArray": false,
+                    "Effects": {
+                        "LowpassEnabled": false,
+                        "LowpassCutoff": 5000.0,
+                        "LowpassResonance": 1.0,
+                        "HighpassEnabled": false,
+                        "HighpassCutoff": 10.0,
+                        "HighpassResonance": 1.0,
+                        "EchoEnabled": false,
+                        "EchoDelay": 500.0,
+                        "EchoFeedback": 50.0,
+                        "EchoDryLevel": 0.0,
+                        "EchoWetLevel": -6.0,
+                        "ReverbEnabled": false,
+                        "ReverbDecayTime": 1500.0,
+                        "ReverbEarlyDelay": 7.0,
+                        "ReverbLateDelay": 11.0,
+                        "ReverbHFReference": 5000.0,
+                        "ReverbDiffusion": 100.0,
+                        "ReverbDensity": 100.0,
+                        "ReverbWetLevel": -6.0,
+                        "ReverbDryLevel": 0.0
+                    }
+                },
+                {
+                    "Component": "Logic",
+                    "0": "AudioManager",
+                    "1": "BackgroundAudio",
+                    "ScriptCount": 2
+                }
+            ]
+        },
+        {
+            "ID": 1,
+            "Components": [
+                {
+                    "Component": "Tag",
+                    "Tag": "OverviewTab",
+                    "TargetTag": ""
+                },
+                {
+                    "Component": "Transform",
+                    "posX": -1.1100000143051147,
+                    "posY": 0.4449999928474426,
+                    "scaleX": 0.3499999940395355,
+                    "scaleY": 0.3499999940395355,
+                    "Rot": 6.0
+                },
+                {
+                    "Component": "Collider",
+                    "ColliderType1": 4,
+                    "ColliderType2": 0,
+                    "minX1": 0.15000000596046448,
+                    "minX2": 0.0,
+                    "minY1": 0.05000000074505806,
+                    "minY2": 0.0,
+                    "maxX1": 0.20000000298023224,
+                    "maxX2": 0.0,
+                    "maxY1": 0.05000000074505806,
+                    "maxY2": 0.0,
+                    "offsetX1": 0.0,
+                    "offsetX2": 0.0,
+                    "offsetY1": 0.0,
+                    "offsetY2": 0.0,
+                    "radius1": 0.0,
+                    "radius2": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "OverviewTag"
+                },
+                {
+                    "Component": "Sprite",
+                    "TextureName": "HowToPlay/overviewtag",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": false,
+                    "MaxIndex": 0,
+                    "LayeringOrder": 0,
+                    "StateManagerEnabled": false,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
+                },
+                {
+                    "Component": "Logic",
+                    "0": "ButtonResponse",
+                    "ScriptCount": 1
+                },
+                {
+                    "Component": "ButtonComponent",
+                    "GoToSceneFlag": true,
+                    "GoToScene": "Assets/Scene/HowToPlay.json",
+                    "AudioOnHoverFlag": false,
+                    "AudioOnHoverRandom": false,
+                    "HoverAudioIndex": 0,
+                    "AudioOnClickFlag": false,
+                    "AudioOnClickRandom": false,
+                    "ClickAudioIndex": 0,
+                    "TexChangeOnHoverFlag": false,
+                    "TexChangeOnHover": "",
+                    "TexChangeOnClickFlag": false,
+                    "TexChangeOnClick": "",
+                    "ScaleOnHoverFlag": false,
+                    "ScaleOnHover": 0.0,
+                    "SetGameStateFlag": false,
+                    "SetGameState": "STARTING",
+                    "ResetStatsFlag": false,
+                    "NextLevelFlag": false,
+                    "SetCameraZoomFlag": false,
+                    "SetCameraZoom": 0.0,
+                    "MuteAudioFlag": false,
+                    "AltSceneSwitchFlag": false,
+                    "AltSceneSwitch": "",
+                    "ExitGameFlag": false
+                }
+            ]
+        },
+        {
+            "ID": 2,
+            "Components": [
+                {
+                    "Component": "Tag",
+                    "Tag": "FlamingoTab",
+                    "TargetTag": ""
+                },
+                {
+                    "Component": "Transform",
+                    "posX": -1.1100000143051147,
+                    "posY": 0.2849999964237213,
+                    "scaleX": 0.3499999940395355,
+                    "scaleY": 0.3499999940395355,
+                    "Rot": 6.0005998611450195
+                },
+                {
+                    "Component": "Collider",
+                    "ColliderType1": 4,
+                    "ColliderType2": 0,
+                    "minX1": 0.15000000596046448,
+                    "minX2": 0.0,
+                    "minY1": 0.05000000074505806,
+                    "minY2": 0.0,
+                    "maxX1": 0.20000000298023224,
+                    "maxX2": 0.0,
+                    "maxY1": 0.05000000074505806,
+                    "maxY2": 0.0,
+                    "offsetX1": 0.0,
+                    "offsetX2": 0.0,
+                    "offsetY1": 0.0,
+                    "offsetY2": 0.0,
+                    "radius1": 0.0,
+                    "radius2": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "FlamingoTag"
+                },
+                {
+                    "Component": "Sprite",
+                    "TextureName": "HowToPlay/flamingotag",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": false,
+                    "MaxIndex": 0,
+                    "LayeringOrder": 0,
+                    "StateManagerEnabled": false,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
+                },
+                {
+                    "Component": "Logic",
+                    "0": "ButtonResponse",
+                    "ScriptCount": 1
+                },
+                {
+                    "Component": "ButtonComponent",
+                    "GoToSceneFlag": true,
+                    "GoToScene": "Assets/Scene/Manual_Flamingo.json",
+                    "AudioOnHoverFlag": false,
+                    "AudioOnHoverRandom": false,
+                    "HoverAudioIndex": 0,
+                    "AudioOnClickFlag": false,
+                    "AudioOnClickRandom": false,
+                    "ClickAudioIndex": 0,
+                    "TexChangeOnHoverFlag": false,
+                    "TexChangeOnHover": "",
+                    "TexChangeOnClickFlag": false,
+                    "TexChangeOnClick": "",
+                    "ScaleOnHoverFlag": false,
+                    "ScaleOnHover": 0.0,
+                    "SetGameStateFlag": false,
+                    "SetGameState": "STARTING",
+                    "ResetStatsFlag": false,
+                    "NextLevelFlag": false,
+                    "SetCameraZoomFlag": false,
+                    "SetCameraZoom": 0.0,
+                    "MuteAudioFlag": false,
+                    "AltSceneSwitchFlag": false,
+                    "AltSceneSwitch": "",
+                    "ExitGameFlag": false
+                }
+            ]
+        },
+        {
+            "ID": 3,
+            "Components": [
+                {
+                    "Component": "Tag",
+                    "Tag": "SealTab",
+                    "TargetTag": ""
+                },
+                {
+                    "Component": "Transform",
+                    "posX": -1.1799999475479126,
+                    "posY": 0.16500000655651093,
+                    "scaleX": 0.3499999940395355,
+                    "scaleY": 0.3499999940395355,
+                    "Rot": 6.0
+                },
+                {
+                    "Component": "Collider",
+                    "ColliderType1": 4,
+                    "ColliderType2": 0,
+                    "minX1": 0.15000000596046448,
+                    "minX2": 0.0,
+                    "minY1": 0.05000000074505806,
+                    "minY2": 0.0,
+                    "maxX1": 0.20000000298023224,
+                    "maxX2": 0.0,
+                    "maxY1": 0.05000000074505806,
+                    "maxY2": 0.0,
+                    "offsetX1": 0.0,
+                    "offsetX2": 0.0,
+                    "offsetY1": 0.0,
+                    "offsetY2": 0.0,
+                    "radius1": 0.0,
+                    "radius2": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "SealTag"
+                },
+                {
+                    "Component": "Sprite",
+                    "TextureName": "HowToPlay/sealtag",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": false,
+                    "MaxIndex": 0,
+                    "LayeringOrder": 0,
+                    "StateManagerEnabled": false,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
+                },
+                {
+                    "Component": "Logic",
+                    "0": "ButtonResponse",
+                    "ScriptCount": 1
+                }
+            ]
+        },
+        {
+            "ID": 4,
+            "Components": [
+                {
+                    "Component": "Tag",
+                    "Tag": "HorseTab",
+                    "TargetTag": ""
+                },
+                {
+                    "Component": "Transform",
+                    "posX": -1.1100000143051147,
+                    "posY": 0.04500000178813934,
+                    "scaleX": 0.3499999940395355,
+                    "scaleY": 0.3499999940395355,
+                    "Rot": 6.0
+                },
+                {
+                    "Component": "Collider",
+                    "ColliderType1": 4,
+                    "ColliderType2": 0,
+                    "minX1": 0.15000000596046448,
+                    "minX2": 0.0,
+                    "minY1": 0.05000000074505806,
+                    "minY2": 0.0,
+                    "maxX1": 0.20000000298023224,
+                    "maxX2": 0.0,
+                    "maxY1": 0.05000000074505806,
+                    "maxY2": 0.0,
+                    "offsetX1": 0.0,
+                    "offsetX2": 0.0,
+                    "offsetY1": 0.0,
+                    "offsetY2": 0.0,
+                    "radius1": 0.0,
+                    "radius2": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "HorseTag"
+                },
+                {
+                    "Component": "Sprite",
+                    "TextureName": "HowToPlay/horsetag",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": false,
+                    "MaxIndex": 0,
+                    "LayeringOrder": 0,
+                    "StateManagerEnabled": false,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
+                },
+                {
+                    "Component": "Logic",
+                    "0": "ButtonResponse",
+                    "ScriptCount": 1
+                },
+                {
+                    "Component": "ButtonComponent",
+                    "GoToSceneFlag": true,
+                    "GoToScene": "Assets/Scene/Manual_Horse.json",
+                    "AudioOnHoverFlag": false,
+                    "AudioOnHoverRandom": false,
+                    "HoverAudioIndex": 0,
+                    "AudioOnClickFlag": false,
+                    "AudioOnClickRandom": false,
+                    "ClickAudioIndex": 0,
+                    "TexChangeOnHoverFlag": false,
+                    "TexChangeOnHover": "",
+                    "TexChangeOnClickFlag": false,
+                    "TexChangeOnClick": "",
+                    "ScaleOnHoverFlag": false,
+                    "ScaleOnHover": 0.0,
+                    "SetGameStateFlag": false,
+                    "SetGameState": "STARTING",
+                    "ResetStatsFlag": false,
+                    "NextLevelFlag": false,
+                    "SetCameraZoomFlag": false,
+                    "SetCameraZoom": 0.0,
+                    "MuteAudioFlag": false,
+                    "AltSceneSwitchFlag": false,
+                    "AltSceneSwitch": "",
+                    "ExitGameFlag": false
+                }
+            ]
+        },
+        {
+            "ID": 5,
+            "Components": [
+                {
+                    "Component": "Tag",
+                    "Tag": "OwlTab",
+                    "TargetTag": ""
+                },
+                {
+                    "Component": "Transform",
+                    "posX": -1.1100000143051147,
+                    "posY": -0.07500000298023224,
+                    "scaleX": 0.3499999940395355,
+                    "scaleY": 0.3499999940395355,
+                    "Rot": 6.0
+                },
+                {
+                    "Component": "Collider",
+                    "ColliderType1": 4,
+                    "ColliderType2": 0,
+                    "minX1": 0.15000000596046448,
+                    "minX2": 0.0,
+                    "minY1": 0.05000000074505806,
+                    "minY2": 0.0,
+                    "maxX1": 0.20000000298023224,
+                    "maxX2": 0.0,
+                    "maxY1": 0.05000000074505806,
+                    "maxY2": 0.0,
+                    "offsetX1": 0.0,
+                    "offsetX2": 0.0,
+                    "offsetY1": 0.0,
+                    "offsetY2": 0.0,
+                    "radius1": 0.0,
+                    "radius2": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "OwlTag"
+                },
+                {
+                    "Component": "Sprite",
+                    "TextureName": "HowToPlay/owltag",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": false,
+                    "MaxIndex": 0,
+                    "LayeringOrder": 0,
+                    "StateManagerEnabled": false,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
+                },
+                {
+                    "Component": "Logic",
+                    "0": "ButtonResponse",
+                    "ScriptCount": 1
+                },
+                {
+                    "Component": "ButtonComponent",
+                    "GoToSceneFlag": true,
+                    "GoToScene": "Assets/Scene/Manual_Owl.json",
+                    "AudioOnHoverFlag": false,
+                    "AudioOnHoverRandom": false,
+                    "HoverAudioIndex": 0,
+                    "AudioOnClickFlag": false,
+                    "AudioOnClickRandom": false,
+                    "ClickAudioIndex": 0,
+                    "TexChangeOnHoverFlag": false,
+                    "TexChangeOnHover": "",
+                    "TexChangeOnClickFlag": false,
+                    "TexChangeOnClick": "",
+                    "ScaleOnHoverFlag": false,
+                    "ScaleOnHover": 0.0,
+                    "SetGameStateFlag": false,
+                    "SetGameState": "STARTING",
+                    "ResetStatsFlag": false,
+                    "NextLevelFlag": false,
+                    "SetCameraZoomFlag": false,
+                    "SetCameraZoom": 0.0,
+                    "MuteAudioFlag": false,
+                    "AltSceneSwitchFlag": false,
+                    "AltSceneSwitch": "",
+                    "ExitGameFlag": false
+                }
+            ]
+        },
+        {
+            "ID": 6,
+            "Components": [
+                {
+                    "Component": "Tag",
+                    "Tag": "HealthTab",
+                    "TargetTag": ""
+                },
+                {
+                    "Component": "Transform",
+                    "posX": -1.065000057220459,
+                    "posY": -0.23000000417232513,
+                    "scaleX": 0.3499999940395355,
+                    "scaleY": 0.3499999940395355,
+                    "Rot": 6.0
+                },
+                {
+                    "Component": "Collider",
+                    "ColliderType1": 4,
+                    "ColliderType2": 0,
+                    "minX1": 0.1899999976158142,
+                    "minX2": 0.0,
+                    "minY1": 0.05000000074505806,
+                    "minY2": 0.0,
+                    "maxX1": 0.15000000596046448,
+                    "maxX2": 0.0,
+                    "maxY1": 0.05000000074505806,
+                    "maxY2": 0.0,
+                    "offsetX1": 0.0,
+                    "offsetX2": 0.0,
+                    "offsetY1": 0.0,
+                    "offsetY2": 0.0,
+                    "radius1": 0.0,
+                    "radius2": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "HealthTag"
+                },
+                {
+                    "Component": "Sprite",
+                    "TextureName": "HowToPlay/healthtag",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": false,
+                    "MaxIndex": 0,
+                    "LayeringOrder": 0,
+                    "StateManagerEnabled": false,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
+                },
+                {
+                    "Component": "Logic",
+                    "0": "ButtonResponse",
+                    "ScriptCount": 1
+                }
+            ]
+        },
+        {
+            "ID": 7,
+            "Components": [
+                {
+                    "Component": "Tag",
+                    "Tag": "HungerTab",
+                    "TargetTag": ""
+                },
+                {
+                    "Component": "Transform",
+                    "posX": -1.065000057220459,
+                    "posY": -0.3799999952316284,
+                    "scaleX": 0.3499999940395355,
+                    "scaleY": 0.3499999940395355,
+                    "Rot": 6.0
+                },
+                {
+                    "Component": "Collider",
+                    "ColliderType1": 4,
+                    "ColliderType2": 0,
+                    "minX1": 0.1899999976158142,
+                    "minX2": 0.0,
+                    "minY1": 0.05000000074505806,
+                    "minY2": 0.0,
+                    "maxX1": 0.15000000596046448,
+                    "maxX2": 0.0,
+                    "maxY1": 0.05000000074505806,
+                    "maxY2": 0.0,
+                    "offsetX1": 0.0,
+                    "offsetX2": 0.0,
+                    "offsetY1": 0.0,
+                    "offsetY2": 0.0,
+                    "radius1": 0.0,
+                    "radius2": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "HungerTag"
+                },
+                {
+                    "Component": "Sprite",
+                    "TextureName": "HowToPlay/hungertag",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": false,
+                    "MaxIndex": 0,
+                    "LayeringOrder": 0,
+                    "StateManagerEnabled": false,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
+                },
+                {
+                    "Component": "Logic",
+                    "0": "ButtonResponse",
+                    "ScriptCount": 1
+                }
+            ]
+        },
+        {
+            "ID": 8,
+            "Components": [
+                {
+                    "Component": "Tag",
+                    "Tag": "SanityTab",
+                    "TargetTag": ""
+                },
+                {
+                    "Component": "Transform",
+                    "posX": -1.065000057220459,
+                    "posY": -0.5249999761581421,
+                    "scaleX": 0.3499999940395355,
+                    "scaleY": 0.3499999940395355,
+                    "Rot": 6.0
+                },
+                {
+                    "Component": "Collider",
+                    "ColliderType1": 4,
+                    "ColliderType2": 0,
+                    "minX1": 0.1899999976158142,
+                    "minX2": 0.0,
+                    "minY1": 0.05000000074505806,
+                    "minY2": 0.0,
+                    "maxX1": 0.15000000596046448,
+                    "maxX2": 0.0,
+                    "maxY1": 0.05000000074505806,
+                    "maxY2": 0.0,
+                    "offsetX1": 0.0,
+                    "offsetX2": 0.0,
+                    "offsetY1": 0.0,
+                    "offsetY2": 0.0,
+                    "radius1": 0.0,
+                    "radius2": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "SanityTag"
+                },
+                {
+                    "Component": "Sprite",
+                    "TextureName": "HowToPlay/sanitytag",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": false,
+                    "MaxIndex": 0,
+                    "LayeringOrder": 0,
+                    "StateManagerEnabled": false,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
+                },
+                {
+                    "Component": "Logic",
+                    "0": "ButtonResponse",
+                    "ScriptCount": 1
+                }
+            ]
+        },
+        {
+            "ID": 9,
+            "Components": [
+                {
+                    "Component": "Transform",
+                    "posX": 0.1899999976158142,
+                    "posY": 0.02500000037252903,
+                    "scaleX": 2.984999895095825,
+                    "scaleY": 1.7450000047683716,
+                    "Rot": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "Manual"
+                },
+                {
+                    "Component": "Sprite",
+                    "TextureName": "HowToPlay/sealhtp",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": false,
+                    "MaxIndex": 0,
+                    "LayeringOrder": 0,
+                    "StateManagerEnabled": false,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "ID": 10,
+            "Components": [
+                {
+                    "Component": "Tag",
+                    "Tag": "XButton",
+                    "TargetTag": ""
+                },
+                {
+                    "Component": "Transform",
+                    "posX": 1.1299999952316284,
+                    "posY": 0.6449999809265137,
+                    "scaleX": 0.10000000149011612,
+                    "scaleY": 0.10000000149011612,
+                    "Rot": 0.0
+                },
+                {
+                    "Component": "Collider",
+                    "ColliderType1": 4,
+                    "ColliderType2": 0,
+                    "minX1": 0.05000000074505806,
+                    "minX2": 0.0,
+                    "minY1": 0.05000000074505806,
+                    "minY2": 0.0,
+                    "maxX1": 0.05000000074505806,
+                    "maxX2": 0.0,
+                    "maxY1": 0.05000000074505806,
+                    "maxY2": 0.0,
+                    "offsetX1": 0.0,
+                    "offsetX2": 0.0,
+                    "offsetY1": 0.0,
+                    "offsetY2": 0.0,
+                    "radius1": 0.0,
+                    "radius2": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "XButton"
+                },
+                {
+                    "Component": "Sprite",
+                    "TextureName": "UI/Xmark",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": false,
+                    "MaxIndex": 0,
+                    "LayeringOrder": 0,
+                    "StateManagerEnabled": false,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
+                },
+                {
+                    "Component": "Logic",
+                    "0": "ButtonResponse",
+                    "ScriptCount": 1
+                },
+                {
+                    "Component": "ButtonComponent",
+                    "GoToSceneFlag": true,
+                    "GoToScene": "Assets/Scene/Menu.json",
+                    "AudioOnHoverFlag": false,
+                    "AudioOnHoverRandom": false,
+                    "HoverAudioIndex": 0,
+                    "AudioOnClickFlag": false,
+                    "AudioOnClickRandom": false,
+                    "ClickAudioIndex": 0,
+                    "TexChangeOnHoverFlag": false,
+                    "TexChangeOnHover": "",
+                    "TexChangeOnClickFlag": false,
+                    "TexChangeOnClick": "",
+                    "ScaleOnHoverFlag": true,
+                    "ScaleOnHover": 1.100000023841858,
+                    "SetGameStateFlag": false,
+                    "SetGameState": "STARTING",
+                    "ResetStatsFlag": false,
+                    "NextLevelFlag": false,
+                    "SetCameraZoomFlag": false,
+                    "SetCameraZoom": 0.0,
+                    "MuteAudioFlag": false,
+                    "AltSceneSwitchFlag": false,
+                    "AltSceneSwitch": "",
+                    "ExitGameFlag": false
+                }
+            ]
+        }
+    ]
 }

@@ -24,12 +24,30 @@ namespace NocturnalEngine
 	public:
 		enum class AnimalType {
 			FLAMINGO,
+			SEAL, 
 			HOESE,
-			SEAL,
 			OWL
 		};
+		enum class PriorityAnimation {
+			NORMAL,
+			HUNGRY,
+			SICK,
+			CRAZY
+		};
+	private:
 		AnimalType animalType{ AnimalType::FLAMINGO };
-
+		PriorityAnimation anim{ PriorityAnimation::NORMAL };
+	public:
+		void SetAnimalType(int a) {
+			switch (a) {
+			case 1: animalType = AnimalType::FLAMINGO; break;
+			case 2: animalType = AnimalType::SEAL;     break;
+			case 3: animalType = AnimalType::HOESE;    break;
+			case 4: animalType = AnimalType::OWL;      break;
+			default:animalType = AnimalType::FLAMINGO; break;
+			}
+		}
+		void SetAnimalType(AnimalType a) { animalType = a; }
 		std::string WhatKindOfAnimalIsThis() {
 
 			switch (animalType)
@@ -50,6 +68,9 @@ namespace NocturnalEngine
 			return "I don't know";
 		}
 
+		PriorityAnimation GetAnimState()const { return anim; }
+		void SetAnimState(PriorityAnimation a) { anim = a; }
+
 		AnimalAttributes();
 		~AnimalAttributes() = default;
 
@@ -57,7 +78,7 @@ namespace NocturnalEngine
 
 		virtual bool Serialize(rapidjson::PrettyWriter<rapidjson::StringBuffer>* writer) const;
 
-		virtual void ToEditor() override;
+		virtual bool ToEditor() override;
 
 		/*!*************************************************************************
 		Retrieves Component Entity ID
@@ -87,8 +108,9 @@ namespace NocturnalEngine
 		double healthDecayRate;
 		double hungerDecayRate;
 		double sanityDecayRate;
-		bool is_alive,isEscaped;
+		bool is_alive, isEscaped{ false };
 
 		int healthWarnLevel{ 0 }, hungerWarnLevel{ 0 }, sanityWarnLevel{ 0 };
+		int animInnerState{ 0 };
 	};
 }

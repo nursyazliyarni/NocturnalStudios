@@ -24,7 +24,7 @@ namespace NocturnalEngine
 
 		Draggable();
 		~Draggable() = default;
-		void ToEditor()override;
+		bool ToEditor()override;
 		/*!*************************************************************************
 		This function de-serializes the level colliders from the given level json file
 		****************************************************************************/

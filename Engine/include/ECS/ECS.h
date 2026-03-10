@@ -99,16 +99,16 @@ namespace NocturnalEngine
 		/*!*************************************************************************
 		Clones the Entity and all its available components
 		****************************************************************************/
-		Entity CloneEntity(Entity entity)
+		Entity CloneEntity(Entity entity,bool isPrefab=false)
 		{
 			Entity newEntity;
 			if (p_MemoryManager.IsEnabled())
 			{
-				newEntity = CreateEntity();
+				newEntity = CreateEntity(isPrefab);
 			}
 			else
 			{
-				newEntity = mEntityManager->CreateEntity();
+				newEntity = mEntityManager->CreateEntity(isPrefab);
 			}
 			
 			mEntityManager->SetSignature(newEntity, GetEntitySignature(entity));
@@ -173,13 +173,22 @@ namespace NocturnalEngine
 		/*!*************************************************************************
 		Resets all the entities for Scene build
 		****************************************************************************/
-		void ResetEntities()
+		void ResetEntities(bool withPrefabs=false)
 		{
 			auto aliveset = mEntityManager->GetAliveEntities();
+			std::bitset<MAX_ENTITIES> bitset= mEntityManager->GetPrefabBitset();
 			
 			for (const auto& iter : aliveset)
 			{
-				DestroyEntity(iter);
+				if (withPrefabs)
+				{
+					DestroyEntity(iter);
+				}
+				else if (!bitset[iter]) 
+				{
+					DestroyEntity(iter);
+				}
+				
 			}
 			
 		}

@@ -19,6 +19,7 @@
 
 #include "pch.h"
 #include "fmod.hpp"
+#include "fmod_dsp_effects.h"
 #include "ECS/Components/Audio.h"
 
 #define p_Audio CAudioEngine::GetInstance()
@@ -39,6 +40,14 @@ class CAudioEngine
     // Track currently playing BGM path to prevent restart on scene transitions
     std::string mCurrentBGMPath;
     int mCurrentBGMChannelId = -1;
+
+    // DSP effect units applied on the Master channel group
+    FMOD::DSP* mDspLowpass{ nullptr };
+    FMOD::DSP* mDspHighpass{ nullptr };
+    FMOD::DSP* mDspEcho{ nullptr };
+    FMOD::DSP* mDspReverb{ nullptr };
+
+    AudioEffectSettings mCurrentEffects;
 public:
     std::map<int, FMOD::Channel*> mChannelMap;
 
@@ -74,6 +83,27 @@ public:
     bool IsBGMPathPlaying(const std::string& strSoundPath) const;
     const std::string& GetCurrentBGMPath() const { return mCurrentBGMPath; }
     void ClearBGMTracking();
+
+    // Audio effects (DSP) management
+    void ApplyEffects(const AudioEffectSettings& settings);
+    const AudioEffectSettings& GetCurrentEffects() const { return mCurrentEffects; }
+
+    // Audio fade-out for smooth transitions
+    static constexpr float DEFAULT_FADE_DURATION = 0.5f;
+    void FadeOutChannel(int channelID, float fadeDurationSeconds = DEFAULT_FADE_DURATION);
+    void FadeOutAndStopChannel(int channelID, float fadeDurationSeconds = DEFAULT_FADE_DURATION);
+    void FadeOutChannelGroup(channel_groups chan, float fadeDurationSeconds = DEFAULT_FADE_DURATION);
+
+private:
+    // Channels that are fading out and should be stopped once the fade completes
+    struct FadeOutInfo
+    {
+        int channelId;
+        unsigned long long stopAtDspClock;
+    };
+    std::vector<FadeOutInfo> mPendingFadeStops;
+    void ProcessPendingFadeStops();
+    unsigned long long GetSampleRateFromSystem() const;
 };
 
 #endif

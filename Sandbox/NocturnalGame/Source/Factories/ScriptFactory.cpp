@@ -30,10 +30,12 @@
 #include "Scripts/TimerDisplay.h"
 #include "Scripts/DigeticLog.h"
 #include "Scripts/RevealTargetOnClick.h"
-#include "Scripts/PainSpotSpawner.h"
+#include "Scripts/PainSpotDuplicateSpawner.h"
 #include "Scripts/EndScreenDisplay.h"
 #include "Scripts/ToyHideAndRevealOnClick.h"
 #include "Scripts/Tutorial_Logic.h"
+#include "Scripts/EncryptionKey.h"
+#include "Scripts/KeysCollectedDisplay.h"
 
 namespace NocturnalEngine {
 
@@ -56,10 +58,13 @@ namespace NocturnalEngine {
             RegisterScriptType<TimerDisplay>();
             RegisterScriptType<DigeticLog>();
             RegisterScriptType<RevealTargetOnClick>();
-            RegisterScriptType<PainSpotSpawner>();
+            RegisterScriptType<PainSpotDuplicateSpawner>();
             RegisterScriptType<EndScreenDisplay>();
             RegisterScriptType<ToyHideAndRevealOnClick>();
             RegisterScriptType<TutorialLogic>();
+            RegisterScriptType<EncryptionKey>();
+            RegisterScriptType<KeysCollectedDisplay>();
+        
 
     }
 

@@ -41,6 +41,8 @@ namespace NocturnalEngine
             for (int i = 0; i < audio.GetSize(); i++) {
                 p_Audio->SetLooping(audio[i].mAudioPath, audio[i].is_Looping);
             }
+            // Apply audio effects from the component settings
+            p_Audio->ApplyEffects(audio.GetEffectSettings());
         }
 	}
     /*!*************************************************************************
@@ -54,6 +56,8 @@ namespace NocturnalEngine
         //check sounds and update
         if (p_ecs.HaveComponent<Audio>(GetScriptEntityID())) {
             auto& audio = p_ecs.GetComponent<Audio>(GetScriptEntityID());
+            // Apply audio effects every frame so editor changes are reflected in real-time
+            p_Audio->ApplyEffects(audio.GetEffectSettings());
             for (int i = 0; i < audio.GetSize(); i++) {
                 //check if sound is playing
                 if (audio[i].triggered)
@@ -87,7 +91,7 @@ namespace NocturnalEngine
                     }
                 }
                 if (audio[i].should_stop == true) {
-                    p_Audio->StopChannel(audio[i].mChannel);
+                    p_Audio->FadeOutAndStopChannel(audio[i].mChannel);
                     audio[i].is_Playing = false;
                     audio[i].triggered = false;
                     audio[i].should_stop = false;

@@ -58,6 +58,7 @@ namespace NocturnalEngine {
 		void LoadAudioFromFile();
 		void LoadScriptsFromFile();
 		void AudioEditor();
+		void AnimationEditor();
 		void insertAudioFilePath(std::string in);
 		void insertTextureFilePath(std::string on);
 
@@ -169,8 +170,9 @@ namespace NocturnalEngine {
 		std::vector<std::string> mUndoStack; // Stack of snapshots for undo operations.
 		std::vector<std::string> mRedoStack; // Stack of snapshots for redo operations.
 		std::filesystem::path mUndoDirectory{ "Assets/Scene/.editor_undo" }; // Temporary folder for editor snapshots.
-		std::size_t mMaxUndoSteps{ 20 }; // Maximum number of history entries kept.
+		std::size_t mMaxUndoSteps{ 30 }; // Maximum number of history entries kept.
 		bool mStartedGizmoDrag{ false }; // Prevents duplicate snapshots during one gizmo drag.
+		bool mInspectorEditDirty{ false }; // Tracks inspector edits until the active widget is released.
 
 		bool mshowNewProjectPopup{ false }, //to show the user the prompt for making a new project
 			mshowOpenProjectPopup{ false }, //unused, for loading up project
@@ -184,6 +186,8 @@ namespace NocturnalEngine {
 		std::filesystem::path mBrowsingPath{}, currPath{}, mSelectedProjPath{};
 		std::string newFolderName{}, fixedProjName{};
 		char folderNameBuffer[128] = "",currPathDisplayBuffer[128]="",selectedPathDisplayBuffer[256]="";
+
+		char prefabNameBuffer[128] = "";
 		
 
 		/*!*************************************************************************

@@ -23,37 +23,39 @@ namespace NocturnalEngine
 	****************************************************************************/
 	RigidBody::RigidBody() : mAccel{vec2D(1.f,1.f)}, mVelocity{vec2D(1.0f,1.0f)}, mDirection{vec2D(1.0f,0.0f)}, mFriction{0.0f}, mRestitution{0.0f} {}
 
-	void RigidBody::ToEditor() {
+	bool RigidBody::ToEditor() {
+		bool changed = false;
 		if (ImGui::CollapsingHeader("RigidBody", ImGuiTreeNodeFlags_None))
 		{
 			//Acceleration
 			ImGui::PushItemWidth(100.0f);
 			ImGui::Text("Acceleration   "); ImGui::SameLine();
 			ImGui::Text("X"); ImGui::SameLine();
-			ImGui::DragFloat("##AccelerationX", (float*)&mVelocity.x, 0.005f); ImGui::SameLine();
+			changed |= ImGui::DragFloat("##AccelerationX", (float*)&mVelocity.x, 0.005f); ImGui::SameLine();
 			ImGui::PushID(3);
 			ImGui::Text("Y"); ImGui::SameLine();
-			ImGui::DragFloat("##AccelerationY", (float*)&mVelocity.y, 0.005f);
+			changed |= ImGui::DragFloat("##AccelerationY", (float*)&mVelocity.y, 0.005f);
 			ImGui::PopID();
 
 			//Direction
 			ImGui::PushItemWidth(100.0f);
 			ImGui::Text("Direction  "); ImGui::SameLine();
 			ImGui::Text("X"); ImGui::SameLine();
-			ImGui::DragFloat("##DirectionX", (float*)&mDirection.x, 0.005f); ImGui::SameLine();
+			changed |= ImGui::DragFloat("##DirectionX", (float*)&mDirection.x, 0.005f); ImGui::SameLine();
 			ImGui::PushID(4);
 			ImGui::Text("Y"); ImGui::SameLine();
-			ImGui::DragFloat("##DirectionY", (float*)&mDirection.y, 0.005f);
+			changed |= ImGui::DragFloat("##DirectionY", (float*)&mDirection.y, 0.005f);
 			ImGui::PopID();
 
 			//GetFricition
 			ImGui::Text("Friction   "); ImGui::SameLine();
-			ImGui::DragFloat("##Friction", (float*)&mFriction, 1.0f);
+			changed |= ImGui::DragFloat("##Friction", (float*)&mFriction, 1.0f);
 
 			//GetRestitution
 			ImGui::Text("Restitution"); ImGui::SameLine();
-			ImGui::DragFloat("##Restitution", (float*)&mRestitution, 1.0f);
+			changed |= ImGui::DragFloat("##Restitution", (float*)&mRestitution, 1.0f);
 		}
+		return changed;
 	}
 
 

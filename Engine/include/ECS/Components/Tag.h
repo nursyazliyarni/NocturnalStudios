@@ -24,7 +24,7 @@ namespace NocturnalEngine
 		Tag();
 		~Tag() = default;
 
-		void ToEditor()override;
+		bool ToEditor()override;
 
 		void SetTag(std::string tag) {mTag = tag;}
 		std::string& GetTag() {return mTag;}

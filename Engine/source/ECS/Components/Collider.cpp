@@ -37,7 +37,8 @@ namespace NocturnalEngine
 		}
 	}
 
-	void Collider::ToEditor() {
+	bool Collider::ToEditor() {
+        bool changed = false;
         if (ImGui::CollapsingHeader("Collider", ImGuiTreeNodeFlags_None))
         {
             //selection for collider type
@@ -45,7 +46,7 @@ namespace NocturnalEngine
             int colliderIndex = static_cast<int>(colliderType);
             const char* colliderNames = "none\0circle\0bubble\0line\0rect\0box\0bossball\0button";
             ImGui::Text("Collider 1 Type"); ImGui::SameLine();
-            ImGui::Combo("##test", &colliderIndex, colliderNames);
+            changed |= ImGui::Combo("##test", &colliderIndex, colliderNames);
             colliderType = static_cast<Collider::ColliderType>(colliderIndex);
 
             //positioning the offset
@@ -55,10 +56,10 @@ namespace NocturnalEngine
             ImGui::Text("OffSet   "); ImGui::SameLine();
             ImGui::Text("X"); ImGui::SameLine();
 
-            ImGui::DragFloat("##colliderOffsetX", (float*)&colliderOffset.x, 0.05f); ImGui::SameLine();
+            changed |= ImGui::DragFloat("##colliderOffsetX", (float*)&colliderOffset.x, 0.05f); ImGui::SameLine();
             ImGui::PushID(1);
             ImGui::Text("Y"); ImGui::SameLine();
-            ImGui::DragFloat("##colliderOffsetY", (float*)&colliderOffset.y, 0.05f);
+            changed |= ImGui::DragFloat("##colliderOffsetY", (float*)&colliderOffset.y, 0.05f);
             ImGui::PopID();
 
             //size of the collider
@@ -67,21 +68,21 @@ namespace NocturnalEngine
             {
                 auto& colliderSize = mColArr[0].mRadius;
                 ImGui::Text("Radius   "); ImGui::SameLine();
-                ImGui::DragFloat("##Radius", (float*)&colliderSize, 0.05f);
+                changed |= ImGui::DragFloat("##Radius", (float*)&colliderSize, 0.05f);
             }
             else if (mColArr[0].mCol == Collider::ColliderType::rect || mColArr[0].mCol == Collider::ColliderType::box)
             {
                 ImGui::Text("Minimum "); ImGui::SameLine();
                 ImGui::Text("X"); ImGui::SameLine();
-                ImGui::DragFloat("##MinimumX", (float*)&mColArr[0].mMin.x, 0.05f); ImGui::SameLine();
+                changed |= ImGui::DragFloat("##MinimumX", (float*)&mColArr[0].mMin.x, 0.05f); ImGui::SameLine();
                 ImGui::Text("Y"); ImGui::SameLine();
-                ImGui::DragFloat("##MinimumY", (float*)&mColArr[0].mMin.y, 0.05f);
+                changed |= ImGui::DragFloat("##MinimumY", (float*)&mColArr[0].mMin.y, 0.05f);
 
                 ImGui::Text("Maximum "); ImGui::SameLine();
                 ImGui::Text("X"); ImGui::SameLine();
-                ImGui::DragFloat("##MaximumX", (float*)&mColArr[0].mMax.x, 0.05f); ImGui::SameLine();
+                changed |= ImGui::DragFloat("##MaximumX", (float*)&mColArr[0].mMax.x, 0.05f); ImGui::SameLine();
                 ImGui::Text("Y"); ImGui::SameLine();
-                ImGui::DragFloat("##MaximumY", (float*)&mColArr[0].mMax.y, 0.05f);
+                changed |= ImGui::DragFloat("##MaximumY", (float*)&mColArr[0].mMax.y, 0.05f);
             }
 
             //selection for collider 2 type
@@ -89,7 +90,7 @@ namespace NocturnalEngine
             int colliderIndex1 = static_cast<int>(colliderType1);
             const char* colliderNames1 = "none\0circle\0bubble\0line\0rect\0box\0button";
             ImGui::Text("Collider 2 Type"); ImGui::SameLine();
-            ImGui::Combo("###test", &colliderIndex1, colliderNames1);
+            changed |= ImGui::Combo("###test", &colliderIndex1, colliderNames1);
             ImGui::PushItemWidth(100.0f);
             colliderType1 = static_cast<Collider::ColliderType>(colliderIndex1);
 
@@ -99,10 +100,10 @@ namespace NocturnalEngine
             ImGui::Text("OffSet   "); ImGui::SameLine();
             ImGui::Text("X"); ImGui::SameLine();
 
-            ImGui::DragFloat("###colliderOffsetX", (float*)&colliderOffset1.x, 0.05f); ImGui::SameLine();
+            changed |= ImGui::DragFloat("###colliderOffsetX", (float*)&colliderOffset1.x, 0.05f); ImGui::SameLine();
             ImGui::PushID(1);
             ImGui::Text("Y"); ImGui::SameLine();
-            ImGui::DragFloat("###colliderOffsetY", (float*)&colliderOffset1.y, 0.05f);
+            changed |= ImGui::DragFloat("###colliderOffsetY", (float*)&colliderOffset1.y, 0.05f);
             ImGui::PopID();
 
             //size of the collider
@@ -111,23 +112,24 @@ namespace NocturnalEngine
             {
                 auto& colliderSize1 = mColArr[1].mRadius;
                 ImGui::Text("Radius   "); ImGui::SameLine();
-                ImGui::DragFloat("###Radius", (float*)&colliderSize1, 0.05f);
+                changed |= ImGui::DragFloat("###Radius", (float*)&colliderSize1, 0.05f);
             }
             else if (mColArr[1].mCol == Collider::ColliderType::rect || mColArr[1].mCol == Collider::ColliderType::box)
             {
                 ImGui::Text("Minimum "); ImGui::SameLine();
                 ImGui::Text("X"); ImGui::SameLine();
-                ImGui::DragFloat("###MinimumX", (float*)&mColArr[1].mMin.x, 0.05f); ImGui::SameLine();
+                changed |= ImGui::DragFloat("###MinimumX", (float*)&mColArr[1].mMin.x, 0.05f); ImGui::SameLine();
                 ImGui::Text("Y"); ImGui::SameLine();
-                ImGui::DragFloat("###MinimumY", (float*)&mColArr[1].mMin.y, 0.05f);
+                changed |= ImGui::DragFloat("###MinimumY", (float*)&mColArr[1].mMin.y, 0.05f);
 
                 ImGui::Text("Maximum "); ImGui::SameLine();
                 ImGui::Text("X"); ImGui::SameLine();
-                ImGui::DragFloat("###MaximumX", (float*)&mColArr[1].mMax.x, 0.05f); ImGui::SameLine();
+                changed |= ImGui::DragFloat("###MaximumX", (float*)&mColArr[1].mMax.x, 0.05f); ImGui::SameLine();
                 ImGui::Text("Y"); ImGui::SameLine();
-                ImGui::DragFloat("###MaximumY", (float*)&mColArr[1].mMax.y, 0.05f);
+                changed |= ImGui::DragFloat("###MaximumY", (float*)&mColArr[1].mMax.y, 0.05f);
             }
         }
+        return changed;
 	}
 	/*!*************************************************************************
 	This function de-serializes the level colliders from the given level json file

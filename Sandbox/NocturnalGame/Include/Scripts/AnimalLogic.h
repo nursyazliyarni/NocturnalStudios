@@ -34,6 +34,13 @@ namespace NocturnalEngine
 	{
 	public:
 
+		struct AttributesDecreaseChance
+		{
+			float  hunger{ 10.f }, hp{ 10.f }, sanity{ 10.f };
+		};
+		struct TimeSinceCheck {
+			float  hunger{ 0.f }, hp{ 0.f }, sanity{ 0.f };
+		};
 		/*!*************************************************************************
 		Default constructor for Drag & Drop
 		****************************************************************************/
@@ -79,7 +86,15 @@ namespace NocturnalEngine
 		virtual Entity& GetScriptEntityID() override { return entityID; }
 
 	private:
+		AttributesDecreaseChance chance;
+		TimeSinceCheck time;
+
+		float checkPeriod{};
+		std::string ogSpritename{};
+		void CheckAndDecreaseStats(float& time,float& chance,double decayRate,double& attributeValue, float frametime,double decreaseScale=1.0);
+
 		void LogLowHealth(AnimalAttributes& aA);
+		void ChangeAnim(AnimalAttributes& aA);
 		// sets on start ,//per second			//max
 		float orgXPos{}, xMovementSpeed{0.05f}, maxXMovement{ 0.05f };
 		void MoveAnimalLeftRight(float Frametime);

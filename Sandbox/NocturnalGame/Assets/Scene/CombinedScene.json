@@ -95,7 +95,7 @@
                 {
                     "Component": "Logic",
                     "0": "AnimalLogic",
-                    "1": "PainSpotSpawner",
+                    "1": "PainSpotDuplicateSpawner",
                     "ScriptCount": 2
                 },
                 {
@@ -284,7 +284,8 @@
                 {
                     "Component": "Logic",
                     "0": "DragAndDrop",
-                    "ScriptCount": 1
+                    "1": "ToyHideAndRevealOnClick",
+                    "ScriptCount": 2
                 },
                 {
                     "Component": "HUDComponent",
