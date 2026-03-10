@@ -61,9 +61,9 @@
                 {
                     "Component": "Audio",
                     "0": {
-                        "AudioPath": "BGM_Iris_Luminara_Loop.wav",
+                        "AudioPath": "Luminara Zoo - Music - Menu (v1).wav",
                         "Channel": 2,
-                        "IsLooping": true
+                        "IsLooping": false
                     },
                     "AudioArrCount": 1,
                     "BGM Volume": 0.75,
@@ -904,7 +904,7 @@
                     "AudioOnHoverFlag": false,
                     "AudioOnHoverRandom": false,
                     "HoverAudioIndex": 0,
-                    "AudioOnClickFlag": false,
+                    "AudioOnClickFlag": true,
                     "AudioOnClickRandom": false,
                     "ClickAudioIndex": 0,
                     "TexChangeOnHoverFlag": false,

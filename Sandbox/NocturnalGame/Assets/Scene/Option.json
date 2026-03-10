@@ -56,9 +56,9 @@
                 {
                     "Component": "Audio",
                     "0": {
-                        "AudioPath": "BGM_Iris_Luminara_Loop.wav",
+                        "AudioPath": "Luminara Zoo - Music - Menu (v1).wav",
                         "Channel": 2,
-                        "IsLooping": true
+                        "IsLooping": false
                     },
                     "AudioArrCount": 1,
                     "BGM Volume": 1.0,
@@ -791,7 +791,10 @@
                 },
                 {
                     "Component": "Text",
+                    "text type": 0,
                     "Content": "Back",
+                    "Array of Content": [],
+                    "Vector of text position": [],
                     "Font": "ExcelsiorSans",
                     "Size": 92.0,
                     "ColorR": 0.27843138575553894,
@@ -803,7 +806,8 @@
                     "Rotation": 0.0,
                     "Line Height": 0,
                     "WorldSpace": false,
-                    "Center": false
+                    "Center": false,
+                    "LayeringOrder": 0
                 },
                 {
                     "Component": "ButtonComponent",
