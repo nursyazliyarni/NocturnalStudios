@@ -169,7 +169,7 @@
                 {
                     "Component": "Audio",
                     "0": {
-                        "AudioPath": "UI ButtonClick.wav",
+                        "AudioPath": "UI_PageFlick_v1.wav",
                         "Channel": 3,
                         "IsLooping": false
                     },
@@ -304,7 +304,7 @@
                 {
                     "Component": "Audio",
                     "0": {
-                        "AudioPath": "UI ButtonClick.wav",
+                        "AudioPath": "UI_PageFlick_v1.wav",
                         "Channel": 3,
                         "IsLooping": false
                     },
@@ -542,7 +542,7 @@
                 {
                     "Component": "Audio",
                     "0": {
-                        "AudioPath": "UI ButtonClick.wav",
+                        "AudioPath": "UI_PageFlick_v1.wav",
                         "Channel": 3,
                         "IsLooping": false
                     },
@@ -677,7 +677,7 @@
                 {
                     "Component": "Audio",
                     "0": {
-                        "AudioPath": "UI ButtonClick.wav",
+                        "AudioPath": "UI_PageFlick_v1.wav",
                         "Channel": 3,
                         "IsLooping": false
                     },
@@ -1074,7 +1074,7 @@
                 {
                     "Component": "Audio",
                     "0": {
-                        "AudioPath": "UI ButtonClick.wav",
+                        "AudioPath": "UI_Back_v2.wav",
                         "Channel": 3,
                         "IsLooping": false
                     },

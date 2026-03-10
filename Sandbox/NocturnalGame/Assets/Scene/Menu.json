@@ -188,7 +188,7 @@
                 {
                     "Component": "Audio",
                     "0": {
-                        "AudioPath": "UI ButtonClick.wav",
+                        "AudioPath": "UI_StartGame.wav",
                         "Channel": 3,
                         "IsLooping": false
                     },
