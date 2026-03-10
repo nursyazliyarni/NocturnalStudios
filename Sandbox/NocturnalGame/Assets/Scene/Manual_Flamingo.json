@@ -66,9 +66,9 @@
                         "IsLooping": false
                     },
                     "AudioArrCount": 1,
-                    "BGM Volume": 0.75,
-                    "SFX Volume": 0.75,
-                    "Master Volume": 0.75,
+                    "BGM Volume": 1.0,
+                    "SFX Volume": 1.0,
+                    "Master Volume": 1.0,
                     "RandomFromArray": false,
                     "Effects": {
                         "LowpassEnabled": false,
@@ -167,9 +167,45 @@
                     ]
                 },
                 {
+                    "Component": "Audio",
+                    "0": {
+                        "AudioPath": "UI ButtonClick.wav",
+                        "Channel": 3,
+                        "IsLooping": false
+                    },
+                    "AudioArrCount": 1,
+                    "BGM Volume": 1.0,
+                    "SFX Volume": 1.0,
+                    "Master Volume": 1.0,
+                    "RandomFromArray": false,
+                    "Effects": {
+                        "LowpassEnabled": false,
+                        "LowpassCutoff": 5000.0,
+                        "LowpassResonance": 1.0,
+                        "HighpassEnabled": false,
+                        "HighpassCutoff": 10.0,
+                        "HighpassResonance": 1.0,
+                        "EchoEnabled": false,
+                        "EchoDelay": 500.0,
+                        "EchoFeedback": 50.0,
+                        "EchoDryLevel": 0.0,
+                        "EchoWetLevel": -6.0,
+                        "ReverbEnabled": false,
+                        "ReverbDecayTime": 1500.0,
+                        "ReverbEarlyDelay": 7.0,
+                        "ReverbLateDelay": 11.0,
+                        "ReverbHFReference": 5000.0,
+                        "ReverbDiffusion": 100.0,
+                        "ReverbDensity": 100.0,
+                        "ReverbWetLevel": -6.0,
+                        "ReverbDryLevel": 0.0
+                    }
+                },
+                {
                     "Component": "Logic",
                     "0": "ButtonResponse",
-                    "ScriptCount": 1
+                    "1": "AudioManager",
+                    "ScriptCount": 2
                 },
                 {
                     "Component": "ButtonComponent",
@@ -178,7 +214,7 @@
                     "AudioOnHoverFlag": false,
                     "AudioOnHoverRandom": false,
                     "HoverAudioIndex": 0,
-                    "AudioOnClickFlag": false,
+                    "AudioOnClickFlag": true,
                     "AudioOnClickRandom": false,
                     "ClickAudioIndex": 0,
                     "TexChangeOnHoverFlag": false,
@@ -268,7 +304,8 @@
                 {
                     "Component": "Logic",
                     "0": "ButtonResponse",
-                    "ScriptCount": 1
+                    "1": "AudioManager",
+                    "ScriptCount": 2
                 }
             ]
         },
@@ -338,9 +375,45 @@
                     ]
                 },
                 {
+                    "Component": "Audio",
+                    "0": {
+                        "AudioPath": "UI ButtonClick.wav",
+                        "Channel": 3,
+                        "IsLooping": false
+                    },
+                    "AudioArrCount": 1,
+                    "BGM Volume": 1.0,
+                    "SFX Volume": 1.0,
+                    "Master Volume": 1.0,
+                    "RandomFromArray": false,
+                    "Effects": {
+                        "LowpassEnabled": false,
+                        "LowpassCutoff": 5000.0,
+                        "LowpassResonance": 1.0,
+                        "HighpassEnabled": false,
+                        "HighpassCutoff": 10.0,
+                        "HighpassResonance": 1.0,
+                        "EchoEnabled": false,
+                        "EchoDelay": 500.0,
+                        "EchoFeedback": 50.0,
+                        "EchoDryLevel": 0.0,
+                        "EchoWetLevel": -6.0,
+                        "ReverbEnabled": false,
+                        "ReverbDecayTime": 1500.0,
+                        "ReverbEarlyDelay": 7.0,
+                        "ReverbLateDelay": 11.0,
+                        "ReverbHFReference": 5000.0,
+                        "ReverbDiffusion": 100.0,
+                        "ReverbDensity": 100.0,
+                        "ReverbWetLevel": -6.0,
+                        "ReverbDryLevel": 0.0
+                    }
+                },
+                {
                     "Component": "Logic",
                     "0": "ButtonResponse",
-                    "ScriptCount": 1
+                    "1": "AudioManager",
+                    "ScriptCount": 2
                 },
                 {
                     "Component": "ButtonComponent",
@@ -349,7 +422,7 @@
                     "AudioOnHoverFlag": false,
                     "AudioOnHoverRandom": false,
                     "HoverAudioIndex": 0,
-                    "AudioOnClickFlag": false,
+                    "AudioOnClickFlag": true,
                     "AudioOnClickRandom": false,
                     "ClickAudioIndex": 0,
                     "TexChangeOnHoverFlag": false,
@@ -437,9 +510,45 @@
                     ]
                 },
                 {
+                    "Component": "Audio",
+                    "0": {
+                        "AudioPath": "UI ButtonClick.wav",
+                        "Channel": 3,
+                        "IsLooping": false
+                    },
+                    "AudioArrCount": 1,
+                    "BGM Volume": 1.0,
+                    "SFX Volume": 1.0,
+                    "Master Volume": 1.0,
+                    "RandomFromArray": false,
+                    "Effects": {
+                        "LowpassEnabled": false,
+                        "LowpassCutoff": 5000.0,
+                        "LowpassResonance": 1.0,
+                        "HighpassEnabled": false,
+                        "HighpassCutoff": 10.0,
+                        "HighpassResonance": 1.0,
+                        "EchoEnabled": false,
+                        "EchoDelay": 500.0,
+                        "EchoFeedback": 50.0,
+                        "EchoDryLevel": 0.0,
+                        "EchoWetLevel": -6.0,
+                        "ReverbEnabled": false,
+                        "ReverbDecayTime": 1500.0,
+                        "ReverbEarlyDelay": 7.0,
+                        "ReverbLateDelay": 11.0,
+                        "ReverbHFReference": 5000.0,
+                        "ReverbDiffusion": 100.0,
+                        "ReverbDensity": 100.0,
+                        "ReverbWetLevel": -6.0,
+                        "ReverbDryLevel": 0.0
+                    }
+                },
+                {
                     "Component": "Logic",
                     "0": "ButtonResponse",
-                    "ScriptCount": 1
+                    "1": "AudioManager",
+                    "ScriptCount": 2
                 },
                 {
                     "Component": "ButtonComponent",
@@ -448,7 +557,7 @@
                     "AudioOnHoverFlag": false,
                     "AudioOnHoverRandom": false,
                     "HoverAudioIndex": 0,
-                    "AudioOnClickFlag": false,
+                    "AudioOnClickFlag": true,
                     "AudioOnClickRandom": false,
                     "ClickAudioIndex": 0,
                     "TexChangeOnHoverFlag": false,
@@ -536,9 +645,45 @@
                     ]
                 },
                 {
+                    "Component": "Audio",
+                    "0": {
+                        "AudioPath": "UI ButtonClick.wav",
+                        "Channel": 3,
+                        "IsLooping": false
+                    },
+                    "AudioArrCount": 1,
+                    "BGM Volume": 1.0,
+                    "SFX Volume": 1.0,
+                    "Master Volume": 1.0,
+                    "RandomFromArray": false,
+                    "Effects": {
+                        "LowpassEnabled": false,
+                        "LowpassCutoff": 5000.0,
+                        "LowpassResonance": 1.0,
+                        "HighpassEnabled": false,
+                        "HighpassCutoff": 10.0,
+                        "HighpassResonance": 1.0,
+                        "EchoEnabled": false,
+                        "EchoDelay": 500.0,
+                        "EchoFeedback": 50.0,
+                        "EchoDryLevel": 0.0,
+                        "EchoWetLevel": -6.0,
+                        "ReverbEnabled": false,
+                        "ReverbDecayTime": 1500.0,
+                        "ReverbEarlyDelay": 7.0,
+                        "ReverbLateDelay": 11.0,
+                        "ReverbHFReference": 5000.0,
+                        "ReverbDiffusion": 100.0,
+                        "ReverbDensity": 100.0,
+                        "ReverbWetLevel": -6.0,
+                        "ReverbDryLevel": 0.0
+                    }
+                },
+                {
                     "Component": "Logic",
                     "0": "ButtonResponse",
-                    "ScriptCount": 1
+                    "1": "AudioManager",
+                    "ScriptCount": 2
                 },
                 {
                     "Component": "ButtonComponent",
@@ -547,7 +692,7 @@
                     "AudioOnHoverFlag": false,
                     "AudioOnHoverRandom": false,
                     "HoverAudioIndex": 0,
-                    "AudioOnClickFlag": false,
+                    "AudioOnClickFlag": true,
                     "AudioOnClickRandom": false,
                     "ClickAudioIndex": 0,
                     "TexChangeOnHoverFlag": false,
@@ -635,9 +780,45 @@
                     ]
                 },
                 {
+                    "Component": "Audio",
+                    "0": {
+                        "AudioPath": "UI ButtonClick.wav",
+                        "Channel": 3,
+                        "IsLooping": false
+                    },
+                    "AudioArrCount": 1,
+                    "BGM Volume": 1.0,
+                    "SFX Volume": 1.0,
+                    "Master Volume": 1.0,
+                    "RandomFromArray": false,
+                    "Effects": {
+                        "LowpassEnabled": false,
+                        "LowpassCutoff": 5000.0,
+                        "LowpassResonance": 1.0,
+                        "HighpassEnabled": false,
+                        "HighpassCutoff": 10.0,
+                        "HighpassResonance": 1.0,
+                        "EchoEnabled": false,
+                        "EchoDelay": 500.0,
+                        "EchoFeedback": 50.0,
+                        "EchoDryLevel": 0.0,
+                        "EchoWetLevel": -6.0,
+                        "ReverbEnabled": false,
+                        "ReverbDecayTime": 1500.0,
+                        "ReverbEarlyDelay": 7.0,
+                        "ReverbLateDelay": 11.0,
+                        "ReverbHFReference": 5000.0,
+                        "ReverbDiffusion": 100.0,
+                        "ReverbDensity": 100.0,
+                        "ReverbWetLevel": -6.0,
+                        "ReverbDryLevel": 0.0
+                    }
+                },
+                {
                     "Component": "Logic",
                     "0": "ButtonResponse",
-                    "ScriptCount": 1
+                    "1": "AudioManager",
+                    "ScriptCount": 2
                 }
             ]
         },
@@ -707,9 +888,45 @@
                     ]
                 },
                 {
+                    "Component": "Audio",
+                    "0": {
+                        "AudioPath": "UI ButtonClick.wav",
+                        "Channel": 3,
+                        "IsLooping": false
+                    },
+                    "AudioArrCount": 1,
+                    "BGM Volume": 1.0,
+                    "SFX Volume": 1.0,
+                    "Master Volume": 1.0,
+                    "RandomFromArray": false,
+                    "Effects": {
+                        "LowpassEnabled": false,
+                        "LowpassCutoff": 5000.0,
+                        "LowpassResonance": 1.0,
+                        "HighpassEnabled": false,
+                        "HighpassCutoff": 10.0,
+                        "HighpassResonance": 1.0,
+                        "EchoEnabled": false,
+                        "EchoDelay": 500.0,
+                        "EchoFeedback": 50.0,
+                        "EchoDryLevel": 0.0,
+                        "EchoWetLevel": -6.0,
+                        "ReverbEnabled": false,
+                        "ReverbDecayTime": 1500.0,
+                        "ReverbEarlyDelay": 7.0,
+                        "ReverbLateDelay": 11.0,
+                        "ReverbHFReference": 5000.0,
+                        "ReverbDiffusion": 100.0,
+                        "ReverbDensity": 100.0,
+                        "ReverbWetLevel": -6.0,
+                        "ReverbDryLevel": 0.0
+                    }
+                },
+                {
                     "Component": "Logic",
                     "0": "ButtonResponse",
-                    "ScriptCount": 1
+                    "1": "AudioManager",
+                    "ScriptCount": 2
                 }
             ]
         },
@@ -779,9 +996,45 @@
                     ]
                 },
                 {
+                    "Component": "Audio",
+                    "0": {
+                        "AudioPath": "UI ButtonClick.wav",
+                        "Channel": 3,
+                        "IsLooping": false
+                    },
+                    "AudioArrCount": 1,
+                    "BGM Volume": 1.0,
+                    "SFX Volume": 1.0,
+                    "Master Volume": 1.0,
+                    "RandomFromArray": false,
+                    "Effects": {
+                        "LowpassEnabled": false,
+                        "LowpassCutoff": 5000.0,
+                        "LowpassResonance": 1.0,
+                        "HighpassEnabled": false,
+                        "HighpassCutoff": 10.0,
+                        "HighpassResonance": 1.0,
+                        "EchoEnabled": false,
+                        "EchoDelay": 500.0,
+                        "EchoFeedback": 50.0,
+                        "EchoDryLevel": 0.0,
+                        "EchoWetLevel": -6.0,
+                        "ReverbEnabled": false,
+                        "ReverbDecayTime": 1500.0,
+                        "ReverbEarlyDelay": 7.0,
+                        "ReverbLateDelay": 11.0,
+                        "ReverbHFReference": 5000.0,
+                        "ReverbDiffusion": 100.0,
+                        "ReverbDensity": 100.0,
+                        "ReverbWetLevel": -6.0,
+                        "ReverbDryLevel": 0.0
+                    }
+                },
+                {
                     "Component": "Logic",
                     "0": "ButtonResponse",
-                    "ScriptCount": 1
+                    "1": "AudioManager",
+                    "ScriptCount": 2
                 }
             ]
         },
@@ -894,9 +1147,45 @@
                     ]
                 },
                 {
+                    "Component": "Audio",
+                    "0": {
+                        "AudioPath": "UI ButtonClick.wav",
+                        "Channel": 3,
+                        "IsLooping": false
+                    },
+                    "AudioArrCount": 1,
+                    "BGM Volume": 1.0,
+                    "SFX Volume": 1.0,
+                    "Master Volume": 1.0,
+                    "RandomFromArray": false,
+                    "Effects": {
+                        "LowpassEnabled": false,
+                        "LowpassCutoff": 5000.0,
+                        "LowpassResonance": 1.0,
+                        "HighpassEnabled": false,
+                        "HighpassCutoff": 10.0,
+                        "HighpassResonance": 1.0,
+                        "EchoEnabled": false,
+                        "EchoDelay": 500.0,
+                        "EchoFeedback": 50.0,
+                        "EchoDryLevel": 0.0,
+                        "EchoWetLevel": -6.0,
+                        "ReverbEnabled": false,
+                        "ReverbDecayTime": 1500.0,
+                        "ReverbEarlyDelay": 7.0,
+                        "ReverbLateDelay": 11.0,
+                        "ReverbHFReference": 5000.0,
+                        "ReverbDiffusion": 100.0,
+                        "ReverbDensity": 100.0,
+                        "ReverbWetLevel": -6.0,
+                        "ReverbDryLevel": 0.0
+                    }
+                },
+                {
                     "Component": "Logic",
                     "0": "ButtonResponse",
-                    "ScriptCount": 1
+                    "1": "AudioManager",
+                    "ScriptCount": 2
                 },
                 {
                     "Component": "ButtonComponent",
@@ -905,7 +1194,7 @@
                     "AudioOnHoverFlag": false,
                     "AudioOnHoverRandom": false,
                     "HoverAudioIndex": 0,
-                    "AudioOnClickFlag": false,
+                    "AudioOnClickFlag": true,
                     "AudioOnClickRandom": false,
                     "ClickAudioIndex": 0,
                     "TexChangeOnHoverFlag": false,
