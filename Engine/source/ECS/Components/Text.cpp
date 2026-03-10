@@ -80,7 +80,7 @@ namespace NocturnalEngine
                 ImGui::DragFloat("##TextPosX", &GetPosition()[0], 0.01f);
                 ImGui::Text("Y"); ImGui::SameLine();
                 ImGui::DragFloat("##TextPosY", &GetPosition()[1], 0.01f);
-                changed = true;
+                //changed = true;
             }
 
             else { //array of text
@@ -92,6 +92,7 @@ namespace NocturnalEngine
                 if (ImGui::Button("Add new content")) {
                     mContent_array.push_back(std::string(new_buffer));
                     new_buffer[0] = '\0'; //clear the content after adding operation is successful
+                    position_vector.push_back({0.0f,0.0f});
                 }
 
                 if (!mContent_array.empty())
@@ -116,13 +117,13 @@ namespace NocturnalEngine
                         mContent_array.erase(mContent_array.begin() + current_index);
                         if (current_index > 0) --current_index;
                     }
-                }
 
-                ImGui::Text("Current text position");
-                ImGui::Text("X"); ImGui::SameLine();
-                ImGui::DragFloat("##TextPosX", &position_vector[current_index].first, 0.01f);
-                ImGui::Text("Y"); ImGui::SameLine();
-                ImGui::DragFloat("##TextPosY", &position_vector[current_index].second, 0.01f);
+                    ImGui::Text("Current text position");
+                    ImGui::Text("X"); ImGui::SameLine();
+                    ImGui::DragFloat("##TextPosX", &position_vector[current_index].first, 0.01f);
+                    ImGui::Text("Y"); ImGui::SameLine();
+                    ImGui::DragFloat("##TextPosY", &position_vector[current_index].second, 0.01f);
+                }
             }
 
             auto& fontName = GetFont();
