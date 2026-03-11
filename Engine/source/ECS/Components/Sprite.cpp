@@ -64,15 +64,7 @@ namespace NocturnalEngine {
 				ImGui::EndCombo();
 			}
 
-			changed |= ImGui::Checkbox("SpriteSheet", &is_SpriteSheet); ImGui::SameLine();
-			changed |= ImGui::Checkbox("Animation", &is_Animated);
-			
 			ImGui::PushItemWidth(100.0f);
-			ImGui::Text("Coordinates: "); ImGui::SameLine();
-			ImGui::Text("X"); ImGui::SameLine();
-			changed |= ImGui::DragInt("##X", (int*)&GetIndex().x, 1); ImGui::SameLine();
-			ImGui::Text("Y"); ImGui::SameLine();
-			changed |= ImGui::DragInt("##Y", (int*)&GetIndex().y, 1);
 			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4());
 			ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4());
 			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4());
@@ -103,32 +95,6 @@ namespace NocturnalEngine {
 					changed = true;
 				}
 				ImGui::EndDragDropTarget();
-			}
-			if (is_SpriteSheet)
-			{
-				GetMaxIndex() = (int)GETTEXTURE(GetTexture())->GetWidth() / 512;
-				ImGui::Text("MaxIndex : %d ", GetMaxIndex());
-				GetDisplayTime().resize(GetMaxIndex());//resize the number of frames in a sprite  
-			}
-			if (GetMaxIndex() > 0 && is_Animated)
-			{
-				ImGui::Text("SelectedIndex: "); ImGui::SameLine();
-				changed |= ImGui::DragInt("##SelectedIndex", (int*)&GetIndex().x, 1, 0, GetMaxIndex() - 1);
-
-				ImGui::Text("SetDisplayTime: "); ImGui::SameLine();
-				changed |= ImGui::DragFloat("##SetDisplayTime", (float*)&GetDisplayTime()[GetIndex().x], 0.005f, 0.0f);
-
-			}
-
-			if (is_SpriteSheet)
-			{
-				ImGui::Text("UVCoordinates: "); ImGui::SameLine();
-				ImGui::Text("U"); ImGui::SameLine();
-				changed |= ImGui::DragFloat("##U", (float*)&GetUVCoor().x, 0.5f); ImGui::SameLine();
-				ImGui::PushID(2);
-				ImGui::Text("V"); ImGui::SameLine();
-				changed |= ImGui::DragFloat("##V", (float*)&GetUVCoor().y, 0.5f);
-				ImGui::PopID();
 			}
 			ImGui::Text("Layering Order: "); ImGui::SameLine();
 			// ImGui::DragInt("##layering", (int*)&sprite.LayerOrder, 1, 0, 8);

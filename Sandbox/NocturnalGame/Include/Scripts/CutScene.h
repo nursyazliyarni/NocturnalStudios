@@ -20,7 +20,14 @@
 #include "Graphics/Camera2D.h"
 #include "Graphics/Graphics.h"
 #include "ECS/SceneManager.h"
-#include "Input/Input.h"
+#include "GUI/GUI.h"
+#include "ECS/Components/NameTag.h"
+#include "ECS/Components/Transform.h"
+#include "ECS/Components/Collider.h"
+#include <algorithm>
+#include <cctype>
+#include <string>
+#include <vector>
 
 namespace NocturnalEngine
 {
@@ -33,7 +40,8 @@ namespace NocturnalEngine
 		/*!*************************************************************************
 		Default constructor for Cutscenes
 		****************************************************************************/
-		CutScene() : timer(0), mScenePicker{ 0 }, mSwitchAudio{ 1 } {}
+		// Cache input system so we can detect mouse clicks.
+		CutScene() : mInput{ InputSystem::GetInstance() } {}
 		/*!*************************************************************************
 		Default destructor for Cutscenes
 		****************************************************************************/
@@ -50,69 +58,87 @@ namespace NocturnalEngine
 		****************************************************************************/
 		virtual void Start() override
 		{
+			// Reset runtime state whenever this scene starts.
+			mCutImages.clear();
+			mOriginalScales.clear();
+			mCurrentImage = 0;
+			mNextButton = 0;
+
+			// Keep camera centered for cutscene presentation.
+			NocturnalEngine::Graphic::mcamera->SetPosition({ 0.0f, 0.0f, 0.0f });
+
+			// Find all cutscene image entities named:
+			// CutImage1, CutImage2, ... CutImageN.
+			std::vector<std::pair<int, Entity>> indexedImages{};
 			for (Entity i = 0; i < p_ecs.GetTotalSceneEntities(); ++i)
 			{
-				if (p_ecs.GetComponent<NameTag>(i).GetNameTag() == "CutScene Controller")
+				if (!p_ecs.HaveComponent<NameTag>(i))
+					continue;
+
+				const std::string& name = p_ecs.GetComponent<NameTag>(i).GetNameTag();
+				// Save Next button entity for click checks.
+				if (name == "NextButton")
 				{
-					NocturnalEngine::Graphic::mcamera->SetPosition({ 0.0f, 0.0f, 0.0f });
+					mNextButton = i;
+					continue;
 				}
+
+				// Ignore entities that are not cutscene images.
+				if (name.rfind("CutImage", 0) != 0)
+					continue;
+
+				// Cut images must have transform + sprite.
+				if (!p_ecs.HaveComponent<Transform>(i) || !p_ecs.HaveComponent<Sprite>(i))
+					continue;
+
+				// Read number from "CutImageX" so we can sort in correct order.
+				std::string suffix = name.substr(std::string("CutImage").size());
+				if (suffix.empty() || !std::all_of(suffix.begin(), suffix.end(),
+					[](unsigned char ch) { return static_cast<bool>(std::isdigit(ch)); }))
+				{
+					continue;
+				}
+
+				indexedImages.push_back({ std::stoi(suffix), i });
 			}
-			if (p_ecs.HaveComponent<Audio>(GetScriptEntityID()) && ((p_ecs.GetComponent<Audio>(GetScriptEntityID())).GetSize() > mSwitchAudio))
+
+			std::sort(indexedImages.begin(), indexedImages.end(),
+				[](const std::pair<int, Entity>& a, const std::pair<int, Entity>& b) {
+					return a.first < b.first;
+				});
+
+			// Store ordered entities and their original scales for show/hide toggling.
+			for (const auto& pair : indexedImages)
 			{
-				p_ecs.GetComponent<Audio>(GetScriptEntityID())[mSwitchAudio].should_play = true;
+				Entity e = pair.second;
+				mCutImages.push_back(e);
+				mOriginalScales.push_back(p_ecs.GetComponent<Transform>(e).GetScale());
 			}
+
+			// Show first image, hide all others.
+			ApplyImageVisibility();
 		}
 		/*!*************************************************************************
 		Update Loop of Cutscenes Script
 		****************************************************************************/
 		virtual void Update(float Frametime) override
 		{
-			timer += Frametime;
-			if (p_Input->MousePressed(GLFW_MOUSE_BUTTON_LEFT))
-			{
-				++mScenePicker;
-				if (p_ecs.HaveComponent<Audio>(GetScriptEntityID()) && ((p_ecs.GetComponent<Audio>(GetScriptEntityID())).GetSize() > mSwitchAudio))
-				{
-					p_ecs.GetComponent<Audio>(GetScriptEntityID())[mSwitchAudio].should_stop = true;
-				}
-				++mSwitchAudio;
-				NocturnalEngine::Graphic::mcamera->SetPosition({ p_ecs.GetComponent<Transform>(mScenePicker).GetPos().x
-					, p_ecs.GetComponent<Transform>(mScenePicker).GetPos().y, 0.0f });
-				p_Input->mMouseStatus[GLFW_MOUSE_BUTTON_LEFT] = GLFW_RELEASE;
-				timer = 0.0f;
-				if (p_ecs.HaveComponent<Audio>(GetScriptEntityID()) && ((p_ecs.GetComponent<Audio>(GetScriptEntityID())).GetSize() > 10))
-				{
-					p_ecs.GetComponent<Audio>(GetScriptEntityID())[10].should_play = true;
-				}
+			UNREFERENCED_PARAMETER(Frametime);
+			if (mCutImages.empty())
+				return;
 
-				if (p_ecs.HaveComponent<Audio>(GetScriptEntityID()) && ((p_ecs.GetComponent<Audio>(GetScriptEntityID())).GetSize() > mSwitchAudio))
-				{
-					p_ecs.GetComponent<Audio>(GetScriptEntityID())[mSwitchAudio].should_play = true;
-				}
-
-			}
-			if (timer >= 5.0f)
+			// Advance only when player clicks inside Next button collider.
+			if (mInput->MousePressed(GLFW_MOUSE_BUTTON_LEFT) && IsMouseOnNextButton())
 			{
-				++mScenePicker;
-				++mSwitchAudio;
-				NocturnalEngine::Graphic::mcamera->SetPosition({ p_ecs.GetComponent<Transform>(mScenePicker).GetPos().x
-					, p_ecs.GetComponent<Transform>(mScenePicker).GetPos().y, 0.0f });
-				timer = 0.0f;
-				if (p_ecs.HaveComponent<Audio>(GetScriptEntityID()) && ((p_ecs.GetComponent<Audio>(GetScriptEntityID())).GetSize() > mSwitchAudio))
+				// Stop at last image; do not overflow index.
+				if (mCurrentImage + 1 < mCutImages.size())
 				{
-					p_ecs.GetComponent<Audio>(GetScriptEntityID())[mSwitchAudio].should_play = true; //cutscene audio
+					++mCurrentImage;
+					// Update which image is visible.
+					ApplyImageVisibility();
 				}
 			}
-
-			if (mScenePicker == 9)
-			{
-				//transit to Game scene
-				p_Scene->setSceneToLoad("Assets/Scene/Game.json");
-			}
-
-
-
-		}
+		}	
 		/*!*************************************************************************
 		End State for Cutscenes
 		****************************************************************************/
@@ -122,8 +148,9 @@ namespace NocturnalEngine
 		}
 
 		bool Requirements(Entity e) override {
-			if (p_ecs.HaveComponent<Sprite>(e))return true;
-			return false;
+			// Script can be attached broadly; runtime checks handle exact entities.
+			UNREFERENCED_PARAMETER(e);
+			return true;
 		}
 		/*!*************************************************************************
 		Returns the name of Script
@@ -138,8 +165,81 @@ namespace NocturnalEngine
 		virtual Entity& GetScriptEntityID() override { return entityID; }
 
 	private:
-		float timer;
-		Entity mScenePicker;
-		int mSwitchAudio;
+		bool IsMouseOnNextButton()
+		{
+			// Need both collider and transform for hit testing.
+			if (mNextButton == 0 ||
+				!p_ecs.HaveComponent<Collider>(mNextButton) ||
+				!p_ecs.HaveComponent<Transform>(mNextButton))
+			{
+				return false;
+			}
+
+			// Mouse position in world/UI space used by this project.
+			const vec2D mPos{ p_GUI->MousePosition.x, p_GUI->MousePosition.y };
+			Collider& col = p_ecs.GetComponent<Collider>(mNextButton);
+			Transform& t = p_ecs.GetComponent<Transform>(mNextButton);
+
+			// Check both collider slots used by this engine.
+			for (int i = 0; i < 2; ++i)
+			{
+				const vec2D offsetPos{ t.GetPos().x + col[i].mOffset.x, t.GetPos().y + col[i].mOffset.y };
+				switch (col[i].mCol)
+				{
+				case Collider::ColliderType::circle:
+				case Collider::ColliderType::bubble:
+				case Collider::ColliderType::bossball:
+					// Circle hit test.
+					if (distance(mPos, offsetPos) < col[i].mRadius) return true;
+					break;
+
+				case Collider::ColliderType::rect:
+				case Collider::ColliderType::box:
+				{
+					// Box hit test.
+					const vec2D minPt{ offsetPos.x - col[i].mMin.x, offsetPos.y - col[i].mMin.y };
+					const vec2D maxPt{ offsetPos.x + col[i].mMax.x, offsetPos.y + col[i].mMax.y };
+					if (mPos.x > minPt.x && mPos.x < maxPt.x &&
+						mPos.y > minPt.y && mPos.y < maxPt.y)
+					{
+						return true;
+					}
+					break;
+				}
+
+				default:
+					break;
+				}
+			}
+			return false;
+		}
+
+		void ApplyImageVisibility()
+		{
+			// Show only current image by restoring scale.
+			// Hide others by setting scale to zero.
+			for (size_t i = 0; i < mCutImages.size(); ++i)
+			{
+				Entity e = mCutImages[i];
+				if (!p_ecs.HaveComponent<Transform>(e))
+					continue;
+
+				Transform& t = p_ecs.GetComponent<Transform>(e);
+				if (i == mCurrentImage)
+				{
+					t.SetScale(mOriginalScales[i].x, mOriginalScales[i].y);
+				}
+				else
+				{
+					t.SetScale(0.0f, 0.0f);
+				}
+			}
+		}
+
+		std::unique_ptr<InputSystem>& mInput;
+		std::vector<Entity> mCutImages{};
+		std::vector<vec2D> mOriginalScales{};
+		size_t mCurrentImage{ 0 };
+		Entity mNextButton{ 0 };
 	};
 }
