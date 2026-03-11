@@ -46,15 +46,14 @@ namespace NocturnalEngine {
 
 		}
 
-		//  CLICK-TO-USE TOY: cache original transform + hide at start 
+		// Cache original toy transform and keep toy visible on start.
 		if (p_ecs.HaveComponent<ItemsAttributes>(entityID) && p_ecs.HaveComponent<Transform>(entityID))
 		{
 			ItemsAttributes& ia = p_ecs.GetComponent<ItemsAttributes>(entityID);
 			if (ia.type == ItemsAttributes::ItemType::TOY)
 			{
 				mOriginalToyTransform = p_ecs.GetComponent<Transform>(entityID);
-				p_ecs.GetComponent<Transform>(entityID).SetScale(0.0f, 0.0f); // hide sprite
-				mToyHidden = true;
+				mToyHidden = false;
 			}
 		}
 
