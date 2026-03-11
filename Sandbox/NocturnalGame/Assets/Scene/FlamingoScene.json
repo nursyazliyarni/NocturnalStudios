@@ -138,7 +138,7 @@
                 {
                     "Component": "Sprite",
                     "TextureName": "Characters/flamingo_angry",
-                    "Index_X": 3,
+                    "Index_X": 1,
                     "Index_Y": 0,
                     "Ucoordinates": 528.0,
                     "Vcoordinates": 528.0,
@@ -150,7 +150,7 @@
                     "DisplayTime 2": 1.2999999523162842,
                     "DisplayTime 3": 1.2999999523162842,
                     "DisplayTime 4": 1.2999999523162842,
-                    "LayeringOrder": 1,
+                    "LayeringOrder": 3,
                     "StateManagerEnabled": true,
                     "StatePreviewInEditor": false,
                     "StatePreviewMode": 4,
@@ -498,8 +498,8 @@
             "Components": [
                 {
                     "Component": "Transform",
-                    "posX": -0.1607748568058014,
-                    "posY": -0.13524222373962402,
+                    "posX": -0.4887652099132538,
+                    "posY": -0.198622465133667,
                     "scaleX": 0.4000000059604645,
                     "scaleY": 0.4000000059604645,
                     "Rot": 0.0
@@ -537,7 +537,7 @@
                     "IsSpriteSheet": false,
                     "IsAnimated": false,
                     "MaxIndex": 0,
-                    "LayeringOrder": 2,
+                    "LayeringOrder": 5,
                     "StateManagerEnabled": false,
                     "StatePreviewInEditor": false,
                     "StatePreviewMode": 0,
@@ -555,9 +555,8 @@
                 },
                 {
                     "Component": "Logic",
-                    "0": "DragAndDrop",
-                    "1": "ToyHideAndRevealOnClick",
-                    "ScriptCount": 2
+                    "0": "ToyHideAndRevealOnClick",
+                    "ScriptCount": 1
                 },
                 {
                     "Component": "ItemsAttributes",
@@ -616,7 +615,7 @@
                     "IsSpriteSheet": false,
                     "IsAnimated": false,
                     "MaxIndex": 0,
-                    "LayeringOrder": 4,
+                    "LayeringOrder": 6,
                     "StateManagerEnabled": false,
                     "StatePreviewInEditor": false,
                     "StatePreviewMode": 0,
@@ -790,7 +789,7 @@
                     "IsSpriteSheet": false,
                     "IsAnimated": false,
                     "MaxIndex": 0,
-                    "LayeringOrder": 4,
+                    "LayeringOrder": 6,
                     "StateManagerEnabled": false,
                     "StatePreviewInEditor": false,
                     "StatePreviewMode": 0,
@@ -964,7 +963,7 @@
                     "IsSpriteSheet": false,
                     "IsAnimated": false,
                     "MaxIndex": 0,
-                    "LayeringOrder": 4,
+                    "LayeringOrder": 6,
                     "StateManagerEnabled": false,
                     "StatePreviewInEditor": false,
                     "StatePreviewMode": 0,
@@ -1137,7 +1136,7 @@
                     "IsSpriteSheet": false,
                     "IsAnimated": false,
                     "MaxIndex": 0,
-                    "LayeringOrder": 4,
+                    "LayeringOrder": 6,
                     "StateManagerEnabled": false,
                     "StatePreviewInEditor": false,
                     "StatePreviewMode": 0,
@@ -1728,7 +1727,7 @@
                     "IsSpriteSheet": false,
                     "IsAnimated": false,
                     "MaxIndex": 0,
-                    "LayeringOrder": 4,
+                    "LayeringOrder": 7,
                     "StateManagerEnabled": false,
                     "StatePreviewInEditor": false,
                     "StatePreviewMode": 0,
@@ -1968,7 +1967,7 @@
                     "IsSpriteSheet": false,
                     "IsAnimated": false,
                     "MaxIndex": 0,
-                    "LayeringOrder": 3,
+                    "LayeringOrder": 5,
                     "StateManagerEnabled": false,
                     "StatePreviewInEditor": false,
                     "StatePreviewMode": 0,
@@ -2011,7 +2010,7 @@
                     "IsSpriteSheet": false,
                     "IsAnimated": false,
                     "MaxIndex": 0,
-                    "LayeringOrder": 4,
+                    "LayeringOrder": 6,
                     "StateManagerEnabled": false,
                     "StatePreviewInEditor": false,
                     "StatePreviewMode": 0,
@@ -2438,6 +2437,150 @@
                     "WorldSpace": true,
                     "Center": false,
                     "LayeringOrder": 0
+                }
+            ]
+        },
+        {
+            "ID": 34,
+            "Components": [
+                {
+                    "Component": "Tag",
+                    "Tag": "HidingSpot",
+                    "TargetTag": ""
+                },
+                {
+                    "Component": "Transform",
+                    "posX": 0.02201826125383377,
+                    "posY": -0.04577493667602539,
+                    "scaleX": 0.7709922790527344,
+                    "scaleY": 0.8157898783683777,
+                    "Rot": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "Bush"
+                },
+                {
+                    "Component": "Sprite",
+                    "TextureName": "Environment/bush",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": false,
+                    "MaxIndex": 0,
+                    "LayeringOrder": 4,
+                    "StateManagerEnabled": false,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "ID": 35,
+            "Components": [
+                {
+                    "Component": "Tag",
+                    "Tag": "HidingSpot",
+                    "TargetTag": ""
+                },
+                {
+                    "Component": "Transform",
+                    "posX": -0.4733947217464447,
+                    "posY": -2.5331974029541016e-7,
+                    "scaleX": 0.7709922790527344,
+                    "scaleY": 0.66350919008255,
+                    "Rot": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "Bush"
+                },
+                {
+                    "Component": "Sprite",
+                    "TextureName": "Environment/bush",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": false,
+                    "MaxIndex": 0,
+                    "LayeringOrder": 2,
+                    "StateManagerEnabled": false,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "ID": 36,
+            "Components": [
+                {
+                    "Component": "Tag",
+                    "Tag": "HidingSpot",
+                    "TargetTag": ""
+                },
+                {
+                    "Component": "Transform",
+                    "posX": -1.247706413269043,
+                    "posY": -0.0880284383893013,
+                    "scaleX": 0.5491239428520203,
+                    "scaleY": 0.5786421895027161,
+                    "Rot": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "Bush"
+                },
+                {
+                    "Component": "Sprite",
+                    "TextureName": "Environment/bush",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": false,
+                    "MaxIndex": 0,
+                    "LayeringOrder": 4,
+                    "StateManagerEnabled": false,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
                 }
             ]
         }

@@ -56,19 +56,28 @@ namespace NocturnalEngine {
     class GameManager {
     public:
 
+        struct ToyState
+        {
+            bool isHiding{ false };
+            int hidingIndex{ 0 };
+        };
         struct AnimalData
         {
             AnimalAttributes aA{};
             float  hungerD {10.f }, hpD{ 10.f }, sanityD{ 10.f };
             float  hungerT{ 0.f }, hpT{ 0.f }, sanityT{ 0.f };
+            ToyState toy{ };
         };
+
+
         enum class GameState {
             STARTING=0,
             PLAYING=1,
             ENDING=2,
             PAUSED=3
         };
-        AnimalData LoadPersistentValues(std::string gs);
+        AnimalData LoadPersistentValues(const std::string& gs);
+        ToyState LoadToyState(const std::string& gs);
 
         static GameManager& GetInstance();
         /*!*************************************************************************
@@ -94,6 +103,8 @@ namespace NocturnalEngine {
          void NextLevel();
 
          void SaveAnimalAttributesToCurrentScene(AnimalData aA);
+
+         void SaveToyState(bool hiding, int hideIndex);
 
          GameState GetGameState()const { return currState; }
 
@@ -188,7 +199,7 @@ namespace NocturnalEngine {
         bool LevelDataToMap(int levelN);
 
         void CheckAndDecreaseStats(float& time, float& chance, double decayRate, double& attributeValue, float frametime, double decreaseScale=1.0);
-
+        bool CheckHide(AnimalAttributes& aa);
 
     };
 

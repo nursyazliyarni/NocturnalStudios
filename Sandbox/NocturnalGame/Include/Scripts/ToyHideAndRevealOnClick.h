@@ -4,7 +4,8 @@
 #include "Math/Vmath.h"
 #include "Scripts/IScript.h"
 #include <random>
-#include <string>
+#include "ECS/Components/AnimalAttributes.h"
+#include "ECS/Components/ItemsAttributes.h"
 
 
 namespace NocturnalEngine
@@ -50,6 +51,11 @@ namespace NocturnalEngine
         // ECS script binding helpers.
         virtual void SetScriptEntityID(Entity& entity) override { entityID = entity; }
         virtual Entity& GetScriptEntityID() override { return entityID; }
+    private:
+        bool CheckHide(AnimalAttributes& aa);
+        int HideToy();        
+        void IsMouseNearHiddenSpot(ItemsAttributes& iA, AnimalAttributes& aa);
+        void ResetThing(ItemsAttributes& iA, AnimalAttributes& aa, Transform& t, Sprite& s);
 
     private:
         // Finds environment entity used as hide-area bounds.
@@ -76,22 +82,13 @@ namespace NocturnalEngine
     private:
         // Input system for mouse click checks.
         InputSystem* mInput{ nullptr };
+        float checkPeriod{};
 
-        // Environment entity and validity flag.
-        Entity mBG{ 0 };
-        bool mHasBG{ false };
+        vec2D ogPos{};
+        int ogLayer{ 0 };
+        Entity animalEntity{MAX_ENTITIES};
+        std::vector<Entity> hidingSpots{};
+        bool hasBeenHidden{ false };
 
-        // Current hide/reveal runtime state for this entity instance.
-        bool mHidden{ true };
-        vec2D mHiddenPos{};
-        vec2D mOriginalScale{};
-        std::string mToyKey{};
-
-        // Original collider cache used to restore exact collider on reveal.
-        bool mHadCollider{ false };
-        Collider mOriginalCollider{};
-
-        // RNG used for random hidden positions.
-        std::mt19937 mRng{ std::random_device{}() };
     };
 }

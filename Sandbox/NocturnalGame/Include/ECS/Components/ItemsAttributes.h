@@ -49,5 +49,8 @@ namespace NocturnalEngine
 		double gain_amount;
 		bool is_dragging;
 		vec2D duplicate_item_pos;
+
+		bool toyIsHidden{ false };
+		int hidingIndex{ 0 };
 	};
 }

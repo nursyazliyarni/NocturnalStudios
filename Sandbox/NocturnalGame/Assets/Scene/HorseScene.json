@@ -1183,8 +1183,8 @@
             "Components": [
                 {
                     "Component": "Transform",
-                    "posX": -0.17580176889896393,
-                    "posY": -0.09465217590332031,
+                    "posX": -0.6565354466438293,
+                    "posY": -0.21084928512573242,
                     "scaleX": 0.3499999940395355,
                     "scaleY": 0.3499999940395355,
                     "Rot": 0.0
@@ -1222,7 +1222,7 @@
                     "IsSpriteSheet": false,
                     "IsAnimated": false,
                     "MaxIndex": 0,
-                    "LayeringOrder": 2,
+                    "LayeringOrder": 6,
                     "StateManagerEnabled": false,
                     "StatePreviewInEditor": false,
                     "StatePreviewMode": 0,
@@ -1240,9 +1240,8 @@
                 },
                 {
                     "Component": "Logic",
-                    "0": "DragAndDrop",
-                    "1": "ToyHideAndRevealOnClick",
-                    "ScriptCount": 2
+                    "0": "ToyHideAndRevealOnClick",
+                    "ScriptCount": 1
                 },
                 {
                     "Component": "ItemsAttributes",
@@ -1726,7 +1725,7 @@
                     "IsSpriteSheet": false,
                     "IsAnimated": false,
                     "MaxIndex": 0,
-                    "LayeringOrder": 4,
+                    "LayeringOrder": 8,
                     "StateManagerEnabled": false,
                     "StatePreviewInEditor": false,
                     "StatePreviewMode": 0,
@@ -2426,6 +2425,54 @@
                     "WorldSpace": true,
                     "Center": false,
                     "LayeringOrder": 0
+                }
+            ]
+        },
+        {
+            "ID": 34,
+            "Components": [
+                {
+                    "Component": "Tag",
+                    "Tag": "HidingSpot",
+                    "TargetTag": ""
+                },
+                {
+                    "Component": "Transform",
+                    "posX": -0.10642213374376297,
+                    "posY": -0.04577481746673584,
+                    "scaleX": 0.8865250945091248,
+                    "scaleY": 0.7215189933776855,
+                    "Rot": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "Bush"
+                },
+                {
+                    "Component": "Sprite",
+                    "TextureName": "Environment/bush",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": false,
+                    "MaxIndex": 0,
+                    "LayeringOrder": 4,
+                    "StateManagerEnabled": false,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
                 }
             ]
         }
