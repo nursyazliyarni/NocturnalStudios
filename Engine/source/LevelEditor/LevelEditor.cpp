@@ -1819,18 +1819,28 @@ namespace NocturnalEngine {
         Sprite& sprite = p_ecs.GetComponent<Sprite>(selectedEntity);
 
         bool changed = false;
-        changed |= ImGui::Checkbox("SpriteSheet", &sprite.is_SpriteSheet); ImGui::SameLine();
         changed |= ImGui::Checkbox("Animated", &sprite.is_Animated);
+        // Animated is the single source of truth. Keep legacy field synced for compatibility.
+        if (sprite.is_SpriteSheet != sprite.is_Animated)
+        {
+            sprite.is_SpriteSheet = sprite.is_Animated;
+            changed = true;
+        }
 
         const std::string& textureName = sprite.GetTexture();
         ImGui::Text("Current Sprite Texture: %s", textureName.c_str());
 
-        if (!sprite.is_SpriteSheet)
+        if (!sprite.is_Animated)
         {
-            ImGui::Text("Enable SpriteSheet to edit frame timings.");
+            ImGui::Text("Enable Animated to edit animation settings.");
             ImGui::End();
             return;
         }
+
+        ImGui::Separator();
+        ImGui::Text("Spritesheet UV");
+        changed |= ImGui::DragFloat("U", &sprite.GetUVCoor().x, 0.5f);
+        changed |= ImGui::DragFloat("V", &sprite.GetUVCoor().y, 0.5f);
 
         ImGui::Separator();
         ImGui::Text("Animation State Manager");
