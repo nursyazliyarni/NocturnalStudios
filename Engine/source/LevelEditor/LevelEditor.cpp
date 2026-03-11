@@ -530,7 +530,19 @@ namespace NocturnalEngine {
 
             }
         }
-        //ImGui::SameLine();
+        ImGui::SameLine();
+        if (ImGui::Button("NEW SCENE"))
+        {
+
+            if (mLastSaveTime < 0.f)
+            {
+                p_Scene->setSceneToLoad(" ");
+                mCurrentScene = "Assets/Scene/NewScene.json";
+                mLastSaveTime = ImGui::GetTime();
+
+
+            }
+        }
 
         // Show message if recently saved
         if (mLastSaveTime > 0.0f && ImGui::GetTime() - mLastSaveTime < mSaveMessageDuration)
@@ -584,6 +596,14 @@ namespace NocturnalEngine {
                 sprite.SetTexture(*(const std::string*)payload->Data);
                 p_ecs.AddComponent<Sprite>(newEntity, sprite);
                 selectedEntity = newEntity;
+                std::string eName = *(const std::string*)payload->Data; 
+                if (eName.find_last_of("/")!=std::string::npos)
+                {
+                    eName = eName.substr(eName.find_last_of("/") + 1);
+                }
+                NameTag nt{};
+                nt.SetNameTag(eName);                                   
+                p_ecs.AddComponent<NameTag>(newEntity, nt);
                 PushUndoSnapshotAndInvalidateRedo();
             }
             ImGui::EndDragDropTarget();
