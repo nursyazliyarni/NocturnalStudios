@@ -169,7 +169,7 @@
                     "IsSpriteSheet": false,
                     "IsAnimated": false,
                     "MaxIndex": 0,
-                    "LayeringOrder": 1,
+                    "LayeringOrder": 3,
                     "StateManagerEnabled": false,
                     "StatePreviewInEditor": false,
                     "StatePreviewMode": 0,
@@ -886,7 +886,7 @@
                     "IsSpriteSheet": false,
                     "IsAnimated": false,
                     "MaxIndex": 0,
-                    "LayeringOrder": 1,
+                    "LayeringOrder": 6,
                     "StateManagerEnabled": false,
                     "StatePreviewInEditor": false,
                     "StatePreviewMode": 0,
@@ -1836,7 +1836,7 @@
                     "IsSpriteSheet": false,
                     "IsAnimated": false,
                     "MaxIndex": 0,
-                    "LayeringOrder": 1,
+                    "LayeringOrder": 6,
                     "StateManagerEnabled": false,
                     "StatePreviewInEditor": false,
                     "StatePreviewMode": 0,
@@ -1879,7 +1879,7 @@
                     "IsSpriteSheet": false,
                     "IsAnimated": false,
                     "MaxIndex": 0,
-                    "LayeringOrder": 1,
+                    "LayeringOrder": 6,
                     "StateManagerEnabled": false,
                     "StatePreviewInEditor": false,
                     "StatePreviewMode": 0,
@@ -1922,7 +1922,7 @@
                     "IsSpriteSheet": false,
                     "IsAnimated": false,
                     "MaxIndex": 0,
-                    "LayeringOrder": 1,
+                    "LayeringOrder": 6,
                     "StateManagerEnabled": false,
                     "StatePreviewInEditor": false,
                     "StatePreviewMode": 0,
@@ -2459,6 +2459,54 @@
                     "IsAnimated": false,
                     "MaxIndex": 0,
                     "LayeringOrder": 4,
+                    "StateManagerEnabled": false,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "ID": 35,
+            "Components": [
+                {
+                    "Component": "Tag",
+                    "Tag": "HidingSpot",
+                    "TargetTag": ""
+                },
+                {
+                    "Component": "Transform",
+                    "posX": -1.0651755332946777,
+                    "posY": 0.010654784739017487,
+                    "scaleX": 0.6363479495048523,
+                    "scaleY": 0.5179064869880676,
+                    "Rot": -5.262115478515625
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "Bush"
+                },
+                {
+                    "Component": "Sprite",
+                    "TextureName": "Environment/bush",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": false,
+                    "MaxIndex": 0,
+                    "LayeringOrder": 2,
                     "StateManagerEnabled": false,
                     "StatePreviewInEditor": false,
                     "StatePreviewMode": 0,

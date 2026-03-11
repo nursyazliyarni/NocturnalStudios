@@ -131,7 +131,7 @@ namespace NocturnalEngine
             itemTransform.MoveX(-1.f*hidingTransform.GetScale().x / 2.f+Random::Range(0.f, hidingTransform.GetScale().x / 8.f));
 
         }
-        std::cout << "toy hidden\n";
+        //std::cout << "toy hidden\n";
         hasBeenHidden = true;
 
         return hideIndex;
