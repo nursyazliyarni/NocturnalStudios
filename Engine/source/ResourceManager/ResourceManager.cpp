@@ -20,6 +20,9 @@
 #include "pch.h"
 #include "ResourceManager/ResourceManager.h"
 
+#include <fstream>
+#include <sstream>
+
 namespace NocturnalEngine {
 	std::filesystem::path EngineAssetPath{std::filesystem::current_path().parent_path().parent_path()/"Resources"/"EngineAssets"};
 	std::unordered_map <std::string, std::shared_ptr<Texture>> ResourceManager::textures;
@@ -91,12 +94,51 @@ namespace NocturnalEngine {
 		return m_shader;
 	}
 
+
+
+
+
+	std::shared_ptr<Shader> ResourceManager::LoadShaderFromFile(const std::string& name, const std::string& vertexPath, const std::string& fragmentPath)
+	{
+		std::ifstream vFile(vertexPath);
+		std::ifstream fFile(fragmentPath);
+
+		if (!vFile.is_open())
+		{
+			NOCTURNAL_ENGINE_ERROR("Failed to open vertex shader file: {}", vertexPath);
+			return nullptr;
+		}
+
+		if (!fFile.is_open())
+		{
+			NOCTURNAL_ENGINE_ERROR("Failed to open fragment shader file: {}", fragmentPath);
+			return nullptr;
+		}
+
+		std::stringstream vStream, fStream;
+		vStream << vFile.rdbuf();
+		fStream << fFile.rdbuf();
+
+		vFile.close();
+		fFile.close();
+
+		return std::make_shared<Shader>(name, vStream.str(), fStream.str());
+	}
+
+
+
 	/*!*************************************************************************
 	Retrieve texture based on filename and filepath
 	****************************************************************************/
 	std::shared_ptr<Shader> ResourceManager::LoadShader(std::string name, const std::string& filepath)
 	{
 		return shaders[name] = ResourceManager::LoadShaderFromFile(filepath);
+	}
+
+
+	std::shared_ptr<Shader> ResourceManager::LoadShader(std::string name, const std::string& vertexPath, const std::string& fragmentPath)
+	{
+		return shaders[name] = ResourceManager::LoadShaderFromFile(name, vertexPath, fragmentPath);
 	}
 
 	/*!*************************************************************************
