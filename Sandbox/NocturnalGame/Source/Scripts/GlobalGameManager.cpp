@@ -20,6 +20,7 @@
 #include "core/Log.h"
 #include "Math/Random.h"
 #include "Scripts/AnimalLogic.h"
+#include "ECS/Components/ButtonComponent.h"
 
 namespace NocturnalEngine {
 
@@ -174,9 +175,14 @@ namespace NocturnalEngine {
 
         if (p_Scene->isGameplay&& currState !=GameState::PAUSED)
         {
+            
             if (!levelDataLoaded && !levelConfig.GetLevels().empty())LevelDataToMap(levelNum);
+
+
             if (IsNewSceneManagement() && !combinedSceneSetup) CombinedSceneStart();
             if (IsNewSceneManagement())CombinedSceneUpdate(dt);
+
+
             for (std::pair<const std::string,AnimalData>& sceneAnimalPair:sceneAnimalMap)
             {
                 //this processes the other animals in the 
@@ -265,6 +271,16 @@ namespace NocturnalEngine {
     }
 
     GameManager::AnimalData GameManager::LoadPersistentValues(std::string gs) {
+        if (levelNum<=1)
+        {
+            Entity owlBtn{ GetEntityByName("OwlBtn") };
+            if (owlBtn != MAX_ENTITIES && p_ecs.HaveComponent<ButtonComponent>(owlBtn))
+            {
+                p_ecs.GetComponent<ButtonComponent>(owlBtn).ClearFlag(); //Deactivates the button
+                if (p_ecs.HaveComponent<Text>(owlBtn))p_ecs.GetComponent<Text>(owlBtn).SetContent("");
+            }
+        }
+
         targetVisibility = false;
         auto it = sceneAnimalMap.find(gs);
         if (it != sceneAnimalMap.end()) {
@@ -482,7 +498,7 @@ namespace NocturnalEngine {
         {
             if (p_ecs.HaveComponent<NameTag>(e) && p_ecs.GetComponent<NameTag>(e).GetNameTag() == name) return e;
         }
-        return 0;
+        return MAX_ENTITIES;
     }
 
     void GameManager::SetSceneToSwitch( std::string seekScene ){

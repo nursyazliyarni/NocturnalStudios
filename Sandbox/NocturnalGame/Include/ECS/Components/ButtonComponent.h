@@ -54,6 +54,8 @@ namespace NocturnalEngine
 
 		int Flag() const { return flag; }
 
+		void ClearFlag() { flag = 0; }
+
 		ButtonComponent();
 		~ButtonComponent() = default;
 
