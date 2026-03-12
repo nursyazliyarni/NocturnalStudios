@@ -91,6 +91,11 @@ namespace NocturnalEngine {
 			EngineAssetPath.string() + "/Shaders/Fullscreen.vert.glsl",
 			EngineAssetPath.string() + "/Shaders/Particle.frag.glsl"
 		);
+		ResourceManager::LoadShader(
+			"SceneLeavesShader",
+			EngineAssetPath.string() + "/Shaders/Fullscreen.vert.glsl",
+			EngineAssetPath.string() + "/Shaders/Leaves.frag.glsl"
+		);
 		sMissingTextureID = ResourceManager::LoadTexture("ERROR_MISSINGTEX", EngineAssetPath.string() + "/Textures/Evil.png",true)->GetRendererID();
 		
 		LoadIconsTexture(EngineAssetPath.string() + "/Text/Icons.txt");

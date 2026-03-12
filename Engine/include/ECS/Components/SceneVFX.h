@@ -24,7 +24,8 @@ namespace NocturnalEngine
         enum class ParticleType
         {
             None = 0,
-            FloatingDots = 1
+            FloatingDots = 1,
+            FallingLeaves = 2
         };
 
         SceneVFX();

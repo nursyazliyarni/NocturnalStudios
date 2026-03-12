@@ -138,7 +138,7 @@
                 {
                     "Component": "Sprite",
                     "TextureName": "Characters/flamingo_angry",
-                    "Index_X": 0,
+                    "Index_X": 1,
                     "Index_Y": 0,
                     "Ucoordinates": 528.0,
                     "Vcoordinates": 528.0,
@@ -711,6 +711,12 @@
                     "WorldSpace": false,
                     "Center": false,
                     "LayeringOrder": 0
+                },
+                {
+                    "Component": "SceneVFX",
+                    "ParticlesEnabled": true,
+                    "ParticleType": 2,
+                    "RenderAfterLayer": 0
                 },
                 {
                     "Component": "ButtonComponent",

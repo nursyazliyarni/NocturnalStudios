@@ -60,6 +60,10 @@ namespace NocturnalEngine
         {
         case ParticleType::FloatingDots:
             return "SceneParticleShader";
+
+        case ParticleType::FallingLeaves:
+            return "SceneLeavesShader";
+
         case ParticleType::None:
         default:
             return nullptr;
