@@ -6,22 +6,22 @@
 		This file is used to serialize and deserialize logic components for ECS.
 	
     Primary Author:
-         LAU XIANG YANG (100%)
+         LAU XIANG YANG (95%)
 		- Created the logic class and its function specification.
+    Secondary Author:
+         Nur Syazliyarni (5%)
+        - Added RevealTargetOnClick script wiring for logic deserialization.
 
     All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
 *------------------------------------------------------------------------------------------------*/
 
 #include "pch.h"
 #include "ECS/Components/Logic.h"
-#include "Scripts/ButtonResponse.h"
-#include "Scripts/ScenerioScript.h"
-#include "Scripts/SliderScript.h"
-#include "Scripts/AudioManager.h"
-#include "Scripts/PauseMenu.h"
-#include "Scripts/BackgroundAudio.h"
-#include "Scripts/CutScene.h"
-#include "Scripts/DialogueManager.h"
+#include "System/ServiceLocator.h"
+#include "Scripts/IScriptRegistry.h"
+#include <imgui.h>
+#include "LevelEditor/LevelEditor.h"
+
 
 
 namespace NocturnalEngine
@@ -30,6 +30,72 @@ namespace NocturnalEngine
 	Ctor for Logic Component
 	****************************************************************************/
 	Logic::Logic() { entityID = GetComponentEntityID(); }
+
+	bool Logic::ToEditor() {
+		bool changed = false;
+		//This is called ONCE ever, then cached
+		static IScriptRegistry* scriptRegistry =
+			ServiceLocator::Get().GetScriptRegistry();
+
+		if (!scriptRegistry) {
+			NOCTURNAL_ENGINE_WARN("Script Registry not Initalized!");
+			return false;
+		}
+
+		if (ImGui::CollapsingHeader("Logic", ImGuiTreeNodeFlags_None))
+		{
+
+			static ImGuiComboFlags flags = 0;
+			static int current_script = 0;
+			const size_t aSize = 30;
+			const char* logicList[aSize];
+			std::vector<const char*> sList;
+			std::vector<std::string> scriptNames = scriptRegistry->GetAvailableScripts();
+
+			for (int i = 0; i < scriptNames.size(); i++)
+			{
+				sList.push_back(scriptNames[i].c_str());
+			}
+			std::copy(sList.begin(), sList.end(), logicList);
+
+			changed |= ImGui::Combo("Logic Scripts", &current_script, logicList, static_cast<int>(sList.size()), static_cast<int>(sList.size()));
+
+			if (ImGui::Button("Add"))
+			{
+				bool can_addScript = true;
+				for (int i = 0; i < GetScriptNames().size(); i++)
+				{
+					if (GetScriptNames()[i] == scriptNames[current_script])
+					{
+						can_addScript = false;
+					}
+				}
+				if (can_addScript == true)
+				{
+					if (scriptRegistry->CanAttachScript(scriptNames[current_script], LevelEditor::GetInstance()->selectedEntity)) {
+						IScript* script = scriptRegistry->CreateScript(scriptNames[current_script]);
+						if (script) {
+							InsertScript(script, LevelEditor::GetInstance()->selectedEntity);
+							//InsertScript(script, entityID);
+							changed = true;
+						}
+					}
+				}
+			}
+			ImGui::SameLine();
+			if (ImGui::Button("Delete")) {
+				DeleteScript(scriptNames[current_script]);
+				changed = true;
+			}
+			ImGui::Text("Inserted Scripts:");
+			for (int i = 0; i < GetScriptNames().size(); i++) {
+				//display the names of all scripts in the entity
+				ImGui::Text("% s", GetScriptNames()[i].c_str());
+			}
+		}
+		return changed;
+	}
+
 
 	/*!*************************************************************************
 	Copy Ctor
@@ -96,49 +162,39 @@ namespace NocturnalEngine
 	}
 
 	/*!*************************************************************************
-	Deserialize for Logic Component
-	****************************************************************************/
+Deserialize for Logic Component
+****************************************************************************/
 	bool Logic::Deserialize(const rapidjson::Value& obj)
 	{
-		for (int i = 0; i < obj["ScriptCount"].GetInt(); ++i)
+		int scriptCount = obj.HasMember("ScriptCount") && obj["ScriptCount"].IsNumber() ? obj["ScriptCount"].GetInt() : 0;
+		if (scriptCount <= 0) return true;
+
+		// Load script names from JSON
+		for (int i = 0; i < scriptCount; ++i)
 		{
 			mScriptNameVector.push_back(obj[std::to_string(i).c_str()].GetString());
 		}
-		for (size_t j = 0; j < mScriptNameVector.size(); ++j)
+
+		// Use factory to create scripts
+		IScriptRegistry* factory = ServiceLocator::Get().GetScriptRegistry();
+		if (!factory) { 
+			NOCTURNAL_ENGINE_WARN("Script Factory is missing!"); 
+			return false;
+		}
+		for (const std::string& scriptName : mScriptNameVector)
 		{
-			if (mScriptNameVector[j] == "ButtonResponse")
+			IScript* script = factory->CreateScript(scriptName);
+			if (script)
 			{
-				mScriptsVector.push_back(new ButtonResponse());
+				mScriptsVector.push_back(script);
 			}
-			if (mScriptNameVector[j] == "ScenerioScript")
+			else
 			{
-				mScriptsVector.push_back(new ScenerioScript());
-			}
-			if (mScriptNameVector[j] == "AudioManager")
-			{
-				mScriptsVector.push_back(new AudioManager());
-			}
-			if (mScriptNameVector[j] == "BackgroundAudio")
-			{
-				mScriptsVector.push_back(new BackgroundAudio());
-			}
-			if (mScriptNameVector[j] == "SliderScript")
-			{
-				mScriptsVector.push_back(new SliderScript());
-			}
-			if (mScriptNameVector[j] == "PauseMenu")
-			{
-				mScriptsVector.push_back(new PauseMenu());
-			}
-			if (mScriptNameVector[j] == "CutScene")
-			{
-				mScriptsVector.push_back(new CutScene());
-			}
-			if (mScriptNameVector[j] == "DialogueManager")
-			{
-				mScriptsVector.push_back(new DialogueManager());
+				// Log warning for unknown script
+				NOCTURNAL_ENGINE_WARN("Unknown script type in scene file: {}", scriptName);
 			}
 		}
+
 		return true;
 	}
 
@@ -150,6 +206,7 @@ namespace NocturnalEngine
 		int i = 0;
 		for (i = 0; i < mScriptNameVector.size(); ++i)
 		{
+
 			writer->Key(std::to_string(i).c_str());
 			writer->String(mScriptNameVector[i].c_str());
 		}

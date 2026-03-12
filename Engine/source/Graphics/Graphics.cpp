@@ -7,8 +7,15 @@
 		once render class is up.
 	
     Primary Author:
-         LAU XIANG YANG (100%)
+         Rishika Bimal Attodi (85%)
 		- Created the graphics class and its function specification.
+    Secondary Author:
+         Nur Syazliyarni (5%)
+        - Added Text component rendering path in the graphics loop.
+		LAYCOCK ENHUI SARAH (10%)
+		- Changed it so that the loading in of textures isnt dependent on hardcoded folder
+		  paths
+		- Added engine asset loading (Icons, Default fonts, shaders, missing texture)
 
     All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
 *------------------------------------------------------------------------------------------------*/
@@ -27,6 +34,7 @@
 #include "ECS/SceneManager.h"
 
 namespace NocturnalEngine {
+	
 	/*!*************************************************************************
 	Load Icon from filepath using resource manager
 	****************************************************************************/
@@ -35,7 +43,7 @@ namespace NocturnalEngine {
 		std::ifstream ifs(filename.c_str());
 		std::string name, textPath;
 		while (ifs >> name >> textPath)
-			ResourceManager::LoadIcons(name.c_str(), textPath.c_str());
+			ResourceManager::LoadIcons(name.c_str(), (EngineAssetPath.string()+textPath).c_str());
 
 		ifs.close();
 	}
@@ -45,27 +53,73 @@ namespace NocturnalEngine {
 	****************************************************************************/
 	void Graphic::Init()
 	{
+		ResourceManager::LoadShader("QuadShader", EngineAssetPath.string() + "/Shaders/texture.shader");
+		ResourceManager::LoadShader("LineShader", EngineAssetPath.string() + "/Shaders/Line.shader");
+		ResourceManager::LoadShader("CircleShader", EngineAssetPath.string() + "/Shaders/Circle.shader");
+		ResourceManager::LoadShader("ImpactShader", EngineAssetPath.string() + "/Shaders/Impact.shader");
+		sMissingTextureID = ResourceManager::LoadTexture("ERROR_MISSINGTEX", EngineAssetPath.string() + "/Textures/Evil.png",true)->GetRendererID();
 		
-		ResourceManager::LoadShader("QuadShader", "Assets/Shaders/texture.shader");
-		ResourceManager::LoadShader("LineShader", "Assets/Shaders/Line.shader");
-		ResourceManager::LoadShader("CircleShader", "Assets/Shaders/Circle.shader");
-		ResourceManager::LoadShader("ImpactShader", "Assets/Shaders/Impact.shader");
-		
-		LoadIconsTexture("Assets/Text/Icons.txt");
-		std::string path = {"Assets/Textures/"};
-		std::string folderpath[] = {"Characters", "Environment", "UI", "CutScene", "Dialogues", "Play"};
-		
-		for (const auto& i : folderpath)
+		LoadIconsTexture(EngineAssetPath.string() + "/Text/Icons.txt");
+		std::string path = "Assets/Textures/";
+		if (!std::filesystem::exists(path))
 		{
-			std::filesystem::path currentPath = path + i;
-			auto currentFolders = std::filesystem::directory_iterator(currentPath);
-			for (const auto& entry : currentFolders)
+			NOCTURNAL_ENGINE_WARN("Assets/Textures/ folder missing! Creating it...");
+			std::filesystem::create_directories(path);
+		}
+		else
+		{
+			//recursive_directory_iterator goes through ALL subfolders
+			for (const auto& entry : std::filesystem::recursive_directory_iterator(path))
 			{
+				// Skip directories, only process files
+				if (!entry.is_regular_file())
+					continue;
+
+				// Only load image files
+				auto ext = entry.path().extension().string();
+				std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
+				if (ext != ".png" && ext != ".jpg" && ext != ".jpeg")
+					continue;
+
 				std::string gs = entry.path().generic_string();
-				std::size_t pos = gs.find_last_of("/");
-				std::size_t pos1 = gs.find(".");
-				std::string Imagename = gs.substr(pos + 1, pos1 - pos - 1);
-				ResourceManager::LoadTexture(Imagename, gs);
+
+				// Use relative path as key to avoid name collisions
+				// e.g. "Characters/horse" instead of just "horse"
+				std::string relativePath = std::filesystem::relative(
+					entry.path(),
+					std::filesystem::path(path)
+				).generic_string();
+
+				// Remove extension from key
+				std::string key = relativePath.substr(0, relativePath.find_last_of('.'));
+				// key = "Characters/Cat" or "UI/Menus/Main" etc.
+
+				ResourceManager::LoadTexture(key, gs);
+				//NOCTURNAL_ENGINE_INFO("Loaded texture: {}", key);
+			}
+		}
+
+		std::string fontPaths[]{ {EngineAssetPath.string() + "/Fonts" }, "Assets/Fonts","Assets/fonts" };
+		for(std::string fontPath:fontPaths){
+			if (std::filesystem::exists(fontPath))
+			{
+				for (const auto& entry : std::filesystem::directory_iterator(fontPath))
+				{
+					if (!entry.is_regular_file())
+						continue;
+
+					auto ext = entry.path().extension().string();
+					std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
+					if (ext != ".ttf" && ext != ".otf")
+						continue;
+
+					std::string fontName = entry.path().stem().string();
+					if (!ResourceManager::GetFont(fontName))
+					{
+						ResourceManager::LoadFont(fontName, entry.path().generic_string());
+						
+					}
+				}
 			}
 		}
 		FrameBufferSpecification fbspec;
@@ -74,7 +128,24 @@ namespace NocturnalEngine {
 		fbspec.Height = mWinData.GetHeight();
 		p_FrameBuffer->SetFrameBufferSpecification(fbspec);
 		Renderer::Init();
-		mFont->Init();
+		if (!ResourceManager::GetFont("KernlGrotesk"))
+		{
+			ResourceManager::LoadFont("KernlGrotesk", "Assets/Fonts/KernlGrotesk.otf");
+		}
+		mFont = ResourceManager::GetFont("KernlGrotesk");
+		if (!mFont)
+		{
+			mFont = std::make_shared<Font>();
+			mFont->Init();
+			mFont->Load("Assets/Fonts/KernlGrotesk.otf");
+		}
+
+		for (int i = 0; i < Graphic::MAX_LAYERS; ++i)
+			Graphic::layerEnabled[i] = true;
+
+		for (int i = 0; i < Graphic::MAX_LAYERS; ++i)
+			Graphic::layerDrawOrder[i] = i;
+
 	}
 
 	/*!*************************************************************************
@@ -124,38 +195,49 @@ namespace NocturnalEngine {
 		glClearTexImage(p_FrameBuffer->GetColorAttachmentRendererID(1), 0, GL_RGBA8, GL_INT, &value);
 	
 		mRenderer->Begin(*mcamera);// begin of the renderer 
-	
+		//mFont->RenderText("TEXT TEST", { 0.f, 0.f }, 0.001f, *mcamera, { 1,1,1 }); // for testing
 
 		p_GUI->VPmat = mcamera->GetViewProjectionMatrix();
-		
+		//std::map<std::string, double>animal_attribute_map;
 
-		for (auto layer = 0; layer < 8; layer++)
+		for (int orderIndex = 0; orderIndex < Graphic::MAX_LAYERS; ++orderIndex)
 		{
+			int layer = Graphic::layerDrawOrder[orderIndex];
+			if (!Graphic::layerEnabled[layer]) continue;
+
 			for (auto i = mEntities.begin(); i != mEntities.end(); i++)
 			{
 				
+				
 				auto& transform = p_ecs.GetComponent<Transform>(*i);
 				auto& sprite = p_ecs.GetComponent<Sprite>(*i);
-				if (sprite.LayerOrder == layer)
+				int layerId = sprite.LayerOrder;
+				if (layerId < 0) layerId = 0;
+				if (layerId >= Graphic::MAX_LAYERS) layerId = Graphic::MAX_LAYERS - 1;
+
+				if (layerId == layer)
 				{//render the lowest layer level then follow on
 					if (sprite.is_Animated)
 					{
-						mAimator.UpdateAnimation(frametime, p_ecs.GetComponent<Sprite>(*i));
+						mAimator.UpdateAnimation(frametime,  p_ecs.GetComponent<Sprite>(*i));
 					}
+
 					if (sprite.is_SpriteSheet)
 					{
-					
+
 						mIndex1 = SpriteRender::CreateSprite(GETTEXTURE(sprite.GetTexture()), { sprite.GetIndex().x, sprite.GetIndex().y },
 							{ sprite.GetUVCoor().x, sprite.GetUVCoor().y });
 
 						mRenderer->DrawSprite({ transform.GetPos().x , transform.GetPos().y }, { transform.GetScale().x , transform.GetScale().y },
 							transform.GetRot(), mIndex1);
 					}
+
 					else
 					{
 						mRenderer->DrawQuad({ transform.GetPos().x, transform.GetPos().y }, { transform.GetScale().x, transform.GetScale().y },
 							transform.GetRot(), GETTEXTURE(sprite.GetTexture()));
 					}
+
 					if (p_Editor->mDebugDraw)
 					{
 						if (p_ecs.HaveComponent<Collider>(*i) && ((p_ecs.GetComponent<Collider>(*i)[0].is_Alive) || (p_ecs.GetComponent<Collider>(*i)[1].is_Alive))) {
@@ -214,9 +296,60 @@ namespace NocturnalEngine {
 
 		}
 		mRenderer->End();
+
+		const auto alive = p_ecs.GetAliveEntitiesSet();
+		for (const auto& e : alive)
+		{
+			if (!p_ecs.HaveComponent<Text>(e)) continue;
+			auto& text = p_ecs.GetComponent<Text>(e);
+			int layerId = text.Get_layering_order();
+			if (layerId < 0) layerId = 0;
+			if (layerId >= Graphic::MAX_LAYERS) layerId = Graphic::MAX_LAYERS - 1;
+
+			glm::vec2 pos(0.0f, 0.0f);
+
+			if (text.GetWorldSpace())
+			{
+				if (!p_ecs.HaveComponent<Transform>(e)) continue;
+				auto& tr = p_ecs.GetComponent<Transform>(e);
+
+				pos = glm::vec2(tr.GetPos().x, tr.GetPos().y);
+				pos.x += text.GetPosition()[0];
+				pos.y += text.GetPosition()[1];
+			}
+			else
+			{
+				pos = glm::vec2(text.GetPosition()[0], text.GetPosition()[1]);
+			}
+
+			float* c = text.GetColor();
+			glm::vec3 col(c[0], c[1], c[2]);
+
+			float scale = text.GetSize() * 0.0000333f;
+			if (scale < 0.0001f) scale = 0.0008f;
+
+			std::shared_ptr<Font> font = ResourceManager::GetFont(text.GetFont());
+			if (!font)
+				font = mFont;
+			if (font) {
+				for (int orderIndex = 0; orderIndex < Graphic::MAX_LAYERS; ++orderIndex) {
+					int layer = Graphic::layerDrawOrder[orderIndex];
+					if (!Graphic::layerEnabled[layer]) continue;
+					if (layerId == orderIndex) {
+						if (text.Get_TEXT_type()==Text::text_type::single_text) //single text
+							font->RenderText(text.GetContent(), pos, text.Get_line_height(), scale, *mcamera, col, text.Rot());
+
+						else { //array of text
+							if (!text.GET_mContent_array().empty())
+								font->RenderText(text.GET_current_mContent(text.current_index), text.GET_current_position(text.current_index), text.Get_line_height(), scale, *mcamera, col, text.Rot());
+						}
+					}
+				}
+			}
+				
+		}
 	
 		p_FrameBuffer->UnBind();
-		
 		
 		mcamera->MouseScrolling();
 		if (p_Input->KeyPressed(GLFW_KEY_F2) && !p_Editor->is_ShowWindow)
@@ -226,7 +359,7 @@ namespace NocturnalEngine {
 		if (misFps)
 		{
 			auto i = std::to_string(FramePerSec::GetInstance().GetFps());
-			mFont->RenderText("FPS: " + i, { camera.GetPosition().x + 0.2f, camera.GetPosition().y + 0.2f },
+			mFont->RenderText("FPS: " + i, { camera.GetPosition().x + 0.2f, camera.GetPosition().y + 0.2f }, 0,
 				0.0008f, camera, { 0.87f, 0.92f, 0.18f });
 		}
 		Timer::GetInstance().Update(Systems::GRAPHIC);

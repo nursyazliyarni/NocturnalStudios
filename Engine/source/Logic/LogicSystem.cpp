@@ -18,6 +18,8 @@
 #include "Logic/LogicSystem.h"
 #include "GUI/GUI.h"
 #include "Timer/Time.h"
+#include "LevelEditor/LevelEditor.h"
+#include <graphics/Graphics.h>
 
 namespace NocturnalEngine
 {
@@ -37,8 +39,28 @@ namespace NocturnalEngine
 		Timer::GetInstance().Start(Systems::LOGIC);
 		Timer::GetInstance().GetDT(Systems::LOGIC);
 
+		//If editor is active, skip logic update
+		if (LevelEditor::IsEditorActive())
+		{
+			Timer::GetInstance().Update(Systems::LOGIC);
+			return;
+		}
+
 		for (const auto &entity : mEntities)
 		{
+			// Layering system: skip logic update if this entity is on a disabled layer
+			if (p_ecs.HaveComponent<Sprite>(entity))
+			{
+				int layer = p_ecs.GetComponent<Sprite>(entity).LayerOrder;
+
+				if (layer < 0) layer = 0;
+				if (layer >= NocturnalEngine::Graphic::MAX_LAYERS)
+					layer = NocturnalEngine::Graphic::MAX_LAYERS - 1;
+
+				if (!NocturnalEngine::Graphic::layerEnabled[layer])
+					continue;
+			}
+
 			auto& LogicComp = p_ecs.GetComponent<Logic>(entity);
 			LogicComp.SetScriptEntity(entity);
 			if (!LogicComp.GetScript().empty())
@@ -47,13 +69,17 @@ namespace NocturnalEngine
 				{
 					if ((p_GUI->check_pause() == false || (*i)->GetScriptName() == "PauseMenu" || (*i)->GetScriptName() == "SliderScript"))
 					{
+						
 						if (!(*i)->GetScriptInit())
 						{
 							(*i)->Start();
 							(*i)->SetScriptInit();
 						}
-						if(!(*i)->GetScriptPaused())
+						if(!(*i)->GetScriptPaused()){
 							(*i)->Update(Frametime);
+							
+						}
+							
 					}
 				}
 			}

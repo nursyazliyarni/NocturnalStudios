@@ -14,9 +14,8 @@
 *------------------------------------------------------------------------------------------------*/
 
 #pragma once
-
 namespace NocturnalEngine {
-
+	static unsigned int sMissingTextureID=1;
 	class Texture
 	{
 	public:
@@ -24,7 +23,7 @@ namespace NocturnalEngine {
 		~Texture();
 		void Bind(unsigned int slot = 0) const; //  specify the slot to bind texture to
 		void UnBind() const;
-		void GenTexture(const std::string& path);
+		void GenTexture(const std::string& path,bool filteringNearest=false);
 		void GenTexture(unsigned int width, unsigned int height);
 		/* accessor functions for the width, height, bpp */
 

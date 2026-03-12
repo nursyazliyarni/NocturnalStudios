@@ -51,11 +51,13 @@ Make sure not to let the animals escape!
 =============================================================================
 CONTROLS
 
-Movement:
-Up-	W
-Left-	A
-Down-	S
-Right-	D
+
+Scene switching using number keys in the game
+
+- Press **1** to load Scene 1 (Horse)
+- Press **2** to load Scene 2 (Flamingo)
+- Press **3** to load Scene 3 (Seal)
+- Press **4** to load Scene 4 (Owl)
 
 Point & Click to interact with objects on the screen
 

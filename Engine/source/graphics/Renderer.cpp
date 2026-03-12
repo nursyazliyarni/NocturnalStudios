@@ -8,7 +8,7 @@
 		To maintain as less draw call as possible
 	
     Primary Author:
-         LAU XIANG YANG (100%)
+         Rishika Bimal Attodi (100%)
 		- Created the renderer class and its function specification.
 
     All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
@@ -547,11 +547,13 @@ Overload function for Draw Quad using vec3 position with texture
 	****************************************************************************/
 	void Renderer::DrawQuad(const Mat4x4& transform, const MultiRefs<Texture>& texture)
 	{
-
+		MultiRefs<Texture> resolvedTex = texture && texture->GetRendererID() != 0 ? 
+			texture : ResourceManager::GetTexture("ERROR_MISSINGTEX");
+		
 		float textureIndex = 0.0f;
 		for (unsigned int i = 1; i < r_Data.TextureUnitIndex; i++)
 		{
-			if (*r_Data.TextureUnits[i] == *texture)
+			if (*r_Data.TextureUnits[i] == *resolvedTex)
 			{
 				textureIndex = (float)i;
 				break;
@@ -564,7 +566,7 @@ Overload function for Draw Quad using vec3 position with texture
 				NextBatch();
 
 			textureIndex = (float)r_Data.TextureUnitIndex;
-			r_Data.TextureUnits[r_Data.TextureUnitIndex] = texture;
+			r_Data.TextureUnits[r_Data.TextureUnitIndex] = resolvedTex;
 			r_Data.TextureUnitIndex++;
 		}
 		constexpr glm::vec2 textureCoors[] = { { 0.0f , 0.0f }, { 1.f, 0.0f }, { 1.f, 1.0f },{ 0.f,1.0f} };
@@ -580,6 +582,7 @@ Overload function for Draw Quad using vec3 position with texture
 		r_Data.QuadIndexCount += 6;
 
 		r_Data.Infos.n_Quad++;
+		
 	}
 	/*!*************************************************************************
 	Overload function for Draw Quad using vec2 position with no texture just shader and rotation 
@@ -630,7 +633,7 @@ Overload function for Draw Quad using vec3 position with texture
 		Translate4x4(translate, position.x, position.y, position.z);
 		Scale4x4(scale, size.x, size.y, 1.0f);
 		RotRad4x4(rot, rotation, { 0.0f, 0.0f, 1.0f });
-		transform = translate* scale * rot ;
+		transform = translate * rot * scale; 
 		DrawQuad(transform, texture);
 	}
 	/*!*************************************************************************

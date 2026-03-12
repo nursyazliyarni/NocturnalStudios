@@ -14,6 +14,7 @@
 
 #include "pch.h"
 #include "ECS/Components/NameTag.h"
+#include <imgui.h>
 
 namespace NocturnalEngine
 {
@@ -21,6 +22,23 @@ namespace NocturnalEngine
 	Ctor for NameTag
 	****************************************************************************/
 	NameTag::NameTag() : mName{"none"} {}
+
+
+	bool NameTag::ToEditor() {
+		bool changed = false;
+		if (ImGui::CollapsingHeader("Name", ImGuiTreeNodeFlags_None))
+		{
+			char buffer[256];
+			memset(buffer, 0, sizeof(buffer));
+			strcpy_s(buffer, sizeof(buffer), mName.c_str());
+			if (ImGui::InputText("name", buffer, sizeof(buffer)))
+			{
+				mName = std::string(buffer);
+				changed = true;
+			}
+		}
+		return changed;
+	}
 
 	/*!*************************************************************************
 	Deserialize NameTag Component

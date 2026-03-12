@@ -41,6 +41,12 @@ namespace NocturnalEngine {
 	****************************************************************************/
 	void Texture::Bind(unsigned int slot) const
 	{
+		if (mRendererID == 0) // 0 means uninitialized/invalid in OpenGL
+		{
+			// Bind your missing texture instead
+			glBindTextureUnit(slot, sMissingTextureID); // or however you store it
+			return;
+		}
 		glBindTextureUnit(slot, mRendererID);
 	}
 
@@ -55,7 +61,7 @@ namespace NocturnalEngine {
 	/*!*************************************************************************
 	Generate texture from file
 	****************************************************************************/
-	void Texture::GenTexture(const std::string& path)
+	void Texture::GenTexture(const std::string& path, bool filteringNearest)
 	{
 		int width, height, channels;
 		stbi_set_flip_vertically_on_load(1);
@@ -85,8 +91,16 @@ namespace NocturnalEngine {
 			glCreateTextures(GL_TEXTURE_2D, 1, &mRendererID);
 			glTextureStorage2D(mRendererID, 1, mInnerFormat, mWidth, mHeight);
 
-			glTextureParameteri(mRendererID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-			glTextureParameteri(mRendererID, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			if (filteringNearest)
+			{
+				glTextureParameteri(mRendererID, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+				glTextureParameteri(mRendererID, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+			}
+			else
+			{
+				glTextureParameteri(mRendererID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+				glTextureParameteri(mRendererID, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			}
 
 			glTextureParameteri(mRendererID, GL_TEXTURE_WRAP_S, GL_REPEAT);
 			glTextureParameteri(mRendererID, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -94,6 +108,12 @@ namespace NocturnalEngine {
 			glTextureSubImage2D(mRendererID, 0, 0, 0, mWidth, mHeight, mImageFormat, GL_UNSIGNED_BYTE, data);
 
 			stbi_image_free(data);
+		}
+		else
+		{
+			// stbi_load failed - path doesn't exist or file is corrupt
+			NOCTURNAL_ENGINE_WARN("Texture failed to load: {0}, using missing texture", path);
+			mRendererID = sMissingTextureID; // your pre-generated fallback texture ID
 		}
 	}
 
@@ -111,6 +131,7 @@ namespace NocturnalEngine {
 		glTextureParameteri(mRendererID, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		glTextureParameteri(mRendererID, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	}
+
 
 	/*!*************************************************************************
 	Set texture data

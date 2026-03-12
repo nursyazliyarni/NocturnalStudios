@@ -14,6 +14,7 @@
 
 #include "pch.h"
 #include "ECS/Components/Tag.h"
+#include <imgui.h>
 
 namespace NocturnalEngine
 {
@@ -22,13 +23,29 @@ namespace NocturnalEngine
 	****************************************************************************/
 	Tag::Tag() : mTag{"Untagged"}, mTargetTag{""} {}
 
+	bool Tag::ToEditor() {
+		bool changed = false;
+		if (ImGui::CollapsingHeader("TAG", ImGuiTreeNodeFlags_None))
+		{
+			char buffer1[256];
+			memset(buffer1, 0, sizeof(buffer1));
+			strcpy_s(buffer1, sizeof(buffer1), mTag.c_str());
+			if (ImGui::InputText("Tag", buffer1, sizeof(buffer1)))
+			{
+				mTag = std::string(buffer1);
+				changed = true;
+			}
+		}
+		return changed;
+	}
+
 	/*!*************************************************************************
 	Deserialize for Tag Component
 	****************************************************************************/
 	bool Tag::Deserialize(const rapidjson::Value& obj)
 	{
-		mTag = obj["Tag"].GetString();
-		mTargetTag = obj["TargetTag"].GetString();
+		if(obj.HasMember("Tag")&& obj["Tag"].IsString())mTag = obj["Tag"].GetString();
+		if (obj.HasMember("TargetTag") && obj["TargetTag"].IsString())mTargetTag = obj["TargetTag"].GetString();
 		return true;
 	}
 

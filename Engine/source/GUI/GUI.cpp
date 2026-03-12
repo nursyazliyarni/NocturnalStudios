@@ -16,7 +16,7 @@
 #include "pch.h"
 #include "Window/Window.h"
 #include "Input/Input.h"
-#include "Core/Application.h"
+#include "Core/EngineCore.h"
 #include "Graphics/Graphics.h"
 #include "ECS/SceneManager.h"
 #include "GUI/GUI.h"

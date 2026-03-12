@@ -1,0 +1,56 @@
+/*!------------------------------------------------------------------------------------------------
+    File: ItemsAttributes.h
+    Project: NocturnalStudio
+
+	Brief:
+		This file contains the Items Attributes component to all the item related attributes
+		used in the ECS
+		
+    Primary Author:
+         Ang Yu Xuan (100%)
+		- Created the ItemsAttributes.h file and its function specification.
+
+    All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
+
+#pragma once
+#include "ECS/Components/IComponent.h"
+#include "pch.h"
+
+
+namespace NocturnalEngine
+{
+	class ItemsAttributes : public IComponent
+	{
+	public:
+		ItemsAttributes();
+		~ItemsAttributes() = default;
+
+		virtual bool Deserialize(const rapidjson::Value& obj);
+		virtual bool Serialize(rapidjson::PrettyWriter<rapidjson::StringBuffer>* writer) const;
+		bool ToEditor()override;
+		/*!*************************************************************************
+		Retrieves Component Entity ID
+		****************************************************************************/
+		Entity& GetComponentEntityID() { return entityID; }
+		/*!*************************************************************************
+		Sets Components Entity ID
+		****************************************************************************/
+		void SetComponentEntityID(Entity& entity) { entityID = entity; }
+
+	public:
+		enum class ItemType{
+			FOOD,
+			MEDICINE,
+			TOY
+		};
+
+		ItemType type;
+		double gain_amount;
+		bool is_dragging;
+		vec2D duplicate_item_pos;
+
+		bool toyIsHidden{ false };
+		int hidingIndex{ 0 };
+	};
+}

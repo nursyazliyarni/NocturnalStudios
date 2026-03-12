@@ -21,6 +21,7 @@
 #include "System/SystemManager.h"
 #include "Types.h"
 #include "pch.h"
+#include "Core/MemoryManager.h"
 
 #define p_ecs NocturnalEngine::ECS::GetInstance()
 
@@ -54,9 +55,18 @@ namespace NocturnalEngine
 		/*!*************************************************************************
 		Pulls a new entity ID from queue and return it
 		****************************************************************************/
-		Entity CreateEntity()
+		Entity CreateEntity(bool isPrefab=false)
 		{
-			return mEntityManager->CreateEntity();
+			if (p_MemoryManager.IsEnabled() == false) return mEntityManager->CreateEntity(isPrefab);
+
+			Entity id = mEntityManager->CreateEntity(isPrefab);
+			void* slot = p_MemoryManager.Allocate(sizeof(Entity));
+			mEntityMemory[id] = slot;
+			if (slot)
+			{
+				*static_cast<Entity*>(slot) = id;
+			}
+			return id;
 		}
 
 		/*!*************************************************************************
@@ -65,6 +75,15 @@ namespace NocturnalEngine
 		void DestroyEntity(Entity entity)
 		{
 			mEntityManager->DestroyEntity(entity);
+			if (p_MemoryManager.IsEnabled())
+			{
+				if (mEntityMemory[entity])
+				{
+					p_MemoryManager.Free(mEntityMemory[entity]);
+					mEntityMemory[entity] = nullptr;
+				}
+			}
+
 			mComponentManager->EntityDestroyed(entity);
 			mSystemManager->EntityDestroyed(entity);
 		}
@@ -74,15 +93,24 @@ namespace NocturnalEngine
 		****************************************************************************/
 		void ClearAllComponents()
 		{
-			mComponentManager->ClearAllComponents();
+			mComponentManager->ClearAllComponents(mEntityManager->GetPrefabBitset());
 		}
 
 		/*!*************************************************************************
 		Clones the Entity and all its available components
 		****************************************************************************/
-		Entity CloneEntity(Entity entity)
+		Entity CloneEntity(Entity entity,bool isPrefab=false)
 		{
-			Entity newEntity = mEntityManager->CreateEntity();
+			Entity newEntity;
+			if (p_MemoryManager.IsEnabled())
+			{
+				newEntity = CreateEntity(isPrefab);
+			}
+			else
+			{
+				newEntity = mEntityManager->CreateEntity(isPrefab);
+			}
+			
 			mEntityManager->SetSignature(newEntity, GetEntitySignature(entity));
 			for (ComponentType i = 0; i < GetTotalRegisteredComponents(); ++i)
 			{
@@ -116,9 +144,9 @@ namespace NocturnalEngine
 		/*!*************************************************************************
 		Returns the number of live entities
 		****************************************************************************/
-		Entity GetTotalEntities()
+		Entity GetTotalSceneEntities()
 		{
-			return mEntityManager->GetTotalEntities();
+			return mEntityManager->GetTotalSceneEntities();
 		}
 
 		/*!*************************************************************************
@@ -145,15 +173,36 @@ namespace NocturnalEngine
 		/*!*************************************************************************
 		Resets all the entities for Scene build
 		****************************************************************************/
-		void ResetEntities()
+		void ResetEntities(bool withPrefabs=false)
 		{
 			auto aliveset = mEntityManager->GetAliveEntities();
+			std::bitset<MAX_ENTITIES> bitset= mEntityManager->GetPrefabBitset();
 			
 			for (const auto& iter : aliveset)
 			{
-				DestroyEntity(iter);
+				if (withPrefabs)
+				{
+					DestroyEntity(iter);
+				}
+				else if (!bitset[iter]) 
+				{
+					DestroyEntity(iter);
+				}
+				
 			}
 			
+		}
+
+		/*!*************************************************************************
+		Primes the memory manager with the expected number of entities for scene load
+		****************************************************************************/
+		void PrepareMemoryForEntities(Entity expected)
+		{
+			p_MemoryManager.Prime(static_cast<std::size_t>(expected));
+			for (std::size_t i = 0; i < MAX_ENTITIES; ++i)
+			{
+				mEntityMemory[i] = nullptr;
+			}
 		}
 
 		void ResetAllEntitySignatures()
@@ -312,5 +361,7 @@ namespace NocturnalEngine
 		std::unique_ptr<SystemManager> mSystemManager;
 		// Unique Pointer to ECS instance
 		inline static std::unique_ptr<ECS> m_instance;
+		// Memory blocks associated with entities when using the custom allocator
+		void* mEntityMemory[MAX_ENTITIES]{};
 	};
 }

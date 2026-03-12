@@ -9,8 +9,11 @@
         deserialize its data
 		
     Primary Author:
-         LAU XIANG YANG (100%)
+         LAU XIANG YANG (95%)
 		- Created the Components.h file and its function specification.
+    Secondary Author:
+         Nur Syazliyarni (5%)
+        - Added Text component integration into ECS component includes/macros.
 
     All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
 *------------------------------------------------------------------------------------------------*/
@@ -26,8 +29,8 @@
 #include "Tag.h"
 #include "Audio.h"
 #include "HUDComponent.h"
-#include "AnimalAttributes.h"
-#include "ItemsAttributes.h"
+#include "Draggable.h"
+#include "Text.h"
 
 
 
@@ -40,6 +43,10 @@
 #define C_LogicComponent NocturnalEngine::Logic::Logic()
 #define C_TagComponent NocturnalEngine::Tag::Tag()
 #define C_AudioComponent NocturnalEngine::Audio::Audio()
-#define C_HUDComponent NocturnalEngine::HUDComponent::HUDComponent()
-#define C_AnimalAttributesComponent NocturnalEngine::AnimalAttributes::AnimalAttributes()
-#define C_ItemsAttributesComponent NocturnalEngine::ItemsAttributes::ItemsAttributes()
+#define C_HUDComponent NocturnalEngine::HUDComponent::HUDComponent())
+#define C_DraggableComponent NocturnalEngine::Draggable::Draggable()
+#define C_TextComponent NocturnalEngine::Text::Text()
+
+
+
+

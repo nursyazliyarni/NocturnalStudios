@@ -16,12 +16,31 @@
 #pragma once
 #include "IComponent.h"
 #include "glm/glm.hpp"
+#include <string>
+#include <vector>
 
 namespace NocturnalEngine {
 
 	class Sprite : public IComponent
 	{
 	public:
+		struct AnimationStateRule
+		{
+			// User-facing state label shown in editor preview dropdown.
+			std::string name{ "State" };
+			// Texture key from ResourceManager::textures.
+			std::string textureKey{};
+			// 0=Hunger, 1=Health, 2=Sanity, 3=Always.
+			int source{ 3 };
+			// 0=<= threshold, 1=>= threshold.
+			int compare{ 0 };
+			// Normalized threshold [0..1].
+			float threshold{ 0.5f };
+			// Higher number wins when multiple states match.
+			int priority{ 0 };
+			bool enabled{ true };
+		};
+
 		struct Coordinates
 		{
 			int x; int y;
@@ -32,6 +51,7 @@ namespace NocturnalEngine {
 		~Sprite() = default;
 		virtual bool Deserialize(const rapidjson::Value & obj);
 		virtual bool Serialize(rapidjson::PrettyWriter<rapidjson::StringBuffer>*writer) const;
+		bool ToEditor()override;
 
 		void SetTexture(const std::string& name) { mTextureName = name; }
 		std::string &GetTexture() { return mTextureName; }
@@ -63,12 +83,24 @@ namespace NocturnalEngine {
 		bool is_Animated;	// if is a spritesheet do we want it to be animated 
 		float internaltimer; // internal timer for animation
 		int LayerOrder; // layering order for rendering
+		// General animation state manager settings shown in Sprite component editor.
+		bool stateManagerEnabled{ false };
+		bool statePreviewInEditor{ false };
+		// 0=Auto, n>0 maps to stateRules[n-1].
+		int statePreviewMode{ 0 };
+		std::vector<AnimationStateRule> stateRules{};
 		//altas 
 	private:
+		int SPRITE_type;
 		std::string mTextureName;
 		vec2D mUVcooridnates;
 		float mAlpha;
 		int MaxIndex_X;
 		std::vector<float>displayTime;
+
+		enum sprite_type {
+			texture, shape, sprite_type_count
+		};
+		const char* sprite_type_ToString(int enum_sprite_type);
 	};
 }

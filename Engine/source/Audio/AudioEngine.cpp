@@ -64,6 +64,22 @@ FMOD API play sound using loaded audio
 ****************************************************************************/
 int CAudioEngine::PlaySound(const std::string& strSoundName, NocturnalEngine::Audio::AudioType chgrp)
 {
+    // For BGM, check if the same track is already playing
+    if (chgrp == NocturnalEngine::Audio::AudioType::BGM)
+    {
+        if (IsBGMPathPlaying(strSoundName))
+        {
+            // BGM is already playing, return the existing channel ID
+            return mCurrentBGMChannelId;
+        }
+        else if (!mCurrentBGMPath.empty() && mCurrentBGMPath != strSoundName)
+        {
+            // Different BGM is being requested, fade out the current one
+            FadeOutAndStopChannel(mCurrentBGMChannelId);
+            ClearBGMTracking();
+        }
+    }
+
     auto tFoundIt = mSoundMap.find(strSoundName);
     FMOD::Sound* pSound;
 
@@ -92,6 +108,9 @@ int CAudioEngine::PlaySound(const std::string& strSoundName, NocturnalEngine::Au
         }
         if (chgrp == NocturnalEngine::Audio::AudioType::BGM) {
             pChannel->setChannelGroup(BGM);
+            // Track the BGM path and channel for persistence
+            mCurrentBGMPath = strSoundName;
+            mCurrentBGMChannelId = nChannelId;
         }
         if (chgrp == NocturnalEngine::Audio::AudioType::SFX) {
             pChannel->setChannelGroup(SFX);
@@ -135,11 +154,13 @@ void CAudioEngine::StopChannel(channel_groups chan)
     if (chan == channel_groups::master)
     {
         Master->stop();
+        ClearBGMTracking(); // BGM is part of master
     }
 
     else if (chan == channel_groups::bgm)
     {
         BGM->stop();
+        ClearBGMTracking();
     }
 
     else if (chan == channel_groups::sfx)
@@ -206,8 +227,27 @@ void CAudioEngine::Init()
     Master->addGroup(BGM);
     Master->addGroup(SFX);
 
+    // Create DSP effect units and attach to Master channel group (bypassed by default)
+    ErrorCheck(mpSystem->createDSPByType(FMOD_DSP_TYPE_LOWPASS, &mDspLowpass));
+    ErrorCheck(mpSystem->createDSPByType(FMOD_DSP_TYPE_HIGHPASS, &mDspHighpass));
+    ErrorCheck(mpSystem->createDSPByType(FMOD_DSP_TYPE_ECHO, &mDspEcho));
+    ErrorCheck(mpSystem->createDSPByType(FMOD_DSP_TYPE_SFXREVERB, &mDspReverb));
+
+    if (mDspLowpass)  { Master->addDSP(0, mDspLowpass);  mDspLowpass->setBypass(true);  }
+    if (mDspHighpass) { Master->addDSP(0, mDspHighpass); mDspHighpass->setBypass(true); }
+    if (mDspEcho)     { Master->addDSP(0, mDspEcho);     mDspEcho->setBypass(true);     }
+    if (mDspReverb)   { Master->addDSP(0, mDspReverb);   mDspReverb->setBypass(true);   }
+
     //load all audio files from audio folder
     std::string audio_path = "Assets/Audio/";
+
+    if (!std::filesystem::exists(audio_path))
+    {
+        NOCTURNAL_ENGINE_WARN("Assets/Audio/ folder missing! Creating it...");
+        std::filesystem::create_directories(audio_path);
+        return;
+    }
+
     for (auto const& dir_entry : std::filesystem::directory_iterator{ audio_path }) //iterate files in Audio folder
     {
         //checks if given file status or path corresponds to a regular file
@@ -223,6 +263,8 @@ Update loop of CAudioEngine
 ****************************************************************************/
 void CAudioEngine::Update()
 {
+    ProcessPendingFadeStops();
+
     std::vector<std::map<int, FMOD::Channel*>::iterator> pStoppedChannels;
     for (auto it = mChannelMap.begin(); it != mChannelMap.end(); ++it)
     {
@@ -256,6 +298,12 @@ void CAudioEngine::Release()
     {
         sound_it->second->release();
     }
+
+    // Release DSP effects
+    if (mDspLowpass)  { Master->removeDSP(mDspLowpass);  mDspLowpass->release();  mDspLowpass = nullptr;  }
+    if (mDspHighpass) { Master->removeDSP(mDspHighpass); mDspHighpass->release(); mDspHighpass = nullptr; }
+    if (mDspEcho)     { Master->removeDSP(mDspEcho);     mDspEcho->release();     mDspEcho = nullptr;     }
+    if (mDspReverb)   { Master->removeDSP(mDspReverb);   mDspReverb->release();   mDspReverb = nullptr;   }
 
     // release every channel group
     // release systems
@@ -337,6 +385,215 @@ float CAudioEngine::GetVolumeByChannel(FMOD::ChannelGroup* ch)
     float ret = 0;
     ch->getVolume(&ret);
     return ret;
+}
+
+/*!*************************************************************************
+Checks if a specific BGM path is currently playing
+****************************************************************************/
+bool CAudioEngine::IsBGMPathPlaying(const std::string& strSoundPath) const
+{
+    // Check if we have a tracked BGM and if it matches the requested path
+    if (mCurrentBGMPath.empty() || mCurrentBGMPath != strSoundPath)
+    {
+        return false;
+    }
+    
+    // Verify the channel is still actually playing
+    if (mCurrentBGMChannelId >= 0)
+    {
+        auto it = mChannelMap.find(mCurrentBGMChannelId);
+        if (it != mChannelMap.end())
+        {
+            bool isPlaying = false;
+            it->second->isPlaying(&isPlaying);
+            return isPlaying;
+        }
+    }
+    
+    return false;
+}
+
+/*!*************************************************************************
+Clears BGM tracking (call when BGM should be stopped/reset)
+****************************************************************************/
+void CAudioEngine::ClearBGMTracking()
+{
+    mCurrentBGMPath.clear();
+    mCurrentBGMChannelId = -1;
+}
+
+/*!*************************************************************************
+Returns the system sample rate for DSP clock calculations
+****************************************************************************/
+unsigned long long CAudioEngine::GetSampleRateFromSystem() const
+{
+    int sampleRate = 0;
+    mpSystem->getSoftwareFormat(&sampleRate, nullptr, nullptr);
+    return static_cast<unsigned long long>(sampleRate > 0 ? sampleRate : 48000);
+}
+
+/*!*************************************************************************
+Processes pending fade-out stops, stopping channels whose fade has completed
+****************************************************************************/
+void CAudioEngine::ProcessPendingFadeStops()
+{
+    if (mPendingFadeStops.empty())
+        return;
+
+    unsigned long long currentClock = 0;
+    unsigned long long parentClock = 0;
+    if (Master)
+        Master->getDSPClock(&currentClock, &parentClock);
+
+    auto it = mPendingFadeStops.begin();
+    while (it != mPendingFadeStops.end())
+    {
+        if (currentClock >= it->stopAtDspClock)
+        {
+            StopChannel(it->channelId);
+            if (mCurrentBGMChannelId == it->channelId)
+                ClearBGMTracking();
+            it = mPendingFadeStops.erase(it);
+        }
+        else
+        {
+            ++it;
+        }
+    }
+}
+
+/*!*************************************************************************
+Fades out a channel over the specified duration (does not stop it)
+****************************************************************************/
+void CAudioEngine::FadeOutChannel(int channelID, float fadeDurationSeconds)
+{
+    auto it = mChannelMap.find(channelID);
+    if (it == mChannelMap.end())
+        return;
+
+    FMOD::Channel* pChannel = it->second;
+    unsigned long long dspclock = 0;
+    unsigned long long parentclock = 0;
+    pChannel->getDSPClock(&dspclock, &parentclock);
+
+    unsigned long long sampleRate = GetSampleRateFromSystem();
+    unsigned long long fadeSamples = static_cast<unsigned long long>(fadeDurationSeconds * sampleRate);
+
+    pChannel->addFadePoint(dspclock, 1.0f);
+    pChannel->addFadePoint(dspclock + fadeSamples, 0.0f);
+}
+
+/*!*************************************************************************
+Fades out a channel over the specified duration, then stops it
+****************************************************************************/
+void CAudioEngine::FadeOutAndStopChannel(int channelID, float fadeDurationSeconds)
+{
+    auto it = mChannelMap.find(channelID);
+    if (it == mChannelMap.end())
+        return;
+
+    FMOD::Channel* pChannel = it->second;
+    unsigned long long dspclock = 0;
+    unsigned long long parentclock = 0;
+    pChannel->getDSPClock(&dspclock, &parentclock);
+
+    unsigned long long sampleRate = GetSampleRateFromSystem();
+    unsigned long long fadeSamples = static_cast<unsigned long long>(fadeDurationSeconds * sampleRate);
+
+    pChannel->addFadePoint(dspclock, 1.0f);
+    pChannel->addFadePoint(dspclock + fadeSamples, 0.0f);
+
+    FadeOutInfo info{};
+    info.channelId = channelID;
+    info.stopAtDspClock = dspclock + fadeSamples;
+    mPendingFadeStops.push_back(info);
+}
+
+/*!*************************************************************************
+Fades out all channels in a channel group over the specified duration
+****************************************************************************/
+void CAudioEngine::FadeOutChannelGroup(channel_groups chan, float fadeDurationSeconds)
+{
+    FMOD::ChannelGroup* group = nullptr;
+    if (chan == channel_groups::master)
+        group = Master;
+    else if (chan == channel_groups::bgm)
+        group = BGM;
+    else if (chan == channel_groups::sfx)
+        group = SFX;
+
+    if (!group)
+        return;
+
+    unsigned long long dspclock = 0;
+    unsigned long long parentclock = 0;
+    group->getDSPClock(&dspclock, &parentclock);
+
+    unsigned long long sampleRate = GetSampleRateFromSystem();
+    unsigned long long fadeSamples = static_cast<unsigned long long>(fadeDurationSeconds * sampleRate);
+
+    group->addFadePoint(dspclock, 1.0f);
+    group->addFadePoint(dspclock + fadeSamples, 0.0f);
+}
+
+/*!*************************************************************************
+Applies audio effect settings to the Master channel group DSP chain
+****************************************************************************/
+void CAudioEngine::ApplyEffects(const AudioEffectSettings& settings)
+{
+    mCurrentEffects = settings;
+
+    // Low-pass filter
+    if (mDspLowpass)
+    {
+        mDspLowpass->setBypass(!settings.lowpassEnabled);
+        if (settings.lowpassEnabled)
+        {
+            mDspLowpass->setParameterFloat(FMOD_DSP_LOWPASS_CUTOFF, settings.lowpassCutoff);
+            mDspLowpass->setParameterFloat(FMOD_DSP_LOWPASS_RESONANCE, settings.lowpassResonance);
+        }
+    }
+
+    // High-pass filter
+    if (mDspHighpass)
+    {
+        mDspHighpass->setBypass(!settings.highpassEnabled);
+        if (settings.highpassEnabled)
+        {
+            mDspHighpass->setParameterFloat(FMOD_DSP_HIGHPASS_CUTOFF, settings.highpassCutoff);
+            mDspHighpass->setParameterFloat(FMOD_DSP_HIGHPASS_RESONANCE, settings.highpassResonance);
+        }
+    }
+
+    // Echo / Delay
+    if (mDspEcho)
+    {
+        mDspEcho->setBypass(!settings.echoEnabled);
+        if (settings.echoEnabled)
+        {
+            mDspEcho->setParameterFloat(FMOD_DSP_ECHO_DELAY, settings.echoDelay);
+            mDspEcho->setParameterFloat(FMOD_DSP_ECHO_FEEDBACK, settings.echoFeedback);
+            mDspEcho->setParameterFloat(FMOD_DSP_ECHO_DRYLEVEL, settings.echoDryLevel);
+            mDspEcho->setParameterFloat(FMOD_DSP_ECHO_WETLEVEL, settings.echoWetLevel);
+        }
+    }
+
+    // SFX Reverb
+    if (mDspReverb)
+    {
+        mDspReverb->setBypass(!settings.reverbEnabled);
+        if (settings.reverbEnabled)
+        {
+            mDspReverb->setParameterFloat(FMOD_DSP_SFXREVERB_DECAYTIME, settings.reverbDecayTime);
+            mDspReverb->setParameterFloat(FMOD_DSP_SFXREVERB_EARLYDELAY, settings.reverbEarlyDelay);
+            mDspReverb->setParameterFloat(FMOD_DSP_SFXREVERB_LATEDELAY, settings.reverbLateDelay);
+            mDspReverb->setParameterFloat(FMOD_DSP_SFXREVERB_HFREFERENCE, settings.reverbHFReference);
+            mDspReverb->setParameterFloat(FMOD_DSP_SFXREVERB_DIFFUSION, settings.reverbDiffusion);
+            mDspReverb->setParameterFloat(FMOD_DSP_SFXREVERB_DENSITY, settings.reverbDensity);
+            mDspReverb->setParameterFloat(FMOD_DSP_SFXREVERB_WETLEVEL, settings.reverbWetLevel);
+            mDspReverb->setParameterFloat(FMOD_DSP_SFXREVERB_DRYLEVEL, settings.reverbDryLevel);
+        }
+    }
 }
 
 

@@ -26,6 +26,7 @@ namespace NocturnalEngine
 		~Transform() = default;
 		virtual bool Deserialize(const rapidjson::Value & obj);
 		virtual bool Serialize(rapidjson::PrettyWriter<rapidjson::StringBuffer>*writer) const;
+		bool ToEditor()override;
 
 		vec2D& GetPos() { return mPosition; }
 		vec2D& GetScale() { return mScale; }
@@ -33,10 +34,18 @@ namespace NocturnalEngine
 
 		void SetPos(vec2D Pos) { mPosition = Pos; }
 		void SetPos(float posX, float posY) { mPosition = vec2D(posX, posY); }
+		void SetPosFromCenterLeft(vec2D Pos) { mPosition = vec2D(Pos.x + mScale.x / 2.f, Pos.y); }
+		void SetPosFromCenterLeft(float posX, float posY) { mPosition = vec2D(posX + mScale.x / 2.f, posY); }
 		void SetScale(vec2D Scale) { mScale = Scale; }
 		void SetScale(float X, float Y) { mScale = vec2D(X, Y); }
 		void SetRot(float value) { mRot = value; }
+		void MoveY(float y) { mPosition.y += y; }
+		void MoveX(float x) { mPosition.x += x; }
+		void ScaleBy(float x) { mScale.x *=x; mScale.y *= x; }
 
+
+		vec2D GetMinPos() { return {mPosition.x-mScale.x/2.f,mPosition.y - mScale.y / 2.f}; }
+		vec2D GetMaxPos() { return { mPosition.x + mScale.x / 2.f,mPosition.y + mScale.y / 2.f }; }
 		/*!*************************************************************************
 		Retrieves Component Entity ID
 		****************************************************************************/

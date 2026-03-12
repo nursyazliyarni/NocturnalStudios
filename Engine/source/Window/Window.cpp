@@ -68,22 +68,17 @@ namespace NocturnalEngine{
 		m_windowData.m_CurrentWidth = m_windowData.m_Width;
 		m_windowData.m_CurrentHeight = m_windowData.m_Height;
 
+		glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE); // Hide on creation
+		std::string winTitle = m_windowData.Title;
+#if DEBUG
+		winTitle = "[NocturnalEngine] Editing " + winTitle;
+#endif
 		//create window
 		m_window = glfwCreateWindow(m_windowData.m_CurrentWidth,
 			m_windowData.m_CurrentHeight,
-			m_windowData.Title.c_str(),
+			winTitle.c_str(),
 			NULL, NULL);
-
-#if !DEBUG		
-		const GLFWvidmode* mode = glfwGetVideoMode(m_monitor);
-		m_windowData.m_Width = mode->width;
-		m_windowData.m_Height = mode->height;
-	
-		glfwSetWindowMonitor(
-			m_window, m_monitor,
-			0, 0,
-			m_windowData.m_Width, m_windowData.m_Height, 0);
-#endif			
+		
 		glfwMakeContextCurrent(m_window);
 		glfwSetWindowUserPointer(m_window, &m_windowData);
 
@@ -111,11 +106,27 @@ namespace NocturnalEngine{
 		glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 		glfwSetDropCallback(m_window, drop_callback);
 #if !DEBUG
-		glfwSetWindowFocusCallback(m_window, OnWindowFocus);
+		//glfwSetWindowFocusCallback(m_window, OnWindowFocus);
 #endif
 		/* Make the window's context current */
 	}
 
+
+	void Window::Show() {
+
+#if !DEBUG		
+		const GLFWvidmode* mode = glfwGetVideoMode(m_monitor);
+		m_windowData.m_Width = mode->width;
+		m_windowData.m_Height = mode->height;
+
+		glfwSetWindowMonitor(
+			m_window, NULL,
+			0, 0,
+			m_windowData.m_Width, m_windowData.m_Height, 0);
+#endif	
+		// Finally show the window
+		glfwShowWindow(m_window);
+	}
 	/*!*************************************************************************
 	Update loop of window
 	****************************************************************************/
@@ -180,6 +191,10 @@ namespace NocturnalEngine{
 				}
 				else NOCTURNAL_ENGINE_INFO("The name convention for this png {0} is wrong", filename.string().c_str());
 
+				if (!std::filesystem::exists(folder)||!std::filesystem::is_directory(folder))
+				{
+					std::filesystem::create_directory(folder);
+				}
 				std::filesystem::copy(std::filesystem::path(paths[i]), folder / filename);
 			}
 			else

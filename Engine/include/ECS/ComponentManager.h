@@ -189,13 +189,13 @@ namespace NocturnalEngine
 		/*!*************************************************************************
 		Clears all component arrays completely
 		****************************************************************************/
-		void ClearAllComponents()
+		void ClearAllComponents(const std::bitset<MAX_ENTITIES>& isPrefab)
 		{
 			for (auto& pair : mComponentArrays)
 			{
 				if (pair.second)
 				{
-					pair.second->Clear();
+					pair.second->Clear(isPrefab);
 				}
 			}
 		}

@@ -8,8 +8,11 @@
 		 such as textures, shaders, fonts, and audio assets used in the engine.
 
     Primary Author:
-         LAU XIANG YANG (100%)
+         LAU XIANG YANG (95%)
 		- Created the ResourceManager.h file and its function specification.
+    Secondary Author:
+         Nur Syazliyarni (5%)
+        - Added font/text resource declarations for text rendering.
 
     All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
 *------------------------------------------------------------------------------------------------*/
@@ -19,8 +22,12 @@
 #include "Graphics/Shader.h"
 #include "Graphics/TextRendering.h"
 #include "Audio/AudioEngine.h"
+#include <filesystem>
+
 
 namespace NocturnalEngine {
+
+	extern std::filesystem::path EngineAssetPath;
 
 	class ResourceManager
 	{
@@ -32,7 +39,7 @@ namespace NocturnalEngine {
 		static std::unordered_map<std::string, std::shared_ptr<Texture>> Icons;
 	public:
 		//load texture from file
-		static std::shared_ptr<Texture> LoadTexture(std::string name, const std::string& filepath);
+		static std::shared_ptr<Texture> LoadTexture(std::string name, const std::string& filepath, bool loadByNearest = false);
 		static std::shared_ptr<Texture> GetTexture(std::string name);
 		static std::shared_ptr<Texture> GenTexture(unsigned int width, unsigned int height);
 		
@@ -43,12 +50,18 @@ namespace NocturnalEngine {
 		//load shader from file
 		static std::shared_ptr<Shader> LoadShader(std::string name, const std::string& filepath);
 		static std::shared_ptr<Shader> GetShader(std::string name);
+
+		//load font from file
+		static std::shared_ptr<Font> LoadFont(std::string name, const std::string& filepath, unsigned int fontsize = 50);
+		static std::shared_ptr<Font> GetFont(const std::string& name);
 		
 		static std::shared_ptr<CAudioEngine> GetAudio(std::string name);
 		static std::shared_ptr<CAudioEngine> LoadAudio(std::string name, const std::string& filepath);
 		
 		//load different type of fonts from file tff
 		static void clear();
+
+		static void SetEngineResources();
 	private:
 		
 	private:
@@ -57,7 +70,7 @@ namespace NocturnalEngine {
 		static std::shared_ptr<CAudioEngine> LoadAudioFromFile(const std::string& filepath);
 		
 		//loads texture
-		static std::shared_ptr<Texture> LoadTextureFromFile(const std::string& filepath);
+		static std::shared_ptr<Texture> LoadTextureFromFile(const std::string& filepath,bool loadByNearest=false);
 
 		// generates shader from file
 		static std::shared_ptr<Shader> LoadShaderFromFile(const std::string& filepath);
@@ -67,5 +80,7 @@ namespace NocturnalEngine {
 
 		//loads Icons texture
 		static std::shared_ptr<Texture> LoadIconsFromFile(const std::string& filepath);
+
+
 	};
 }

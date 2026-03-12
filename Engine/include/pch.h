@@ -25,7 +25,6 @@
 #include <functional>
 #include <array>
 #include <bitset>
-#include <utility>
 #include <cstdlib>
 #include <random>
 #include <math.h>
@@ -47,3 +46,7 @@
 
 #include "Core/Log.h" 
 #include "Serialization/JSONincludes.h"
+
+// Memory Manager defines
+constexpr std::size_t kDefaultBlockSize = 256u;
+constexpr std::size_t kDefaultBlocksPerPage = 128u;

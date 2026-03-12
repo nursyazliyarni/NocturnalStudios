@@ -1,0 +1,466 @@
+{
+    "LayerDrawOrder": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        8,
+        9,
+        9
+    ],
+    "Entities": [
+        {
+            "ID": 0,
+            "Components": [
+                {
+                    "Component": "Tag",
+                    "Tag": "CutScene",
+                    "TargetTag": ""
+                },
+                {
+                    "Component": "Transform",
+                    "posX": 0.0,
+                    "posY": 0.0,
+                    "scaleX": 1.0,
+                    "scaleY": 1.0,
+                    "Rot": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "CutScene Controller"
+                },
+                {
+                    "Component": "Logic",
+                    "0": "CutScene",
+                    "ScriptCount": 1
+                }
+            ]
+        },
+        {
+            "ID": 1,
+            "Components": [
+                {
+                    "Component": "Tag",
+                    "Tag": "CutSceneImage",
+                    "TargetTag": ""
+                },
+                {
+                    "Component": "Transform",
+                    "posX": 0.0,
+                    "posY": 0.0,
+                    "scaleX": 3.6449999809265137,
+                    "scaleY": 1.9999960660934448,
+                    "Rot": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "CutImage1"
+                },
+                {
+                    "Component": "Sprite",
+                    "TextureName": "CutScene/1",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": false,
+                    "MaxIndex": 0,
+                    "LayeringOrder": 0,
+                    "StateManagerEnabled": false,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "ID": 2,
+            "Components": [
+                {
+                    "Component": "Tag",
+                    "Tag": "CutSceneImage",
+                    "TargetTag": ""
+                },
+                {
+                    "Component": "Transform",
+                    "posX": 0.0,
+                    "posY": 0.0,
+                    "scaleX": 3.6449999809265137,
+                    "scaleY": 1.9999960660934448,
+                    "Rot": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "CutImage2"
+                },
+                {
+                    "Component": "Sprite",
+                    "TextureName": "CutScene/2",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": false,
+                    "MaxIndex": 0,
+                    "LayeringOrder": 1,
+                    "StateManagerEnabled": false,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "ID": 3,
+            "Components": [
+                {
+                    "Component": "Tag",
+                    "Tag": "CutSceneImage",
+                    "TargetTag": ""
+                },
+                {
+                    "Component": "Transform",
+                    "posX": 0.0,
+                    "posY": 0.0,
+                    "scaleX": 3.6449999809265137,
+                    "scaleY": 1.9999960660934448,
+                    "Rot": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "CutImage3"
+                },
+                {
+                    "Component": "Sprite",
+                    "TextureName": "CutScene/3",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": false,
+                    "MaxIndex": 0,
+                    "LayeringOrder": 2,
+                    "StateManagerEnabled": false,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "ID": 4,
+            "Components": [
+                {
+                    "Component": "Tag",
+                    "Tag": "CutSceneImage",
+                    "TargetTag": ""
+                },
+                {
+                    "Component": "Transform",
+                    "posX": 0.0,
+                    "posY": 0.0,
+                    "scaleX": 3.6449999809265137,
+                    "scaleY": 1.9999960660934448,
+                    "Rot": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "CutImage4"
+                },
+                {
+                    "Component": "Sprite",
+                    "TextureName": "CutScene/4",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": false,
+                    "MaxIndex": 0,
+                    "LayeringOrder": 3,
+                    "StateManagerEnabled": false,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "ID": 5,
+            "Components": [
+                {
+                    "Component": "Tag",
+                    "Tag": "CutSceneImage",
+                    "TargetTag": ""
+                },
+                {
+                    "Component": "Transform",
+                    "posX": 0.0,
+                    "posY": 0.0,
+                    "scaleX": 3.6449999809265137,
+                    "scaleY": 1.9999960660934448,
+                    "Rot": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "CutImage5"
+                },
+                {
+                    "Component": "Sprite",
+                    "TextureName": "CutScene/5",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": false,
+                    "MaxIndex": 0,
+                    "LayeringOrder": 4,
+                    "StateManagerEnabled": false,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "ID": 6,
+            "Components": [
+                {
+                    "Component": "Tag",
+                    "Tag": "CutSceneImage",
+                    "TargetTag": ""
+                },
+                {
+                    "Component": "Transform",
+                    "posX": 0.0,
+                    "posY": 0.0,
+                    "scaleX": 3.6449999809265137,
+                    "scaleY": 1.9999960660934448,
+                    "Rot": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "CutImage6"
+                },
+                {
+                    "Component": "Sprite",
+                    "TextureName": "CutScene/6",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": false,
+                    "MaxIndex": 0,
+                    "LayeringOrder": 5,
+                    "StateManagerEnabled": false,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "ID": 7,
+            "Components": [
+                {
+                    "Component": "Tag",
+                    "Tag": "CutSceneImage",
+                    "TargetTag": ""
+                },
+                {
+                    "Component": "Transform",
+                    "posX": 0.0,
+                    "posY": 0.0,
+                    "scaleX": 3.6449999809265137,
+                    "scaleY": 1.9999960660934448,
+                    "Rot": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "CutImage7"
+                },
+                {
+                    "Component": "Sprite",
+                    "TextureName": "CutScene/7",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": false,
+                    "MaxIndex": 0,
+                    "LayeringOrder": 6,
+                    "StateManagerEnabled": false,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "ID": 8,
+            "Components": [
+                {
+                    "Component": "Tag",
+                    "Tag": "CutSceneUI",
+                    "TargetTag": ""
+                },
+                {
+                    "Component": "Transform",
+                    "posX": 1.350000023841858,
+                    "posY": -0.8500000238418579,
+                    "scaleX": 0.3499999940395355,
+                    "scaleY": 0.20000000298023224,
+                    "Rot": 0.0
+                },
+                {
+                    "Component": "Collider",
+                    "ColliderType1": 4,
+                    "ColliderType2": 0,
+                    "minX1": 0.20000000298023224,
+                    "minX2": 0.0,
+                    "minY1": 0.10000000149011612,
+                    "minY2": 0.0,
+                    "maxX1": 0.20000000298023224,
+                    "maxX2": 0.0,
+                    "maxY1": 0.10000000149011612,
+                    "maxY2": 0.0,
+                    "offsetX1": 0.0,
+                    "offsetX2": 0.0,
+                    "offsetY1": 0.0,
+                    "offsetY2": 0.0,
+                    "radius1": 0.0,
+                    "radius2": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "NextButton"
+                },
+                {
+                    "Component": "Sprite",
+                    "TextureName": "UI/BlankArrow",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": false,
+                    "MaxIndex": 0,
+                    "LayeringOrder": 9,
+                    "StateManagerEnabled": false,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
+                },
+                {
+                    "Component": "Text",
+                    "text type": 0,
+                    "Content": "NEXT",
+                    "Array of Content": [],
+                    "Vector of text position": [],
+                    "Font": "ChauPhilomeneOne-Regular",
+                    "Size": 41.5,
+                    "ColorR": 1.0,
+                    "ColorG": 1.0,
+                    "ColorB": 1.0,
+                    "ColorA": 1.0,
+                    "PosX": 1.2799999713897705,
+                    "PosY": -0.8799999952316284,
+                    "Rotation": 0.0,
+                    "Line Height": 0,
+                    "WorldSpace": false,
+                    "Center": false,
+                    "LayeringOrder": 0
+                }
+            ]
+        }
+    ]
+}

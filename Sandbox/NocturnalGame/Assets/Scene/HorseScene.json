@@ -1,0 +1,2528 @@
+{
+    "LayerDrawOrder": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+    ],
+    "Entities": [
+        {
+            "ID": 0,
+            "Components": [
+                {
+                    "Component": "Tag",
+                    "Tag": "Untagged",
+                    "TargetTag": ""
+                },
+                {
+                    "Component": "Transform",
+                    "posX": 0.0,
+                    "posY": 0.0,
+                    "scaleX": 3.6449999809265137,
+                    "scaleY": 1.9999960660934448,
+                    "Rot": 0.0
+                },
+                {
+                    "Component": "Collider",
+                    "ColliderType1": 0,
+                    "ColliderType2": 0,
+                    "minX1": -0.10000000149011612,
+                    "minX2": 0.0,
+                    "minY1": -0.10000000149011612,
+                    "minY2": 0.0,
+                    "maxX1": 0.10000000149011612,
+                    "maxX2": 0.0,
+                    "maxY1": 0.10000000149011612,
+                    "maxY2": 0.0,
+                    "offsetX1": 0.0,
+                    "offsetX2": 0.0,
+                    "offsetY1": 0.0,
+                    "offsetY2": 0.0,
+                    "radius1": 0.0,
+                    "radius2": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "HorseBG"
+                },
+                {
+                    "Component": "Sprite",
+                    "TextureName": "UI/blackbg",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": false,
+                    "MaxIndex": 0,
+                    "LayeringOrder": 0,
+                    "StateManagerEnabled": false,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
+                },
+                {
+                    "Component": "Audio",
+                    "0": {
+                        "AudioPath": "BGM_Ambience_Horse_01.wav",
+                        "Channel": 2,
+                        "IsLooping": false
+                    },
+                    "AudioArrCount": 1,
+                    "BGM Volume": 1.0,
+                    "SFX Volume": 1.0,
+                    "Master Volume": 1.0,
+                    "RandomFromArray": false,
+                    "Effects": {
+                        "LowpassEnabled": false,
+                        "LowpassCutoff": 5000.0,
+                        "LowpassResonance": 1.0,
+                        "HighpassEnabled": false,
+                        "HighpassCutoff": 10.0,
+                        "HighpassResonance": 1.0,
+                        "EchoEnabled": false,
+                        "EchoDelay": 500.0,
+                        "EchoFeedback": 50.0,
+                        "EchoDryLevel": 0.0,
+                        "EchoWetLevel": -6.0,
+                        "ReverbEnabled": false,
+                        "ReverbDecayTime": 1500.0,
+                        "ReverbEarlyDelay": 7.0,
+                        "ReverbLateDelay": 11.0,
+                        "ReverbHFReference": 5000.0,
+                        "ReverbDiffusion": 100.0,
+                        "ReverbDensity": 100.0,
+                        "ReverbWetLevel": -6.0,
+                        "ReverbDryLevel": 0.0
+                    }
+                },
+                {
+                    "Component": "Logic",
+                    "0": "AudioManager",
+                    "1": "BackgroundAudio",
+                    "ScriptCount": 2
+                }
+            ]
+        },
+        {
+            "ID": 1,
+            "Components": [
+                {
+                    "Component": "Tag",
+                    "Tag": "Horse",
+                    "TargetTag": ""
+                },
+                {
+                    "Component": "Transform",
+                    "posX": -0.9539999961853027,
+                    "posY": 0.0560000017285347,
+                    "scaleX": 0.9879999756813049,
+                    "scaleY": 1.0360000133514404,
+                    "Rot": 0.0
+                },
+                {
+                    "Component": "Collider",
+                    "ColliderType1": 5,
+                    "ColliderType2": 5,
+                    "minX1": 0.30000001192092896,
+                    "minX2": -0.25,
+                    "minY1": -0.05000000074505806,
+                    "minY2": -0.30000001192092896,
+                    "maxX1": 0.25,
+                    "maxX2": 0.46000000834465027,
+                    "maxY1": 0.30000001192092896,
+                    "maxY2": 0.15000000596046448,
+                    "offsetX1": 0.0,
+                    "offsetX2": 0.0,
+                    "offsetY1": -0.10000000149011612,
+                    "offsetY2": 0.05000000074505806,
+                    "radius1": 0.0,
+                    "radius2": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "Horse"
+                },
+                {
+                    "Component": "Sprite",
+                    "TextureName": "Characters/horse",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": false,
+                    "MaxIndex": 0,
+                    "LayeringOrder": 3,
+                    "StateManagerEnabled": false,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
+                },
+                {
+                    "Component": "Logic",
+                    "0": "AnimalLogic",
+                    "1": "PainSpotDuplicateSpawner",
+                    "ScriptCount": 2
+                },
+                {
+                    "Component": "Draggable",
+                    "isTarget": true
+                },
+                {
+                    "Component": "AnimalAttributes",
+                    "Animal Type": 2,
+                    "Current Health": 100.0,
+                    "Max Health": 100.0,
+                    "Current Hunger": 100.0,
+                    "Max Hunger": 100.0,
+                    "Current Sanity": 100.0,
+                    "Max Sanity": 100.0,
+                    "Health Decay Rate": 1.0,
+                    "Hunger Decay Rate": 1.0,
+                    "Sanity Decay Rate": 1.0,
+                    "IS_alive": true
+                }
+            ]
+        },
+        {
+            "ID": 2,
+            "Components": [
+                {
+                    "Component": "Tag",
+                    "Tag": "FlamingoBtn",
+                    "TargetTag": ""
+                },
+                {
+                    "Component": "Transform",
+                    "posX": 0.40032678842544556,
+                    "posY": 0.2418299913406372,
+                    "scaleX": 0.13472461700439453,
+                    "scaleY": 0.12401483952999115,
+                    "Rot": 0.0
+                },
+                {
+                    "Component": "Collider",
+                    "ColliderType1": 2,
+                    "ColliderType2": 0,
+                    "minX1": -1.0,
+                    "minX2": 0.0,
+                    "minY1": -0.6600000262260437,
+                    "minY2": 0.0,
+                    "maxX1": 1.0,
+                    "maxX2": 0.0,
+                    "maxY1": 0.6600000262260437,
+                    "maxY2": 0.0,
+                    "offsetX1": 0.0,
+                    "offsetX2": 0.0,
+                    "offsetY1": 0.0,
+                    "offsetY2": 0.0,
+                    "radius1": 0.05000000074505806,
+                    "radius2": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "FlamingoBtn"
+                },
+                {
+                    "Component": "Sprite",
+                    "TextureName": "UI/cameraButtonUnlit",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": false,
+                    "MaxIndex": 0,
+                    "LayeringOrder": 2,
+                    "StateManagerEnabled": false,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
+                },
+                {
+                    "Component": "Audio",
+                    "0": {
+                        "AudioPath": "SFX_Static_01.wav",
+                        "Channel": 3,
+                        "IsLooping": false
+                    },
+                    "1": {
+                        "AudioPath": "SFX_Static_02.wav",
+                        "Channel": 3,
+                        "IsLooping": false
+                    },
+                    "2": {
+                        "AudioPath": "SFX_Static_03.wav",
+                        "Channel": 3,
+                        "IsLooping": false
+                    },
+                    "3": {
+                        "AudioPath": "SFX_Static_04.wav",
+                        "Channel": 3,
+                        "IsLooping": false
+                    },
+                    "4": {
+                        "AudioPath": "SFX_Static_05.wav",
+                        "Channel": 3,
+                        "IsLooping": false
+                    },
+                    "AudioArrCount": 5,
+                    "BGM Volume": 1.0,
+                    "SFX Volume": 1.0,
+                    "Master Volume": 1.0,
+                    "RandomFromArray": true,
+                    "Effects": {
+                        "LowpassEnabled": false,
+                        "LowpassCutoff": 5000.0,
+                        "LowpassResonance": 1.0,
+                        "HighpassEnabled": false,
+                        "HighpassCutoff": 10.0,
+                        "HighpassResonance": 1.0,
+                        "EchoEnabled": false,
+                        "EchoDelay": 500.0,
+                        "EchoFeedback": 50.0,
+                        "EchoDryLevel": 0.0,
+                        "EchoWetLevel": -6.0,
+                        "ReverbEnabled": false,
+                        "ReverbDecayTime": 1500.0,
+                        "ReverbEarlyDelay": 7.0,
+                        "ReverbLateDelay": 11.0,
+                        "ReverbHFReference": 5000.0,
+                        "ReverbDiffusion": 100.0,
+                        "ReverbDensity": 100.0,
+                        "ReverbWetLevel": -6.0,
+                        "ReverbDryLevel": 0.0
+                    }
+                },
+                {
+                    "Component": "Logic",
+                    "0": "ButtonResponse",
+                    "1": "AudioManager",
+                    "ScriptCount": 2
+                },
+                {
+                    "Component": "Text",
+                    "text type": 0,
+                    "Content": "1",
+                    "Array of Content": [],
+                    "Vector of text position": [],
+                    "Font": "ChauPhilomeneOne-Regular",
+                    "Size": 32.5,
+                    "ColorR": 0.0,
+                    "ColorG": 0.0,
+                    "ColorB": 0.0,
+                    "ColorA": 1.0,
+                    "PosX": 0.38749998807907104,
+                    "PosY": 0.2280000001192093,
+                    "Rotation": 0.0,
+                    "Line Height": 0,
+                    "WorldSpace": false,
+                    "Center": false,
+                    "LayeringOrder": 0
+                },
+                {
+                    "Component": "ButtonComponent",
+                    "GoToSceneFlag": true,
+                    "GoToScene": "Assets/Scene/FlamingoScene.json",
+                    "AudioOnHoverFlag": false,
+                    "AudioOnHoverRandom": false,
+                    "HoverAudioIndex": 0,
+                    "AudioOnClickFlag": true,
+                    "AudioOnClickRandom": true,
+                    "TexChangeOnHoverFlag": false,
+                    "TexChangeOnHover": "",
+                    "TexChangeOnClickFlag": false,
+                    "TexChangeOnClick": "",
+                    "ScaleOnHoverFlag": false,
+                    "ScaleOnHover": 0.0,
+                    "SetGameStateFlag": false,
+                    "SetGameState": "STARTING",
+                    "ResetStatsFlag": false,
+                    "NextLevelFlag": false,
+                    "SetCameraZoomFlag": false,
+                    "SetCameraZoom": 0.0,
+                    "MuteAudioFlag": false,
+                    "AltSceneSwitchFlag": false,
+                    "AltSceneSwitch": "",
+                    "ExitGameFlag": false
+                }
+            ]
+        },
+        {
+            "ID": 3,
+            "Components": [
+                {
+                    "Component": "Tag",
+                    "Tag": "SealBtn",
+                    "TargetTag": ""
+                },
+                {
+                    "Component": "Transform",
+                    "posX": 0.40032678842544556,
+                    "posY": 0.11358354985713959,
+                    "scaleX": 0.12510144710540771,
+                    "scaleY": 0.11588465422391891,
+                    "Rot": 0.0
+                },
+                {
+                    "Component": "Collider",
+                    "ColliderType1": 2,
+                    "ColliderType2": 0,
+                    "minX1": -1.0,
+                    "minX2": 0.0,
+                    "minY1": -0.6600000262260437,
+                    "minY2": 0.0,
+                    "maxX1": 1.0,
+                    "maxX2": 0.0,
+                    "maxY1": 0.6600000262260437,
+                    "maxY2": 0.0,
+                    "offsetX1": 0.0,
+                    "offsetX2": 0.0,
+                    "offsetY1": 0.0,
+                    "offsetY2": 0.0,
+                    "radius1": 0.05000000074505806,
+                    "radius2": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "SealBtn"
+                },
+                {
+                    "Component": "Sprite",
+                    "TextureName": "UI/cameraButtonUnlit",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": false,
+                    "MaxIndex": 0,
+                    "LayeringOrder": 2,
+                    "StateManagerEnabled": false,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
+                },
+                {
+                    "Component": "Audio",
+                    "0": {
+                        "AudioPath": "SFX_Static_01.wav",
+                        "Channel": 3,
+                        "IsLooping": false
+                    },
+                    "1": {
+                        "AudioPath": "SFX_Static_02.wav",
+                        "Channel": 3,
+                        "IsLooping": false
+                    },
+                    "2": {
+                        "AudioPath": "SFX_Static_03.wav",
+                        "Channel": 3,
+                        "IsLooping": false
+                    },
+                    "3": {
+                        "AudioPath": "SFX_Static_04.wav",
+                        "Channel": 3,
+                        "IsLooping": false
+                    },
+                    "4": {
+                        "AudioPath": "SFX_Static_05.wav",
+                        "Channel": 3,
+                        "IsLooping": false
+                    },
+                    "AudioArrCount": 5,
+                    "BGM Volume": 1.0,
+                    "SFX Volume": 1.0,
+                    "Master Volume": 1.0,
+                    "RandomFromArray": true,
+                    "Effects": {
+                        "LowpassEnabled": false,
+                        "LowpassCutoff": 5000.0,
+                        "LowpassResonance": 1.0,
+                        "HighpassEnabled": false,
+                        "HighpassCutoff": 10.0,
+                        "HighpassResonance": 1.0,
+                        "EchoEnabled": false,
+                        "EchoDelay": 500.0,
+                        "EchoFeedback": 50.0,
+                        "EchoDryLevel": 0.0,
+                        "EchoWetLevel": -6.0,
+                        "ReverbEnabled": false,
+                        "ReverbDecayTime": 1500.0,
+                        "ReverbEarlyDelay": 7.0,
+                        "ReverbLateDelay": 11.0,
+                        "ReverbHFReference": 5000.0,
+                        "ReverbDiffusion": 100.0,
+                        "ReverbDensity": 100.0,
+                        "ReverbWetLevel": -6.0,
+                        "ReverbDryLevel": 0.0
+                    }
+                },
+                {
+                    "Component": "Logic",
+                    "0": "ButtonResponse",
+                    "1": "AudioManager",
+                    "ScriptCount": 2
+                },
+                {
+                    "Component": "Text",
+                    "text type": 0,
+                    "Content": "2",
+                    "Array of Content": [],
+                    "Vector of text position": [],
+                    "Font": "ChauPhilomeneOne-Regular",
+                    "Size": 32.5,
+                    "ColorR": 0.0,
+                    "ColorG": 0.0,
+                    "ColorB": 0.0,
+                    "ColorA": 1.0,
+                    "PosX": 0.38749998807907104,
+                    "PosY": 0.09799999743700027,
+                    "Rotation": 0.0,
+                    "Line Height": 0,
+                    "WorldSpace": false,
+                    "Center": false,
+                    "LayeringOrder": 0
+                },
+                {
+                    "Component": "ButtonComponent",
+                    "GoToSceneFlag": true,
+                    "GoToScene": "Assets/Scene/SealScene.json",
+                    "AudioOnHoverFlag": false,
+                    "AudioOnHoverRandom": false,
+                    "HoverAudioIndex": 0,
+                    "AudioOnClickFlag": true,
+                    "AudioOnClickRandom": true,
+                    "TexChangeOnHoverFlag": false,
+                    "TexChangeOnHover": "",
+                    "TexChangeOnClickFlag": false,
+                    "TexChangeOnClick": "",
+                    "ScaleOnHoverFlag": false,
+                    "ScaleOnHover": 0.0,
+                    "SetGameStateFlag": false,
+                    "SetGameState": "STARTING",
+                    "ResetStatsFlag": false,
+                    "NextLevelFlag": false,
+                    "SetCameraZoomFlag": false,
+                    "SetCameraZoom": 0.0,
+                    "MuteAudioFlag": false,
+                    "AltSceneSwitchFlag": false,
+                    "AltSceneSwitch": "",
+                    "ExitGameFlag": false
+                }
+            ]
+        },
+        {
+            "ID": 4,
+            "Components": [
+                {
+                    "Component": "Tag",
+                    "Tag": "OwlBtn",
+                    "TargetTag": ""
+                },
+                {
+                    "Component": "Transform",
+                    "posX": 0.40032678842544556,
+                    "posY": -0.1454678773880005,
+                    "scaleX": 0.13472461700439453,
+                    "scaleY": 0.12255587428808212,
+                    "Rot": 0.0
+                },
+                {
+                    "Component": "Collider",
+                    "ColliderType1": 2,
+                    "ColliderType2": 0,
+                    "minX1": -1.0,
+                    "minX2": 0.0,
+                    "minY1": -0.6600000262260437,
+                    "minY2": 0.0,
+                    "maxX1": 1.0,
+                    "maxX2": 0.0,
+                    "maxY1": 0.6600000262260437,
+                    "maxY2": 0.0,
+                    "offsetX1": 0.0,
+                    "offsetX2": 0.0,
+                    "offsetY1": 0.0,
+                    "offsetY2": 0.0,
+                    "radius1": 0.05000000074505806,
+                    "radius2": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "OwlBtn"
+                },
+                {
+                    "Component": "Sprite",
+                    "TextureName": "UI/cameraButtonUnlit",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": false,
+                    "MaxIndex": 0,
+                    "LayeringOrder": 2,
+                    "StateManagerEnabled": false,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
+                },
+                {
+                    "Component": "Audio",
+                    "0": {
+                        "AudioPath": "SFX_Static_01.wav",
+                        "Channel": 3,
+                        "IsLooping": false
+                    },
+                    "1": {
+                        "AudioPath": "SFX_Static_02.wav",
+                        "Channel": 3,
+                        "IsLooping": false
+                    },
+                    "2": {
+                        "AudioPath": "SFX_Static_03.wav",
+                        "Channel": 3,
+                        "IsLooping": false
+                    },
+                    "3": {
+                        "AudioPath": "SFX_Static_04.wav",
+                        "Channel": 3,
+                        "IsLooping": false
+                    },
+                    "4": {
+                        "AudioPath": "SFX_Static_05.wav",
+                        "Channel": 3,
+                        "IsLooping": false
+                    },
+                    "AudioArrCount": 5,
+                    "BGM Volume": 1.0,
+                    "SFX Volume": 1.0,
+                    "Master Volume": 1.0,
+                    "RandomFromArray": true,
+                    "Effects": {
+                        "LowpassEnabled": false,
+                        "LowpassCutoff": 5000.0,
+                        "LowpassResonance": 1.0,
+                        "HighpassEnabled": false,
+                        "HighpassCutoff": 10.0,
+                        "HighpassResonance": 1.0,
+                        "EchoEnabled": false,
+                        "EchoDelay": 500.0,
+                        "EchoFeedback": 50.0,
+                        "EchoDryLevel": 0.0,
+                        "EchoWetLevel": -6.0,
+                        "ReverbEnabled": false,
+                        "ReverbDecayTime": 1500.0,
+                        "ReverbEarlyDelay": 7.0,
+                        "ReverbLateDelay": 11.0,
+                        "ReverbHFReference": 5000.0,
+                        "ReverbDiffusion": 100.0,
+                        "ReverbDensity": 100.0,
+                        "ReverbWetLevel": -6.0,
+                        "ReverbDryLevel": 0.0
+                    }
+                },
+                {
+                    "Component": "Logic",
+                    "0": "ButtonResponse",
+                    "1": "AudioManager",
+                    "ScriptCount": 2
+                },
+                {
+                    "Component": "Text",
+                    "text type": 0,
+                    "Content": "4",
+                    "Array of Content": [],
+                    "Vector of text position": [],
+                    "Font": "ChauPhilomeneOne-Regular",
+                    "Size": 32.5,
+                    "ColorR": 0.0,
+                    "ColorG": 0.0,
+                    "ColorB": 0.0,
+                    "ColorA": 1.0,
+                    "PosX": 0.38749998807907104,
+                    "PosY": -0.1720000058412552,
+                    "Rotation": 0.0,
+                    "Line Height": 0,
+                    "WorldSpace": false,
+                    "Center": false,
+                    "LayeringOrder": 0
+                },
+                {
+                    "Component": "ButtonComponent",
+                    "GoToSceneFlag": true,
+                    "GoToScene": "Assets/Scene/OwlScene.json",
+                    "AudioOnHoverFlag": false,
+                    "AudioOnHoverRandom": false,
+                    "HoverAudioIndex": 0,
+                    "AudioOnClickFlag": true,
+                    "AudioOnClickRandom": true,
+                    "TexChangeOnHoverFlag": false,
+                    "TexChangeOnHover": "",
+                    "TexChangeOnClickFlag": false,
+                    "TexChangeOnClick": "",
+                    "ScaleOnHoverFlag": false,
+                    "ScaleOnHover": 0.0,
+                    "SetGameStateFlag": false,
+                    "SetGameState": "STARTING",
+                    "ResetStatsFlag": false,
+                    "NextLevelFlag": false,
+                    "SetCameraZoomFlag": false,
+                    "SetCameraZoom": 0.0,
+                    "MuteAudioFlag": false,
+                    "AltSceneSwitchFlag": false,
+                    "AltSceneSwitch": "",
+                    "ExitGameFlag": false
+                }
+            ]
+        },
+        {
+            "ID": 5,
+            "Components": [
+                {
+                    "Component": "Tag",
+                    "Tag": "InventoryBtn",
+                    "TargetTag": ""
+                },
+                {
+                    "Component": "Transform",
+                    "posX": 0.40032678842544556,
+                    "posY": -0.28433525562286377,
+                    "scaleX": 0.13472461700439453,
+                    "scaleY": 0.12255587428808212,
+                    "Rot": 0.0
+                },
+                {
+                    "Component": "Collider",
+                    "ColliderType1": 2,
+                    "ColliderType2": 0,
+                    "minX1": -1.0,
+                    "minX2": 0.0,
+                    "minY1": -0.6600000262260437,
+                    "minY2": 0.0,
+                    "maxX1": 1.0,
+                    "maxX2": 0.0,
+                    "maxY1": 0.6600000262260437,
+                    "maxY2": 0.0,
+                    "offsetX1": 0.0,
+                    "offsetX2": 0.0,
+                    "offsetY1": 0.0,
+                    "offsetY2": 0.0,
+                    "radius1": 0.05000000074505806,
+                    "radius2": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "InventoryBtn"
+                },
+                {
+                    "Component": "Sprite",
+                    "TextureName": "UI/cameraButtonUnlit",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": false,
+                    "MaxIndex": 0,
+                    "LayeringOrder": 2,
+                    "StateManagerEnabled": false,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
+                },
+                {
+                    "Component": "Audio",
+                    "0": {
+                        "AudioPath": "SFX_Static_01.wav",
+                        "Channel": 3,
+                        "IsLooping": false
+                    },
+                    "1": {
+                        "AudioPath": "SFX_Static_02.wav",
+                        "Channel": 3,
+                        "IsLooping": false
+                    },
+                    "2": {
+                        "AudioPath": "SFX_Static_03.wav",
+                        "Channel": 3,
+                        "IsLooping": false
+                    },
+                    "3": {
+                        "AudioPath": "SFX_Static_04.wav",
+                        "Channel": 3,
+                        "IsLooping": false
+                    },
+                    "4": {
+                        "AudioPath": "SFX_Static_05.wav",
+                        "Channel": 3,
+                        "IsLooping": false
+                    },
+                    "AudioArrCount": 5,
+                    "BGM Volume": 1.0,
+                    "SFX Volume": 1.0,
+                    "Master Volume": 1.0,
+                    "RandomFromArray": true,
+                    "Effects": {
+                        "LowpassEnabled": false,
+                        "LowpassCutoff": 5000.0,
+                        "LowpassResonance": 1.0,
+                        "HighpassEnabled": false,
+                        "HighpassCutoff": 10.0,
+                        "HighpassResonance": 1.0,
+                        "EchoEnabled": false,
+                        "EchoDelay": 500.0,
+                        "EchoFeedback": 50.0,
+                        "EchoDryLevel": 0.0,
+                        "EchoWetLevel": -6.0,
+                        "ReverbEnabled": false,
+                        "ReverbDecayTime": 1500.0,
+                        "ReverbEarlyDelay": 7.0,
+                        "ReverbLateDelay": 11.0,
+                        "ReverbHFReference": 5000.0,
+                        "ReverbDiffusion": 100.0,
+                        "ReverbDensity": 100.0,
+                        "ReverbWetLevel": -6.0,
+                        "ReverbDryLevel": 0.0
+                    }
+                },
+                {
+                    "Component": "Logic",
+                    "0": "ButtonResponse",
+                    "1": "AudioManager",
+                    "ScriptCount": 2
+                }
+            ]
+        },
+        {
+            "ID": 6,
+            "Components": [
+                {
+                    "Component": "Transform",
+                    "posX": -1.5640000104904175,
+                    "posY": 0.7609999775886536,
+                    "scaleX": 0.10000000149011612,
+                    "scaleY": 0.10000000149011612,
+                    "Rot": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "CameraHighlight"
+                },
+                {
+                    "Component": "Sprite",
+                    "TextureName": "UI/cameraHighlight",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": false,
+                    "MaxIndex": 0,
+                    "LayeringOrder": 6,
+                    "StateManagerEnabled": false,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "ID": 7,
+            "Components": [
+                {
+                    "Component": "Transform",
+                    "posX": -1.3370000123977661,
+                    "posY": -0.6959999799728394,
+                    "scaleX": 0.30000001192092896,
+                    "scaleY": 0.30000001192092896,
+                    "Rot": 0.0
+                },
+                {
+                    "Component": "Collider",
+                    "ColliderType1": 5,
+                    "ColliderType2": 0,
+                    "minX1": 0.25,
+                    "minX2": 0.0,
+                    "minY1": 0.14000000059604645,
+                    "minY2": 0.0,
+                    "maxX1": 0.20000000298023224,
+                    "maxX2": 0.0,
+                    "maxY1": 0.10999999940395355,
+                    "maxY2": 0.0,
+                    "offsetX1": 0.0,
+                    "offsetX2": 0.0,
+                    "offsetY1": 0.0,
+                    "offsetY2": 0.0,
+                    "radius1": 0.0,
+                    "radius2": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "horse food"
+                },
+                {
+                    "Component": "Sprite",
+                    "TextureName": "Play/Food",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": false,
+                    "MaxIndex": 0,
+                    "LayeringOrder": 2,
+                    "StateManagerEnabled": false,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
+                },
+                {
+                    "Component": "Audio",
+                    "0": {
+                        "AudioPath": "Item_Grab_v1.wav",
+                        "Channel": 3,
+                        "IsLooping": false
+                    },
+                    "AudioArrCount": 1,
+                    "BGM Volume": 1.0,
+                    "SFX Volume": 1.0,
+                    "Master Volume": 1.0,
+                    "RandomFromArray": false,
+                    "Effects": {
+                        "LowpassEnabled": false,
+                        "LowpassCutoff": 5000.0,
+                        "LowpassResonance": 1.0,
+                        "HighpassEnabled": false,
+                        "HighpassCutoff": 10.0,
+                        "HighpassResonance": 1.0,
+                        "EchoEnabled": false,
+                        "EchoDelay": 500.0,
+                        "EchoFeedback": 50.0,
+                        "EchoDryLevel": 0.0,
+                        "EchoWetLevel": -6.0,
+                        "ReverbEnabled": false,
+                        "ReverbDecayTime": 1500.0,
+                        "ReverbEarlyDelay": 7.0,
+                        "ReverbLateDelay": 11.0,
+                        "ReverbHFReference": 5000.0,
+                        "ReverbDiffusion": 100.0,
+                        "ReverbDensity": 100.0,
+                        "ReverbWetLevel": -6.0,
+                        "ReverbDryLevel": 0.0
+                    }
+                },
+                {
+                    "Component": "Logic",
+                    "0": "DragAndDrop",
+                    "1": "AudioManager",
+                    "2": "ButtonResponse",
+                    "ScriptCount": 3
+                },
+                {
+                    "Component": "ButtonComponent",
+                    "GoToSceneFlag": false,
+                    "GoToScene": "",
+                    "AudioOnHoverFlag": false,
+                    "AudioOnHoverRandom": false,
+                    "HoverAudioIndex": 0,
+                    "AudioOnClickFlag": true,
+                    "AudioOnClickRandom": false,
+                    "ClickAudioIndex": 0,
+                    "TexChangeOnHoverFlag": false,
+                    "TexChangeOnHover": "",
+                    "TexChangeOnClickFlag": false,
+                    "TexChangeOnClick": "",
+                    "ScaleOnHoverFlag": false,
+                    "ScaleOnHover": 0.0,
+                    "SetGameStateFlag": false,
+                    "SetGameState": "STARTING",
+                    "ResetStatsFlag": false,
+                    "NextLevelFlag": false,
+                    "SetCameraZoomFlag": false,
+                    "SetCameraZoom": 0.0,
+                    "MuteAudioFlag": false,
+                    "AltSceneSwitchFlag": false,
+                    "AltSceneSwitch": "",
+                    "ExitGameFlag": false
+                },
+                {
+                    "Component": "ItemsAttributes",
+                    "type": 0,
+                    "gain amount": 20.0,
+                    "is_dragging": false
+                }
+            ]
+        },
+        {
+            "ID": 8,
+            "Components": [
+                {
+                    "Component": "Transform",
+                    "posX": -0.6019999980926514,
+                    "posY": -0.722000002861023,
+                    "scaleX": 0.25,
+                    "scaleY": 0.25,
+                    "Rot": 0.0
+                },
+                {
+                    "Component": "Collider",
+                    "ColliderType1": 5,
+                    "ColliderType2": 0,
+                    "minX1": 0.15000000596046448,
+                    "minX2": 0.0,
+                    "minY1": 0.15000000596046448,
+                    "minY2": 0.0,
+                    "maxX1": 0.15000000596046448,
+                    "maxX2": 0.0,
+                    "maxY1": 0.05999999865889549,
+                    "maxY2": 0.0,
+                    "offsetX1": 0.0,
+                    "offsetX2": 0.0,
+                    "offsetY1": 0.0,
+                    "offsetY2": 0.0,
+                    "radius1": 0.0,
+                    "radius2": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "horse medicine"
+                },
+                {
+                    "Component": "Sprite",
+                    "TextureName": "Play/Medicine",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": false,
+                    "MaxIndex": 0,
+                    "LayeringOrder": 2,
+                    "StateManagerEnabled": false,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
+                },
+                {
+                    "Component": "Audio",
+                    "0": {
+                        "AudioPath": "Item_Grab_v1.wav",
+                        "Channel": 3,
+                        "IsLooping": false
+                    },
+                    "AudioArrCount": 1,
+                    "BGM Volume": 1.0,
+                    "SFX Volume": 1.0,
+                    "Master Volume": 1.0,
+                    "RandomFromArray": false,
+                    "Effects": {
+                        "LowpassEnabled": false,
+                        "LowpassCutoff": 5000.0,
+                        "LowpassResonance": 1.0,
+                        "HighpassEnabled": false,
+                        "HighpassCutoff": 10.0,
+                        "HighpassResonance": 1.0,
+                        "EchoEnabled": false,
+                        "EchoDelay": 500.0,
+                        "EchoFeedback": 50.0,
+                        "EchoDryLevel": 0.0,
+                        "EchoWetLevel": -6.0,
+                        "ReverbEnabled": false,
+                        "ReverbDecayTime": 1500.0,
+                        "ReverbEarlyDelay": 7.0,
+                        "ReverbLateDelay": 11.0,
+                        "ReverbHFReference": 5000.0,
+                        "ReverbDiffusion": 100.0,
+                        "ReverbDensity": 100.0,
+                        "ReverbWetLevel": -6.0,
+                        "ReverbDryLevel": 0.0
+                    }
+                },
+                {
+                    "Component": "Logic",
+                    "0": "RevealTargetOnClick",
+                    "1": "AudioManager",
+                    "2": "ButtonResponse",
+                    "ScriptCount": 3
+                },
+                {
+                    "Component": "ButtonComponent",
+                    "GoToSceneFlag": false,
+                    "GoToScene": "",
+                    "AudioOnHoverFlag": false,
+                    "AudioOnHoverRandom": false,
+                    "HoverAudioIndex": 0,
+                    "AudioOnClickFlag": true,
+                    "AudioOnClickRandom": false,
+                    "ClickAudioIndex": 0,
+                    "TexChangeOnHoverFlag": false,
+                    "TexChangeOnHover": "",
+                    "TexChangeOnClickFlag": false,
+                    "TexChangeOnClick": "",
+                    "ScaleOnHoverFlag": false,
+                    "ScaleOnHover": 0.0,
+                    "SetGameStateFlag": false,
+                    "SetGameState": "STARTING",
+                    "ResetStatsFlag": false,
+                    "NextLevelFlag": false,
+                    "SetCameraZoomFlag": false,
+                    "SetCameraZoom": 0.0,
+                    "MuteAudioFlag": false,
+                    "AltSceneSwitchFlag": false,
+                    "AltSceneSwitch": "",
+                    "ExitGameFlag": false
+                },
+                {
+                    "Component": "ItemsAttributes",
+                    "type": 1,
+                    "gain amount": 20.0,
+                    "is_dragging": false
+                }
+            ]
+        },
+        {
+            "ID": 9,
+            "Components": [
+                {
+                    "Component": "Transform",
+                    "posX": -0.6565354466438293,
+                    "posY": -0.21084928512573242,
+                    "scaleX": 0.3499999940395355,
+                    "scaleY": 0.3499999940395355,
+                    "Rot": 0.0
+                },
+                {
+                    "Component": "Collider",
+                    "ColliderType1": 5,
+                    "ColliderType2": 0,
+                    "minX1": 0.20000000298023224,
+                    "minX2": 0.0,
+                    "minY1": 0.15000000596046448,
+                    "minY2": 0.0,
+                    "maxX1": 0.20000000298023224,
+                    "maxX2": 0.0,
+                    "maxY1": 0.11500000208616257,
+                    "maxY2": 0.0,
+                    "offsetX1": 0.0,
+                    "offsetX2": 0.0,
+                    "offsetY1": 0.0,
+                    "offsetY2": 0.0,
+                    "radius1": 0.0,
+                    "radius2": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "horse toy"
+                },
+                {
+                    "Component": "Sprite",
+                    "TextureName": "Play/Horse_Toy",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": false,
+                    "MaxIndex": 0,
+                    "LayeringOrder": 6,
+                    "StateManagerEnabled": false,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
+                },
+                {
+                    "Component": "Logic",
+                    "0": "ToyHideAndRevealOnClick",
+                    "ScriptCount": 1
+                },
+                {
+                    "Component": "ItemsAttributes",
+                    "type": 2,
+                    "gain amount": 20.0,
+                    "is_dragging": false
+                }
+            ]
+        },
+        {
+            "ID": 10,
+            "Components": [
+                {
+                    "Component": "Transform",
+                    "posX": 0.6753605604171753,
+                    "posY": 0.12399999797344208,
+                    "scaleX": 0.21751198172569275,
+                    "scaleY": 0.21751198172569275,
+                    "Rot": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "HealthIcon"
+                },
+                {
+                    "Component": "Sprite",
+                    "TextureName": "UI/health",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": false,
+                    "MaxIndex": 0,
+                    "LayeringOrder": 3,
+                    "StateManagerEnabled": false,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "ID": 11,
+            "Components": [
+                {
+                    "Component": "Transform",
+                    "posX": 0.6753605604171753,
+                    "posY": -0.029999999329447746,
+                    "scaleX": 0.21751198172569275,
+                    "scaleY": 0.21751198172569275,
+                    "Rot": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "HungerIcon"
+                },
+                {
+                    "Component": "Sprite",
+                    "TextureName": "UI/hunger",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": false,
+                    "MaxIndex": 0,
+                    "LayeringOrder": 3,
+                    "StateManagerEnabled": false,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "ID": 12,
+            "Components": [
+                {
+                    "Component": "Transform",
+                    "posX": 0.6753605604171753,
+                    "posY": -0.1679999977350235,
+                    "scaleX": 0.21751198172569275,
+                    "scaleY": 0.21751198172569275,
+                    "Rot": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "SanityIcon"
+                },
+                {
+                    "Component": "Sprite",
+                    "TextureName": "UI/sanity",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": false,
+                    "MaxIndex": 0,
+                    "LayeringOrder": 3,
+                    "StateManagerEnabled": false,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "ID": 13,
+            "Components": [
+                {
+                    "Component": "Transform",
+                    "posX": 1.1399999856948853,
+                    "posY": 0.11400000005960464,
+                    "scaleX": 0.8989999890327454,
+                    "scaleY": 0.0689999982714653,
+                    "Rot": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "HealthBar"
+                },
+                {
+                    "Component": "Sprite",
+                    "TextureName": "UI/health bar",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": false,
+                    "MaxIndex": 0,
+                    "LayeringOrder": 2,
+                    "StateManagerEnabled": false,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
+                },
+                {
+                    "Component": "Logic",
+                    "0": "HealthBar",
+                    "ScriptCount": 1
+                },
+                {
+                    "Component": "HUDComponent",
+                    "ElementType": 2,
+                    "offsetX": 0.0,
+                    "offsetY": 0.0
+                }
+            ]
+        },
+        {
+            "ID": 14,
+            "Components": [
+                {
+                    "Component": "Transform",
+                    "posX": 1.1399999856948853,
+                    "posY": -0.02500000037252903,
+                    "scaleX": 0.8989999890327454,
+                    "scaleY": 0.0689999982714653,
+                    "Rot": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "HungerBar"
+                },
+                {
+                    "Component": "Sprite",
+                    "TextureName": "UI/hunger bar",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": false,
+                    "MaxIndex": 0,
+                    "LayeringOrder": 2,
+                    "StateManagerEnabled": false,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
+                },
+                {
+                    "Component": "Logic",
+                    "0": "HealthBar",
+                    "ScriptCount": 1
+                },
+                {
+                    "Component": "HUDComponent",
+                    "ElementType": 3,
+                    "offsetX": 0.0,
+                    "offsetY": 0.0
+                }
+            ]
+        },
+        {
+            "ID": 15,
+            "Components": [
+                {
+                    "Component": "Transform",
+                    "posX": 1.1399999856948853,
+                    "posY": -0.15299999713897705,
+                    "scaleX": 0.8989999890327454,
+                    "scaleY": 0.0689999982714653,
+                    "Rot": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "SanityBar"
+                },
+                {
+                    "Component": "Sprite",
+                    "TextureName": "UI/sanity bar",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": false,
+                    "MaxIndex": 0,
+                    "LayeringOrder": 2,
+                    "StateManagerEnabled": false,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
+                },
+                {
+                    "Component": "Logic",
+                    "0": "HealthBar",
+                    "ScriptCount": 1
+                },
+                {
+                    "Component": "HUDComponent",
+                    "ElementType": 4,
+                    "offsetX": 0.0,
+                    "offsetY": 0.0
+                }
+            ]
+        },
+        {
+            "ID": 16,
+            "Components": [
+                {
+                    "Component": "Transform",
+                    "posX": -1.469074010848999,
+                    "posY": 0.7428621053695679,
+                    "scaleX": 1.0,
+                    "scaleY": 1.0,
+                    "Rot": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "TimerDisplay"
+                },
+                {
+                    "Component": "Logic",
+                    "0": "TimerDisplay",
+                    "ScriptCount": 1
+                },
+                {
+                    "Component": "Text",
+                    "text type": 0,
+                    "Content": "00:00:00",
+                    "Array of Content": [],
+                    "Vector of text position": [],
+                    "Font": "DSEG7Classic-Bold",
+                    "Size": 35.29999923706055,
+                    "ColorR": 0.0,
+                    "ColorG": 1.0,
+                    "ColorB": 0.0,
+                    "ColorA": 1.0,
+                    "PosX": 0.0,
+                    "PosY": 0.0,
+                    "Rotation": 0.0,
+                    "Line Height": 0,
+                    "WorldSpace": true,
+                    "Center": false,
+                    "LayeringOrder": 0
+                }
+            ]
+        },
+        {
+            "ID": 17,
+            "Components": [
+                {
+                    "Component": "Transform",
+                    "posX": 0.0,
+                    "posY": 0.0,
+                    "scaleX": 3.6449999809265137,
+                    "scaleY": 1.9999960660934448,
+                    "Rot": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "horse_title"
+                },
+                {
+                    "Component": "Text",
+                    "text type": 0,
+                    "Content": "HORSE",
+                    "Array of Content": [],
+                    "Vector of text position": [],
+                    "Font": "ChauPhilomeneOne-Regular",
+                    "Size": 72.0,
+                    "ColorR": 0.31651291251182556,
+                    "ColorG": 0.7254902124404907,
+                    "ColorB": 0.3285415470600128,
+                    "ColorA": 1.0,
+                    "PosX": 0.6399999856948853,
+                    "PosY": 0.6299999952316284,
+                    "Rotation": 0.0,
+                    "Line Height": 50,
+                    "WorldSpace": false,
+                    "Center": false,
+                    "LayeringOrder": 0
+                }
+            ]
+        },
+        {
+            "ID": 18,
+            "Components": [
+                {
+                    "Component": "Transform",
+                    "posX": 0.0,
+                    "posY": 0.0,
+                    "scaleX": 3.6449999809265137,
+                    "scaleY": 1.9999960660934448,
+                    "Rot": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "horse enclosure"
+                },
+                {
+                    "Component": "Text",
+                    "text type": 0,
+                    "Content": "Enclosure 1 - 03-00-2A",
+                    "Array of Content": [],
+                    "Vector of text position": [],
+                    "Font": "ChauPhilomeneOne-Regular",
+                    "Size": 36.0,
+                    "ColorR": 0.31651291251182556,
+                    "ColorG": 0.7254902124404907,
+                    "ColorB": 0.3285415470600128,
+                    "ColorA": 1.0,
+                    "PosX": 0.6399999856948853,
+                    "PosY": 0.550000011920929,
+                    "Rotation": 0.0,
+                    "Line Height": 50,
+                    "WorldSpace": false,
+                    "Center": false,
+                    "LayeringOrder": 0
+                }
+            ]
+        },
+        {
+            "ID": 19,
+            "Components": [
+                {
+                    "Component": "Transform",
+                    "posX": 0.0,
+                    "posY": 0.0,
+                    "scaleX": 3.6449999809265137,
+                    "scaleY": 1.9999960660934448,
+                    "Rot": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "horse_intro"
+                },
+                {
+                    "Component": "Text",
+                    "text type": 0,
+                    "Content": "An equine that is trained for horseracing.\nUntil now, it has not won a single race.\nNeeds extra care for health.",
+                    "Array of Content": [],
+                    "Vector of text position": [],
+                    "Font": "ChauPhilomeneOne-Regular",
+                    "Size": 34.79999923706055,
+                    "ColorR": 0.4215686321258545,
+                    "ColorG": 0.41214776039123535,
+                    "ColorB": 0.41123607754707336,
+                    "ColorA": 0.501960813999176,
+                    "PosX": 0.6399999856948853,
+                    "PosY": 0.44999998807907104,
+                    "Rotation": 0.0,
+                    "Line Height": 62,
+                    "WorldSpace": false,
+                    "Center": false,
+                    "LayeringOrder": 0
+                }
+            ]
+        },
+        {
+            "ID": 20,
+            "Components": [
+                {
+                    "Component": "Tag",
+                    "Tag": "target",
+                    "TargetTag": ""
+                },
+                {
+                    "Component": "Transform",
+                    "posX": 0.0,
+                    "posY": 0.0,
+                    "scaleX": 0.20000000298023224,
+                    "scaleY": 0.20000000298023224,
+                    "Rot": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "Target"
+                },
+                {
+                    "Component": "Sprite",
+                    "TextureName": "UI/target",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": false,
+                    "MaxIndex": 0,
+                    "LayeringOrder": 8,
+                    "StateManagerEnabled": false,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "ID": 21,
+            "Components": [
+                {
+                    "Component": "Transform",
+                    "posX": 1.0999298095703125,
+                    "posY": -0.54035484790802,
+                    "scaleX": 0.9850000143051147,
+                    "scaleY": 0.5099999904632568,
+                    "Rot": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "LogObj"
+                },
+                {
+                    "Component": "Sprite",
+                    "TextureName": "UI/PlaceholderLogbg",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": false,
+                    "MaxIndex": 0,
+                    "LayeringOrder": 2,
+                    "StateManagerEnabled": false,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
+                },
+                {
+                    "Component": "Logic",
+                    "0": "DigeticLog",
+                    "ScriptCount": 1
+                },
+                {
+                    "Component": "Text",
+                    "text type": 0,
+                    "Content": "[00:00:00] This is a Log entry",
+                    "Array of Content": [],
+                    "Vector of text position": [],
+                    "Font": "Jersey10Charted-Regular",
+                    "Size": 25.899999618530273,
+                    "ColorR": 1.0,
+                    "ColorG": 0.0,
+                    "ColorB": 0.0,
+                    "ColorA": 1.0,
+                    "PosX": -0.4699999988079071,
+                    "PosY": 0.20000000298023224,
+                    "Rotation": 0.0,
+                    "Line Height": 0,
+                    "WorldSpace": true,
+                    "Center": false,
+                    "LayeringOrder": 0
+                }
+            ]
+        },
+        {
+            "ID": 22,
+            "Components": [
+                {
+                    "Component": "Transform",
+                    "posX": 0.25099998712539673,
+                    "posY": 0.7609999775886536,
+                    "scaleX": 0.10000000149011612,
+                    "scaleY": 0.10000000149011612,
+                    "Rot": -90.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "CameraHighlight"
+                },
+                {
+                    "Component": "Sprite",
+                    "TextureName": "UI/cameraHighlight",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": false,
+                    "MaxIndex": 0,
+                    "LayeringOrder": 6,
+                    "StateManagerEnabled": false,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "ID": 23,
+            "Components": [
+                {
+                    "Component": "Transform",
+                    "posX": 0.25099998712539673,
+                    "posY": -0.28200000524520874,
+                    "scaleX": 0.10000000149011612,
+                    "scaleY": 0.10000000149011612,
+                    "Rot": 180.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "CameraHighlight"
+                },
+                {
+                    "Component": "Sprite",
+                    "TextureName": "UI/cameraHighlight",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": false,
+                    "MaxIndex": 0,
+                    "LayeringOrder": 6,
+                    "StateManagerEnabled": false,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "ID": 24,
+            "Components": [
+                {
+                    "Component": "Transform",
+                    "posX": -1.5640000104904175,
+                    "posY": -0.28200000524520874,
+                    "scaleX": 0.10000000149011612,
+                    "scaleY": 0.10000000149011612,
+                    "Rot": 90.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "CameraHighlight"
+                },
+                {
+                    "Component": "Sprite",
+                    "TextureName": "UI/cameraHighlight",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": false,
+                    "MaxIndex": 0,
+                    "LayeringOrder": 6,
+                    "StateManagerEnabled": false,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "ID": 25,
+            "Components": [
+                {
+                    "Component": "Transform",
+                    "posX": -0.6259999871253967,
+                    "posY": 0.2329999953508377,
+                    "scaleX": 2.2100000381469727,
+                    "scaleY": 1.3849999904632568,
+                    "Rot": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "Panel"
+                },
+                {
+                    "Component": "Sprite",
+                    "TextureName": "UI/panel",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": false,
+                    "MaxIndex": 0,
+                    "LayeringOrder": 1,
+                    "StateManagerEnabled": false,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "ID": 26,
+            "Components": [
+                {
+                    "Component": "Transform",
+                    "posX": -0.6399999856948853,
+                    "posY": 0.23499999940395355,
+                    "scaleX": 2.059999942779541,
+                    "scaleY": 1.225000023841858,
+                    "Rot": 0.0
+                },
+                {
+                    "Component": "Collider",
+                    "ColliderType1": 5,
+                    "ColliderType2": 0,
+                    "minX1": 1.9700000286102295,
+                    "minX2": 0.0,
+                    "minY1": 1.225000023841858,
+                    "minY2": 0.0,
+                    "maxX1": 0.0,
+                    "maxX2": 0.0,
+                    "maxY1": 0.0,
+                    "maxY2": 0.0,
+                    "offsetX1": 0.9700000286102295,
+                    "offsetX2": 0.0,
+                    "offsetY1": 0.6200000047683716,
+                    "offsetY2": 0.0,
+                    "radius1": 0.0,
+                    "radius2": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "Environment"
+                },
+                {
+                    "Component": "Sprite",
+                    "TextureName": "Environment/horseCage",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": false,
+                    "MaxIndex": 0,
+                    "LayeringOrder": 0,
+                    "StateManagerEnabled": false,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "ID": 27,
+            "Components": [
+                {
+                    "Component": "Transform",
+                    "posX": 0.07999999821186066,
+                    "posY": 0.03999999910593033,
+                    "scaleX": 3.9200000762939453,
+                    "scaleY": 2.184999942779541,
+                    "Rot": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "InventoryBar"
+                },
+                {
+                    "Component": "Sprite",
+                    "TextureName": "UI/inventory",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": false,
+                    "MaxIndex": 0,
+                    "LayeringOrder": 1,
+                    "StateManagerEnabled": false,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
+                },
+                {
+                    "Component": "Text",
+                    "text type": 0,
+                    "Content": "INVENTORY",
+                    "Array of Content": [],
+                    "Vector of text position": [],
+                    "Font": "ChauPhilomeneOne-Regular",
+                    "Size": 36.79999923706055,
+                    "ColorR": 0.46666666865348816,
+                    "ColorG": 1.0,
+                    "ColorB": 0.48235294222831726,
+                    "ColorA": 1.0,
+                    "PosX": -0.7599999904632568,
+                    "PosY": -0.5799999833106995,
+                    "Rotation": 0.0,
+                    "Line Height": 0,
+                    "WorldSpace": false,
+                    "Center": false,
+                    "LayeringOrder": 0
+                }
+            ]
+        },
+        {
+            "ID": 28,
+            "Components": [
+                {
+                    "Component": "Transform",
+                    "posX": 1.0950000286102295,
+                    "posY": 0.014999999664723873,
+                    "scaleX": 1.190000057220459,
+                    "scaleY": 1.850000023841858,
+                    "Rot": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "LogBar"
+                },
+                {
+                    "Component": "Sprite",
+                    "TextureName": "UI/right panel",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": false,
+                    "MaxIndex": 0,
+                    "LayeringOrder": 1,
+                    "StateManagerEnabled": false,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "ID": 29,
+            "Components": [
+                {
+                    "Component": "Transform",
+                    "posX": -0.014999999664723873,
+                    "posY": 0.02500000037252903,
+                    "scaleX": 3.7049999237060547,
+                    "scaleY": 2.109999895095825,
+                    "Rot": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "BgWires"
+                },
+                {
+                    "Component": "Sprite",
+                    "TextureName": "UI/background",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": false,
+                    "MaxIndex": 0,
+                    "LayeringOrder": 0,
+                    "StateManagerEnabled": false,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "ID": 30,
+            "Components": [
+                {
+                    "Component": "Transform",
+                    "posX": 0.4000000059604645,
+                    "posY": -0.014999999664723873,
+                    "scaleX": 0.125,
+                    "scaleY": 0.11599999666213989,
+                    "Rot": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "HorseBtn"
+                },
+                {
+                    "Component": "Sprite",
+                    "TextureName": "UI/cameraButtonLit",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": false,
+                    "MaxIndex": 0,
+                    "LayeringOrder": 2,
+                    "StateManagerEnabled": false,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
+                },
+                {
+                    "Component": "Text",
+                    "text type": 0,
+                    "Content": "3",
+                    "Array of Content": [],
+                    "Vector of text position": [],
+                    "Font": "ChauPhilomeneOne-Regular",
+                    "Size": 32.5,
+                    "ColorR": 0.0,
+                    "ColorG": 0.0,
+                    "ColorB": 0.0,
+                    "ColorA": 1.0,
+                    "PosX": 0.38499999046325684,
+                    "PosY": -0.029999999329447746,
+                    "Rotation": 0.0,
+                    "Line Height": 0,
+                    "WorldSpace": false,
+                    "Center": false,
+                    "LayeringOrder": 0
+                }
+            ]
+        },
+        {
+            "ID": 31,
+            "Components": [
+                {
+                    "Component": "Transform",
+                    "posX": -0.6594700813293457,
+                    "posY": 0.0,
+                    "scaleX": 0.05000000074505806,
+                    "scaleY": 0.05000000074505806,
+                    "Rot": 0.0
+                },
+                {
+                    "Component": "Collider",
+                    "ColliderType1": 5,
+                    "ColliderType2": 0,
+                    "minX1": 0.05000000074505806,
+                    "minX2": 0.0,
+                    "minY1": 0.05000000074505806,
+                    "minY2": 0.0,
+                    "maxX1": 0.0,
+                    "maxX2": 0.0,
+                    "maxY1": 0.0,
+                    "maxY2": 0.0,
+                    "offsetX1": 0.02500000037252903,
+                    "offsetX2": 0.0,
+                    "offsetY1": 0.02500000037252903,
+                    "offsetY2": 0.0,
+                    "radius1": 0.0,
+                    "radius2": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "PainSpot"
+                },
+                {
+                    "Component": "Sprite",
+                    "TextureName": "UI/painSpot",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": false,
+                    "MaxIndex": 0,
+                    "LayeringOrder": 2,
+                    "StateManagerEnabled": false,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "ID": 32,
+            "Components": [
+                {
+                    "Component": "Transform",
+                    "posX": 0.18076913058757782,
+                    "posY": 0.0,
+                    "scaleX": 0.10000000149011612,
+                    "scaleY": 0.10000000149011612,
+                    "Rot": 0.0
+                },
+                {
+                    "Component": "Collider",
+                    "ColliderType1": 5,
+                    "ColliderType2": 0,
+                    "minX1": 0.10000000149011612,
+                    "minX2": 0.0,
+                    "minY1": 0.10000000149011612,
+                    "minY2": 0.0,
+                    "maxX1": 0.0,
+                    "maxX2": 0.0,
+                    "maxY1": 0.0,
+                    "maxY2": 0.0,
+                    "offsetX1": 0.04500000178813934,
+                    "offsetX2": 0.0,
+                    "offsetY1": 0.04500000178813934,
+                    "offsetY2": 0.0,
+                    "radius1": 0.0,
+                    "radius2": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "Key"
+                },
+                {
+                    "Component": "Sprite",
+                    "TextureName": "UI/key",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": false,
+                    "MaxIndex": 0,
+                    "LayeringOrder": 7,
+                    "StateManagerEnabled": false,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
+                },
+                {
+                    "Component": "Logic",
+                    "0": "encryptionkey",
+                    "ScriptCount": 1
+                }
+            ]
+        },
+        {
+            "ID": 33,
+            "Components": [
+                {
+                    "Component": "Transform",
+                    "posX": 0.07800000160932541,
+                    "posY": 0.7279999852180481,
+                    "scaleX": 1.0,
+                    "scaleY": 1.0,
+                    "Rot": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "KeysCollected"
+                },
+                {
+                    "Component": "Logic",
+                    "0": "KeysCollectedDisplay",
+                    "ScriptCount": 1
+                },
+                {
+                    "Component": "Text",
+                    "text type": 0,
+                    "Content": "0/4",
+                    "Array of Content": [],
+                    "Vector of text position": [],
+                    "Font": "ChauPhilomeneOne-Regular",
+                    "Size": 35.29999923706055,
+                    "ColorR": 0.8549019694328308,
+                    "ColorG": 0.1764705926179886,
+                    "ColorB": 0.05882352963089943,
+                    "ColorA": 1.0,
+                    "PosX": 0.0,
+                    "PosY": 0.0,
+                    "Rotation": 0.0,
+                    "Line Height": 0,
+                    "WorldSpace": true,
+                    "Center": false,
+                    "LayeringOrder": 0
+                }
+            ]
+        },
+        {
+            "ID": 34,
+            "Components": [
+                {
+                    "Component": "Tag",
+                    "Tag": "HidingSpot",
+                    "TargetTag": ""
+                },
+                {
+                    "Component": "Transform",
+                    "posX": -0.10642213374376297,
+                    "posY": -0.04577481746673584,
+                    "scaleX": 0.8865250945091248,
+                    "scaleY": 0.7215189933776855,
+                    "Rot": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "Bush"
+                },
+                {
+                    "Component": "Sprite",
+                    "TextureName": "Environment/bush",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": false,
+                    "MaxIndex": 0,
+                    "LayeringOrder": 4,
+                    "StateManagerEnabled": false,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "ID": 35,
+            "Components": [
+                {
+                    "Component": "Tag",
+                    "Tag": "HidingSpot",
+                    "TargetTag": ""
+                },
+                {
+                    "Component": "Transform",
+                    "posX": -1.0651755332946777,
+                    "posY": 0.010654784739017487,
+                    "scaleX": 0.6363479495048523,
+                    "scaleY": 0.5179064869880676,
+                    "Rot": -5.262115478515625
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "Bush"
+                },
+                {
+                    "Component": "Sprite",
+                    "TextureName": "Environment/bush",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": false,
+                    "MaxIndex": 0,
+                    "LayeringOrder": 2,
+                    "StateManagerEnabled": false,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

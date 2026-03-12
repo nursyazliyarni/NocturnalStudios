@@ -8,8 +8,11 @@
 		and audios.
 	
     Primary Author:
-         LAU XIANG YANG (100%)
+         LAU XIANG YANG (95%)
 		- Created the ResourceManager class and its function specification.
+    Secondary Author:
+         Nur Syazliyarni (5%)
+        - Added font/text resource support for text rendering.
 
     All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
 *------------------------------------------------------------------------------------------------*/
@@ -18,17 +21,19 @@
 #include "ResourceManager/ResourceManager.h"
 
 namespace NocturnalEngine {
+	std::filesystem::path EngineAssetPath{std::filesystem::current_path().parent_path().parent_path()/"Resources"/"EngineAssets"};
 	std::unordered_map <std::string, std::shared_ptr<Texture>> ResourceManager::textures;
 	std::unordered_map <std::string, std::shared_ptr<Shader>> ResourceManager::shaders;
+	std::unordered_map <std::string, std::shared_ptr<Font>> ResourceManager::fonts;
 	std::unordered_map <std::string, std::shared_ptr<CAudioEngine>> ResourceManager::audios;
 	std::unordered_map <std::string, std::shared_ptr<Texture>> ResourceManager::Icons;
 
 	/*!*************************************************************************
 	Load texture
 	****************************************************************************/
-	std::shared_ptr<Texture> ResourceManager::LoadTexture(std::string name, const std::string& filepath)
+	std::shared_ptr<Texture> ResourceManager::LoadTexture(std::string name, const std::string& filepath, bool loadByNearest)
 	{
-		return textures[name] = ResourceManager::LoadTextureFromFile(filepath);
+		return textures[name] = ResourceManager::LoadTextureFromFile(filepath,loadByNearest);
 	}
 
 	/*!*************************************************************************
@@ -42,10 +47,10 @@ namespace NocturnalEngine {
 	/*!*************************************************************************
 	Load texture from filepath
 	****************************************************************************/
-	std::shared_ptr<Texture> ResourceManager::LoadTextureFromFile(const std::string& filepath)
+	std::shared_ptr<Texture> ResourceManager::LoadTextureFromFile(const std::string& filepath, bool loadByNearest )
 	{
 		auto m_texture = std::make_shared<Texture>();
-		m_texture->GenTexture(filepath);
+		m_texture->GenTexture(filepath,loadByNearest);
 		return m_texture;
 	}
 
@@ -105,9 +110,29 @@ namespace NocturnalEngine {
 	/*!*************************************************************************
 	Load font based on filepath
 	****************************************************************************/
+	std::shared_ptr<Font> ResourceManager::LoadFont(std::string name, const std::string& filepath, unsigned int fontsize)
+	{
+		return fonts[name] = ResourceManager::LoadFontFromFile(filepath, fontsize);
+	}
+
+	/*!*************************************************************************
+	Retrieve font based on name
+	****************************************************************************/
+	std::shared_ptr<Font> ResourceManager::GetFont(const std::string& name)
+	{
+		auto it = fonts.find(name);
+		if (it == fonts.end())
+			return nullptr;
+		return it->second;
+	}
+
+	/*!*************************************************************************
+	Load font based on filepath
+	****************************************************************************/
 	std::shared_ptr<Font> ResourceManager::LoadFontFromFile(const std::string& filepath, unsigned int fontsize)
 	{
 		auto m_font = std::make_shared<Font>();
+		m_font->Init();
 		m_font->Load(filepath, fontsize);
 		return m_font;
 	}
@@ -158,5 +183,29 @@ namespace NocturnalEngine {
 		textures.clear();
 		Icons.clear();
 		shaders.clear();
+		fonts.clear();
 	}
+	void ResourceManager::SetEngineResources() {
+
+		std::filesystem::path exePath = std::filesystem::current_path();
+		if (exePath.has_extension()&&exePath.extension().string() ==".exe")
+		{
+			 exePath = std::filesystem::current_path().parent_path();
+		}
+		std::filesystem::path relativeToExe = exePath / "Assets"/"Resources"/"EngineAssets";
+
+		if (std::filesystem::exists(relativeToExe)) {
+			EngineAssetPath = relativeToExe;
+			return;
+		}
+
+		// Second try: traverse up to find NocturnalStudios (running from VS)
+		std::filesystem::path search = std::filesystem::current_path();
+		while (search.filename() != "NocturnalStudios") {
+			if (search == search.parent_path()) return; // hit root, not found
+			search = search.parent_path();
+		}
+		EngineAssetPath = search / "Resources" / "EngineAssets";
+	}
+
 }

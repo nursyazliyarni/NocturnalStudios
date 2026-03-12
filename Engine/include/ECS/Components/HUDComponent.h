@@ -25,8 +25,8 @@ namespace NocturnalEngine {
 			Static,
 			BossStatic,
 			HealthBar,
-			BossHP,
-			BlockBar,
+			HungerBar,
+			SanityBar,
 			DashBar,
 			ChargeAtk,
 			Text
@@ -35,6 +35,9 @@ namespace NocturnalEngine {
 		~HUDComponent() = default;
 		virtual bool Deserialize(const rapidjson::Value& obj);
 		virtual bool Serialize(rapidjson::PrettyWriter<rapidjson::StringBuffer>* writer) const;
+
+		bool ToEditor()override;
+
 		/*!*************************************************************************
 		Retrieves Component Entity ID
 		****************************************************************************/

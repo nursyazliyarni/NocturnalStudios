@@ -1,13 +1,21 @@
 project(Sandbox LANGUAGES C CXX)
 
-# grab every subdirectory inside Sandbox (except this CMakeLists itself)
-file(GLOB SANDBOX_SUBDIRS RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/*)
+function(add_sandbox_projects dir)
+    file(GLOB children RELATIVE ${dir} ${dir}/*)
 
-foreach(subdir ${SANDBOX_SUBDIRS})
-  if (IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/${subdir})
-    if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${subdir}/CMakeLists.txt)
-      message(STATUS "Adding Sandbox game: ${subdir}")
-      add_subdirectory(${subdir})
-    endif()
-  endif()
-endforeach()
+    foreach(child ${children})
+        set(child_path "${dir}/${child}")
+        if(IS_DIRECTORY ${child_path})
+            if(EXISTS "${child_path}/CMakeLists.txt")
+                message(STATUS "Adding Sandbox game: ${child}")
+                add_subdirectory(${child_path})
+            else()
+                # recurse into subdirectory
+                add_sandbox_projects(${child_path})
+            endif()
+        endif()
+    endforeach()
+endfunction()
+
+# start from Sandbox root
+add_sandbox_projects(${CMAKE_CURRENT_SOURCE_DIR})

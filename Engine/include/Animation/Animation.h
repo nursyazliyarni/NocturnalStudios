@@ -6,7 +6,7 @@
 		This file contains the declaration of Animation class.
 	
     Primary Author:
-         LAU XIANG YANG (100%)
+         Chang Qi Xuan Celest (100%)
 		- Created the animation class and its function specification.
 
     All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
@@ -25,6 +25,9 @@ namespace NocturnalEngine {
 	    static std::unordered_map<std::string, std::vector<float>> spriteContainer;// to store all animation info
 		Animation();
 		void UpdateAnimation(float deltatime, Sprite& sprite);
+		// Resolve the texture key from sprite state rules using normalized status ratios.
+		static std::string ResolveStateTexture(const Sprite& sprite,
+			double hungerRatio, double healthRatio, double sanityRatio, bool usePreviewMode);
 	private:
 	};
 }

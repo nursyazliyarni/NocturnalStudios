@@ -8,7 +8,7 @@
         response.
 		
     Primary Author:
-         LAU XIANG YANG (100%)
+         Chang Qi Xuan Celest (100%)
 		- Created the CollisionSystem.h file and its function specification.
 
     All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
