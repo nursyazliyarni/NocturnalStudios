@@ -349,7 +349,7 @@
                 },
                 {
                     "Component": "Sprite",
-                    "TextureName": "CutScene/7",
+                    "TextureName": "Characters/Blank",
                     "Index_X": 0,
                     "Index_Y": 0,
                     "Ucoordinates": 512.0,
@@ -372,6 +372,22 @@
                             "Enabled": true
                         }
                     ]
+                },
+                {
+                    "Component": "Video",
+                    "VideoPath": "luminarazoo_720p.mpg",
+                    "Enabled": true,
+                    "Loop": false,
+                    "PlayInEditor": false,
+                    "AllowSkip": true,
+                    "SkipOnMouseClick": false,
+                    "RestartOnEnable": true,
+                    "HideWhenFinished": false,
+                    "SkipKey": 32,
+                    "NextScene": "",
+                    "AudioPath": "",
+                    "AudioChannelGroup": 1,
+                    "AudioLoop": false
                 }
             ]
         },

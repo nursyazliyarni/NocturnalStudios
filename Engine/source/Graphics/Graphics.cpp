@@ -32,6 +32,7 @@
 #include "Graphics/FrameBuffer.h"
 #include "Timer/Fps.h"
 #include "ECS/SceneManager.h"
+#include "Video/VideoPlayback.h"
 
 namespace NocturnalEngine {
 	
@@ -200,6 +201,8 @@ namespace NocturnalEngine {
 		p_GUI->VPmat = mcamera->GetViewProjectionMatrix();
 		//std::map<std::string, double>animal_attribute_map;
 
+		VideoPlayback::CleanupMissing(p_ecs.GetAliveEntitiesSet());
+
 		for (int orderIndex = 0; orderIndex < Graphic::MAX_LAYERS; ++orderIndex)
 		{
 			int layer = Graphic::layerDrawOrder[orderIndex];
@@ -217,6 +220,21 @@ namespace NocturnalEngine {
 
 				if (layerId == layer)
 				{//render the lowest layer level then follow on
+					std::shared_ptr<Texture> renderTexture = GETTEXTURE(sprite.GetTexture());
+					if (p_ecs.HaveComponent<Video>(*i))
+					{
+						auto& video = p_ecs.GetComponent<Video>(*i);
+						auto videoTexture = VideoPlayback::UpdateAndGetTexture(*i, video, frametime, p_Editor->is_ShowWindow);
+						if (videoTexture)
+						{
+							renderTexture = videoTexture;
+						}
+						else if (video.hideWhenFinished && !video.loop)
+						{
+							continue;
+						}
+					}
+
 					if (sprite.is_Animated)
 					{
 						mAimator.UpdateAnimation(frametime,  p_ecs.GetComponent<Sprite>(*i));
@@ -225,7 +243,7 @@ namespace NocturnalEngine {
 					if (sprite.is_SpriteSheet)
 					{
 
-						mIndex1 = SpriteRender::CreateSprite(GETTEXTURE(sprite.GetTexture()), { sprite.GetIndex().x, sprite.GetIndex().y },
+						mIndex1 = SpriteRender::CreateSprite(renderTexture, { sprite.GetIndex().x, sprite.GetIndex().y },
 							{ sprite.GetUVCoor().x, sprite.GetUVCoor().y });
 
 						mRenderer->DrawSprite({ transform.GetPos().x , transform.GetPos().y }, { transform.GetScale().x , transform.GetScale().y },
@@ -235,7 +253,7 @@ namespace NocturnalEngine {
 					else
 					{
 						mRenderer->DrawQuad({ transform.GetPos().x, transform.GetPos().y }, { transform.GetScale().x, transform.GetScale().y },
-							transform.GetRot(), GETTEXTURE(sprite.GetTexture()));
+							transform.GetRot(), renderTexture);
 					}
 
 					if (p_Editor->mDebugDraw)
