@@ -175,6 +175,7 @@ namespace NocturnalEngine {
 
         if (p_Scene->isGameplay&& currState !=GameState::PAUSED)
         {
+
             
             if (!levelDataLoaded && !levelConfig.GetLevels().empty())LevelDataToMap(levelNum);
 
@@ -192,7 +193,7 @@ namespace NocturnalEngine {
                 if (sceneAnimalPair.first!=currScene&& !sceneAnimalPair.second.aA.isEscaped &&sceneAnimalPair.second.aA.is_alive)
                 {
                     if (levelNum <= 1 && sceneAnimalPair.first == "Owl")continue;
-
+                    sceneAnimalPair.second.aA.timeSinceLastFeed += dt;
                         sceneAnimalPair.second.aA.timeSinceSanity += dt;
 
                         if (!sceneAnimalPair.second.toy.isHiding) sceneAnimalPair.second.toy.isHiding = CheckHide(sceneAnimalPair.second.aA);
@@ -305,7 +306,7 @@ namespace NocturnalEngine {
     GameManager::ToyState GameManager::LoadToyState(const std::string& gs) {
         auto it = sceneAnimalMap.find(gs);
         if (it != sceneAnimalMap.end()) {
-            currScene = gs;
+            //currScene = gs;
             return it->second.toy;
         }
         else {
@@ -441,6 +442,7 @@ namespace NocturnalEngine {
         }
         else if (sceneAnimalPair.second.aA.current_health <= sceneAnimalPair.second.aA.maxHealth / 5.0 && sceneAnimalPair.second.aA.healthWarnLevel < 2)
         {
+            AddLogEntry(sceneAnimalPair.first + "'s body temperature is alarmingly high.");
             sceneAnimalPair.second.aA.healthWarnLevel++;
             AddCrit();
         }
@@ -449,10 +451,14 @@ namespace NocturnalEngine {
         }
         if (sceneAnimalPair.second.aA.current_hunger <= sceneAnimalPair.second.aA.maxHunger / 2.0 && sceneAnimalPair.second.aA.hungerWarnLevel < 1)
         {
+            int minutesPassed = static_cast<int>((GetTimeScale() * sceneAnimalPair.second.aA.timeSinceLastFeed) / 60.f);
+            if (minutesPassed < 60) p_GameManager.AddLogEntry(sceneAnimalPair.first + " seems hungry...");
+            else AddLogEntry(sceneAnimalPair.first + " has not been fed for " + std::to_string(minutesPassed) + " minutes.");
             sceneAnimalPair.second.aA.hungerWarnLevel++;
         }
         else if (sceneAnimalPair.second.aA.current_hunger <= sceneAnimalPair.second.aA.maxHunger / 5.0 && sceneAnimalPair.second.aA.hungerWarnLevel < 2)
         {
+            AddLogEntry(sceneAnimalPair.first + " is starving!");
             sceneAnimalPair.second.aA.hungerWarnLevel++;
             AddCrit();
         }
@@ -461,10 +467,12 @@ namespace NocturnalEngine {
         }
         if (sceneAnimalPair.second.aA.current_sanity <= sceneAnimalPair.second.aA.maxSanity / 2.0 && sceneAnimalPair.second.aA.sanityWarnLevel < 1)
         {
+            AddLogEntry(sceneAnimalPair.first + " is searching for something...");
             sceneAnimalPair.second.aA.sanityWarnLevel++;
         }
         else if (sceneAnimalPair.second.aA.current_sanity <= sceneAnimalPair.second.aA.maxSanity / 5.0 && sceneAnimalPair.second.aA.sanityWarnLevel < 2)
         {
+            AddLogEntry(sceneAnimalPair.first + " is exhibiting increased restlessness.");
             sceneAnimalPair.second.aA.sanityWarnLevel++;
             AddCrit();
         }
@@ -474,7 +482,8 @@ namespace NocturnalEngine {
 
         if (!sceneAnimalPair.second.aA.is_alive)
         {
-            AddLogEntry(sceneAnimalPair.first + " is not moving");
+            AddLogEntry("Please check "+sceneAnimalPair.first+"'s enclosure. ");
+            AddLogEntry(sceneAnimalPair.first + " is not moving.");
         }
         if (sceneAnimalPair.second.aA.isEscaped)
         {

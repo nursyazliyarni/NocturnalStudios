@@ -114,6 +114,7 @@ namespace NocturnalEngine
 		int animInnerState{ 0 };
 
 		float timeSinceSanity{ 0.f };
+		float timeSinceLastFeed{ 0.f };
 
 	};
 }

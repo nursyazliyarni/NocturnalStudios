@@ -948,7 +948,7 @@
                     "IsSpriteSheet": false,
                     "IsAnimated": false,
                     "MaxIndex": 0,
-                    "LayeringOrder": 2,
+                    "LayeringOrder": 7,
                     "StateManagerEnabled": false,
                     "StatePreviewInEditor": false,
                     "StatePreviewMode": 0,
@@ -1252,7 +1252,7 @@
             ]
         },
         {
-            "ID": 16,
+            "ID": 10,
             "Components": [
                 {
                     "Component": "Transform",
@@ -1294,7 +1294,7 @@
             ]
         },
         {
-            "ID": 17,
+            "ID": 11,
             "Components": [
                 {
                     "Component": "NameTag",
@@ -1323,7 +1323,7 @@
             ]
         },
         {
-            "ID": 18,
+            "ID": 12,
             "Components": [
                 {
                     "Component": "NameTag",
@@ -1352,7 +1352,7 @@
             ]
         },
         {
-            "ID": 19,
+            "ID": 13,
             "Components": [
                 {
                     "Component": "NameTag",
@@ -1381,7 +1381,7 @@
             ]
         },
         {
-            "ID": 20,
+            "ID": 14,
             "Components": [
                 {
                     "Component": "Tag",
@@ -1429,8 +1429,8 @@
             ]
         },
         {
-            "ID": 21,
-             "Components": [
+            "ID": 15,
+            "Components": [
                 {
                     "Component": "Transform",
                     "posX": 1.0999298095703125,
@@ -1497,7 +1497,7 @@
             ]
         },
         {
-            "ID": 22,
+            "ID": 16,
             "Components": [
                 {
                     "Component": "Transform",
@@ -1540,7 +1540,7 @@
             ]
         },
         {
-            "ID": 23,
+            "ID": 17,
             "Components": [
                 {
                     "Component": "Transform",
@@ -1583,7 +1583,7 @@
             ]
         },
         {
-            "ID": 24,
+            "ID": 18,
             "Components": [
                 {
                     "Component": "Transform",
@@ -1626,7 +1626,7 @@
             ]
         },
         {
-            "ID": 25,
+            "ID": 19,
             "Components": [
                 {
                     "Component": "Transform",
@@ -1669,7 +1669,7 @@
             ]
         },
         {
-            "ID": 26,
+            "ID": 20,
             "Components": [
                 {
                     "Component": "Transform",
@@ -1731,7 +1731,7 @@
             ]
         },
         {
-            "ID": 27,
+            "ID": 21,
             "Components": [
                 {
                     "Component": "Transform",
@@ -1794,7 +1794,7 @@
             ]
         },
         {
-            "ID": 28,
+            "ID": 22,
             "Components": [
                 {
                     "Component": "Transform",
@@ -1837,7 +1837,7 @@
             ]
         },
         {
-            "ID": 29,
+            "ID": 23,
             "Components": [
                 {
                     "Component": "Transform",
@@ -1880,7 +1880,7 @@
             ]
         },
         {
-            "ID": 30,
+            "ID": 24,
             "Components": [
                 {
                     "Component": "Transform",
@@ -1943,7 +1943,7 @@
             ]
         },
         {
-            "ID": 31,
+            "ID": 25,
             "Components": [
                 {
                     "Component": "Transform",
@@ -1986,7 +1986,7 @@
                     "IsSpriteSheet": false,
                     "IsAnimated": false,
                     "MaxIndex": 0,
-                    "LayeringOrder": 2,
+                    "LayeringOrder": 5,
                     "StateManagerEnabled": false,
                     "StatePreviewInEditor": false,
                     "StatePreviewMode": 0,
@@ -2005,7 +2005,7 @@
             ]
         },
         {
-            "ID": 32,
+            "ID": 26,
             "Components": [
                 {
                     "Component": "Transform",
@@ -2072,7 +2072,7 @@
             ]
         },
         {
-            "ID": 33,
+            "ID": 27,
             "Components": [
                 {
                     "Component": "Transform",
@@ -2114,7 +2114,7 @@
             ]
         },
         {
-            "ID": 34,
+            "ID": 28,
             "Components": [
                 {
                     "Component": "Tag",
@@ -2162,7 +2162,7 @@
             ]
         },
         {
-            "ID": 35,
+            "ID": 29,
             "Components": [
                 {
                     "Component": "Tag",

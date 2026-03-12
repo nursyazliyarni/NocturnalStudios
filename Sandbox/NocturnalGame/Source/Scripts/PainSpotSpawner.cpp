@@ -105,8 +105,9 @@ namespace NocturnalEngine
         if (!mHasSpotTemplate)
         {
             s.SetTexture("UI/painSpot");
+
         }
-        s.SetLayerOrder(2);
+        s.SetLayerOrder(6);
         p_ecs.AddComponent<Sprite>(spot, s);
 
         if (mTemplateHasCollider)

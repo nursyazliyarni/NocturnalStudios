@@ -108,7 +108,7 @@ namespace NocturnalEngine
 			{
 				if (buttonFlag & ButtonFlag::GOTO_SCENE) p_Scene->setSceneToLoad(buttonComponent.gotoScene);
 
-				if (buttonFlag & ButtonFlag::RESET_STATS) p_GameManager.ResetStats();
+				if (buttonFlag & ButtonFlag::RESET_STATS) p_GameManager.ResetSystem(true);
 
 				if (buttonFlag & ButtonFlag::SET_GAME_STATE) p_GameManager.SetState(static_cast<GameManager::GameState>(buttonComponent.stateToSet));
 
