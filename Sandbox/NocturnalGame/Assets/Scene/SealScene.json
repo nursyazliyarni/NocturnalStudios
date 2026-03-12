@@ -165,7 +165,7 @@
                 {
                     "Component": "Sprite",
                     "TextureName": "Characters/sealSpritesheet",
-                    "Index_X": 1,
+                    "Index_X": 2,
                     "Index_Y": 0,
                     "Ucoordinates": 530.0,
                     "Vcoordinates": 254.5,
@@ -2345,7 +2345,7 @@
                     "IsSpriteSheet": false,
                     "IsAnimated": false,
                     "MaxIndex": 0,
-                    "LayeringOrder": 2,
+                    "LayeringOrder": 7,
                     "StateManagerEnabled": false,
                     "StatePreviewInEditor": false,
                     "StatePreviewMode": 0,
