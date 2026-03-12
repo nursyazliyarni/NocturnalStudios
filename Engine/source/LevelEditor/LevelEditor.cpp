@@ -730,14 +730,18 @@ namespace NocturnalEngine {
         }
         if (p_ecs.GetTotalSceneEntities() != 0 && p_Input->MousePressed(GLFW_MOUSE_BUTTON_LEFT) && (!mShowGizmos || !ImGuizmo::IsOver())) // Allow picking when gizmos are hidden
         {
-            if (selectedEntity >= 0 && selectedEntity < MAX_ENTITIES)//no entity selected will remain to the previous selected entity
+            Entity picked = (Entity)Picker::Pick(NocturnalEngine::Graphic::mcamera, sortedMultimap);
+
+            if (picked >= 0 && picked < MAX_ENTITIES &&
+                p_ecs.GetAliveEntitiesSet().contains(picked) &&  // ← key check
+                p_ecs.HaveComponent<Transform>(picked))
             {
-                if(p_ecs.HaveComponent<Transform>(selectedEntity))
-                    selectedEntity = (Entity)Picker::Pick(NocturnalEngine::Graphic::mcamera, sortedMultimap);
+                selectedEntity = picked;
             }
             else
+            {
                 selectedEntity = MAX_ENTITIES;
-          
+            }
         }
 
         if (ImGui::IsKeyPressed(ImGuiKey_Delete, false))

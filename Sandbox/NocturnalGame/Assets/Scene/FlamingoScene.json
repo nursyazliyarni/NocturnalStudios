@@ -138,7 +138,7 @@
                 {
                     "Component": "Sprite",
                     "TextureName": "Characters/flamingo_angry",
-                    "Index_X": 2,
+                    "Index_X": 0,
                     "Index_Y": 0,
                     "Ucoordinates": 528.0,
                     "Vcoordinates": 528.0,
@@ -2581,6 +2581,43 @@
                             "Enabled": true
                         }
                     ]
+                }
+            ]
+        },
+        {
+            "ID": 37,
+            "Components": [
+                {
+                    "Component": "Transform",
+                    "posX": -1.8000634908676147,
+                    "posY": 0.9089253544807434,
+                    "scaleX": 1.0,
+                    "scaleY": 1.0,
+                    "Rot": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "FPSDisplay"
+                },
+                {
+                    "Component": "Text",
+                    "text type": 0,
+                    "Content": "FPS: ",
+                    "Array of Content": [],
+                    "Vector of text position": [],
+                    "Font": "Jersey10Charted-Regular",
+                    "Size": 58.79999923706055,
+                    "ColorR": 1.0,
+                    "ColorG": 0.9705882668495178,
+                    "ColorB": 0.0,
+                    "ColorA": 1.0,
+                    "PosX": 0.0,
+                    "PosY": 0.0,
+                    "Rotation": 0.0,
+                    "Line Height": 0,
+                    "WorldSpace": true,
+                    "Center": false,
+                    "LayeringOrder": 0
                 }
             ]
         }
