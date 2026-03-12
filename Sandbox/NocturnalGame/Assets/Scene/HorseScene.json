@@ -197,7 +197,7 @@
                 },
                 {
                     "Component": "AnimalAttributes",
-                    "Animal Type": 2,
+                    "Animal Type": 1,
                     "Current Health": 100.0,
                     "Max Health": 100.0,
                     "Current Hunger": 100.0,
