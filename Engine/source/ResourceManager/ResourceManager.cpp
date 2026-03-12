@@ -91,6 +91,40 @@ namespace NocturnalEngine {
 		return m_shader;
 	}
 
+
+	std::shared_ptr<Shader> ResourceManager::LoadShaderFromFile(const std::string& name, const std::string& vertexPath, const std::string& fragmentPath)
+	{
+		std::ifstream vFile(vertexPath);
+		std::ifstream fFile(fragmentPath);
+
+		if (!vFile.is_open())
+		{
+			NOCTURNAL_ENGINE_ERROR("Failed to open vertex shader file: {}", vertexPath);
+			return nullptr;
+		}
+
+		if (!fFile.is_open())
+		{
+			NOCTURNAL_ENGINE_ERROR("Failed to open fragment shader file: {}", fragmentPath);
+			return nullptr;
+		}
+
+		std::stringstream vStream, fStream;
+		vStream << vFile.rdbuf();
+		fStream << fFile.rdbuf();
+
+		vFile.close();
+		fFile.close();
+
+		return std::make_shared<Shader>(name, vStream.str(), fStream.str());
+	}
+
+	std::shared_ptr<Shader> ResourceManager::LoadShader(std::string name, const std::string& vertexPath, const std::string& fragmentPath)
+	{
+		return shaders[name] = ResourceManager::LoadShaderFromFile(name, vertexPath, fragmentPath);
+	}
+
+
 	/*!*************************************************************************
 	Retrieve texture based on filename and filepath
 	****************************************************************************/

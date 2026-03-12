@@ -47,6 +47,35 @@ namespace NocturnalEngine {
 
 		ifs.close();
 	}
+
+
+
+
+	void Graphic::UpdateSceneVFXFromScene()
+	{
+		mSceneParticlesEnabled = false;
+		mSceneParticleType = SceneParticleRenderer::ParticleType::None;
+		mSceneParticleRenderAfterLayer = -1;
+
+		const auto alive = p_ecs.GetAliveEntitiesSet();
+		for (const auto& entity : alive)
+		{
+			if (!p_ecs.HaveComponent<SceneVFX>(entity))
+				continue;
+
+			auto& vfx = p_ecs.GetComponent<SceneVFX>(entity);
+
+			if (!vfx.GetParticlesEnabled())
+				continue;
+
+			mSceneParticlesEnabled = true;
+			mSceneParticleType = static_cast<SceneParticleRenderer::ParticleType>(vfx.GetParticleType());
+			mSceneParticleRenderAfterLayer = vfx.GetRenderAfterLayer();
+			return;
+		}
+	}
+
+
 	
 	/*!*************************************************************************
 	Init loop for Graphics
@@ -57,6 +86,11 @@ namespace NocturnalEngine {
 		ResourceManager::LoadShader("LineShader", EngineAssetPath.string() + "/Shaders/Line.shader");
 		ResourceManager::LoadShader("CircleShader", EngineAssetPath.string() + "/Shaders/Circle.shader");
 		ResourceManager::LoadShader("ImpactShader", EngineAssetPath.string() + "/Shaders/Impact.shader");
+		ResourceManager::LoadShader(
+			"SceneParticleShader",
+			EngineAssetPath.string() + "/Shaders/Fullscreen.vert.glsl",
+			EngineAssetPath.string() + "/Shaders/Particle.frag.glsl"
+		);
 		sMissingTextureID = ResourceManager::LoadTexture("ERROR_MISSINGTEX", EngineAssetPath.string() + "/Textures/Evil.png",true)->GetRendererID();
 		
 		LoadIconsTexture(EngineAssetPath.string() + "/Text/Icons.txt");
@@ -193,6 +227,8 @@ namespace NocturnalEngine {
 		mRenderer->Clear();
 		int value = -1;
 		glClearTexImage(p_FrameBuffer->GetColorAttachmentRendererID(1), 0, GL_RGBA8, GL_INT, &value);
+
+		UpdateSceneVFXFromScene();
 	
 		mRenderer->Begin(*mcamera);// begin of the renderer 
 		//mFont->RenderText("TEXT TEST", { 0.f, 0.f }, 0.001f, *mcamera, { 1,1,1 }); // for testing
@@ -262,6 +298,15 @@ namespace NocturnalEngine {
 					}
 				}
 			}
+
+			if (mSceneParticlesEnabled && layer == mSceneParticleRenderAfterLayer)
+			{
+				mRenderer->End();
+				mSceneParticleRenderer.Draw(mSceneParticleType);
+				mRenderer->Begin(*mcamera);
+				p_GUI->VPmat = mcamera->GetViewProjectionMatrix();
+			}
+
 		}
 
 		
@@ -372,6 +417,7 @@ namespace NocturnalEngine {
 	****************************************************************************/
 	void Graphic::End()
 	{
+		mSceneParticleRenderer.Shutdown();
 		ResourceManager::clear();
 		Renderer::ShutDown();
 	}

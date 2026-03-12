@@ -49,6 +49,7 @@ namespace NocturnalEngine {
 
 		//load shader from file
 		static std::shared_ptr<Shader> LoadShader(std::string name, const std::string& filepath);
+		static std::shared_ptr<Shader> LoadShader(std::string name, const std::string& vertexPath, const std::string& fragmentPath);
 		static std::shared_ptr<Shader> GetShader(std::string name);
 
 		//load font from file
@@ -74,6 +75,7 @@ namespace NocturnalEngine {
 
 		// generates shader from file
 		static std::shared_ptr<Shader> LoadShaderFromFile(const std::string& filepath);
+		static std::shared_ptr<Shader> LoadShaderFromFile(const std::string& name, const std::string& vertexPath, const std::string& fragmentPath);
 
 		// generates font from file
 		static std::shared_ptr<Font> LoadFontFromFile(const std::string& filepath, unsigned int fontsize);

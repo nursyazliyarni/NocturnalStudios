@@ -338,6 +338,12 @@
                     "ScriptCount": 2
                 },
                 {
+                    "Component": "SceneVFX",
+                    "ParticlesEnabled": true,
+                    "ParticleType": 1,
+                    "RenderAfterLayer": 0
+                },
+                {
                     "Component": "Text",
                     "text type": 0,
                     "Content": "1",
