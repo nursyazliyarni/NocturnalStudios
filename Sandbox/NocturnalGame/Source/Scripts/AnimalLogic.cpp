@@ -24,6 +24,7 @@
 #include "ECS/ECS.h"
 #include "Scripts/GlobalGameManager.h"
 #include "ECS/Components/AnimalAttributes.h"
+#include "ECS/Components/ItemsAttributes.h"
 #include "Animation/Animation.h"
 #include "Math/Random.h"
 #include "LevelEditor/LevelEditor.h"
@@ -52,10 +53,21 @@ namespace NocturnalEngine {
 			//fetch checkperiod
 			checkPeriod = p_GameManager.GetCheckPeriod();
 
+			
+
 			if (p_ecs.HaveComponent<Sprite>(entityID))
 			{
 				auto& sprite = p_ecs.GetComponent<Sprite>(entityID);
 				ogSpritename = sprite.GetTexture();
+			}
+		}
+
+		//find toy entity
+		for (Entity e:p_ecs.GetAliveEntitiesSet())
+		{
+			if (p_ecs.HaveComponent<ItemsAttributes>(e))
+			{
+				if (p_ecs.GetComponent<ItemsAttributes>(e).type == ItemsAttributes::ItemType::TOY) toyE = e;
 			}
 		}
 	}
@@ -81,8 +93,6 @@ namespace NocturnalEngine {
 
 		AnimalAttributes& aA{ p_ecs.GetComponent<AnimalAttributes>(entityID) };
 
-		
-
 
 		if (!aA.isEscaped&&aA.is_alive&&p_GameManager.GetGameState() != GameManager::GameState::ENDING) {
 
@@ -102,7 +112,10 @@ namespace NocturnalEngine {
 
 			CheckAndDecreaseStats(time.hp, chance.hp, hpDecay, aA.current_health, Frametime,decreaseScale);
 
-			aA.current_sanity -= aA.sanityDecayRate * static_cast<double>(Frametime);
+			if (toyE!=MAX_ENTITIES&&p_ecs.HaveComponent<ItemsAttributes>(toyE)&& p_ecs.GetComponent<ItemsAttributes>(toyE).toyIsHidden)
+			{
+				aA.current_sanity -= aA.sanityDecayRate * static_cast<double>(Frametime);
+			}
 
 			if (aA.current_sanity <= 0)
 			{

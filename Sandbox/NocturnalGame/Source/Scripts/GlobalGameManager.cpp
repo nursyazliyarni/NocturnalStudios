@@ -20,6 +20,7 @@
 #include "core/Log.h"
 #include "Math/Random.h"
 #include "Scripts/AnimalLogic.h"
+#include "ECS/Components/ButtonComponent.h"
 
 namespace NocturnalEngine {
 
@@ -174,9 +175,14 @@ namespace NocturnalEngine {
 
         if (p_Scene->isGameplay&& currState !=GameState::PAUSED)
         {
+            
             if (!levelDataLoaded && !levelConfig.GetLevels().empty())LevelDataToMap(levelNum);
+
+
             if (IsNewSceneManagement() && !combinedSceneSetup) CombinedSceneStart();
             if (IsNewSceneManagement())CombinedSceneUpdate(dt);
+
+
             for (std::pair<const std::string,AnimalData>& sceneAnimalPair:sceneAnimalMap)
             {
                 //this processes the other animals in the 
@@ -186,6 +192,10 @@ namespace NocturnalEngine {
                 if (sceneAnimalPair.first!=currScene&& !sceneAnimalPair.second.aA.isEscaped &&sceneAnimalPair.second.aA.is_alive)
                 {
                     if (levelNum <= 1 && sceneAnimalPair.first == "Owl")continue;
+
+                        sceneAnimalPair.second.aA.timeSinceSanity += dt;
+
+                        if (!sceneAnimalPair.second.toy.isHiding) sceneAnimalPair.second.toy.isHiding = CheckHide(sceneAnimalPair.second.aA);
                         //hunger>hp>sanity
                         CheckAndDecreaseStats(sceneAnimalPair.second.hungerT, sceneAnimalPair.second.hungerD, sceneAnimalPair.second.aA.hungerDecayRate, sceneAnimalPair.second.aA.current_hunger, dt);
 
@@ -202,7 +212,10 @@ namespace NocturnalEngine {
 
                         CheckAndDecreaseStats(sceneAnimalPair.second.hpT, sceneAnimalPair.second.hpD, hpDecay, sceneAnimalPair.second.aA.current_health, dt,decreaseScale);
 
-                        sceneAnimalPair.second.aA.current_sanity -= sceneAnimalPair.second.aA.sanityDecayRate * static_cast<double>(dt);
+                        if (sceneAnimalPair.second.toy.isHiding)
+                        {
+                            sceneAnimalPair.second.aA.current_sanity -= sceneAnimalPair.second.aA.sanityDecayRate * static_cast<double>(dt);
+                        }
 
                         if (sceneAnimalPair.second.aA.current_sanity <= 0)
                         {
@@ -264,7 +277,17 @@ namespace NocturnalEngine {
         return true;
     }
 
-    GameManager::AnimalData GameManager::LoadPersistentValues(std::string gs) {
+    GameManager::AnimalData GameManager::LoadPersistentValues(const std::string& gs) {
+        if (levelNum<=1)
+        {
+            Entity owlBtn{ GetEntityByName("OwlBtn") };
+            if (owlBtn != MAX_ENTITIES && p_ecs.HaveComponent<ButtonComponent>(owlBtn))
+            {
+                p_ecs.GetComponent<ButtonComponent>(owlBtn).ClearFlag(); //Deactivates the button
+                if (p_ecs.HaveComponent<Text>(owlBtn))p_ecs.GetComponent<Text>(owlBtn).SetContent("");
+            }
+        }
+
         targetVisibility = false;
         auto it = sceneAnimalMap.find(gs);
         if (it != sceneAnimalMap.end()) {
@@ -276,6 +299,18 @@ namespace NocturnalEngine {
             defaultAttributes.SetDefault();
             AnimalData da{ defaultAttributes };
             return da;
+        }
+    }
+
+    GameManager::ToyState GameManager::LoadToyState(const std::string& gs) {
+        auto it = sceneAnimalMap.find(gs);
+        if (it != sceneAnimalMap.end()) {
+            currScene = gs;
+            return it->second.toy;
+        }
+        else {
+
+            return {};
         }
     }
     /*!*************************************************************************
@@ -321,7 +356,16 @@ namespace NocturnalEngine {
             it->second = aA;
         }
     }
+    void GameManager::SaveToyState(bool hiding, int hideIndex) {
+        if (currState == GameManager::GameState::ENDING)return;
+        auto it = sceneAnimalMap.find(currScene);
 
+        //there is an older version of the aa in the thingy
+        //oh i have to rekmember to iterate this with one by default ops
+        if (it != sceneAnimalMap.end()) {
+            it->second.toy = { hiding,hideIndex };
+        }
+    }
     void GameManager::NextLevel() {
         unsigned int maxlvls = std::min(levelCount, static_cast<unsigned int>(levelConfig.GetLevels().size()));
         p_GameManager.ResetStats();
@@ -474,7 +518,22 @@ namespace NocturnalEngine {
         }
 
     }
+    bool GameManager::CheckHide(AnimalAttributes& aa)
+    {
+        if (aa.sanityDecayRate <= 0.0)aa.sanityDecayRate = 0.00000001;
 
+        if (aa.timeSinceSanity >= GetCheckPeriod() / aa.sanityDecayRate)
+        {
+            aa.timeSinceSanity = 0.f;
+
+            if (Random::Range(0, 1))
+            {
+                return true;
+
+            }
+        }
+        return false;
+    }
     Entity GameManager::GetEntityByName(const std::string name) {
         std::set<Entity> eSet{ p_ecs.GetAliveEntitiesSet() };
 
@@ -482,7 +541,7 @@ namespace NocturnalEngine {
         {
             if (p_ecs.HaveComponent<NameTag>(e) && p_ecs.GetComponent<NameTag>(e).GetNameTag() == name) return e;
         }
-        return 0;
+        return MAX_ENTITIES;
     }
 
     void GameManager::SetSceneToSwitch( std::string seekScene ){
