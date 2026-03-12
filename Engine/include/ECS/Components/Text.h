@@ -71,6 +71,8 @@ namespace NocturnalEngine
 
         int& Get_TEXT_type() { return TEXT_type; }
         void Set_TEXT_type(int enum_text_type) { TEXT_type = enum_text_type; }
+        static const int& Get_current_index() { return current_index; }
+        static int& Set_current_index(int input_index) { return current_index = input_index; }
 
     private:
         int TEXT_type;

@@ -6,7 +6,7 @@ NocturnalEngine::TutorialAttributes::TutorialAttributes() : tutorial_order{  } {
 
 bool NocturnalEngine::TutorialAttributes::ToEditor() {
     if (ImGui::CollapsingHeader("Level Attributes", ImGuiTreeNodeFlags_None)) {
-        ImGui::DragInt("tutorial order", &tutorial_order, 1, 0, 100);
+        ImGui::DragInt("tutorial order", &tutorial_order, 1, 0, 1000);
         return false;
     }
 }

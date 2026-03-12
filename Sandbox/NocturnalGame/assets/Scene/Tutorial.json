@@ -137,23 +137,21 @@
                 },
                 {
                     "Component": "Sprite",
-                    "TextureName": "Characters/flamingo_angry",
-                    "Index_X": 4,
+                    "TextureName": "Characters/flamingo_idle",
+                    "Index_X": 2,
                     "Index_Y": 0,
                     "Ucoordinates": 528.0,
                     "Vcoordinates": 528.0,
                     "IsSpriteSheet": true,
                     "IsAnimated": true,
-                    "MaxIndex": 5,
+                    "MaxIndex": 3,
                     "DisplayTime 0": 1.2999999523162842,
                     "DisplayTime 1": 1.2999999523162842,
                     "DisplayTime 2": 1.2999999523162842,
-                    "DisplayTime 3": 1.2999999523162842,
-                    "DisplayTime 4": 1.2999999523162842,
                     "LayeringOrder": 1,
                     "StateManagerEnabled": true,
                     "StatePreviewInEditor": false,
-                    "StatePreviewMode": 4,
+                    "StatePreviewMode": 1,
                     "AnimationStates": [
                         {
                             "Name": "Idle",
@@ -195,9 +193,8 @@
                 },
                 {
                     "Component": "Logic",
-                    "0": "AnimalLogic",
-                    "1": "PainSpotDuplicateSpawner",
-                    "ScriptCount": 2
+                    "0": "TutorialLogic",
+                    "ScriptCount": 1
                 },
                 {
                     "Component": "Draggable",
@@ -427,9 +424,7 @@
                 },
                 {
                     "Component": "Logic",
-                    "0": "DragAndDrop",
-                    "1": "ToyHideAndRevealOnClick",
-                    "ScriptCount": 2
+                    "ScriptCount": 0
                 },
                 {
                     "Component": "ItemsAttributes",
@@ -673,8 +668,7 @@
                 },
                 {
                     "Component": "Logic",
-                    "0": "TimerDisplay",
-                    "ScriptCount": 1
+                    "ScriptCount": 0
                 },
                 {
                     "Component": "Text",
@@ -895,8 +889,7 @@
                 },
                 {
                     "Component": "Logic",
-                    "0": "DigeticLog",
-                    "ScriptCount": 1
+                    "ScriptCount": 0
                 },
                 {
                     "Component": "Text",
@@ -1500,8 +1493,7 @@
                 },
                 {
                     "Component": "Logic",
-                    "0": "encryptionkey",
-                    "ScriptCount": 1
+                    "ScriptCount": 0
                 }
             ]
         },
@@ -1522,8 +1514,7 @@
                 },
                 {
                     "Component": "Logic",
-                    "0": "KeysCollectedDisplay",
-                    "ScriptCount": 1
+                    "ScriptCount": 0
                 },
                 {
                     "Component": "Text",
@@ -1591,14 +1582,34 @@
                     "text type": 1,
                     "Content": "",
                     "Array of Content": [
-                        "Here is the animal that you \nare supposed to take care of!!!",
+                        "Here is the flamingo that you \nare supposed to take care of!!!",
+                        "You need to observe the current state of the \nanimal so that you know the proper way to \ntake care of them",
+                        "right now the animal is in IDLE state, \nmeans that no extra care is needed \nfor the animal currently",
+                        "right now the animal is in HUNGRY state, \nmeans that you should feed the flamingo now!!!",
                         "You are supposed to drag this food to feed the\nanimal if it seemed like hungry",
-                        "You are supposed to drag this injection to heal the\nanimal if it seemed like injured",
-                        "Here is the timer that indicates how long\nyou have been worked",
+                        "right now the animal is in SICK state, \nmeans that you should cure the flamingo now!!!",
+                        "The red dot which is the painspot is appeared \non the animal. You are supposed to click and drag this \ninjection to inject on the red dot to heal the\nanimal if it seemed like sicked",
+                        "right now the animal is in ANGRY state as it \nhas been a long time that it cannot find its \ntoy to entertain itself, so now you should \nfind the toy that is hidden behind the scene to\ncalm it down!!!",
+                        "Looks! You have successfully find the toy that\nis hidden behind the scene and the flamingo does\nnot look angry anymore. In a real game scenario,\nyou have to observe where is the possible place\nthat the toy could be hidden inside and click on\nsuspicious spots to reveal the toy",
+                        "Here is the log entry that gives clues about\nthe current status of the animal. You\ncan infer from the log info whether the animal\nis IDLE/HUNGRY/SICKED/ANGRY state!!!",
+                        "Here is the timer that indicates how long\nyou have been worked since the start of the game.",
                         "You can click on the button on the right side\nto switch between different scenes",
-                        "Here is the log entry that gives clues about\nthe status of the current scene's animal. You\ncan infer from the log info whether the animal\nis hungry/injured/unhappy"
+                        "This number indicates how many secret keys you\nhave been revealed since the start of the game.\nThe game can be looked entirely different depends on how\nmany secret keys are found. All the keys are\nhidden behind the scene as well like how the toy\nworks for the game but they are more hard to be found.",
+                        "Congratulations!!! You have successfully complete\nthe tutorial level. Now you can move onto to\nthe actual gameplay level!!! ENJOY AND REMEMEBER\nTHE SECRET KEYS!!!"
                     ],
                     "Vector of text position": [
+                        [
+                            -0.699999988079071,
+                            0.30000001192092896
+                        ],
+                        [
+                            -0.699999988079071,
+                            0.30000001192092896
+                        ],
+                        [
+                            -0.699999988079071,
+                            0.30000001192092896
+                        ],
                         [
                             -0.699999988079071,
                             0.30000001192092896
@@ -1608,23 +1619,43 @@
                             -0.47999998927116394
                         ],
                         [
-                            -1.100000023841858,
-                            -0.3700000047683716
+                            -0.75,
+                            0.38999998569488525
                         ],
                         [
-                            -1.1299999952316284,
-                            0.7599999904632568
+                            -0.41999998688697815,
+                            -0.6700000166893005
                         ],
                         [
-                            -0.550000011920929,
-                            -0.009999999776482582
+                            -0.7300000190734863,
+                            0.5
                         ],
                         [
-                            0.6399999856948853,
-                            0.14000000059604645
+                            0.0,
+                            -0.11999999731779099
+                        ],
+                        [
+                            0.6200000047683716,
+                            0.09000000357627869
+                        ],
+                        [
+                            -1.559999942779541,
+                            0.6399999856948853
+                        ],
+                        [
+                            -0.6200000047683716,
+                            0.2199999988079071
+                        ],
+                        [
+                            -0.6399999856948853,
+                            0.6600000262260437
+                        ],
+                        [
+                            -0.7200000286102295,
+                            0.3199999928474426
                         ]
                     ],
-                    "Font": "KernlGrotesk",
+                    "Font": "ChauPhilomeneOne-Regular",
                     "Size": 32.0,
                     "ColorR": 1.0,
                     "ColorG": 1.0,
@@ -1637,6 +1668,10 @@
                     "WorldSpace": false,
                     "Center": false,
                     "LayeringOrder": 0
+                },
+                {
+                    "Component": "TutorialAttributes",
+                    "tutorial_order": 357
                 }
             ]
         }

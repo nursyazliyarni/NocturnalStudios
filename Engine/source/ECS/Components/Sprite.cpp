@@ -64,6 +64,14 @@ namespace NocturnalEngine {
 				ImGui::EndCombo();
 			}
 
+			if (SPRITE_type == sprite_type::texture) {
+
+			}
+
+			else { //shape
+
+			}
+
 			changed |= ImGui::Checkbox("SpriteSheet", &is_SpriteSheet); ImGui::SameLine();
 			changed |= ImGui::Checkbox("Animation", &is_Animated);
 			
