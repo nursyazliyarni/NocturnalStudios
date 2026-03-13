@@ -1,3 +1,18 @@
+/*!------------------------------------------------------------------------------------------------
+    File: TutorialAttributes.cpp
+    Project: NocturnalStudio
+
+    Brief:
+        This file handles the data needed for TutorialAttribute component for specific entity
+
+    Primary Author:
+         ANG YU XUAN(100%)
+        - Created functions to serialize and deserialize the data for for TutorialAttribute component
+
+
+    All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
+
 #include "pch.h"
 #include "ECS/Components/TutorialAttributes.h"
 #include <imgui.h>

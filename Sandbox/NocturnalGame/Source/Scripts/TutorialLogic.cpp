@@ -1,3 +1,18 @@
+/*!------------------------------------------------------------------------------------------------
+	File: TutorialLogic.cpp
+	Project: NocturnalStudio
+
+	Brief:
+		This file handles the gameplay tutorial for tutorial.json
+
+	Primary Author:
+		 ANG YU XUAN(100%)
+		- Created functions to handles the gameplay tutorial logic
+
+
+	All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
+
 #include "pch.h"
 #include "Scripts/TutorialLogic.h"
 #include "ECS/ECS.h"
@@ -42,7 +57,7 @@ namespace NocturnalEngine {
 				sprite.GetTexture() = sprite.stateRules[3].textureKey; break;
 			case 8: //angry
 				sprite.GetTexture() = sprite.stateRules[3].textureKey; break;
-			default: sprite.GetTexture() = sprite.stateRules[0].textureKey; break;
+			default: sprite.GetTexture() = sprite.stateRules[0].textureKey; break; //idle
 			}
 		}
 	}
