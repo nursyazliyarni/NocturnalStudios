@@ -1753,41 +1753,6 @@
                     "NameTag": "gameplay_tutorial"
                 },
                 {
-                    "Component": "Sprite",
-                    "shape/texture": 1,
-                    "shape type": 0,
-                    "circle radius": 0.0,
-                    "RGBA": [
-                        1.0,
-                        1.0,
-                        1.0,
-                        1.0
-                    ],
-                    "TextureName": "Blank",
-                    "Index_X": 0,
-                    "Index_Y": 0,
-                    "Ucoordinates": 512.0,
-                    "Vcoordinates": 512.0,
-                    "IsSpriteSheet": false,
-                    "IsAnimated": false,
-                    "MaxIndex": 0,
-                    "LayeringOrder": 0,
-                    "StateManagerEnabled": false,
-                    "StatePreviewInEditor": false,
-                    "StatePreviewMode": 0,
-                    "AnimationStates": [
-                        {
-                            "Name": "Idle",
-                            "Texture": "",
-                            "Source": 3,
-                            "Compare": 0,
-                            "Threshold": 0.0,
-                            "Priority": -100,
-                            "Enabled": true
-                        }
-                    ]
-                },
-                {
                     "Component": "Logic",
                     "0": "TutorialLogic",
                     "ScriptCount": 1

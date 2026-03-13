@@ -59,6 +59,5 @@ namespace NocturnalEngine
 		virtual Entity& GetScriptEntityID() override { return entityID; }
 
 	private:
-
 	};
 }

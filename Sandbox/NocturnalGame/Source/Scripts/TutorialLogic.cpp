@@ -14,21 +14,36 @@ namespace NocturnalEngine {
 	void TutorialLogic::Update(float Frametime)
 	{
 		UNREFERENCED_PARAMETER(Frametime);
-		static unsigned int current_index{ 0 };
+		static int tutorial_current_index{ 0 };
+
 		if (p_ecs.HaveComponent<Text>(entityID)) {
 			auto& text{ p_ecs.GetComponent<Text>(entityID) };
+
 			if (InputSystem::GetInstance()->MousePressed(0)&&!text.GET_mContent_array().empty()) {
 				text.GET_mContent_array().erase(text.GET_mContent_array().begin());
 				text.GET_position_vector().erase(text.GET_position_vector().begin());
-				current_index++;
+				tutorial_current_index++;
 			}
 		}
 
 		if (p_ecs.HaveComponent<Sprite>(entityID)) {
-			
 			auto& sprite{ p_ecs.GetComponent<Sprite>(entityID) };
 			//idle,hungry,sick,angry(4 states for animal)
-			//sprite.GetTexture() = sprite.stateRules[3].textureKey;
+			switch (tutorial_current_index) {
+			case 3: //hungry
+				sprite.GetTexture() = sprite.stateRules[1].textureKey; break;
+			case 4: //hungry
+				sprite.GetTexture() = sprite.stateRules[1].textureKey; break;
+			case 5: //sick
+				sprite.GetTexture() = sprite.stateRules[2].textureKey; break;
+			case 6: //sick
+				sprite.GetTexture() = sprite.stateRules[2].textureKey; break;
+			case 7: //angry
+				sprite.GetTexture() = sprite.stateRules[3].textureKey; break;
+			case 8: //angry
+				sprite.GetTexture() = sprite.stateRules[3].textureKey; break;
+			default: sprite.GetTexture() = sprite.stateRules[0].textureKey; break;
+			}
 		}
 	}
 
