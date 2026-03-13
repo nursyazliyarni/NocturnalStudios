@@ -27,6 +27,10 @@ namespace NocturnalEngine {
         //ItemsAttributes
         RegisterGameComponentInECS<ItemsAttributes>();
         RegisterComponent<ItemsAttributes>("ItemsAttributes");
+        //TutorialAttributes
+        RegisterGameComponentInECS<TutorialAttributes>();
+        RegisterComponent<TutorialAttributes>("TutorialAttributes");
+
         //ButtonComponent
         RegisterGameComponentInECS<ButtonComponent>();
         RegisterComponent<ButtonComponent>("ButtonComponent");

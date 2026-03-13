@@ -91,10 +91,16 @@ namespace NocturnalEngine {
 		std::vector<AnimationStateRule> stateRules{};
 		//altas 
 	private:
+		int SPRITE_type;
 		std::string mTextureName;
 		vec2D mUVcooridnates;
 		float mAlpha;
 		int MaxIndex_X;
 		std::vector<float>displayTime;
+
+		enum sprite_type {
+			texture, shape, sprite_type_count
+		};
+		const char* sprite_type_ToString(int enum_sprite_type);
 	};
 }

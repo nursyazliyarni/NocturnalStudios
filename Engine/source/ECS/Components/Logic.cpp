@@ -20,6 +20,7 @@
 #include "System/ServiceLocator.h"
 #include "Scripts/IScriptRegistry.h"
 #include <imgui.h>
+#include "LevelEditor/LevelEditor.h"
 
 
 
@@ -71,10 +72,11 @@ namespace NocturnalEngine
 				}
 				if (can_addScript == true)
 				{
-					if (scriptRegistry->CanAttachScript(scriptNames[current_script], entityID)) {
+					if (scriptRegistry->CanAttachScript(scriptNames[current_script], LevelEditor::GetInstance()->selectedEntity)) {
 						IScript* script = scriptRegistry->CreateScript(scriptNames[current_script]);
 						if (script) {
-							InsertScript(script, entityID);
+							InsertScript(script, LevelEditor::GetInstance()->selectedEntity);
+							//InsertScript(script, entityID);
 							changed = true;
 						}
 					}
@@ -204,6 +206,7 @@ Deserialize for Logic Component
 		int i = 0;
 		for (i = 0; i < mScriptNameVector.size(); ++i)
 		{
+
 			writer->Key(std::to_string(i).c_str());
 			writer->String(mScriptNameVector[i].c_str());
 		}

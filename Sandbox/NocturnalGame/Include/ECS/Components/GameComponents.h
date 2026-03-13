@@ -16,8 +16,10 @@
 
 #include "AnimalAttributes.h"
 #include "ItemsAttributes.h"
+#include "TutorialAttributes.h"
 #include "ButtonComponent.h"
 
 #define C_AnimalAttributesComponent NocturnalEngine::AnimalAttributes::AnimalAttributes()
 #define C_ItemsAttributesComponent NocturnalEngine::ItemsAttributes::ItemsAttributes()
+#define C_TutorialAttributesComponent NocturnalEngine::TutorialAttributes::TutorialAttributes()
 #define C_ButtonComponent NocturnalEngine::ButtonComponent::ButtonComponent()

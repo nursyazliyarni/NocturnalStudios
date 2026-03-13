@@ -86,7 +86,7 @@
                     },
                     "AudioArrCount": 1,
                     "BGM Volume": 1.0,
-                    "SFX Volume": 0.578000009059906,
+                    "SFX Volume": 1.0,
                     "Master Volume": 1.0,
                     "RandomFromArray": false,
                     "Effects": {
@@ -169,7 +169,7 @@
                     "IsSpriteSheet": false,
                     "IsAnimated": false,
                     "MaxIndex": 0,
-                    "LayeringOrder": 1,
+                    "LayeringOrder": 3,
                     "StateManagerEnabled": false,
                     "StatePreviewInEditor": false,
                     "StatePreviewMode": 0,
@@ -305,7 +305,7 @@
                     },
                     "AudioArrCount": 5,
                     "BGM Volume": 1.0,
-                    "SFX Volume": 0.578000009059906,
+                    "SFX Volume": 1.0,
                     "Master Volume": 1.0,
                     "RandomFromArray": true,
                     "Effects": {
@@ -339,7 +339,10 @@
                 },
                 {
                     "Component": "Text",
+                    "text type": 0,
                     "Content": "1",
+                    "Array of Content": [],
+                    "Vector of text position": [],
                     "Font": "ChauPhilomeneOne-Regular",
                     "Size": 32.5,
                     "ColorR": 0.0,
@@ -351,7 +354,8 @@
                     "Rotation": 0.0,
                     "Line Height": 0,
                     "WorldSpace": false,
-                    "Center": false
+                    "Center": false,
+                    "LayeringOrder": 0
                 },
                 {
                     "Component": "ButtonComponent",
@@ -475,7 +479,7 @@
                     },
                     "AudioArrCount": 5,
                     "BGM Volume": 1.0,
-                    "SFX Volume": 0.578000009059906,
+                    "SFX Volume": 1.0,
                     "Master Volume": 1.0,
                     "RandomFromArray": true,
                     "Effects": {
@@ -509,7 +513,10 @@
                 },
                 {
                     "Component": "Text",
+                    "text type": 0,
                     "Content": "2",
+                    "Array of Content": [],
+                    "Vector of text position": [],
                     "Font": "ChauPhilomeneOne-Regular",
                     "Size": 32.5,
                     "ColorR": 0.0,
@@ -521,7 +528,8 @@
                     "Rotation": 0.0,
                     "Line Height": 0,
                     "WorldSpace": false,
-                    "Center": false
+                    "Center": false,
+                    "LayeringOrder": 0
                 },
                 {
                     "Component": "ButtonComponent",
@@ -645,7 +653,7 @@
                     },
                     "AudioArrCount": 5,
                     "BGM Volume": 1.0,
-                    "SFX Volume": 0.578000009059906,
+                    "SFX Volume": 1.0,
                     "Master Volume": 1.0,
                     "RandomFromArray": true,
                     "Effects": {
@@ -679,7 +687,10 @@
                 },
                 {
                     "Component": "Text",
+                    "text type": 0,
                     "Content": "4",
+                    "Array of Content": [],
+                    "Vector of text position": [],
                     "Font": "ChauPhilomeneOne-Regular",
                     "Size": 32.5,
                     "ColorR": 0.0,
@@ -691,7 +702,8 @@
                     "Rotation": 0.0,
                     "Line Height": 0,
                     "WorldSpace": false,
-                    "Center": false
+                    "Center": false,
+                    "LayeringOrder": 0
                 },
                 {
                     "Component": "ButtonComponent",
@@ -815,7 +827,7 @@
                     },
                     "AudioArrCount": 5,
                     "BGM Volume": 1.0,
-                    "SFX Volume": 0.578000009059906,
+                    "SFX Volume": 1.0,
                     "Master Volume": 1.0,
                     "RandomFromArray": true,
                     "Effects": {
@@ -874,7 +886,7 @@
                     "IsSpriteSheet": false,
                     "IsAnimated": false,
                     "MaxIndex": 0,
-                    "LayeringOrder": 1,
+                    "LayeringOrder": 6,
                     "StateManagerEnabled": false,
                     "StatePreviewInEditor": false,
                     "StatePreviewMode": 0,
@@ -953,9 +965,73 @@
                     ]
                 },
                 {
+                    "Component": "Audio",
+                    "0": {
+                        "AudioPath": "Item_Grab_v1.wav",
+                        "Channel": 3,
+                        "IsLooping": false
+                    },
+                    "AudioArrCount": 1,
+                    "BGM Volume": 1.0,
+                    "SFX Volume": 1.0,
+                    "Master Volume": 1.0,
+                    "RandomFromArray": false,
+                    "Effects": {
+                        "LowpassEnabled": false,
+                        "LowpassCutoff": 5000.0,
+                        "LowpassResonance": 1.0,
+                        "HighpassEnabled": false,
+                        "HighpassCutoff": 10.0,
+                        "HighpassResonance": 1.0,
+                        "EchoEnabled": false,
+                        "EchoDelay": 500.0,
+                        "EchoFeedback": 50.0,
+                        "EchoDryLevel": 0.0,
+                        "EchoWetLevel": -6.0,
+                        "ReverbEnabled": false,
+                        "ReverbDecayTime": 1500.0,
+                        "ReverbEarlyDelay": 7.0,
+                        "ReverbLateDelay": 11.0,
+                        "ReverbHFReference": 5000.0,
+                        "ReverbDiffusion": 100.0,
+                        "ReverbDensity": 100.0,
+                        "ReverbWetLevel": -6.0,
+                        "ReverbDryLevel": 0.0
+                    }
+                },
+                {
                     "Component": "Logic",
                     "0": "DragAndDrop",
-                    "ScriptCount": 1
+                    "1": "AudioManager",
+                    "2": "ButtonResponse",
+                    "ScriptCount": 3
+                },
+                {
+                    "Component": "ButtonComponent",
+                    "GoToSceneFlag": false,
+                    "GoToScene": "",
+                    "AudioOnHoverFlag": false,
+                    "AudioOnHoverRandom": false,
+                    "HoverAudioIndex": 0,
+                    "AudioOnClickFlag": true,
+                    "AudioOnClickRandom": false,
+                    "ClickAudioIndex": 0,
+                    "TexChangeOnHoverFlag": false,
+                    "TexChangeOnHover": "",
+                    "TexChangeOnClickFlag": false,
+                    "TexChangeOnClick": "",
+                    "ScaleOnHoverFlag": false,
+                    "ScaleOnHover": 0.0,
+                    "SetGameStateFlag": false,
+                    "SetGameState": "STARTING",
+                    "ResetStatsFlag": false,
+                    "NextLevelFlag": false,
+                    "SetCameraZoomFlag": false,
+                    "SetCameraZoom": 0.0,
+                    "MuteAudioFlag": false,
+                    "AltSceneSwitchFlag": false,
+                    "AltSceneSwitch": "",
+                    "ExitGameFlag": false
                 },
                 {
                     "Component": "ItemsAttributes",
@@ -1026,9 +1102,73 @@
                     ]
                 },
                 {
+                    "Component": "Audio",
+                    "0": {
+                        "AudioPath": "Item_Grab_v1.wav",
+                        "Channel": 3,
+                        "IsLooping": false
+                    },
+                    "AudioArrCount": 1,
+                    "BGM Volume": 1.0,
+                    "SFX Volume": 1.0,
+                    "Master Volume": 1.0,
+                    "RandomFromArray": false,
+                    "Effects": {
+                        "LowpassEnabled": false,
+                        "LowpassCutoff": 5000.0,
+                        "LowpassResonance": 1.0,
+                        "HighpassEnabled": false,
+                        "HighpassCutoff": 10.0,
+                        "HighpassResonance": 1.0,
+                        "EchoEnabled": false,
+                        "EchoDelay": 500.0,
+                        "EchoFeedback": 50.0,
+                        "EchoDryLevel": 0.0,
+                        "EchoWetLevel": -6.0,
+                        "ReverbEnabled": false,
+                        "ReverbDecayTime": 1500.0,
+                        "ReverbEarlyDelay": 7.0,
+                        "ReverbLateDelay": 11.0,
+                        "ReverbHFReference": 5000.0,
+                        "ReverbDiffusion": 100.0,
+                        "ReverbDensity": 100.0,
+                        "ReverbWetLevel": -6.0,
+                        "ReverbDryLevel": 0.0
+                    }
+                },
+                {
                     "Component": "Logic",
                     "0": "RevealTargetOnClick",
-                    "ScriptCount": 1
+                    "1": "AudioManager",
+                    "2": "ButtonResponse",
+                    "ScriptCount": 3
+                },
+                {
+                    "Component": "ButtonComponent",
+                    "GoToSceneFlag": false,
+                    "GoToScene": "",
+                    "AudioOnHoverFlag": false,
+                    "AudioOnHoverRandom": false,
+                    "HoverAudioIndex": 0,
+                    "AudioOnClickFlag": true,
+                    "AudioOnClickRandom": false,
+                    "ClickAudioIndex": 0,
+                    "TexChangeOnHoverFlag": false,
+                    "TexChangeOnHover": "",
+                    "TexChangeOnClickFlag": false,
+                    "TexChangeOnClick": "",
+                    "ScaleOnHoverFlag": false,
+                    "ScaleOnHover": 0.0,
+                    "SetGameStateFlag": false,
+                    "SetGameState": "STARTING",
+                    "ResetStatsFlag": false,
+                    "NextLevelFlag": false,
+                    "SetCameraZoomFlag": false,
+                    "SetCameraZoom": 0.0,
+                    "MuteAudioFlag": false,
+                    "AltSceneSwitchFlag": false,
+                    "AltSceneSwitch": "",
+                    "ExitGameFlag": false
                 },
                 {
                     "Component": "ItemsAttributes",
@@ -1043,8 +1183,8 @@
             "Components": [
                 {
                     "Component": "Transform",
-                    "posX": -0.17580176889896393,
-                    "posY": -0.09465217590332031,
+                    "posX": -0.6565354466438293,
+                    "posY": -0.21084928512573242,
                     "scaleX": 0.3499999940395355,
                     "scaleY": 0.3499999940395355,
                     "Rot": 0.0
@@ -1082,7 +1222,7 @@
                     "IsSpriteSheet": false,
                     "IsAnimated": false,
                     "MaxIndex": 0,
-                    "LayeringOrder": 2,
+                    "LayeringOrder": 6,
                     "StateManagerEnabled": false,
                     "StatePreviewInEditor": false,
                     "StatePreviewMode": 0,
@@ -1100,9 +1240,8 @@
                 },
                 {
                     "Component": "Logic",
-                    "0": "DragAndDrop",
-                    "1": "ToyHideAndRevealOnClick",
-                    "ScriptCount": 2
+                    "0": "ToyHideAndRevealOnClick",
+                    "ScriptCount": 1
                 },
                 {
                     "Component": "ItemsAttributes",
@@ -1425,7 +1564,10 @@
                 },
                 {
                     "Component": "Text",
+                    "text type": 0,
                     "Content": "00:00:00",
+                    "Array of Content": [],
+                    "Vector of text position": [],
                     "Font": "DSEG7Classic-Bold",
                     "Size": 35.29999923706055,
                     "ColorR": 0.0,
@@ -1437,7 +1579,8 @@
                     "Rotation": 0.0,
                     "Line Height": 0,
                     "WorldSpace": true,
-                    "Center": false
+                    "Center": false,
+                    "LayeringOrder": 0
                 }
             ]
         },
@@ -1458,7 +1601,10 @@
                 },
                 {
                     "Component": "Text",
+                    "text type": 0,
                     "Content": "HORSE",
+                    "Array of Content": [],
+                    "Vector of text position": [],
                     "Font": "ChauPhilomeneOne-Regular",
                     "Size": 72.0,
                     "ColorR": 0.31651291251182556,
@@ -1470,7 +1616,8 @@
                     "Rotation": 0.0,
                     "Line Height": 50,
                     "WorldSpace": false,
-                    "Center": false
+                    "Center": false,
+                    "LayeringOrder": 0
                 }
             ]
         },
@@ -1491,7 +1638,10 @@
                 },
                 {
                     "Component": "Text",
+                    "text type": 0,
                     "Content": "Enclosure 1 - 03-00-2A",
+                    "Array of Content": [],
+                    "Vector of text position": [],
                     "Font": "ChauPhilomeneOne-Regular",
                     "Size": 36.0,
                     "ColorR": 0.31651291251182556,
@@ -1503,7 +1653,8 @@
                     "Rotation": 0.0,
                     "Line Height": 50,
                     "WorldSpace": false,
-                    "Center": false
+                    "Center": false,
+                    "LayeringOrder": 0
                 }
             ]
         },
@@ -1524,7 +1675,10 @@
                 },
                 {
                     "Component": "Text",
+                    "text type": 0,
                     "Content": "An equine that is trained for horseracing.\nUntil now, it has not won a single race.\nNeeds extra care for health.",
+                    "Array of Content": [],
+                    "Vector of text position": [],
                     "Font": "ChauPhilomeneOne-Regular",
                     "Size": 34.79999923706055,
                     "ColorR": 0.4215686321258545,
@@ -1536,7 +1690,8 @@
                     "Rotation": 0.0,
                     "Line Height": 62,
                     "WorldSpace": false,
-                    "Center": false
+                    "Center": false,
+                    "LayeringOrder": 0
                 }
             ]
         },
@@ -1570,7 +1725,7 @@
                     "IsSpriteSheet": false,
                     "IsAnimated": false,
                     "MaxIndex": 0,
-                    "LayeringOrder": 4,
+                    "LayeringOrder": 8,
                     "StateManagerEnabled": false,
                     "StatePreviewInEditor": false,
                     "StatePreviewMode": 0,
@@ -1636,7 +1791,10 @@
                 },
                 {
                     "Component": "Text",
+                    "text type": 0,
                     "Content": "[00:00:00] This is a Log entry",
+                    "Array of Content": [],
+                    "Vector of text position": [],
                     "Font": "Jersey10Charted-Regular",
                     "Size": 25.899999618530273,
                     "ColorR": 1.0,
@@ -1648,7 +1806,8 @@
                     "Rotation": 0.0,
                     "Line Height": 0,
                     "WorldSpace": true,
-                    "Center": false
+                    "Center": false,
+                    "LayeringOrder": 0
                 }
             ]
         },
@@ -1677,7 +1836,7 @@
                     "IsSpriteSheet": false,
                     "IsAnimated": false,
                     "MaxIndex": 0,
-                    "LayeringOrder": 1,
+                    "LayeringOrder": 6,
                     "StateManagerEnabled": false,
                     "StatePreviewInEditor": false,
                     "StatePreviewMode": 0,
@@ -1720,7 +1879,7 @@
                     "IsSpriteSheet": false,
                     "IsAnimated": false,
                     "MaxIndex": 0,
-                    "LayeringOrder": 1,
+                    "LayeringOrder": 6,
                     "StateManagerEnabled": false,
                     "StatePreviewInEditor": false,
                     "StatePreviewMode": 0,
@@ -1763,7 +1922,7 @@
                     "IsSpriteSheet": false,
                     "IsAnimated": false,
                     "MaxIndex": 0,
-                    "LayeringOrder": 1,
+                    "LayeringOrder": 6,
                     "StateManagerEnabled": false,
                     "StatePreviewInEditor": false,
                     "StatePreviewMode": 0,
@@ -1929,7 +2088,10 @@
                 },
                 {
                     "Component": "Text",
+                    "text type": 0,
                     "Content": "INVENTORY",
+                    "Array of Content": [],
+                    "Vector of text position": [],
                     "Font": "ChauPhilomeneOne-Regular",
                     "Size": 36.79999923706055,
                     "ColorR": 0.46666666865348816,
@@ -1941,7 +2103,8 @@
                     "Rotation": 0.0,
                     "Line Height": 0,
                     "WorldSpace": false,
-                    "Center": false
+                    "Center": false,
+                    "LayeringOrder": 0
                 }
             ]
         },
@@ -2074,7 +2237,10 @@
                 },
                 {
                     "Component": "Text",
+                    "text type": 0,
                     "Content": "3",
+                    "Array of Content": [],
+                    "Vector of text position": [],
                     "Font": "ChauPhilomeneOne-Regular",
                     "Size": 32.5,
                     "ColorR": 0.0,
@@ -2086,7 +2252,8 @@
                     "Rotation": 0.0,
                     "Line Height": 0,
                     "WorldSpace": false,
-                    "Center": false
+                    "Center": false,
+                    "LayeringOrder": 0
                 }
             ]
         },
@@ -2196,7 +2363,7 @@
                     "IsSpriteSheet": false,
                     "IsAnimated": false,
                     "MaxIndex": 0,
-                    "LayeringOrder": 2,
+                    "LayeringOrder": 7,
                     "StateManagerEnabled": false,
                     "StatePreviewInEditor": false,
                     "StatePreviewMode": 0,
@@ -2241,7 +2408,10 @@
                 },
                 {
                     "Component": "Text",
+                    "text type": 0,
                     "Content": "0/4",
+                    "Array of Content": [],
+                    "Vector of text position": [],
                     "Font": "ChauPhilomeneOne-Regular",
                     "Size": 35.29999923706055,
                     "ColorR": 0.8549019694328308,
@@ -2253,7 +2423,104 @@
                     "Rotation": 0.0,
                     "Line Height": 0,
                     "WorldSpace": true,
-                    "Center": false
+                    "Center": false,
+                    "LayeringOrder": 0
+                }
+            ]
+        },
+        {
+            "ID": 34,
+            "Components": [
+                {
+                    "Component": "Tag",
+                    "Tag": "HidingSpot",
+                    "TargetTag": ""
+                },
+                {
+                    "Component": "Transform",
+                    "posX": -0.10642213374376297,
+                    "posY": -0.04577481746673584,
+                    "scaleX": 0.8865250945091248,
+                    "scaleY": 0.7215189933776855,
+                    "Rot": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "Bush"
+                },
+                {
+                    "Component": "Sprite",
+                    "TextureName": "Environment/bush",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": false,
+                    "MaxIndex": 0,
+                    "LayeringOrder": 4,
+                    "StateManagerEnabled": false,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "ID": 35,
+            "Components": [
+                {
+                    "Component": "Tag",
+                    "Tag": "HidingSpot",
+                    "TargetTag": ""
+                },
+                {
+                    "Component": "Transform",
+                    "posX": -1.0651755332946777,
+                    "posY": 0.010654784739017487,
+                    "scaleX": 0.6363479495048523,
+                    "scaleY": 0.5179064869880676,
+                    "Rot": -5.262115478515625
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "Bush"
+                },
+                {
+                    "Component": "Sprite",
+                    "TextureName": "Environment/bush",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": false,
+                    "MaxIndex": 0,
+                    "LayeringOrder": 2,
+                    "StateManagerEnabled": false,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
                 }
             ]
         }

@@ -72,7 +72,7 @@ namespace NocturnalEngine
 		void SetAnimState(PriorityAnimation a) { anim = a; }
 
 		AnimalAttributes();
-		~AnimalAttributes() = default;
+		~AnimalAttributes() {  }
 
 		virtual bool Deserialize(const rapidjson::Value& obj);
 
@@ -112,5 +112,8 @@ namespace NocturnalEngine
 
 		int healthWarnLevel{ 0 }, hungerWarnLevel{ 0 }, sanityWarnLevel{ 0 };
 		int animInnerState{ 0 };
+
+		float timeSinceSanity{ 0.f };
+
 	};
 }

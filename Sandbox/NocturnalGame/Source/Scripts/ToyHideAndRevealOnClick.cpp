@@ -1,17 +1,32 @@
 #include "pch.h"
 #include "Scripts/ToyHideAndRevealOnClick.h"
-#include "ECS/Components/AnimalAttributes.h"
+#include "ECS/Components/ItemsAttributes.h"
 #include "ECS/Components/NameTag.h"
 #include "ECS/Components/Tag.h"
 #include "ECS/Components/Transform.h"
 #include "ECS/Components/Collider.h"
+#include "ECS/Components/Sprite.h"
 #include "GUI/GUI.h"
-#include "Math/Vmath.h"
-#include <algorithm>
-#include <cctype>
+#include "Scripts/GlobalGameManager.h"
+#include "Math/Random.h"
 
 namespace NocturnalEngine
 {
+    namespace
+    {
+        // Per-toy runtime memory:
+        // - enteredOnce: whether this toy has already been seen in this run
+        // - pendingHiddenPos: where to hide the toy the next time scene loads
+        struct ToyPersistState
+        {
+            bool enteredOnce{ false };
+            bool hasPendingHiddenPos{ false };
+            vec2D pendingHiddenPos{};
+        };
+
+        std::unordered_map<std::string, ToyPersistState> gToyState{};
+    }
+
     ToyHideAndRevealOnClick::ToyHideAndRevealOnClick()
         : mInput{ InputSystem::GetInstance().get() }
     {
@@ -19,201 +34,165 @@ namespace NocturnalEngine
 
     void ToyHideAndRevealOnClick::Start()
     {
-        // This script is attached to the Toy entity.
-        if (!p_ecs.HaveComponent<Transform>(entityID))
-            return;
+        checkPeriod = p_GameManager.GetCheckPeriod()*5.f;
 
-        auto& toyT = p_ecs.GetComponent<Transform>(entityID);
-        mOriginalScale = toyT.GetScale();
-
-        // Cache original collider so we can disable while hidden and restore on reveal.
-        if (p_ecs.HaveComponent<Collider>(entityID))
+        //find animal entity
+        for (Entity e : p_ecs.GetAliveEntitiesSet())
         {
-            mHadCollider = true;
-            mOriginalCollider = p_ecs.GetComponent<Collider>(entityID);
-        }
-
-        FindBG();
-        if (!mHasBG)
-            return;
-
-        // Pick one random hidden position bounded by Environment collider.
-        mHiddenPos = RandomPointInsideBG();
-
-        // Hide toy and move it to its hidden position.
-        toyT.SetPos(mHiddenPos.x, mHiddenPos.y);
-        toyT.SetScale(0.0f, 0.0f);
-
-        // Disable collider so hidden toy cannot be interacted with.
-        if (mHadCollider)
-        {
-            auto& c = p_ecs.GetComponent<Collider>(entityID);
-            for (int i = 0; i < 2; ++i)
+            if (p_ecs.HaveComponent<AnimalAttributes>(e))
             {
-                c[i].mRadius = 0.0f;
-                c[i].mMin = { 0.0f, 0.0f };
-                c[i].mMax = { 0.0f, 0.0f };
+                animalEntity = e;
+                continue;
+            }
+            if (p_ecs.HaveComponent<Tag>(e)&& p_ecs.GetComponent<Tag>(e).GetTag()=="HidingSpot")
+            {
+                if (p_ecs.HaveComponent<Transform>(e)&&p_ecs.HaveComponent<Sprite>(e)) hidingSpots.push_back(e);
             }
         }
 
-        mHidden = true;
+        if (animalEntity == MAX_ENTITIES) return;
+
+        AnimalAttributes& aa{ p_ecs.GetComponent<AnimalAttributes>(animalEntity) };
+
+        if (p_ecs.HaveComponent<ItemsAttributes>(entityID)) {
+            ItemsAttributes& iA{ p_ecs.GetComponent<ItemsAttributes>(entityID) };
+
+            GameManager::ToyState ts{ p_GameManager.LoadToyState(aa.WhatKindOfAnimalIsThis()) };
+
+            iA.toyIsHidden = ts.isHiding;
+            iA.hidingIndex = ts.hidingIndex;
+        }
+        if (p_ecs.HaveComponent<Transform>(entityID))ogPos = p_ecs.GetComponent<Transform>(entityID).GetPos();
+        if (p_ecs.HaveComponent<Sprite>(entityID))ogLayer = p_ecs.GetComponent<Sprite>(entityID).LayerOrder;
+       
     }
 
     void ToyHideAndRevealOnClick::Update(float dt)
     {
-        UNREFERENCED_PARAMETER(dt);
-        if (!mHasBG || !mHidden)
-            return;
+        if (!p_ecs.HaveComponent<ItemsAttributes>(entityID)) return;
+        if (!p_ecs.HaveComponent<AnimalAttributes>(animalEntity)) return;
+        if (!p_ecs.HaveComponent<Transform>(entityID)) return;
 
-        if (mInput->MousePressed(GLFW_MOUSE_BUTTON_LEFT) && IsMouseNearHiddenSpot())
-        {
-            // Reveal toy at the hidden position.
-            auto& toyT = p_ecs.GetComponent<Transform>(entityID);
-            toyT.SetPos(mHiddenPos.x, mHiddenPos.y);
-            toyT.SetScale(mOriginalScale.x, mOriginalScale.y);
+        ItemsAttributes& iA{ p_ecs.GetComponent<ItemsAttributes>(entityID) };
+        AnimalAttributes& aa{ p_ecs.GetComponent<AnimalAttributes>(animalEntity) };
+        aa.timeSinceSanity += dt;
 
-            if (mHadCollider)
-                p_ecs.GetComponent<Collider>(entityID) = mOriginalCollider;
+        if(!iA.toyIsHidden) iA.toyIsHidden = CheckHide(aa);
 
-            mHidden = false;
-        }
+        if (iA.toyIsHidden && !hasBeenHidden) iA.hidingIndex=HideToy();
+            
+        IsMouseNearHiddenSpot(iA, aa);
+
+
     }
 
     void ToyHideAndRevealOnClick::End()
     {
-        if (p_ecs.HaveComponent<Transform>(entityID))
-        {
-            auto& toyT = p_ecs.GetComponent<Transform>(entityID);
-            toyT.SetScale(mOriginalScale.x, mOriginalScale.y);
-        }
-        if (mHadCollider && p_ecs.HaveComponent<Collider>(entityID))
-            p_ecs.GetComponent<Collider>(entityID) = mOriginalCollider;
+        if (!p_ecs.HaveComponent<ItemsAttributes>(entityID)) return;
+
+        ItemsAttributes& iA{ p_ecs.GetComponent<ItemsAttributes>(entityID) };
+        p_GameManager.SaveToyState(iA.toyIsHidden, iA.hidingIndex);
     }
 
-    void ToyHideAndRevealOnClick::FindBG()
+    bool ToyHideAndRevealOnClick::CheckHide(AnimalAttributes& aa)
     {
-        mBG = 0;
-        mHasBG = false;
+        if (aa.sanityDecayRate <= 0.0)aa.sanityDecayRate = 0.00000001;
 
-        // Use explicit Environment object bounds (requires Transform + Collider).
-        for (Entity e : p_ecs.GetAliveEntitiesSet())
+        if (aa.timeSinceSanity>=checkPeriod/aa.sanityDecayRate)
         {
-            if (!p_ecs.HaveComponent<NameTag>(e) || !p_ecs.HaveComponent<Transform>(e) || !p_ecs.HaveComponent<Collider>(e))
-                continue;
+            aa.timeSinceSanity = 0.f;
 
-            std::string tag = p_ecs.GetComponent<NameTag>(e).GetNameTag();
-            for (char& ch : tag)
-                ch = static_cast<char>(std::tolower(static_cast<unsigned char>(ch)));
-
-            if (tag.find("environment") != std::string::npos)
+            if (Random::Range(0,1))
             {
-                mBG = e;
-                mHasBG = true;
-                return;
+                return true;
+
+            }
+        }
+        return false;
+    }
+
+    int ToyHideAndRevealOnClick::HideToy()
+    {
+        int hideIndex{ 0 };
+
+        Transform& itemTransform{ p_ecs.GetComponent<Transform>(entityID) };
+        if (!hidingSpots.empty())
+        {
+            hideIndex = Random::Range(0, static_cast<int>(hidingSpots.size()) - 1);
+            
+            Transform& hidingTransform{ p_ecs.GetComponent<Transform>(hidingSpots[hideIndex]) };
+            Sprite& hidingSprite{ p_ecs.GetComponent<Sprite>(hidingSpots[hideIndex]) }, &itemSprite{ p_ecs.GetComponent<Sprite>(entityID) };
+            
+            int hidingLayer = hidingSprite.LayerOrder > 1 ? hidingSprite.LayerOrder - 1: 1;
+            itemSprite.SetLayerOrder(hidingLayer);
+            itemTransform.SetPos(hidingTransform.GetPos());
+            
+            itemTransform.MoveY(-1.f * hidingTransform.GetScale().y / 6.f);
+            itemTransform.MoveX(-1.f*hidingTransform.GetScale().x / 2.f+Random::Range(0.f, hidingTransform.GetScale().x / 8.f));
+
+        }
+        //std::cout << "toy hidden\n";
+        hasBeenHidden = true;
+
+        return hideIndex;
+    }
+
+
+    void ToyHideAndRevealOnClick::IsMouseNearHiddenSpot(ItemsAttributes& iA, AnimalAttributes& aa)
+    {
+        if (mInput->MousePressed(0) && p_ecs.HaveComponent<Transform>(entityID)) {
+            vec2D mPos{ p_GUI->MousePosition.x,p_GUI->MousePosition.y };
+            Transform& t = p_ecs.GetComponent<Transform>(entityID);
+
+            if (p_ecs.HaveComponent<Collider>(entityID))
+            {
+                Collider& c = p_ecs.GetComponent<Collider>(entityID);
+                for (int i = 0; i < 2; i++)
+                {
+                    vec2D offsetPos{ t.GetPos().x + c[i].mOffset.x ,t.GetPos().y + c[i].mOffset.y };
+                    switch (c[i].mCol)
+                    {
+                    case Collider::ColliderType::circle:
+                    case Collider::ColliderType::bubble:
+                        if (distance(mPos, offsetPos) < c[i].mRadius) {
+                            
+                            ResetThing(iA, aa, t, p_ecs.GetComponent<Sprite>(entityID));
+                        }
+                        break;
+                    case Collider::ColliderType::rect:
+                    case Collider::ColliderType::box:
+                        vec2D minPt{ offsetPos.x - c[i].mMin.x,offsetPos.y - c[i].mMin.y }, maxPt{ offsetPos.x + c[i].mMax.x,offsetPos.y + c[i].mMax.y };
+                        if (mPos.x > minPt.x && mPos.x<maxPt.x && mPos.y>minPt.y && mPos.y < maxPt.y)
+                        {
+                            ResetThing(iA, aa, t, p_ecs.GetComponent<Sprite>(entityID));
+
+                        }
+                        break;
+                    }
+                }
+
+            }
+            else
+            {
+
+
+                if (mPos.x > t.GetMinPos().x && mPos.x < t.GetMaxPos().x &&
+                    mPos.y>t.GetMinPos().y && mPos.y < t.GetMaxPos().y)
+                {
+                    ResetThing(iA, aa, t, p_ecs.GetComponent<Sprite>(entityID));
+
+
+                }
             }
         }
     }
 
-    vec2D ToyHideAndRevealOnClick::RandomPointInsideBG()
-    {
-        auto& bgT = p_ecs.GetComponent<Transform>(mBG);
-        auto& bgCol = p_ecs.GetComponent<Collider>(mBG)[0];
-        const vec2D toyHalf = GetToyHalfExtents();
+    void ToyHideAndRevealOnClick::ResetThing(ItemsAttributes& iA, AnimalAttributes& aa,Transform& t, Sprite& s){
+        iA.toyIsHidden = false;
+        hasBeenHidden = false;
+        aa.timeSinceSanity = -10.f;
 
-        // Start with transform bounds as fallback.
-        vec2D minP = bgT.GetMinPos();
-        vec2D maxP = bgT.GetMaxPos();
-
-        // Prefer collider bounds for environment area.
-        if (bgCol.mCol == Collider::ColliderType::rect || bgCol.mCol == Collider::ColliderType::box)
-        {
-            const vec2D center{ bgT.GetPos().x + bgCol.mOffset.x, bgT.GetPos().y + bgCol.mOffset.y };
-            minP = { center.x - bgCol.mMin.x, center.y - bgCol.mMin.y };
-            maxP = { center.x + bgCol.mMax.x, center.y + bgCol.mMax.y };
-        }
-        else if (bgCol.mCol == Collider::ColliderType::circle ||
-                 bgCol.mCol == Collider::ColliderType::bubble ||
-                 bgCol.mCol == Collider::ColliderType::bossball)
-        {
-            const vec2D center{ bgT.GetPos().x + bgCol.mOffset.x, bgT.GetPos().y + bgCol.mOffset.y };
-            minP = { center.x - bgCol.mRadius, center.y - bgCol.mRadius };
-            maxP = { center.x + bgCol.mRadius, center.y + bgCol.mRadius };
-        }
-
-        // Shrink by toy half-size so full toy stays inside bounds.
-        minP.x += toyHalf.x;
-        minP.y += toyHalf.y;
-        maxP.x -= toyHalf.x;
-        maxP.y -= toyHalf.y;
-
-        if (maxP.x <= minP.x)
-        {
-            const float mid = (minP.x + maxP.x) * 0.5f;
-            minP.x = maxP.x = mid;
-        }
-        if (maxP.y <= minP.y)
-        {
-            const float mid = (minP.y + maxP.y) * 0.5f;
-            minP.y = maxP.y = mid;
-        }
-
-        std::uniform_real_distribution<float> distX(minP.x, maxP.x);
-        std::uniform_real_distribution<float> distY(minP.y, maxP.y);
-        vec2D candidate{ distX(mRng), distY(mRng) };
-
-        // For circular environment collider, reject candidates outside allowed circle.
-        if (bgCol.mCol == Collider::ColliderType::circle ||
-            bgCol.mCol == Collider::ColliderType::bubble ||
-            bgCol.mCol == Collider::ColliderType::bossball)
-        {
-            const vec2D center{ bgT.GetPos().x + bgCol.mOffset.x, bgT.GetPos().y + bgCol.mOffset.y };
-            const float toyRadius = std::max(toyHalf.x, toyHalf.y);
-            const float allowedRadius = std::max(0.0f, bgCol.mRadius - toyRadius);
-
-            for (int i = 0; i < 12; ++i)
-            {
-                if (distance(candidate, center) <= allowedRadius)
-                    return candidate;
-                candidate = { distX(mRng), distY(mRng) };
-            }
-            return center;
-        }
-
-        return candidate;
-    }
-
-    vec2D ToyHideAndRevealOnClick::GetToyHalfExtents()
-    {
-        // Prefer collider dimensions when available.
-        if (mHadCollider)
-        {
-            const auto& c = mOriginalCollider[0];
-
-            if (c.mCol == Collider::ColliderType::circle ||
-                c.mCol == Collider::ColliderType::bubble ||
-                c.mCol == Collider::ColliderType::bossball)
-            {
-                const float r = std::max(c.mRadius, 0.001f);
-                return { r, r };
-            }
-
-            if (c.mCol == Collider::ColliderType::rect || c.mCol == Collider::ColliderType::box)
-            {
-                const float hx = std::max(std::max(std::abs(c.mMin.x), std::abs(c.mMax.x)), 0.001f);
-                const float hy = std::max(std::max(std::abs(c.mMin.y), std::abs(c.mMax.y)), 0.001f);
-                return { hx, hy };
-            }
-        }
-
-        // Fallback to transform scale.
-        const float hx = std::max(std::abs(mOriginalScale.x) * 0.5f, 0.001f);
-        const float hy = std::max(std::abs(mOriginalScale.y) * 0.5f, 0.001f);
-        return { hx, hy };
-    }
-
-    bool ToyHideAndRevealOnClick::IsMouseNearHiddenSpot() const
-    {
-        vec2D mouse{ p_GUI->MousePosition.x, p_GUI->MousePosition.y };
-        return distance(mouse, mHiddenPos) <= mRevealRadius;
+        t.SetPos(ogPos);
+        s.SetLayerOrder(ogLayer);
     }
 }

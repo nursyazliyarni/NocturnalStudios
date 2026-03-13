@@ -36,7 +36,7 @@ namespace NocturnalEngine
 
 		struct AttributesDecreaseChance
 		{
-			float  hunger{ 10.f }, hp{ 10.f }, sanity{ 10.f };
+			float  hunger{ 10.f }, hp{ 10.f }, sanity{ 20.f };
 		};
 		struct TimeSinceCheck {
 			float  hunger{ 0.f }, hp{ 0.f }, sanity{ 0.f };
@@ -88,6 +88,8 @@ namespace NocturnalEngine
 	private:
 		AttributesDecreaseChance chance;
 		TimeSinceCheck time;
+
+		Entity toyE{ MAX_ENTITIES };
 
 		float checkPeriod{};
 		std::string ogSpritename{};

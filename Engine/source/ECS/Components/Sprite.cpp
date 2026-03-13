@@ -23,7 +23,8 @@ namespace NocturnalEngine {
 	Ctor for Sprite Component
 	****************************************************************************/
 	Sprite::Sprite() : mTextureName("Blank"), Index({ 0,0 }), mUVcooridnates({ 512.0f, 512.0f }),
-		is_SpriteSheet(false), is_Animated(false), mAlpha(1), MaxIndex_X(0),displayTime(GetMaxIndex()), internaltimer(0), LayerOrder(0)
+		is_SpriteSheet(false), is_Animated(false), mAlpha(1), MaxIndex_X(0), displayTime(GetMaxIndex()),
+		internaltimer(0), LayerOrder(0), SPRITE_type{ texture }
 	{
 		// Provide one fallback rule so auto mode always has a valid default state.
 		AnimationStateRule idle{};
@@ -36,19 +37,45 @@ namespace NocturnalEngine {
 		stateRules.push_back(idle);
 	}
 
+	const char* Sprite::sprite_type_ToString(int enum_sprite_type) {
+		switch (enum_sprite_type) {
+		case sprite_type::texture: return "texture";
+		case sprite_type::shape: return "shape";
+		}
+	}
 
 	bool Sprite::ToEditor() {
 		bool changed = false;
 		if (ImGui::CollapsingHeader("Sprite", ImGuiTreeNodeFlags_None))
 		{
+			ImGui::Text("Texture/Shape"); ImGui::SameLine();
+			if (ImGui::BeginCombo("##Texture/Shape", sprite_type_ToString(SPRITE_type)))
+			{
+				for (unsigned int i{ 0 }; i < sprite_type::sprite_type_count; i++) {
+					sprite_type selected_sprite_type = static_cast<sprite_type>(i);
+					bool is_selected = (SPRITE_type == selected_sprite_type);
+					if (ImGui::Selectable(sprite_type_ToString(selected_sprite_type), is_selected))
+					{
+						SPRITE_type = selected_sprite_type;
+					}
+					if (is_selected)
+						ImGui::SetItemDefaultFocus();
+				}
+				ImGui::EndCombo();
+			}
+
+			if (SPRITE_type == sprite_type::texture) {
+
+			}
+
+			else { //shape
+
+			}
+
 			changed |= ImGui::Checkbox("SpriteSheet", &is_SpriteSheet); ImGui::SameLine();
 			changed |= ImGui::Checkbox("Animation", &is_Animated);
+			
 			ImGui::PushItemWidth(100.0f);
-			ImGui::Text("Coordinates: "); ImGui::SameLine();
-			ImGui::Text("X"); ImGui::SameLine();
-			changed |= ImGui::DragInt("##X", (int*)&GetIndex().x, 1); ImGui::SameLine();
-			ImGui::Text("Y"); ImGui::SameLine();
-			changed |= ImGui::DragInt("##Y", (int*)&GetIndex().y, 1);
 			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4());
 			ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4());
 			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4());
@@ -79,32 +106,6 @@ namespace NocturnalEngine {
 					changed = true;
 				}
 				ImGui::EndDragDropTarget();
-			}
-			if (is_SpriteSheet)
-			{
-				GetMaxIndex() = (int)GETTEXTURE(GetTexture())->GetWidth() / 512;
-				ImGui::Text("MaxIndex : %d ", GetMaxIndex());
-				GetDisplayTime().resize(GetMaxIndex());//resize the number of frames in a sprite  
-			}
-			if (GetMaxIndex() > 0 && is_Animated)
-			{
-				ImGui::Text("SelectedIndex: "); ImGui::SameLine();
-				changed |= ImGui::DragInt("##SelectedIndex", (int*)&GetIndex().x, 1, 0, GetMaxIndex() - 1);
-
-				ImGui::Text("SetDisplayTime: "); ImGui::SameLine();
-				changed |= ImGui::DragFloat("##SetDisplayTime", (float*)&GetDisplayTime()[GetIndex().x], 0.005f, 0.0f);
-
-			}
-
-			if (is_SpriteSheet)
-			{
-				ImGui::Text("UVCoordinates: "); ImGui::SameLine();
-				ImGui::Text("U"); ImGui::SameLine();
-				changed |= ImGui::DragFloat("##U", (float*)&GetUVCoor().x, 0.5f); ImGui::SameLine();
-				ImGui::PushID(2);
-				ImGui::Text("V"); ImGui::SameLine();
-				changed |= ImGui::DragFloat("##V", (float*)&GetUVCoor().y, 0.5f);
-				ImGui::PopID();
 			}
 			ImGui::Text("Layering Order: "); ImGui::SameLine();
 			// ImGui::DragInt("##layering", (int*)&sprite.LayerOrder, 1, 0, 8);

@@ -530,7 +530,19 @@ namespace NocturnalEngine {
 
             }
         }
-        //ImGui::SameLine();
+        ImGui::SameLine();
+        if (ImGui::Button("NEW SCENE"))
+        {
+
+            if (mLastSaveTime < 0.f)
+            {
+                p_Scene->setSceneToLoad(" ");
+                mCurrentScene = "Assets/Scene/NewScene.json";
+                mLastSaveTime = ImGui::GetTime();
+
+
+            }
+        }
 
         // Show message if recently saved
         if (mLastSaveTime > 0.0f && ImGui::GetTime() - mLastSaveTime < mSaveMessageDuration)
@@ -584,6 +596,14 @@ namespace NocturnalEngine {
                 sprite.SetTexture(*(const std::string*)payload->Data);
                 p_ecs.AddComponent<Sprite>(newEntity, sprite);
                 selectedEntity = newEntity;
+                std::string eName = *(const std::string*)payload->Data; 
+                if (eName.find_last_of("/")!=std::string::npos)
+                {
+                    eName = eName.substr(eName.find_last_of("/") + 1);
+                }
+                NameTag nt{};
+                nt.SetNameTag(eName);                                   
+                p_ecs.AddComponent<NameTag>(newEntity, nt);
                 PushUndoSnapshotAndInvalidateRedo();
             }
             ImGui::EndDragDropTarget();
@@ -710,14 +730,18 @@ namespace NocturnalEngine {
         }
         if (p_ecs.GetTotalSceneEntities() != 0 && p_Input->MousePressed(GLFW_MOUSE_BUTTON_LEFT) && (!mShowGizmos || !ImGuizmo::IsOver())) // Allow picking when gizmos are hidden
         {
-            if (selectedEntity >= 0 && selectedEntity < MAX_ENTITIES)//no entity selected will remain to the previous selected entity
+            Entity picked = (Entity)Picker::Pick(NocturnalEngine::Graphic::mcamera, sortedMultimap);
+
+            if (picked >= 0 && picked < MAX_ENTITIES &&
+                p_ecs.GetAliveEntitiesSet().contains(picked) &&  // ← key check
+                p_ecs.HaveComponent<Transform>(picked))
             {
-                if(p_ecs.HaveComponent<Transform>(selectedEntity))
-                    selectedEntity = (Entity)Picker::Pick(NocturnalEngine::Graphic::mcamera, sortedMultimap);
+                selectedEntity = picked;
             }
             else
+            {
                 selectedEntity = MAX_ENTITIES;
-          
+            }
         }
 
         if (ImGui::IsKeyPressed(ImGuiKey_Delete, false))
@@ -1277,6 +1301,11 @@ namespace NocturnalEngine {
             if (l >= NocturnalEngine::Graphic::MAX_LAYERS) l = NocturnalEngine::Graphic::MAX_LAYERS - 1;
 
             usedLayers.push_back(l);
+            if (p_ecs.HaveComponent<Text>(e)) {
+                int text_layer_order = p_ecs.GetComponent<Text>(e).Get_layering_order();
+                usedLayers.push_back(text_layer_order);
+            }
+            
         }
 
         if (usedLayers.empty())
@@ -1814,18 +1843,28 @@ namespace NocturnalEngine {
         Sprite& sprite = p_ecs.GetComponent<Sprite>(selectedEntity);
 
         bool changed = false;
-        changed |= ImGui::Checkbox("SpriteSheet", &sprite.is_SpriteSheet); ImGui::SameLine();
         changed |= ImGui::Checkbox("Animated", &sprite.is_Animated);
+        // Animated is the single source of truth. Keep legacy field synced for compatibility.
+        if (sprite.is_SpriteSheet != sprite.is_Animated)
+        {
+            sprite.is_SpriteSheet = sprite.is_Animated;
+            changed = true;
+        }
 
         const std::string& textureName = sprite.GetTexture();
         ImGui::Text("Current Sprite Texture: %s", textureName.c_str());
 
-        if (!sprite.is_SpriteSheet)
+        if (!sprite.is_Animated)
         {
-            ImGui::Text("Enable SpriteSheet to edit frame timings.");
+            ImGui::Text("Enable Animated to edit animation settings.");
             ImGui::End();
             return;
         }
+
+        ImGui::Separator();
+        ImGui::Text("Spritesheet UV");
+        changed |= ImGui::DragFloat("U", &sprite.GetUVCoor().x, 0.5f);
+        changed |= ImGui::DragFloat("V", &sprite.GetUVCoor().y, 0.5f);
 
         ImGui::Separator();
         ImGui::Text("Animation State Manager");
