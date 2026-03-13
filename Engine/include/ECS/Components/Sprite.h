@@ -30,6 +30,9 @@ namespace NocturnalEngine {
 			std::string name{ "State" };
 			// Texture key from ResourceManager::textures.
 			std::string textureKey{};
+			// Per-state spritesheet frame size in pixels.
+			float uSize{ 512.0f };
+			float vSize{ 512.0f };
 			// 0=Hunger, 1=Health, 2=Sanity, 3=Always.
 			int source{ 3 };
 			// 0=<= threshold, 1=>= threshold.

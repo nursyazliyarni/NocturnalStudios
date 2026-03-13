@@ -176,18 +176,10 @@ namespace NocturnalEngine {
 		const bool editorPreview = (p_Editor != nullptr) && p_Editor->is_ShowWindow &&
 			sprite.statePreviewMode > 0;
 		// Animation manager decides which state texture to use from Sprite rule config.
-		std::string desiredTexture = Animation::ResolveStateTexture(sprite, hungerRatio, healthRatio, sanityRatio, editorPreview);
-		if (desiredTexture.empty())
+		const int desiredRule = Animation::ResolveStateRuleIndex(sprite, hungerRatio, healthRatio, sanityRatio, editorPreview);
+		if (desiredRule < 0)
 			return;
-
-		if (sprite.GetTexture() != desiredTexture)
-		{
-			sprite.SetTexture(desiredTexture);
-			int x = 0;
-			int y = sprite.GetIndex().y;
-			sprite.SetIndex(x, y);
-			sprite.internaltimer = 0.f;
-		}
+		Animation::ApplyStateRule(sprite, desiredRule);
 
 	}
 
