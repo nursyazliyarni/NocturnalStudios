@@ -637,7 +637,7 @@
                 {
                     "Component": "ButtonComponent",
                     "GoToSceneFlag": true,
-                    "GoToScene": "Assets/Scene/SealScene.json",
+                    "GoToScene": "Assets/Scene/FlamingoScene.json",
                     "AudioOnHoverFlag": false,
                     "AudioOnHoverRandom": false,
                     "HoverAudioIndex": 0,
