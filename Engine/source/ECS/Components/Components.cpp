@@ -42,17 +42,14 @@ namespace NocturnalEngine{
         //Audio
         p_ecs.RegisterComponent<Audio>();//7
         RegisterComponent<Audio>("Audio");
-        //Video
-        p_ecs.RegisterComponent<Video>();//8
-        RegisterComponent<Video>("Video");
         //HUDComponent
-        p_ecs.RegisterComponent<HUDComponent>();//9
+        p_ecs.RegisterComponent<HUDComponent>();//8
         RegisterComponent<HUDComponent>("HUDComponent");
         //Draggable
-        p_ecs.RegisterComponent<Draggable>();//10
+        p_ecs.RegisterComponent<Draggable>();//9
         RegisterComponent<Draggable>("Draggable");
         //Text
-        p_ecs.RegisterComponent<Text>();//11
+        p_ecs.RegisterComponent<Text>();//10
         RegisterComponent<Text>("Text");
 
     }

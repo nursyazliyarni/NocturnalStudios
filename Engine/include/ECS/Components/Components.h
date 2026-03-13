@@ -28,7 +28,6 @@
 #include "Logic.h"
 #include "Tag.h"
 #include "Audio.h"
-#include "Video.h"
 #include "HUDComponent.h"
 #include "Draggable.h"
 #include "Text.h"
@@ -44,7 +43,6 @@
 #define C_LogicComponent NocturnalEngine::Logic::Logic()
 #define C_TagComponent NocturnalEngine::Tag::Tag()
 #define C_AudioComponent NocturnalEngine::Audio::Audio()
-#define C_VideoComponent NocturnalEngine::Video::Video()
 #define C_HUDComponent NocturnalEngine::HUDComponent::HUDComponent())
 #define C_DraggableComponent NocturnalEngine::Draggable::Draggable()
 #define C_TextComponent NocturnalEngine::Text::Text()

@@ -31,7 +31,6 @@
 #include "Logic/LogicSystem.h"
 #include "GUI/GUI.h"
 #include "Core/MemoryManager.h"
-#include "Video/VideoPlayback.h"
 #include <stdlib.h>
 
 namespace NocturnalEngine {
@@ -209,7 +208,6 @@ EngineCore constructor
 	void EngineCore::End()
 	{
 		p_Editor->End();
-		VideoPlayback::Shutdown();
 		p_Audio->Release();
 	}
 
