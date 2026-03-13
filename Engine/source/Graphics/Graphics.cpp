@@ -524,6 +524,8 @@ namespace NocturnalEngine {
 			}
 
 			float* c = text.GetColor();
+			if (c[3] <= 0.001f)
+				continue;
 			glm::vec3 col(c[0], c[1], c[2]);
 
 			float scale = text.GetSize() * 0.0000333f;
