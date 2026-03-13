@@ -61,7 +61,7 @@
                 {
                     "Component": "Audio",
                     "0": {
-                        "AudioPath": "BGM_Ambience_Flamingo_01.wav",
+                        "AudioPath": "Luminara Zoo - Music - Level 1 (v2).wav",
                         "Channel": 2,
                         "IsLooping": true
                     },
