@@ -567,8 +567,15 @@ namespace NocturnalEngine {
 			std::shared_ptr<Font> font = ResourceManager::GetFont(text.GetFont());
 			if (!font)
 				font = mFont;
-			if (font)
-				font->RenderText(text.GetContent(), pos, text.Get_line_height(), scale, *mcamera, col, text.Rot());
+			if (font) {
+				if (text.Get_TEXT_type() == Text::text_type::single_text) //single text
+					font->RenderText(text.GetContent(), pos, text.Get_line_height(), scale, *mcamera, col, text.Rot());
+
+				else { //array of text
+					if (!text.GET_mContent_array().empty())
+						font->RenderText(text.GET_current_mContent(text.current_index), text.GET_current_position(text.current_index), text.Get_line_height(), scale, *mcamera, col, text.Rot());
+				}
+			}
 		}
 
 		p_FrameBuffer->UnBind();

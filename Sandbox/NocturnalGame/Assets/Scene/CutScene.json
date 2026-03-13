@@ -384,7 +384,7 @@
                     "RestartOnEnable": true,
                     "HideWhenFinished": false,
                     "SkipKey": 32,
-                    "NextScene": "",
+                    "NextScene": "Assets/Scene/Tutorial.json",
                     "AudioPath": "",
                     "AudioChannelGroup": 1,
                     "AudioLoop": false

@@ -260,7 +260,7 @@
                 {
                     "Component": "ButtonComponent",
                     "GoToSceneFlag": true,
-                    "GoToScene": "Assets/Scene/FlamingoScene.json",
+                    "GoToScene": "Assets/Scene/CutScene.json",
                     "AudioOnHoverFlag": true,
                     "AudioOnHoverRandom": false,
                     "HoverAudioIndex": 1,
