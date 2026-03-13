@@ -338,6 +338,12 @@
                     "ScriptCount": 2
                 },
                 {
+                    "Component": "SceneVFX",
+                    "ParticlesEnabled": true,
+                    "ParticleType": 1,
+                    "RenderAfterLayer": 0
+                },
+                {
                     "Component": "Text",
                     "text type": 0,
                     "Content": "1",
@@ -948,7 +954,7 @@
                     "IsSpriteSheet": false,
                     "IsAnimated": false,
                     "MaxIndex": 0,
-                    "LayeringOrder": 2,
+                    "LayeringOrder": 7,
                     "StateManagerEnabled": false,
                     "StatePreviewInEditor": false,
                     "StatePreviewMode": 0,
@@ -1256,297 +1262,6 @@
             "Components": [
                 {
                     "Component": "Transform",
-                    "posX": 0.6753605604171753,
-                    "posY": 0.12399999797344208,
-                    "scaleX": 0.21751198172569275,
-                    "scaleY": 0.21751198172569275,
-                    "Rot": 0.0
-                },
-                {
-                    "Component": "NameTag",
-                    "NameTag": "HealthIcon"
-                },
-                {
-                    "Component": "Sprite",
-                    "TextureName": "UI/health",
-                    "Index_X": 0,
-                    "Index_Y": 0,
-                    "Ucoordinates": 512.0,
-                    "Vcoordinates": 512.0,
-                    "IsSpriteSheet": false,
-                    "IsAnimated": false,
-                    "MaxIndex": 0,
-                    "LayeringOrder": 3,
-                    "StateManagerEnabled": false,
-                    "StatePreviewInEditor": false,
-                    "StatePreviewMode": 0,
-                    "AnimationStates": [
-                        {
-                            "Name": "Idle",
-                            "Texture": "",
-                            "Source": 3,
-                            "Compare": 0,
-                            "Threshold": 0.0,
-                            "Priority": -100,
-                            "Enabled": true
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "ID": 11,
-            "Components": [
-                {
-                    "Component": "Transform",
-                    "posX": 0.6753605604171753,
-                    "posY": -0.029999999329447746,
-                    "scaleX": 0.21751198172569275,
-                    "scaleY": 0.21751198172569275,
-                    "Rot": 0.0
-                },
-                {
-                    "Component": "NameTag",
-                    "NameTag": "HungerIcon"
-                },
-                {
-                    "Component": "Sprite",
-                    "TextureName": "UI/hunger",
-                    "Index_X": 0,
-                    "Index_Y": 0,
-                    "Ucoordinates": 512.0,
-                    "Vcoordinates": 512.0,
-                    "IsSpriteSheet": false,
-                    "IsAnimated": false,
-                    "MaxIndex": 0,
-                    "LayeringOrder": 3,
-                    "StateManagerEnabled": false,
-                    "StatePreviewInEditor": false,
-                    "StatePreviewMode": 0,
-                    "AnimationStates": [
-                        {
-                            "Name": "Idle",
-                            "Texture": "",
-                            "Source": 3,
-                            "Compare": 0,
-                            "Threshold": 0.0,
-                            "Priority": -100,
-                            "Enabled": true
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "ID": 12,
-            "Components": [
-                {
-                    "Component": "Transform",
-                    "posX": 0.6753605604171753,
-                    "posY": -0.1679999977350235,
-                    "scaleX": 0.21751198172569275,
-                    "scaleY": 0.21751198172569275,
-                    "Rot": 0.0
-                },
-                {
-                    "Component": "NameTag",
-                    "NameTag": "SanityIcon"
-                },
-                {
-                    "Component": "Sprite",
-                    "TextureName": "UI/sanity",
-                    "Index_X": 0,
-                    "Index_Y": 0,
-                    "Ucoordinates": 512.0,
-                    "Vcoordinates": 512.0,
-                    "IsSpriteSheet": false,
-                    "IsAnimated": false,
-                    "MaxIndex": 0,
-                    "LayeringOrder": 3,
-                    "StateManagerEnabled": false,
-                    "StatePreviewInEditor": false,
-                    "StatePreviewMode": 0,
-                    "AnimationStates": [
-                        {
-                            "Name": "Idle",
-                            "Texture": "",
-                            "Source": 3,
-                            "Compare": 0,
-                            "Threshold": 0.0,
-                            "Priority": -100,
-                            "Enabled": true
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "ID": 13,
-            "Components": [
-                {
-                    "Component": "Transform",
-                    "posX": 1.1399999856948853,
-                    "posY": 0.11400000005960464,
-                    "scaleX": 0.8989999890327454,
-                    "scaleY": 0.0689999982714653,
-                    "Rot": 0.0
-                },
-                {
-                    "Component": "NameTag",
-                    "NameTag": "HealthBar"
-                },
-                {
-                    "Component": "Sprite",
-                    "TextureName": "UI/health bar",
-                    "Index_X": 0,
-                    "Index_Y": 0,
-                    "Ucoordinates": 512.0,
-                    "Vcoordinates": 512.0,
-                    "IsSpriteSheet": false,
-                    "IsAnimated": false,
-                    "MaxIndex": 0,
-                    "LayeringOrder": 2,
-                    "StateManagerEnabled": false,
-                    "StatePreviewInEditor": false,
-                    "StatePreviewMode": 0,
-                    "AnimationStates": [
-                        {
-                            "Name": "Idle",
-                            "Texture": "",
-                            "Source": 3,
-                            "Compare": 0,
-                            "Threshold": 0.0,
-                            "Priority": -100,
-                            "Enabled": true
-                        }
-                    ]
-                },
-                {
-                    "Component": "Logic",
-                    "0": "HealthBar",
-                    "ScriptCount": 1
-                },
-                {
-                    "Component": "HUDComponent",
-                    "ElementType": 2,
-                    "offsetX": 0.0,
-                    "offsetY": 0.0
-                }
-            ]
-        },
-        {
-            "ID": 14,
-            "Components": [
-                {
-                    "Component": "Transform",
-                    "posX": 1.1399999856948853,
-                    "posY": -0.02500000037252903,
-                    "scaleX": 0.8989999890327454,
-                    "scaleY": 0.0689999982714653,
-                    "Rot": 0.0
-                },
-                {
-                    "Component": "NameTag",
-                    "NameTag": "HungerBar"
-                },
-                {
-                    "Component": "Sprite",
-                    "TextureName": "UI/hunger bar",
-                    "Index_X": 0,
-                    "Index_Y": 0,
-                    "Ucoordinates": 512.0,
-                    "Vcoordinates": 512.0,
-                    "IsSpriteSheet": false,
-                    "IsAnimated": false,
-                    "MaxIndex": 0,
-                    "LayeringOrder": 2,
-                    "StateManagerEnabled": false,
-                    "StatePreviewInEditor": false,
-                    "StatePreviewMode": 0,
-                    "AnimationStates": [
-                        {
-                            "Name": "Idle",
-                            "Texture": "",
-                            "Source": 3,
-                            "Compare": 0,
-                            "Threshold": 0.0,
-                            "Priority": -100,
-                            "Enabled": true
-                        }
-                    ]
-                },
-                {
-                    "Component": "Logic",
-                    "0": "HealthBar",
-                    "ScriptCount": 1
-                },
-                {
-                    "Component": "HUDComponent",
-                    "ElementType": 3,
-                    "offsetX": 0.0,
-                    "offsetY": 0.0
-                }
-            ]
-        },
-        {
-            "ID": 15,
-            "Components": [
-                {
-                    "Component": "Transform",
-                    "posX": 1.1399999856948853,
-                    "posY": -0.15299999713897705,
-                    "scaleX": 0.8989999890327454,
-                    "scaleY": 0.0689999982714653,
-                    "Rot": 0.0
-                },
-                {
-                    "Component": "NameTag",
-                    "NameTag": "SanityBar"
-                },
-                {
-                    "Component": "Sprite",
-                    "TextureName": "UI/sanity bar",
-                    "Index_X": 0,
-                    "Index_Y": 0,
-                    "Ucoordinates": 512.0,
-                    "Vcoordinates": 512.0,
-                    "IsSpriteSheet": false,
-                    "IsAnimated": false,
-                    "MaxIndex": 0,
-                    "LayeringOrder": 2,
-                    "StateManagerEnabled": false,
-                    "StatePreviewInEditor": false,
-                    "StatePreviewMode": 0,
-                    "AnimationStates": [
-                        {
-                            "Name": "Idle",
-                            "Texture": "",
-                            "Source": 3,
-                            "Compare": 0,
-                            "Threshold": 0.0,
-                            "Priority": -100,
-                            "Enabled": true
-                        }
-                    ]
-                },
-                {
-                    "Component": "Logic",
-                    "0": "HealthBar",
-                    "ScriptCount": 1
-                },
-                {
-                    "Component": "HUDComponent",
-                    "ElementType": 4,
-                    "offsetX": 0.0,
-                    "offsetY": 0.0
-                }
-            ]
-        },
-        {
-            "ID": 16,
-            "Components": [
-                {
-                    "Component": "Transform",
                     "posX": -1.469074010848999,
                     "posY": 0.7429999709129333,
                     "scaleX": 1.0,
@@ -1585,7 +1300,7 @@
             ]
         },
         {
-            "ID": 17,
+            "ID": 11,
             "Components": [
                 {
                     "Component": "NameTag",
@@ -1614,7 +1329,7 @@
             ]
         },
         {
-            "ID": 18,
+            "ID": 12,
             "Components": [
                 {
                     "Component": "NameTag",
@@ -1643,7 +1358,7 @@
             ]
         },
         {
-            "ID": 19,
+            "ID": 13,
             "Components": [
                 {
                     "Component": "NameTag",
@@ -1672,7 +1387,7 @@
             ]
         },
         {
-            "ID": 20,
+            "ID": 14,
             "Components": [
                 {
                     "Component": "Tag",
@@ -1720,14 +1435,14 @@
             ]
         },
         {
-            "ID": 21,
+            "ID": 15,
             "Components": [
                 {
                     "Component": "Transform",
                     "posX": 1.0999298095703125,
-                    "posY": -0.54035484790802,
+                    "posY": -0.3150026798248291,
                     "scaleX": 0.9850000143051147,
-                    "scaleY": 0.5099999904632568,
+                    "scaleY": 0.9418125152587891,
                     "Rot": 0.0
                 },
                 {
@@ -1768,7 +1483,7 @@
                 {
                     "Component": "Text",
                     "text type": 0,
-                    "Content": "[00:00:00] This is a Log entry",
+                    "Content": "[00:00:00] This a Log Entry",
                     "Array of Content": [],
                     "Vector of text position": [],
                     "Font": "Jersey10Charted-Regular",
@@ -1778,7 +1493,7 @@
                     "ColorB": 0.0,
                     "ColorA": 1.0,
                     "PosX": -0.4699999988079071,
-                    "PosY": 0.20000000298023224,
+                    "PosY": 0.4099999964237213,
                     "Rotation": 0.0,
                     "Line Height": 0,
                     "WorldSpace": true,
@@ -1788,7 +1503,7 @@
             ]
         },
         {
-            "ID": 22,
+            "ID": 16,
             "Components": [
                 {
                     "Component": "Transform",
@@ -1831,7 +1546,7 @@
             ]
         },
         {
-            "ID": 23,
+            "ID": 17,
             "Components": [
                 {
                     "Component": "Transform",
@@ -1874,7 +1589,7 @@
             ]
         },
         {
-            "ID": 24,
+            "ID": 18,
             "Components": [
                 {
                     "Component": "Transform",
@@ -1917,7 +1632,7 @@
             ]
         },
         {
-            "ID": 25,
+            "ID": 19,
             "Components": [
                 {
                     "Component": "Transform",
@@ -1960,7 +1675,7 @@
             ]
         },
         {
-            "ID": 26,
+            "ID": 20,
             "Components": [
                 {
                     "Component": "Transform",
@@ -2022,7 +1737,7 @@
             ]
         },
         {
-            "ID": 27,
+            "ID": 21,
             "Components": [
                 {
                     "Component": "Transform",
@@ -2085,7 +1800,7 @@
             ]
         },
         {
-            "ID": 28,
+            "ID": 22,
             "Components": [
                 {
                     "Component": "Transform",
@@ -2128,7 +1843,7 @@
             ]
         },
         {
-            "ID": 29,
+            "ID": 23,
             "Components": [
                 {
                     "Component": "Transform",
@@ -2171,7 +1886,7 @@
             ]
         },
         {
-            "ID": 30,
+            "ID": 24,
             "Components": [
                 {
                     "Component": "Transform",
@@ -2234,7 +1949,7 @@
             ]
         },
         {
-            "ID": 31,
+            "ID": 25,
             "Components": [
                 {
                     "Component": "Transform",
@@ -2277,7 +1992,7 @@
                     "IsSpriteSheet": false,
                     "IsAnimated": false,
                     "MaxIndex": 0,
-                    "LayeringOrder": 2,
+                    "LayeringOrder": 5,
                     "StateManagerEnabled": false,
                     "StatePreviewInEditor": false,
                     "StatePreviewMode": 0,
@@ -2296,7 +2011,7 @@
             ]
         },
         {
-            "ID": 32,
+            "ID": 26,
             "Components": [
                 {
                     "Component": "Transform",
@@ -2363,7 +2078,7 @@
             ]
         },
         {
-            "ID": 33,
+            "ID": 27,
             "Components": [
                 {
                     "Component": "Transform",
@@ -2405,7 +2120,7 @@
             ]
         },
         {
-            "ID": 34,
+            "ID": 28,
             "Components": [
                 {
                     "Component": "Tag",
@@ -2453,7 +2168,7 @@
             ]
         },
         {
-            "ID": 35,
+            "ID": 29,
             "Components": [
                 {
                     "Component": "Tag",
