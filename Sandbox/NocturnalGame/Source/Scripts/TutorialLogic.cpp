@@ -28,7 +28,7 @@ namespace NocturnalEngine {
 			
 			auto& sprite{ p_ecs.GetComponent<Sprite>(entityID) };
 			//idle,hungry,sick,angry(4 states for animal)
-			sprite.GetTexture() = sprite.stateRules[3].textureKey;
+			//sprite.GetTexture() = sprite.stateRules[3].textureKey;
 		}
 	}
 
