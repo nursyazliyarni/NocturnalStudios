@@ -121,19 +121,19 @@ namespace NocturnalEngine
 		/*!*************************************************************************
 		Update Loop of Cutscenes Script
 		****************************************************************************/
-		virtual void Update(float Frametime) override
-		{
-			UNREFERENCED_PARAMETER(Frametime);
-			if (mCutImages.empty())
-				return;
-
-			// Advance only when player clicks inside Next button collider.
-			if (mInput->MousePressed(GLFW_MOUSE_BUTTON_LEFT) && IsMouseOnNextButton())
+			virtual void Update(float Frametime) override
 			{
-				// Stop at last image; do not overflow index.
-				if (mCurrentImage + 1 < mCutImages.size())
+				UNREFERENCED_PARAMETER(Frametime);
+				if (mCutImages.empty())
+					return;
+	
+				// Advance on any left click.
+				if (mInput->MousePressed(GLFW_MOUSE_BUTTON_LEFT))
 				{
-					++mCurrentImage;
+					// Stop at last image; do not overflow index.
+					if (mCurrentImage + 1 < mCutImages.size())
+					{
+						++mCurrentImage;
 					// Update which image is visible.
 					ApplyImageVisibility();
 				}
