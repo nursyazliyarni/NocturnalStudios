@@ -9,6 +9,7 @@
     Primary Author:
          Rishika Bimal Attodi (85%)
 		- Created the graphics class and its function specification.
+		- Implemented particle system via shaders
     Secondary Author:
          Nur Syazliyarni (5%)
         - Added Text component rendering path in the graphics loop.

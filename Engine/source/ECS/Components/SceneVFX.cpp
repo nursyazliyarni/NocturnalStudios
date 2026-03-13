@@ -6,7 +6,7 @@
         This file contains the implementation of the SceneVFX component.
 
     Primary Author:
-         Rishika Bimal Attodi
+         Rishika Bimal Attodi (100%)
         - Added scene-level VFX component for JSON-driven scene effects.
 
     All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.

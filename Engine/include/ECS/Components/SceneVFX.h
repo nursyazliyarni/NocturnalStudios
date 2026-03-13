@@ -7,7 +7,7 @@
         It is used to control effects such as floating particle overlays through JSON.
 
     Primary Author:
-         Rishika Bimal Attodi
+         Rishika Bimal Attodi (100%)
         - Added scene-level VFX component for JSON-driven scene effects.
 
     All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.

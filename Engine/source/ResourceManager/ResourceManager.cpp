@@ -8,12 +8,14 @@
 		and audios.
 	
     Primary Author:
-         LAU XIANG YANG (95%)
+         LAU XIANG YANG (75%)
 		- Created the ResourceManager class and its function specification.
     Secondary Author:
          Nur Syazliyarni (5%)
         - Added font/text resource support for text rendering.
 
+	Primary Author:
+		 Rishika Bimal Attodi (20%)
     All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
 *------------------------------------------------------------------------------------------------*/
 

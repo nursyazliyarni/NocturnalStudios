@@ -4,6 +4,8 @@
 
     Brief:
         Implementation of a reusable fullscreen scene particle / VFX renderer.
+    Primary Author:
+         Rishika Bimal Attodi (100%)
 
     All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
 *------------------------------------------------------------------------------------------------*/

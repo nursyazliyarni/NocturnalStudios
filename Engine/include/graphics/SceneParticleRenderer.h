@@ -1,7 +1,8 @@
 /*!------------------------------------------------------------------------------------------------
     File: SceneParticleRenderer.h
     Project: NocturnalStudio
-
+    Primary Author:
+         Rishika Bimal Attodi (100%)
     Brief:
         Renderer for scene-wide fullscreen particle / VFX passes.
         This is intended for reusable scene effects such as floating dots,
