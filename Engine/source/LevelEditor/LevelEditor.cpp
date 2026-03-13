@@ -156,6 +156,7 @@ namespace NocturnalEngine {
         ImGui_ImplOpenGL3_Init("#version 450");
 
         LoadAudioFromFile();
+        std::filesystem::create_directories("Assets/Video");
 
         LoadSceneFromFile();
 
@@ -606,6 +607,34 @@ namespace NocturnalEngine {
                 p_ecs.AddComponent<NameTag>(newEntity, nt);
                 PushUndoSnapshotAndInvalidateRedo();
             }
+            if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Videos"))
+            {
+                const std::string videoPath = static_cast<const char*>(payload->Data);
+                Entity newEntity = p_ecs.CreateEntity();
+
+                Transform trans;
+                trans.SetPos(0.f, 0.f);
+                trans.SetScale(1.777f, 1.0f);
+                trans.SetRot(0.0f);
+                p_ecs.AddComponent<Transform>(newEntity, trans);
+
+                Sprite sprite{};
+                sprite.SetTexture("Blank");
+                p_ecs.AddComponent<Sprite>(newEntity, sprite);
+
+                Video video{};
+                video.SetVideoPath(videoPath);
+                video.playInEditor = false;
+                p_ecs.AddComponent<Video>(newEntity, video);
+
+                NameTag nt{};
+                std::string entityName = std::filesystem::path(videoPath).stem().string();
+                nt.SetNameTag(entityName);
+                p_ecs.AddComponent<NameTag>(newEntity, nt);
+
+                selectedEntity = newEntity;
+                PushUndoSnapshotAndInvalidateRedo();
+            }
             ImGui::EndDragDropTarget();
         }
 
@@ -995,13 +1024,49 @@ namespace NocturnalEngine {
                     if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID))
                     {
                         std::string payloadStr = sndName;
-                        ImGui::SetDragDropPayload("CONTENT_BROWSER_ITEM", payloadStr.c_str(), payloadStr.size() + 1);
+                        std::string relativePath = filename;
+                        if (mCurrentDirectory.filename() != "Audio")
+                        {
+                            relativePath = std::filesystem::relative(directorypath, std::filesystem::path("Assets/Audio")).generic_string();
+                        }
+                        ImGui::SetDragDropPayload("AudioFiles", relativePath.c_str(), relativePath.size() + 1);
 
                         ImGui::Image((ImTextureID)(intptr_t)ResourceManager::GetIcon("SoundIcon")->GetRendererID(),
                             ImVec2(thumbnailSize, thumbnailSize), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
                         ImGui::EndDragDropSource();
                     }
 
+                }
+                else if (ext == ".mpg" || ext == ".mpeg") {
+                    std::string videoName = filename;
+                    videoName.erase(filename.find_last_of('.'));
+
+                    ImGui::ImageButton("VideoButton", (ImTextureID)(intptr_t)ResourceManager::GetIcon("TextIcon")->GetRendererID(),
+                        ImVec2(thumbnailSize, thumbnailSize), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
+                    if (ImGui::IsItemHovered())
+                    {
+                        ImGui::BeginTooltip();
+                        ImGui::Text("Video: %s", videoName.c_str());
+                        ImGui::EndTooltip();
+                    }
+
+                    if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID))
+                    {
+                        std::string relativePath = filename;
+                        if (mCurrentDirectory.filename() != "Video")
+                        {
+                            relativePath = std::filesystem::relative(directorypath, std::filesystem::path("Assets/Video")).generic_string();
+                        }
+                        else
+                        {
+                            relativePath = directorypath.filename().generic_string();
+                        }
+
+                        ImGui::SetDragDropPayload("Videos", relativePath.c_str(), relativePath.size() + 1);
+                        ImGui::Image((ImTextureID)(intptr_t)ResourceManager::GetIcon("TextIcon")->GetRendererID(),
+                            ImVec2(thumbnailSize, thumbnailSize), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
+                        ImGui::EndDragDropSource();
+                    }
                 }
                 else if (ext == ".cpp" || ext == ".hpp" || ext == ".h"||ext==".c") {
                     ImGui::Image( (ImTextureID)(intptr_t)ResourceManager::GetIcon("TextIcon")->GetRendererID(),
@@ -1951,7 +2016,9 @@ namespace NocturnalEngine {
                 auto& rule = sprite.stateRules[i];
                 ImGui::PushID(static_cast<int>(i) + 5100);
 
-                std::string header = "Rule " + std::to_string(i + 1) + ": " + (rule.name.empty() ? "Unnamed" : rule.name);
+                std::string header = "Rule " + std::to_string(i + 1) + ": " +
+                    (rule.name.empty() ? "Unnamed" : rule.name) +
+                    "###AnimStateRule" + std::to_string(i);
                 if (ImGui::TreeNode(header.c_str()))
                 {
                     changed |= ImGui::Checkbox("Enabled", &rule.enabled);

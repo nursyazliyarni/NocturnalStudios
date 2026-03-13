@@ -3,10 +3,10 @@
 	Project: NocturnalStudio
 
 	Brief:
-		Contains the attributes related to animals in the ECS
+		Component for determining how a button entity  responds
 
 	Primary Author:
-		 Ang Yu Xuan (100%)
+		 LAYCOCK ENHUI SARAH (100%)
 		- Created the ButtonComponent.h file and its function specification.
 
 	All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.

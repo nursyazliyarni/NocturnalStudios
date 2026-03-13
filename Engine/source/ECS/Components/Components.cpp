@@ -15,6 +15,7 @@
 
 #include "pch.h"
 #include "ECS/EngineComponentReg.h"
+#include "ECS/Components/SceneVFX.h"
 
 namespace NocturnalEngine{
     void EngineComponentRegistry::RegisterAllEngineComponents() {
@@ -42,15 +43,22 @@ namespace NocturnalEngine{
         //Audio
         p_ecs.RegisterComponent<Audio>();//7
         RegisterComponent<Audio>("Audio");
+        //Video
+        p_ecs.RegisterComponent<Video>();//8
+        RegisterComponent<Video>("Video");
         //HUDComponent
-        p_ecs.RegisterComponent<HUDComponent>();//8
+        p_ecs.RegisterComponent<HUDComponent>();//9
         RegisterComponent<HUDComponent>("HUDComponent");
         //Draggable
-        p_ecs.RegisterComponent<Draggable>();//9
+        p_ecs.RegisterComponent<Draggable>();//10
         RegisterComponent<Draggable>("Draggable");
         //Text
-        p_ecs.RegisterComponent<Text>();//10
+        p_ecs.RegisterComponent<Text>();//11
         RegisterComponent<Text>("Text");
+
+        //SceneVFX
+        p_ecs.RegisterComponent<SceneVFX>();//11
+        RegisterComponent<SceneVFX>("SceneVFX");
 
     }
 }

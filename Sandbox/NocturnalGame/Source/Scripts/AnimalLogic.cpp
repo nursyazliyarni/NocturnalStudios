@@ -95,7 +95,7 @@ namespace NocturnalEngine {
 
 
 		if (!aA.isEscaped&&aA.is_alive&&p_GameManager.GetGameState() != GameManager::GameState::ENDING) {
-
+			aA.timeSinceLastFeed += Frametime;
 			//hunger>hp>sanity
 			CheckAndDecreaseStats(time.hunger, chance.hunger, aA.hungerDecayRate, aA.current_hunger, Frametime);
 			
@@ -196,11 +196,12 @@ namespace NocturnalEngine {
 
 		if (aA.current_health <= aA.maxHealth / 2.0 && aA.healthWarnLevel<1)
 		{
-
+			
 			aA.healthWarnLevel++;
 		}
 		else if (aA.current_health <= aA.maxHealth / 5.0 && aA.healthWarnLevel < 2) 
 		{
+			p_GameManager.AddLogEntry(animalName + "'s body temperature is alarmingly high.");
 			p_GameManager.AddCrit();
 			aA.healthWarnLevel++;
 		}
@@ -210,11 +211,16 @@ namespace NocturnalEngine {
 		}
 		if (aA.current_hunger <= aA.maxHunger / 2.0 && aA.hungerWarnLevel<1)
 		{
+			int minutesPassed = static_cast<int>((p_GameManager.GetTimeScale() * aA.timeSinceLastFeed) / 60.f);
+			if (minutesPassed<60) p_GameManager.AddLogEntry(animalName + " seems hungry...");
+			else p_GameManager.AddLogEntry(animalName + " has not been fed for " + std::to_string(minutesPassed) + " minutes.");
 
 			aA.hungerWarnLevel++;
 		}
 		else if (aA.current_hunger <= aA.maxHunger / 5.0 && aA.hungerWarnLevel < 2)
 		{
+			p_GameManager.AddLogEntry(animalName + " is starving!");
+
 			aA.hungerWarnLevel++;
 			p_GameManager.AddCrit();
 		}
@@ -223,10 +229,12 @@ namespace NocturnalEngine {
 		}
 		if (aA.current_sanity <= aA.maxSanity / 2.0 && aA.sanityWarnLevel<1)
 		{
+			p_GameManager.AddLogEntry(animalName + " is searching for something...");
 			aA.sanityWarnLevel++;
 		}
 		else if (aA.current_sanity <= aA.maxSanity / 5.0 && aA.sanityWarnLevel < 2)
 		{
+			p_GameManager.AddLogEntry(animalName + " is exhibiting increased restlessness.");
 			aA.sanityWarnLevel++;
 			p_GameManager.AddCrit();
 		}
@@ -237,7 +245,8 @@ namespace NocturnalEngine {
 
 		if (!aA.is_alive)
 		{
-			p_GameManager.AddLogEntry( animalName + " is not moving");
+			p_GameManager.AddLogEntry("Please check " + animalName + "'s enclosure. ");
+			p_GameManager.AddLogEntry(animalName + " is not moving.");
 		}
 		if (aA.isEscaped)
 		{

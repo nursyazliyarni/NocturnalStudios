@@ -7,14 +7,17 @@
         for managing button responses within the engine.
 	
     Primary Author:
-         LAU XIANG YANG (99%)
+         LAU XIANG YANG (50%)
 		- Created the ButtonResponse class and its function specification.
 	Seconday Author(s):
-		LAYCOCK ENHUI SARAH (1%)
+		LAYCOCK ENHUI SARAH (50%)
 		- Added random sound functionality for specific ingame buttons so 
 		  that they play a random sound instead of one singular sound
 		- updated the collision logic so it will actually work with the colliders
 		  and and accept circle colliders
+		(06/03/2026)
+		- Rewrote the script so none of the values hardcoded. Instead linked the script to
+		  ButtonComponent which users can add the logic into on that side
 
     All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
 *------------------------------------------------------------------------------------------------*/
@@ -106,20 +109,28 @@ namespace NocturnalEngine
 			
 			if (curr_state == button_state::release)// when mouse button is release, call the button functions, release is selected to prevent function from calling when mouse is held down 
 			{
+				// goes to a scene
 				if (buttonFlag & ButtonFlag::GOTO_SCENE) p_Scene->setSceneToLoad(buttonComponent.gotoScene);
 
-				if (buttonFlag & ButtonFlag::RESET_STATS) p_GameManager.ResetStats();
+				// resets stats
+				if (buttonFlag & ButtonFlag::RESET_STATS) p_GameManager.ResetSystem(true);
 
+				// sets the game state
 				if (buttonFlag & ButtonFlag::SET_GAME_STATE) p_GameManager.SetState(static_cast<GameManager::GameState>(buttonComponent.stateToSet));
 
+				//calls the next level function
 				if (buttonFlag & ButtonFlag::NEXT_LEVEL) p_GameManager.NextLevel();
 
+				//sets volume to mute
 				if (buttonFlag & ButtonFlag::MUTE_AUDIO) p_Audio->SetVolumeByChannel(p_Audio->GetMasterChannelGroup(), 0.0f); //tell the system to mute
 
+				//sets camera zoom
 				if (buttonFlag & ButtonFlag::SET_CAMERA_ZOOM) Graphic::mcamera->SetZoomLevel(buttonComponent.cameraZoom);
 
+				//unused, was for a prototype single-scene game
 				if (buttonFlag & ButtonFlag::ALT_SCENE_SWITCH) p_GameManager.SetSceneToSwitch(buttonComponent.altSceneSwitch);
 
+				//exits the game
 				if (buttonFlag & ButtonFlag::EXIT_GAME) p_GUI->toggle_script();
 
 			}
@@ -135,10 +146,13 @@ namespace NocturnalEngine
 		{
 			if (!leftcollider) 
 			{
+				//changes texture back
 				if (buttonFlag & ButtonFlag::TEX_CHANGE_ON_HOVER) ChangeTexture(originalTexture);
 
+				//unscales the button
 				if (buttonFlag & ButtonFlag::SCALE_ON_HOVER)ScaleButton(1.f/buttonComponent.hoverScale, transform);
 
+				//tells the audio to mute 
 				if (buttonFlag & ButtonFlag::AUDIO_ON_HOVER)MuteAudio();
 
 				leftcollider = true;
@@ -206,6 +220,10 @@ namespace NocturnalEngine
 		return false;
 	}
 
+	//im so tired i dont wanna explain this
+	//thius just checks for an audio component attaxchedx tpo the button object
+	//then depending on if itds hpvering ot clicking and if itsd random or not 
+	//it plays the sound
 	void ButtonResponse::PlayAudio(bool hover, const ButtonComponent& button) {
 		if (!p_ecs.HaveComponent<Audio>(entityID)) return;
 
@@ -229,6 +247,7 @@ namespace NocturnalEngine
 		audio[soundIndex].should_play = true;
 	}
 
+	//this is used for hover because what if u want to keep on hearing the same sound effect this will stop the sound efect apon exiting
 	void ButtonResponse::MuteAudio() {
 		if (!p_ecs.HaveComponent<Audio>(entityID)) return;
 
@@ -238,6 +257,7 @@ namespace NocturnalEngine
 		audio[hoverAudioIndex].should_stop = true;
 	}
 
+	//changes texture by right the button shouldf have a texture
 	void ButtonResponse::ChangeTexture(const std::string& tex) {
 		if (tex.empty())return;
 		if (!p_ecs.HaveComponent<Sprite>(entityID)) return;
@@ -246,6 +266,7 @@ namespace NocturnalEngine
 		
 	}
 
+	//sca;es buton
 	void ButtonResponse::ScaleButton(float scale, Transform& t) {
 
 		t.ScaleBy(scale);
