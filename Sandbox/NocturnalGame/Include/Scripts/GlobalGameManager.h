@@ -148,6 +148,21 @@ namespace NocturnalEngine {
          void ToggleSceneManagement() { altMode = !altMode; }
 
          void SetSceneToSwitch(std::string);
+
+		 //for pause menu
+         void PauseGame();
+         void ResumeGame();
+         bool IsPaused() const;
+         const std::string& GetCurrentScene() const { return currScene; }
+         void SaveAnimalAttributesToScene(const std::string& sceneName, AnimalData aA);
+         bool hasInitialized{ false };
+
+		 //entities for pause menu
+         Entity pausePanelE{ MAX_ENTITIES };
+         Entity resumeButtonE{ MAX_ENTITIES };
+         Entity menuButtonE{ MAX_ENTITIES };
+         bool escWasPressed = false;
+
     private:
 
         LevelConfig levelConfig{};

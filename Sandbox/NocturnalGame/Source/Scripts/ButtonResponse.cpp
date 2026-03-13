@@ -49,43 +49,81 @@ namespace NocturnalEngine
 
 	void ButtonResponse::Update(float Frametime)
 	{
+		if (p_GameManager.GetGameState() == GameManager::GameState::PAUSED)
+		{
+			if (!p_ecs.HaveComponent<NameTag>(entityID))
+				return;
+			const std::string& name = p_ecs.GetComponent<NameTag>(entityID).GetNameTag();
+			if (name != "Resume" && name != "Exit")
+				return;
+		}
 
-		Graphic::camera.SetPosition({ 0.0f,0.0f,0.0f });// ensure that camera is set to  center at the start
+		Graphic::camera.SetPosition({ 0.0f,0.0f,0.0f });
 		UNREFERENCED_PARAMETER(Frametime);
-
 
 		if (KeyboardSceneSwitch()) return;
 
-
-		if (!p_ecs.HaveComponent<ButtonComponent>(entityID)||
-			!p_ecs.HaveComponent<Collider>(entityID)||
+		if (!p_ecs.HaveComponent<ButtonComponent>(entityID) ||
+			!p_ecs.HaveComponent<Collider>(entityID) ||
 			!p_ecs.HaveComponent<Transform>(entityID)) return;
 
 		ButtonComponent& buttonComponent{ p_ecs.GetComponent<ButtonComponent>(entityID) };
 		int buttonFlag{ buttonComponent.Flag() };
-
-
-		if (buttonFlag ==0) return;
-
 		Collider& col{ p_ecs.GetComponent<Collider>(entityID) };
 		Transform& transform{ p_ecs.GetComponent<Transform>(entityID) };
 
-		if (p_GUI->Check_HTP() == false) // if HTP mode is off allow button to be click and interacted with
+		// Update mouse state first (needed for both pause and normal buttons)
+		if (p_GUI->Check_HTP() == false)
 		{
-			//this code is to check the current state of the mouse
-			if (curr_state != button_state::click)curr_state = button_state::idle;// return to idle whe the state is set to release at the start of the next game loop
-
-
+			if (curr_state != button_state::click) curr_state = button_state::idle;
 			if (p_Input->MousePressed(GLFW_MOUSE_BUTTON_LEFT) && curr_state == button_state::idle)
-			{
-				curr_state = button_state::click; //if left mouse is held down set mouse state to click
-			}
-
+				curr_state = button_state::click;
 			else if (p_Input->MouseIsReleased(GLFW_MOUSE_BUTTON_LEFT) && curr_state == button_state::click)
+				curr_state = button_state::release;
+		}
+
+		// Pause menu buttons � handle click with proper hit test
+		if (p_ecs.HaveComponent<NameTag>(entityID))
+		{
+			const std::string& name = p_ecs.GetComponent<NameTag>(entityID).GetNameTag();
+			if (curr_state == button_state::release && is_within_box(p_GUI->MousePosition, col, transform))
 			{
-				curr_state = button_state::release;//when mouse key is release set state to release
+				if (name == "Resume")
+				{
+					p_GameManager.ResumeGame();
+					return;
+				}
+				else if (name == "Exit")
+				{
+					p_GameManager.ResumeGame();
+					p_GameManager.ResetSystem(false);
+					p_Scene->setSceneToLoad("Assets/Scene/Menu.json");
+					return;
+				}
 			}
 		}
+
+		if (buttonFlag ==0) return;
+
+		/*Collider& col{ p_ecs.GetComponent<Collider>(entityID) };
+		Transform& transform{ p_ecs.GetComponent<Transform>(entityID) };*/
+
+		//if (p_GUI->Check_HTP() == false) // if HTP mode is off allow button to be click and interacted with
+		//{
+		//	//this code is to check the current state of the mouse
+		//	if (curr_state != button_state::click)curr_state = button_state::idle;// return to idle whe the state is set to release at the start of the next game loop
+
+
+		//	if (p_Input->MousePressed(GLFW_MOUSE_BUTTON_LEFT) && curr_state == button_state::idle)
+		//	{
+		//		curr_state = button_state::click; //if left mouse is held down set mouse state to click
+		//	}
+
+		//	else if (p_Input->MouseIsReleased(GLFW_MOUSE_BUTTON_LEFT) && curr_state == button_state::click)
+		//	{
+		//		curr_state = button_state::release;//when mouse key is release set state to release
+		//	}
+		//}
 
 		if (is_within_box(p_GUI->MousePosition, col, transform))//check if the system is hovering over an object, change to the hover sprite if it is
 		{
@@ -160,7 +198,6 @@ namespace NocturnalEngine
 				entercollider = false;
 			}
 		}
-
 		
 	}
 
@@ -191,32 +228,34 @@ namespace NocturnalEngine
 		// ------------------------------------------------------------	
 		if (p_GUI->Check_HTP() == false&&p_Scene->isGameplay) // don't allow shortcuts during HTP overlay
 		{
-			if (p_Input->KeyPressed(GLFW_KEY_1) || p_Input->KeyPressed(GLFW_KEY_W))
-			{
-				p_ecs.GetComponent<Audio>(GetScriptEntityID())[0].should_play = true;
-				p_Scene->setSceneToLoad("Assets/Scene/FlamingoScene.json");
-				return true;
-			}
-			if (p_Input->KeyPressed(GLFW_KEY_2) || p_Input->KeyPressed(GLFW_KEY_A))
-			{
-				p_ecs.GetComponent<Audio>(GetScriptEntityID())[0].should_play = true;
-				p_Scene->setSceneToLoad("Assets/Scene/SealScene.json");
-				return true;
-			}
-			if (p_Input->KeyPressed(GLFW_KEY_3) || p_Input->KeyPressed(GLFW_KEY_S))
-			{
-				p_ecs.GetComponent<Audio>(GetScriptEntityID())[0].should_play = true;
-				p_Scene->setSceneToLoad("Assets/Scene/HorseScene.json");
-				return true;
-			}
-			if (p_GameManager.CurrentLevel() > 1 && (p_Input->KeyPressed(GLFW_KEY_4) || p_Input->KeyPressed(GLFW_KEY_D)))
-			{
-				p_ecs.GetComponent<Audio>(GetScriptEntityID())[0].should_play = true;
-				p_Scene->setSceneToLoad("Assets/Scene/OwlScene.json");
-				return true;
+			auto playAudioAndSwitch = [&](const char* scene) {
+				if (p_ecs.HaveComponent<Audio>(GetScriptEntityID()))
+					p_ecs.GetComponent<Audio>(GetScriptEntityID())[0].should_play = true;
+				p_Scene->setSceneToLoad(scene);
+				};
+			if (p_GameManager.GetGameState() == GameManager::GameState::PLAYING) {
+				if (p_Input->KeyPressed(GLFW_KEY_1) || p_Input->KeyPressed(GLFW_KEY_W))
+				{
+					playAudioAndSwitch("Assets/Scene/FlamingoScene.json");
+					return true;
+				}
+				if (p_Input->KeyPressed(GLFW_KEY_2) || p_Input->KeyPressed(GLFW_KEY_A))
+				{
+					playAudioAndSwitch("Assets/Scene/SealScene.json");
+					return true;
+				}
+				if (p_Input->KeyPressed(GLFW_KEY_3) || p_Input->KeyPressed(GLFW_KEY_S))
+				{
+					playAudioAndSwitch("Assets/Scene/HorseScene.json");
+					return true;
+				}
+				if (p_GameManager.CurrentLevel() > 1 && (p_Input->KeyPressed(GLFW_KEY_4) || p_Input->KeyPressed(GLFW_KEY_D)))
+				{
+					playAudioAndSwitch("Assets/Scene/OwlScene.json");
+					return true;
+				}
 			}
 		}
-
 		return false;
 	}
 

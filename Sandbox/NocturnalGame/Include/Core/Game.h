@@ -66,6 +66,7 @@ namespace NocturnalEngine {
     private:
         ScriptFactory m_scriptFactory;
         LuminaraZoo m_gameConfig;
+        bool escPressedLastFrame{ false };
     };
 }
 

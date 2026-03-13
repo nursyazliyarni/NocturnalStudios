@@ -21,6 +21,7 @@
 #include "Math/Random.h"
 #include "Scripts/AnimalLogic.h"
 #include "ECS/Components/ButtonComponent.h"
+#include "graphics/Graphics.h"
 
 namespace NocturnalEngine {
 
@@ -54,6 +55,10 @@ namespace NocturnalEngine {
     initialization, this function is empty
     ****************************************************************************/
     void GameManager::Init() {
+        Graphic::layerEnabled[8] = false; //hide pause layer on start
+        p_GUI->set_pause(false);
+        if (hasInitialized) return; //already set up, don't reinitialize
+        hasInitialized = true;
         if (!levelConfig.SetupLevelData("Assets/LevelPreset")||levelConfig.GetLevels().find(levelNum)==levelConfig.GetLevels().end()) {
             AnimalAttributes defaultAttributes{};
             defaultAttributes.SetDefault();
@@ -74,7 +79,7 @@ namespace NocturnalEngine {
         }
 
         currState=  GameManager::GameState::PLAYING;
-        deadAnimals = 0;
+        deadAnimals = 0; 
     }
 
     void GameManager::CombinedSceneStart() {
@@ -171,7 +176,10 @@ namespace NocturnalEngine {
     ****************************************************************************/
     void GameManager::Update(float dt) {
        
-        
+        if (!IsPaused())
+        {
+            Graphic::layerEnabled[8] = false;
+        }
 
         if (p_Scene->isGameplay&& currState !=GameState::PAUSED)
         {
@@ -322,6 +330,8 @@ namespace NocturnalEngine {
     void GameManager::ResetSystem(bool resetStats) {
 
 
+        Graphic::layerEnabled[8] = false;
+        p_GUI->set_pause(false);
         AnimalAttributes defaultAttributes{};
         defaultAttributes.SetDefault();
         for (std::pair<const std::string, AnimalData>& sceneAnimalPair : sceneAnimalMap)
@@ -342,6 +352,7 @@ namespace NocturnalEngine {
         
         currState = GameManager::GameState::ENDING;
         targetVisibility = false;
+        hasInitialized = false;
     }
 
     void GameManager::SaveAnimalAttributesToCurrentScene(AnimalData aA) {
@@ -652,5 +663,33 @@ namespace NocturnalEngine {
 
         levelList.emplace(levelIndex, leveldat);
         return true; 
+    }
+
+	//Pause and resume functions, also a function to check if the game is paused
+    void GameManager::PauseGame() {
+        if (currState == GameState::PAUSED) return;
+        prePauseState = currState;
+        currState = GameState::PAUSED;
+        Graphic::layerEnabled[8] = true;   //show pause layer
+        p_GUI->set_pause(true);
+    }
+
+    void GameManager::ResumeGame() {
+        if (currState != GameState::PAUSED) return;
+        currState = prePauseState;
+        Graphic::layerEnabled[8] = false;  //hide pause layer
+        p_GUI->set_pause(false);
+    }
+
+    bool GameManager::IsPaused() const {
+        return currState == GameState::PAUSED;
+    }
+    void GameManager::SaveAnimalAttributesToScene(const std::string& sceneName, AnimalData aA) {
+        if (currState == GameManager::GameState::ENDING) return;
+        auto it = sceneAnimalMap.find(sceneName);
+        if (it == sceneAnimalMap.end())
+            sceneAnimalMap.emplace(sceneName, aA);
+        else
+            it->second = aA;
     }
 }

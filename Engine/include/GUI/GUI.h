@@ -64,6 +64,7 @@ namespace NocturnalEngine
 		bool Check_HTP(); // check if player is currently in how to play in the main menu
 		bool is_within_box(glm::vec2 cur, button_bb box);// a helper function to check  if the cursor is touching the button,
 		glm::vec2 MousePosition{};
+		void set_pause(bool val) { is_Pause = val; }
 	};
 
 

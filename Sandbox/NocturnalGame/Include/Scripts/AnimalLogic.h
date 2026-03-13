@@ -84,6 +84,7 @@ namespace NocturnalEngine
 		virtual void SetScriptEntityID(Entity& entity) override { entityID = entity; }
 
 		virtual Entity& GetScriptEntityID() override { return entityID; }
+		std::string cachedSceneName; //this is to check if the scene has changed since last update, if it has, then we need to reload the values from the gamemanager
 
 	private:
 		AttributesDecreaseChance chance;
