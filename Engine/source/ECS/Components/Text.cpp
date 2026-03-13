@@ -40,6 +40,7 @@ namespace NocturnalEngine
         switch (enum_text_type) {
         case text_type::single_text: return "single text";
         case text_type::array_text: return "array of text";
+        default: return "Unknown Text Type";
         }
     }
 
@@ -100,7 +101,7 @@ namespace NocturnalEngine
                     ImGui::Text("Total current number of text inside array: %d", mContent_array.size());
                     ImGui::Text("Current Content Index:"); ImGui::SameLine();
                     ImGui::DragInt("##Current Content Index", &current_index, 1, 0,
-                        mContent_array.size() - 1, "%d", ImGuiSliderFlags_AlwaysClamp);
+                        static_cast<int>(mContent_array.size() - 1), "%d", ImGuiSliderFlags_AlwaysClamp);
 
                     if (check_index != current_index) { 
                         strcpy_s(edit_buffer, sizeof(edit_buffer), mContent_array[current_index].c_str());

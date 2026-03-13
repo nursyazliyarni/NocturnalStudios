@@ -9,6 +9,7 @@ bool NocturnalEngine::TutorialAttributes::ToEditor() {
         ImGui::DragInt("tutorial order", &tutorial_order, 1, 0, 1000);
         return false;
     }
+    return true;
 }
 
 bool NocturnalEngine::TutorialAttributes::Deserialize(const rapidjson::Value& obj)

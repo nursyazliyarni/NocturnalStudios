@@ -67,6 +67,12 @@ namespace NocturnalEngine {
 		void SetAlpha(float in) { mAlpha = in; }
 		float GetAlpha() { return mAlpha; }
 
+		int& Get_SPRITE_type() { return SPRITE_type; }
+		void Set_SPRITE_type(int enum_sprite_type) { SPRITE_type = enum_sprite_type; }
+
+		int& Get_SHAPE_type() { return SHAPE_type; }
+		void Set_SHAPE_type(int enum_shape_type) { SHAPE_type = enum_shape_type; }
+
 		void SetLayerOrder(int layer) { LayerOrder = layer; }
 		/*!*************************************************************************
 		Retrieves Component Entity ID
@@ -89,9 +95,14 @@ namespace NocturnalEngine {
 		// 0=Auto, n>0 maps to stateRules[n-1].
 		int statePreviewMode{ 0 };
 		std::vector<AnimationStateRule> stateRules{};
+		
 		//altas 
 	private:
+
 		int SPRITE_type;
+		int SHAPE_type;
+		float circle_radius;
+		std::array<float, 4> rgba_color;
 		std::string mTextureName;
 		vec2D mUVcooridnates;
 		float mAlpha;
@@ -101,6 +112,11 @@ namespace NocturnalEngine {
 		enum sprite_type {
 			texture, shape, sprite_type_count
 		};
+		enum shape_type {
+			rectangle, circle, shape_type_count
+		};
 		const char* sprite_type_ToString(int enum_sprite_type);
+		const char* shape_type_ToString(int enum_shape_type);
+		friend class Graphic;
 	};
 }

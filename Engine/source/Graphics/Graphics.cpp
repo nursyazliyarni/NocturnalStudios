@@ -234,8 +234,23 @@ namespace NocturnalEngine {
 
 					else
 					{
+						if (sprite.Get_SPRITE_type() ==Sprite::sprite_type::texture)
 						mRenderer->DrawQuad({ transform.GetPos().x, transform.GetPos().y }, { transform.GetScale().x, transform.GetScale().y },
 							transform.GetRot(), GETTEXTURE(sprite.GetTexture()));
+						else { //render shape here depends on which shape type is used
+							if (sprite.Get_SHAPE_type() == Sprite::shape_type::rectangle) {
+								mRenderer->DrawRect({ transform.GetPos().x, transform.GetPos().y, 0.0f},
+									{ transform.GetScale().x, transform.GetScale().y },
+									{ sprite.rgba_color[0],sprite.rgba_color[1], sprite.rgba_color[2], sprite.rgba_color[3] });
+							}
+
+							if (sprite.Get_SHAPE_type() == Sprite::shape_type::circle) {
+								NocturnalEngine::Matrix4x4 translate = NocturnalEngine::Translate4x4(translate, transform.GetPos().x, transform.GetPos().y, 0.0f);
+								NocturnalEngine::Matrix4x4 scale = NocturnalEngine::Scale4x4(scale, sprite.circle_radius*2, sprite.circle_radius*2, sprite.circle_radius*2);
+								NocturnalEngine::Matrix4x4 Transform = translate * scale;
+								mRenderer->DrawCircle(Transform, { sprite.rgba_color[0],sprite.rgba_color[1], sprite.rgba_color[2], sprite.rgba_color[3] }, 0.01f);
+							}
+						}
 					}
 
 					if (p_Editor->mDebugDraw)

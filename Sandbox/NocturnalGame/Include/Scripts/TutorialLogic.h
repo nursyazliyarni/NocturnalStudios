@@ -49,6 +49,7 @@ namespace NocturnalEngine
 		}
 
 		bool Requirements(Entity e) override {
+			UNREFERENCED_PARAMETER(e);
 			//if (p_ecs.HaveComponent<Collider>(e)) { return true; }
 			return true;
 		}

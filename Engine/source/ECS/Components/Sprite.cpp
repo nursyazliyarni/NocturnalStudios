@@ -24,7 +24,7 @@ namespace NocturnalEngine {
 	****************************************************************************/
 	Sprite::Sprite() : mTextureName("Blank"), Index({ 0,0 }), mUVcooridnates({ 512.0f, 512.0f }),
 		is_SpriteSheet(false), is_Animated(false), mAlpha(1), MaxIndex_X(0), displayTime(GetMaxIndex()),
-		internaltimer(0), LayerOrder(0), SPRITE_type{ texture }
+		internaltimer(0), LayerOrder(0), SPRITE_type{ texture }, SHAPE_type{rectangle}, circle_radius{}, rgba_color{}
 	{
 		// Provide one fallback rule so auto mode always has a valid default state.
 		AnimationStateRule idle{};
@@ -41,6 +41,15 @@ namespace NocturnalEngine {
 		switch (enum_sprite_type) {
 		case sprite_type::texture: return "texture";
 		case sprite_type::shape: return "shape";
+		default: return "Unknown Sprite Type";
+		}
+	}
+
+	const char* Sprite::shape_type_ToString(int enum_shape_type) {
+		switch (enum_shape_type) {
+		case shape_type::rectangle: return "rectangle";
+		case shape_type::circle: return "circle";
+		default: return "Unknown Shape Type";
 		}
 	}
 
@@ -65,48 +74,74 @@ namespace NocturnalEngine {
 			}
 
 			if (SPRITE_type == sprite_type::texture) {
+				ImGui::PushItemWidth(100.0f);
+				ImGui::PushStyleColor(ImGuiCol_Button, ImVec4());
+				ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4());
+				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4());
+				ImGui::Text("Image : "); ImGui::SameLine();
+				ImGui::PopStyleColor(3);
+				auto& texturePath = GetTexture();
+				ImGui::SetNextItemWidth(140.0f);
 
+				if (ImGui::BeginCombo("##sprite", texturePath.c_str()))
+				{
+					for (auto& [str, tex] : ResourceManager::textures)
+					{
+						if (ImGui::Selectable(str.c_str()))
+						{
+							texturePath = str;
+							NOCTURNAL_ENGINE_INFO("Loaded {0} Sprite", texturePath.c_str());
+							changed = true;
+						}
+					}
+					ImGui::EndCombo();
+				}
+
+				if (ImGui::BeginDragDropTarget())
+				{
+					if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Textures"))
+					{
+						texturePath = *(const std::string*)payload->Data;
+						changed = true;
+					}
+					ImGui::EndDragDropTarget();
+				}
+
+				changed |= ImGui::Checkbox("SpriteSheet", &is_SpriteSheet); ImGui::SameLine();
 			}
 
 			else { //shape
+				ImGui::Text("Shape Type"); ImGui::SameLine();
+				if (ImGui::BeginCombo("##Shape Type", shape_type_ToString(SHAPE_type)))
+				{
+					for (unsigned int i{ 0 }; i < shape_type::shape_type_count; i++) {
+						shape_type selected_shape_type = static_cast<shape_type>(i);
+						bool is_selected = (SHAPE_type == selected_shape_type);
+						if (ImGui::Selectable(shape_type_ToString(selected_shape_type), is_selected))
+						{
+							SHAPE_type = selected_shape_type;
+						}
+						if (is_selected)
+							ImGui::SetItemDefaultFocus();
+					}
+					ImGui::EndCombo();
+				}
 
+				ImGui::Text("Circle Radius"); ImGui::SameLine();
+				ImGui::DragFloat("##Circle Radius", &circle_radius, 1.f, 0.f, 2.f);
+				ImGui::Text("RED color"); ImGui::SameLine();
+				ImGui::DragFloat("##RED color", &rgba_color[0], 0.05f, 0.f, 1.f);
+				ImGui::Text("GREEN color"); ImGui::SameLine();
+				ImGui::DragFloat("##GREEN color", &rgba_color[1], 0.05f, 0.f, 1.f);
+				ImGui::Text("BLUE color"); ImGui::SameLine();
+				ImGui::DragFloat("##BLUE color", &rgba_color[2], 0.05f, 0.f, 1.f);
+				ImGui::Text("ALPHA"); ImGui::SameLine();
+				ImGui::DragFloat("##ALPHA", &rgba_color[3], 0.05f, 0.f, 1.f);
 			}
 
-			changed |= ImGui::Checkbox("SpriteSheet", &is_SpriteSheet); ImGui::SameLine();
+			
 			changed |= ImGui::Checkbox("Animation", &is_Animated);
 			
-			ImGui::PushItemWidth(100.0f);
-			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4());
-			ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4());
-			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4());
-			ImGui::Text("Image : "); ImGui::SameLine();
-			ImGui::PopStyleColor(3);
-			auto& texturePath = GetTexture();
-			ImGui::SetNextItemWidth(140.0f);
-
-			if (ImGui::BeginCombo("##sprite", texturePath.c_str()))
-			{
-				for (auto& [str, tex] : ResourceManager::textures)
-				{
-					if (ImGui::Selectable(str.c_str()))
-					{
-						texturePath = str;
-						NOCTURNAL_ENGINE_INFO("Loaded {0} Sprite", texturePath.c_str());
-						changed = true;
-					}
-				}
-				ImGui::EndCombo();
-			}
-
-			if (ImGui::BeginDragDropTarget())
-			{
-				if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Textures"))
-				{
-					texturePath = *(const std::string*)payload->Data;
-					changed = true;
-				}
-				ImGui::EndDragDropTarget();
-			}
 			ImGui::Text("Layering Order: "); ImGui::SameLine();
 			// ImGui::DragInt("##layering", (int*)&sprite.LayerOrder, 1, 0, 8);
 			changed |= ImGui::DragInt("##layering", (int*)&LayerOrder, 1, 0, NocturnalEngine::Graphic::MAX_LAYERS - 1);
@@ -120,6 +155,22 @@ namespace NocturnalEngine {
 	****************************************************************************/
 	bool Sprite::Deserialize(const rapidjson::Value& obj)
 	{
+		if (obj.HasMember("shape/texture") && obj["shape/texture"].IsInt())
+			SPRITE_type = obj["shape/texture"].GetInt();
+		if (obj.HasMember("shape type") && obj["shape type"].IsInt())
+			SHAPE_type = obj["shape type"].GetInt();
+		if (obj.HasMember("circle radius") && obj["circle radius"].IsNumber())
+			circle_radius = obj["circle radius"].GetFloat();
+
+		if (obj.HasMember("RGBA") && obj["RGBA"].IsArray())
+		{
+			const auto& arr = obj["RGBA"];
+			for (rapidjson::SizeType index{0};index<arr.Size();index++)
+			{
+				if (arr[index].IsNumber()) rgba_color[index] = arr[index].GetFloat();
+			}
+		}
+
 		mTextureName = std::string(obj["TextureName"].GetString());
 		Index.x = int(obj["Index_X"].GetInt());
 		Index.y = int(obj["Index_Y"].GetInt());
@@ -241,6 +292,20 @@ namespace NocturnalEngine {
 	****************************************************************************/
 	bool Sprite::Serialize(rapidjson::PrettyWriter<rapidjson::StringBuffer>* writer) const
 	{
+		writer->Key("shape/texture");
+		writer->Int(SPRITE_type);
+		writer->Key("shape type");
+		writer->Int(SHAPE_type);
+		writer->Key("circle radius");
+		writer->Double(circle_radius);
+
+		writer->Key("RGBA");
+		writer->StartArray(); //start array here
+		for (const auto& color : rgba_color) {
+			writer->Double(color); //serialize array of data here
+		}
+		writer->EndArray(); //end array here
+
 		writer->Key("TextureName");
 		writer->String(mTextureName.c_str());
 		writer->Key("Index_X");

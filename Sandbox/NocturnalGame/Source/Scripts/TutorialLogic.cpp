@@ -13,6 +13,7 @@ namespace NocturnalEngine {
 
 	void TutorialLogic::Update(float Frametime)
 	{
+		UNREFERENCED_PARAMETER(Frametime);
 		static unsigned int current_index{ 0 };
 		if (p_ecs.HaveComponent<Text>(entityID)) {
 			auto& text{ p_ecs.GetComponent<Text>(entityID) };
