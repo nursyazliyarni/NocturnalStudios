@@ -39,8 +39,8 @@ namespace NocturnalEngine {
 		if (textureKey.empty() || !ResourceManager::GetTexture(textureKey))
 			return;
 
-		// Frame count is inferred from spritesheet width (512px per frame).
-		int maxFrames = static_cast<int>(GETTEXTURE(textureKey)->GetWidth() / 512.f);
+		const float frameWidth = sprite.GetUVCoor().x > 0.0f ? sprite.GetUVCoor().x : 512.0f;
+		int maxFrames = static_cast<int>(std::round(GETTEXTURE(textureKey)->GetWidth() / frameWidth));
 		if (maxFrames <= 0)
 			maxFrames = 1;
 		sprite.GetMaxIndex() = maxFrames;
@@ -79,11 +79,11 @@ namespace NocturnalEngine {
 		}
 	}
 
-	std::string Animation::ResolveStateTexture(const Sprite& sprite,
+	int Animation::ResolveStateRuleIndex(const Sprite& sprite,
 		double hungerRatio, double healthRatio, double sanityRatio, bool usePreviewMode)
 	{
 		if (!sprite.stateManagerEnabled || sprite.stateRules.empty())
-			return "";
+			return -1;
 
 		int selectedRule = -1;
 
@@ -138,6 +138,16 @@ namespace NocturnalEngine {
 		}
 
 		if (selectedRule < 0 || selectedRule >= static_cast<int>(sprite.stateRules.size()))
+			return -1;
+
+		return selectedRule;
+	}
+
+	std::string Animation::ResolveStateTexture(const Sprite& sprite,
+		double hungerRatio, double healthRatio, double sanityRatio, bool usePreviewMode)
+	{
+		const int selectedRule = ResolveStateRuleIndex(sprite, hungerRatio, healthRatio, sanityRatio, usePreviewMode);
+		if (selectedRule < 0)
 			return "";
 
 		const auto& chosen = sprite.stateRules[selectedRule];
@@ -147,6 +157,41 @@ namespace NocturnalEngine {
 			return "";
 
 		return chosen.textureKey;
+	}
+
+	bool Animation::ApplyStateRule(Sprite& sprite, int ruleIndex)
+	{
+		if (ruleIndex < 0 || ruleIndex >= static_cast<int>(sprite.stateRules.size()))
+			return false;
+
+		auto& rule = sprite.stateRules[ruleIndex];
+		if (rule.textureKey.empty() || !ResourceManager::GetTexture(rule.textureKey))
+			return false;
+
+		const bool changedTexture = sprite.GetTexture() != rule.textureKey;
+		const bool changedUV =
+			std::abs(sprite.GetUVCoor().x - rule.uSize) > 0.001f ||
+			std::abs(sprite.GetUVCoor().y - rule.vSize) > 0.001f;
+
+		sprite.SetTexture(rule.textureKey);
+		sprite.GetUVCoor().x = rule.uSize;
+		sprite.GetUVCoor().y = rule.vSize;
+
+		const float frameWidth = rule.uSize > 0.0f ? rule.uSize : 512.0f;
+		int maxFrames = static_cast<int>(std::round(GETTEXTURE(rule.textureKey)->GetWidth() / frameWidth));
+		if (maxFrames <= 0)
+			maxFrames = 1;
+		sprite.GetMaxIndex() = maxFrames;
+
+		if (changedTexture || changedUV)
+		{
+			int x = 0;
+			int y = sprite.GetIndex().y;
+			sprite.SetIndex(x, y);
+			sprite.internaltimer = 0.0f;
+		}
+
+		return changedTexture || changedUV;
 	}
 
 }

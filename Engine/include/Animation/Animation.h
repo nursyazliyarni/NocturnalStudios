@@ -26,8 +26,11 @@ namespace NocturnalEngine {
 		Animation();
 		void UpdateAnimation(float deltatime, Sprite& sprite);
 		// Resolve the texture key from sprite state rules using normalized status ratios.
+		static int ResolveStateRuleIndex(const Sprite& sprite,
+			double hungerRatio, double healthRatio, double sanityRatio, bool usePreviewMode);
 		static std::string ResolveStateTexture(const Sprite& sprite,
 			double hungerRatio, double healthRatio, double sanityRatio, bool usePreviewMode);
+		static bool ApplyStateRule(Sprite& sprite, int ruleIndex);
 	private:
 	};
 }

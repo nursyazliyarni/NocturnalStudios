@@ -1935,10 +1935,13 @@ namespace NocturnalEngine {
             return;
         }
 
-        ImGui::Separator();
-        ImGui::Text("Spritesheet UV");
-        changed |= ImGui::DragFloat("U", &sprite.GetUVCoor().x, 0.5f);
-        changed |= ImGui::DragFloat("V", &sprite.GetUVCoor().y, 0.5f);
+        if (!sprite.stateManagerEnabled)
+        {
+            ImGui::Separator();
+            ImGui::Text("Spritesheet UV");
+            changed |= ImGui::DragFloat("U", &sprite.GetUVCoor().x, 0.5f);
+            changed |= ImGui::DragFloat("V", &sprite.GetUVCoor().y, 0.5f);
+        }
 
         ImGui::Separator();
         ImGui::Text("Animation State Manager");
@@ -2001,6 +2004,8 @@ namespace NocturnalEngine {
                 Sprite::AnimationStateRule r{};
                 r.name = "State " + std::to_string(sprite.stateRules.size() + 1);
                 r.textureKey = sprite.GetTexture();
+                r.uSize = sprite.GetUVCoor().x;
+                r.vSize = sprite.GetUVCoor().y;
                 r.source = 3;
                 r.compare = 0;
                 r.threshold = 0.5f;
@@ -2032,6 +2037,8 @@ namespace NocturnalEngine {
                     }
 
                     drawStateTexturePicker("Texture", rule.textureKey, 6000 + static_cast<int>(i));
+                    changed |= ImGui::DragFloat("U", &rule.uSize, 0.5f, 1.0f, 4096.0f, "%.1f");
+                    changed |= ImGui::DragFloat("V", &rule.vSize, 0.5f, 1.0f, 4096.0f, "%.1f");
 
                     const char* sourceItems[] = { "Hunger", "Health", "Sanity", "Always" };
                     changed |= ImGui::Combo("Source", &rule.source, sourceItems, IM_ARRAYSIZE(sourceItems));
@@ -2067,19 +2074,8 @@ namespace NocturnalEngine {
             if (sprite.statePreviewMode > 0 &&
                 sprite.statePreviewMode <= static_cast<int>(sprite.stateRules.size()))
             {
-                const auto& previewRule = sprite.stateRules[sprite.statePreviewMode - 1];
-                if (!previewRule.textureKey.empty() && ResourceManager::GetTexture(previewRule.textureKey))
-                {
-                    if (sprite.GetTexture() != previewRule.textureKey)
-                    {
-                        sprite.SetTexture(previewRule.textureKey);
-                        int x = 0;
-                        int y = sprite.GetIndex().y;
-                        sprite.SetIndex(x, y);
-                        sprite.internaltimer = 0.0f;
-                        changed = true;
-                    }
-                }
+                if (Animation::ApplyStateRule(sprite, sprite.statePreviewMode - 1))
+                    changed = true;
             }
         }
 

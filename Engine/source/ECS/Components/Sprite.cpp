@@ -29,6 +29,8 @@ namespace NocturnalEngine {
 		// Provide one fallback rule so auto mode always has a valid default state.
 		AnimationStateRule idle{};
 		idle.name = "Idle";
+		idle.uSize = 512.0f;
+		idle.vSize = 512.0f;
 		idle.source = 3; // Always
 		idle.compare = 0;
 		idle.threshold = 0.0f;
@@ -205,6 +207,10 @@ namespace NocturnalEngine {
 				AnimationStateRule rule{};
 				if (s.HasMember("Name") && s["Name"].IsString()) rule.name = s["Name"].GetString();
 				if (s.HasMember("Texture") && s["Texture"].IsString()) rule.textureKey = s["Texture"].GetString();
+				rule.uSize = mUVcooridnates.x;
+				rule.vSize = mUVcooridnates.y;
+				if (s.HasMember("Ucoordinates") && s["Ucoordinates"].IsNumber()) rule.uSize = s["Ucoordinates"].GetFloat();
+				if (s.HasMember("Vcoordinates") && s["Vcoordinates"].IsNumber()) rule.vSize = s["Vcoordinates"].GetFloat();
 				if (s.HasMember("Source") && s["Source"].IsInt()) rule.source = s["Source"].GetInt();
 				if (s.HasMember("Compare") && s["Compare"].IsInt()) rule.compare = s["Compare"].GetInt();
 				if (s.HasMember("Threshold") && s["Threshold"].IsNumber()) rule.threshold = s["Threshold"].GetFloat();
@@ -232,6 +238,8 @@ namespace NocturnalEngine {
 				AnimationStateRule idle{};
 				idle.name = "Idle";
 				idle.textureKey = idleTex;
+				idle.uSize = mUVcooridnates.x;
+				idle.vSize = mUVcooridnates.y;
 				idle.source = 3;
 				idle.compare = 0;
 				idle.threshold = 0.0f;
@@ -242,6 +250,8 @@ namespace NocturnalEngine {
 				AnimationStateRule hungry{};
 				hungry.name = "Hungry";
 				hungry.textureKey = hungryTex;
+				hungry.uSize = mUVcooridnates.x;
+				hungry.vSize = mUVcooridnates.y;
 				hungry.source = 0;
 				hungry.compare = 0;
 				hungry.threshold = hungryThreshold;
@@ -252,6 +262,8 @@ namespace NocturnalEngine {
 				AnimationStateRule sick{};
 				sick.name = "Sick";
 				sick.textureKey = sickTex;
+				sick.uSize = mUVcooridnates.x;
+				sick.vSize = mUVcooridnates.y;
 				sick.source = 1;
 				sick.compare = 0;
 				sick.threshold = sickThreshold;
@@ -262,6 +274,8 @@ namespace NocturnalEngine {
 				AnimationStateRule angry{};
 				angry.name = "Angry";
 				angry.textureKey = angryTex;
+				angry.uSize = mUVcooridnates.x;
+				angry.vSize = mUVcooridnates.y;
 				angry.source = 2;
 				angry.compare = 0;
 				angry.threshold = angryThreshold;
@@ -277,6 +291,8 @@ namespace NocturnalEngine {
 			AnimationStateRule idle{};
 			idle.name = "Idle";
 			idle.textureKey = mTextureName;
+			idle.uSize = mUVcooridnates.x;
+			idle.vSize = mUVcooridnates.y;
 			idle.source = 3;
 			idle.compare = 0;
 			idle.threshold = 0.0f;
@@ -346,6 +362,10 @@ namespace NocturnalEngine {
 			writer->String(state.name.c_str());
 			writer->Key("Texture");
 			writer->String(state.textureKey.c_str());
+			writer->Key("Ucoordinates");
+			writer->Double(state.uSize);
+			writer->Key("Vcoordinates");
+			writer->Double(state.vSize);
 			writer->Key("Source");
 			writer->Int(state.source);
 			writer->Key("Compare");

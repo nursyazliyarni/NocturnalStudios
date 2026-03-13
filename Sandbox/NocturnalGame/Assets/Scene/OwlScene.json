@@ -78,6 +78,8 @@
                         {
                             "Name": "Idle",
                             "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
                             "Source": 3,
                             "Compare": 0,
                             "Threshold": 0.0,
@@ -140,7 +142,7 @@
                 {
                     "Component": "Transform",
                     "posX": -0.8536927700042725,
-                    "posY": 0.44117629528045654,
+                    "posY": 0.4706423282623291,
                     "scaleX": 0.31816616654396057,
                     "scaleY": 0.316239595413208,
                     "Rot": 0.0
@@ -179,27 +181,26 @@
                         0.0,
                         0.0
                     ],
-                    "TextureName": "Characters/owl idle",
-                    "Index_X": 3,
+                    "TextureName": "Characters/owl insanity",
+                    "Index_X": 1,
                     "Index_Y": 0,
-                    "Ucoordinates": 512.0,
-                    "Vcoordinates": 512.0,
+                    "Ucoordinates": 534.5,
+                    "Vcoordinates": 536.5,
                     "IsSpriteSheet": true,
                     "IsAnimated": true,
-                    "MaxIndex": 5,
-                    "DisplayTime 0": 0.10000000149011612,
-                    "DisplayTime 1": 0.10000000149011612,
-                    "DisplayTime 2": 0.10000000149011612,
-                    "DisplayTime 3": 0.10000000149011612,
-                    "DisplayTime 4": 0.10000000149011612,
+                    "MaxIndex": 2,
+                    "DisplayTime 0": 0.5,
+                    "DisplayTime 1": 0.5,
                     "LayeringOrder": 1,
                     "StateManagerEnabled": true,
                     "StatePreviewInEditor": false,
-                    "StatePreviewMode": 0,
+                    "StatePreviewMode": 2,
                     "AnimationStates": [
                         {
                             "Name": "Idle",
                             "Texture": "Characters/owl idle",
+                            "Ucoordinates": 514.0,
+                            "Vcoordinates": 536.5,
                             "Source": 3,
                             "Compare": 0,
                             "Threshold": 0.0,
@@ -209,6 +210,8 @@
                         {
                             "Name": "Angry",
                             "Texture": "Characters/owl insanity",
+                            "Ucoordinates": 534.5,
+                            "Vcoordinates": 536.5,
                             "Source": 2,
                             "Compare": 0,
                             "Threshold": 0.5,
@@ -218,6 +221,8 @@
                         {
                             "Name": "Hungry",
                             "Texture": "Characters/owl hungry",
+                            "Ucoordinates": 514.0,
+                            "Vcoordinates": 536.5,
                             "Source": 0,
                             "Compare": 0,
                             "Threshold": 0.5,
@@ -227,6 +232,8 @@
                         {
                             "Name": "Sick",
                             "Texture": "Characters/owl sick",
+                            "Ucoordinates": 619.5,
+                            "Vcoordinates": 536.5,
                             "Source": 1,
                             "Compare": 0,
                             "Threshold": 0.5,
@@ -327,6 +334,8 @@
                         {
                             "Name": "Idle",
                             "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
                             "Source": 3,
                             "Compare": 0,
                             "Threshold": 0.0,
@@ -516,6 +525,8 @@
                         {
                             "Name": "Idle",
                             "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
                             "Source": 3,
                             "Compare": 0,
                             "Threshold": 0.0,
@@ -699,6 +710,8 @@
                         {
                             "Name": "Idle",
                             "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
                             "Source": 3,
                             "Compare": 0,
                             "Threshold": 0.0,
@@ -882,6 +895,8 @@
                         {
                             "Name": "Idle",
                             "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
                             "Source": 3,
                             "Compare": 0,
                             "Threshold": 0.0,
@@ -995,6 +1010,8 @@
                         {
                             "Name": "Idle",
                             "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
                             "Source": 3,
                             "Compare": 0,
                             "Threshold": 0.0,
@@ -1066,6 +1083,8 @@
                         {
                             "Name": "Idle",
                             "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
                             "Source": 3,
                             "Compare": 0,
                             "Threshold": 0.0,
@@ -1212,6 +1231,8 @@
                         {
                             "Name": "Idle",
                             "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
                             "Source": 3,
                             "Compare": 0,
                             "Threshold": 0.0,
@@ -1358,6 +1379,8 @@
                         {
                             "Name": "Idle",
                             "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
                             "Source": 3,
                             "Compare": 0,
                             "Threshold": 0.0,
@@ -1555,6 +1578,8 @@
                         {
                             "Name": "Idle",
                             "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
                             "Source": 3,
                             "Compare": 0,
                             "Threshold": 0.0,
@@ -1607,6 +1632,8 @@
                         {
                             "Name": "Idle",
                             "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
                             "Source": 3,
                             "Compare": 0,
                             "Threshold": 0.0,
@@ -1684,6 +1711,8 @@
                         {
                             "Name": "Idle",
                             "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
                             "Source": 3,
                             "Compare": 0,
                             "Threshold": 0.0,
@@ -1736,6 +1765,8 @@
                         {
                             "Name": "Idle",
                             "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
                             "Source": 3,
                             "Compare": 0,
                             "Threshold": 0.0,
@@ -1788,6 +1819,8 @@
                         {
                             "Name": "Idle",
                             "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
                             "Source": 3,
                             "Compare": 0,
                             "Threshold": 0.0,
@@ -1840,6 +1873,8 @@
                         {
                             "Name": "Idle",
                             "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
                             "Source": 3,
                             "Compare": 0,
                             "Threshold": 0.0,
@@ -1911,6 +1946,8 @@
                         {
                             "Name": "Idle",
                             "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
                             "Source": 3,
                             "Compare": 0,
                             "Threshold": 0.0,
@@ -1963,6 +2000,8 @@
                         {
                             "Name": "Idle",
                             "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
                             "Source": 3,
                             "Compare": 0,
                             "Threshold": 0.0,
@@ -2035,6 +2074,8 @@
                         {
                             "Name": "Idle",
                             "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
                             "Source": 3,
                             "Compare": 0,
                             "Threshold": 0.0,
@@ -2087,6 +2128,8 @@
                         {
                             "Name": "Idle",
                             "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
                             "Source": 3,
                             "Compare": 0,
                             "Threshold": 0.0,
@@ -2139,6 +2182,8 @@
                         {
                             "Name": "Idle",
                             "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
                             "Source": 3,
                             "Compare": 0,
                             "Threshold": 0.0,
@@ -2230,6 +2275,8 @@
                         {
                             "Name": "Idle",
                             "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
                             "Source": 3,
                             "Compare": 0,
                             "Threshold": 0.0,
@@ -2301,6 +2348,8 @@
                         {
                             "Name": "Idle",
                             "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
                             "Source": 3,
                             "Compare": 0,
                             "Threshold": 0.0,
@@ -2405,6 +2454,8 @@
                         {
                             "Name": "Idle",
                             "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
                             "Source": 3,
                             "Compare": 0,
                             "Threshold": 0.0,
@@ -2462,6 +2513,8 @@
                         {
                             "Name": "Idle",
                             "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
                             "Source": 3,
                             "Compare": 0,
                             "Threshold": 0.0,
