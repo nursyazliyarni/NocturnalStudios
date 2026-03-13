@@ -127,7 +127,7 @@ namespace NocturnalEngine {
 	void Shader::Compile(const std::unordered_map<GLenum, std::string>& shaderSources)
 	{
 		GLuint program = glCreateProgram();
-		std::array<GLenum,2> shaderIDs; //only have 2 shaders for now
+		std::array<GLenum, 2> shaderIDs; //only have 2 shaders for now
 		int shaderIDIndex = 0;
 		for (auto& i : shaderSources)
 		{
@@ -159,7 +159,6 @@ namespace NocturnalEngine {
 			}
 
 			glAttachShader(program, shader);
-			//shaderIDs.push_back(shader);
 			shaderIDs[shaderIDIndex++] = shader;
 		}
 

@@ -258,7 +258,6 @@ namespace NocturnalEngine {
 				p_Audio->PlaySound("Assets/Audio/Give_Food_v2.wav", Audio::AudioType::SFX);
 				if (aa.current_hunger + ia.gain_amount >= aa.maxHunger)aa.current_hunger = aa.maxHunger;
 				else aa.current_hunger += ia.gain_amount;
-				aa.timeSinceLastFeed = 0.f;
 				break;
 
 			}

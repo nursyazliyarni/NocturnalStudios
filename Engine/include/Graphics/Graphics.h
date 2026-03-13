@@ -27,7 +27,6 @@
 #include "Math/math.h"
 #include "Animation/Animation.h"
 #include <array>
-#include "Graphics/SceneParticleRenderer.h"
 
 namespace NocturnalEngine {
 
@@ -59,13 +58,7 @@ namespace NocturnalEngine {
 		MultiRefs<SpriteRender> mIndex1;
 		WinData mWinData{};
 		Animation mAimator;
-
-		SceneParticleRenderer mSceneParticleRenderer{};
-		bool mSceneParticlesEnabled = false;
-		SceneParticleRenderer::ParticleType mSceneParticleType = SceneParticleRenderer::ParticleType::None;
-		int mSceneParticleRenderAfterLayer = -1;
 	private:
 		void LoadIconsTexture(std::string filename);
-		void UpdateSceneVFXFromScene();
 	};
 }

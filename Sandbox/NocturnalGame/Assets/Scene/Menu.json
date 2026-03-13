@@ -117,12 +117,6 @@
                     "0": "AudioManager",
                     "1": "BackgroundAudio",
                     "ScriptCount": 2
-                },
-                {
-                    "Component": "SceneVFX",
-                    "ParticlesEnabled": true,
-                    "ParticleType": 1,
-                    "RenderAfterLayer": 0
                 }
             ]
         },

@@ -122,7 +122,7 @@ namespace NocturnalEngine
         p_ecs.AddComponent<Transform>(spot, t);
 
         Sprite s = mSpotTemplateSprite;
-        s.SetLayerOrder(5);
+        s.SetLayerOrder(2);
         p_ecs.AddComponent<Sprite>(spot, s);
 
         if (mTemplateHasCollider)
