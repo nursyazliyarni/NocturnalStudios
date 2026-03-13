@@ -3,10 +3,12 @@
 	Project: NocturnalStudio
 
 	Brief:
-
+		This file contains the class specifications for a prefabmanager. It handles loading prefabs
+		from json files and allows users to store prefabs
 
 	Primary Author:
-
+		  LAYCOCK ENHUI SARAH (100%)
+		- Created the PrefabManager class
 
 	All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
 *------------------------------------------------------------------------------------------------*/

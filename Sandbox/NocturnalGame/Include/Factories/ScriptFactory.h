@@ -3,7 +3,7 @@
     Project: NocturnalStudio
 
     Brief:
-        This file enables injection of scripts into the leveleditor
+        This file enables injection of scripts into the engine side
 
     Primary Author:
          LAYCOCK ENHUI SARAH (100%)
