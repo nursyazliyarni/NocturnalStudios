@@ -9,6 +9,7 @@
     Primary Author:
          Rishika Bimal Attodi (85%)
 		- Created the graphics class and its function specification.
+		- Implemented particle system via shaders
     Secondary Author:
          Nur Syazliyarni (5%)
         - Added Text component rendering path in the graphics loop.
@@ -35,6 +36,167 @@
 #include "Video/VideoPlayback.h"
 
 namespace NocturnalEngine {
+
+
+
+	namespace
+	{
+		enum class SceneParticleType
+		{
+			None = 0,
+			FloatingDots = 1,
+			FallingLeaves = 2
+		};
+
+		static GLuint gSceneParticleVAO = 0;
+		static GLuint gSceneParticleVBO = 0;
+		static bool gSceneParticlesEnabled = false;
+		static SceneParticleType gSceneParticleType = SceneParticleType::None;
+
+		static void InitSceneParticleQuad()
+		{
+			if (gSceneParticleVAO != 0)
+				return;
+
+			float quadVertices[] =
+			{
+				-1.0f, -1.0f,
+				 1.0f, -1.0f,
+				 1.0f,  1.0f,
+
+				-1.0f, -1.0f,
+				 1.0f,  1.0f,
+				-1.0f,  1.0f
+			};
+
+			glGenVertexArrays(1, &gSceneParticleVAO);
+			glGenBuffers(1, &gSceneParticleVBO);
+
+			glBindVertexArray(gSceneParticleVAO);
+			glBindBuffer(GL_ARRAY_BUFFER, gSceneParticleVBO);
+			glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), quadVertices, GL_STATIC_DRAW);
+
+			glEnableVertexAttribArray(0);
+			glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
+
+			glBindBuffer(GL_ARRAY_BUFFER, 0);
+			glBindVertexArray(0);
+		}
+
+		static void ShutdownSceneParticleQuad()
+		{
+			if (gSceneParticleVBO != 0)
+			{
+				glDeleteBuffers(1, &gSceneParticleVBO);
+				gSceneParticleVBO = 0;
+			}
+
+			if (gSceneParticleVAO != 0)
+			{
+				glDeleteVertexArrays(1, &gSceneParticleVAO);
+				gSceneParticleVAO = 0;
+			}
+		}
+
+		static void UpdateSceneParticleSettingsFromScene()
+		{
+			gSceneParticlesEnabled = false;
+			gSceneParticleType = SceneParticleType::None;
+
+			const auto alive = p_ecs.GetAliveEntitiesSet();
+			for (const auto& entity : alive)
+			{
+				if (!p_ecs.HaveComponent<SceneVFX>(entity))
+					continue;
+
+				auto& vfx = p_ecs.GetComponent<SceneVFX>(entity);
+
+				if (!vfx.GetParticlesEnabled())
+					continue;
+
+				gSceneParticlesEnabled = true;
+
+				switch (vfx.GetParticleType())
+				{
+				case SceneVFX::ParticleType::FloatingDots:
+					gSceneParticleType = SceneParticleType::FloatingDots;
+					break;
+
+				case SceneVFX::ParticleType::FallingLeaves:
+					gSceneParticleType = SceneParticleType::FallingLeaves;
+					break;
+
+				case SceneVFX::ParticleType::None:
+				default:
+					gSceneParticleType = SceneParticleType::None;
+					break;
+				}
+
+				break;
+			}
+		}
+
+		static void DrawSceneParticles()
+		{
+			if (!gSceneParticlesEnabled)
+				return;
+
+			if (gSceneParticleType == SceneParticleType::None)
+				return;
+
+			const char* shaderName = nullptr;
+
+			switch (gSceneParticleType)
+			{
+			case SceneParticleType::FloatingDots:
+				shaderName = "SceneParticleShader";
+				break;
+
+			case SceneParticleType::FallingLeaves:
+				shaderName = "SceneLeavesShader";
+				break;
+
+			case SceneParticleType::None:
+			default:
+				return;
+			}
+
+			auto shader = ResourceManager::GetShader(shaderName);
+			if (!shader)
+				return;
+
+			GLint viewport[4];
+			glGetIntegerv(GL_VIEWPORT, viewport);
+
+			const float width = static_cast<float>(viewport[2]);
+			const float height = static_cast<float>(viewport[3]);
+
+			shader->Bind();
+			shader->SetUniform("uResolution", glm::vec2(width, height));
+			shader->SetUniform("uTime", static_cast<float>(glfwGetTime()));
+
+			GLboolean wasBlendEnabled = glIsEnabled(GL_BLEND);
+			glEnable(GL_BLEND);
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+			glBindVertexArray(gSceneParticleVAO);
+			glDrawArrays(GL_TRIANGLES, 0, 6);
+			glBindVertexArray(0);
+
+			if (!wasBlendEnabled)
+				glDisable(GL_BLEND);
+
+			shader->Unbind();
+		}
+	}
+
+
+
+
+
+
+
+
 	
 	/*!*************************************************************************
 	Load Icon from filepath using resource manager
@@ -58,6 +220,19 @@ namespace NocturnalEngine {
 		ResourceManager::LoadShader("LineShader", EngineAssetPath.string() + "/Shaders/Line.shader");
 		ResourceManager::LoadShader("CircleShader", EngineAssetPath.string() + "/Shaders/Circle.shader");
 		ResourceManager::LoadShader("ImpactShader", EngineAssetPath.string() + "/Shaders/Impact.shader");
+		ResourceManager::LoadShader(
+			"SceneParticleShader",
+			EngineAssetPath.string() + "/Shaders/Fullscreen.vert.glsl",
+			EngineAssetPath.string() + "/Shaders/Particle.frag.glsl"
+		);
+
+		ResourceManager::LoadShader(
+			"SceneLeavesShader",
+			EngineAssetPath.string() + "/Shaders/Fullscreen.vert.glsl",
+			EngineAssetPath.string() + "/Shaders/Leaves.frag.glsl"
+		);
+
+			InitSceneParticleQuad();
 		sMissingTextureID = ResourceManager::LoadTexture("ERROR_MISSINGTEX", EngineAssetPath.string() + "/Textures/Evil.png",true)->GetRendererID();
 		
 		LoadIconsTexture(EngineAssetPath.string() + "/Text/Icons.txt");
@@ -195,93 +370,104 @@ namespace NocturnalEngine {
 		int value = -1;
 		glClearTexImage(p_FrameBuffer->GetColorAttachmentRendererID(1), 0, GL_RGBA8, GL_INT, &value);
 	
-		mRenderer->Begin(*mcamera);// begin of the renderer 
-		//mFont->RenderText("TEXT TEST", { 0.f, 0.f }, 0.001f, *mcamera, { 1,1,1 }); // for testing
+			UpdateSceneParticleSettingsFromScene();
+			VideoPlayback::CleanupMissing(p_ecs.GetAliveEntitiesSet());
+			mRenderer->Begin(*mcamera);// begin of the renderer 
+			//mFont->RenderText("TEXT TEST", { 0.f, 0.f }, 0.001f, *mcamera, { 1,1,1 }); // for testing
 
-		p_GUI->VPmat = mcamera->GetViewProjectionMatrix();
+			p_GUI->VPmat = mcamera->GetViewProjectionMatrix();
 		//std::map<std::string, double>animal_attribute_map;
 
-		VideoPlayback::CleanupMissing(p_ecs.GetAliveEntitiesSet());
-
-		for (int orderIndex = 0; orderIndex < Graphic::MAX_LAYERS; ++orderIndex)
-		{
-			int layer = Graphic::layerDrawOrder[orderIndex];
-			if (!Graphic::layerEnabled[layer]) continue;
-
-			for (auto i = mEntities.begin(); i != mEntities.end(); i++)
-			{
-				
-				
-				auto& transform = p_ecs.GetComponent<Transform>(*i);
-				auto& sprite = p_ecs.GetComponent<Sprite>(*i);
-				int layerId = sprite.LayerOrder;
-				if (layerId < 0) layerId = 0;
-				if (layerId >= Graphic::MAX_LAYERS) layerId = Graphic::MAX_LAYERS - 1;
-
-				if (layerId == layer)
-				{//render the lowest layer level then follow on
-					std::shared_ptr<Texture> renderTexture = GETTEXTURE(sprite.GetTexture());
-					if (p_ecs.HaveComponent<Video>(*i))
+		auto DrawSceneLayers = [&](int startOrderIndex, int endOrderIndex)
+				{
+					for (int orderIndex = startOrderIndex; orderIndex <= endOrderIndex; ++orderIndex)
 					{
-						auto& video = p_ecs.GetComponent<Video>(*i);
-						auto videoTexture = VideoPlayback::UpdateAndGetTexture(*i, video, frametime, p_Editor->is_ShowWindow);
-						if (videoTexture)
+						int layer = Graphic::layerDrawOrder[orderIndex];
+						if (!Graphic::layerEnabled[layer]) continue;
+						for (auto i = mEntities.begin(); i != mEntities.end(); i++)
 						{
-							renderTexture = videoTexture;
-						}
-						else if (video.hideWhenFinished && !video.loop)
-						{
-							continue;
-						}
-					}
+							auto& transform = p_ecs.GetComponent<Transform>(*i);
+							auto& sprite = p_ecs.GetComponent<Sprite>(*i);
+							int layerId = sprite.LayerOrder;
+							if (layerId < 0) layerId = 0;
+							if (layerId >= Graphic::MAX_LAYERS) layerId = Graphic::MAX_LAYERS - 1;
 
-					if (sprite.is_Animated)
-					{
-						mAimator.UpdateAnimation(frametime,  p_ecs.GetComponent<Sprite>(*i));
-					}
-
-					if (sprite.is_SpriteSheet)
-					{
-
-						mIndex1 = SpriteRender::CreateSprite(renderTexture, { sprite.GetIndex().x, sprite.GetIndex().y },
-							{ sprite.GetUVCoor().x, sprite.GetUVCoor().y });
-
-						mRenderer->DrawSprite({ transform.GetPos().x , transform.GetPos().y }, { transform.GetScale().x , transform.GetScale().y },
-							transform.GetRot(), mIndex1);
-					}
-
-					else
-					{
-						mRenderer->DrawQuad({ transform.GetPos().x, transform.GetPos().y }, { transform.GetScale().x, transform.GetScale().y },
-							transform.GetRot(), renderTexture);
-					}
-
-					if (p_Editor->mDebugDraw)
-					{
-						if (p_ecs.HaveComponent<Collider>(*i) && ((p_ecs.GetComponent<Collider>(*i)[0].is_Alive) || (p_ecs.GetComponent<Collider>(*i)[1].is_Alive))) {
-							for (int u = 0; u < 2; u++) {
-								if (p_ecs.GetComponent<Collider>(*i)[u].mCol == Collider::ColliderType::rect || p_ecs.GetComponent<Collider>(*i)[u].mCol == Collider::ColliderType::box)
+							if (layerId == layer)
+							{
+								std::shared_ptr<Texture> renderTexture = GETTEXTURE(sprite.GetTexture());
+								if (p_ecs.HaveComponent<Video>(*i))
 								{
-									auto& collider = p_ecs.GetComponent<Collider>(*i);
-									mRenderer->DrawRect({ transform.GetPos().x + collider[u].mOffset.x + (collider[u].mMax.x / 2) - (collider[u].mMin.x / 2) , transform.GetPos().y + collider[u].mOffset.y + (collider[u].mMax.y / 2) - (collider[u].mMin.y / 2), 0.0f },
-										{ collider[u].mMin.x + collider[u].mMax.x , collider[u].mMin.y + collider[u].mMax.y },
-										{ 1.0f, 0.0f, 0.0f,1.0f });
+									auto& video = p_ecs.GetComponent<Video>(*i);
+									auto videoTexture = VideoPlayback::UpdateAndGetTexture(*i, video, frametime, p_Editor->is_ShowWindow);
+									if (videoTexture)
+									{
+										renderTexture = videoTexture;
+									}
+									else if (video.hideWhenFinished && !video.loop)
+									{
+										continue;
+									}
 								}
-								if (p_ecs.GetComponent<Collider>(*i)[u].mCol == Collider::ColliderType::circle || p_ecs.GetComponent<Collider>(*i)[u].mCol == Collider::ColliderType::bubble
-									|| p_ecs.GetComponent<Collider>(*i)[u].mCol == Collider::ColliderType::bossball) {
-									auto& collider = p_ecs.GetComponent<Collider>(*i);
-									NocturnalEngine::Matrix4x4 translate = NocturnalEngine::Translate4x4(translate, transform.GetPos().x + collider[u].mOffset.x, transform.GetPos().y + collider[u].mOffset.y, 0.0f);
-									NocturnalEngine::Matrix4x4 scale = NocturnalEngine::Scale4x4(scale, collider[u].mRadius * 2, collider[u].mRadius * 2, collider[u].mRadius * 2);
-									NocturnalEngine::Matrix4x4 Transform = translate * scale;
-									mRenderer->DrawCircle(Transform, { 0.5f,0.4f,1.0f, 1.0f }, 0.01f);
+
+								if (sprite.is_Animated)
+								{
+									mAimator.UpdateAnimation(frametime, p_ecs.GetComponent<Sprite>(*i));
+								}
+
+								if (sprite.is_SpriteSheet)
+								{
+									mIndex1 = SpriteRender::CreateSprite(renderTexture, { sprite.GetIndex().x, sprite.GetIndex().y },
+										{ sprite.GetUVCoor().x, sprite.GetUVCoor().y });
+
+									mRenderer->DrawSprite({ transform.GetPos().x , transform.GetPos().y }, { transform.GetScale().x , transform.GetScale().y },
+										transform.GetRot(), mIndex1);
+								}
+								else
+								{
+									mRenderer->DrawQuad({ transform.GetPos().x, transform.GetPos().y }, { transform.GetScale().x, transform.GetScale().y },
+										transform.GetRot(), renderTexture);
+								}
+
+								if (p_Editor->mDebugDraw)
+								{
+									if (p_ecs.HaveComponent<Collider>(*i) && ((p_ecs.GetComponent<Collider>(*i)[0].is_Alive) || (p_ecs.GetComponent<Collider>(*i)[1].is_Alive))) {
+										for (int u = 0; u < 2; u++) {
+										if (p_ecs.GetComponent<Collider>(*i)[u].mCol == Collider::ColliderType::rect || p_ecs.GetComponent<Collider>(*i)[u].mCol == Collider::ColliderType::box)
+										{
+											auto& collider = p_ecs.GetComponent<Collider>(*i);
+											mRenderer->DrawRect({ transform.GetPos().x + collider[u].mOffset.x + (collider[u].mMax.x / 2) - (collider[u].mMin.x / 2) , transform.GetPos().y + collider[u].mOffset.y + (collider[u].mMax.y / 2) - (collider[u].mMin.y / 2), 0.0f },
+												{ collider[u].mMin.x + collider[u].mMax.x , collider[u].mMin.y + collider[u].mMax.y },
+												{ 1.0f, 0.0f, 0.0f,1.0f });
+										}
+										if (p_ecs.GetComponent<Collider>(*i)[u].mCol == Collider::ColliderType::circle || p_ecs.GetComponent<Collider>(*i)[u].mCol == Collider::ColliderType::bubble
+											|| p_ecs.GetComponent<Collider>(*i)[u].mCol == Collider::ColliderType::bossball) {
+											auto& collider = p_ecs.GetComponent<Collider>(*i);
+											NocturnalEngine::Matrix4x4 translate = NocturnalEngine::Translate4x4(translate, transform.GetPos().x + collider[u].mOffset.x, transform.GetPos().y + collider[u].mOffset.y, 0.0f);
+											NocturnalEngine::Matrix4x4 scale = NocturnalEngine::Scale4x4(scale, collider[u].mRadius * 2, collider[u].mRadius * 2, collider[u].mRadius * 2);
+												NocturnalEngine::Matrix4x4 Transform = translate * scale;
+												mRenderer->DrawCircle(Transform, { 0.5f,0.4f,1.0f, 1.0f }, 0.01f);
+											}
+										}
+									}
 								}
 							}
 						}
-					}
 				}
-			}
+			};
+
+		// Pass 1: background only (layer 0)
+		DrawSceneLayers(0, 0);
+		mRenderer->End();
+
+		// Particle pass: above background, below the rest of the scene
+		if (gSceneParticlesEnabled)
+		{
+			DrawSceneParticles();
 		}
 
+		// Pass 2: everything else
+		mRenderer->Begin(*mcamera);
+		DrawSceneLayers(1, Graphic::MAX_LAYERS - 1);
 		
 		for (auto const& entity : mEntities)
 		{
@@ -320,9 +506,6 @@ namespace NocturnalEngine {
 		{
 			if (!p_ecs.HaveComponent<Text>(e)) continue;
 			auto& text = p_ecs.GetComponent<Text>(e);
-			int layerId = text.Get_layering_order();
-			if (layerId < 0) layerId = 0;
-			if (layerId >= Graphic::MAX_LAYERS) layerId = Graphic::MAX_LAYERS - 1;
 
 			glm::vec2 pos(0.0f, 0.0f);
 
@@ -349,22 +532,8 @@ namespace NocturnalEngine {
 			std::shared_ptr<Font> font = ResourceManager::GetFont(text.GetFont());
 			if (!font)
 				font = mFont;
-			if (font) {
-				for (int orderIndex = 0; orderIndex < Graphic::MAX_LAYERS; ++orderIndex) {
-					int layer = Graphic::layerDrawOrder[orderIndex];
-					if (!Graphic::layerEnabled[layer]) continue;
-					if (layerId == orderIndex) {
-						if (text.Get_TEXT_type()==Text::text_type::single_text) //single text
-							font->RenderText(text.GetContent(), pos, text.Get_line_height(), scale, *mcamera, col, text.Rot());
-
-						else { //array of text
-							if (!text.GET_mContent_array().empty())
-								font->RenderText(text.GET_current_mContent(text.current_index), text.GET_current_position(text.current_index), text.Get_line_height(), scale, *mcamera, col, text.Rot());
-						}
-					}
-				}
-			}
-				
+			if (font)
+				font->RenderText(text.GetContent(), pos, text.Get_line_height(), scale, *mcamera, col,text.Rot());
 		}
 	
 		p_FrameBuffer->UnBind();
@@ -390,6 +559,7 @@ namespace NocturnalEngine {
 	****************************************************************************/
 	void Graphic::End()
 	{
+		ShutdownSceneParticleQuad();
 		ResourceManager::clear();
 		Renderer::ShutDown();
 	}

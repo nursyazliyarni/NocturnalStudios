@@ -32,7 +32,7 @@
 #include "HUDComponent.h"
 #include "Draggable.h"
 #include "Text.h"
-
+#include "SceneVFX.h"
 
 
 //Macros for creating default values of various components
@@ -48,7 +48,6 @@
 #define C_HUDComponent NocturnalEngine::HUDComponent::HUDComponent())
 #define C_DraggableComponent NocturnalEngine::Draggable::Draggable()
 #define C_TextComponent NocturnalEngine::Text::Text()
-
-
+#define C_SceneVFXComponent NocturnalEngine::SceneVFX()
 
 
