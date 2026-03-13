@@ -32,6 +32,7 @@
 #include "Graphics/FrameBuffer.h"
 #include "Timer/Fps.h"
 #include "ECS/SceneManager.h"
+#include "Video/VideoPlayback.h"
 
 namespace NocturnalEngine {
 	
@@ -57,6 +58,19 @@ namespace NocturnalEngine {
 		ResourceManager::LoadShader("LineShader", EngineAssetPath.string() + "/Shaders/Line.shader");
 		ResourceManager::LoadShader("CircleShader", EngineAssetPath.string() + "/Shaders/Circle.shader");
 		ResourceManager::LoadShader("ImpactShader", EngineAssetPath.string() + "/Shaders/Impact.shader");
+		ResourceManager::LoadShader(
+			"SceneParticleShader",
+			EngineAssetPath.string() + "/Shaders/Fullscreen.vert.glsl",
+			EngineAssetPath.string() + "/Shaders/Particle.frag.glsl"
+		);
+
+		ResourceManager::LoadShader(
+			"SceneLeavesShader",
+			EngineAssetPath.string() + "/Shaders/Fullscreen.vert.glsl",
+			EngineAssetPath.string() + "/Shaders/Leaves.frag.glsl"
+		);
+
+			InitSceneParticleQuad();
 		sMissingTextureID = ResourceManager::LoadTexture("ERROR_MISSINGTEX", EngineAssetPath.string() + "/Textures/Evil.png",true)->GetRendererID();
 		
 		LoadIconsTexture(EngineAssetPath.string() + "/Text/Icons.txt");
@@ -271,10 +285,88 @@ namespace NocturnalEngine {
 									NocturnalEngine::Matrix4x4 scale = NocturnalEngine::Scale4x4(scale, collider[u].mRadius * 2, collider[u].mRadius * 2, collider[u].mRadius * 2);
 									NocturnalEngine::Matrix4x4 Transform = translate * scale;
 									mRenderer->DrawCircle(Transform, { 0.5f,0.4f,1.0f, 1.0f }, 0.01f);
+			UpdateSceneParticleSettingsFromScene();
+			VideoPlayback::CleanupMissing(p_ecs.GetAliveEntitiesSet());
+			mRenderer->Begin(*mcamera);// begin of the renderer 
+			//mFont->RenderText("TEXT TEST", { 0.f, 0.f }, 0.001f, *mcamera, { 1,1,1 }); // for testing
+
+			p_GUI->VPmat = mcamera->GetViewProjectionMatrix();
+		//std::map<std::string, double>animal_attribute_map;
+
+		auto DrawSceneLayers = [&](int startOrderIndex, int endOrderIndex)
+				{
+					for (int orderIndex = startOrderIndex; orderIndex <= endOrderIndex; ++orderIndex)
+					{
+						int layer = Graphic::layerDrawOrder[orderIndex];
+						if (!Graphic::layerEnabled[layer]) continue;
+						for (auto i = mEntities.begin(); i != mEntities.end(); i++)
+						{
+							auto& transform = p_ecs.GetComponent<Transform>(*i);
+							auto& sprite = p_ecs.GetComponent<Sprite>(*i);
+							int layerId = sprite.LayerOrder;
+							if (layerId < 0) layerId = 0;
+							if (layerId >= Graphic::MAX_LAYERS) layerId = Graphic::MAX_LAYERS - 1;
+
+							if (layerId == layer)
+							{
+								std::shared_ptr<Texture> renderTexture = GETTEXTURE(sprite.GetTexture());
+								if (p_ecs.HaveComponent<Video>(*i))
+								{
+									auto& video = p_ecs.GetComponent<Video>(*i);
+									auto videoTexture = VideoPlayback::UpdateAndGetTexture(*i, video, frametime, p_Editor->is_ShowWindow);
+									if (videoTexture)
+									{
+										renderTexture = videoTexture;
+									}
+									else if (video.hideWhenFinished && !video.loop)
+									{
+										continue;
+									}
+								}
+
+								if (sprite.is_Animated)
+								{
+									mAimator.UpdateAnimation(frametime, p_ecs.GetComponent<Sprite>(*i));
+								}
+
+								if (sprite.is_SpriteSheet)
+								{
+									mIndex1 = SpriteRender::CreateSprite(renderTexture, { sprite.GetIndex().x, sprite.GetIndex().y },
+										{ sprite.GetUVCoor().x, sprite.GetUVCoor().y });
+
+									mRenderer->DrawSprite({ transform.GetPos().x , transform.GetPos().y }, { transform.GetScale().x , transform.GetScale().y },
+										transform.GetRot(), mIndex1);
+								}
+								else
+								{
+									mRenderer->DrawQuad({ transform.GetPos().x, transform.GetPos().y }, { transform.GetScale().x, transform.GetScale().y },
+										transform.GetRot(), renderTexture);
+								}
+
+								if (p_Editor->mDebugDraw)
+								{
+									if (p_ecs.HaveComponent<Collider>(*i) && ((p_ecs.GetComponent<Collider>(*i)[0].is_Alive) || (p_ecs.GetComponent<Collider>(*i)[1].is_Alive))) {
+										for (int u = 0; u < 2; u++) {
+										if (p_ecs.GetComponent<Collider>(*i)[u].mCol == Collider::ColliderType::rect || p_ecs.GetComponent<Collider>(*i)[u].mCol == Collider::ColliderType::box)
+										{
+											auto& collider = p_ecs.GetComponent<Collider>(*i);
+											mRenderer->DrawRect({ transform.GetPos().x + collider[u].mOffset.x + (collider[u].mMax.x / 2) - (collider[u].mMin.x / 2) , transform.GetPos().y + collider[u].mOffset.y + (collider[u].mMax.y / 2) - (collider[u].mMin.y / 2), 0.0f },
+												{ collider[u].mMin.x + collider[u].mMax.x , collider[u].mMin.y + collider[u].mMax.y },
+												{ 1.0f, 0.0f, 0.0f,1.0f });
+										}
+										if (p_ecs.GetComponent<Collider>(*i)[u].mCol == Collider::ColliderType::circle || p_ecs.GetComponent<Collider>(*i)[u].mCol == Collider::ColliderType::bubble
+											|| p_ecs.GetComponent<Collider>(*i)[u].mCol == Collider::ColliderType::bossball) {
+											auto& collider = p_ecs.GetComponent<Collider>(*i);
+											NocturnalEngine::Matrix4x4 translate = NocturnalEngine::Translate4x4(translate, transform.GetPos().x + collider[u].mOffset.x, transform.GetPos().y + collider[u].mOffset.y, 0.0f);
+											NocturnalEngine::Matrix4x4 scale = NocturnalEngine::Scale4x4(scale, collider[u].mRadius * 2, collider[u].mRadius * 2, collider[u].mRadius * 2);
+												NocturnalEngine::Matrix4x4 Transform = translate * scale;
+												mRenderer->DrawCircle(Transform, { 0.5f,0.4f,1.0f, 1.0f }, 0.01f);
+											}
+										}
+									}
 								}
 							}
 						}
-					}
 				}
 			}
 		}
