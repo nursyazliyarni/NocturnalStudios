@@ -189,7 +189,7 @@ namespace NocturnalEngine
 		// 3 / S -> Horse
 		// 4 / D -> Owl
 		// ------------------------------------------------------------	
-		if (p_GUI->Check_HTP() == false) // don't allow shortcuts during HTP overlay
+		if (p_GUI->Check_HTP() == false&&p_Scene->isGameplay) // don't allow shortcuts during HTP overlay
 		{
 			if (p_Input->KeyPressed(GLFW_KEY_1) || p_Input->KeyPressed(GLFW_KEY_W))
 			{

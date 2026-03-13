@@ -42,7 +42,7 @@ namespace NocturnalEngine {
 		p_ecs.GetComponent<Transform>(fileBG).MoveX(-2.f);
 
 		if (p_ecs.HaveComponent<Text>(dayE))p_ecs.GetComponent<Text>(dayE).SetContent("Day " + std::to_string(p_GameManager.CurrentLevel()));
-		if (GetEntityByName("Payout")!=0&&p_ecs.HaveComponent<Text>( GetEntityByName("Payout")))
+		if (GetEntityByName("Payout")!=MAX_ENTITIES&&p_ecs.HaveComponent<Text>( GetEntityByName("Payout")))
 		{
 			int basePay = 300;
 			basePay -= p_GameManager.AnimalsGone() * 100;
@@ -51,9 +51,9 @@ namespace NocturnalEngine {
 
 			p_ecs.GetComponent<Text>(GetEntityByName("Payout")).SetContent("Your payout: @$"+std::to_string(basePay)+"|");
 		}
-		if (p_ecs.HaveComponent<Text>(escapedStats))p_ecs.GetComponent<Text>(escapedStats).SetContent("Number of animals alive/in their\nenclosures: "+std::to_string(4-p_GameManager.AnimalsGone())+"/4");
-		if (p_ecs.HaveComponent<Text>(barStats))p_ecs.GetComponent<Text>(barStats).SetContent("Number of times the bars have reached\nbelow 20%: " + std::to_string(p_GameManager.getCrits()));
-		
+		if (escapedStats != MAX_ENTITIES && p_ecs.HaveComponent<Text>(escapedStats))p_ecs.GetComponent<Text>(escapedStats).SetContent("Number of animals alive/in their\nenclosures: "+std::to_string(4-p_GameManager.AnimalsGone())+"/4");
+		if (barStats!=MAX_ENTITIES&&p_ecs.HaveComponent<Text>(barStats))p_ecs.GetComponent<Text>(barStats).SetContent("Number of times the bars have reached\nbelow 20%: " + std::to_string(p_GameManager.getCrits()));
+
 	}
 
 	void EndScreenDisplay::Update(float Frametime)
@@ -95,7 +95,7 @@ namespace NocturnalEngine {
 		{
 			if (p_ecs.HaveComponent<NameTag>(e) && p_ecs.GetComponent<NameTag>(e).GetNameTag() == name) return e;
 		}
-		return 0;
+		return MAX_ENTITIES;
 	}
 
 }
