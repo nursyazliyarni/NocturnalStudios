@@ -321,6 +321,12 @@
                     "2": "ButtonResponse",
                     "ScriptCount": 3
                 },
+                 {
+                    "Component": "SceneVFX",
+                    "ParticlesEnabled": true,
+                    "ParticleType": 2,
+                    "RenderAfterLayer": 0
+                },
                 {
                     "Component": "ButtonComponent",
                     "GoToSceneFlag": false,

@@ -42,7 +42,8 @@ namespace NocturnalEngine {
 		enum class SceneParticleType
 		{
 			None = 0,
-			FloatingDots = 1
+			FloatingDots = 1,
+			FallingLeaves = 2
 		};
 
 		static GLuint gSceneParticleVAO = 0;
@@ -100,21 +101,36 @@ namespace NocturnalEngine {
 			gSceneParticlesEnabled = false;
 			gSceneParticleType = SceneParticleType::None;
 
-			// TEMP: Owl-scene detection using an existing unique NameTag.
-			// Later, replace this with JSON/component-driven scene settings.
 			const auto alive = p_ecs.GetAliveEntitiesSet();
 			for (const auto& entity : alive)
 			{
-				if (!p_ecs.HaveComponent<NameTag>(entity))
+				if (!p_ecs.HaveComponent<SceneVFX>(entity))
 					continue;
 
-				const std::string& name = p_ecs.GetComponent<NameTag>(entity).GetNameTag();
-				if (name == "owl_title")
+				auto& vfx = p_ecs.GetComponent<SceneVFX>(entity);
+
+				if (!vfx.GetParticlesEnabled())
+					continue;
+
+				gSceneParticlesEnabled = true;
+
+				switch (vfx.GetParticleType())
 				{
-					gSceneParticlesEnabled = true;
+				case SceneVFX::ParticleType::FloatingDots:
 					gSceneParticleType = SceneParticleType::FloatingDots;
 					break;
+
+				case SceneVFX::ParticleType::FallingLeaves:
+					gSceneParticleType = SceneParticleType::FallingLeaves;
+					break;
+
+				case SceneVFX::ParticleType::None:
+				default:
+					gSceneParticleType = SceneParticleType::None;
+					break;
 				}
+
+				break;
 			}
 		}
 
@@ -126,7 +142,24 @@ namespace NocturnalEngine {
 			if (gSceneParticleType == SceneParticleType::None)
 				return;
 
-			auto shader = ResourceManager::GetShader("SceneParticleShader");
+			const char* shaderName = nullptr;
+
+			switch (gSceneParticleType)
+			{
+			case SceneParticleType::FloatingDots:
+				shaderName = "SceneParticleShader";
+				break;
+
+			case SceneParticleType::FallingLeaves:
+				shaderName = "SceneLeavesShader";
+				break;
+
+			case SceneParticleType::None:
+			default:
+				return;
+			}
+
+			auto shader = ResourceManager::GetShader(shaderName);
 			if (!shader)
 				return;
 
@@ -140,12 +173,16 @@ namespace NocturnalEngine {
 			shader->SetUniform("uResolution", glm::vec2(width, height));
 			shader->SetUniform("uTime", static_cast<float>(glfwGetTime()));
 
+			GLboolean wasBlendEnabled = glIsEnabled(GL_BLEND);
 			glEnable(GL_BLEND);
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 			glBindVertexArray(gSceneParticleVAO);
 			glDrawArrays(GL_TRIANGLES, 0, 6);
 			glBindVertexArray(0);
+
+			if (!wasBlendEnabled)
+				glDisable(GL_BLEND);
 
 			shader->Unbind();
 		}
@@ -186,6 +223,14 @@ namespace NocturnalEngine {
 			EngineAssetPath.string() + "/Shaders/Fullscreen.vert.glsl",
 			EngineAssetPath.string() + "/Shaders/Particle.frag.glsl"
 		);
+
+		ResourceManager::LoadShader(
+			"SceneLeavesShader",
+			EngineAssetPath.string() + "/Shaders/Fullscreen.vert.glsl",
+			EngineAssetPath.string() + "/Shaders/Leaves.frag.glsl"
+		);
+
+		InitSceneParticleQuad();
 		InitSceneParticleQuad();
 		sMissingTextureID = ResourceManager::LoadTexture("ERROR_MISSINGTEX", EngineAssetPath.string() + "/Textures/Evil.png",true)->GetRendererID();
 		
