@@ -122,6 +122,10 @@ namespace NocturnalEngine {
 	****************************************************************************/
 	void Texture::GenTexture(unsigned int width, unsigned int height)
 	{
+		mWidth = width;
+		mHeight = height;
+		mInnerFormat = GL_RGBA8;
+		mImageFormat = GL_RGBA;
 		glCreateTextures(GL_TEXTURE_2D, 1, &mRendererID);
 		glTextureStorage2D(mRendererID, 1, mInnerFormat, width, height);
 
@@ -139,7 +143,7 @@ namespace NocturnalEngine {
 	void Texture::SetTextureData(void* data, unsigned int size)
 	{
 		uint32_t bpp = mImageFormat == GL_RGBA ? 4 : 3;
-		NOCTURNAL_ENGINE_ASSERT(size == mWidth * mHeight * bpp, "Data must be entire texture!");
+		NOCTURNAL_ENGINE_ASSERT(size != mWidth * mHeight * bpp, "Data must be entire texture!");
 		glTextureSubImage2D(mRendererID, 0, 0, 0, mWidth, mHeight, mImageFormat, GL_UNSIGNED_BYTE, data);
 	}
 }
