@@ -2016,7 +2016,9 @@ namespace NocturnalEngine {
                 auto& rule = sprite.stateRules[i];
                 ImGui::PushID(static_cast<int>(i) + 5100);
 
-                std::string header = "Rule " + std::to_string(i + 1) + ": " + (rule.name.empty() ? "Unnamed" : rule.name);
+                std::string header = "Rule " + std::to_string(i + 1) + ": " +
+                    (rule.name.empty() ? "Unnamed" : rule.name) +
+                    "###AnimStateRule" + std::to_string(i);
                 if (ImGui::TreeNode(header.c_str()))
                 {
                     changed |= ImGui::Checkbox("Enabled", &rule.enabled);
