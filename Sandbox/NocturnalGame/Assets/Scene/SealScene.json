@@ -53,6 +53,15 @@
                 },
                 {
                     "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
                     "TextureName": "UI/blackbg",
                     "Index_X": 0,
                     "Index_Y": 0,
@@ -133,10 +142,10 @@
                 },
                 {
                     "Component": "Transform",
-                    "posX": -0.7948408126831055,
-                    "posY": -0.01907503604888916,
-                    "scaleX": 0.4940004050731659,
-                    "scaleY": 0.3830002248287201,
+                    "posX": -0.8698469996452332,
+                    "posY": -0.00708435196429491,
+                    "scaleX": 0.5,
+                    "scaleY": 0.5,
                     "Rot": -9.082768440246582
                 },
                 {
@@ -164,29 +173,66 @@
                 },
                 {
                     "Component": "Sprite",
-                    "TextureName": "Characters/sealSpritesheet",
-                    "Index_X": 2,
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "TextureName": "Characters/seal angry",
+                    "Index_X": 0,
                     "Index_Y": 0,
-                    "Ucoordinates": 530.0,
-                    "Vcoordinates": 254.5,
+                    "Ucoordinates": 528.0,
+                    "Vcoordinates": 458.0,
                     "IsSpriteSheet": true,
                     "IsAnimated": true,
-                    "MaxIndex": 3,
-                    "DisplayTime 0": -0.75,
-                    "DisplayTime 1": 0.8100000023841858,
-                    "DisplayTime 2": 1.3600000143051147,
+                    "MaxIndex": 4,
+                    "DisplayTime 0": 0.20000000298023224,
+                    "DisplayTime 1": 0.20000000298023224,
+                    "DisplayTime 2": 0.20000000298023224,
+                    "DisplayTime 3": 0.20000000298023224,
                     "LayeringOrder": 1,
-                    "StateManagerEnabled": false,
+                    "StateManagerEnabled": true,
                     "StatePreviewInEditor": false,
-                    "StatePreviewMode": 0,
+                    "StatePreviewMode": 2,
                     "AnimationStates": [
                         {
                             "Name": "Idle",
-                            "Texture": "",
+                            "Texture": "Characters/seal idle",
                             "Source": 3,
                             "Compare": 0,
                             "Threshold": 0.0,
                             "Priority": -100,
+                            "Enabled": true
+                        },
+                        {
+                            "Name": "Angry",
+                            "Texture": "Characters/seal angry",
+                            "Source": 2,
+                            "Compare": 0,
+                            "Threshold": 0.5,
+                            "Priority": 0,
+                            "Enabled": true
+                        },
+                        {
+                            "Name": "Hungry",
+                            "Texture": "Characters/seal hungry",
+                            "Source": 0,
+                            "Compare": 0,
+                            "Threshold": 0.5,
+                            "Priority": 0,
+                            "Enabled": true
+                        },
+                        {
+                            "Name": "Sick",
+                            "Texture": "Characters/seal sick",
+                            "Source": 1,
+                            "Compare": 0,
+                            "Threshold": 0.5,
+                            "Priority": 0,
                             "Enabled": true
                         }
                     ]
@@ -258,6 +304,15 @@
                 },
                 {
                     "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
                     "TextureName": "UI/cameraButtonUnlit",
                     "Index_X": 0,
                     "Index_Y": 0,
@@ -432,6 +487,15 @@
                 },
                 {
                     "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
                     "TextureName": "UI/cameraButtonUnlit",
                     "Index_X": 0,
                     "Index_Y": 0,
@@ -606,6 +670,15 @@
                 },
                 {
                     "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
                     "TextureName": "UI/cameraButtonUnlit",
                     "Index_X": 0,
                     "Index_Y": 0,
@@ -780,6 +853,15 @@
                 },
                 {
                     "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
                     "TextureName": "UI/cameraButtonUnlit",
                     "Index_X": 0,
                     "Index_Y": 0,
@@ -884,6 +966,15 @@
                 },
                 {
                     "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
                     "TextureName": "UI/cameraHighlight",
                     "Index_X": 0,
                     "Index_Y": 0,
@@ -946,6 +1037,15 @@
                 },
                 {
                     "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
                     "TextureName": "Play/Food",
                     "Index_X": 0,
                     "Index_Y": 0,
@@ -1083,6 +1183,15 @@
                 },
                 {
                     "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
                     "TextureName": "Play/Medicine",
                     "Index_X": 0,
                     "Index_Y": 0,
@@ -1220,6 +1329,15 @@
                 },
                 {
                     "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
                     "TextureName": "Play/Seal_Toy",
                     "Index_X": 0,
                     "Index_Y": 0,
@@ -1408,6 +1526,15 @@
                 },
                 {
                     "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
                     "TextureName": "UI/target",
                     "Index_X": 0,
                     "Index_Y": 0,
@@ -1451,6 +1578,15 @@
                 },
                 {
                     "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
                     "TextureName": "UI/PlaceholderLogbg",
                     "Index_X": 0,
                     "Index_Y": 0,
@@ -1519,6 +1655,15 @@
                 },
                 {
                     "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
                     "TextureName": "UI/cameraHighlight",
                     "Index_X": 0,
                     "Index_Y": 0,
@@ -1562,6 +1707,15 @@
                 },
                 {
                     "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
                     "TextureName": "UI/cameraHighlight",
                     "Index_X": 0,
                     "Index_Y": 0,
@@ -1605,6 +1759,15 @@
                 },
                 {
                     "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
                     "TextureName": "UI/cameraHighlight",
                     "Index_X": 0,
                     "Index_Y": 0,
@@ -1648,6 +1811,15 @@
                 },
                 {
                     "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
                     "TextureName": "UI/panel",
                     "Index_X": 0,
                     "Index_Y": 0,
@@ -1710,6 +1882,15 @@
                 },
                 {
                     "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
                     "TextureName": "Environment/sealCage",
                     "Index_X": 0,
                     "Index_Y": 0,
@@ -1753,6 +1934,15 @@
                 },
                 {
                     "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
                     "TextureName": "UI/inventory",
                     "Index_X": 0,
                     "Index_Y": 0,
@@ -1816,6 +2006,15 @@
                 },
                 {
                     "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
                     "TextureName": "UI/right panel",
                     "Index_X": 0,
                     "Index_Y": 0,
@@ -1859,6 +2058,15 @@
                 },
                 {
                     "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
                     "TextureName": "UI/background",
                     "Index_X": 0,
                     "Index_Y": 0,
@@ -1902,6 +2110,15 @@
                 },
                 {
                     "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
                     "TextureName": "UI/cameraButtonLit",
                     "Index_X": 0,
                     "Index_Y": 0,
@@ -1984,6 +2201,15 @@
                 },
                 {
                     "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
                     "TextureName": "UI/painSpot",
                     "Index_X": 0,
                     "Index_Y": 0,
@@ -2046,6 +2272,15 @@
                 },
                 {
                     "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
                     "TextureName": "UI/key",
                     "Index_X": 0,
                     "Index_Y": 0,
@@ -2141,6 +2376,15 @@
                 },
                 {
                     "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
                     "TextureName": "Environment/bush",
                     "Index_X": 0,
                     "Index_Y": 0,
@@ -2189,6 +2433,15 @@
                 },
                 {
                     "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
                     "TextureName": "Environment/bush",
                     "Index_X": 0,
                     "Index_Y": 0,
