@@ -395,86 +395,480 @@
             "ID": 8,
             "Components": [
                 {
-                    "Component": "Tag",
-                    "Tag": "CutSceneUI",
-                    "TargetTag": ""
-                },
-                {
                     "Component": "Transform",
-                    "posX": 1.350000023841858,
-                    "posY": -0.8500000238418579,
-                    "scaleX": 0.3499999940395355,
-                    "scaleY": 0.20000000298023224,
+                    "posX": 1.534999966621399,
+                    "posY": -0.9100000262260437,
+                    "scaleX": 0.5,
+                    "scaleY": 0.5,
                     "Rot": 0.0
                 },
                 {
-                    "Component": "Collider",
-                    "ColliderType1": 4,
-                    "ColliderType2": 0,
-                    "minX1": 0.20000000298023224,
-                    "minX2": 0.0,
-                    "minY1": 0.10000000149011612,
-                    "minY2": 0.0,
-                    "maxX1": 0.20000000298023224,
-                    "maxX2": 0.0,
-                    "maxY1": 0.10000000149011612,
-                    "maxY2": 0.0,
-                    "offsetX1": 0.0,
-                    "offsetX2": 0.0,
-                    "offsetY1": 0.0,
-                    "offsetY2": 0.0,
-                    "radius1": 0.0,
-                    "radius2": 0.0
-                },
-                {
                     "Component": "NameTag",
-                    "NameTag": "NextButton"
-                },
-                {
-                    "Component": "Sprite",
-                    "TextureName": "UI/BlankArrow",
-                    "Index_X": 0,
-                    "Index_Y": 0,
-                    "Ucoordinates": 512.0,
-                    "Vcoordinates": 512.0,
-                    "IsSpriteSheet": false,
-                    "IsAnimated": false,
-                    "MaxIndex": 0,
-                    "LayeringOrder": 9,
-                    "StateManagerEnabled": false,
-                    "StatePreviewInEditor": false,
-                    "StatePreviewMode": 0,
-                    "AnimationStates": [
-                        {
-                            "Name": "Idle",
-                            "Texture": "",
-                            "Source": 3,
-                            "Compare": 0,
-                            "Threshold": 0.0,
-                            "Priority": -100,
-                            "Enabled": true
-                        }
-                    ]
+                    "NameTag": "ClickAnywhere"
                 },
                 {
                     "Component": "Text",
                     "text type": 0,
-                    "Content": "NEXT",
+                    "Content": "Click anywhere to continue",
                     "Array of Content": [],
                     "Vector of text position": [],
                     "Font": "ChauPhilomeneOne-Regular",
-                    "Size": 41.5,
-                    "ColorR": 1.0,
-                    "ColorG": 1.0,
-                    "ColorB": 1.0,
+                    "Size": 39.0,
+                    "ColorR": 0.7450979948043823,
+                    "ColorG": 0.021914668381214142,
+                    "ColorB": 0.021914668381214142,
                     "ColorA": 1.0,
-                    "PosX": 1.2799999713897705,
-                    "PosY": -0.8799999952316284,
+                    "PosX": 1.0,
+                    "PosY": 0.8299999833106995,
                     "Rotation": 0.0,
                     "Line Height": 0,
                     "WorldSpace": false,
                     "Center": false,
                     "LayeringOrder": 0
+                }
+            ]
+        },
+        {
+            "ID": 9,
+            "Components": [
+                {
+                    "Component": "Transform",
+                    "posX": 0.0,
+                    "posY": 0.0,
+                    "scaleX": 1.0,
+                    "scaleY": 1.0,
+                    "Rot": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "CutText1_1"
+                },
+                {
+                    "Component": "Text",
+                    "text type": 0,
+                    "Content": ">...Ah, my university fees. Should have realised I cannot avoid paying them forever.",
+                    "Array of Content": [],
+                    "Vector of text position": [],
+                    "Font": "ChauPhilomeneOne-Regular",
+                    "Size": 45.0,
+                    "ColorR": 0.6549019813537598,
+                    "ColorG": 0.6980392336845398,
+                    "ColorB": 0.24705882370471954,
+                    "ColorA": 1.0,
+                    "PosX": -1.3899999856948853,
+                    "PosY": -0.8999999761581421,
+                    "Rotation": 0.0,
+                    "Line Height": 0,
+                    "WorldSpace": false,
+                    "Center": false,
+                    "LayeringOrder": 9
+                }
+            ]
+        },
+        {
+            "ID": 10,
+            "Components": [
+                {
+                    "Component": "Transform",
+                    "posX": 0.0,
+                    "posY": 0.0,
+                    "scaleX": 1.0,
+                    "scaleY": 1.0,
+                    "Rot": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "CutText1_2"
+                },
+                {
+                    "Component": "Text",
+                    "text type": 0,
+                    "Content": "> Let's see...",
+                    "Array of Content": [],
+                    "Vector of text position": [],
+                    "Font": "ChauPhilomeneOne-Regular",
+                    "Size": 45.0,
+                    "ColorR": 0.6549019813537598,
+                    "ColorG": 0.6980392336845398,
+                    "ColorB": 0.24705882370471954,
+                    "ColorA": 1.0,
+                    "PosX": -1.3899999856948853,
+                    "PosY": -0.8999999761581421,
+                    "Rotation": 0.0,
+                    "Line Height": 0,
+                    "WorldSpace": false,
+                    "Center": false,
+                    "LayeringOrder": 9
+                }
+            ]
+        },
+        {
+            "ID": 11,
+            "Components": [
+                {
+                    "Component": "Transform",
+                    "posX": 0.0,
+                    "posY": 0.0,
+                    "scaleX": 1.0,
+                    "scaleY": 1.0,
+                    "Rot": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "CutText2_1"
+                },
+                {
+                    "Component": "Text",
+                    "text type": 0,
+                    "Content": "> I have to pay 671 dollars?",
+                    "Array of Content": [],
+                    "Vector of text position": [],
+                    "Font": "ChauPhilomeneOne-Regular",
+                    "Size": 45.0,
+                    "ColorR": 0.6549019813537598,
+                    "ColorG": 0.6980392336845398,
+                    "ColorB": 0.24705882370471954,
+                    "ColorA": 1.0,
+                    "PosX": -1.3899999856948853,
+                    "PosY": -0.8999999761581421,
+                    "Rotation": 0.0,
+                    "Line Height": 0,
+                    "WorldSpace": false,
+                    "Center": false,
+                    "LayeringOrder": 9
+                }
+            ]
+        },
+        {
+            "ID": 12,
+            "Components": [
+                {
+                    "Component": "Transform",
+                    "posX": 0.0,
+                    "posY": 0.0,
+                    "scaleX": 1.0,
+                    "scaleY": 1.0,
+                    "Rot": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "CutText2_2"
+                },
+                {
+                    "Component": "Text",
+                    "text type": 0,
+                    "Content": "> That is not too bad-",
+                    "Array of Content": [],
+                    "Vector of text position": [],
+                    "Font": "ChauPhilomeneOne-Regular",
+                    "Size": 45.0,
+                    "ColorR": 0.6549019813537598,
+                    "ColorG": 0.6980392336845398,
+                    "ColorB": 0.24705882370471954,
+                    "ColorA": 1.0,
+                    "PosX": -1.3899999856948853,
+                    "PosY": -0.8999999761581421,
+                    "Rotation": 0.0,
+                    "Line Height": 0,
+                    "WorldSpace": false,
+                    "Center": false,
+                    "LayeringOrder": 9
+                }
+            ]
+        },
+        {
+            "ID": 13,
+            "Components": [
+                {
+                    "Component": "Transform",
+                    "posX": 0.0,
+                    "posY": 0.0,
+                    "scaleX": 1.0,
+                    "scaleY": 1.0,
+                    "Rot": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "CutText3_1"
+                },
+                {
+                    "Component": "Text",
+                    "text type": 0,
+                    "Content": "> Hold on, that is a comma.",
+                    "Array of Content": [],
+                    "Vector of text position": [],
+                    "Font": "ChauPhilomeneOne-Regular",
+                    "Size": 45.0,
+                    "ColorR": 0.6549019813537598,
+                    "ColorG": 0.6980392336845398,
+                    "ColorB": 0.24705882370471954,
+                    "ColorA": 1.0,
+                    "PosX": -1.3899999856948853,
+                    "PosY": -0.8999999761581421,
+                    "Rotation": 0.0,
+                    "Line Height": 0,
+                    "WorldSpace": false,
+                    "Center": false,
+                    "LayeringOrder": 9
+                }
+            ]
+        },
+        {
+            "ID": 14,
+            "Components": [
+                {
+                    "Component": "Transform",
+                    "posX": 0.0,
+                    "posY": 0.0,
+                    "scaleX": 1.0,
+                    "scaleY": 1.0,
+                    "Rot": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "CutText3_2"
+                },
+                {
+                    "Component": "Text",
+                    "text type": 0,
+                    "Content": "> Sighh I really need to get glasses",
+                    "Array of Content": [],
+                    "Vector of text position": [],
+                    "Font": "ChauPhilomeneOne-Regular",
+                    "Size": 45.0,
+                    "ColorR": 0.6549019813537598,
+                    "ColorG": 0.6980392336845398,
+                    "ColorB": 0.24705882370471954,
+                    "ColorA": 1.0,
+                    "PosX": -1.3899999856948853,
+                    "PosY": -0.8999999761581421,
+                    "Rotation": 0.0,
+                    "Line Height": 0,
+                    "WorldSpace": false,
+                    "Center": false,
+                    "LayeringOrder": 9
+                }
+            ]
+        },
+        {
+            "ID": 15,
+            "Components": [
+                {
+                    "Component": "Transform",
+                    "posX": 0.0,
+                    "posY": 0.0,
+                    "scaleX": 1.0,
+                    "scaleY": 1.0,
+                    "Rot": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "CutText3_3"
+                },
+                {
+                    "Component": "Text",
+                    "text type": 0,
+                    "Content": "> I guess I got to put my biomed degree to use and get a job to pay these off.",
+                    "Array of Content": [],
+                    "Vector of text position": [],
+                    "Font": "ChauPhilomeneOne-Regular",
+                    "Size": 45.0,
+                    "ColorR": 0.6549019813537598,
+                    "ColorG": 0.6980392336845398,
+                    "ColorB": 0.24705882370471954,
+                    "ColorA": 1.0,
+                    "PosX": -1.3899999856948853,
+                    "PosY": -0.8999999761581421,
+                    "Rotation": 0.0,
+                    "Line Height": 0,
+                    "WorldSpace": false,
+                    "Center": false,
+                    "LayeringOrder": 9
+                }
+            ]
+        },
+        {
+            "ID": 16,
+            "Components": [
+                {
+                    "Component": "Transform",
+                    "posX": 0.0,
+                    "posY": 0.0,
+                    "scaleX": 1.0,
+                    "scaleY": 1.0,
+                    "Rot": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "CutText4_1"
+                },
+                {
+                    "Component": "Text",
+                    "text type": 0,
+                    "Content": ">...but I'd rather be watching TV right now.",
+                    "Array of Content": [],
+                    "Vector of text position": [],
+                    "Font": "ChauPhilomeneOne-Regular",
+                    "Size": 45.0,
+                    "ColorR": 0.6549019813537598,
+                    "ColorG": 0.6980392336845398,
+                    "ColorB": 0.24705882370471954,
+                    "ColorA": 1.0,
+                    "PosX": -1.3899999856948853,
+                    "PosY": -0.8999999761581421,
+                    "Rotation": 0.0,
+                    "Line Height": 0,
+                    "WorldSpace": false,
+                    "Center": false,
+                    "LayeringOrder": 9
+                }
+            ]
+        },
+        {
+            "ID": 17,
+            "Components": [
+                {
+                    "Component": "Transform",
+                    "posX": 0.0,
+                    "posY": 0.0,
+                    "scaleX": 1.0,
+                    "scaleY": 1.0,
+                    "Rot": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "CutText4_2"
+                },
+                {
+                    "Component": "Text",
+                    "text type": 0,
+                    "Content": "TV: Watch me~",
+                    "Array of Content": [],
+                    "Vector of text position": [],
+                    "Font": "ChauPhilomeneOne-Regular",
+                    "Size": 45.0,
+                    "ColorR": 0.0,
+                    "ColorG": 0.06632063537836075,
+                    "ColorB": 0.11274510622024536,
+                    "ColorA": 1.0,
+                    "PosX": 1.1100000143051147,
+                    "PosY": -0.25999999046325684,
+                    "Rotation": 0.0,
+                    "Line Height": 0,
+                    "WorldSpace": false,
+                    "Center": false,
+                    "LayeringOrder": 9
+                }
+            ]
+        },
+        {
+            "ID": 18,
+            "Components": [
+                {
+                    "Component": "Transform",
+                    "posX": 0.0,
+                    "posY": 0.0,
+                    "scaleX": 1.0,
+                    "scaleY": 1.0,
+                    "Rot": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "CutText5_1"
+                },
+                {
+                    "Component": "Text",
+                    "text type": 0,
+                    "Content": "> Eh? Did the TV just speak?",
+                    "Array of Content": [],
+                    "Vector of text position": [],
+                    "Font": "ChauPhilomeneOne-Regular",
+                    "Size": 45.0,
+                    "ColorR": 0.6549019813537598,
+                    "ColorG": 0.6980392336845398,
+                    "ColorB": 0.24705882370471954,
+                    "ColorA": 1.0,
+                    "PosX": -1.3899999856948853,
+                    "PosY": -0.8999999761581421,
+                    "Rotation": 0.0,
+                    "Line Height": 0,
+                    "WorldSpace": false,
+                    "Center": false,
+                    "LayeringOrder": 9
+                }
+            ]
+        },
+        {
+            "ID": 19,
+            "Components": [
+                {
+                    "Component": "Transform",
+                    "posX": 0.0,
+                    "posY": 0.0,
+                    "scaleX": 1.0,
+                    "scaleY": 1.0,
+                    "Rot": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "CutText5_2"
+                },
+                {
+                    "Component": "Text",
+                    "text type": 0,
+                    "Content": "> Must have been the wind.",
+                    "Array of Content": [],
+                    "Vector of text position": [],
+                    "Font": "ChauPhilomeneOne-Regular",
+                    "Size": 45.0,
+                    "ColorR": 0.6549019813537598,
+                    "ColorG": 0.6980392336845398,
+                    "ColorB": 0.24705882370471954,
+                    "ColorA": 1.0,
+                    "PosX": -1.3899999856948853,
+                    "PosY": -0.8999999761581421,
+                    "Rotation": 0.0,
+                    "Line Height": 0,
+                    "WorldSpace": false,
+                    "Center": false,
+                    "LayeringOrder": 9
+                }
+            ]
+        },
+        {
+            "ID": 20,
+            "Components": [
+                {
+                    "Component": "Transform",
+                    "posX": 0.0,
+                    "posY": 0.0,
+                    "scaleX": 1.0,
+                    "scaleY": 1.0,
+                    "Rot": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "CutText6_1"
+                },
+                {
+                    "Component": "Text",
+                    "text type": 0,
+                    "Content": "> Let's just see what is on.",
+                    "Array of Content": [],
+                    "Vector of text position": [],
+                    "Font": "ChauPhilomeneOne-Regular",
+                    "Size": 45.0,
+                    "ColorR": 0.6549019813537598,
+                    "ColorG": 0.6980392336845398,
+                    "ColorB": 0.24705882370471954,
+                    "ColorA": 1.0,
+                    "PosX": -1.3899999856948853,
+                    "PosY": -0.8999999761581421,
+                    "Rotation": 0.0,
+                    "Line Height": 0,
+                    "WorldSpace": false,
+                    "Center": false,
+                    "LayeringOrder": 9
                 }
             ]
         }

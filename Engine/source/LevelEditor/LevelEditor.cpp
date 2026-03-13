@@ -1470,7 +1470,16 @@ namespace NocturnalEngine {
 
             if (ImGui::Button("Create Entity") && totalEntities != MAX_ENTITIES)
             {
-                p_ecs.AddComponent<NameTag>(p_ecs.CreateEntity(), C_NameTagComponent);
+                Entity newEntity = p_ecs.CreateEntity();
+                p_ecs.AddComponent<NameTag>(newEntity, C_NameTagComponent);
+
+                Transform transform{};
+                transform.SetPos(0.0f, 0.0f);
+                transform.SetScale(1.0f, 1.0f);
+                transform.SetRot(0.0f);
+                p_ecs.AddComponent<Transform>(newEntity, transform);
+
+                selectedEntity = newEntity;
                 PushUndoSnapshotAndInvalidateRedo();
             }
 
