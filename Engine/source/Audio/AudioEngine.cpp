@@ -178,7 +178,7 @@ void CAudioEngine::SetVolume(int channelID, float vol)
 
     if (it != mChannelMap.end())
     {
-        it->second->setVolume(VolumeTodB(vol));
+        it->second->setVolume(vol);
     }
 }
 

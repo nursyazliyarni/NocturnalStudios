@@ -60,6 +60,7 @@ namespace NocturnalEngine
 			std::string mAudioPath{};
 			AudioType mChannelGroup{};
 			int mChannel{};
+			float volumeLimit{ 1.0f };
 			bool is_Looping{};
 			bool should_play{};
 			bool should_stop{};

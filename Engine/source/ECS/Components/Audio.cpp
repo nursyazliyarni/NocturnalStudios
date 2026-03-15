@@ -65,6 +65,7 @@ bool NocturnalEngine::Audio::ToEditor() {
             changed |= ImGui::Combo("###why is this named tes", &ChIndex, ChList);
             ImGui::PushItemWidth(100.0f);
             AudioArr[current_audio].mChannelGroup = static_cast<Audio::AudioType>(ChIndex);
+            changed |= ImGui::SliderFloat("Track Volume Limit", &AudioArr[current_audio].volumeLimit, 0.0f, 1.0f, "%.3f");
         }
         //option to add audio to array
         if (ImGui::Button("Add Audio")) {
@@ -72,6 +73,7 @@ bool NocturnalEngine::Audio::ToEditor() {
             nAud.mAudioPath = audioFileList[currentfile];
             nAud.mChannelGroup = Audio::AudioType::NONE;
             nAud.mChannel = 0;
+            nAud.volumeLimit = 1.0f;
             nAud.is_Looping = false;
             nAud.should_play = false;
             nAud.should_stop = false;
@@ -149,6 +151,14 @@ bool NocturnalEngine::Audio::Deserialize(const rapidjson::Value& obj)
 		na.mAudioPath = obj[std::to_string(i).c_str()].GetObj()["AudioPath"].GetString();
 		na.mChannelGroup = static_cast<AudioType>(obj[std::to_string(i).c_str()].GetObj()["Channel"].GetInt());
 		na.is_Looping = obj[std::to_string(i).c_str()].GetObj()["IsLooping"].GetBool();
+		if (obj[std::to_string(i).c_str()].GetObj().HasMember("VolumeLimit") && obj[std::to_string(i).c_str()].GetObj()["VolumeLimit"].IsNumber())
+		{
+			na.volumeLimit = (float)obj[std::to_string(i).c_str()].GetObj()["VolumeLimit"].GetDouble();
+		}
+		else
+		{
+			na.volumeLimit = 1.0f;
+		}
 		na.mChannel = 0;
 		na.should_play = false;
 		na.should_stop = false;
@@ -210,6 +220,8 @@ bool NocturnalEngine::Audio::Serialize(rapidjson::PrettyWriter<rapidjson::String
 		writer->Int(static_cast<int>(AudioArr[i].mChannelGroup));
 		writer->Key("IsLooping");
 		writer->Bool(AudioArr[i].is_Looping);
+		writer->Key("VolumeLimit");
+		writer->Double(AudioArr[i].volumeLimit);
 		writer->EndObject();
 	}
 	writer->Key("AudioArrCount");
