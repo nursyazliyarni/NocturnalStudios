@@ -26,6 +26,7 @@
 #include "ECS/EngineComponentReg.h"
 #include "Core/MemoryManager.h"
 #include "System/ServiceLocator.h"
+#include "ECS/PrefabManager.h"
 #include <unordered_map>
 #include <array>
 
@@ -273,7 +274,7 @@ bool NocturnalEngine::SceneManager::NewDeserialize(const rapidjson::Value& obj) 
 			? &gameComp->GetAll()
 			: nullptr;
 
-
+		PrefabManager& prefabs{ p_PrefabManager };
 		for (const rapidjson::Value& ent:obj["Entities"].GetArray())
 		{
 			if (!ent.HasMember("Components") || !ent["Components"].IsArray())continue;
@@ -478,6 +479,7 @@ bool NocturnalEngine::SceneManager::NewSerialize(rapidjson::PrettyWriter<rapidjs
 	}
 
 	std::set<Entity> aliveTotal =p_ecs.GetAliveEntitiesSet();
+	PrefabManager& prefabs{ p_PrefabManager };
 	for (Entity j:aliveTotal)
 	{
 		//Skip entities with no components
@@ -489,6 +491,16 @@ bool NocturnalEngine::SceneManager::NewSerialize(rapidjson::PrettyWriter<rapidjs
 		writer->Key("ID");
 		writer->Int(static_cast<int>(j));
 
+		bool isFrmPrefab{ false };
+		PrefabManager::PrefabInfo pI{};
+		if (prefabs.IsFromPrefab(j))
+		{
+			pI=prefabs.GetPrefabInfo(j) ;
+			writer->Key("Prefab");
+			writer->String(pI.prefabName.c_str());
+			isFrmPrefab = true;
+		}
+
 		//Start Component array
 		writer->Key("Components");
 		writer->StartArray();
@@ -498,6 +510,7 @@ bool NocturnalEngine::SceneManager::NewSerialize(rapidjson::PrettyWriter<rapidjs
 		{
 			if (comp.second.hasFunc(j))
 			{
+				if (isFrmPrefab && comp.second.compareFunc(pI.prefabID, j)) continue;
 				writer->StartObject();
 				//component name always comes first,
 				writer->Key("Component");
@@ -516,6 +529,7 @@ bool NocturnalEngine::SceneManager::NewSerialize(rapidjson::PrettyWriter<rapidjs
 			{
 				if (comp.second.hasFunc(j))
 				{
+					if (isFrmPrefab && comp.second.compareFunc(pI.prefabID, j)) continue;
 					writer->StartObject();
 					writer->Key("Component");
 					writer->String(comp.first.c_str());

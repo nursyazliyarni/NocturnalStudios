@@ -72,6 +72,7 @@ namespace NocturnalEngine
 		virtual bool Deserialize(const rapidjson::Value& obj);
 		virtual bool Serialize(rapidjson::PrettyWriter<rapidjson::StringBuffer>* writer) const;
 		bool ToEditor()override;
+		bool OnCompare(const IComponent& other) const override;
 		
 		std::vector<AudioPiece>& GetArr() { return AudioArr; }
 		void SetArr(std::vector<AudioPiece> in) { AudioArr = in; }

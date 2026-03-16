@@ -33,6 +33,12 @@ namespace NocturnalEngine
 		virtual bool ToEditor() { return false; }
 		virtual bool Deserialize(const rapidjson::Value& obj) = 0;
 		virtual bool Serialize(rapidjson::PrettyWriter<rapidjson::StringBuffer>* writer) const = 0;
+		bool Compare(const IComponent& other) const
+		{
+			if (typeid(*this) != typeid(other)) return false;
+			return OnCompare(other);
+		}
+		virtual bool OnCompare(const IComponent& other) const { UNREFERENCED_PARAMETER(other); return true; }
 
 		/*!*************************************************************************
 		Retrieves Component Entity ID

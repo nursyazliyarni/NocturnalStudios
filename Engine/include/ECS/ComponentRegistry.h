@@ -50,6 +50,9 @@ namespace NocturnalEngine {
 
             //Editor Display func
             std::function<bool(Entity)> displayInEditor{};
+
+            //compare
+            std::function<bool(Entity, Entity)> compareFunc{};
         };
 
         ComponentRegistry() = default;
@@ -107,6 +110,16 @@ namespace NocturnalEngine {
                     return GetECS().template GetComponent<T>(e).ToEditor();
                 }
                 return false;
+                };
+
+            desc.compareFunc = [this](Entity a, Entity b) -> bool {
+                if (!GetECS().template HaveComponent<T>(a) ||
+                    !GetECS().template HaveComponent<T>(b))
+                    return false;
+
+                T& compA = GetECS().template GetComponent<T>(a);
+                T& compB = GetECS().template GetComponent<T>(b);
+                return compA.Compare(compB);
                 };
 
             mComponents.emplace(name, desc);

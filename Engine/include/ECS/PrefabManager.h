@@ -16,10 +16,18 @@
 
 #include "ECS.h"
 #include "Serialization/JSONserialization.h"
+
+#define p_PrefabManager NocturnalEngine::PrefabManager::GetInstance()
 namespace NocturnalEngine
 {
 	class PrefabManager:public JSONSerializer {
 	public:
+		struct PrefabInfo
+		{
+			std::string prefabName{};
+			bool        isDirty{ false };    // has it diverged from the source?
+			Entity       prefabID{};          // links instance back to the master prefab
+		};
 
 		/*!*************************************************************************
 		Singleton
@@ -70,12 +78,33 @@ namespace NocturnalEngine
 		Serializes ECS entities and data to JSON file to save ECS (File saving)
 		****************************************************************************/
 		virtual bool Serialize(rapidjson::PrettyWriter<rapidjson::StringBuffer>* writer) const override;
+
+		/*!*************************************************************************
+		Clones Entity from prefab list
+		****************************************************************************/
+		Entity CloneFromPrefab(const std::string& prefabName);
+
+		bool IsFromPrefab(Entity e) const {
+			return prefabRegistry.find(e) != prefabRegistry.end();
+		}
+
+		PrefabInfo GetPrefabInfo(Entity e) {
+			if (!IsFromPrefab(e)) return {};
+
+			return prefabRegistry[e];
+		}
+
+		void ClearRegistry() {
+			prefabRegistry.clear();
+		}
 	private:
 		bool SerializeWithName(rapidjson::PrettyWriter<rapidjson::StringBuffer>* writer, const std::string& prefabName,Entity e)const;
 
 		PrefabManager() = default;
 		std::vector<Entity> prefabList{};
 		std::map<std::string, Entity> prefabNameMap{};
+
+		std::unordered_map<Entity, PrefabInfo> prefabRegistry{};
 
 		std::string prefabToSave{};
 		Entity prefabToSaveEntity{ MAX_ENTITIES };
