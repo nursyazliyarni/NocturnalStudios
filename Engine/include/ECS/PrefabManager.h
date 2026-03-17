@@ -57,7 +57,7 @@ namespace NocturnalEngine
 			return true;
 		}
 
-		bool CheckOrAddPrefabfromName(const std::string& name);
+		bool CheckOrAddPrefabFromName(const std::string& name);
 
 		/*!*************************************************************************
 		This is a function used by the leveleditor to add a prefab from the inspector

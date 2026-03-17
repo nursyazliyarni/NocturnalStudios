@@ -288,7 +288,7 @@ bool NocturnalEngine::SceneManager::NewDeserialize(const rapidjson::Value& obj) 
 				}
 				else {
 					prefabName=ent["Prefab"].GetString() ;
-					fromPrefab = prefabs.CheckOrAddPrefabfromName(prefabName);
+					fromPrefab = prefabs.CheckOrAddPrefabFromName(prefabName);
 				}
 
 				if (fromPrefab) {
