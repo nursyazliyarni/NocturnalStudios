@@ -147,4 +147,14 @@ namespace NocturnalEngine
 
 		return newEntity;
 	}
+
+	bool PrefabManager::CheckOrAddPrefabfromName(const std::string& name) {
+		if (DoesPrefabExist(name))return true;
+
+		std::string filename{ "Assets/Prefabs/" + name + ".json" };
+
+		if (!std::filesystem::exists(filename))return false;
+
+		return MakeFromJson(filename);
+	}
 }

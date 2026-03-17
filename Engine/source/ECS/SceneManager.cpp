@@ -277,24 +277,50 @@ bool NocturnalEngine::SceneManager::NewDeserialize(const rapidjson::Value& obj) 
 		PrefabManager& prefabs{ p_PrefabManager };
 		for (const rapidjson::Value& ent:obj["Entities"].GetArray())
 		{
+			bool fromPrefab{ ent.HasMember("Prefab") };
+
+			Entity e{ MAX_ENTITIES };
+
+			if (fromPrefab) {
+				std::string prefabName{};
+				if (!ent["Prefab"].IsString()) {
+					fromPrefab = false;
+				}
+				else {
+					prefabName=ent["Prefab"].GetString() ;
+					fromPrefab = prefabs.CheckOrAddPrefabfromName(prefabName);
+				}
+
+				if (fromPrefab) {
+					e = prefabs.CloneFromPrefab(prefabName);
+				}
+			}
+
 			if (!ent.HasMember("Components") || !ent["Components"].IsArray())continue;
-			Entity e = p_ecs.CreateEntity();
+
+			if (!fromPrefab)
+			{
+				e = p_ecs.CreateEntity();
+			}
+
+			if (e == MAX_ENTITIES) continue;
 
 			for (const rapidjson::Value& comps : ent["Components"].GetArray())
 			{
-				if (!comps.HasMember("Component")||!comps["Component"].IsString())continue;
+				if (!comps.HasMember("Component") || !comps["Component"].IsString())continue;
 
 				std::string componentName = comps["Component"].GetString();
 				if (ecr.contains(componentName)) {
 					ecr.at(componentName).deserializeAndAddFunc(e, comps);
 				}
-				else if (gcr && gcr->contains(componentName)) 
+				else if (gcr && gcr->contains(componentName))
 				{
 					gcr->at(componentName).deserializeAndAddFunc(e, comps);
 				}
-				
-				
+
+
 			}
+			
 
 		}
 	}
