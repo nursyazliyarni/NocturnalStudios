@@ -26,7 +26,17 @@ namespace NocturnalEngine
 
 		Entity newEntity{p_Heirarchy.CloneEntity(id,true)};
 		bool returnV =AddPrefab(name, newEntity);
-		if (returnV)SaveToJson(name, newEntity);
+		if (returnV)
+		{
+			SaveToJson(name, newEntity);
+
+			// Register the original entity as an instance of this prefab
+			PrefabInfo pfInfo{ name, false, newEntity };
+			prefabRegistry.emplace(id, pfInfo);
+
+			// Register its children too
+			RegisterChildren(newEntity, id, name);
+		}
 		return returnV;
 	}
 
