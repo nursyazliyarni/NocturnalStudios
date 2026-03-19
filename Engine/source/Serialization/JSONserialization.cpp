@@ -46,7 +46,6 @@ namespace NocturnalEngine
 		}
 		else
 		{
-			// p_Audio->StopChannel(CAudioEngine::channel_groups::bgm);
 			Deserialize(doc);
 		}
 		return true;

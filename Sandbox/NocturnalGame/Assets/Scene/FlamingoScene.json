@@ -34,6 +34,15 @@
                 },
                 {
                     "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
                     "TextureName": "UI/blackbg",
                     "Index_X": 0,
                     "Index_Y": 0,
@@ -50,6 +59,8 @@
                         {
                             "Name": "Idle",
                             "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
                             "Source": 3,
                             "Compare": 0,
                             "Threshold": 0.0,
@@ -63,7 +74,8 @@
                     "0": {
                         "AudioPath": "Luminara Zoo - Music - Level 1 (v2).wav",
                         "Channel": 2,
-                        "IsLooping": true
+                        "IsLooping": true,
+                        "VolumeLimit": 1.0
                     },
                     "AudioArrCount": 1,
                     "BGM Volume": 1.0,
@@ -137,8 +149,17 @@
                 },
                 {
                     "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
                     "TextureName": "Characters/flamingo_angry",
-                    "Index_X": 4,
+                    "Index_X": 3,
                     "Index_Y": 0,
                     "Ucoordinates": 528.0,
                     "Vcoordinates": 528.0,
@@ -158,6 +179,8 @@
                         {
                             "Name": "Idle",
                             "Texture": "Characters/flamingo_idle",
+                            "Ucoordinates": 528.0,
+                            "Vcoordinates": 528.0,
                             "Source": 3,
                             "Compare": 0,
                             "Threshold": 0.0,
@@ -167,6 +190,8 @@
                         {
                             "Name": "Hungry",
                             "Texture": "Characters/flamingo_hungry",
+                            "Ucoordinates": 528.0,
+                            "Vcoordinates": 528.0,
                             "Source": 0,
                             "Compare": 0,
                             "Threshold": 0.800000011920929,
@@ -176,6 +201,8 @@
                         {
                             "Name": "Sick",
                             "Texture": "Characters/flamingo_sick",
+                            "Ucoordinates": 528.0,
+                            "Vcoordinates": 528.0,
                             "Source": 1,
                             "Compare": 0,
                             "Threshold": 0.8999999761581421,
@@ -185,6 +212,8 @@
                         {
                             "Name": "Angry",
                             "Texture": "Characters/flamingo_angry",
+                            "Ucoordinates": 528.0,
+                            "Vcoordinates": 528.0,
                             "Source": 2,
                             "Compare": 0,
                             "Threshold": 0.7400000095367432,
@@ -255,6 +284,15 @@
                 },
                 {
                     "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
                     "TextureName": "Play/Food",
                     "Index_X": 0,
                     "Index_Y": 0,
@@ -271,6 +309,8 @@
                         {
                             "Name": "Idle",
                             "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
                             "Source": 3,
                             "Compare": 0,
                             "Threshold": 0.0,
@@ -284,7 +324,8 @@
                     "0": {
                         "AudioPath": "Item_Grab_v1.wav",
                         "Channel": 3,
-                        "IsLooping": false
+                        "IsLooping": false,
+                        "VolumeLimit": 1.0
                     },
                     "AudioArrCount": 1,
                     "BGM Volume": 1.0,
@@ -321,7 +362,7 @@
                     "2": "ButtonResponse",
                     "ScriptCount": 3
                 },
-                 {
+                {
                     "Component": "SceneVFX",
                     "ParticlesEnabled": true,
                     "ParticleType": 2,
@@ -398,6 +439,15 @@
                 },
                 {
                     "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
                     "TextureName": "Play/Medicine",
                     "Index_X": 0,
                     "Index_Y": 0,
@@ -414,6 +464,8 @@
                         {
                             "Name": "Idle",
                             "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
                             "Source": 3,
                             "Compare": 0,
                             "Threshold": 0.0,
@@ -427,7 +479,8 @@
                     "0": {
                         "AudioPath": "Item_Grab_v1.wav",
                         "Channel": 3,
-                        "IsLooping": false
+                        "IsLooping": false,
+                        "VolumeLimit": 1.0
                     },
                     "AudioArrCount": 1,
                     "BGM Volume": 1.0,
@@ -535,6 +588,15 @@
                 },
                 {
                     "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
                     "TextureName": "Play/flamingo_toy",
                     "Index_X": 0,
                     "Index_Y": 0,
@@ -551,6 +613,8 @@
                         {
                             "Name": "Idle",
                             "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
                             "Source": 3,
                             "Compare": 0,
                             "Threshold": 0.0,
@@ -613,6 +677,15 @@
                 },
                 {
                     "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
                     "TextureName": "UI/cameraButtonUnlit",
                     "Index_X": 0,
                     "Index_Y": 0,
@@ -629,6 +702,8 @@
                         {
                             "Name": "Idle",
                             "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
                             "Source": 3,
                             "Compare": 0,
                             "Threshold": 0.0,
@@ -642,27 +717,32 @@
                     "0": {
                         "AudioPath": "SFX_Static_01.wav",
                         "Channel": 3,
-                        "IsLooping": false
+                        "IsLooping": false,
+                        "VolumeLimit": 0.2980000078678131
                     },
                     "1": {
                         "AudioPath": "SFX_Static_02.wav",
                         "Channel": 3,
-                        "IsLooping": false
+                        "IsLooping": false,
+                        "VolumeLimit": 0.3100000023841858
                     },
                     "2": {
                         "AudioPath": "SFX_Static_03.wav",
                         "Channel": 3,
-                        "IsLooping": false
+                        "IsLooping": false,
+                        "VolumeLimit": 0.3449999988079071
                     },
                     "3": {
                         "AudioPath": "SFX_Static_04.wav",
                         "Channel": 3,
-                        "IsLooping": false
+                        "IsLooping": false,
+                        "VolumeLimit": 0.3449999988079071
                     },
                     "4": {
                         "AudioPath": "SFX_Static_05.wav",
                         "Channel": 3,
-                        "IsLooping": false
+                        "IsLooping": false,
+                        "VolumeLimit": 0.32100000977516174
                     },
                     "AudioArrCount": 5,
                     "BGM Volume": 1.0,
@@ -787,6 +867,15 @@
                 },
                 {
                     "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
                     "TextureName": "UI/cameraButtonUnlit",
                     "Index_X": 0,
                     "Index_Y": 0,
@@ -803,6 +892,8 @@
                         {
                             "Name": "Idle",
                             "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
                             "Source": 3,
                             "Compare": 0,
                             "Threshold": 0.0,
@@ -816,27 +907,32 @@
                     "0": {
                         "AudioPath": "SFX_Static_01.wav",
                         "Channel": 3,
-                        "IsLooping": false
+                        "IsLooping": false,
+                        "VolumeLimit": 0.3569999933242798
                     },
                     "1": {
                         "AudioPath": "SFX_Static_02.wav",
                         "Channel": 3,
-                        "IsLooping": false
+                        "IsLooping": false,
+                        "VolumeLimit": 0.32100000977516174
                     },
                     "2": {
                         "AudioPath": "SFX_Static_03.wav",
                         "Channel": 3,
-                        "IsLooping": false
+                        "IsLooping": false,
+                        "VolumeLimit": 0.3330000042915344
                     },
                     "3": {
                         "AudioPath": "SFX_Static_04.wav",
                         "Channel": 3,
-                        "IsLooping": false
+                        "IsLooping": false,
+                        "VolumeLimit": 0.3449999988079071
                     },
                     "4": {
                         "AudioPath": "SFX_Static_05.wav",
                         "Channel": 3,
-                        "IsLooping": false
+                        "IsLooping": false,
+                        "VolumeLimit": 0.3449999988079071
                     },
                     "AudioArrCount": 5,
                     "BGM Volume": 1.0,
@@ -961,6 +1057,15 @@
                 },
                 {
                     "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
                     "TextureName": "UI/cameraButtonUnlit",
                     "Index_X": 0,
                     "Index_Y": 0,
@@ -977,6 +1082,8 @@
                         {
                             "Name": "Idle",
                             "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
                             "Source": 3,
                             "Compare": 0,
                             "Threshold": 0.0,
@@ -990,27 +1097,32 @@
                     "0": {
                         "AudioPath": "SFX_Static_01.wav",
                         "Channel": 3,
-                        "IsLooping": false
+                        "IsLooping": false,
+                        "VolumeLimit": 0.3330000042915344
                     },
                     "1": {
                         "AudioPath": "SFX_Static_02.wav",
                         "Channel": 3,
-                        "IsLooping": false
+                        "IsLooping": false,
+                        "VolumeLimit": 0.2980000078678131
                     },
                     "2": {
                         "AudioPath": "SFX_Static_03.wav",
                         "Channel": 3,
-                        "IsLooping": false
+                        "IsLooping": false,
+                        "VolumeLimit": 0.3100000023841858
                     },
                     "3": {
                         "AudioPath": "SFX_Static_04.wav",
                         "Channel": 3,
-                        "IsLooping": false
+                        "IsLooping": false,
+                        "VolumeLimit": 0.3100000023841858
                     },
                     "4": {
                         "AudioPath": "SFX_Static_05.wav",
                         "Channel": 3,
-                        "IsLooping": false
+                        "IsLooping": false,
+                        "VolumeLimit": 0.3330000042915344
                     },
                     "AudioArrCount": 5,
                     "BGM Volume": 1.0,
@@ -1134,6 +1246,15 @@
                 },
                 {
                     "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
                     "TextureName": "UI/cameraButtonUnlit",
                     "Index_X": 0,
                     "Index_Y": 0,
@@ -1150,6 +1271,8 @@
                         {
                             "Name": "Idle",
                             "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
                             "Source": 3,
                             "Compare": 0,
                             "Threshold": 0.0,
@@ -1163,27 +1286,32 @@
                     "0": {
                         "AudioPath": "SFX_Static_01.wav",
                         "Channel": 3,
-                        "IsLooping": false
+                        "IsLooping": false,
+                        "VolumeLimit": 0.32100000977516174
                     },
                     "1": {
                         "AudioPath": "SFX_Static_02.wav",
                         "Channel": 3,
-                        "IsLooping": false
+                        "IsLooping": false,
+                        "VolumeLimit": 0.3449999988079071
                     },
                     "2": {
                         "AudioPath": "SFX_Static_03.wav",
                         "Channel": 3,
-                        "IsLooping": false
+                        "IsLooping": false,
+                        "VolumeLimit": 0.36899998784065247
                     },
                     "3": {
                         "AudioPath": "SFX_Static_04.wav",
                         "Channel": 3,
-                        "IsLooping": false
+                        "IsLooping": false,
+                        "VolumeLimit": 0.3449999988079071
                     },
                     "4": {
                         "AudioPath": "SFX_Static_05.wav",
                         "Channel": 3,
-                        "IsLooping": false
+                        "IsLooping": false,
+                        "VolumeLimit": 0.3330000042915344
                     },
                     "AudioArrCount": 5,
                     "BGM Volume": 1.0,
@@ -1238,6 +1366,15 @@
                 },
                 {
                     "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
                     "TextureName": "UI/cameraHighlight",
                     "Index_X": 0,
                     "Index_Y": 0,
@@ -1254,6 +1391,8 @@
                         {
                             "Name": "Idle",
                             "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
                             "Source": 3,
                             "Compare": 0,
                             "Threshold": 0.0,
@@ -1434,6 +1573,15 @@
                 },
                 {
                     "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
                     "TextureName": "UI/target",
                     "Index_X": 0,
                     "Index_Y": 0,
@@ -1450,6 +1598,8 @@
                         {
                             "Name": "Idle",
                             "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
                             "Source": 3,
                             "Compare": 0,
                             "Threshold": 0.0,
@@ -1477,6 +1627,15 @@
                 },
                 {
                     "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
                     "TextureName": "UI/PlaceholderLogbg",
                     "Index_X": 0,
                     "Index_Y": 0,
@@ -1493,6 +1652,8 @@
                         {
                             "Name": "Idle",
                             "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
                             "Source": 3,
                             "Compare": 0,
                             "Threshold": 0.0,
@@ -1545,6 +1706,15 @@
                 },
                 {
                     "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
                     "TextureName": "UI/cameraHighlight",
                     "Index_X": 0,
                     "Index_Y": 0,
@@ -1561,6 +1731,8 @@
                         {
                             "Name": "Idle",
                             "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
                             "Source": 3,
                             "Compare": 0,
                             "Threshold": 0.0,
@@ -1588,6 +1760,15 @@
                 },
                 {
                     "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
                     "TextureName": "UI/cameraHighlight",
                     "Index_X": 0,
                     "Index_Y": 0,
@@ -1604,6 +1785,8 @@
                         {
                             "Name": "Idle",
                             "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
                             "Source": 3,
                             "Compare": 0,
                             "Threshold": 0.0,
@@ -1631,6 +1814,15 @@
                 },
                 {
                     "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
                     "TextureName": "UI/cameraHighlight",
                     "Index_X": 0,
                     "Index_Y": 0,
@@ -1647,6 +1839,8 @@
                         {
                             "Name": "Idle",
                             "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
                             "Source": 3,
                             "Compare": 0,
                             "Threshold": 0.0,
@@ -1674,6 +1868,15 @@
                 },
                 {
                     "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
                     "TextureName": "UI/panel",
                     "Index_X": 0,
                     "Index_Y": 0,
@@ -1690,6 +1893,8 @@
                         {
                             "Name": "Idle",
                             "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
                             "Source": 3,
                             "Compare": 0,
                             "Threshold": 0.0,
@@ -1717,6 +1922,15 @@
                 },
                 {
                     "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
                     "TextureName": "UI/cameraButtonLit",
                     "Index_X": 0,
                     "Index_Y": 0,
@@ -1733,6 +1947,8 @@
                         {
                             "Name": "Idle",
                             "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
                             "Source": 3,
                             "Compare": 0,
                             "Threshold": 0.0,
@@ -1804,6 +2020,15 @@
                 },
                 {
                     "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
                     "TextureName": "Environment/flamingoCage",
                     "Index_X": 0,
                     "Index_Y": 0,
@@ -1820,6 +2045,8 @@
                         {
                             "Name": "Idle",
                             "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
                             "Source": 3,
                             "Compare": 0,
                             "Threshold": 0.0,
@@ -1847,6 +2074,15 @@
                 },
                 {
                     "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
                     "TextureName": "UI/inventory",
                     "Index_X": 0,
                     "Index_Y": 0,
@@ -1863,6 +2099,8 @@
                         {
                             "Name": "Idle",
                             "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
                             "Source": 3,
                             "Compare": 0,
                             "Threshold": 0.0,
@@ -1910,6 +2148,15 @@
                 },
                 {
                     "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
                     "TextureName": "UI/right panel",
                     "Index_X": 0,
                     "Index_Y": 0,
@@ -1926,6 +2173,8 @@
                         {
                             "Name": "Idle",
                             "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
                             "Source": 3,
                             "Compare": 0,
                             "Threshold": 0.0,
@@ -1958,6 +2207,15 @@
                 },
                 {
                     "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
                     "TextureName": "UI/background",
                     "Index_X": 0,
                     "Index_Y": 0,
@@ -1974,6 +2232,8 @@
                         {
                             "Name": "Idle",
                             "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
                             "Source": 3,
                             "Compare": 0,
                             "Threshold": 0.0,
@@ -2020,6 +2280,15 @@
                 },
                 {
                     "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
                     "TextureName": "UI/painSpot",
                     "Index_X": 0,
                     "Index_Y": 0,
@@ -2036,6 +2305,8 @@
                         {
                             "Name": "Idle",
                             "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
                             "Source": 3,
                             "Compare": 0,
                             "Threshold": 0.0,
@@ -2082,6 +2353,15 @@
                 },
                 {
                     "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
                     "TextureName": "UI/key",
                     "Index_X": 0,
                     "Index_Y": 0,
@@ -2098,6 +2378,8 @@
                         {
                             "Name": "Idle",
                             "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
                             "Source": 3,
                             "Compare": 0,
                             "Threshold": 0.0,
@@ -2177,6 +2459,15 @@
                 },
                 {
                     "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
                     "TextureName": "Environment/bush",
                     "Index_X": 0,
                     "Index_Y": 0,
@@ -2193,6 +2484,8 @@
                         {
                             "Name": "Idle",
                             "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
                             "Source": 3,
                             "Compare": 0,
                             "Threshold": 0.0,
@@ -2225,6 +2518,15 @@
                 },
                 {
                     "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
                     "TextureName": "Environment/bush",
                     "Index_X": 0,
                     "Index_Y": 0,
@@ -2241,6 +2543,8 @@
                         {
                             "Name": "Idle",
                             "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
                             "Source": 3,
                             "Compare": 0,
                             "Threshold": 0.0,
@@ -2273,6 +2577,15 @@
                 },
                 {
                     "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
                     "TextureName": "Environment/bush",
                     "Index_X": 0,
                     "Index_Y": 0,
@@ -2289,6 +2602,8 @@
                         {
                             "Name": "Idle",
                             "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
                             "Source": 3,
                             "Compare": 0,
                             "Threshold": 0.0,

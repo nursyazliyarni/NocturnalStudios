@@ -70,6 +70,7 @@ namespace NocturnalEngine
                 if (audio[i].is_Looping == false && audio[i].should_play == true && audio[i].is_Playing == false) {
                     //play sound
                     audio[i].mChannel = p_Audio->PlaySound("Assets/Audio/" + audio[i].mAudioPath, audio[i].mChannelGroup);
+                    p_Audio->SetVolume(audio[i].mChannel, audio[i].volumeLimit);
                     audio[i].should_play = false;
                     audio[i].triggered = true;
                 }
@@ -87,6 +88,7 @@ namespace NocturnalEngine
                     {
                         //play sound
                         audio[i].mChannel = p_Audio->PlaySound(fullPath, audio[i].mChannelGroup);
+                        p_Audio->SetVolume(audio[i].mChannel, audio[i].volumeLimit);
                         audio[i].triggered = true;
                     }
                 }

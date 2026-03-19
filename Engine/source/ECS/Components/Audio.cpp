@@ -65,6 +65,7 @@ bool NocturnalEngine::Audio::ToEditor() {
             changed |= ImGui::Combo("###why is this named tes", &ChIndex, ChList);
             ImGui::PushItemWidth(100.0f);
             AudioArr[current_audio].mChannelGroup = static_cast<Audio::AudioType>(ChIndex);
+            changed |= ImGui::SliderFloat("Track Volume Limit", &AudioArr[current_audio].volumeLimit, 0.0f, 1.0f, "%.3f");
         }
         //option to add audio to array
         if (ImGui::Button("Add Audio")) {
@@ -72,6 +73,7 @@ bool NocturnalEngine::Audio::ToEditor() {
             nAud.mAudioPath = audioFileList[currentfile];
             nAud.mChannelGroup = Audio::AudioType::NONE;
             nAud.mChannel = 0;
+            nAud.volumeLimit = 1.0f;
             nAud.is_Looping = false;
             nAud.should_play = false;
             nAud.should_stop = false;
@@ -149,6 +151,14 @@ bool NocturnalEngine::Audio::Deserialize(const rapidjson::Value& obj)
 		na.mAudioPath = obj[std::to_string(i).c_str()].GetObj()["AudioPath"].GetString();
 		na.mChannelGroup = static_cast<AudioType>(obj[std::to_string(i).c_str()].GetObj()["Channel"].GetInt());
 		na.is_Looping = obj[std::to_string(i).c_str()].GetObj()["IsLooping"].GetBool();
+		if (obj[std::to_string(i).c_str()].GetObj().HasMember("VolumeLimit") && obj[std::to_string(i).c_str()].GetObj()["VolumeLimit"].IsNumber())
+		{
+			na.volumeLimit = (float)obj[std::to_string(i).c_str()].GetObj()["VolumeLimit"].GetDouble();
+		}
+		else
+		{
+			na.volumeLimit = 1.0f;
+		}
 		na.mChannel = 0;
 		na.should_play = false;
 		na.should_stop = false;
@@ -210,6 +220,8 @@ bool NocturnalEngine::Audio::Serialize(rapidjson::PrettyWriter<rapidjson::String
 		writer->Int(static_cast<int>(AudioArr[i].mChannelGroup));
 		writer->Key("IsLooping");
 		writer->Bool(AudioArr[i].is_Looping);
+		writer->Key("VolumeLimit");
+		writer->Double(AudioArr[i].volumeLimit);
 		writer->EndObject();
 	}
 	writer->Key("AudioArrCount");
@@ -251,6 +263,60 @@ bool NocturnalEngine::Audio::Serialize(rapidjson::PrettyWriter<rapidjson::String
 	return true;
 }
 
+
+bool NocturnalEngine::Audio::OnCompare(const IComponent& other) const {
+    const Audio& o = static_cast<const Audio&>(other);
+    // Compare volumes
+    if (bgmVol != o.bgmVol)    return false;
+    if (sfxVol != o.sfxVol)    return false;
+    if (masterVol != o.masterVol) return false;
+
+    // Compare flags
+    if (randomFromArray != o.randomFromArray) return false;
+
+    // Compare AudioPiece array
+    if (AudioArr.size() != o.AudioArr.size()) return false;
+    for (size_t i = 0; i < AudioArr.size(); ++i)
+    {
+        const AudioPiece& a = AudioArr[i];
+        const AudioPiece& b = o.AudioArr[i];
+        if (a.mAudioPath != b.mAudioPath)    return false;
+        if (a.mChannelGroup != b.mChannelGroup) return false;
+        if (a.mChannel != b.mChannel)      return false;
+        if (a.volumeLimit != b.volumeLimit)   return false;
+        if (a.is_Looping != b.is_Looping)    return false;
+        if (a.should_play != b.should_play)   return false;
+        if (a.should_stop != b.should_stop)   return false;
+        if (a.is_Playing != b.is_Playing)    return false;
+        if (a.triggered != b.triggered)     return false;
+    }
+
+    // Compare effect settings
+    const AudioEffectSettings& e = effectSettings;
+    const AudioEffectSettings& oe = o.effectSettings;
+    if (e.lowpassEnabled != oe.lowpassEnabled)    return false;
+    if (e.lowpassCutoff != oe.lowpassCutoff)     return false;
+    if (e.lowpassResonance != oe.lowpassResonance)  return false;
+    if (e.highpassEnabled != oe.highpassEnabled)   return false;
+    if (e.highpassCutoff != oe.highpassCutoff)    return false;
+    if (e.highpassResonance != oe.highpassResonance) return false;
+    if (e.echoEnabled != oe.echoEnabled)       return false;
+    if (e.echoDelay != oe.echoDelay)         return false;
+    if (e.echoFeedback != oe.echoFeedback)      return false;
+    if (e.echoDryLevel != oe.echoDryLevel)      return false;
+    if (e.echoWetLevel != oe.echoWetLevel)      return false;
+    if (e.reverbEnabled != oe.reverbEnabled)     return false;
+    if (e.reverbDecayTime != oe.reverbDecayTime)   return false;
+    if (e.reverbEarlyDelay != oe.reverbEarlyDelay)  return false;
+    if (e.reverbLateDelay != oe.reverbLateDelay)   return false;
+    if (e.reverbHFReference != oe.reverbHFReference) return false;
+    if (e.reverbDiffusion != oe.reverbDiffusion)   return false;
+    if (e.reverbDensity != oe.reverbDensity)     return false;
+    if (e.reverbWetLevel != oe.reverbWetLevel)    return false;
+    if (e.reverbDryLevel != oe.reverbDryLevel)    return false;
+
+    return true;
+}
 std::vector < std::pair<std::string, std::filesystem::directory_entry>> NocturnalEngine::Audio::LoadAudioFromFiles(){
 
     std::vector<std::pair<std::string, std::filesystem::directory_entry>> returnVal{};

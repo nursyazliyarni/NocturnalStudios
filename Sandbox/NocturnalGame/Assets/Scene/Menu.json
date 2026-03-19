@@ -53,6 +53,15 @@
                 },
                 {
                     "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
                     "TextureName": "UI/menu_bg",
                     "Index_X": 0,
                     "Index_Y": 0,
@@ -69,6 +78,8 @@
                         {
                             "Name": "Idle",
                             "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
                             "Source": 3,
                             "Compare": 0,
                             "Threshold": 0.0,
@@ -82,7 +93,8 @@
                     "0": {
                         "AudioPath": "Luminara Zoo - Music - Menu (v1).wav",
                         "Channel": 2,
-                        "IsLooping": false
+                        "IsLooping": false,
+                        "VolumeLimit": 1.0
                     },
                     "AudioArrCount": 1,
                     "BGM Volume": 1.0,
@@ -167,6 +179,15 @@
                 },
                 {
                     "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
                     "TextureName": "UI/BlankArrow",
                     "Index_X": 0,
                     "Index_Y": 0,
@@ -183,6 +204,8 @@
                         {
                             "Name": "Idle",
                             "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
                             "Source": 3,
                             "Compare": 0,
                             "Threshold": 0.0,
@@ -196,12 +219,14 @@
                     "0": {
                         "AudioPath": "UI_StartGame.wav",
                         "Channel": 3,
-                        "IsLooping": false
+                        "IsLooping": false,
+                        "VolumeLimit": 0.6660000085830688
                     },
                     "1": {
                         "AudioPath": "UI_Hover.wav",
                         "Channel": 3,
-                        "IsLooping": false
+                        "IsLooping": false,
+                        "VolumeLimit": 0.6549999713897705
                     },
                     "AudioArrCount": 2,
                     "BGM Volume": 1.0,
@@ -327,6 +352,15 @@
                 },
                 {
                     "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
                     "TextureName": "UI/BlankArrow",
                     "Index_X": 0,
                     "Index_Y": 0,
@@ -343,6 +377,8 @@
                         {
                             "Name": "Idle",
                             "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
                             "Source": 3,
                             "Compare": 0,
                             "Threshold": 0.0,
@@ -356,12 +392,14 @@
                     "0": {
                         "AudioPath": "UI ButtonClick.wav",
                         "Channel": 3,
-                        "IsLooping": false
+                        "IsLooping": false,
+                        "VolumeLimit": 0.6190000176429749
                     },
                     "1": {
                         "AudioPath": "UI_Hover.wav",
                         "Channel": 3,
-                        "IsLooping": false
+                        "IsLooping": false,
+                        "VolumeLimit": 0.6549999713897705
                     },
                     "AudioArrCount": 2,
                     "BGM Volume": 1.0,
@@ -487,6 +525,15 @@
                 },
                 {
                     "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
                     "TextureName": "UI/BlankArrow",
                     "Index_X": 0,
                     "Index_Y": 0,
@@ -503,6 +550,8 @@
                         {
                             "Name": "Idle",
                             "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
                             "Source": 3,
                             "Compare": 0,
                             "Threshold": 0.0,
@@ -516,12 +565,14 @@
                     "0": {
                         "AudioPath": "UI ButtonClick.wav",
                         "Channel": 3,
-                        "IsLooping": false
+                        "IsLooping": false,
+                        "VolumeLimit": 0.6309999823570251
                     },
                     "1": {
                         "AudioPath": "UI_Hover.wav",
                         "Channel": 3,
-                        "IsLooping": false
+                        "IsLooping": false,
+                        "VolumeLimit": 0.6309999823570251
                     },
                     "AudioArrCount": 2,
                     "BGM Volume": 1.0,
@@ -647,6 +698,15 @@
                 },
                 {
                     "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
                     "TextureName": "UI/BlankArrow",
                     "Index_X": 0,
                     "Index_Y": 0,
@@ -663,6 +723,8 @@
                         {
                             "Name": "Idle",
                             "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
                             "Source": 3,
                             "Compare": 0,
                             "Threshold": 0.0,
@@ -676,12 +738,14 @@
                     "0": {
                         "AudioPath": "UI ButtonClick.wav",
                         "Channel": 3,
-                        "IsLooping": false
+                        "IsLooping": false,
+                        "VolumeLimit": 0.6069999933242798
                     },
                     "1": {
                         "AudioPath": "UI_Hover.wav",
                         "Channel": 3,
-                        "IsLooping": false
+                        "IsLooping": false,
+                        "VolumeLimit": 0.5950000286102295
                     },
                     "AudioArrCount": 2,
                     "BGM Volume": 1.0,

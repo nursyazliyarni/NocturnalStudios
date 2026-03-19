@@ -8,7 +8,7 @@
 		 for the dialogue components.
 
     Primary Author:
-         LAU XIANG YANG (100%)
+         CHANG QI XUAN CELEST (100%)
 		- Created the DialogueManager.h file and its function specification.
 
     All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.

@@ -136,4 +136,15 @@ namespace NocturnalEngine
 		return true;
 	}
 
+	Entity PrefabManager::CloneFromPrefab(const std::string& prefabName) {
+		if (!DoesPrefabExist(prefabName))return MAX_ENTITIES;
+
+		Entity prefabEntity{ prefabNameMap[prefabName] }, newEntity{ p_ecs.CloneEntity(prefabEntity) };
+
+		PrefabInfo pfInfo{ prefabName,false,prefabEntity };
+
+		prefabRegistry.emplace(newEntity, pfInfo);
+
+		return newEntity;
+	}
 }

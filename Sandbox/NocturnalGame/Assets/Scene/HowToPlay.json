@@ -34,6 +34,15 @@
                 },
                 {
                     "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
                     "TextureName": "UI/menu_bg",
                     "Index_X": 0,
                     "Index_Y": 0,
@@ -50,6 +59,8 @@
                         {
                             "Name": "Idle",
                             "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
                             "Source": 3,
                             "Compare": 0,
                             "Threshold": 0.0,
@@ -63,7 +74,8 @@
                     "0": {
                         "AudioPath": "Luminara Zoo - Music - Menu (v1).wav",
                         "Channel": 2,
-                        "IsLooping": false
+                        "IsLooping": false,
+                        "VolumeLimit": 1.0
                     },
                     "AudioArrCount": 1,
                     "BGM Volume": 1.0,
@@ -142,6 +154,15 @@
                 },
                 {
                     "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
                     "TextureName": "HowToPlay/overviewtag",
                     "Index_X": 0,
                     "Index_Y": 0,
@@ -158,6 +179,8 @@
                         {
                             "Name": "Idle",
                             "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
                             "Source": 3,
                             "Compare": 0,
                             "Threshold": 0.0,
@@ -171,7 +194,8 @@
                     "0": {
                         "AudioPath": "UI_PageFlick_v1.wav",
                         "Channel": 3,
-                        "IsLooping": false
+                        "IsLooping": false,
+                        "VolumeLimit": 1.0
                     },
                     "AudioArrCount": 1,
                     "BGM Volume": 1.0,
@@ -250,6 +274,15 @@
                 },
                 {
                     "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
                     "TextureName": "HowToPlay/flamingotag",
                     "Index_X": 0,
                     "Index_Y": 0,
@@ -266,6 +299,8 @@
                         {
                             "Name": "Idle",
                             "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
                             "Source": 3,
                             "Compare": 0,
                             "Threshold": 0.0,
@@ -279,7 +314,8 @@
                     "0": {
                         "AudioPath": "UI_PageFlick_v1.wav",
                         "Channel": 3,
-                        "IsLooping": false
+                        "IsLooping": false,
+                        "VolumeLimit": 1.0
                     },
                     "AudioArrCount": 1,
                     "BGM Volume": 1.0,
@@ -385,6 +421,15 @@
                 },
                 {
                     "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
                     "TextureName": "HowToPlay/sealtag",
                     "Index_X": 0,
                     "Index_Y": 0,
@@ -401,6 +446,8 @@
                         {
                             "Name": "Idle",
                             "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
                             "Source": 3,
                             "Compare": 0,
                             "Threshold": 0.0,
@@ -414,7 +461,8 @@
                     "0": {
                         "AudioPath": "UI_PageFlick_v1.wav",
                         "Channel": 3,
-                        "IsLooping": false
+                        "IsLooping": false,
+                        "VolumeLimit": 1.0
                     },
                     "AudioArrCount": 1,
                     "BGM Volume": 1.0,
@@ -520,6 +568,15 @@
                 },
                 {
                     "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
                     "TextureName": "HowToPlay/horsetag",
                     "Index_X": 0,
                     "Index_Y": 0,
@@ -536,6 +593,8 @@
                         {
                             "Name": "Idle",
                             "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
                             "Source": 3,
                             "Compare": 0,
                             "Threshold": 0.0,
@@ -549,7 +608,8 @@
                     "0": {
                         "AudioPath": "UI_PageFlick_v1.wav",
                         "Channel": 3,
-                        "IsLooping": false
+                        "IsLooping": false,
+                        "VolumeLimit": 1.0
                     },
                     "AudioArrCount": 1,
                     "BGM Volume": 1.0,
@@ -655,6 +715,15 @@
                 },
                 {
                     "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
                     "TextureName": "HowToPlay/owltag",
                     "Index_X": 0,
                     "Index_Y": 0,
@@ -671,6 +740,8 @@
                         {
                             "Name": "Idle",
                             "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
                             "Source": 3,
                             "Compare": 0,
                             "Threshold": 0.0,
@@ -684,7 +755,8 @@
                     "0": {
                         "AudioPath": "UI_PageFlick_v1.wav",
                         "Channel": 3,
-                        "IsLooping": false
+                        "IsLooping": false,
+                        "VolumeLimit": 1.0
                     },
                     "AudioArrCount": 1,
                     "BGM Volume": 1.0,
@@ -790,6 +862,15 @@
                 },
                 {
                     "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
                     "TextureName": "HowToPlay/healthtag",
                     "Index_X": 0,
                     "Index_Y": 0,
@@ -806,6 +887,8 @@
                         {
                             "Name": "Idle",
                             "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
                             "Source": 3,
                             "Compare": 0,
                             "Threshold": 0.0,
@@ -863,6 +946,15 @@
                 },
                 {
                     "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
                     "TextureName": "HowToPlay/hungertag",
                     "Index_X": 0,
                     "Index_Y": 0,
@@ -879,6 +971,8 @@
                         {
                             "Name": "Idle",
                             "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
                             "Source": 3,
                             "Compare": 0,
                             "Threshold": 0.0,
@@ -936,6 +1030,15 @@
                 },
                 {
                     "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
                     "TextureName": "HowToPlay/sanitytag",
                     "Index_X": 0,
                     "Index_Y": 0,
@@ -952,6 +1055,8 @@
                         {
                             "Name": "Idle",
                             "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
                             "Source": 3,
                             "Compare": 0,
                             "Threshold": 0.0,
@@ -985,6 +1090,15 @@
                 },
                 {
                     "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
                     "TextureName": "HowToPlay/overviewhtp",
                     "Index_X": 0,
                     "Index_Y": 0,
@@ -1001,6 +1115,8 @@
                         {
                             "Name": "Idle",
                             "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
                             "Source": 3,
                             "Compare": 0,
                             "Threshold": 0.0,
@@ -1052,6 +1168,15 @@
                 },
                 {
                     "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
                     "TextureName": "UI/Xmark",
                     "Index_X": 0,
                     "Index_Y": 0,
@@ -1068,6 +1193,8 @@
                         {
                             "Name": "Idle",
                             "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
                             "Source": 3,
                             "Compare": 0,
                             "Threshold": 0.0,
@@ -1081,7 +1208,8 @@
                     "0": {
                         "AudioPath": "UI_Back_v2.wav",
                         "Channel": 3,
-                        "IsLooping": false
+                        "IsLooping": false,
+                        "VolumeLimit": 0.5600000023841858
                     },
                     "AudioArrCount": 1,
                     "BGM Volume": 1.0,
