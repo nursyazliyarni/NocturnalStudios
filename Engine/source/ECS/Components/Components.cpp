@@ -59,9 +59,6 @@ namespace NocturnalEngine{
         p_ecs.RegisterComponent<SceneVFX>();//12
         RegisterComponent<SceneVFX>("SceneVFX");
 
-        //Relationship
-        p_ecs.RegisterComponent<Relationship>();//13
-        RegisterComponent<Relationship>("Relationship");
 
     }
 }

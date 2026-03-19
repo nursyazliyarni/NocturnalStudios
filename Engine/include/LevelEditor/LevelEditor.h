@@ -226,6 +226,8 @@ namespace NocturnalEngine {
 		****************************************************************************/
 		void ShowReloadPrompt();
 
+		void DrawHierarchyNode(Entity e);
+
 		
 	};
 }

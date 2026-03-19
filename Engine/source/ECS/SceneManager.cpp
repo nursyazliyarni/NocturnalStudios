@@ -26,7 +26,7 @@
 #include "ECS/EngineComponentReg.h"
 #include "Core/MemoryManager.h"
 #include "System/ServiceLocator.h"
-#include "ECS/PrefabManager.h"
+#include "ECS/ParentingSystem.h"
 #include <unordered_map>
 #include <array>
 
@@ -232,10 +232,12 @@ void NocturnalEngine::SceneManager::changeScene()
 			p_ecs.GetComponent<Logic>(i).EndAllScripts();
 		}
 	}
-
+	p_PrefabManager.ClearRegistry();
+	p_Heirarchy.ClearSceneEntities();
 	p_ecs.ClearAllComponents();
 	p_ecs.ResetAllEntitySignatures();
 	p_ecs.ResetEntities();
+
 }
 
 /*!*************************************************************************
@@ -268,68 +270,92 @@ bool NocturnalEngine::SceneManager::NewDeserialize(const rapidjson::Value& obj) 
 
 		std::unordered_map<Entity, Entity> entityOldIDMap{};
 
-		const std::unordered_map<std::string, ComponentRegistry::ComponentDescriptor>& ecr = p_ECompReg.GetAll();
 
-		ComponentRegistry* gameComp = ServiceLocator::Get().GetGameComponents();
-		const std::unordered_map<std::string, ComponentRegistry::ComponentDescriptor>* gcr =
-			gameComp
-			? &gameComp->GetAll()
-			: nullptr;
 
 		PrefabManager& prefabs{ p_PrefabManager };
 		for (const rapidjson::Value& ent:obj["Entities"].GetArray())
 		{
-			bool fromPrefab{ ent.HasMember("Prefab") };
-
-			Entity e{ MAX_ENTITIES };
-
-			if (fromPrefab) {
-				std::string prefabName{};
-				if (!ent["Prefab"].IsString()) {
-					fromPrefab = false;
-				}
-				else {
-					prefabName=ent["Prefab"].GetString() ;
-					fromPrefab = prefabs.CheckOrAddPrefabFromName(prefabName);
-				}
-
-				if (fromPrefab) {
-					e = prefabs.CloneFromPrefab(prefabName);
-				}
-			}
-
-			if (!ent.HasMember("Components") || !ent["Components"].IsArray())continue;
-
-			if (!fromPrefab)
-			{
-				e = p_ecs.CreateEntity();
-			}
-
-			if (e == MAX_ENTITIES) continue;
-
-			for (const rapidjson::Value& comps : ent["Components"].GetArray())
-			{
-				if (!comps.HasMember("Component") || !comps["Component"].IsString())continue;
-
-				std::string componentName = comps["Component"].GetString();
-				if (ecr.contains(componentName)) {
-					ecr.at(componentName).deserializeAndAddFunc(e, comps);
-				}
-				else if (gcr && gcr->contains(componentName))
-				{
-					gcr->at(componentName).deserializeAndAddFunc(e, comps);
-				}
-
-
-			}
-			
-			if (ent.HasMember("ID") && ent["ID"].IsUint()) {
-				entityOldIDMap.emplace(static_cast<Entity>(ent["ID"].GetUint()), e);
-			}
+			DeserializeEntity(ent, prefabs, entityOldIDMap);
 		}
-		ParentingSystem::RemapRelationships(entityOldIDMap);
+
 	}
 	return true;
+}
+
+NocturnalEngine::Entity NocturnalEngine::SceneManager::DeserializeEntity(const rapidjson::Value& ent, PrefabManager& prefabs, std::unordered_map<Entity, Entity>& entityOldIDMap, Entity parent) const {
+
+	const std::unordered_map<std::string, ComponentRegistry::ComponentDescriptor>& ecr = p_ECompReg.GetAll();
+
+	ComponentRegistry* gameComp = ServiceLocator::Get().GetGameComponents();
+	const std::unordered_map<std::string, ComponentRegistry::ComponentDescriptor>* gcr =
+		gameComp
+		? &gameComp->GetAll()
+		: nullptr;
+	bool fromPrefab{ ent.HasMember("Prefab") };
+
+	Entity e{ MAX_ENTITIES };
+
+	if (fromPrefab) {
+		std::string prefabName{};
+		if (!ent["Prefab"].IsString()) {
+			fromPrefab = false;
+		}
+		else {
+			prefabName = ent["Prefab"].GetString();
+			fromPrefab = prefabs.CheckOrAddPrefabFromName(prefabName);
+		}
+
+		if (fromPrefab) {
+			e = prefabs.CloneFromPrefab(prefabName);
+		}
+	}
+
+	if (!ent.HasMember("Components") || !ent["Components"].IsArray())return e;
+
+	if (!fromPrefab)
+	{
+		e = p_ecs.CreateEntity();
+	}
+
+	if (e == MAX_ENTITIES) return e;
+
+	for (const rapidjson::Value& comps : ent["Components"].GetArray())
+	{
+		if (!comps.HasMember("Component") || !comps["Component"].IsString())continue;
+
+		std::string componentName = comps["Component"].GetString();
+		if (ecr.contains(componentName)) {
+			ecr.at(componentName).deserializeAndAddFunc(e, comps);
+		}
+		else if (gcr && gcr->contains(componentName))
+		{
+			gcr->at(componentName).deserializeAndAddFunc(e, comps);
+		}
+
+
+	}
+
+	if (ent.HasMember("ID") && ent["ID"].IsUint()) {
+		entityOldIDMap.emplace(static_cast<Entity>(ent["ID"].GetUint()), e);
+	}
+	if (parent!=MAX_ENTITIES)
+	{
+		p_Heirarchy.SetParent(e, parent);
+	}
+	
+	if (ent.HasMember("Children")&& ent["Children"].IsArray())
+	{
+		for (const rapidjson::Value& chd : ent["Children"].GetArray())
+		{
+			DeserializeEntity(chd, prefabs, entityOldIDMap, e);
+		}
+	}
+
+
+
+
+
+	return e;
 }
 
 bool NocturnalEngine::SceneManager::OldDeserialize(const rapidjson::Value& obj) {
@@ -513,66 +539,10 @@ bool NocturnalEngine::SceneManager::NewSerialize(rapidjson::PrettyWriter<rapidjs
 	PrefabManager& prefabs{ p_PrefabManager };
 	for (Entity j:aliveTotal)
 	{
-		//Skip entities with no components
-		if (!p_ecs.GetEntitySignature(j).any())
-			continue;
-		//Start entity object
-		writer->StartObject();
-		//ID, not actually used when deserializing but for users to see better
-		writer->Key("ID");
-		writer->Int(static_cast<int>(j));
-
-		bool isFrmPrefab{ false };
-		PrefabManager::PrefabInfo pI{};
-		if (prefabs.IsFromPrefab(j))
-		{
-			pI=prefabs.GetPrefabInfo(j) ;
-			writer->Key("Prefab");
-			writer->String(pI.prefabName.c_str());
-			isFrmPrefab = true;
-		}
-
-		//Start Component array
-		writer->Key("Components");
-		writer->StartArray();
-
-		//Engine components
-		for (std::pair<const std::string, const ComponentRegistry::ComponentDescriptor> comp: p_ECompReg.GetAll())
-		{
-			if (comp.second.hasFunc(j))
-			{
-				if (isFrmPrefab && comp.second.compareFunc(pI.prefabID, j)) continue;
-				writer->StartObject();
-				//component name always comes first,
-				writer->Key("Component");
-				writer->String(comp.first.c_str());
-				// then start writing down the component
-				comp.second.serializeFunc(j,writer);
-				writer->EndObject();
-				
-			}
-		}
-
-		//Game components
-		if (ComponentRegistry *meow=ServiceLocator::Get().GetGameComponents())
-		{
-			for (std::pair<const std::string, const ComponentRegistry::ComponentDescriptor> comp : meow->GetAll())
-			{
-				if (comp.second.hasFunc(j))
-				{
-					if (isFrmPrefab && comp.second.compareFunc(pI.prefabID, j)) continue;
-					writer->StartObject();
-					writer->Key("Component");
-					writer->String(comp.first.c_str());
-					comp.second.serializeFunc(j, writer);
-					writer->EndObject();
-
-				}
-			}
-		}
-		
-		writer->EndArray(); //components
-		writer->EndObject(); //entity
+		// Only serialize root entities — children are handled recursively
+		if (p_Heirarchy.IsChild(j)) continue;
+		SerializeEntity(writer, j, prefabs);
+	
 	}
 	
 	writer->EndArray(); //entity array
@@ -580,4 +550,82 @@ bool NocturnalEngine::SceneManager::NewSerialize(rapidjson::PrettyWriter<rapidjs
 	writer->EndObject();
 	return true;
 
+}
+
+void NocturnalEngine::SceneManager::SerializeEntity(rapidjson::PrettyWriter<rapidjson::StringBuffer>* writer, Entity j, PrefabManager& prefabs) const {
+
+	//Skip entities with no components
+	if (!p_ecs.GetEntitySignature(j).any())
+		return;
+	//Start entity object
+	writer->StartObject();
+	//ID, not actually used when deserializing but for users to see better
+	writer->Key("ID");
+	writer->Int(static_cast<int>(j));
+
+	bool isFrmPrefab{ false };
+	PrefabManager::PrefabInfo pI{};
+	if (prefabs.IsFromPrefab(j))
+	{
+		pI = prefabs.GetPrefabInfo(j);
+		writer->Key("Prefab");
+		writer->String(pI.prefabName.c_str());
+		isFrmPrefab = true;
+	}
+
+	//Start Component array
+	writer->Key("Components");
+	writer->StartArray();
+
+	//Engine components
+	for (std::pair<const std::string, const ComponentRegistry::ComponentDescriptor> comp : p_ECompReg.GetAll())
+	{
+		if (comp.second.hasFunc(j))
+		{
+			if (isFrmPrefab && comp.second.compareFunc(pI.prefabID, j)) continue;
+			writer->StartObject();
+			//component name always comes first,
+			writer->Key("Component");
+			writer->String(comp.first.c_str());
+			// then start writing down the component
+			comp.second.serializeFunc(j, writer);
+			writer->EndObject();
+
+		}
+	}
+
+	//Game components
+	if (ComponentRegistry* meow = ServiceLocator::Get().GetGameComponents())
+	{
+		for (std::pair<const std::string, const ComponentRegistry::ComponentDescriptor> comp : meow->GetAll())
+		{
+			if (comp.second.hasFunc(j))
+			{
+				if (isFrmPrefab && comp.second.compareFunc(pI.prefabID, j)) continue;
+				writer->StartObject();
+				writer->Key("Component");
+				writer->String(comp.first.c_str());
+				comp.second.serializeFunc(j, writer);
+				writer->EndObject();
+
+			}
+		}
+	}
+
+	writer->EndArray(); //components
+
+	if (p_Heirarchy.IsParent(j))
+	{
+		//Start Children array
+		writer->Key("Children");
+		writer->StartArray();
+		const std::vector<Entity> children{ p_Heirarchy.GetChildren(j) };
+		for (const Entity e:children)
+		{
+			SerializeEntity(writer, e, prefabs);
+		}
+		writer->EndArray();
+	}
+
+	writer->EndObject(); //entity
 }

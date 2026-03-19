@@ -23,6 +23,7 @@
 #include "pch.h"
 #include "Serialization/JSONserialization.h"
 #include "Serialization/JSONincludes.h"
+#include "ECS/PrefabManager.h"
 
 #define p_Scene NocturnalEngine::SceneManager::GetInstance()
 
@@ -52,6 +53,8 @@ namespace NocturnalEngine
 		****************************************************************************/
 		virtual bool Serialize(rapidjson::PrettyWriter<rapidjson::StringBuffer>* writer) const;
 
+		void SerializeEntity(rapidjson::PrettyWriter<rapidjson::StringBuffer>* writer,Entity j, PrefabManager& prefabs) const;
+		Entity DeserializeEntity(const rapidjson::Value& obj, PrefabManager& prefabs, std::unordered_map<Entity, Entity>& entityOldIDMap,Entity parent=MAX_ENTITIES) const;
 		// temp: scene to load code
 		void setSceneToLoad(std::string s);
 		void checkForSceneToLoad();
