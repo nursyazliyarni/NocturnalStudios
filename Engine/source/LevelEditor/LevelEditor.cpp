@@ -934,7 +934,11 @@ namespace NocturnalEngine {
                     }
                 }
                 else if (ext==".json") {
-                    ImGui::ImageButton("SceneButton",(ImTextureID)(intptr_t)ResourceManager::GetIcon("TextIcon")->GetRendererID(),
+
+                    // Pick icon based on which folder we're in
+                    const char* jsonIcon = "TextIcon";
+                    if (mCurrentDirectory.filename() == "Prefabs")jsonIcon = "PrefabIcon";
+                    ImGui::ImageButton("SceneButton",(ImTextureID)(intptr_t)ResourceManager::GetIcon(jsonIcon)->GetRendererID(),
                         ImVec2(thumbnailSize, thumbnailSize), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
                     if (ImGui::IsItemHovered())
                     {
@@ -946,6 +950,9 @@ namespace NocturnalEngine {
 
                         if (mCurrentDirectory.filename() == "Scene") {
                             str += "Scene: ";
+                        }
+                        else if (mCurrentDirectory.filename() == "Prefabs") {
+                            str += "Prefab: ";
                         }
                         str += jsnName;
 

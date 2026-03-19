@@ -23,7 +23,7 @@ namespace NocturnalEngine
 		if (!p_ecs.HaveComponent<NameTag>(id))return false;
 		if (name.empty())name = p_ecs.GetComponent<NameTag>(id).GetNameTag();
 
-		Entity newEntity{ p_ecs.CloneEntity(id,true) };
+		Entity newEntity{ParentingSystem::CloneEntity(id,true)};
 		bool returnV =AddPrefab(name, newEntity);
 		if (returnV)SaveToJson(name, newEntity);
 		return returnV;

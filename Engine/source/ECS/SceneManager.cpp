@@ -266,6 +266,8 @@ bool NocturnalEngine::SceneManager::NewDeserialize(const rapidjson::Value& obj) 
 			p_ecs.PrepareMemoryForEntities(obj["Entities"].Size());
 		}
 
+		std::unordered_map<Entity, Entity> entityOldIDMap{};
+
 		const std::unordered_map<std::string, ComponentRegistry::ComponentDescriptor>& ecr = p_ECompReg.GetAll();
 
 		ComponentRegistry* gameComp = ServiceLocator::Get().GetGameComponents();
@@ -321,8 +323,11 @@ bool NocturnalEngine::SceneManager::NewDeserialize(const rapidjson::Value& obj) 
 
 			}
 			
-
+			if (ent.HasMember("ID") && ent["ID"].IsUint()) {
+				entityOldIDMap.emplace(static_cast<Entity>(ent["ID"].GetUint()), e);
+			}
 		}
+		ParentingSystem::RemapRelationships(entityOldIDMap);
 	}
 	return true;
 }

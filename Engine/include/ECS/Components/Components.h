@@ -33,6 +33,7 @@
 #include "Draggable.h"
 #include "Text.h"
 #include "SceneVFX.h"
+#include "EntityRelationships.h"
 
 
 //Macros for creating default values of various components
@@ -49,5 +50,6 @@
 #define C_DraggableComponent NocturnalEngine::Draggable::Draggable()
 #define C_TextComponent NocturnalEngine::Text::Text()
 #define C_SceneVFXComponent NocturnalEngine::SceneVFX()
+#define C_Relationship NocturnalEngine::Relationship()
 
 
