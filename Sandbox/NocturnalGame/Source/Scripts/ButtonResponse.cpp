@@ -277,7 +277,7 @@ namespace NocturnalEngine
 		vec2D mPos{ cur.x,cur.y };
 		for (int i = 0; i < 2 ; i++)
 		{
-			vec2D offsetPos{ trans.GetPos().x + box[i].mOffset.x ,trans.GetPos().y + box[i].mOffset.y };
+			vec2D offsetPos{ trans.GetWorldPos().x + box[i].mOffset.x ,trans.GetWorldPos().y + box[i].mOffset.y };
 			switch (box[i].mCol)
 			{
 			case Collider::ColliderType::circle:
