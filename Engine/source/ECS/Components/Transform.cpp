@@ -141,7 +141,7 @@ namespace NocturnalEngine
 
 		if (obj.HasMember("Rotation") && obj["Rotation"].IsNumber())mRot = obj["Rotation"].GetFloat();
 
-		if (obj.HasMember("IsLocalSpace") && obj["IsLocalSpace"].IsBool())mRot = obj["IsLocalSpace"].GetBool();
+		if (obj.HasMember("IsLocalSpace") && obj["IsLocalSpace"].IsBool())isLocalSpace = obj["IsLocalSpace"].GetBool();
 
 		return true;
 	}
@@ -153,7 +153,7 @@ namespace NocturnalEngine
 	{
 		if (p_Heirarchy.IsChild(entityID)) {
 			writer->Key("IsLocalSpace");
-			writer->Double(isLocalSpace);
+			writer->Bool(isLocalSpace);
 		}
 
 		writer->Key("Position");
@@ -199,7 +199,9 @@ namespace NocturnalEngine
 		return parentPos + mPosition;
 	}
 
-	void Transform::UnparentPos() {
+	void Transform::UnparentPos(bool precheck) {
+
+		if (precheck && !isLocalSpace) return;
 
 		Entity parent = p_Heirarchy.GetParent(entityID);
 		vec2D parentPos{};
@@ -211,7 +213,10 @@ namespace NocturnalEngine
 
 		isLocalSpace = false;
 	}
-	void Transform::ParentPos() {
+	void Transform::ParentPos(bool precheck ) {
+
+		if (precheck && isLocalSpace) return;
+
 		Entity parent = p_Heirarchy.GetParent(entityID);
 		vec2D parentPos{};
 		if (p_ecs.HaveComponent<Transform>(parent))parentPos = p_ecs.GetComponent<Transform>(parent).GetWorldPos();

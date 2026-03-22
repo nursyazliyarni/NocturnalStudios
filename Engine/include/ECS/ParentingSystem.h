@@ -32,7 +32,7 @@ namespace NocturnalEngine {
 			Entity prevSibling{ MAX_ENTITIES };
 			uint32_t childCount{ 0 };
 		};
-		void SetParent(Entity child, Entity parent,bool isPrefab=false);
+		void SetParent(Entity child, Entity parent,bool isPrefab=false,bool isStartup=false);
 
 		void RemoveParent(Entity child);
 

@@ -340,7 +340,7 @@ NocturnalEngine::Entity NocturnalEngine::SceneManager::DeserializeEntity(const r
 	}
 	if (parent!=MAX_ENTITIES)
 	{
-		p_Heirarchy.SetParent(e, parent);
+		p_Heirarchy.SetParent(e, parent,false,true);
 	}
 	
 	if (ent.HasMember("Children")&& ent["Children"].IsArray())

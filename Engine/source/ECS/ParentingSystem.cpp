@@ -20,7 +20,7 @@
 namespace NocturnalEngine {
 
 
-		void ParentingSystem::SetParent(Entity child, Entity parent, bool isPrefab)
+		void ParentingSystem::SetParent(Entity child, Entity parent, bool isPrefab,bool isStartup)
 		{
 			Relationship blank {};
 			if (!EntityRelationshipExists(child))entityRelationships.emplace(child,blank);
@@ -52,7 +52,7 @@ namespace NocturnalEngine {
 			parentRel.isParent = true;      
 			parentRel.childCount++;
 
-			if (p_ecs.HaveComponent<Transform>(child))p_ecs.GetComponent<Transform>(child).ParentPos();
+			if(!isStartup&&p_ecs.HaveComponent<Transform>(child))p_ecs.GetComponent<Transform>(child).ParentPos(true);
 		}
 
 		// Detach child from its current parent
@@ -66,7 +66,7 @@ namespace NocturnalEngine {
 			if (parent == MAX_ENTITIES) return;
 			if (!EntityRelationshipExists(parent)) return;
 
-			if (p_ecs.HaveComponent<Transform>(child))p_ecs.GetComponent<Transform>(child).UnparentPos();
+			if (p_ecs.HaveComponent<Transform>(child))p_ecs.GetComponent<Transform>(child).UnparentPos(true);
 
 			Relationship& parentRel = entityRelationships[parent];
 

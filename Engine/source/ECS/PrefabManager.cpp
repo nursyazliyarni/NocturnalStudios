@@ -116,7 +116,7 @@ namespace NocturnalEngine
 			{
 				Entity childEntity = p_ecs.CreateEntity(true);
 				DeserializePrefabEntity(childObj, childEntity,prefabName+"_Child"+std::to_string(childNum));
-				p_Heirarchy.SetParent(childEntity, e, true); 
+				p_Heirarchy.SetParent(childEntity, e, true,true); 
 				childNum++;
 			}
 		}
