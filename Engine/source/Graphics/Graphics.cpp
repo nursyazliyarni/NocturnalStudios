@@ -422,7 +422,7 @@ namespace NocturnalEngine {
 						);
 
 						mRenderer->DrawSprite(
-							{ transform.GetPos().x, transform.GetPos().y },
+							{ transform.GetWorldPos().x, transform.GetWorldPos().y },
 							{ transform.GetScale().x, transform.GetScale().y },
 							transform.GetRot(),
 							mIndex1
@@ -431,7 +431,7 @@ namespace NocturnalEngine {
 					else if (sprite.Get_SPRITE_type() == Sprite::sprite_type::texture)
 					{
 						mRenderer->DrawQuad(
-							{ transform.GetPos().x, transform.GetPos().y },
+							{ transform.GetWorldPos().x, transform.GetWorldPos().y },
 							{ transform.GetScale().x, transform.GetScale().y },
 							transform.GetRot(),
 							renderTexture
@@ -440,7 +440,7 @@ namespace NocturnalEngine {
 					else if (sprite.Get_SHAPE_type() == Sprite::shape_type::rectangle)
 					{
 						mRenderer->DrawRect(
-							{ transform.GetPos().x, transform.GetPos().y, 0.0f },
+							{ transform.GetWorldPos().x, transform.GetWorldPos().y, 0.0f },
 							{ transform.GetScale().x, transform.GetScale().y },
 							{ sprite.rgba_color[0], sprite.rgba_color[1], sprite.rgba_color[2], sprite.rgba_color[3] }
 						);
@@ -448,7 +448,7 @@ namespace NocturnalEngine {
 					else if (sprite.Get_SHAPE_type() == Sprite::shape_type::circle)
 					{
 						NocturnalEngine::Matrix4x4 translate = NocturnalEngine::Translate4x4(
-							translate, transform.GetPos().x, transform.GetPos().y, 0.0f
+							translate, transform.GetWorldPos().x, transform.GetWorldPos().y, 0.0f
 						);
 						NocturnalEngine::Matrix4x4 scale = NocturnalEngine::Scale4x4(
 							scale, sprite.circle_radius * 2, sprite.circle_radius * 2, sprite.circle_radius * 2
@@ -472,8 +472,8 @@ namespace NocturnalEngine {
 							{
 								mRenderer->DrawRect(
 									{
-										transform.GetPos().x + collider[u].mOffset.x + (collider[u].mMax.x / 2) - (collider[u].mMin.x / 2),
-										transform.GetPos().y + collider[u].mOffset.y + (collider[u].mMax.y / 2) - (collider[u].mMin.y / 2),
+										transform.GetWorldPos().x + collider[u].mOffset.x + (collider[u].mMax.x / 2) - (collider[u].mMin.x / 2),
+										transform.GetWorldPos().y + collider[u].mOffset.y + (collider[u].mMax.y / 2) - (collider[u].mMin.y / 2),
 										0.0f
 									},
 									{ collider[u].mMin.x + collider[u].mMax.x, collider[u].mMin.y + collider[u].mMax.y },
@@ -486,8 +486,8 @@ namespace NocturnalEngine {
 							{
 								NocturnalEngine::Matrix4x4 translate = NocturnalEngine::Translate4x4(
 									translate,
-									transform.GetPos().x + collider[u].mOffset.x,
-									transform.GetPos().y + collider[u].mOffset.y,
+									transform.GetWorldPos().x + collider[u].mOffset.x,
+									transform.GetWorldPos().y + collider[u].mOffset.y,
 									0.0f
 								);
 								NocturnalEngine::Matrix4x4 scale = NocturnalEngine::Scale4x4(

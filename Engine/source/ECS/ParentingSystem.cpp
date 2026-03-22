@@ -51,6 +51,8 @@ namespace NocturnalEngine {
 			childRel.isChild = true;        
 			parentRel.isParent = true;      
 			parentRel.childCount++;
+
+			if (p_ecs.HaveComponent<Transform>(child))p_ecs.GetComponent<Transform>(child).ParentPos();
 		}
 
 		// Detach child from its current parent
@@ -63,6 +65,8 @@ namespace NocturnalEngine {
 
 			if (parent == MAX_ENTITIES) return;
 			if (!EntityRelationshipExists(parent)) return;
+
+			if (p_ecs.HaveComponent<Transform>(child))p_ecs.GetComponent<Transform>(child).UnparentPos();
 
 			Relationship& parentRel = entityRelationships[parent];
 
