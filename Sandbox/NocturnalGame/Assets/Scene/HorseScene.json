@@ -100,7 +100,37 @@
                         "IsLooping": false,
                         "VolumeLimit": 1.0
                     },
-                    "AudioArrCount": 1,
+                    "1": {
+                        "AudioPath": "SFX_Static_01.wav",
+                        "Channel": 3,
+                        "IsLooping": false,
+                        "VolumeLimit": 1.0
+                    },
+                    "2": {
+                        "AudioPath": "SFX_Static_02.wav",
+                        "Channel": 3,
+                        "IsLooping": false,
+                        "VolumeLimit": 1.0
+                    },
+                    "3": {
+                        "AudioPath": "SFX_Static_03.wav",
+                        "Channel": 3,
+                        "IsLooping": false,
+                        "VolumeLimit": 1.0
+                    },
+                    "4": {
+                        "AudioPath": "SFX_Static_04.wav",
+                        "Channel": 3,
+                        "IsLooping": false,
+                        "VolumeLimit": 1.0
+                    },
+                    "5": {
+                        "AudioPath": "SFX_Static_05.wav",
+                        "Channel": 3,
+                        "IsLooping": false,
+                        "VolumeLimit": 1.0
+                    },
+                    "AudioArrCount": 6,
                     "BGM Volume": 1.0,
                     "SFX Volume": 1.0,
                     "Master Volume": 1.0,
@@ -130,9 +160,19 @@
                 },
                 {
                     "Component": "Logic",
-                    "0": "AudioManager",
-                    "1": "BackgroundAudio",
-                    "ScriptCount": 2
+                    "Scripts": [
+                        {
+                            "ScriptName": "KeyboardSceneSwitch"
+                        },
+                        {
+                            "ScriptName": "AudioManager"
+                        },
+                        {
+                            "ScriptName": "BackgroundAudio",
+                            "Background Audio Index": 0
+                        }
+                    ],
+                    "ScriptCount": 3
                 }
             ]
         },
@@ -253,8 +293,14 @@
                 },
                 {
                     "Component": "Logic",
-                    "0": "AnimalLogic",
-                    "1": "PainSpotDuplicateSpawner",
+                    "Scripts": [
+                        {
+                            "ScriptName": "AnimalLogic"
+                        },
+                        {
+                            "ScriptName": "PainSpotDuplicateSpawner"
+                        }
+                    ],
                     "ScriptCount": 2
                 },
                 {
@@ -419,8 +465,14 @@
                 },
                 {
                     "Component": "Logic",
-                    "0": "ButtonResponse",
-                    "1": "AudioManager",
+                    "Scripts": [
+                        {
+                            "ScriptName": "ButtonResponse"
+                        },
+                        {
+                            "ScriptName": "AudioManager"
+                        }
+                    ],
                     "ScriptCount": 2
                 },
                 {
@@ -613,8 +665,14 @@
                 },
                 {
                     "Component": "Logic",
-                    "0": "ButtonResponse",
-                    "1": "AudioManager",
+                    "Scripts": [
+                        {
+                            "ScriptName": "ButtonResponse"
+                        },
+                        {
+                            "ScriptName": "AudioManager"
+                        }
+                    ],
                     "ScriptCount": 2
                 },
                 {
@@ -807,8 +865,14 @@
                 },
                 {
                     "Component": "Logic",
-                    "0": "ButtonResponse",
-                    "1": "AudioManager",
+                    "Scripts": [
+                        {
+                            "ScriptName": "ButtonResponse"
+                        },
+                        {
+                            "ScriptName": "AudioManager"
+                        }
+                    ],
                     "ScriptCount": 2
                 },
                 {
@@ -1001,8 +1065,14 @@
                 },
                 {
                     "Component": "Logic",
-                    "0": "ButtonResponse",
-                    "1": "AudioManager",
+                    "Scripts": [
+                        {
+                            "ScriptName": "ButtonResponse"
+                        },
+                        {
+                            "ScriptName": "AudioManager"
+                        }
+                    ],
                     "ScriptCount": 2
                 }
             ]
@@ -1178,9 +1248,17 @@
                 },
                 {
                     "Component": "Logic",
-                    "0": "DragAndDrop",
-                    "1": "AudioManager",
-                    "2": "ButtonResponse",
+                    "Scripts": [
+                        {
+                            "ScriptName": "DragAndDrop"
+                        },
+                        {
+                            "ScriptName": "AudioManager"
+                        },
+                        {
+                            "ScriptName": "ButtonResponse"
+                        }
+                    ],
                     "ScriptCount": 3
                 },
                 {
@@ -1331,9 +1409,17 @@
                 },
                 {
                     "Component": "Logic",
-                    "0": "RevealTargetOnClick",
-                    "1": "AudioManager",
-                    "2": "ButtonResponse",
+                    "Scripts": [
+                        {
+                            "ScriptName": "RevealTargetOnClick"
+                        },
+                        {
+                            "ScriptName": "AudioManager"
+                        },
+                        {
+                            "ScriptName": "ButtonResponse"
+                        }
+                    ],
                     "ScriptCount": 3
                 },
                 {
@@ -1448,7 +1534,11 @@
                 },
                 {
                     "Component": "Logic",
-                    "0": "ToyHideAndRevealOnClick",
+                    "Scripts": [
+                        {
+                            "ScriptName": "ToyHideAndRevealOnClick"
+                        }
+                    ],
                     "ScriptCount": 1
                 },
                 {
@@ -1480,7 +1570,11 @@
                 },
                 {
                     "Component": "Logic",
-                    "0": "TimerDisplay",
+                    "Scripts": [
+                        {
+                            "ScriptName": "TimerDisplay"
+                        }
+                    ],
                     "ScriptCount": 1
                 },
                 {
@@ -1749,7 +1843,11 @@
                 },
                 {
                     "Component": "Logic",
-                    "0": "DigeticLog",
+                    "Scripts": [
+                        {
+                            "ScriptName": "DigeticLog"
+                        }
+                    ],
                     "ScriptCount": 1
                 },
                 {
@@ -2509,7 +2607,11 @@
                 },
                 {
                     "Component": "Logic",
-                    "0": "encryptionkey",
+                    "Scripts": [
+                        {
+                            "ScriptName": "encryptionkey"
+                        }
+                    ],
                     "ScriptCount": 1
                 }
             ]
@@ -2535,7 +2637,11 @@
                 },
                 {
                     "Component": "Logic",
-                    "0": "KeysCollectedDisplay",
+                    "Scripts": [
+                        {
+                            "ScriptName": "KeysCollectedDisplay"
+                        }
+                    ],
                     "ScriptCount": 1
                 },
                 {

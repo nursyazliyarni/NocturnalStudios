@@ -81,7 +81,37 @@
                         "IsLooping": true,
                         "VolumeLimit": 1.0
                     },
-                    "AudioArrCount": 1,
+                    "1": {
+                        "AudioPath": "SFX_Static_01.wav",
+                        "Channel": 3,
+                        "IsLooping": false,
+                        "VolumeLimit": 1.0
+                    },
+                    "2": {
+                        "AudioPath": "SFX_Static_02.wav",
+                        "Channel": 3,
+                        "IsLooping": false,
+                        "VolumeLimit": 1.0
+                    },
+                    "3": {
+                        "AudioPath": "SFX_Static_03.wav",
+                        "Channel": 3,
+                        "IsLooping": false,
+                        "VolumeLimit": 1.0
+                    },
+                    "4": {
+                        "AudioPath": "SFX_Static_04.wav",
+                        "Channel": 3,
+                        "IsLooping": false,
+                        "VolumeLimit": 1.0
+                    },
+                    "5": {
+                        "AudioPath": "SFX_Static_05.wav",
+                        "Channel": 3,
+                        "IsLooping": false,
+                        "VolumeLimit": 1.0
+                    },
+                    "AudioArrCount": 6,
                     "BGM Volume": 1.0,
                     "SFX Volume": 1.0,
                     "Master Volume": 1.0,
@@ -113,6 +143,9 @@
                     "Component": "Logic",
                     "Scripts": [
                         {
+                            "ScriptName": "KeyboardSceneSwitch"
+                        },
+                        {
                             "ScriptName": "AudioManager"
                         },
                         {
@@ -120,7 +153,7 @@
                             "Background Audio Index": 0
                         }
                     ],
-                    "ScriptCount": 2
+                    "ScriptCount": 3
                 }
             ]
         },
@@ -174,7 +207,7 @@
                         0.0
                     ],
                     "TextureName": "Characters/flamingo_angry",
-                    "Index_X": 4,
+                    "Index_X": 0,
                     "Index_Y": 0,
                     "Ucoordinates": 528.0,
                     "Vcoordinates": 528.0,

@@ -36,6 +36,8 @@
 #include "Scripts/TutorialLogic.h"
 #include "Scripts/EncryptionKey.h"
 #include "Scripts/KeysCollectedDisplay.h"
+#include "Scripts/KeyboardSceneSwitch.h"
+
 
 namespace NocturnalEngine {
 
@@ -44,6 +46,7 @@ namespace NocturnalEngine {
     ****************************************************************************/
     void ScriptFactory::RegisterAllGameScripts() {
         
+
             RegisterScriptType<ButtonResponse>();
             RegisterScriptType<ScenerioScript>();
             RegisterScriptType<AudioManager>();
@@ -64,6 +67,8 @@ namespace NocturnalEngine {
             RegisterScriptType<TutorialLogic>();
             RegisterScriptType<EncryptionKey>();
             RegisterScriptType<KeysCollectedDisplay>();
+            RegisterScriptType<KeyboardSceneSwitch>();
+
         
 
     }
