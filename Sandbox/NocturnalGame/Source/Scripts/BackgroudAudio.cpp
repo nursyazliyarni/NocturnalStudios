@@ -31,7 +31,12 @@ namespace NocturnalEngine {
 		//check if it has an audio loaded 
 		if (p_ecs.HaveComponent<Audio>(GetScriptEntityID()) && (p_ecs.GetComponent<Audio>(GetScriptEntityID()).GetSize() > 0) )
 		{
-			p_ecs.GetComponent<Audio>(GetScriptEntityID())[0].is_Looping = true;
+			Audio& a{ p_ecs.GetComponent<Audio>(GetScriptEntityID()) };
+			if (a.GetArr().size()>bgAudioIndex)
+			{
+				a[bgAudioIndex] .is_Looping = true;
+			}
+
 		}
 	}
 
@@ -40,7 +45,11 @@ namespace NocturnalEngine {
 		UNREFERENCED_PARAMETER(Frametime);
 		if (p_ecs.HaveComponent<Audio>(GetScriptEntityID()) && (p_ecs.GetComponent<Audio>(GetScriptEntityID()).GetSize() > 0))
 		{
-			p_ecs.GetComponent<Audio>(GetScriptEntityID())[0].is_Looping = true;
+			Audio& a{ p_ecs.GetComponent<Audio>(GetScriptEntityID()) };
+			if (a.GetArr().size() > bgAudioIndex)
+			{
+				a[bgAudioIndex].is_Looping = true;
+			}
 		}
 	}
 
@@ -48,8 +57,12 @@ namespace NocturnalEngine {
 	{
 		if (p_ecs.HaveComponent<Audio>(GetScriptEntityID()))
 		{
-			p_ecs.GetComponent<Audio>(GetScriptEntityID())[0].should_stop = true;
-			p_ecs.GetComponent<Audio>(GetScriptEntityID())[0].is_Looping = false;
+			Audio& a{ p_ecs.GetComponent<Audio>(GetScriptEntityID()) };
+			if (a.GetArr().size() > bgAudioIndex)
+			{
+				a[bgAudioIndex].should_stop = true;
+				a[bgAudioIndex].is_Looping = false;
+			}
 		}
 		
 	}
@@ -58,4 +71,5 @@ namespace NocturnalEngine {
 	{
 		return "BackgroundAudio";
 	}
+
 }

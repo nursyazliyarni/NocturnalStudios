@@ -82,15 +82,49 @@ namespace NocturnalEngine
 					}
 				}
 			}
-			ImGui::SameLine();
-			if (ImGui::Button("Delete")) {
-				DeleteScript(scriptNames[current_script]);
-				changed = true;
-			}
+
+
+			ImGui::Separator();
 			ImGui::Text("Inserted Scripts:");
-			for (int i = 0; i < GetScriptNames().size(); i++) {
-				//display the names of all scripts in the entity
-				ImGui::Text("% s", GetScriptNames()[i].c_str());
+			ImGui::Spacing();
+
+			std::string scriptToDelete = "";
+			for (int i = 0; i < static_cast<int>(mScriptsVector.size()); i++) {
+				ImGui::PushID(i);
+
+				ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0.20f, 0.35f, 0.45f, 1.00f));
+				ImGui::PushStyleColor(ImGuiCol_HeaderHovered, ImVec4(0.25f, 0.45f, 0.55f, 1.00f));
+				ImGui::PushStyleColor(ImGuiCol_HeaderActive, ImVec4(0.15f, 0.28f, 0.38f, 1.00f));
+
+				bool headerOpen = ImGui::CollapsingHeader(
+					mScriptNameVector[i].c_str(),
+					ImGuiTreeNodeFlags_DefaultOpen
+				);
+
+				ImGui::PopStyleColor(3);
+
+				// Right-click on the header to remove
+				if (ImGui::BeginPopupContextItem()) {
+					if (ImGui::MenuItem("Remove Script")) {
+						scriptToDelete = mScriptNameVector[i];
+					}
+					ImGui::EndPopup();
+				}
+
+				if (headerOpen && mScriptsVector[i]) {
+					ImGui::Indent();
+					changed |= mScriptsVector[i]->ToEditor();
+					ImGui::Unindent();
+				}
+
+				ImGui::PopID();
+				ImGui::Spacing();
+			}
+
+			// Defer deletion to avoid mutating the vector mid-loop
+			if (!scriptToDelete.empty()) {
+				DeleteScript(scriptToDelete);
+				changed = true;
 			}
 		}
 		return changed;
@@ -108,6 +142,7 @@ namespace NocturnalEngine
 		{
 			mScriptsVector[i] = rhs.mScriptsVector[i]->Clone();
 			mScriptsVector[i]->SetScriptEntityID(this->GetComponentEntityID());
+
 		}
 	}
 	/*!*************************************************************************
@@ -162,38 +197,72 @@ namespace NocturnalEngine
 	}
 
 	/*!*************************************************************************
-Deserialize for Logic Component
-****************************************************************************/
+	Deserialize for Logic Component
+	****************************************************************************/
 	bool Logic::Deserialize(const rapidjson::Value& obj)
 	{
 		int scriptCount = obj.HasMember("ScriptCount") && obj["ScriptCount"].IsNumber() ? obj["ScriptCount"].GetInt() : 0;
 		if (scriptCount <= 0) return true;
 
-		// Load script names from JSON
-		for (int i = 0; i < scriptCount; ++i)
-		{
-			mScriptNameVector.push_back(obj[std::to_string(i).c_str()].GetString());
-		}
-
 		// Use factory to create scripts
 		IScriptRegistry* factory = ServiceLocator::Get().GetScriptRegistry();
-		if (!factory) { 
-			NOCTURNAL_ENGINE_WARN("Script Factory is missing!"); 
+		if (!factory) {
+			NOCTURNAL_ENGINE_WARN("Script Factory is missing!");
 			return false;
 		}
-		for (const std::string& scriptName : mScriptNameVector)
+
+		if (obj.HasMember("Scripts") && obj["Scripts"].IsArray())
 		{
-			IScript* script = factory->CreateScript(scriptName);
-			if (script)
+
+			for (const rapidjson::Value& scriptObj : obj["Scripts"].GetArray())
 			{
-				mScriptsVector.push_back(script);
+				if (!scriptObj.HasMember("ScriptName") || !scriptObj["ScriptName"].IsString())continue;
+				std::string scriptName{ scriptObj["ScriptName"].GetString() };
+
+				IScript* script = factory->CreateScript(scriptName);
+				if (script)
+				{
+					script->Deserialize(scriptObj);
+					mScriptNameVector.push_back(scriptName);
+					mScriptsVector.push_back(script);
+
+				}
+				else
+				{
+					// Log warning for unknown script
+					NOCTURNAL_ENGINE_WARN("Unknown script type in scene file: {}", scriptName);
+				}
 			}
-			else
+
+		}
+		else
+		{
+			// Load script names from JSON
+			for (int i = 0; i < scriptCount; ++i)
 			{
-				// Log warning for unknown script
-				NOCTURNAL_ENGINE_WARN("Unknown script type in scene file: {}", scriptName);
+				mScriptNameVector.push_back(obj[std::to_string(i).c_str()].GetString());
+			}
+
+
+			int scriptInd{ 0 };
+			for (const std::string& scriptName : mScriptNameVector)
+			{
+				IScript* script = factory->CreateScript(scriptName);
+				if (script)
+				{
+
+					mScriptsVector.push_back(script);
+
+				}
+				else
+				{
+					// Log warning for unknown script
+					NOCTURNAL_ENGINE_WARN("Unknown script type in scene file: {}", scriptName);
+				}
 			}
 		}
+
+		
 
 		return true;
 	}
@@ -203,15 +272,21 @@ Deserialize for Logic Component
 	****************************************************************************/
 	bool Logic::Serialize(rapidjson::PrettyWriter<rapidjson::StringBuffer>* writer) const
 	{
-		int i = 0;
-		for (i = 0; i < mScriptNameVector.size(); ++i)
+		writer->Key("Scripts");
+		writer->StartArray();
+		for (IScript* script:mScriptsVector)
 		{
+			writer->StartObject();
+			writer->Key("ScriptName");
+			writer->String(script->GetScriptName().c_str());
 
-			writer->Key(std::to_string(i).c_str());
-			writer->String(mScriptNameVector[i].c_str());
+			script->Serialize(writer);
+
+			writer->EndObject();
 		}
+		writer->EndArray();
 		writer->Key("ScriptCount");
-		writer->Int(i);
+		writer->Int(mScriptsVector.size());
 		return true;
 	}
 
