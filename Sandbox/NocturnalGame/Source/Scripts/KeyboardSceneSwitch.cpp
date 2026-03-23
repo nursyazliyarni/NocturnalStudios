@@ -84,6 +84,27 @@ namespace NocturnalEngine {
 				p_Scene->setSceneToLoad("Assets/Scene/OwlScene.json");
 				return;
 			}
+			
+			if (p_Input->GamepadPressed(GLFW_GAMEPAD_BUTTON_RIGHT_BUMPER)) {
+				std::string sceneToGo{ p_GameManager.CanMoveScene(sceneName,false) };
+				if (sceneToGo!="")
+				{
+					std::vector<Audio::AudioPiece>& ar{ a.GetArr() };
+					if (!ar.empty())a[GetRandomSoundIndex(ar)].should_play = true;
+					p_Scene->setSceneToLoad("Assets/Scene/"+sceneToGo+"Scene.json");
+					return;
+				}
+			}
+			if (p_Input->GamepadPressed(GLFW_GAMEPAD_BUTTON_LEFT_BUMPER)) {
+				std::string sceneToGo{ p_GameManager.CanMoveScene(sceneName,true) };
+				if (sceneToGo != "")
+				{
+					std::vector<Audio::AudioPiece>& ar{ a.GetArr() };
+					if (!ar.empty())a[GetRandomSoundIndex(ar)].should_play = true;
+					p_Scene->setSceneToLoad("Assets/Scene/" + sceneToGo + "Scene.json");
+					return;
+				}
+			}
 		}
 	}
 

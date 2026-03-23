@@ -34,7 +34,7 @@ namespace NocturnalEngine
 
 		struct ScriptField {
 			std::string name;
-			std::variant<float*, int*, bool*> ptr;
+			std::variant<float*, int*, bool*,std::string*> ptr;
 		};
 		virtual std::vector<ScriptField> GetFields() { return {}; }
 		virtual ~IScript() = default;

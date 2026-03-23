@@ -34,11 +34,19 @@ namespace NocturnalEngine {
 			if (p_ecs.HaveComponent<Audio>(e))return true;
 			return false;
 		}
+
+		std::vector<ScriptField> GetFields() override {
+			return {
+				{ "SceneName",    &sceneName    }
+			};
+		}
 		virtual std::string GetScriptName();
 		virtual void SetScriptEntityID(Entity& entity) override { entityID = entity; }
 		virtual Entity& GetScriptEntityID() override { return entityID; }
 
 	private:
 		int GetRandomSoundIndex(const std::vector<Audio::AudioPiece>& a);
+
+		std::string sceneName{};
 	};
 }

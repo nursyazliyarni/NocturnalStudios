@@ -183,11 +183,7 @@ EngineCore constructor
 			p_Input->PollGamepad();
 			mGraphics->Update(Timer::GetInstance().GetGlobalDT());
 
-			if (p_Input->GamepadPressed(GLFW_GAMEPAD_AXIS_RIGHT_TRIGGER))
-			{
-				std::cout << "Right Trigger pressed\n";
-			}
-			
+
 #if !DEBUG
 			p_Editor->is_ShowWindow = false;
 #endif 

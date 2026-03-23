@@ -27,6 +27,26 @@ namespace NocturnalEngine
 				changed |= ImGui::DragInt(field.name.c_str(), *p);
 			else if (auto* p = std::get_if<bool*>(&field.ptr))
 				changed |= ImGui::Checkbox(field.name.c_str(), *p);
+			else if (auto* p = std::get_if<std::string*>(&field.ptr)) {
+				static std::unordered_map<std::string, std::array<char, 256>> buffers;
+
+				// Only initialize the buffer if it doesn't exist yet
+				if (buffers.find(field.name) == buffers.end()) {
+					buffers[field.name] = {};
+					strncpy_s(buffers[field.name].data(), 256, (*p)->c_str(), 255);
+				}
+
+				// Sync buffer from source when not being edited
+				if (!ImGui::IsItemActive()) {
+					strncpy_s(buffers[field.name].data(), 256, (*p)->c_str(), 255);
+				}
+
+				ImGui::InputText(field.name.c_str(), buffers[field.name].data(), 256);
+				if (ImGui::IsItemDeactivatedAfterEdit()) {
+					**p = buffers[field.name].data();
+					changed = true;
+				}
+			}
 		}
 		return changed;
 	}
@@ -39,6 +59,8 @@ namespace NocturnalEngine
 				 writer->Int(**p);
 			 else if (auto* p = std::get_if<bool*>(&field.ptr))
 				 writer->Bool(**p);
+			 else if (auto* p = std::get_if<std::string*>(&field.ptr))
+				 writer->String((*p)->c_str());
 		 }
 		 return true;
 	 }
@@ -52,6 +74,8 @@ namespace NocturnalEngine
 				 **p = val.GetInt();
 			 else if (auto* p = std::get_if<bool*>(&field.ptr))
 				 **p = val.GetBool();
+			 else if (auto* p = std::get_if<std::string*>(&field.ptr))
+				 **p = val.GetString();
 		 }
 		 return true;
 	 }

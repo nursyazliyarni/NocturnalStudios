@@ -60,13 +60,13 @@ namespace NocturnalEngine {
 
             sceneAnimalMap.emplace("Flamingo", defaultAttributes);
             sceneAnimalMap["Flamingo"].aA.SetAnimalType(AnimalAttributes::AnimalType::FLAMINGO);
+            sceneAnimalMap.emplace("Seal", defaultAttributes);
+            sceneAnimalMap["Seal"].aA.SetAnimalType(AnimalAttributes::AnimalType::SEAL);
             sceneAnimalMap.emplace("Horse", defaultAttributes);
             sceneAnimalMap["Horse"].aA.SetAnimalType(AnimalAttributes::AnimalType::HOESE);
             sceneAnimalMap.emplace("Owl", defaultAttributes);
             sceneAnimalMap["Owl"].aA.SetAnimalType(AnimalAttributes::AnimalType::OWL);
             sceneAnimalMap["Owl"].aA.hungerDecayRate = 1.5; //owl special hunger
-            sceneAnimalMap.emplace("Seal", defaultAttributes);
-            sceneAnimalMap["Seal"].aA.SetAnimalType(AnimalAttributes::AnimalType::SEAL);
             levelDataLoaded = true;
         }
         else {
@@ -301,6 +301,29 @@ namespace NocturnalEngine {
             AnimalData da{ defaultAttributes };
             return da;
         }
+    }
+
+    std::string GameManager::CanMoveScene(const std::string& sceneName, bool dir) {
+        auto idk = sceneAnimalMap.find(sceneName);
+        if (idk == sceneAnimalMap.end())return "";
+        //true left false right
+        if (dir) {
+            if(sceneName == "Flamingo")return "";
+            else {
+                idk--;
+                return idk->first;
+            }
+
+        }
+        if (!dir) {
+            if(sceneName == "Owl" || levelNum == 1 && sceneName == "Horse")return "";
+            else {
+                idk++;
+                return idk->first;
+            }
+        }
+
+        
     }
 
     GameManager::ToyState GameManager::LoadToyState(const std::string& gs) {

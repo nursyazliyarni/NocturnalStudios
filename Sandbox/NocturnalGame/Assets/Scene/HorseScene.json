@@ -162,7 +162,8 @@
                     "Component": "Logic",
                     "Scripts": [
                         {
-                            "ScriptName": "KeyboardSceneSwitch"
+                            "ScriptName": "KeyboardSceneSwitch",
+                            "SceneName": "Horse"
                         },
                         {
                             "ScriptName": "AudioManager"

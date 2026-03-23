@@ -162,7 +162,8 @@
                     "Component": "Logic",
                     "Scripts": [
                         {
-                            "ScriptName": "KeyboardSceneSwitch"
+                            "ScriptName": "KeyboardSceneSwitch",
+                            "SceneName": "Owl"
                         },
                         {
                             "ScriptName": "AudioManager"
@@ -231,7 +232,7 @@
                         0.0
                     ],
                     "TextureName": "Characters/owl insanity",
-                    "Index_X": 0,
+                    "Index_X": 1,
                     "Index_Y": 0,
                     "Ucoordinates": 534.5,
                     "Vcoordinates": 536.5,

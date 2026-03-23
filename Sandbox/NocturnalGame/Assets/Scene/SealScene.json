@@ -165,7 +165,8 @@
                     "Component": "Logic",
                     "Scripts": [
                         {
-                            "ScriptName": "KeyboardSceneSwitch"
+                            "ScriptName": "KeyboardSceneSwitch",
+                            "SceneName": "Seal"
                         },
                         {
                             "ScriptName": "AudioManager"
@@ -234,7 +235,7 @@
                         0.0
                     ],
                     "TextureName": "Characters/seal sick",
-                    "Index_X": 3,
+                    "Index_X": 1,
                     "Index_Y": 0,
                     "Ucoordinates": 603.5,
                     "Vcoordinates": 458.0,
