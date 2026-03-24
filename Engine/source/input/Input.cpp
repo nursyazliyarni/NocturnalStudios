@@ -181,6 +181,18 @@ namespace NocturnalEngine {
             (state.axes[GLFW_GAMEPAD_AXIS_LEFT_TRIGGER] + 1.0f) * 0.5f;
         mGamepadAxes[static_cast<int>(GLFW_GAMEPAD_AXIS_RIGHT_TRIGGER)] =
             (state.axes[GLFW_GAMEPAD_AXIS_RIGHT_TRIGGER] + 1.0f) * 0.5f;
+
+        // Check if any gamepad input is active this frame
+        bool anyInput = false;
+        for (int i = 0; i < 14; i++)
+            if (mGamepadCurr[i]) { anyInput = true; break; }
+
+        if (!anyInput)
+            for (int i = 0; i < 6; i++)
+                if (std::abs(mGamepadAxes[i]) > 0.0f) { anyInput = true; break; }
+
+        if (anyInput)
+            SetLastDevice(InputDevice::Gamepad);
     }
 
     void InputSystem::ResetGamepadButtons()

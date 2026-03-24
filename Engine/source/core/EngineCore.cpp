@@ -182,7 +182,7 @@ EngineCore constructor
 			m_window->Update(Timer::GetInstance().GetGlobalDT());
 			p_Input->PollGamepad();
 			mGraphics->Update(Timer::GetInstance().GetGlobalDT());
-
+			m_window->HideShowCursor();
 
 #if !DEBUG
 			p_Editor->is_ShowWindow = false;

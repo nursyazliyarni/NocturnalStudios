@@ -37,6 +37,8 @@ namespace NocturnalEngine {
     using GamepadButton = int;
     using GamepadAxis = int;
 
+	enum class InputDevice { KeyboardMouse, Gamepad };
+
 	class NOCTURNAL_ENGINE_API InputSystem
 	{
 	public:
@@ -74,6 +76,20 @@ namespace NocturnalEngine {
 
         void ResetGamepadButtons(); // call alongside ResetPressedKey each frame
 
+		InputDevice GetLastDevice() const { return mLastDevice; }
+		void SetLastDevice(InputDevice id) { 
+			if (mLastDevice!=id)deviceChanged = true;
+			mLastDevice = id; 
+		}
+
+		bool DeviceChanged() {
+			if (deviceChanged)
+			{
+				deviceChanged = false;
+				return true;
+			}
+			else return deviceChanged;
+		}
 
 	public:
 		//data
@@ -97,5 +113,8 @@ namespace NocturnalEngine {
         {
             return (std::abs(val) < DEADZONE) ? 0.0f : val;
         }
+
+		InputDevice mLastDevice = InputDevice::KeyboardMouse;
+		bool deviceChanged{ false };
 	};
 }
