@@ -25,6 +25,7 @@
 #include "ECS/Components/Transform.h"
 #include "ECS/Components/Collider.h"
 #include "ECS/Components/Text.h"
+#include "ECS/Components/Video.h"
 #include <algorithm>
 #include <cctype>
 #include <string>
@@ -64,6 +65,8 @@ namespace NocturnalEngine
 				mOriginalScales.clear();
 				mCutTextGroups.clear();
 				mOriginalTextAlpha.clear();
+				mOriginalVideoEnabled.clear();
+				mOriginalVideoSkipOnMouseClick.clear();
 				mCurrentImage = 0;
 				mCurrentTextLine = 0;
 				mNextButton = 0;
@@ -143,6 +146,12 @@ namespace NocturnalEngine
 					Entity e = pair.second;
 					mCutImages.push_back(e);
 					mOriginalScales.push_back(p_ecs.GetComponent<Transform>(e).GetScale());
+					mOriginalVideoEnabled.push_back(p_ecs.HaveComponent<Video>(e)
+						? p_ecs.GetComponent<Video>(e).enabled
+						: false);
+					mOriginalVideoSkipOnMouseClick.push_back(p_ecs.HaveComponent<Video>(e)
+						? p_ecs.GetComponent<Video>(e).skipOnMouseClick
+						: false);
 				}
 
 				mCutTextGroups.resize(mCutImages.size());
@@ -276,6 +285,13 @@ namespace NocturnalEngine
 				{
 					t.SetScale(0.0f, 0.0f);
 					}
+
+				if (p_ecs.HaveComponent<Video>(e))
+				{
+					auto& video = p_ecs.GetComponent<Video>(e);
+					video.enabled = (i == mCurrentImage) ? mOriginalVideoEnabled[i] : false;
+					video.skipOnMouseClick = (i == mCurrentImage) ? true : mOriginalVideoSkipOnMouseClick[i];
+				}
 				}
 			}
 
@@ -325,6 +341,8 @@ namespace NocturnalEngine
 			std::vector<vec2D> mOriginalScales{};
 			std::vector<std::vector<Entity>> mCutTextGroups{};
 			std::vector<std::vector<float>> mOriginalTextAlpha{};
+			std::vector<bool> mOriginalVideoEnabled{};
+			std::vector<bool> mOriginalVideoSkipOnMouseClick{};
 			size_t mCurrentImage{ 0 };
 			size_t mCurrentTextLine{ 0 };
 			Entity mNextButton{ 0 };
