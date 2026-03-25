@@ -65,9 +65,11 @@ namespace NocturnalEngine
 				mOriginalScales.clear();
 				mCutTextGroups.clear();
 				mOriginalTextAlpha.clear();
+				mOriginalTextContent.clear();
 				// Preserve each layer's original video settings before cutscene toggling overrides them.
 				mOriginalVideoEnabled.clear();
 				mOriginalVideoSkipOnMouseClick.clear();
+				mTypewriterElapsed = 0.0f;
 				mCurrentImage = 0;
 				mCurrentTextLine = 0;
 				mNextButton = 0;
@@ -78,7 +80,10 @@ namespace NocturnalEngine
 				// Find all cutscene image entities named:
 				// CutImage1, CutImage2, ... CutImageN.
 				std::vector<std::pair<int, Entity>> indexedImages{};
+				std::vector<std::pair<int, Entity>> indexedOverlays{};
 				std::vector<std::tuple<int, int, Entity>> indexedTexts{};
+				Entity cutVideoEntity = MAX_ENTITIES;
+				int maxCutImageIndex = 0;
 				for (Entity i = 0; i < p_ecs.GetTotalSceneEntities(); ++i)
 				{
 					if (!p_ecs.HaveComponent<NameTag>(i))
@@ -110,7 +115,32 @@ namespace NocturnalEngine
 						continue;
 					}
 
+					if (name.rfind("CutOverlay", 0) == 0)
+					{
+						const std::string suffix = name.substr(std::string("CutOverlay").size());
+						std::size_t digitCount = 0;
+						while (digitCount < suffix.size() && std::isdigit(static_cast<unsigned char>(suffix[digitCount])))
+						{
+							++digitCount;
+						}
+
+						if (digitCount == 0)
+							continue;
+
+						if (!p_ecs.HaveComponent<Transform>(i) || !p_ecs.HaveComponent<Sprite>(i))
+							continue;
+
+						indexedOverlays.push_back({ std::stoi(suffix.substr(0, digitCount)), i });
+						continue;
+					}
+
 					// Ignore entities that are not cutscene images.
+					if (name == "CutVideo")
+					{
+						cutVideoEntity = i;
+						continue;
+					}
+
 					if (name.rfind("CutImage", 0) != 0)
 						continue;
 
@@ -126,8 +156,18 @@ namespace NocturnalEngine
 					continue;
 				}
 
-				indexedImages.push_back({ std::stoi(suffix), i });
+				const int cutImageIndex = std::stoi(suffix);
+				indexedImages.push_back({ cutImageIndex, i });
+				maxCutImageIndex = std::max(maxCutImageIndex, cutImageIndex);
 			}
+
+				if (cutVideoEntity != MAX_ENTITIES &&
+					p_ecs.HaveComponent<Transform>(cutVideoEntity) &&
+					p_ecs.HaveComponent<Sprite>(cutVideoEntity))
+				{
+					// Treat the video as the final cutscene layer even though it has its own explicit name.
+					indexedImages.push_back({ maxCutImageIndex + 1, cutVideoEntity });
+				}
 
 				std::sort(indexedImages.begin(), indexedImages.end(),
 					[](const std::pair<int, Entity>& a, const std::pair<int, Entity>& b) {
@@ -156,8 +196,32 @@ namespace NocturnalEngine
 						: false);
 				}
 
+				mCutOverlayGroups.resize(mCutImages.size());
+				mOriginalOverlayScales.resize(mCutImages.size());
+				mOriginalOverlayVideoEnabled.resize(mCutImages.size());
+				mOriginalOverlayVideoSkipOnMouseClick.resize(mCutImages.size());
+				for (const auto& [imageNumber, overlayEntity] : indexedOverlays)
+				{
+					const int imageIndex = imageNumber - 1;
+					if (imageIndex < 0 || imageIndex >= static_cast<int>(mCutOverlayGroups.size()))
+						continue;
+
+					mCutOverlayGroups[imageIndex].push_back(overlayEntity);
+					mOriginalOverlayScales[imageIndex].push_back(
+						p_ecs.GetComponent<Transform>(overlayEntity).GetScale());
+					mOriginalOverlayVideoEnabled[imageIndex].push_back(
+						p_ecs.HaveComponent<Video>(overlayEntity)
+						? p_ecs.GetComponent<Video>(overlayEntity).enabled
+						: false);
+					mOriginalOverlayVideoSkipOnMouseClick[imageIndex].push_back(
+						p_ecs.HaveComponent<Video>(overlayEntity)
+						? p_ecs.GetComponent<Video>(overlayEntity).skipOnMouseClick
+						: false);
+				}
+
 				mCutTextGroups.resize(mCutImages.size());
 				mOriginalTextAlpha.resize(mCutImages.size());
+				mOriginalTextContent.resize(mCutImages.size());
 				for (const auto& entry : indexedTexts)
 				{
 					const int imageIndex = std::get<0>(entry) - 1;
@@ -168,6 +232,7 @@ namespace NocturnalEngine
 					auto& text = p_ecs.GetComponent<Text>(textEntity);
 					mCutTextGroups[imageIndex].push_back(textEntity);
 					mOriginalTextAlpha[imageIndex].push_back(text.GetColor()[3]);
+					mOriginalTextContent[imageIndex].push_back(text.GetContent());
 				}
 
 				// Show first image, hide all others.
@@ -179,13 +244,29 @@ namespace NocturnalEngine
 		****************************************************************************/
 			virtual void Update(float Frametime) override
 			{
-				UNREFERENCED_PARAMETER(Frametime);
 				if (mCutImages.empty())
 					return;
-	
+
+				UpdateTypewriter(Frametime);
+				if (TryAdvanceOverlayVideo())
+				{
+					ApplyImageVisibility();
+					ApplyTextVisibility();
+					return;
+				}
+		
 					// Advance on any left click.
 					if (mInput->MousePressed(GLFW_MOUSE_BUTTON_LEFT))
 					{
+						if (!IsCurrentLineFullyRevealed())
+						{
+							RevealCurrentLineFully();
+							return;
+						}
+
+						if (HasPendingOverlayVideo())
+							return;
+
 						if (AdvanceCutScene())
 						{
 							ApplyImageVisibility();
@@ -294,7 +375,40 @@ namespace NocturnalEngine
 					// Hidden cutscene layers must not advance video playback in the background.
 					video.enabled = (i == mCurrentImage) ? mOriginalVideoEnabled[i] : false;
 					// The active cutscene video should always be skippable by clicking anywhere.
-					video.skipOnMouseClick = (i == mCurrentImage) ? true : mOriginalVideoSkipOnMouseClick[i];
+						video.skipOnMouseClick = (i == mCurrentImage) ? true : mOriginalVideoSkipOnMouseClick[i];
+				}
+
+				if (i < mCutOverlayGroups.size())
+				{
+					for (size_t overlayIndex = 0; overlayIndex < mCutOverlayGroups[i].size(); ++overlayIndex)
+					{
+						Entity overlayEntity = mCutOverlayGroups[i][overlayIndex];
+						if (!p_ecs.HaveComponent<Transform>(overlayEntity))
+							continue;
+
+						Transform& overlayTransform = p_ecs.GetComponent<Transform>(overlayEntity);
+						if (i == mCurrentImage)
+						{
+							overlayTransform.SetScale(
+								mOriginalOverlayScales[i][overlayIndex].x,
+								mOriginalOverlayScales[i][overlayIndex].y);
+						}
+						else
+						{
+							overlayTransform.SetScale(0.0f, 0.0f);
+						}
+
+						if (p_ecs.HaveComponent<Video>(overlayEntity))
+						{
+							auto& overlayVideo = p_ecs.GetComponent<Video>(overlayEntity);
+							overlayVideo.enabled = (i == mCurrentImage)
+								? mOriginalOverlayVideoEnabled[i][overlayIndex]
+								: false;
+							overlayVideo.skipOnMouseClick = (i == mCurrentImage)
+								? mOriginalOverlayVideoSkipOnMouseClick[i][overlayIndex]
+								: false;
+						}
+					}
 				}
 				}
 			}
@@ -314,8 +428,15 @@ namespace NocturnalEngine
 						color[3] = (imageIndex == mCurrentImage && lineIndex == mCurrentTextLine)
 							? mOriginalTextAlpha[imageIndex][lineIndex]
 							: 0.0f;
+
+						// Reset the visible line to an empty string so the typewriter effect can replay on entry.
+						text.SetContent((imageIndex == mCurrentImage && lineIndex == mCurrentTextLine)
+							? std::string{}
+							: mOriginalTextContent[imageIndex][lineIndex]);
 					}
 				}
+
+				mTypewriterElapsed = 0.0f;
 			}
 
 			bool AdvanceCutScene()
@@ -340,13 +461,107 @@ namespace NocturnalEngine
 				return false;
 			}
 
+			void UpdateTypewriter(float frametime)
+			{
+				if (mCurrentImage >= mCutTextGroups.size() ||
+					mCurrentTextLine >= mCutTextGroups[mCurrentImage].size())
+					return;
+
+				Entity textEntity = mCutTextGroups[mCurrentImage][mCurrentTextLine];
+				if (!p_ecs.HaveComponent<Text>(textEntity))
+					return;
+
+				const std::string& fullText = mOriginalTextContent[mCurrentImage][mCurrentTextLine];
+				if (fullText.empty())
+					return;
+
+				mTypewriterElapsed += frametime;
+				const std::size_t visibleCharacters = std::min(
+					fullText.size(),
+					static_cast<std::size_t>(mTypewriterElapsed * mTypewriterCharactersPerSecond));
+				p_ecs.GetComponent<Text>(textEntity).SetContent(fullText.substr(0, visibleCharacters));
+			}
+
+			bool IsCurrentLineFullyRevealed() const
+			{
+				if (mCurrentImage >= mCutTextGroups.size() ||
+					mCurrentTextLine >= mCutTextGroups[mCurrentImage].size())
+					return true;
+
+				const Entity textEntity = mCutTextGroups[mCurrentImage][mCurrentTextLine];
+				if (!p_ecs.HaveComponent<Text>(textEntity))
+					return true;
+
+				return p_ecs.GetComponent<Text>(textEntity).GetContent() ==
+					mOriginalTextContent[mCurrentImage][mCurrentTextLine];
+			}
+
+			void RevealCurrentLineFully()
+			{
+				if (mCurrentImage >= mCutTextGroups.size() ||
+					mCurrentTextLine >= mCutTextGroups[mCurrentImage].size())
+					return;
+
+				Entity textEntity = mCutTextGroups[mCurrentImage][mCurrentTextLine];
+				if (!p_ecs.HaveComponent<Text>(textEntity))
+					return;
+
+				p_ecs.GetComponent<Text>(textEntity).SetContent(
+					mOriginalTextContent[mCurrentImage][mCurrentTextLine]);
+			}
+
+			bool TryAdvanceOverlayVideo()
+			{
+				if (mCurrentImage >= mCutOverlayGroups.size())
+					return false;
+
+				bool sawFinishedOverlayVideo = false;
+				for (Entity overlayEntity : mCutOverlayGroups[mCurrentImage])
+				{
+					if (!p_ecs.HaveComponent<Video>(overlayEntity))
+						continue;
+
+					auto& overlayVideo = p_ecs.GetComponent<Video>(overlayEntity);
+					if (!overlayVideo.finished)
+						return false;
+
+					sawFinishedOverlayVideo = true;
+				}
+
+				return sawFinishedOverlayVideo && AdvanceCutScene();
+			}
+
+			bool HasPendingOverlayVideo() const
+			{
+				if (mCurrentImage >= mCutOverlayGroups.size())
+					return false;
+
+				for (Entity overlayEntity : mCutOverlayGroups[mCurrentImage])
+				{
+					if (!p_ecs.HaveComponent<Video>(overlayEntity))
+						continue;
+
+					if (!p_ecs.GetComponent<Video>(overlayEntity).finished)
+						return true;
+				}
+
+				return false;
+			}
+
 			std::unique_ptr<InputSystem>& mInput;
 			std::vector<Entity> mCutImages{};
 			std::vector<vec2D> mOriginalScales{};
+			std::vector<std::vector<Entity>> mCutOverlayGroups{};
+			std::vector<std::vector<vec2D>> mOriginalOverlayScales{};
 			std::vector<std::vector<Entity>> mCutTextGroups{};
 			std::vector<std::vector<float>> mOriginalTextAlpha{};
+			std::vector<std::vector<std::string>> mOriginalTextContent{};
 			std::vector<bool> mOriginalVideoEnabled{};
 			std::vector<bool> mOriginalVideoSkipOnMouseClick{};
+			std::vector<std::vector<bool>> mOriginalOverlayVideoEnabled{};
+			std::vector<std::vector<bool>> mOriginalOverlayVideoSkipOnMouseClick{};
+			float mTypewriterElapsed{ 0.0f };
+			float mTypewriterCharactersPerSecond{ 45.0f };
 			size_t mCurrentImage{ 0 };
 			size_t mCurrentTextLine{ 0 };
 			Entity mNextButton{ 0 };
