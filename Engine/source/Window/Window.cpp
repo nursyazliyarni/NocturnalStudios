@@ -258,10 +258,10 @@ namespace NocturnalEngine{
 	{
 		
 		WindowProps& data = *(WindowProps*)glfwGetWindowUserPointer(window);
+
 		data.mouseX = xpos;
 		data.mouseY = ypos;
 
-		// Switch back to keyboard/mouse when mouse moves
 		p_Input->SetLastDevice(InputDevice::KeyboardMouse);
 	}
 
@@ -269,7 +269,7 @@ namespace NocturnalEngine{
 		if (p_Input->DeviceChanged())
 		{
 			if (p_Input->GetLastDevice() == InputDevice::Gamepad)
-				glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+				glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 			else
 				glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 		}

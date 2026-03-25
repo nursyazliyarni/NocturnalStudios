@@ -191,8 +191,9 @@ namespace NocturnalEngine {
             for (int i = 0; i < 6; i++)
                 if (std::abs(mGamepadAxes[i]) > 0.0f) { anyInput = true; break; }
 
-        if (anyInput)
+        if (anyInput) {
             SetLastDevice(InputDevice::Gamepad);
+        }
     }
 
     void InputSystem::ResetGamepadButtons()
