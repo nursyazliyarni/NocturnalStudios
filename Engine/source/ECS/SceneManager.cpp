@@ -39,7 +39,8 @@ namespace NocturnalEngine
 	static std::unordered_map<std::string,
 		std::array<bool, NocturnalEngine::Graphic::MAX_LAYERS>> gSceneLayerState_Runtime;
 
-	static std::string gCurrentScenePath = "";
+	// Legacy global scene-path tracking kept for reference after moving it into SceneManager state.
+	// static std::string gCurrentScenePath = "";
 
 
 	/*!*************************************************************************
@@ -60,6 +61,10 @@ namespace NocturnalEngine
 	void SceneManager::Init()
 	{
 		sceneToLoad = "";
+		mQueuedSceneToLoad.clear();
+		mCurrentScenePath.clear();
+		mTransitionPhase = TransitionPhase::None;
+		mTransitionAlpha = 0.0f;
 	}
 
 
@@ -91,135 +96,317 @@ namespace NocturnalEngine
 	}
 }
 
+// Legacy direct scene-load path kept for reference after adding the cutscene-to-tutorial fade.
+//
+// void NocturnalEngine::SceneManager::setSceneToLoad(std::string s)
+// {
+// 	sceneToLoad = s;
+// }
+//
+// void NocturnalEngine::SceneManager::checkForSceneToLoad()
+// {
+// 	if (sceneToLoad != "")
+// 	{
+// 		changeScene();
+//
+// 		/*if (!isGameplay) {
+// 			isGameplay = true;
+// 			DeserializeFromFile(sceneToLoad);
+// 		}*/
+//
+// 		if (sceneToLoad == "Assets/Scene/Menu.json")
+// 		{
+// 			isGameplay = true;
+// 			Graphic::camera.SetZoomLevel(1.0f);
+// 			Graphic::camera.SetPosition({ 0.0f,0.0f,0.0f });
+// 		}
+//
+// 		if (sceneToLoad == "Assets/Scene/FlamingoScene.json")
+// 		{
+// 			isGameplay = true;
+// 			Graphic::camera.SetZoomLevel(1.0f);
+// 			Graphic::camera.SetPosition({ 0.0f,0.0f,0.0f });
+// 		}
+//
+// 		if (sceneToLoad == "Assets/Scene/HorseScene.json")
+// 		{
+// 			isGameplay = true;
+// 			Graphic::camera.SetZoomLevel(1.0f);
+// 			Graphic::camera.SetPosition({ 0.0f,0.0f,0.0f });
+// 		}
+//
+// 		if (sceneToLoad == "Assets/Scene/SealScene.json")
+// 		{
+// 			isGameplay = true;
+// 			Graphic::camera.SetZoomLevel(1.0f);
+// 			Graphic::camera.SetPosition({ 0.0f,0.0f,0.0f });
+// 		}
+//
+// 		if (sceneToLoad == "Assets/Scene/OwlScene.json")
+// 		{
+// 			isGameplay = true;
+// 			Graphic::camera.SetZoomLevel(1.0f);
+// 			Graphic::camera.SetPosition({ 0.0f,0.0f,0.0f });
+// 		}
+//
+// 		if (sceneToLoad == "Assets/Scene/Menu.json")
+// 		{
+// 			isGameplay = false;
+// 			Graphic::camera.SetZoomLevel(1.0f);
+// 			Graphic::camera.SetPosition({ 0.0f,0.0f,0.0f });
+// 		}
+//
+// 		if (sceneToLoad == "Assets/Scene/Options.json")
+// 		{
+// 			isGameplay = false;
+// 			Graphic::camera.SetZoomLevel(1.0f);
+// 			Graphic::camera.SetPosition({ 0.0f,0.0f,0.0f });
+// 		}
+//
+// 		if (sceneToLoad == "Assets/Scene/Game_Over.json")
+// 		{
+// 			isGameplay = false;
+// 			Graphic::camera.SetZoomLevel(1.0f);
+// 			Graphic::camera.SetPosition({ 0.0f,0.0f,0.0f });
+// 		}
+// 		if (sceneToLoad == "Assets/Scene/LoseScene.json")
+// 		{
+// 			isGameplay = false;
+// 			Graphic::camera.SetZoomLevel(1.0f);
+// 			Graphic::camera.SetPosition({ 0.0f,0.0f,0.0f });
+// 		}
+// 		if (sceneToLoad == "Assets/Scene/WinScene.json")
+// 		{
+// 			isGameplay = false;
+// 			Graphic::camera.SetZoomLevel(1.0f);
+// 			Graphic::camera.SetPosition({ 0.0f,0.0f,0.0f });
+// 		}
+//
+// 			if (sceneToLoad == "Assets/Scene/CutScene.json")
+// 			{
+// 				isGameplay = false;
+// 				Graphic::camera.SetZoomLevel(1.0f);
+// 				Graphic::camera.SetPosition({ 0.0f,0.0f,0.0f });
+// 			}
+//
+// 		if (sceneToLoad == "Assets/Scene/HowToPlay.json")
+// 		{
+// 			isGameplay = false;
+// 			if (sceneToLoad == "Assets/Scene/CombinedScene.json")
+// 			{
+// 				isGameplay = true;
+// 				Graphic::camera.SetZoomLevel(1.0f);
+// 				Graphic::camera.SetPosition({ 0.0f,0.0f,0.0f });
+// 			}
+// 		}
+//
+// 		//SAVE current scene layer state before switching away
+// 		if (!gCurrentScenePath.empty())
+// 		{
+// 			auto& saved = gSceneLayerState_Runtime[gCurrentScenePath];
+// 			for (int l = 0; l < NocturnalEngine::Graphic::MAX_LAYERS; ++l)
+// 				saved[l] = NocturnalEngine::Graphic::layerEnabled[l];
+// 		}
+//
+// 		DeserializeFromFile(sceneToLoad);
+// 		sceneToLoad = "";
+//
+// 		gCurrentScenePath = sceneToLoad;
+//
+// 		// RESTORE layer state for newly loaded scene 
+// 		auto it = gSceneLayerState_Runtime.find(gCurrentScenePath);
+// 		if (it != gSceneLayerState_Runtime.end())
+// 		{
+// 			for (int l = 0; l < NocturnalEngine::Graphic::MAX_LAYERS; ++l)
+// 				NocturnalEngine::Graphic::layerEnabled[l] = it->second[l];
+// 		}
+// 		else
+// 		{
+// 			for (int l = 0; l < NocturnalEngine::Graphic::MAX_LAYERS; ++l)
+// 				NocturnalEngine::Graphic::layerEnabled[l] = true;
+// 		}
+//
+// 		sceneToLoad = "";
+// 	}
+// }
+//
 void NocturnalEngine::SceneManager::setSceneToLoad(std::string s)
 {
+	if (ShouldUseFadeTransition(mCurrentScenePath, s))
+	{
+		// Queue the tutorial load so the current cutscene scene can fade fully to black first.
+		mQueuedSceneToLoad = s;
+		mTransitionPhase = TransitionPhase::FadeOut;
+		if (sceneToLoad.empty())
+		{
+			sceneToLoad = s;
+		}
+		return;
+	}
+
 	sceneToLoad = s;
 }
 
 void NocturnalEngine::SceneManager::checkForSceneToLoad()
 {
+	constexpr float kSceneTransitionDuration = 0.2f;
+	const float dt = Timer::GetInstance().GetGlobalDT();
+
+	if (mTransitionPhase == TransitionPhase::FadeOut)
+	{
+		// Fade out the current scene before switching to the tutorial scene.
+		mTransitionAlpha = std::min(1.0f, mTransitionAlpha + (dt / kSceneTransitionDuration));
+		if (mTransitionAlpha >= 1.0f && !mQueuedSceneToLoad.empty())
+		{
+			LoadSceneNow(mQueuedSceneToLoad);
+			mQueuedSceneToLoad.clear();
+			sceneToLoad.clear();
+			mTransitionPhase = TransitionPhase::FadeIn;
+		}
+		return;
+	}
+
+	if (mTransitionPhase == TransitionPhase::FadeIn)
+	{
+		// Fade back in once the tutorial scene has finished loading.
+		mTransitionAlpha = std::max(0.0f, mTransitionAlpha - (dt / kSceneTransitionDuration));
+		if (mTransitionAlpha <= 0.0f)
+		{
+			mTransitionAlpha = 0.0f;
+			mTransitionPhase = TransitionPhase::None;
+		}
+		return;
+	}
+
 	if (sceneToLoad != "")
 	{
-		changeScene();
+		LoadSceneNow(sceneToLoad);
+		sceneToLoad.clear();
+	}
+}
 
-		/*if (!isGameplay) {
-			isGameplay = true;
-			DeserializeFromFile(sceneToLoad);
-		}*/
+float NocturnalEngine::SceneManager::GetSceneTransitionAlpha() const
+{
+	return mTransitionAlpha;
+}
 
-		if (sceneToLoad == "Assets/Scene/Menu.json")
+bool NocturnalEngine::SceneManager::ShouldUseFadeTransition(const std::string& currentScene, const std::string& nextScene) const
+{
+	// Only the cutscene-to-tutorial handoff uses this temporary black-screen transition.
+	return currentScene == "Assets/Scene/CutScene.json" && nextScene == "Assets/Scene/Tutorial.json";
+}
+
+void NocturnalEngine::SceneManager::LoadSceneNow(const std::string& path)
+{
+	changeScene();
+
+	if (path == "Assets/Scene/Menu.json")
+	{
+		isGameplay = true;
+		Graphic::camera.SetZoomLevel(1.0f);
+		Graphic::camera.SetPosition({ 0.0f,0.0f,0.0f });
+	}
+
+	if (path == "Assets/Scene/FlamingoScene.json")
+	{
+		isGameplay = true;
+		Graphic::camera.SetZoomLevel(1.0f);
+		Graphic::camera.SetPosition({ 0.0f,0.0f,0.0f });
+	}
+
+	if (path == "Assets/Scene/HorseScene.json")
+	{
+		isGameplay = true;
+		Graphic::camera.SetZoomLevel(1.0f);
+		Graphic::camera.SetPosition({ 0.0f,0.0f,0.0f });
+	}
+
+	if (path == "Assets/Scene/SealScene.json")
+	{
+		isGameplay = true;
+		Graphic::camera.SetZoomLevel(1.0f);
+		Graphic::camera.SetPosition({ 0.0f,0.0f,0.0f });
+	}
+
+	if (path == "Assets/Scene/OwlScene.json")
+	{
+		isGameplay = true;
+		Graphic::camera.SetZoomLevel(1.0f);
+		Graphic::camera.SetPosition({ 0.0f,0.0f,0.0f });
+	}
+
+	if (path == "Assets/Scene/Menu.json")
+	{
+		isGameplay = false;
+		Graphic::camera.SetZoomLevel(1.0f);
+		Graphic::camera.SetPosition({ 0.0f,0.0f,0.0f });
+	}
+
+	if (path == "Assets/Scene/Options.json")
+	{
+		isGameplay = false;
+		Graphic::camera.SetZoomLevel(1.0f);
+		Graphic::camera.SetPosition({ 0.0f,0.0f,0.0f });
+	}
+
+	if (path == "Assets/Scene/Game_Over.json")
+	{
+		isGameplay = false;
+		Graphic::camera.SetZoomLevel(1.0f);
+		Graphic::camera.SetPosition({ 0.0f,0.0f,0.0f });
+	}
+	if (path == "Assets/Scene/LoseScene.json")
+	{
+		isGameplay = false;
+		Graphic::camera.SetZoomLevel(1.0f);
+		Graphic::camera.SetPosition({ 0.0f,0.0f,0.0f });
+	}
+	if (path == "Assets/Scene/WinScene.json")
+	{
+		isGameplay = false;
+		Graphic::camera.SetZoomLevel(1.0f);
+		Graphic::camera.SetPosition({ 0.0f,0.0f,0.0f });
+	}
+
+	if (path == "Assets/Scene/CutScene.json")
+	{
+		isGameplay = false;
+		Graphic::camera.SetZoomLevel(1.0f);
+		Graphic::camera.SetPosition({ 0.0f,0.0f,0.0f });
+	}
+
+	if (path == "Assets/Scene/HowToPlay.json")
+	{
+		isGameplay = false;
+		if (path == "Assets/Scene/CombinedScene.json")
 		{
 			isGameplay = true;
 			Graphic::camera.SetZoomLevel(1.0f);
 			Graphic::camera.SetPosition({ 0.0f,0.0f,0.0f });
 		}
+	}
 
-		if (sceneToLoad == "Assets/Scene/FlamingoScene.json")
-		{
-			isGameplay = true;
-			Graphic::camera.SetZoomLevel(1.0f);
-			Graphic::camera.SetPosition({ 0.0f,0.0f,0.0f });
-		}
+	if (!mCurrentScenePath.empty())
+	{
+		auto& saved = gSceneLayerState_Runtime[mCurrentScenePath];
+		for (int l = 0; l < NocturnalEngine::Graphic::MAX_LAYERS; ++l)
+			saved[l] = NocturnalEngine::Graphic::layerEnabled[l];
+	}
 
-		if (sceneToLoad == "Assets/Scene/HorseScene.json")
-		{
-			isGameplay = true;
-			Graphic::camera.SetZoomLevel(1.0f);
-			Graphic::camera.SetPosition({ 0.0f,0.0f,0.0f });
-		}
+	DeserializeFromFile(path);
+	// Track the live scene path after the load so future transitions know the current source scene.
+	mCurrentScenePath = path;
 
-		if (sceneToLoad == "Assets/Scene/SealScene.json")
-		{
-			isGameplay = true;
-			Graphic::camera.SetZoomLevel(1.0f);
-			Graphic::camera.SetPosition({ 0.0f,0.0f,0.0f });
-		}
-
-		if (sceneToLoad == "Assets/Scene/OwlScene.json")
-		{
-			isGameplay = true;
-			Graphic::camera.SetZoomLevel(1.0f);
-			Graphic::camera.SetPosition({ 0.0f,0.0f,0.0f });
-		}
-
-		if (sceneToLoad == "Assets/Scene/Menu.json")
-		{
-			isGameplay = false;
-			Graphic::camera.SetZoomLevel(1.0f);
-			Graphic::camera.SetPosition({ 0.0f,0.0f,0.0f });
-		}
-
-		if (sceneToLoad == "Assets/Scene/Options.json")
-		{
-			isGameplay = false;
-			Graphic::camera.SetZoomLevel(1.0f);
-			Graphic::camera.SetPosition({ 0.0f,0.0f,0.0f });
-		}
-
-		if (sceneToLoad == "Assets/Scene/Game_Over.json")
-		{
-			isGameplay = false;
-			Graphic::camera.SetZoomLevel(1.0f);
-			Graphic::camera.SetPosition({ 0.0f,0.0f,0.0f });
-		}
-		if (sceneToLoad == "Assets/Scene/LoseScene.json")
-		{
-			isGameplay = false;
-			Graphic::camera.SetZoomLevel(1.0f);
-			Graphic::camera.SetPosition({ 0.0f,0.0f,0.0f });
-		}
-		if (sceneToLoad == "Assets/Scene/WinScene.json")
-		{
-			isGameplay = false;
-			Graphic::camera.SetZoomLevel(1.0f);
-			Graphic::camera.SetPosition({ 0.0f,0.0f,0.0f });
-		}
-
-			if (sceneToLoad == "Assets/Scene/CutScene.json")
-			{
-				isGameplay = false;
-				Graphic::camera.SetZoomLevel(1.0f);
-				Graphic::camera.SetPosition({ 0.0f,0.0f,0.0f });
-			}
-
-		if (sceneToLoad == "Assets/Scene/HowToPlay.json")
-		{
-			isGameplay = false;
-			if (sceneToLoad == "Assets/Scene/CombinedScene.json")
-			{
-				isGameplay = true;
-				Graphic::camera.SetZoomLevel(1.0f);
-				Graphic::camera.SetPosition({ 0.0f,0.0f,0.0f });
-			}
-		}
-
-		//SAVE current scene layer state before switching away
-		if (!gCurrentScenePath.empty())
-		{
-			auto& saved = gSceneLayerState_Runtime[gCurrentScenePath];
-			for (int l = 0; l < NocturnalEngine::Graphic::MAX_LAYERS; ++l)
-				saved[l] = NocturnalEngine::Graphic::layerEnabled[l];
-		}
-
-		DeserializeFromFile(sceneToLoad);
-		sceneToLoad = "";
-
-		gCurrentScenePath = sceneToLoad;
-
-		// RESTORE layer state for newly loaded scene 
-		auto it = gSceneLayerState_Runtime.find(gCurrentScenePath);
-		if (it != gSceneLayerState_Runtime.end())
-		{
-			for (int l = 0; l < NocturnalEngine::Graphic::MAX_LAYERS; ++l)
-				NocturnalEngine::Graphic::layerEnabled[l] = it->second[l];
-		}
-		else
-		{
-			for (int l = 0; l < NocturnalEngine::Graphic::MAX_LAYERS; ++l)
-				NocturnalEngine::Graphic::layerEnabled[l] = true;
-		}
-
-		sceneToLoad = "";
+	auto it = gSceneLayerState_Runtime.find(mCurrentScenePath);
+	if (it != gSceneLayerState_Runtime.end())
+	{
+		for (int l = 0; l < NocturnalEngine::Graphic::MAX_LAYERS; ++l)
+			NocturnalEngine::Graphic::layerEnabled[l] = it->second[l];
+	}
+	else
+	{
+		for (int l = 0; l < NocturnalEngine::Graphic::MAX_LAYERS; ++l)
+			NocturnalEngine::Graphic::layerEnabled[l] = true;
 	}
 }
 

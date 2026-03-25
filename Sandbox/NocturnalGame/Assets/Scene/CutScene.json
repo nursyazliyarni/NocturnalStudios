@@ -22,11 +22,15 @@
                 },
                 {
                     "Component": "Transform",
-                    "posX": 0.0,
-                    "posY": 0.0,
-                    "scaleX": 1.0,
-                    "scaleY": 1.0,
-                    "Rot": 0.0
+                    "Position": {
+                        "x": 0.0,
+                        "y": 0.0
+                    },
+                    "Scale": {
+                        "x": 1.0,
+                        "y": 1.0
+                    },
+                    "Rotation": 0.0
                 },
                 {
                     "Component": "NameTag",
@@ -34,7 +38,11 @@
                 },
                 {
                     "Component": "Logic",
-                    "0": "CutScene",
+                    "Scripts": [
+                        {
+                            "ScriptName": "CutScene"
+                        }
+                    ],
                     "ScriptCount": 1
                 }
             ]
@@ -49,11 +57,15 @@
                 },
                 {
                     "Component": "Transform",
-                    "posX": 0.0,
-                    "posY": 0.0,
-                    "scaleX": 3.6449999809265137,
-                    "scaleY": 1.9999960660934448,
-                    "Rot": 0.0
+                    "Position": {
+                        "x": 0.0,
+                        "y": 0.0
+                    },
+                    "Scale": {
+                        "x": 3.6449999809265137,
+                        "y": 1.9999960660934448
+                    },
+                    "Rotation": 0.0
                 },
                 {
                     "Component": "NameTag",
@@ -61,6 +73,15 @@
                 },
                 {
                     "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
                     "TextureName": "CutScene/1",
                     "Index_X": 0,
                     "Index_Y": 0,
@@ -77,6 +98,8 @@
                         {
                             "Name": "Idle",
                             "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
                             "Source": 3,
                             "Compare": 0,
                             "Threshold": 0.0,
@@ -97,11 +120,15 @@
                 },
                 {
                     "Component": "Transform",
-                    "posX": 0.0,
-                    "posY": 0.0,
-                    "scaleX": 3.6449999809265137,
-                    "scaleY": 1.9999960660934448,
-                    "Rot": 0.0
+                    "Position": {
+                        "x": 0.0,
+                        "y": 0.0
+                    },
+                    "Scale": {
+                        "x": 3.6449999809265137,
+                        "y": 1.9999960660934448
+                    },
+                    "Rotation": 0.0
                 },
                 {
                     "Component": "NameTag",
@@ -109,6 +136,15 @@
                 },
                 {
                     "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
                     "TextureName": "CutScene/2",
                     "Index_X": 0,
                     "Index_Y": 0,
@@ -125,6 +161,8 @@
                         {
                             "Name": "Idle",
                             "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
                             "Source": 3,
                             "Compare": 0,
                             "Threshold": 0.0,
@@ -145,11 +183,15 @@
                 },
                 {
                     "Component": "Transform",
-                    "posX": 0.0,
-                    "posY": 0.0,
-                    "scaleX": 3.6449999809265137,
-                    "scaleY": 1.9999960660934448,
-                    "Rot": 0.0
+                    "Position": {
+                        "x": 0.0,
+                        "y": 0.0
+                    },
+                    "Scale": {
+                        "x": 3.6449999809265137,
+                        "y": 1.9999960660934448
+                    },
+                    "Rotation": 0.0
                 },
                 {
                     "Component": "NameTag",
@@ -157,6 +199,15 @@
                 },
                 {
                     "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
                     "TextureName": "CutScene/3",
                     "Index_X": 0,
                     "Index_Y": 0,
@@ -173,6 +224,8 @@
                         {
                             "Name": "Idle",
                             "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
                             "Source": 3,
                             "Compare": 0,
                             "Threshold": 0.0,
@@ -193,11 +246,15 @@
                 },
                 {
                     "Component": "Transform",
-                    "posX": 0.0,
-                    "posY": 0.0,
-                    "scaleX": 3.6449999809265137,
-                    "scaleY": 1.9999960660934448,
-                    "Rot": 0.0
+                    "Position": {
+                        "x": 0.0,
+                        "y": 0.0
+                    },
+                    "Scale": {
+                        "x": 3.6449999809265137,
+                        "y": 1.9999960660934448
+                    },
+                    "Rotation": 0.0
                 },
                 {
                     "Component": "NameTag",
@@ -205,6 +262,15 @@
                 },
                 {
                     "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
                     "TextureName": "CutScene/4",
                     "Index_X": 0,
                     "Index_Y": 0,
@@ -221,6 +287,8 @@
                         {
                             "Name": "Idle",
                             "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
                             "Source": 3,
                             "Compare": 0,
                             "Threshold": 0.0,
@@ -241,11 +309,15 @@
                 },
                 {
                     "Component": "Transform",
-                    "posX": 0.0,
-                    "posY": 0.0,
-                    "scaleX": 3.6449999809265137,
-                    "scaleY": 1.9999960660934448,
-                    "Rot": 0.0
+                    "Position": {
+                        "x": 0.0,
+                        "y": 0.0
+                    },
+                    "Scale": {
+                        "x": 3.6449999809265137,
+                        "y": 1.9999960660934448
+                    },
+                    "Rotation": 0.0
                 },
                 {
                     "Component": "NameTag",
@@ -253,6 +325,15 @@
                 },
                 {
                     "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
                     "TextureName": "CutScene/5",
                     "Index_X": 0,
                     "Index_Y": 0,
@@ -269,6 +350,8 @@
                         {
                             "Name": "Idle",
                             "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
                             "Source": 3,
                             "Compare": 0,
                             "Threshold": 0.0,
@@ -289,11 +372,15 @@
                 },
                 {
                     "Component": "Transform",
-                    "posX": 0.0,
-                    "posY": 0.0,
-                    "scaleX": 3.6449999809265137,
-                    "scaleY": 1.9999960660934448,
-                    "Rot": 0.0
+                    "Position": {
+                        "x": 0.0,
+                        "y": 0.0
+                    },
+                    "Scale": {
+                        "x": 3.6449999809265137,
+                        "y": 1.9999960660934448
+                    },
+                    "Rotation": 0.0
                 },
                 {
                     "Component": "NameTag",
@@ -301,6 +388,15 @@
                 },
                 {
                     "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
                     "TextureName": "CutScene/6",
                     "Index_X": 0,
                     "Index_Y": 0,
@@ -317,6 +413,8 @@
                         {
                             "Name": "Idle",
                             "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
                             "Source": 3,
                             "Compare": 0,
                             "Threshold": 0.0,
@@ -337,11 +435,15 @@
                 },
                 {
                     "Component": "Transform",
-                    "posX": 0.0,
-                    "posY": 0.0,
-                    "scaleX": 3.6449999809265137,
-                    "scaleY": 1.9999960660934448,
-                    "Rot": 0.0
+                    "Position": {
+                        "x": 0.0,
+                        "y": 0.0
+                    },
+                    "Scale": {
+                        "x": 3.6449999809265137,
+                        "y": 1.9999960660934448
+                    },
+                    "Rotation": 0.0
                 },
                 {
                     "Component": "NameTag",
@@ -349,6 +451,78 @@
                 },
                 {
                     "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "TextureName": "CutScene/7",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": false,
+                    "MaxIndex": 0,
+                    "LayeringOrder": 6,
+                    "StateManagerEnabled": false,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "ID": 8,
+            "Components": [
+                {
+                    "Component": "Tag",
+                    "Tag": "CutSceneImage",
+                    "TargetTag": ""
+                },
+                {
+                    "Component": "Transform",
+                    "Position": {
+                        "x": -0.2198234498500824,
+                        "y": 0.010999999940395355
+                    },
+                    "Scale": {
+                        "x": 2.0250000953674316,
+                        "y": 1.6050000190734863
+                    },
+                    "Rotation": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "CutOverlay7_TV"
+                },
+                {
+                    "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
                     "TextureName": "Characters/Blank",
                     "Index_X": 0,
                     "Index_Y": 0,
@@ -365,6 +539,87 @@
                         {
                             "Name": "Idle",
                             "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
+                },
+                {
+                    "Component": "Video",
+                    "VideoPath": "tvTurnOn.mpg",
+                    "Enabled": true,
+                    "Loop": false,
+                    "PlayInEditor": false,
+                    "AllowSkip": false,
+                    "SkipOnMouseClick": false,
+                    "RestartOnEnable": true,
+                    "HideWhenFinished": true,
+                    "SkipKey": 32,
+                    "NextScene": "",
+                    "AudioPath": "",
+                    "AudioChannelGroup": 1,
+                    "AudioLoop": false
+                }
+            ]
+        },
+        {
+            "ID": 9,
+            "Components": [
+                {
+                    "Component": "Tag",
+                    "Tag": "CutSceneImage",
+                    "TargetTag": ""
+                },
+                {
+                    "Component": "Transform",
+                    "Position": {
+                        "x": 0.0,
+                        "y": 0.0
+                    },
+                    "Scale": {
+                        "x": 3.6449999809265137,
+                        "y": 1.9999960660934448
+                    },
+                    "Rotation": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "CutVideo"
+                },
+                {
+                    "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "TextureName": "Characters/Blank",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": false,
+                    "MaxIndex": 0,
+                    "LayeringOrder": 8,
+                    "StateManagerEnabled": false,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
                             "Source": 3,
                             "Compare": 0,
                             "Threshold": 0.0,
@@ -392,15 +647,19 @@
             ]
         },
         {
-            "ID": 8,
+            "ID": 10,
             "Components": [
                 {
                     "Component": "Transform",
-                    "posX": 1.534999966621399,
-                    "posY": -0.9100000262260437,
-                    "scaleX": 0.5,
-                    "scaleY": 0.5,
-                    "Rot": 0.0
+                    "Position": {
+                        "x": 1.534999966621399,
+                        "y": -0.9100000262260437
+                    },
+                    "Scale": {
+                        "x": 0.5,
+                        "y": 0.5
+                    },
+                    "Rotation": 0.0
                 },
                 {
                     "Component": "NameTag",
@@ -429,15 +688,19 @@
             ]
         },
         {
-            "ID": 9,
+            "ID": 11,
             "Components": [
                 {
                     "Component": "Transform",
-                    "posX": 0.0,
-                    "posY": 0.0,
-                    "scaleX": 1.0,
-                    "scaleY": 1.0,
-                    "Rot": 0.0
+                    "Position": {
+                        "x": 0.0,
+                        "y": 0.0
+                    },
+                    "Scale": {
+                        "x": 1.0,
+                        "y": 1.0
+                    },
+                    "Rotation": 0.0
                 },
                 {
                     "Component": "NameTag",
@@ -466,15 +729,19 @@
             ]
         },
         {
-            "ID": 10,
+            "ID": 12,
             "Components": [
                 {
                     "Component": "Transform",
-                    "posX": 0.0,
-                    "posY": 0.0,
-                    "scaleX": 1.0,
-                    "scaleY": 1.0,
-                    "Rot": 0.0
+                    "Position": {
+                        "x": 0.0,
+                        "y": 0.0
+                    },
+                    "Scale": {
+                        "x": 1.0,
+                        "y": 1.0
+                    },
+                    "Rotation": 0.0
                 },
                 {
                     "Component": "NameTag",
@@ -503,15 +770,19 @@
             ]
         },
         {
-            "ID": 11,
+            "ID": 13,
             "Components": [
                 {
                     "Component": "Transform",
-                    "posX": 0.0,
-                    "posY": 0.0,
-                    "scaleX": 1.0,
-                    "scaleY": 1.0,
-                    "Rot": 0.0
+                    "Position": {
+                        "x": 0.0,
+                        "y": 0.0
+                    },
+                    "Scale": {
+                        "x": 1.0,
+                        "y": 1.0
+                    },
+                    "Rotation": 0.0
                 },
                 {
                     "Component": "NameTag",
@@ -540,15 +811,19 @@
             ]
         },
         {
-            "ID": 12,
+            "ID": 14,
             "Components": [
                 {
                     "Component": "Transform",
-                    "posX": 0.0,
-                    "posY": 0.0,
-                    "scaleX": 1.0,
-                    "scaleY": 1.0,
-                    "Rot": 0.0
+                    "Position": {
+                        "x": 0.0,
+                        "y": 0.0
+                    },
+                    "Scale": {
+                        "x": 1.0,
+                        "y": 1.0
+                    },
+                    "Rotation": 0.0
                 },
                 {
                     "Component": "NameTag",
@@ -577,15 +852,19 @@
             ]
         },
         {
-            "ID": 13,
+            "ID": 15,
             "Components": [
                 {
                     "Component": "Transform",
-                    "posX": 0.0,
-                    "posY": 0.0,
-                    "scaleX": 1.0,
-                    "scaleY": 1.0,
-                    "Rot": 0.0
+                    "Position": {
+                        "x": 0.0,
+                        "y": 0.0
+                    },
+                    "Scale": {
+                        "x": 1.0,
+                        "y": 1.0
+                    },
+                    "Rotation": 0.0
                 },
                 {
                     "Component": "NameTag",
@@ -614,15 +893,19 @@
             ]
         },
         {
-            "ID": 14,
+            "ID": 16,
             "Components": [
                 {
                     "Component": "Transform",
-                    "posX": 0.0,
-                    "posY": 0.0,
-                    "scaleX": 1.0,
-                    "scaleY": 1.0,
-                    "Rot": 0.0
+                    "Position": {
+                        "x": 0.0,
+                        "y": 0.0
+                    },
+                    "Scale": {
+                        "x": 1.0,
+                        "y": 1.0
+                    },
+                    "Rotation": 0.0
                 },
                 {
                     "Component": "NameTag",
@@ -651,15 +934,19 @@
             ]
         },
         {
-            "ID": 15,
+            "ID": 17,
             "Components": [
                 {
                     "Component": "Transform",
-                    "posX": 0.0,
-                    "posY": 0.0,
-                    "scaleX": 1.0,
-                    "scaleY": 1.0,
-                    "Rot": 0.0
+                    "Position": {
+                        "x": 0.0,
+                        "y": 0.0
+                    },
+                    "Scale": {
+                        "x": 1.0,
+                        "y": 1.0
+                    },
+                    "Rotation": 0.0
                 },
                 {
                     "Component": "NameTag",
@@ -688,15 +975,19 @@
             ]
         },
         {
-            "ID": 16,
+            "ID": 18,
             "Components": [
                 {
                     "Component": "Transform",
-                    "posX": 0.0,
-                    "posY": 0.0,
-                    "scaleX": 1.0,
-                    "scaleY": 1.0,
-                    "Rot": 0.0
+                    "Position": {
+                        "x": 0.0,
+                        "y": 0.0
+                    },
+                    "Scale": {
+                        "x": 1.0,
+                        "y": 1.0
+                    },
+                    "Rotation": 0.0
                 },
                 {
                     "Component": "NameTag",
@@ -725,15 +1016,19 @@
             ]
         },
         {
-            "ID": 17,
+            "ID": 19,
             "Components": [
                 {
                     "Component": "Transform",
-                    "posX": 0.0,
-                    "posY": 0.0,
-                    "scaleX": 1.0,
-                    "scaleY": 1.0,
-                    "Rot": 0.0
+                    "Position": {
+                        "x": 0.0,
+                        "y": 0.0
+                    },
+                    "Scale": {
+                        "x": 1.0,
+                        "y": 1.0
+                    },
+                    "Rotation": 0.0
                 },
                 {
                     "Component": "NameTag",
@@ -762,15 +1057,19 @@
             ]
         },
         {
-            "ID": 18,
+            "ID": 20,
             "Components": [
                 {
                     "Component": "Transform",
-                    "posX": 0.0,
-                    "posY": 0.0,
-                    "scaleX": 1.0,
-                    "scaleY": 1.0,
-                    "Rot": 0.0
+                    "Position": {
+                        "x": 0.0,
+                        "y": 0.0
+                    },
+                    "Scale": {
+                        "x": 1.0,
+                        "y": 1.0
+                    },
+                    "Rotation": 0.0
                 },
                 {
                     "Component": "NameTag",
@@ -799,15 +1098,19 @@
             ]
         },
         {
-            "ID": 19,
+            "ID": 21,
             "Components": [
                 {
                     "Component": "Transform",
-                    "posX": 0.0,
-                    "posY": 0.0,
-                    "scaleX": 1.0,
-                    "scaleY": 1.0,
-                    "Rot": 0.0
+                    "Position": {
+                        "x": 0.0,
+                        "y": 0.0
+                    },
+                    "Scale": {
+                        "x": 1.0,
+                        "y": 1.0
+                    },
+                    "Rotation": 0.0
                 },
                 {
                     "Component": "NameTag",
@@ -836,15 +1139,19 @@
             ]
         },
         {
-            "ID": 20,
+            "ID": 22,
             "Components": [
                 {
                     "Component": "Transform",
-                    "posX": 0.0,
-                    "posY": 0.0,
-                    "scaleX": 1.0,
-                    "scaleY": 1.0,
-                    "Rot": 0.0
+                    "Position": {
+                        "x": 0.0,
+                        "y": 0.0
+                    },
+                    "Scale": {
+                        "x": 1.0,
+                        "y": 1.0
+                    },
+                    "Rotation": 0.0
                 },
                 {
                     "Component": "NameTag",
