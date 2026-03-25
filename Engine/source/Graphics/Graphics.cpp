@@ -23,6 +23,7 @@
 
 #include "pch.h"
 #include "Graphics/Graphics.h"
+#include "ECS/SceneManager.h"
 #include "GUI/GUI.h"
 #include <glm/gtc/matrix_transform.hpp>
 #include "Input/Input.h"
@@ -32,7 +33,6 @@
 #include "Math/Math.h"
 #include "Graphics/FrameBuffer.h"
 #include "Timer/Fps.h"
-#include "ECS/SceneManager.h"
 #include "Video/VideoPlayback.h"
 
 namespace NocturnalEngine {
@@ -576,6 +576,20 @@ namespace NocturnalEngine {
 						font->RenderText(text.GET_current_mContent(text.current_index), text.GET_current_position(text.current_index), text.Get_line_height(), scale, *mcamera, col, text.Rot());
 				}
 			}
+		}
+
+		const float sceneTransitionAlpha = p_Scene->GetSceneTransitionAlpha();
+		if (sceneTransitionAlpha > 0.0f)
+		{
+			mRenderer->Begin(*mcamera);
+			// Draw a simple fullscreen black overlay to visualize the scene transition fade.
+			mRenderer->DrawQuad(
+				{ mcamera->GetPosition().x, mcamera->GetPosition().y },
+				{ 20.0f, 20.0f },
+				0.0f,
+				{ 0.0f, 0.0f, 0.0f, sceneTransitionAlpha }
+			);
+			mRenderer->End();
 		}
 
 		p_FrameBuffer->UnBind();

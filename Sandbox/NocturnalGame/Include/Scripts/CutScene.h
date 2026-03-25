@@ -65,6 +65,7 @@ namespace NocturnalEngine
 				mOriginalScales.clear();
 				mCutTextGroups.clear();
 				mOriginalTextAlpha.clear();
+				// Preserve each layer's original video settings before cutscene toggling overrides them.
 				mOriginalVideoEnabled.clear();
 				mOriginalVideoSkipOnMouseClick.clear();
 				mCurrentImage = 0;
@@ -146,6 +147,7 @@ namespace NocturnalEngine
 					Entity e = pair.second;
 					mCutImages.push_back(e);
 					mOriginalScales.push_back(p_ecs.GetComponent<Transform>(e).GetScale());
+					// Cache per-layer video defaults so they can be restored when the layer becomes active again.
 					mOriginalVideoEnabled.push_back(p_ecs.HaveComponent<Video>(e)
 						? p_ecs.GetComponent<Video>(e).enabled
 						: false);
@@ -289,7 +291,9 @@ namespace NocturnalEngine
 				if (p_ecs.HaveComponent<Video>(e))
 				{
 					auto& video = p_ecs.GetComponent<Video>(e);
+					// Hidden cutscene layers must not advance video playback in the background.
 					video.enabled = (i == mCurrentImage) ? mOriginalVideoEnabled[i] : false;
+					// The active cutscene video should always be skippable by clicking anywhere.
 					video.skipOnMouseClick = (i == mCurrentImage) ? true : mOriginalVideoSkipOnMouseClick[i];
 				}
 				}
