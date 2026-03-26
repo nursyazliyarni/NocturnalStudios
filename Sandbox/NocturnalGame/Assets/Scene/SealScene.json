@@ -98,42 +98,12 @@
                 {
                     "Component": "Audio",
                     "0": {
-                        "AudioPath": "BGM_Ambience_Horse_01.wav",
+                        "AudioPath": "Luminara Zoo - Music - Level 1 (v2).wav",
                         "Channel": 2,
-                        "IsLooping": true,
-                        "VolumeLimit": 1.0
-                    },
-                    "1": {
-                        "AudioPath": "SFX_Static_01.wav",
-                        "Channel": 3,
                         "IsLooping": false,
                         "VolumeLimit": 1.0
                     },
-                    "2": {
-                        "AudioPath": "SFX_Static_02.wav",
-                        "Channel": 3,
-                        "IsLooping": false,
-                        "VolumeLimit": 1.0
-                    },
-                    "3": {
-                        "AudioPath": "SFX_Static_03.wav",
-                        "Channel": 3,
-                        "IsLooping": false,
-                        "VolumeLimit": 1.0
-                    },
-                    "4": {
-                        "AudioPath": "SFX_Static_04.wav",
-                        "Channel": 3,
-                        "IsLooping": false,
-                        "VolumeLimit": 1.0
-                    },
-                    "5": {
-                        "AudioPath": "SFX_Static_05.wav",
-                        "Channel": 3,
-                        "IsLooping": false,
-                        "VolumeLimit": 1.0
-                    },
-                    "AudioArrCount": 6,
+                    "AudioArrCount": 1,
                     "BGM Volume": 1.0,
                     "SFX Volume": 1.0,
                     "Master Volume": 1.0,
@@ -235,7 +205,7 @@
                         0.0
                     ],
                     "TextureName": "Characters/seal sick",
-                    "Index_X": 1,
+                    "Index_X": 0,
                     "Index_Y": 0,
                     "Ucoordinates": 603.5,
                     "Vcoordinates": 458.0,
