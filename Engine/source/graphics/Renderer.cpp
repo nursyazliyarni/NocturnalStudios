@@ -729,6 +729,47 @@ Overload function for Draw Quad using vec3 position with texture
 		DrawLine(p2, p3, color);
 		DrawLine(p3, p0, color);
 	}
+
+	void Renderer::DrawDashedLine(const Vec3& point_1, const Vec3& point_2, const Vec4& color, float offset, float line_length,
+		float line_gap)
+	{
+		//compute direction vector and distance between 2 points here
+		glm::vec2 direction = glm::normalize(glm::vec2(point_2.x - point_1.x, point_2.y - point_1.y));
+		float distance = glm::distance(glm::vec2(point_1.x, point_1.y),glm::vec2(point_2.x, point_2.y));
+
+		//this for loop continue until the entire line is covered
+		while (offset < distance)
+		{
+			float start_line = std::max(0.0f, offset); //this ensures the offset don't go before the beginning of the line
+			float end_line = std::min(distance, offset + line_length); //this ensures offset + line_length don¡¯t go past the end of the line.
+
+			if (start_line < end_line)
+			{
+				Vec3 start_pt = { point_1.x + direction.x * start_line, point_1.y + direction.y * start_line, point_1.z };
+				Vec3 end_pt = { point_1.x + direction.x * end_line,   point_1.y + direction.y * end_line,   point_1.z };
+				DrawLine(start_pt, end_pt, color);
+			}
+			offset += line_length + line_gap; //This creates the dashed pattern
+		}
+	}
+
+	/*!*************************************************************************
+	This function draw rect that is made up of 4 dashed line using DrawDashedLine function 4 times
+	****************************************************************************/
+	void Renderer::DrawDashedRect(const Vec3& position, const vec2D& size, const Vec4& color, float offset, float line_length,
+		float line_gap)
+	{
+		Vec3 p0 = Vec3(position.x - size.x * 0.5f, position.y - size.y * 0.5f, position.z);
+		Vec3 p1 = Vec3(position.x + size.x * 0.5f, position.y - size.y * 0.5f, position.z);
+		Vec3 p2 = Vec3(position.x + size.x * 0.5f, position.y + size.y * 0.5f, position.z);
+		Vec3 p3 = Vec3(position.x - size.x * 0.5f, position.y + size.y * 0.5f, position.z);
+
+		DrawDashedLine(p0, p1, color, offset, line_length, line_gap); // bottom
+		DrawDashedLine(p1, p2, color, offset, line_length, line_gap); // right
+		DrawDashedLine(p2, p3, color, offset, line_length, line_gap); // top
+		DrawDashedLine(p3, p0, color, offset, line_length, line_gap); // left
+	}
+
 	/*!*************************************************************************
 	This function draw circle using shader
 	****************************************************************************/

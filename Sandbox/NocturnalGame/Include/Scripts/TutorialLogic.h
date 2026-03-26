@@ -74,5 +74,6 @@ namespace NocturnalEngine
 		virtual Entity& GetScriptEntityID() override { return entityID; }
 
 	private:
+		int current_tutorial_order{ 0 };
 	};
 }

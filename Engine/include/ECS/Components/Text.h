@@ -73,6 +73,8 @@ namespace NocturnalEngine
         void Set_TEXT_type(int enum_text_type) { TEXT_type = enum_text_type; }
         static const int& Get_current_index() { return current_index; }
         static int& Set_current_index(int input_index) { return current_index = input_index; }
+        bool GET_visibility() { return visibility; }
+        void SET_visibility(bool is_visible) { visibility = is_visible; }
 
     private:
         int TEXT_type;
@@ -89,6 +91,7 @@ namespace NocturnalEngine
         std::vector<std::pair<float,float>> position_vector; //vector for storing pair of x and y
         float rotation{};
         int line_height;
+        bool visibility;
         int LayerOrder; // layering order for rendering
 
         enum text_type {

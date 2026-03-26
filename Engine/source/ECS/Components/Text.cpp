@@ -33,6 +33,7 @@ namespace NocturnalEngine
         , mPosition{ 0.0f, 0.0f }
         , line_height{0}
         , LayerOrder{0}
+        , visibility{true}
     {
     }
 
@@ -157,6 +158,7 @@ namespace NocturnalEngine
             ImGui::DragInt("##Line Height", &Get_line_height(), 1);
             ImGui::Text("Layering Order"); ImGui::SameLine();
             ImGui::DragInt("##Layering Order", &LayerOrder, 1, 0, 9);
+            ImGui::Checkbox("Is Visible", &visibility);
         }
         return changed;
     }
@@ -216,6 +218,9 @@ namespace NocturnalEngine
 
         if (obj.HasMember("LayeringOrder") && obj["LayeringOrder"].IsInt())
             LayerOrder = obj["LayeringOrder"].GetInt();
+
+        if (obj.HasMember("Visibility") && obj["Visibility"].IsBool())
+            visibility = obj["Visibility"].GetBool();
 
         return true;
     }
@@ -280,6 +285,9 @@ namespace NocturnalEngine
 
         writer->Key("LayeringOrder");
         writer->Int(LayerOrder);
+
+        writer->Key("Visibility");
+        writer->Bool(visibility);
 
         return true;
     }
