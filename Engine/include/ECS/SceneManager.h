@@ -23,7 +23,6 @@
 #include "pch.h"
 #include "Serialization/JSONserialization.h"
 #include "Serialization/JSONincludes.h"
-#include "ECS/PrefabManager.h"
 
 #define p_Scene NocturnalEngine::SceneManager::GetInstance()
 
@@ -53,36 +52,19 @@ namespace NocturnalEngine
 		****************************************************************************/
 		virtual bool Serialize(rapidjson::PrettyWriter<rapidjson::StringBuffer>* writer) const;
 
-		void SerializeEntity(rapidjson::PrettyWriter<rapidjson::StringBuffer>* writer,Entity j, PrefabManager& prefabs) const;
-		Entity DeserializeEntity(const rapidjson::Value& obj, PrefabManager& prefabs, std::unordered_map<Entity, Entity>& entityOldIDMap,Entity parent=MAX_ENTITIES) const;
 		// temp: scene to load code
 		void setSceneToLoad(std::string s);
 		void checkForSceneToLoad();
 		void changeScene();
-		float GetSceneTransitionAlpha() const;
 
 		bool isGameplay{};
 	private:
-		enum class TransitionPhase
-		{
-			None,
-			FadeOut,
-			FadeIn
-		};
-
 		// Unique pointer to SceneManager
 		static std::unique_ptr<SceneManager> m_instance;
 
 		std::unordered_map<std::string, DeserializeFn> componentLoaders;
 
 		std::string sceneToLoad;
-		std::string mQueuedSceneToLoad{};
-		std::string mCurrentScenePath{};
-		TransitionPhase mTransitionPhase{ TransitionPhase::None };
-		float mTransitionAlpha{ 0.0f };
-
-		bool ShouldUseFadeTransition(const std::string& currentScene, const std::string& nextScene) const;
-		void LoadSceneNow(const std::string& path);
 
 		bool NewDeserialize(const rapidjson::Value& obj);
 		bool OldDeserialize(const rapidjson::Value& obj);

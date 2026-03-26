@@ -17,8 +17,6 @@
 #pragma once
 #include "ECS/Types.h"
 #include "ECS/ECS.h"
-#include "Serialization/JSONserialization.h"
-#include <variant>
 
 namespace NocturnalEngine
 {
@@ -28,26 +26,15 @@ namespace NocturnalEngine
 	1) Ensure the Logic Component has the inserted script when deserializing
 	2) Ensure the Level Editor has the new script that can be inserted
 	****************************************************************************/
-	class IScript :public JSONSerializer
+	class IScript
 	{
 	public:
-
-		struct ScriptField {
-			std::string name;
-			std::variant<float*, int*, bool*,std::string*> ptr;
-		};
-		virtual std::vector<ScriptField> GetFields() { return {}; }
 		virtual ~IScript() = default;
 		virtual void Start() {};
 		virtual void Update(float Frametime) { UNREFERENCED_PARAMETER(Frametime); };
 		virtual void End() {};
 		virtual IScript* Clone() const = 0;
 		virtual std::string GetScriptName() = 0;
-
-		virtual bool ToEditor();
-		virtual bool Serialize(rapidjson::PrettyWriter<rapidjson::StringBuffer>* writer) const override;
-		virtual bool Deserialize(const rapidjson::Value& obj) override;
-
 
 		virtual void SetScriptEntityID(Entity& entity) = 0;
 		virtual Entity & GetScriptEntityID() = 0;

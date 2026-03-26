@@ -219,8 +219,43 @@ namespace NocturnalEngine
 
 	bool ButtonResponse::KeyboardSceneSwitch() {
 
-
-
+		// ------------------------------------------------------------
+		// Keyboard shortcuts for scene switching (works anywhere)
+		// 1 / W -> Flamingo
+		// 2 / A -> Seal
+		// 3 / S -> Horse
+		// 4 / D -> Owl
+		// ------------------------------------------------------------	
+		if (p_GUI->Check_HTP() == false&&p_Scene->isGameplay) // don't allow shortcuts during HTP overlay
+		{
+			auto playAudioAndSwitch = [&](const char* scene) {
+				if (p_ecs.HaveComponent<Audio>(GetScriptEntityID()))
+					p_ecs.GetComponent<Audio>(GetScriptEntityID())[0].should_play = true;
+				p_Scene->setSceneToLoad(scene);
+				};
+			if (p_GameManager.GetGameState() == GameManager::GameState::PLAYING) {
+				if (p_Input->KeyPressed(GLFW_KEY_1) || p_Input->KeyPressed(GLFW_KEY_W))
+				{
+					playAudioAndSwitch("Assets/Scene/FlamingoScene.json");
+					return true;
+				}
+				if (p_Input->KeyPressed(GLFW_KEY_2) || p_Input->KeyPressed(GLFW_KEY_A))
+				{
+					playAudioAndSwitch("Assets/Scene/SealScene.json");
+					return true;
+				}
+				if (p_Input->KeyPressed(GLFW_KEY_3) || p_Input->KeyPressed(GLFW_KEY_S))
+				{
+					playAudioAndSwitch("Assets/Scene/HorseScene.json");
+					return true;
+				}
+				if (p_GameManager.CurrentLevel() > 1 && (p_Input->KeyPressed(GLFW_KEY_4) || p_Input->KeyPressed(GLFW_KEY_D)))
+				{
+					playAudioAndSwitch("Assets/Scene/OwlScene.json");
+					return true;
+				}
+			}
+		}
 		return false;
 	}
 
@@ -281,7 +316,7 @@ namespace NocturnalEngine
 		vec2D mPos{ cur.x,cur.y };
 		for (int i = 0; i < 2 ; i++)
 		{
-			vec2D offsetPos{ trans.GetWorldPos().x + box[i].mOffset.x ,trans.GetWorldPos().y + box[i].mOffset.y };
+			vec2D offsetPos{ trans.GetPos().x + box[i].mOffset.x ,trans.GetPos().y + box[i].mOffset.y };
 			switch (box[i].mCol)
 			{
 			case Collider::ColliderType::circle:

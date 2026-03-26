@@ -59,41 +59,46 @@ namespace NocturnalEngine
             // Apply audio effects every frame so editor changes are reflected in real-time
             p_Audio->ApplyEffects(audio.GetEffectSettings());
             for (int i = 0; i < audio.GetSize(); i++) {
-                // check if sound is playing
-                if (audio[i].triggered) {
+                //check if sound is playing
+                if (audio[i].triggered)
+                {
                     audio[i].is_Playing = p_Audio->IsPlaying(audio[i].mChannel);
                     if (audio[i].is_Playing == false) {
                         audio[i].triggered = false;
                     }
                 }
-                // play SFX
                 if (audio[i].is_Looping == false && audio[i].should_play == true && audio[i].is_Playing == false) {
+                    //play sound
                     audio[i].mChannel = p_Audio->PlaySound("Assets/Audio/" + audio[i].mAudioPath, audio[i].mChannelGroup);
                     p_Audio->SetVolume(audio[i].mChannel, audio[i].volumeLimit);
                     audio[i].should_play = false;
                     audio[i].triggered = true;
                 }
-                // play BGM
                 if (audio[i].is_Looping == true && audio[i].is_Playing == false) {
+                    // For BGM, check if it's already playing (persisted from previous scene)
                     std::string fullPath = "Assets/Audio/" + audio[i].mAudioPath;
-                    if (audio[i].mChannelGroup == Audio::AudioType::BGM && p_Audio->IsBGMPathPlaying(fullPath)) {
+                    if (audio[i].mChannelGroup == Audio::AudioType::BGM && p_Audio->IsBGMPathPlaying(fullPath))
+                    {
+                        // BGM is already playing from previous scene, just update our tracking
                         audio[i].is_Playing = true;
                         audio[i].triggered = true;
+                        // Note: mChannel may not match the actual channel, but is_Playing check will still work
                     }
-                    else {
+                    else
+                    {
+                        //play sound
                         audio[i].mChannel = p_Audio->PlaySound(fullPath, audio[i].mChannelGroup);
                         p_Audio->SetVolume(audio[i].mChannel, audio[i].volumeLimit);
                         audio[i].triggered = true;
                     }
                 }
-                // stop
                 if (audio[i].should_stop == true) {
                     p_Audio->FadeOutAndStopChannel(audio[i].mChannel);
                     audio[i].is_Playing = false;
                     audio[i].triggered = false;
                     audio[i].should_stop = false;
                 }
-                
+                audio[i].should_play = false;
             }
         }
 	}

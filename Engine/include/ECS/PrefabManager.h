@@ -57,8 +57,6 @@ namespace NocturnalEngine
 			return true;
 		}
 
-		bool CheckOrAddPrefabFromName(const std::string& name);
-
 		/*!*************************************************************************
 		This is a function used by the leveleditor to add a prefab from the inspector
 		****************************************************************************/
@@ -76,7 +74,6 @@ namespace NocturnalEngine
 		Deserializes ECS entities and data from JSON file to build ECS (File loading)
 		****************************************************************************/
 		virtual bool Deserialize(const rapidjson::Value& obj) override;
-		void DeserializePrefabEntity(const rapidjson::Value& obj, Entity e,const std::string& prefabName);
 		/*!*************************************************************************
 		Serializes ECS entities and data to JSON file to save ECS (File saving)
 		****************************************************************************/
@@ -100,12 +97,8 @@ namespace NocturnalEngine
 		void ClearRegistry() {
 			prefabRegistry.clear();
 		}
-
-
 	private:
 		bool SerializeWithName(rapidjson::PrettyWriter<rapidjson::StringBuffer>* writer, const std::string& prefabName,Entity e)const;
-
-		void RegisterChildren(Entity sourceE, Entity newE,const std::string& prefabName);
 
 		PrefabManager() = default;
 		std::vector<Entity> prefabList{};

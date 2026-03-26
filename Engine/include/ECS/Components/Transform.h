@@ -46,11 +46,6 @@ namespace NocturnalEngine
 
 		vec2D GetMinPos() { return {mPosition.x-mScale.x/2.f,mPosition.y - mScale.y / 2.f}; }
 		vec2D GetMaxPos() { return { mPosition.x + mScale.x / 2.f,mPosition.y + mScale.y / 2.f }; }
-
-		void UnparentPos(bool precheck=false);
-		void ParentPos(bool precheck = false);
-
-		vec2D GetWorldPos();
 		/*!*************************************************************************
 		Retrieves Component Entity ID
 		****************************************************************************/
@@ -65,8 +60,5 @@ namespace NocturnalEngine
 		vec2D mScale;
 		float mRot;
 
-		bool isLocalSpace{ false };
-
-		vec2D GetVec2d(const rapidjson::Value&);
 	};
 }

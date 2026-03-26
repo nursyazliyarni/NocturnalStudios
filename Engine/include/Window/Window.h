@@ -69,7 +69,6 @@ namespace NocturnalEngine {
 		GLFWwindow* GetWindow() const { return m_window; }
 		GLFWmonitor* GetMonitor() const { return m_monitor; }
 		
-		void HideShowCursor();
 
 	public:
 

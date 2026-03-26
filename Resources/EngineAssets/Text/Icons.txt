@@ -4,4 +4,3 @@ ShaderIcon /Icons/ShaderIcon.png
 TextIcon /Icons/TextIcon.png
 FolderIcon /Icons/FolderIcon.png
 BackIcon /Icons/BackIcon.png
-PrefabIcon /Icons/PrefabIcon.png
