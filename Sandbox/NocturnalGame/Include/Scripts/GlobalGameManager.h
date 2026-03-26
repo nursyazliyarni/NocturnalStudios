@@ -148,6 +148,8 @@ namespace NocturnalEngine {
          void ToggleSceneManagement() { altMode = !altMode; }
 
          void SetSceneToSwitch(std::string);
+
+         std::string CanMoveScene(const std::string&, bool dir);
     private:
 
         LevelConfig levelConfig{};

@@ -66,6 +66,7 @@ public:
     void UnpauseSound(int channelID);
     void StopChannel(channel_groups chan);
     void SetVolume(int channelID, float vol);
+    void SetPan(int channelID, float pan);
     void StopChannel(int channelID);
     float GetVolume(int channelID);
     void SetLooping(const std::string& strSoundName, bool in);

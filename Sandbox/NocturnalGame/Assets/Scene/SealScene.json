@@ -22,11 +22,15 @@
                 },
                 {
                     "Component": "Transform",
-                    "posX": 0.0,
-                    "posY": 0.0,
-                    "scaleX": 3.6449999809265137,
-                    "scaleY": 1.9999960660934448,
-                    "Rot": 0.0
+                    "Position": {
+                        "x": 0.0,
+                        "y": 0.0
+                    },
+                    "Scale": {
+                        "x": 3.6449999809265137,
+                        "y": 1.9999960660934448
+                    },
+                    "Rotation": 0.0
                 },
                 {
                     "Component": "Collider",
@@ -94,9 +98,9 @@
                 {
                     "Component": "Audio",
                     "0": {
-                        "AudioPath": "BGM_Ambience_Horse_01.wav",
+                        "AudioPath": "Luminara Zoo - Music - Level 1 (v2).wav",
                         "Channel": 2,
-                        "IsLooping": true,
+                        "IsLooping": false,
                         "VolumeLimit": 1.0
                     },
                     "AudioArrCount": 1,
@@ -129,9 +133,20 @@
                 },
                 {
                     "Component": "Logic",
-                    "0": "AudioManager",
-                    "1": "BackgroundAudio",
-                    "ScriptCount": 2
+                    "Scripts": [
+                        {
+                            "ScriptName": "KeyboardSceneSwitch",
+                            "SceneName": "Seal"
+                        },
+                        {
+                            "ScriptName": "AudioManager"
+                        },
+                        {
+                            "ScriptName": "BackgroundAudio",
+                            "Background Audio Index": 0
+                        }
+                    ],
+                    "ScriptCount": 3
                 }
             ]
         },
@@ -145,11 +160,15 @@
                 },
                 {
                     "Component": "Transform",
-                    "posX": -0.8698469996452332,
-                    "posY": -0.00708435196429491,
-                    "scaleX": 0.5,
-                    "scaleY": 0.5,
-                    "Rot": -9.082768440246582
+                    "Position": {
+                        "x": -0.8698469996452332,
+                        "y": -0.00708435196429491
+                    },
+                    "Scale": {
+                        "x": 0.5,
+                        "y": 0.5
+                    },
+                    "Rotation": -9.082768440246582
                 },
                 {
                     "Component": "Collider",
@@ -186,7 +205,7 @@
                         0.0
                     ],
                     "TextureName": "Characters/seal sick",
-                    "Index_X": 4,
+                    "Index_X": 0,
                     "Index_Y": 0,
                     "Ucoordinates": 603.5,
                     "Vcoordinates": 458.0,
@@ -251,8 +270,14 @@
                 },
                 {
                     "Component": "Logic",
-                    "0": "AnimalLogic",
-                    "1": "PainSpotDuplicateSpawner",
+                    "Scripts": [
+                        {
+                            "ScriptName": "AnimalLogic"
+                        },
+                        {
+                            "ScriptName": "PainSpotDuplicateSpawner"
+                        }
+                    ],
                     "ScriptCount": 2
                 },
                 {
@@ -285,11 +310,15 @@
                 },
                 {
                     "Component": "Transform",
-                    "posX": 0.40032678842544556,
-                    "posY": 0.2418299913406372,
-                    "scaleX": 0.13472461700439453,
-                    "scaleY": 0.12401483952999115,
-                    "Rot": 0.0
+                    "Position": {
+                        "x": 0.40032678842544556,
+                        "y": 0.2418299913406372
+                    },
+                    "Scale": {
+                        "x": 0.13472461700439453,
+                        "y": 0.12401483952999115
+                    },
+                    "Rotation": 0.0
                 },
                 {
                     "Component": "Collider",
@@ -413,8 +442,14 @@
                 },
                 {
                     "Component": "Logic",
-                    "0": "ButtonResponse",
-                    "1": "AudioManager",
+                    "Scripts": [
+                        {
+                            "ScriptName": "ButtonResponse"
+                        },
+                        {
+                            "ScriptName": "AudioManager"
+                        }
+                    ],
                     "ScriptCount": 2
                 },
                 {
@@ -475,11 +510,15 @@
                 },
                 {
                     "Component": "Transform",
-                    "posX": 0.40032678842544556,
-                    "posY": -0.14785435795783997,
-                    "scaleX": 0.12510144710540771,
-                    "scaleY": 0.11588465422391891,
-                    "Rot": 0.0
+                    "Position": {
+                        "x": 0.40032678842544556,
+                        "y": -0.14785435795783997
+                    },
+                    "Scale": {
+                        "x": 0.12510144710540771,
+                        "y": 0.11588465422391891
+                    },
+                    "Rotation": 0.0
                 },
                 {
                     "Component": "Collider",
@@ -603,8 +642,14 @@
                 },
                 {
                     "Component": "Logic",
-                    "0": "ButtonResponse",
-                    "1": "AudioManager",
+                    "Scripts": [
+                        {
+                            "ScriptName": "ButtonResponse"
+                        },
+                        {
+                            "ScriptName": "AudioManager"
+                        }
+                    ],
                     "ScriptCount": 2
                 },
                 {
@@ -665,11 +710,15 @@
                 },
                 {
                     "Component": "Transform",
-                    "posX": 0.40032678842544556,
-                    "posY": -0.014748930931091309,
-                    "scaleX": 0.13472461700439453,
-                    "scaleY": 0.12255587428808212,
-                    "Rot": 0.0
+                    "Position": {
+                        "x": 0.40032678842544556,
+                        "y": -0.014748930931091309
+                    },
+                    "Scale": {
+                        "x": 0.13472461700439453,
+                        "y": 0.12255587428808212
+                    },
+                    "Rotation": 0.0
                 },
                 {
                     "Component": "Collider",
@@ -793,8 +842,14 @@
                 },
                 {
                     "Component": "Logic",
-                    "0": "ButtonResponse",
-                    "1": "AudioManager",
+                    "Scripts": [
+                        {
+                            "ScriptName": "ButtonResponse"
+                        },
+                        {
+                            "ScriptName": "AudioManager"
+                        }
+                    ],
                     "ScriptCount": 2
                 },
                 {
@@ -855,11 +910,15 @@
                 },
                 {
                     "Component": "Transform",
-                    "posX": 0.40032678842544556,
-                    "posY": -0.28433525562286377,
-                    "scaleX": 0.13472461700439453,
-                    "scaleY": 0.12255587428808212,
-                    "Rot": 0.0
+                    "Position": {
+                        "x": 0.40032678842544556,
+                        "y": -0.28433525562286377
+                    },
+                    "Scale": {
+                        "x": 0.13472461700439453,
+                        "y": 0.12255587428808212
+                    },
+                    "Rotation": 0.0
                 },
                 {
                     "Component": "Collider",
@@ -983,8 +1042,14 @@
                 },
                 {
                     "Component": "Logic",
-                    "0": "ButtonResponse",
-                    "1": "AudioManager",
+                    "Scripts": [
+                        {
+                            "ScriptName": "ButtonResponse"
+                        },
+                        {
+                            "ScriptName": "AudioManager"
+                        }
+                    ],
                     "ScriptCount": 2
                 }
             ]
@@ -994,11 +1059,15 @@
             "Components": [
                 {
                     "Component": "Transform",
-                    "posX": -1.5640000104904175,
-                    "posY": 0.7609999775886536,
-                    "scaleX": 0.10000000149011612,
-                    "scaleY": 0.10000000149011612,
-                    "Rot": 0.0
+                    "Position": {
+                        "x": -1.5640000104904175,
+                        "y": 0.7609999775886536
+                    },
+                    "Scale": {
+                        "x": 0.10000000149011612,
+                        "y": 0.10000000149011612
+                    },
+                    "Rotation": 0.0
                 },
                 {
                     "Component": "NameTag",
@@ -1048,11 +1117,15 @@
             "Components": [
                 {
                     "Component": "Transform",
-                    "posX": -1.3370000123977661,
-                    "posY": -0.6959999799728394,
-                    "scaleX": 0.30000001192092896,
-                    "scaleY": 0.30000001192092896,
-                    "Rot": 0.0
+                    "Position": {
+                        "x": -1.3370000123977661,
+                        "y": -0.6959999799728394
+                    },
+                    "Scale": {
+                        "x": 0.30000001192092896,
+                        "y": 0.30000001192092896
+                    },
+                    "Rotation": 0.0
                 },
                 {
                     "Component": "Collider",
@@ -1152,9 +1225,17 @@
                 },
                 {
                     "Component": "Logic",
-                    "0": "DragAndDrop",
-                    "1": "AudioManager",
-                    "2": "ButtonResponse",
+                    "Scripts": [
+                        {
+                            "ScriptName": "DragAndDrop"
+                        },
+                        {
+                            "ScriptName": "AudioManager"
+                        },
+                        {
+                            "ScriptName": "ButtonResponse"
+                        }
+                    ],
                     "ScriptCount": 3
                 },
                 {
@@ -1197,11 +1278,15 @@
             "Components": [
                 {
                     "Component": "Transform",
-                    "posX": -0.6019999980926514,
-                    "posY": -0.722000002861023,
-                    "scaleX": 0.25,
-                    "scaleY": 0.25,
-                    "Rot": 0.0
+                    "Position": {
+                        "x": -0.6019999980926514,
+                        "y": -0.722000002861023
+                    },
+                    "Scale": {
+                        "x": 0.25,
+                        "y": 0.25
+                    },
+                    "Rotation": 0.0
                 },
                 {
                     "Component": "Collider",
@@ -1301,9 +1386,17 @@
                 },
                 {
                     "Component": "Logic",
-                    "0": "RevealTargetOnClick",
-                    "1": "ButtonResponse",
-                    "2": "AudioManager",
+                    "Scripts": [
+                        {
+                            "ScriptName": "RevealTargetOnClick"
+                        },
+                        {
+                            "ScriptName": "ButtonResponse"
+                        },
+                        {
+                            "ScriptName": "AudioManager"
+                        }
+                    ],
                     "ScriptCount": 3
                 },
                 {
@@ -1346,11 +1439,15 @@
             "Components": [
                 {
                     "Component": "Transform",
-                    "posX": -0.5302081108093262,
-                    "posY": -0.17984771728515625,
-                    "scaleX": 0.33999988436698914,
-                    "scaleY": 0.3670000433921814,
-                    "Rot": -44.99152374267578
+                    "Position": {
+                        "x": -0.5302081108093262,
+                        "y": -0.17984771728515625
+                    },
+                    "Scale": {
+                        "x": 0.33999988436698914,
+                        "y": 0.3670000433921814
+                    },
+                    "Rotation": -44.99152374267578
                 },
                 {
                     "Component": "Collider",
@@ -1414,7 +1511,11 @@
                 },
                 {
                     "Component": "Logic",
-                    "0": "ToyHideAndRevealOnClick",
+                    "Scripts": [
+                        {
+                            "ScriptName": "ToyHideAndRevealOnClick"
+                        }
+                    ],
                     "ScriptCount": 1
                 },
                 {
@@ -1430,11 +1531,15 @@
             "Components": [
                 {
                     "Component": "Transform",
-                    "posX": -1.469074010848999,
-                    "posY": 0.7429999709129333,
-                    "scaleX": 1.0,
-                    "scaleY": 1.0,
-                    "Rot": 0.0
+                    "Position": {
+                        "x": -1.469074010848999,
+                        "y": 0.7429999709129333
+                    },
+                    "Scale": {
+                        "x": 1.0,
+                        "y": 1.0
+                    },
+                    "Rotation": 0.0
                 },
                 {
                     "Component": "NameTag",
@@ -1442,7 +1547,11 @@
                 },
                 {
                     "Component": "Logic",
-                    "0": "TimerDisplay",
+                    "Scripts": [
+                        {
+                            "ScriptName": "TimerDisplay"
+                        }
+                    ],
                     "ScriptCount": 1
                 },
                 {
@@ -1564,11 +1673,15 @@
                 },
                 {
                     "Component": "Transform",
-                    "posX": 0.0,
-                    "posY": 0.0,
-                    "scaleX": 0.20000000298023224,
-                    "scaleY": 0.20000000298023224,
-                    "Rot": 0.0
+                    "Position": {
+                        "x": 0.0,
+                        "y": 0.0
+                    },
+                    "Scale": {
+                        "x": 0.20000000298023224,
+                        "y": 0.20000000298023224
+                    },
+                    "Rotation": 0.0
                 },
                 {
                     "Component": "NameTag",
@@ -1618,11 +1731,15 @@
             "Components": [
                 {
                     "Component": "Transform",
-                    "posX": 1.0999298095703125,
-                    "posY": -0.3150026798248291,
-                    "scaleX": 0.9850000143051147,
-                    "scaleY": 0.9418125152587891,
-                    "Rot": 0.0
+                    "Position": {
+                        "x": 1.0999298095703125,
+                        "y": -0.3150026798248291
+                    },
+                    "Scale": {
+                        "x": 0.9850000143051147,
+                        "y": 0.9418125152587891
+                    },
+                    "Rotation": 0.0
                 },
                 {
                     "Component": "NameTag",
@@ -1667,7 +1784,11 @@
                 },
                 {
                     "Component": "Logic",
-                    "0": "DigeticLog",
+                    "Scripts": [
+                        {
+                            "ScriptName": "DigeticLog"
+                        }
+                    ],
                     "ScriptCount": 1
                 },
                 {
@@ -1697,11 +1818,15 @@
             "Components": [
                 {
                     "Component": "Transform",
-                    "posX": 0.25099998712539673,
-                    "posY": 0.7609999775886536,
-                    "scaleX": 0.10000000149011612,
-                    "scaleY": 0.10000000149011612,
-                    "Rot": -90.0
+                    "Position": {
+                        "x": 0.25099998712539673,
+                        "y": 0.7609999775886536
+                    },
+                    "Scale": {
+                        "x": 0.10000000149011612,
+                        "y": 0.10000000149011612
+                    },
+                    "Rotation": -90.0
                 },
                 {
                     "Component": "NameTag",
@@ -1751,11 +1876,15 @@
             "Components": [
                 {
                     "Component": "Transform",
-                    "posX": 0.25099998712539673,
-                    "posY": -0.28200000524520874,
-                    "scaleX": 0.10000000149011612,
-                    "scaleY": 0.10000000149011612,
-                    "Rot": 180.0
+                    "Position": {
+                        "x": 0.25099998712539673,
+                        "y": -0.28200000524520874
+                    },
+                    "Scale": {
+                        "x": 0.10000000149011612,
+                        "y": 0.10000000149011612
+                    },
+                    "Rotation": 180.0
                 },
                 {
                     "Component": "NameTag",
@@ -1805,11 +1934,15 @@
             "Components": [
                 {
                     "Component": "Transform",
-                    "posX": -1.5640000104904175,
-                    "posY": -0.28200000524520874,
-                    "scaleX": 0.10000000149011612,
-                    "scaleY": 0.10000000149011612,
-                    "Rot": 90.0
+                    "Position": {
+                        "x": -1.5640000104904175,
+                        "y": -0.28200000524520874
+                    },
+                    "Scale": {
+                        "x": 0.10000000149011612,
+                        "y": 0.10000000149011612
+                    },
+                    "Rotation": 90.0
                 },
                 {
                     "Component": "NameTag",
@@ -1859,11 +1992,15 @@
             "Components": [
                 {
                     "Component": "Transform",
-                    "posX": -0.6259999871253967,
-                    "posY": 0.2329999953508377,
-                    "scaleX": 2.2100000381469727,
-                    "scaleY": 1.3849999904632568,
-                    "Rot": 0.0
+                    "Position": {
+                        "x": -0.6259999871253967,
+                        "y": 0.2329999953508377
+                    },
+                    "Scale": {
+                        "x": 2.2100000381469727,
+                        "y": 1.3849999904632568
+                    },
+                    "Rotation": 0.0
                 },
                 {
                     "Component": "NameTag",
@@ -1913,11 +2050,15 @@
             "Components": [
                 {
                     "Component": "Transform",
-                    "posX": -0.6399999856948853,
-                    "posY": 0.23499999940395355,
-                    "scaleX": 2.059999942779541,
-                    "scaleY": 1.225000023841858,
-                    "Rot": 0.0
+                    "Position": {
+                        "x": -0.6399999856948853,
+                        "y": 0.23499999940395355
+                    },
+                    "Scale": {
+                        "x": 2.059999942779541,
+                        "y": 1.225000023841858
+                    },
+                    "Rotation": 0.0
                 },
                 {
                     "Component": "Collider",
@@ -1986,11 +2127,15 @@
             "Components": [
                 {
                     "Component": "Transform",
-                    "posX": 0.07999999821186066,
-                    "posY": 0.03999999910593033,
-                    "scaleX": 3.9200000762939453,
-                    "scaleY": 2.184999942779541,
-                    "Rot": 0.0
+                    "Position": {
+                        "x": 0.07999999821186066,
+                        "y": 0.03999999910593033
+                    },
+                    "Scale": {
+                        "x": 3.9200000762939453,
+                        "y": 2.184999942779541
+                    },
+                    "Rotation": 0.0
                 },
                 {
                     "Component": "NameTag",
@@ -2060,11 +2205,15 @@
             "Components": [
                 {
                     "Component": "Transform",
-                    "posX": 1.0950000286102295,
-                    "posY": 0.014999999664723873,
-                    "scaleX": 1.190000057220459,
-                    "scaleY": 1.850000023841858,
-                    "Rot": 0.0
+                    "Position": {
+                        "x": 1.0950000286102295,
+                        "y": 0.014999999664723873
+                    },
+                    "Scale": {
+                        "x": 1.190000057220459,
+                        "y": 1.850000023841858
+                    },
+                    "Rotation": 0.0
                 },
                 {
                     "Component": "NameTag",
@@ -2114,11 +2263,15 @@
             "Components": [
                 {
                     "Component": "Transform",
-                    "posX": -0.014999999664723873,
-                    "posY": 0.02500000037252903,
-                    "scaleX": 3.7049999237060547,
-                    "scaleY": 2.109999895095825,
-                    "Rot": 0.0
+                    "Position": {
+                        "x": -0.014999999664723873,
+                        "y": 0.02500000037252903
+                    },
+                    "Scale": {
+                        "x": 3.7049999237060547,
+                        "y": 2.109999895095825
+                    },
+                    "Rotation": 0.0
                 },
                 {
                     "Component": "NameTag",
@@ -2168,11 +2321,15 @@
             "Components": [
                 {
                     "Component": "Transform",
-                    "posX": 0.4000000059604645,
-                    "posY": 0.11400000005960464,
-                    "scaleX": 0.13500000536441803,
-                    "scaleY": 0.12399999797344208,
-                    "Rot": 0.0
+                    "Position": {
+                        "x": 0.4000000059604645,
+                        "y": 0.11400000005960464
+                    },
+                    "Scale": {
+                        "x": 0.13500000536441803,
+                        "y": 0.12399999797344208
+                    },
+                    "Rotation": 0.0
                 },
                 {
                     "Component": "NameTag",
@@ -2242,11 +2399,15 @@
             "Components": [
                 {
                     "Component": "Transform",
-                    "posX": -0.8583579659461975,
-                    "posY": 0.0,
-                    "scaleX": 0.05000000074505806,
-                    "scaleY": 0.05000000074505806,
-                    "Rot": 0.0
+                    "Position": {
+                        "x": -0.8583579659461975,
+                        "y": 0.0
+                    },
+                    "Scale": {
+                        "x": 0.05000000074505806,
+                        "y": 0.05000000074505806
+                    },
+                    "Rotation": 0.0
                 },
                 {
                     "Component": "Collider",
@@ -2315,11 +2476,15 @@
             "Components": [
                 {
                     "Component": "Transform",
-                    "posX": -0.2692306637763977,
-                    "posY": 0.0,
-                    "scaleX": 0.10000000149011612,
-                    "scaleY": 0.10000000149011612,
-                    "Rot": 0.0
+                    "Position": {
+                        "x": -0.2692306637763977,
+                        "y": 0.0
+                    },
+                    "Scale": {
+                        "x": 0.10000000149011612,
+                        "y": 0.10000000149011612
+                    },
+                    "Rotation": 0.0
                 },
                 {
                     "Component": "Collider",
@@ -2383,7 +2548,11 @@
                 },
                 {
                     "Component": "Logic",
-                    "0": "encryptionkey",
+                    "Scripts": [
+                        {
+                            "ScriptName": "encryptionkey"
+                        }
+                    ],
                     "ScriptCount": 1
                 }
             ]
@@ -2393,11 +2562,15 @@
             "Components": [
                 {
                     "Component": "Transform",
-                    "posX": 0.07800000160932541,
-                    "posY": 0.7279999852180481,
-                    "scaleX": 1.0,
-                    "scaleY": 1.0,
-                    "Rot": 0.0
+                    "Position": {
+                        "x": 0.07800000160932541,
+                        "y": 0.7279999852180481
+                    },
+                    "Scale": {
+                        "x": 1.0,
+                        "y": 1.0
+                    },
+                    "Rotation": 0.0
                 },
                 {
                     "Component": "NameTag",
@@ -2405,7 +2578,11 @@
                 },
                 {
                     "Component": "Logic",
-                    "0": "KeysCollectedDisplay",
+                    "Scripts": [
+                        {
+                            "ScriptName": "KeysCollectedDisplay"
+                        }
+                    ],
                     "ScriptCount": 1
                 },
                 {
@@ -2440,11 +2617,15 @@
                 },
                 {
                     "Component": "Transform",
-                    "posX": 0.09541279822587967,
-                    "posY": -0.10915482044219971,
-                    "scaleX": 0.5827340483665466,
-                    "scaleY": 0.6988232731819153,
-                    "Rot": 0.0
+                    "Position": {
+                        "x": 0.09541279822587967,
+                        "y": -0.10915482044219971
+                    },
+                    "Scale": {
+                        "x": 0.5827340483665466,
+                        "y": 0.6988232731819153
+                    },
+                    "Rotation": 0.0
                 },
                 {
                     "Component": "NameTag",
@@ -2499,11 +2680,15 @@
                 },
                 {
                     "Component": "Transform",
-                    "posX": -1.2770640850067139,
-                    "posY": -0.13732385635375977,
-                    "scaleX": 0.47050386667251587,
-                    "scaleY": 0.5375560522079468,
-                    "Rot": 0.0
+                    "Position": {
+                        "x": -1.2770640850067139,
+                        "y": -0.13732385635375977
+                    },
+                    "Scale": {
+                        "x": 0.47050386667251587,
+                        "y": 0.5375560522079468
+                    },
+                    "Rotation": 0.0
                 },
                 {
                     "Component": "NameTag",

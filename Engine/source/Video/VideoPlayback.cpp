@@ -160,6 +160,7 @@ namespace NocturnalEngine
         bool LoadState(Entity entity, Video& video, VideoRuntimeState& state)
         {
             DestroyState(state);
+            video.finished = false;
 
             if (video.GetVideoPath().empty())
                 return false;
@@ -226,6 +227,7 @@ namespace NocturnalEngine
                 return;
 
             state.completed = true;
+            video.finished = true;
             StopAttachedAudio(state);
             if (!video.nextScene.empty())
             {
@@ -240,6 +242,7 @@ namespace NocturnalEngine
 
         if (!video.enabled || video.GetVideoPath().empty())
         {
+            video.finished = false;
             if (video.restartOnEnable)
                 DestroyState(state);
             return nullptr;

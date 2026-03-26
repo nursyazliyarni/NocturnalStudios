@@ -180,11 +180,13 @@ EngineCore constructor
 
 
 			m_window->Update(Timer::GetInstance().GetGlobalDT());
+			p_Input->PollGamepad();
 			mGraphics->Update(Timer::GetInstance().GetGlobalDT());
-			
+
 #if !DEBUG
 			p_Editor->is_ShowWindow = false;
 #endif 
+			if (p_Editor->is_ShowWindow == false)m_window->HideShowCursor();
 			FramePerSec::GetInstance().EndFrameCount();
 			Timer::GetInstance().Update(Systems::API);
 			if(!end_state)end_state = p_Editor->ShouldEnd();

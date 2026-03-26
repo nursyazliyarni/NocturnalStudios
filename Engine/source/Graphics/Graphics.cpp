@@ -23,6 +23,7 @@
 
 #include "pch.h"
 #include "Graphics/Graphics.h"
+#include "ECS/SceneManager.h"
 #include "GUI/GUI.h"
 #include <glm/gtc/matrix_transform.hpp>
 #include "Input/Input.h"
@@ -32,7 +33,6 @@
 #include "Math/Math.h"
 #include "Graphics/FrameBuffer.h"
 #include "Timer/Fps.h"
-#include "ECS/SceneManager.h"
 #include "Video/VideoPlayback.h"
 
 namespace NocturnalEngine {
@@ -422,7 +422,7 @@ namespace NocturnalEngine {
 						);
 
 						mRenderer->DrawSprite(
-							{ transform.GetPos().x, transform.GetPos().y },
+							{ transform.GetWorldPos().x, transform.GetWorldPos().y },
 							{ transform.GetScale().x, transform.GetScale().y },
 							transform.GetRot(),
 							mIndex1
@@ -432,7 +432,7 @@ namespace NocturnalEngine {
 					else if (sprite.Get_SPRITE_type() == Sprite::sprite_type::texture)
 					{
 						mRenderer->DrawQuad(
-							{ transform.GetPos().x, transform.GetPos().y },
+							{ transform.GetWorldPos().x, transform.GetWorldPos().y },
 							{ transform.GetScale().x, transform.GetScale().y },
 							transform.GetRot(),
 							renderTexture
@@ -478,7 +478,7 @@ namespace NocturnalEngine {
 					else if (sprite.Get_SHAPE_type() == Sprite::shape_type::circle)
 					{
 						NocturnalEngine::Matrix4x4 translate = NocturnalEngine::Translate4x4(
-							translate, transform.GetPos().x, transform.GetPos().y, 0.0f
+							translate, transform.GetWorldPos().x, transform.GetWorldPos().y, 0.0f
 						);
 						NocturnalEngine::Matrix4x4 scale = NocturnalEngine::Scale4x4(
 							scale, sprite.circle_radius * 2, sprite.circle_radius * 2, sprite.circle_radius * 2
@@ -502,8 +502,8 @@ namespace NocturnalEngine {
 							{
 								mRenderer->DrawRect(
 									{
-										transform.GetPos().x + collider[u].mOffset.x + (collider[u].mMax.x / 2) - (collider[u].mMin.x / 2),
-										transform.GetPos().y + collider[u].mOffset.y + (collider[u].mMax.y / 2) - (collider[u].mMin.y / 2),
+										transform.GetWorldPos().x + collider[u].mOffset.x + (collider[u].mMax.x / 2) - (collider[u].mMin.x / 2),
+										transform.GetWorldPos().y + collider[u].mOffset.y + (collider[u].mMax.y / 2) - (collider[u].mMin.y / 2),
 										0.0f
 									},
 									{ collider[u].mMin.x + collider[u].mMax.x, collider[u].mMin.y + collider[u].mMax.y },
@@ -516,8 +516,8 @@ namespace NocturnalEngine {
 							{
 								NocturnalEngine::Matrix4x4 translate = NocturnalEngine::Translate4x4(
 									translate,
-									transform.GetPos().x + collider[u].mOffset.x,
-									transform.GetPos().y + collider[u].mOffset.y,
+									transform.GetWorldPos().x + collider[u].mOffset.x,
+									transform.GetWorldPos().y + collider[u].mOffset.y,
 									0.0f
 								);
 								NocturnalEngine::Matrix4x4 scale = NocturnalEngine::Scale4x4(
@@ -601,6 +601,20 @@ namespace NocturnalEngine {
 				if (text.Get_TEXT_type() == Text::text_type::single_text && text.visibility) //single text
 					font->RenderText(text.GetContent(), pos, text.Get_line_height(), scale, *mcamera, col, text.Rot());
 			}
+		}
+
+		const float sceneTransitionAlpha = p_Scene->GetSceneTransitionAlpha();
+		if (sceneTransitionAlpha > 0.0f)
+		{
+			mRenderer->Begin(*mcamera);
+			// Draw a simple fullscreen black overlay to visualize the scene transition fade.
+			mRenderer->DrawQuad(
+				{ mcamera->GetPosition().x, mcamera->GetPosition().y },
+				{ 20.0f, 20.0f },
+				0.0f,
+				{ 0.0f, 0.0f, 0.0f, sceneTransitionAlpha }
+			);
+			mRenderer->End();
 		}
 
 		p_FrameBuffer->UnBind();

@@ -15,6 +15,7 @@
 #include "pch.h"
 #include "Audio/AudioEngine.h"
 #include "ResourceManager/ResourceManager.h"
+#include <algorithm>
 
 std::unique_ptr<CAudioEngine> m_Instance;
 
@@ -179,6 +180,20 @@ void CAudioEngine::SetVolume(int channelID, float vol)
     if (it != mChannelMap.end())
     {
         it->second->setVolume(vol);
+    }
+}
+
+/*!*************************************************************************
+Sets audio pan
+****************************************************************************/
+void CAudioEngine::SetPan(int channelID, float pan)
+{
+    auto it = mChannelMap.find(channelID);
+
+    if (it != mChannelMap.end())
+    {
+        const float clampedPan = std::clamp(pan, -1.0f, 1.0f);
+        it->second->setPan(clampedPan);
     }
 }
 
