@@ -91,7 +91,13 @@ namespace NocturnalEngine {
                 component.SetComponentEntityID(e);
 
                 if (component.Deserialize(obj)) {
-                    GetECS().template AddComponent<T>(e, component);
+                    if (GetECS().template HaveComponent<T>(e))
+                    {
+                        GetECS().template GetComponent<T>(e) = component;
+                    }
+                    else {
+                        GetECS().template AddComponent<T>(e, component);
+                    }
                     return true;
                 }
                 return false;

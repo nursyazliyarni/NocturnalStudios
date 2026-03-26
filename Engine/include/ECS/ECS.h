@@ -119,8 +119,13 @@ namespace NocturnalEngine
 					mComponentManager->GetComponentArrayFromType(i)->CopyComponent(entity, newEntity);
 				}
 			}
-			auto signature = mEntityManager->GetSignature(newEntity);
-			mSystemManager->EntitySignatureChanged(newEntity, signature);
+
+			if (!isPrefab)
+			{
+				auto signature = mEntityManager->GetSignature(newEntity);
+				mSystemManager->EntitySignatureChanged(newEntity, signature);
+			}
+
 
 			return newEntity;
 		}
@@ -231,7 +236,12 @@ namespace NocturnalEngine
 			auto signature = mEntityManager->GetSignature(entity);
 			signature.set(mComponentManager->GetComponentType<T>(), true);
 			mEntityManager->SetSignature(entity, signature);
-			mSystemManager->EntitySignatureChanged(entity, signature);
+
+			if (!mEntityManager->GetPrefabBitset()[entity])
+			{
+				mSystemManager->EntitySignatureChanged(entity, signature);
+			}
+
 		}
 
 		/*!*************************************************************************
@@ -245,8 +255,11 @@ namespace NocturnalEngine
 			auto signature = mEntityManager->GetSignature(entity);
 			signature.set(mComponentManager->GetComponentType<T>(), false);
 			mEntityManager->SetSignature(entity, signature);
+			if (!mEntityManager->GetPrefabBitset()[entity])
+			{
+				mSystemManager->EntitySignatureChanged(entity, signature);
+			}
 
-			mSystemManager->EntitySignatureChanged(entity, signature);
 		}
 
 		/*!*************************************************************************

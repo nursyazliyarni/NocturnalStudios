@@ -40,6 +40,7 @@ namespace NocturnalEngine
         bool skipOnMouseClick{ false };
         bool restartOnEnable{ true };
         bool hideWhenFinished{ false };
+        bool finished{ false };
         int skipKey{ 32 };
         std::string nextScene{};
         std::string audioPath{};

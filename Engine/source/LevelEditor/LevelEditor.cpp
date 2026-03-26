@@ -55,7 +55,7 @@
 #include "Graphics/Renderer.h"
 #include "Graphics/Graphics.h"
 #include "LevelEditor/Picker.h"
-#include "ECS/PrefabManager.h"
+#include "ECS/ParentingSystem.h"
 
 #include "Graphics/FrameBuffer.h"
 #include "Core/Log.h"
@@ -98,7 +98,7 @@ namespace NocturnalEngine {
         }
         return mInstance;
      }
-
+    
     bool LevelEditor::IsEditorActive()
     {
 		return mInstance != nullptr && mInstance->is_ShowWindow;
@@ -635,6 +635,23 @@ namespace NocturnalEngine {
                 selectedEntity = newEntity;
                 PushUndoSnapshotAndInvalidateRedo();
             }
+            if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("PrefabDrop"))
+            {
+                std::string prefabName = static_cast<const char*>(payload->Data);
+
+                // Load prefab if not already loaded
+                p_PrefabManager.CheckOrAddPrefabFromName(prefabName);
+
+                if (p_PrefabManager.DoesPrefabExist(prefabName))
+                {
+                    Entity newEntity = p_PrefabManager.CloneFromPrefab(prefabName);
+                    if (newEntity != MAX_ENTITIES)
+                    {
+                        selectedEntity = newEntity;
+                        PushUndoSnapshotAndInvalidateRedo();
+                    }
+                }
+            }
             ImGui::EndDragDropTarget();
         }
 
@@ -777,7 +794,7 @@ namespace NocturnalEngine {
         {
             if (selectedEntity >= 0 && selectedEntity < MAX_ENTITIES)
             {
-                p_ecs.DestroyEntity(selectedEntity);
+                p_Heirarchy.DestroyHierarchy(selectedEntity);
                 selectedEntity = MAX_ENTITIES;
                 PushUndoSnapshotAndInvalidateRedo();
             }
@@ -934,8 +951,23 @@ namespace NocturnalEngine {
                     }
                 }
                 else if (ext==".json") {
-                    ImGui::ImageButton("SceneButton",(ImTextureID)(intptr_t)ResourceManager::GetIcon("TextIcon")->GetRendererID(),
+
+                    // Pick icon based on which folder we're in
+                    const char* jsonIcon = "TextIcon";
+                    if (mCurrentDirectory.filename() == "Prefabs")jsonIcon = "PrefabIcon";
+                    ImGui::ImageButton("SceneButton",(ImTextureID)(intptr_t)ResourceManager::GetIcon(jsonIcon)->GetRendererID(),
                         ImVec2(thumbnailSize, thumbnailSize), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
+
+                    if (mCurrentDirectory.filename() == "Prefabs" &&
+                        ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID))
+                    {
+                        std::string prefabName = filename.substr(0, filename.find_last_of('.'));
+                        ImGui::SetDragDropPayload("PrefabDrop", prefabName.c_str(), prefabName.size() + 1);
+                        ImGui::Image((ImTextureID)(intptr_t)ResourceManager::GetIcon(jsonIcon)->GetRendererID(),
+                            ImVec2(thumbnailSize, thumbnailSize), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
+                        ImGui::Text("%s", prefabName.c_str());
+                        ImGui::EndDragDropSource();
+                    }
                     if (ImGui::IsItemHovered())
                     {
                         ImGui::BeginTooltip();
@@ -946,6 +978,9 @@ namespace NocturnalEngine {
 
                         if (mCurrentDirectory.filename() == "Scene") {
                             str += "Scene: ";
+                        }
+                        else if (mCurrentDirectory.filename() == "Prefabs") {
+                            str += "Prefab: ";
                         }
                         str += jsnName;
 
@@ -1490,7 +1525,7 @@ namespace NocturnalEngine {
                 {
                     if (selectedEntity != MAX_ENTITIES)
                     {
-                        p_ecs.DestroyEntity(selectedEntity);
+                        p_Heirarchy.DestroyHierarchy(selectedEntity); // destroys children too
                         selectedEntity = MAX_ENTITIES;
                         PushUndoSnapshotAndInvalidateRedo();
                     }
@@ -1500,8 +1535,8 @@ namespace NocturnalEngine {
                 {
                     if (selectedEntity != MAX_ENTITIES)
                     {
-                        Entity CloneEntity = p_ecs.CloneEntity(selectedEntity);
-                        selectedEntity = CloneEntity; // when the entity is destroy there is no current selected entity
+                        Entity cloned = p_Heirarchy.CloneEntity(selectedEntity);
+                        selectedEntity = cloned;
                         PushUndoSnapshotAndInvalidateRedo();
                     }
                 }
@@ -1509,40 +1544,9 @@ namespace NocturnalEngine {
                 //loops through each alive entity and shows it in the heirarchy. Tree node in the futre in case of parenting
                 for (Entity e:p_ecs.GetAliveEntitiesSet())
                 {
-                    if (p_ecs.HaveComponent<NameTag>(e))
-                    {
-                        std::string& tag = p_ecs.GetComponent<NameTag>(e).GetNameTag();
-
-                        ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow|ImGuiTreeNodeFlags_SpanAvailWidth;
-                        if (selectedEntity == e)
-                            flags |= ImGuiTreeNodeFlags_Selected;
-
-                        bool opened = ImGui::TreeNodeEx((void*)(uint64_t)(uint32_t)e, flags, tag.c_str());
-
-                        if (ImGui::IsItemClicked())
-                            selectedEntity = e;
-                        if (ImGui::BeginPopupContextItem())
-                        {
-
-                            ImGui::Text("Create Prefab");
-                            ImGui::InputText("Name (optional)", prefabNameBuffer, sizeof(prefabNameBuffer), ImGuiInputTextFlags_EnterReturnsTrue);
-
-                            if (ImGui::Button("Create"))
-                            {
-                                std::string prefabName = prefabNameBuffer;
-                                if(PrefabManager::GetInstance().CloneToList(e, prefabName))std::cout<<"Prefab cloned\n";
-
-                                prefabNameBuffer[0] = '\0'; // clear buffer
-                                ImGui::CloseCurrentPopup();
-                            }
-
-                            ImGui::EndPopup();
-                        }
-
-                        if (opened)
-                            ImGui::TreePop();
-                        ImGui::Separator();
-                    }
+                    if (p_Heirarchy.IsChild(e)) continue;
+                    DrawHierarchyNode(e);
+                    
 
                 }
 
@@ -1551,11 +1555,117 @@ namespace NocturnalEngine {
 
             if (ImGui::IsMouseDown(0) && ImGui::IsWindowHovered())
                 selectedEntity = MAX_ENTITIES;
+
+            // Drop onto empty space = unparent
+            if (ImGui::BeginDragDropTarget())
+            {
+                if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("HIERARCHY_ENTITY"))
+                {
+                    Entity dragged = *(Entity*)payload->Data;
+                    if (p_Heirarchy.IsChild(dragged))
+                    {
+                        p_Heirarchy.RemoveParent(dragged);
+                        PushUndoSnapshotAndInvalidateRedo();
+                    }
+                }
+                ImGui::EndDragDropTarget();
+            }
             ImGui::End();
         }
 
     }
 
+    void LevelEditor::DrawHierarchyNode(Entity e) {
+        if (p_ecs.HaveComponent<NameTag>(e))
+        {
+            std::string tag = p_ecs.HaveComponent<NameTag>(e)? p_ecs.GetComponent<NameTag>(e).GetNameTag():"";
+            bool hasChildren = p_Heirarchy.IsParent(e);
+
+            ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanAvailWidth;
+            if (!hasChildren)
+                flags |= ImGuiTreeNodeFlags_Leaf; // no arrow if no children
+            if (selectedEntity == e)
+                flags |= ImGuiTreeNodeFlags_Selected;
+
+            bool opened = ImGui::TreeNodeEx((void*)(uint64_t)(uint32_t)e, flags, tag.c_str());
+
+            if (ImGui::IsItemClicked())
+                selectedEntity = e;
+
+            // Drag source
+            if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID))
+            {
+                ImGui::SetDragDropPayload("HIERARCHY_ENTITY", &e, sizeof(Entity));
+                ImGui::Text("Moving: %s", tag.c_str());
+                ImGui::EndDragDropSource();
+            }
+
+            // Drop target — parent dragged entity onto this one
+            if (ImGui::BeginDragDropTarget())
+            {
+                if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("HIERARCHY_ENTITY"))
+                {
+                    Entity dragged = *(Entity*)payload->Data;
+                    if (dragged != e && dragged != MAX_ENTITIES)
+                    {
+                        // Prevent parenting to own descendant
+                        bool isDescendant = false;
+                        std::function<void(Entity)> checkDesc = [&](Entity parent)
+                            {
+                                for (Entity child : p_Heirarchy.GetChildren(parent))
+                                {
+                                    if (child == e) { isDescendant = true; return; }
+                                    checkDesc(child);
+                                }
+                            };
+                        checkDesc(dragged);
+
+                        if (!isDescendant)
+                        {
+                            p_Heirarchy.SetParent(dragged, e);
+                            PushUndoSnapshotAndInvalidateRedo();
+                        }
+                    }
+                }
+                ImGui::EndDragDropTarget();
+            }
+
+            if (ImGui::BeginPopupContextItem())
+            {
+
+                ImGui::Text("Create Prefab");
+                ImGui::InputText("Name (optional)", prefabNameBuffer, sizeof(prefabNameBuffer), ImGuiInputTextFlags_EnterReturnsTrue);
+
+                if (ImGui::Button("Create"))
+                {
+                    std::string prefabName = prefabNameBuffer;
+                    if (p_PrefabManager.CloneToList(e, prefabName))std::cout << "Prefab cloned\n";
+
+                    prefabNameBuffer[0] = '\0'; // clear buffer
+                    ImGui::CloseCurrentPopup();
+                }
+
+                ImGui::Separator();
+
+                if (p_Heirarchy.IsChild(e))
+                {
+                    if (ImGui::MenuItem("Unparent"))
+                    {
+                        p_Heirarchy.RemoveParent(e);
+                        PushUndoSnapshotAndInvalidateRedo();
+                    }
+                }
+                ImGui::EndPopup();
+            }
+
+            if (opened) {
+                for (Entity child : p_Heirarchy.GetChildren(e))
+                    DrawHierarchyNode(child);
+                ImGui::TreePop();
+            }
+            ImGui::Separator();
+        }
+    }
     /*!*************************************************************************
    Inspector allows us to manipulate the entity properties, modifying scale,
    rotation and position of the object.
@@ -1976,6 +2086,7 @@ namespace NocturnalEngine {
                         textureKey = *(const std::string*)payload->Data;
                         changed = true;
                     }
+                    
                     ImGui::EndDragDropTarget();
                 }
                 ImGui::PopID();

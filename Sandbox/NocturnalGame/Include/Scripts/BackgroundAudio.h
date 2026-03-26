@@ -31,6 +31,12 @@ namespace NocturnalEngine {
 		virtual void Update(float Frametime) override;
 		virtual void End() override;
 
+		std::vector<ScriptField> GetFields() override {
+			return {
+				{ "Background Audio Index",    &bgAudioIndex    }
+			};
+		}
+
 		bool Requirements(Entity e) override {
 			if (p_ecs.HaveComponent<Audio>(e))return true;
 			return false;
@@ -40,6 +46,6 @@ namespace NocturnalEngine {
 		virtual Entity& GetScriptEntityID() override { return entityID; }
 
 	private:
-		
+		int bgAudioIndex{0};
 	};
 }

@@ -1,0 +1,28 @@
+{
+    "LayerDrawOrder": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+    ],
+    "Entities": [
+        {
+            "ID": 0,
+            "Prefab": "hoswl",
+            "Components": [],
+            "Children": [
+                {
+                    "ID": 1,
+                    "Prefab": "hoswl",
+                    "Components": []
+                }
+            ]
+        }
+    ]
+}

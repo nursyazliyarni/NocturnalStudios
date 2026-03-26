@@ -258,8 +258,21 @@ namespace NocturnalEngine{
 	{
 		
 		WindowProps& data = *(WindowProps*)glfwGetWindowUserPointer(window);
+
 		data.mouseX = xpos;
 		data.mouseY = ypos;
+
+		p_Input->SetLastDevice(InputDevice::KeyboardMouse);
+	}
+
+	void Window::HideShowCursor() {
+		if (p_Input->DeviceChanged())
+		{
+			if (p_Input->GetLastDevice() == InputDevice::Gamepad)
+				glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+			else
+				glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+		}
 	}
 
 	/*!*************************************************************************

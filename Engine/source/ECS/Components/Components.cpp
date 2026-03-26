@@ -15,7 +15,6 @@
 
 #include "pch.h"
 #include "ECS/EngineComponentReg.h"
-#include "ECS/Components/SceneVFX.h"
 
 namespace NocturnalEngine{
     void EngineComponentRegistry::RegisterAllEngineComponents() {
@@ -57,8 +56,9 @@ namespace NocturnalEngine{
         RegisterComponent<Text>("Text");
 
         //SceneVFX
-        p_ecs.RegisterComponent<SceneVFX>();//11
+        p_ecs.RegisterComponent<SceneVFX>();//12
         RegisterComponent<SceneVFX>("SceneVFX");
+
 
     }
 }
