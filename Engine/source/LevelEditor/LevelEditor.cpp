@@ -2180,11 +2180,6 @@ namespace NocturnalEngine {
                     if (sprite.statePreviewMode > static_cast<int>(sprite.stateRules.size()))
                         sprite.statePreviewMode = 0;
                     changed = true;
-                    if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Textures"))
-                    {
-                        textureKey = *(const std::string*)payload->Data;
-                        changed = true;
-                    }
                     
                     ImGui::EndDragDropTarget();
                 }
