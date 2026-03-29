@@ -68,7 +68,6 @@ namespace NocturnalEngine{
 		m_windowData.m_CurrentWidth = m_windowData.m_Width;
 		m_windowData.m_CurrentHeight = m_windowData.m_Height;
 
-		glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE); // Hide on creation
 		std::string winTitle = m_windowData.Title;
 #if DEBUG
 		winTitle = "[NocturnalEngine] Editing " + winTitle;
@@ -78,7 +77,17 @@ namespace NocturnalEngine{
 			m_windowData.m_CurrentHeight,
 			winTitle.c_str(),
 			NULL, NULL);
-		
+
+#if !DEBUG		
+		const GLFWvidmode* mode = glfwGetVideoMode(m_monitor);
+		m_windowData.m_Width = mode->width;
+		m_windowData.m_Height = mode->height;
+
+		glfwSetWindowMonitor(
+			m_window, m_monitor,
+			0, 0,
+			m_windowData.m_Width, m_windowData.m_Height, 0);
+#endif	
 		glfwMakeContextCurrent(m_window);
 		glfwSetWindowUserPointer(m_window, &m_windowData);
 
@@ -106,26 +115,27 @@ namespace NocturnalEngine{
 		glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 		glfwSetDropCallback(m_window, drop_callback);
 #if !DEBUG
-		//glfwSetWindowFocusCallback(m_window, OnWindowFocus);
+		glfwSetWindowFocusCallback(m_window, OnWindowFocus);
 #endif
 		/* Make the window's context current */
 	}
 
 
 	void Window::Show() {
-
+#if 0
 #if !DEBUG		
 		const GLFWvidmode* mode = glfwGetVideoMode(m_monitor);
 		m_windowData.m_Width = mode->width;
 		m_windowData.m_Height = mode->height;
 
 		glfwSetWindowMonitor(
-			m_window, NULL,
+			m_window, m_monitor,
 			0, 0,
 			m_windowData.m_Width, m_windowData.m_Height, 0);
 #endif	
 		// Finally show the window
 		glfwShowWindow(m_window);
+#endif
 	}
 	/*!*************************************************************************
 	Update loop of window
