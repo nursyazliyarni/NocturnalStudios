@@ -80,13 +80,10 @@ namespace NocturnalEngine{
 
 #if !DEBUG		
 		const GLFWvidmode* mode = glfwGetVideoMode(m_monitor);
-		m_windowData.m_Width = mode->width;
-		m_windowData.m_Height = mode->height;
-
 		glfwSetWindowMonitor(
 			m_window, m_monitor,
 			0, 0,
-			m_windowData.m_Width, m_windowData.m_Height, 0);
+			m_windowData.m_CurrentWidth, m_windowData.m_CurrentHeight, mode ? mode->refreshRate : 0);
 #endif	
 		glfwMakeContextCurrent(m_window);
 		glfwSetWindowUserPointer(m_window, &m_windowData);
@@ -133,9 +130,9 @@ namespace NocturnalEngine{
 			0, 0,
 			m_windowData.m_Width, m_windowData.m_Height, 0);
 #endif	
+#endif
 		// Finally show the window
 		glfwShowWindow(m_window);
-#endif
 	}
 	/*!*************************************************************************
 	Update loop of window
