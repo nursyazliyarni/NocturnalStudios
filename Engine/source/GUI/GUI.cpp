@@ -75,9 +75,19 @@ namespace NocturnalEngine
 	****************************************************************************/
 	bool  gui_system::Update(Window* screen)
 	{
-		
-		glm::vec2 mouse_pos{ static_cast<float>(screen->Getter().mouseX) , static_cast<float>(screen->Getter().mouseY) };//store the mouse position into a vector
-		glm::vec2 screen_size{ static_cast<float>(screen->Getter().m_Width),static_cast<float>(screen->Getter().m_Height) };//store the screen size into a vector
+		const WindowProps windowProps = screen->Getter();
+		glm::vec2 mouse_pos{ static_cast<float>(windowProps.mouseX) , static_cast<float>(windowProps.mouseY) };//store the mouse position into a vector
+		glm::vec2 screen_size{ static_cast<float>(windowProps.m_Width),static_cast<float>(windowProps.m_Height) };//store the screen size into a vector
+		glm::vec2 viewport_offset{ static_cast<float>(windowProps.m_ViewportX), static_cast<float>(windowProps.m_ViewportY) };
+
+		if (screen_size.x <= 0.0f || screen_size.y <= 0.0f)
+		{
+			return false;
+		}
+
+		mouse_pos -= viewport_offset;
+		const bool mouseInViewport = mouse_pos.x >= 0.0f && mouse_pos.y >= 0.0f &&
+			mouse_pos.x <= screen_size.x && mouse_pos.y <= screen_size.y;
 		mAspectRatio = screen_size.x / screen_size.y;//find and store the aspect ratio of the screen
 		
 		
@@ -92,12 +102,12 @@ namespace NocturnalEngine
 		MousePosition = { mouse_pos.x * mAspectRatio * 1/Graphic::camera.GetZoomLevel() , mouse_pos.y};
 		if (is_Pause == true && is_menu == false)//check if the system is pause
 		{	
-			if (is_within_box(mouse_pos, mPauseButton) && p_Input->MousePressed(GLFW_MOUSE_BUTTON_LEFT))//if system is pause and the quit button is pressed, tell the system to quit the game
+			if (mouseInViewport && is_within_box(mouse_pos, mPauseButton) && p_Input->MousePressed(GLFW_MOUSE_BUTTON_LEFT))//if system is pause and the quit button is pressed, tell the system to quit the game
 			{
 				return true;
 			}
 
-			if (is_within_box(mouse_pos, mContinueButton) && p_Input->MousePressed(GLFW_MOUSE_BUTTON_LEFT))//if system is pause and continue button is pressed, tell the system to resume the game
+			if (mouseInViewport && is_within_box(mouse_pos, mContinueButton) && p_Input->MousePressed(GLFW_MOUSE_BUTTON_LEFT))//if system is pause and continue button is pressed, tell the system to resume the game
 			{
 				is_Pause = false;
 			}

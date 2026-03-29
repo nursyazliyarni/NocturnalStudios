@@ -338,17 +338,24 @@ namespace NocturnalEngine {
 		}
 		else
 		{
-			glViewport(0, 0, p_Editor->GetWindow()->Getter().m_Width, p_Editor->GetWindow()->Getter().m_Height);
+			const WindowProps windowProps = p_Editor->GetWindow()->Getter();
+			glViewport(static_cast<GLint>(windowProps.m_ViewportX),
+				static_cast<GLint>(windowProps.m_ViewportY),
+				static_cast<GLsizei>(windowProps.m_Width),
+				static_cast<GLsizei>(windowProps.m_Height));
 			NocturnalEngine::Graphic::mcamera->Resize(
-				static_cast<float>(p_Editor->GetWindow()->Getter().m_Width),
-				static_cast<float>(p_Editor->GetWindow()->Getter().m_Height)
+				static_cast<float>(windowProps.m_Width),
+				static_cast<float>(windowProps.m_Height)
 			);
 
 			mcamera = &camera;
-			glViewport(0, 0, p_Editor->GetWindow()->Getter().m_Width, p_Editor->GetWindow()->Getter().m_Height);
+			glViewport(static_cast<GLint>(windowProps.m_ViewportX),
+				static_cast<GLint>(windowProps.m_ViewportY),
+				static_cast<GLsizei>(windowProps.m_Width),
+				static_cast<GLsizei>(windowProps.m_Height));
 			mcamera->Resize(
-				static_cast<float>(p_Editor->GetWindow()->Getter().m_Width),
-				static_cast<float>(p_Editor->GetWindow()->Getter().m_Height)
+				static_cast<float>(windowProps.m_Width),
+				static_cast<float>(windowProps.m_Height)
 			);
 		}
 

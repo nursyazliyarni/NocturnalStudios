@@ -37,7 +37,11 @@ namespace NocturnalEngine {
 		unsigned int m_Width,
 					 m_Height,
 					 m_CurrentWidth,
-					 m_CurrentHeight;
+					 m_CurrentHeight,
+					 m_WindowWidth,
+					 m_WindowHeight,
+					 m_ViewportX,
+					 m_ViewportY;
 		bool Vsync;
 		double mouseX, mouseY;
 	};

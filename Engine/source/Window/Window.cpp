@@ -18,12 +18,13 @@
 #include "LevelEditor/LevelEditor.h"
 #include "Timer/Time.h"
 #include "Window/Window.h"
+#include <algorithm>
 
 namespace NocturnalEngine{
 	bool Window::isWindowNotFocus = false;
 
 	Window::Window() : m_window{ nullptr }, m_monitor{ nullptr },
-		m_windowData{ windowData.GetTitle(), windowData.GetWidth(), windowData.GetHeight(), windowData.GetCurrWidth(), windowData.GetCurrHeight(), 0, 0 },//should be serialized
+		m_windowData{ windowData.GetTitle(), windowData.GetWidth(), windowData.GetHeight(), windowData.GetCurrWidth(), windowData.GetCurrHeight(), 0, 0, 0, 0, false, 0.0, 0.0 },//should be serialized
 		m_vsync{ false }, previousTime{glfwGetTime()}, frameCount{0}
 	{
 		windowData.DeserializeFromFile("Window.json");
@@ -32,6 +33,10 @@ namespace NocturnalEngine{
 		m_windowData.m_Height = windowData.GetHeight();
 		m_windowData.m_CurrentWidth = windowData.GetCurrWidth();
 		m_windowData.m_CurrentHeight = windowData.GetCurrHeight();
+		m_windowData.m_WindowWidth = m_windowData.m_Width;
+		m_windowData.m_WindowHeight = m_windowData.m_Height;
+		m_windowData.m_ViewportX = 0;
+		m_windowData.m_ViewportY = 0;
 		windowData.SerializeToFile("Window.json");
 	};
 
@@ -63,36 +68,61 @@ namespace NocturnalEngine{
 		glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 		//fullscreen
 		m_monitor = glfwGetPrimaryMonitor();
-		
-		//set initialize window width & height to current (to be set in rapidjson file)
-		m_windowData.m_CurrentWidth = m_windowData.m_Width;
-		m_windowData.m_CurrentHeight = m_windowData.m_Height;
+
+		if (m_monitor)
+		{
+			NOCTURNAL_ENGINE_INFO("Primary monitor detected: {0}", glfwGetMonitorName(m_monitor));
+		}
+
+		if (m_windowData.m_CurrentWidth == 0)
+		{
+			m_windowData.m_CurrentWidth = m_windowData.m_Width;
+		}
+		if (m_windowData.m_CurrentHeight == 0)
+		{
+			m_windowData.m_CurrentHeight = m_windowData.m_Height;
+		}
 
 		std::string winTitle = m_windowData.Title;
 #if DEBUG
 		winTitle = "[NocturnalEngine] Editing " + winTitle;
 #endif
-		//create window
-		m_window = glfwCreateWindow(m_windowData.m_CurrentWidth,
-			m_windowData.m_CurrentHeight,
-			winTitle.c_str(),
-			NULL, NULL);
 
-#if !DEBUG		
-		const GLFWvidmode* mode = glfwGetVideoMode(m_monitor);
-		glfwSetWindowMonitor(
-			m_window, m_monitor,
-			0, 0,
-			m_windowData.m_CurrentWidth, m_windowData.m_CurrentHeight, mode ? mode->refreshRate : 0);
-#endif	
-		glfwMakeContextCurrent(m_window);
-		glfwSetWindowUserPointer(m_window, &m_windowData);
+#if !DEBUG
+		const GLFWvidmode* mode = m_monitor ? glfwGetVideoMode(m_monitor) : nullptr;
+		const int fullscreenWidth = mode ? mode->width : static_cast<int>(m_windowData.m_CurrentWidth);
+		const int fullscreenHeight = mode ? mode->height : static_cast<int>(m_windowData.m_CurrentHeight);
+		if (mode)
+		{
+			glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate);
+		}
+
+		m_window = glfwCreateWindow(fullscreenWidth,
+			fullscreenHeight,
+			winTitle.c_str(),
+			m_monitor, nullptr);
+
+		m_windowData.m_WindowWidth = static_cast<unsigned int>(fullscreenWidth);
+		m_windowData.m_WindowHeight = static_cast<unsigned int>(fullscreenHeight);
+#else
+		m_window = glfwCreateWindow(static_cast<int>(m_windowData.m_CurrentWidth),
+			static_cast<int>(m_windowData.m_CurrentHeight),
+			winTitle.c_str(),
+			nullptr, nullptr);
+
+		m_windowData.m_WindowWidth = m_windowData.m_CurrentWidth;
+		m_windowData.m_WindowHeight = m_windowData.m_CurrentHeight;
+#endif
 
 		if (!m_window)
 		{
 			std::cout << "Failed to create window !" << std::endl;
 			glfwTerminate();
+			return;
 		}
+
+		glfwMakeContextCurrent(m_window);
+		glfwSetWindowUserPointer(m_window, &m_windowData);
 
 		NOCTURNAL_ENGINE_INFO("Generating Window {0} : SIZE ({1},{2})", m_windowData.Title, m_windowData.m_Width, m_windowData.m_Height);
 		
@@ -103,7 +133,6 @@ namespace NocturnalEngine{
 		//context
 		ToggleVsync(true);
 
-		glfwSetWindowSizeCallback(m_window, Window_size_callback);
 		glfwSetCursorPosCallback(m_window, Mouseposition_callback);
 		glfwSetKeyCallback(m_window, Key_callback);
 		glfwSetScrollCallback(m_window, Mousescroll_callback);
@@ -114,6 +143,11 @@ namespace NocturnalEngine{
 #if !DEBUG
 		glfwSetWindowFocusCallback(m_window, OnWindowFocus);
 #endif
+
+		int framebufferWidth = 0, framebufferHeight = 0;
+		glfwGetFramebufferSize(m_window, &framebufferWidth, &framebufferHeight);
+		Window_size_callback(m_window, framebufferWidth, framebufferHeight);
+
 		/* Make the window's context current */
 	}
 
@@ -225,9 +259,41 @@ namespace NocturnalEngine{
 	void Window::Window_size_callback(GLFWwindow* window, int width, int height)
 	{
 		WindowProps& data = *(WindowProps*)glfwGetWindowUserPointer(window);
-		data.m_Width = width;
-		data.m_Height = height;
-		glViewport(0, 0, data.m_Width, data.m_Height);
+		if (width <= 0 || height <= 0)
+		{
+			return;
+		}
+
+		data.m_WindowWidth = static_cast<unsigned int>(width);
+		data.m_WindowHeight = static_cast<unsigned int>(height);
+
+#if !DEBUG
+		const unsigned int virtualWidth = data.m_CurrentWidth > 0 ? data.m_CurrentWidth : static_cast<unsigned int>(width);
+		const unsigned int virtualHeight = data.m_CurrentHeight > 0 ? data.m_CurrentHeight : static_cast<unsigned int>(height);
+
+		const float scaleX = static_cast<float>(width) / static_cast<float>(virtualWidth);
+		const float scaleY = static_cast<float>(height) / static_cast<float>(virtualHeight);
+		const float scale = (std::min)(scaleX, scaleY);
+
+		const int viewportWidth = (std::max)(1, static_cast<int>(virtualWidth * scale));
+		const int viewportHeight = (std::max)(1, static_cast<int>(virtualHeight * scale));
+		const int viewportX = (width - viewportWidth) / 2;
+		const int viewportY = (height - viewportHeight) / 2;
+
+		data.m_Width = static_cast<unsigned int>(viewportWidth);
+		data.m_Height = static_cast<unsigned int>(viewportHeight);
+		data.m_ViewportX = static_cast<unsigned int>(viewportX);
+		data.m_ViewportY = static_cast<unsigned int>(viewportY);
+
+		glViewport(viewportX, viewportY, viewportWidth, viewportHeight);
+#else
+		data.m_Width = static_cast<unsigned int>(width);
+		data.m_Height = static_cast<unsigned int>(height);
+		data.m_ViewportX = 0;
+		data.m_ViewportY = 0;
+
+		glViewport(0, 0, width, height);
+#endif
 	}
 
 	/*!*************************************************************************
