@@ -60,6 +60,9 @@
                     "shape/texture": 0,
                     "shape type": 0,
                     "circle radius": 0.0,
+                    "length of dashed lines": 0.009999999776482582,
+                    "distance gap": 0.009999999776482582,
+                    "line movement speed": 0.0,
                     "RGBA": [
                         0.0,
                         0.0,
@@ -100,7 +103,13 @@
                         "IsLooping": false,
                         "VolumeLimit": 1.0
                     },
-                    "AudioArrCount": 1,
+                    "1": {
+                        "AudioPath": "Luminara Zoo - Music - Level 2 (v1).wav",
+                        "Channel": 2,
+                        "IsLooping": false,
+                        "VolumeLimit": 1.0
+                    },
+                    "AudioArrCount": 2,
                     "BGM Volume": 1.0,
                     "SFX Volume": 1.0,
                     "Master Volume": 1.0,
@@ -195,6 +204,9 @@
                     "shape/texture": 0,
                     "shape type": 0,
                     "circle radius": 0.0,
+                    "length of dashed lines": 0.009999999776482582,
+                    "distance gap": 0.009999999776482582,
+                    "line movement speed": 0.0,
                     "RGBA": [
                         0.0,
                         0.0,
@@ -342,6 +354,9 @@
                     "shape/texture": 0,
                     "shape type": 0,
                     "circle radius": 0.0,
+                    "length of dashed lines": 0.009999999776482582,
+                    "distance gap": 0.009999999776482582,
+                    "line movement speed": 0.0,
                     "RGBA": [
                         0.0,
                         0.0,
@@ -464,7 +479,8 @@
                     "Line Height": 0,
                     "WorldSpace": false,
                     "Center": false,
-                    "LayeringOrder": 0
+                    "LayeringOrder": 0,
+                    "Visibility": true
                 },
                 {
                     "Component": "ButtonComponent",
@@ -542,6 +558,9 @@
                     "shape/texture": 0,
                     "shape type": 0,
                     "circle radius": 0.0,
+                    "length of dashed lines": 0.009999999776482582,
+                    "distance gap": 0.009999999776482582,
+                    "line movement speed": 0.0,
                     "RGBA": [
                         0.0,
                         0.0,
@@ -664,7 +683,8 @@
                     "Line Height": 0,
                     "WorldSpace": false,
                     "Center": false,
-                    "LayeringOrder": 0
+                    "LayeringOrder": 0,
+                    "Visibility": true
                 },
                 {
                     "Component": "ButtonComponent",
@@ -742,6 +762,9 @@
                     "shape/texture": 0,
                     "shape type": 0,
                     "circle radius": 0.0,
+                    "length of dashed lines": 0.009999999776482582,
+                    "distance gap": 0.009999999776482582,
+                    "line movement speed": 0.0,
                     "RGBA": [
                         0.0,
                         0.0,
@@ -864,7 +887,8 @@
                     "Line Height": 0,
                     "WorldSpace": false,
                     "Center": false,
-                    "LayeringOrder": 0
+                    "LayeringOrder": 0,
+                    "Visibility": true
                 },
                 {
                     "Component": "ButtonComponent",
@@ -942,6 +966,9 @@
                     "shape/texture": 0,
                     "shape type": 0,
                     "circle radius": 0.0,
+                    "length of dashed lines": 0.009999999776482582,
+                    "distance gap": 0.009999999776482582,
+                    "line movement speed": 0.0,
                     "RGBA": [
                         0.0,
                         0.0,
@@ -1072,6 +1099,9 @@
                     "shape/texture": 0,
                     "shape type": 0,
                     "circle radius": 0.0,
+                    "length of dashed lines": 0.009999999776482582,
+                    "distance gap": 0.009999999776482582,
+                    "line movement speed": 0.0,
                     "RGBA": [
                         0.0,
                         0.0,
@@ -1149,6 +1179,9 @@
                     "shape/texture": 0,
                     "shape type": 0,
                     "circle radius": 0.0,
+                    "length of dashed lines": 0.009999999776482582,
+                    "distance gap": 0.009999999776482582,
+                    "line movement speed": 0.0,
                     "RGBA": [
                         0.0,
                         0.0,
@@ -1310,6 +1343,9 @@
                     "shape/texture": 0,
                     "shape type": 0,
                     "circle radius": 0.0,
+                    "length of dashed lines": 0.009999999776482582,
+                    "distance gap": 0.009999999776482582,
+                    "line movement speed": 0.0,
                     "RGBA": [
                         0.0,
                         0.0,
@@ -1471,6 +1507,9 @@
                     "shape/texture": 0,
                     "shape type": 0,
                     "circle radius": 0.0,
+                    "length of dashed lines": 0.009999999776482582,
+                    "distance gap": 0.009999999776482582,
+                    "line movement speed": 0.0,
                     "RGBA": [
                         0.0,
                         0.0,
@@ -1566,7 +1605,8 @@
                     "Line Height": 0,
                     "WorldSpace": true,
                     "Center": false,
-                    "LayeringOrder": 0
+                    "LayeringOrder": 0,
+                    "Visibility": true
                 }
             ]
         },
@@ -1607,7 +1647,8 @@
                     "Line Height": 50,
                     "WorldSpace": false,
                     "Center": false,
-                    "LayeringOrder": 0
+                    "LayeringOrder": 0,
+                    "Visibility": true
                 }
             ]
         },
@@ -1648,7 +1689,8 @@
                     "Line Height": 50,
                     "WorldSpace": false,
                     "Center": false,
-                    "LayeringOrder": 0
+                    "LayeringOrder": 0,
+                    "Visibility": true
                 }
             ]
         },
@@ -1689,7 +1731,8 @@
                     "Line Height": 62,
                     "WorldSpace": false,
                     "Center": false,
-                    "LayeringOrder": 0
+                    "LayeringOrder": 0,
+                    "Visibility": true
                 }
             ]
         },
@@ -1722,6 +1765,9 @@
                     "shape/texture": 0,
                     "shape type": 0,
                     "circle radius": 0.0,
+                    "length of dashed lines": 0.009999999776482582,
+                    "distance gap": 0.009999999776482582,
+                    "line movement speed": 0.0,
                     "RGBA": [
                         0.0,
                         0.0,
@@ -1780,6 +1826,9 @@
                     "shape/texture": 0,
                     "shape type": 0,
                     "circle radius": 0.0,
+                    "length of dashed lines": 0.009999999776482582,
+                    "distance gap": 0.009999999776482582,
+                    "line movement speed": 0.0,
                     "RGBA": [
                         0.0,
                         0.0,
@@ -1839,7 +1888,8 @@
                     "Line Height": 0,
                     "WorldSpace": true,
                     "Center": false,
-                    "LayeringOrder": 0
+                    "LayeringOrder": 0,
+                    "Visibility": true
                 }
             ]
         },
@@ -1867,6 +1917,9 @@
                     "shape/texture": 0,
                     "shape type": 0,
                     "circle radius": 0.0,
+                    "length of dashed lines": 0.009999999776482582,
+                    "distance gap": 0.009999999776482582,
+                    "line movement speed": 0.0,
                     "RGBA": [
                         0.0,
                         0.0,
@@ -1925,6 +1978,9 @@
                     "shape/texture": 0,
                     "shape type": 0,
                     "circle radius": 0.0,
+                    "length of dashed lines": 0.009999999776482582,
+                    "distance gap": 0.009999999776482582,
+                    "line movement speed": 0.0,
                     "RGBA": [
                         0.0,
                         0.0,
@@ -1983,6 +2039,9 @@
                     "shape/texture": 0,
                     "shape type": 0,
                     "circle radius": 0.0,
+                    "length of dashed lines": 0.009999999776482582,
+                    "distance gap": 0.009999999776482582,
+                    "line movement speed": 0.0,
                     "RGBA": [
                         0.0,
                         0.0,
@@ -2041,6 +2100,9 @@
                     "shape/texture": 0,
                     "shape type": 0,
                     "circle radius": 0.0,
+                    "length of dashed lines": 0.009999999776482582,
+                    "distance gap": 0.009999999776482582,
+                    "line movement speed": 0.0,
                     "RGBA": [
                         0.0,
                         0.0,
@@ -2118,6 +2180,9 @@
                     "shape/texture": 0,
                     "shape type": 0,
                     "circle radius": 0.0,
+                    "length of dashed lines": 0.009999999776482582,
+                    "distance gap": 0.009999999776482582,
+                    "line movement speed": 0.0,
                     "RGBA": [
                         0.0,
                         0.0,
@@ -2176,6 +2241,9 @@
                     "shape/texture": 0,
                     "shape type": 0,
                     "circle radius": 0.0,
+                    "length of dashed lines": 0.009999999776482582,
+                    "distance gap": 0.009999999776482582,
+                    "line movement speed": 0.0,
                     "RGBA": [
                         0.0,
                         0.0,
@@ -2226,7 +2294,8 @@
                     "Line Height": 0,
                     "WorldSpace": false,
                     "Center": false,
-                    "LayeringOrder": 0
+                    "LayeringOrder": 0,
+                    "Visibility": true
                 }
             ]
         },
@@ -2254,6 +2323,9 @@
                     "shape/texture": 0,
                     "shape type": 0,
                     "circle radius": 0.0,
+                    "length of dashed lines": 0.009999999776482582,
+                    "distance gap": 0.009999999776482582,
+                    "line movement speed": 0.0,
                     "RGBA": [
                         0.0,
                         0.0,
@@ -2312,6 +2384,9 @@
                     "shape/texture": 0,
                     "shape type": 0,
                     "circle radius": 0.0,
+                    "length of dashed lines": 0.009999999776482582,
+                    "distance gap": 0.009999999776482582,
+                    "line movement speed": 0.0,
                     "RGBA": [
                         0.0,
                         0.0,
@@ -2370,6 +2445,9 @@
                     "shape/texture": 0,
                     "shape type": 0,
                     "circle radius": 0.0,
+                    "length of dashed lines": 0.009999999776482582,
+                    "distance gap": 0.009999999776482582,
+                    "line movement speed": 0.0,
                     "RGBA": [
                         0.0,
                         0.0,
@@ -2420,7 +2498,8 @@
                     "Line Height": 0,
                     "WorldSpace": false,
                     "Center": false,
-                    "LayeringOrder": 0
+                    "LayeringOrder": 0,
+                    "Visibility": true
                 }
             ]
         },
@@ -2467,6 +2546,9 @@
                     "shape/texture": 0,
                     "shape type": 0,
                     "circle radius": 0.0,
+                    "length of dashed lines": 0.009999999776482582,
+                    "distance gap": 0.009999999776482582,
+                    "line movement speed": 0.0,
                     "RGBA": [
                         0.0,
                         0.0,
@@ -2544,6 +2626,9 @@
                     "shape/texture": 0,
                     "shape type": 0,
                     "circle radius": 0.0,
+                    "length of dashed lines": 0.009999999776482582,
+                    "distance gap": 0.009999999776482582,
+                    "line movement speed": 0.0,
                     "RGBA": [
                         0.0,
                         0.0,
@@ -2633,7 +2718,8 @@
                     "Line Height": 0,
                     "WorldSpace": true,
                     "Center": false,
-                    "LayeringOrder": 0
+                    "LayeringOrder": 0,
+                    "Visibility": true
                 }
             ]
         },
@@ -2666,6 +2752,9 @@
                     "shape/texture": 0,
                     "shape type": 0,
                     "circle radius": 0.0,
+                    "length of dashed lines": 0.009999999776482582,
+                    "distance gap": 0.009999999776482582,
+                    "line movement speed": 0.0,
                     "RGBA": [
                         0.0,
                         0.0,
@@ -2729,6 +2818,9 @@
                     "shape/texture": 0,
                     "shape type": 0,
                     "circle radius": 0.0,
+                    "length of dashed lines": 0.009999999776482582,
+                    "distance gap": 0.009999999776482582,
+                    "line movement speed": 0.0,
                     "RGBA": [
                         0.0,
                         0.0,
