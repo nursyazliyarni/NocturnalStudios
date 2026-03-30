@@ -87,6 +87,12 @@ namespace NocturnalEngine
 			}
 		}
 
+		// Click audio should only trigger once per press, not every frame while held.
+		if (curr_state != button_state::click)
+		{
+			clicked = false;
+		}
+
 		if (is_within_box(p_GUI->MousePosition, col, transform))//check if the system is hovering over an object, change to the hover sprite if it is
 		{
 			if (initial_hover)
@@ -137,7 +143,11 @@ namespace NocturnalEngine
 
 			if (curr_state == button_state::click) 
 			{
-				if (buttonFlag & ButtonFlag::AUDIO_ON_CLICK) PlayAudio(false, buttonComponent);
+				if ((buttonFlag & ButtonFlag::AUDIO_ON_CLICK) && !clicked)
+				{
+					PlayAudio(false, buttonComponent);
+					clicked = true;
+				}
 
 				if (buttonFlag & ButtonFlag::TEX_CHANGE_ON_CLICK) ChangeTexture(buttonComponent.clickTexture);
 			}

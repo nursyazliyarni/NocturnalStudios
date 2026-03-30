@@ -152,6 +152,9 @@ namespace NocturnalEngine
                     audio[i].triggered = false;
                     audio[i].should_stop = false;
                 }
+
+                // Consume one-shot play requests so held clicks cannot re-arm stale triggers.
+                audio[i].should_play = false;
                 
             }
         }
