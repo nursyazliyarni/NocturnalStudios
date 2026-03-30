@@ -21,6 +21,7 @@
 #include "Math/Random.h"
 #include "Scripts/AnimalLogic.h"
 #include "ECS/Components/ButtonComponent.h"
+#include "Audio/AudioEngine.h"
 
 namespace NocturnalEngine {
 
@@ -433,6 +434,7 @@ namespace NocturnalEngine {
     }
     
     void GameManager::AddLogEntry(std::string message) {
+		p_Audio->PlaySound("Assets/Audio/Alert_v2.wav", Audio::AudioType::SFX);
         float timeInGameWorld{ gameTimeElapsed * GetTimeScale()};
         int hours{ static_cast<int>(timeInGameWorld / 3600.f) },
             mins{ static_cast<int>((timeInGameWorld - (static_cast<float>(hours) * 3600.f)) / 60.f) },
