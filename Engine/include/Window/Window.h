@@ -74,6 +74,7 @@ namespace NocturnalEngine {
 		GLFWmonitor* GetMonitor() const { return m_monitor; }
 		
 		void HideShowCursor();
+		void SyncGamepadCursor();
 
 	public:
 

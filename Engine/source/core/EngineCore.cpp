@@ -186,7 +186,10 @@ EngineCore constructor
 #if !DEBUG
 			p_Editor->is_ShowWindow = false;
 #endif 
-			if (p_Editor->is_ShowWindow == false)m_window->HideShowCursor();
+			if (p_Editor->is_ShowWindow == false) {
+				if(p_Input->IsGamepadConnected())m_window->SyncGamepadCursor();
+
+			}
 			FramePerSec::GetInstance().EndFrameCount();
 			Timer::GetInstance().Update(Systems::API);
 			if(!end_state)end_state = p_Editor->ShouldEnd();
