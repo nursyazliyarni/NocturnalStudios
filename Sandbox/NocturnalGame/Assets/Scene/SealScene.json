@@ -144,10 +144,6 @@
                     "Component": "Logic",
                     "Scripts": [
                         {
-                            "ScriptName": "KeyboardSceneSwitch",
-                            "SceneName": "Seal"
-                        },
-                        {
                             "ScriptName": "AudioManager"
                         },
                         {
@@ -155,7 +151,7 @@
                             "Background Audio Index": 0
                         }
                     ],
-                    "ScriptCount": 3
+                    "ScriptCount": 2
                 }
             ]
         },
@@ -217,7 +213,7 @@
                         0.0
                     ],
                     "TextureName": "Characters/seal sick",
-                    "Index_X": 2,
+                    "Index_X": 4,
                     "Index_Y": 0,
                     "Ucoordinates": 603.5,
                     "Vcoordinates": 458.0,
@@ -2822,6 +2818,25 @@
                             "Enabled": true
                         }
                     ]
+                }
+            ]
+        },
+        {
+            "ID": 31,
+            "Prefab": "KeyboardButtonReaction",
+            "Components": [
+                {
+                    "Component": "Logic",
+                    "Scripts": [
+                        {
+                            "ScriptName": "KeyboardSceneSwitch",
+                            "SceneName": "Seal"
+                        },
+                        {
+                            "ScriptName": "AudioManager"
+                        }
+                    ],
+                    "ScriptCount": 2
                 }
             ]
         }

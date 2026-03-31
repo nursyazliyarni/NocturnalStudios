@@ -141,10 +141,6 @@
                     "Component": "Logic",
                     "Scripts": [
                         {
-                            "ScriptName": "KeyboardSceneSwitch",
-                            "SceneName": "Horse"
-                        },
-                        {
                             "ScriptName": "AudioManager"
                         },
                         {
@@ -152,7 +148,7 @@
                             "Background Audio Index": 0
                         }
                     ],
-                    "ScriptCount": 3
+                    "ScriptCount": 2
                 }
             ]
         },
@@ -2852,6 +2848,25 @@
                             "Enabled": true
                         }
                     ]
+                }
+            ]
+        },
+        {
+            "ID": 31,
+            "Prefab": "KeyboardButtonReaction",
+            "Components": [
+                {
+                    "Component": "Logic",
+                    "Scripts": [
+                        {
+                            "ScriptName": "KeyboardSceneSwitch",
+                            "SceneName": "Horse"
+                        },
+                        {
+                            "ScriptName": "AudioManager"
+                        }
+                    ],
+                    "ScriptCount": 2
                 }
             ]
         }

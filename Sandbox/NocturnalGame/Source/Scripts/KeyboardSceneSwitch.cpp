@@ -58,21 +58,29 @@ namespace NocturnalEngine {
 		{
 			if (p_Input->KeyPressed(GLFW_KEY_1) || p_Input->KeyPressed(GLFW_KEY_W)||p_Input->GamepadPressed(GLFW_GAMEPAD_BUTTON_DPAD_UP))
 			{
+				std::vector<Audio::AudioPiece>& ar{ a.GetArr() };
+				if (!ar.empty()) a[GetRandomSoundIndex(ar)].should_play = true;
 				p_Scene->setSceneToLoad("Assets/Scene/FlamingoScene.json");
 				return;
 			}
 			if (p_Input->KeyPressed(GLFW_KEY_2) || p_Input->KeyPressed(GLFW_KEY_A) || p_Input->GamepadPressed(GLFW_GAMEPAD_BUTTON_DPAD_RIGHT))
 			{
+				std::vector<Audio::AudioPiece>& ar{ a.GetArr() };
+				if (!ar.empty()) a[GetRandomSoundIndex(ar)].should_play = true;
 				p_Scene->setSceneToLoad("Assets/Scene/SealScene.json");
 				return;
 			}
 			if (p_Input->KeyPressed(GLFW_KEY_3) || p_Input->KeyPressed(GLFW_KEY_S) || p_Input->GamepadPressed(GLFW_GAMEPAD_BUTTON_DPAD_DOWN))
 			{
+				std::vector<Audio::AudioPiece>& ar{ a.GetArr() };
+				if (!ar.empty()) a[GetRandomSoundIndex(ar)].should_play = true;
 				p_Scene->setSceneToLoad("Assets/Scene/HorseScene.json");
 				return;
 			}
 			if (p_GameManager.CurrentLevel() > 1 && (p_Input->KeyPressed(GLFW_KEY_4) || p_Input->KeyPressed(GLFW_KEY_D) || p_Input->GamepadPressed(GLFW_GAMEPAD_BUTTON_DPAD_LEFT)))
 			{
+				std::vector<Audio::AudioPiece>& ar{ a.GetArr() };
+				if (!ar.empty()) a[GetRandomSoundIndex(ar)].should_play = true;
 				p_Scene->setSceneToLoad("Assets/Scene/OwlScene.json");
 				return;
 			}
@@ -81,6 +89,8 @@ namespace NocturnalEngine {
 				std::string sceneToGo{ p_GameManager.CanMoveScene(sceneName,false) };
 				if (sceneToGo!="")
 				{
+					std::vector<Audio::AudioPiece>& ar{ a.GetArr() };
+					if (!ar.empty()) a[GetRandomSoundIndex(ar)].should_play = true;
 					p_Scene->setSceneToLoad("Assets/Scene/"+sceneToGo+"Scene.json");
 					return;
 				}
@@ -89,6 +99,8 @@ namespace NocturnalEngine {
 				std::string sceneToGo{ p_GameManager.CanMoveScene(sceneName,true) };
 				if (sceneToGo != "")
 				{
+					std::vector<Audio::AudioPiece>& ar{ a.GetArr() };
+					if (!ar.empty()) a[GetRandomSoundIndex(ar)].should_play = true;
 					p_Scene->setSceneToLoad("Assets/Scene/" + sceneToGo + "Scene.json");
 					return;
 				}
@@ -105,7 +117,7 @@ namespace NocturnalEngine {
 	int KeyboardSceneSwitch::GetRandomSoundIndex(const std::vector<Audio::AudioPiece>& a) {
 		if (a.size() <= 1) return 0; // only BGM or empty, fall back to 0
 		int maxIndex = static_cast<int>(a.size()) - 1;
-		return Random::Range(1, maxIndex);
+		return Random::Range(0, maxIndex);
 	}
 
 	std::string KeyboardSceneSwitch::GetScriptName()

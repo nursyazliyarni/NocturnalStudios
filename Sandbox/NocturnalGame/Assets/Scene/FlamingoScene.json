@@ -122,10 +122,6 @@
                     "Component": "Logic",
                     "Scripts": [
                         {
-                            "ScriptName": "KeyboardSceneSwitch",
-                            "SceneName": "Flamingo"
-                        },
-                        {
                             "ScriptName": "AudioManager"
                         },
                         {
@@ -133,7 +129,7 @@
                             "Background Audio Index": 0
                         }
                     ],
-                    "ScriptCount": 3
+                    "ScriptCount": 2
                 }
             ]
         },
@@ -190,7 +186,7 @@
                         0.0
                     ],
                     "TextureName": "Characters/flamingo_angry",
-                    "Index_X": 1,
+                    "Index_X": 4,
                     "Index_Y": 0,
                     "Ucoordinates": 528.0,
                     "Vcoordinates": 528.0,
@@ -2831,7 +2827,7 @@
             ]
         },
         {
-            "ID": 30,
+            "ID": 31,
             "Components": [
                 {
                     "Component": "Tag",
@@ -2893,6 +2889,25 @@
                             "Enabled": true
                         }
                     ]
+                }
+            ]
+        },
+        {
+            "ID": 32,
+            "Prefab": "KeyboardButtonReaction",
+            "Components": [
+                {
+                    "Component": "Logic",
+                    "Scripts": [
+                        {
+                            "ScriptName": "KeyboardSceneSwitch",
+                            "SceneName": "Flamingo"
+                        },
+                        {
+                            "ScriptName": "AudioManager"
+                        }
+                    ],
+                    "ScriptCount": 2
                 }
             ]
         }
