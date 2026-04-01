@@ -338,54 +338,7 @@ namespace NocturnalEngine{
 		p_Input->SetLastDevice(InputDevice::KeyboardMouse);
 	}
 
-	void Window::HideShowCursor() {
-		if (p_Input->DeviceChanged())
-		{
-			if (p_Input->GetLastDevice() == InputDevice::Gamepad)
-				glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-			else
-				glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-		}
-	}
-	void Window::SyncGamepadCursor() {
-		// After p_Input->PollGamepad()
-		if (p_Input->GetLastDevice() == InputDevice::Gamepad)
-		{
-			static constexpr float CURSOR_SPEED = 800.0f; // pixels per second, tune this
-			float dt = Timer::GetInstance().GetGlobalDT();
 
-			float stickX = p_Input->GetAxis(GLFW_GAMEPAD_AXIS_LEFT_X);
-			float stickY = p_Input->GetAxis(GLFW_GAMEPAD_AXIS_LEFT_Y);
-
-			if (std::abs(stickX) > 0.0f || std::abs(stickY) > 0.0f)
-			{
-				// Read current cursor position
-				double curX = m_windowData.mouseX;
-				double curY = m_windowData.mouseY;
-
-				// Move it
-				curX += stickX * CURSOR_SPEED * dt;
-				curY += stickY * CURSOR_SPEED * dt;
-
-				// Clamp to window bounds
-				curX = std::clamp(curX, 0.0, (double)m_windowData.m_Width);
-				curY = std::clamp(curY, 0.0, (double)m_windowData.m_Height);
-
-				// Write back into your existing mouse position data
-				m_windowData.mouseX = curX;
-				m_windowData.mouseY = curY;
-
-				// Move the actual OS cursor to match (so your click detection stays in sync)
-				glfwSetCursorPos(m_window, curX, curY);
-			}
-
-			// A button = left click
-			if (p_Input->GamepadPressed(GLFW_GAMEPAD_BUTTON_A))
-				p_Input->SetMouseStatus(GLFW_MOUSE_BUTTON_LEFT, GLFW_PRESS);
-			else if (p_Input->GamepadReleased(GLFW_GAMEPAD_BUTTON_A))
-				p_Input->SetMouseStatus(GLFW_MOUSE_BUTTON_LEFT, GLFW_RELEASE);
-		}
-	}
 	/*!*************************************************************************
 	Toggle vsync function
 	****************************************************************************/

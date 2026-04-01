@@ -18,6 +18,7 @@ namespace NocturnalEngine {
     /*!*************************************************************************
     Used by the engine to run the game
     ****************************************************************************/
+    class Window;
     class  IGameLayer
     {
     public:
@@ -26,12 +27,14 @@ namespace NocturnalEngine {
         ****************************************************************************/
         virtual void Init() = 0;
         virtual void Update(float dt) = 0;
+        virtual void InputUpdate(float dt) { UNREFERENCED_PARAMETER(dt); }
         virtual void Shutdown() = 0;
 
         /*!*************************************************************************
         Idk if i even need this
         ****************************************************************************/
         virtual void RegisterScripts() = 0;
+        virtual void GiveWindow(Window* window) { UNREFERENCED_PARAMETER(window); }
     };
 
 }
