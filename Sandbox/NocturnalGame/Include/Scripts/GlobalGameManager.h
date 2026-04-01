@@ -150,6 +150,11 @@ namespace NocturnalEngine {
          void SetSceneToSwitch(std::string);
 
          std::string CanMoveScene(const std::string&, bool dir);
+
+         void AllFullStats();
+         void SetTime(float time) { gameTimeElapsed = time; }
+         void ReviveAll();
+
     private:
 
         LevelConfig levelConfig{};

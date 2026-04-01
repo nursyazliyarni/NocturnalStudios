@@ -48,6 +48,24 @@ namespace NocturnalEngine
 			}
 		}
 		void SetAnimalType(AnimalType a) { animalType = a; }
+		int WhatAnimalType()const {
+			switch (animalType)
+			{
+			case AnimalType::FLAMINGO:
+				return 1;
+				break;
+			case AnimalType::HOESE:
+				return 3;
+				break;
+			case AnimalType::SEAL:
+				return 2;
+				break;
+			case AnimalType::OWL:
+				return 4;
+				break;
+			}
+			return 0;
+		}
 		std::string WhatKindOfAnimalIsThis() {
 
 			switch (animalType)

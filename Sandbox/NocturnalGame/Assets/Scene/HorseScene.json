@@ -2864,9 +2864,12 @@
                         },
                         {
                             "ScriptName": "AudioManager"
+                        },
+                        {
+                            "ScriptName": "CheatPanel"
                         }
                     ],
-                    "ScriptCount": 2
+                    "ScriptCount": 3
                 }
             ]
         }

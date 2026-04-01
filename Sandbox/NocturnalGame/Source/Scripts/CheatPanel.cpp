@@ -43,6 +43,9 @@ namespace NocturnalEngine {
 		}
 		else 
 		{
+			if (p_Input->isKeyPressed(GLFW_KEY_Z))p_GameManager.AllFullStats();//all stats full
+			if (p_Input->isKeyPressed(GLFW_KEY_X))p_GameManager.SetTime(p_GameManager.GetTimeScale() * 21300);//time 5:59
+			if (p_Input->isKeyPressed(GLFW_KEY_C))p_GameManager.ReviveAll();//revive all
 			if (p_Input->isKeyPressed(GLFW_KEY_BACKSLASH))ToggleCheat();
 		}
 

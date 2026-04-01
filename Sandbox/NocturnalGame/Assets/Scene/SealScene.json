@@ -213,7 +213,7 @@
                         0.0
                     ],
                     "TextureName": "Characters/seal sick",
-                    "Index_X": 4,
+                    "Index_X": 1,
                     "Index_Y": 0,
                     "Ucoordinates": 603.5,
                     "Vcoordinates": 458.0,
@@ -2834,9 +2834,12 @@
                         },
                         {
                             "ScriptName": "AudioManager"
+                        },
+                        {
+                            "ScriptName": "CheatPanel"
                         }
                     ],
-                    "ScriptCount": 2
+                    "ScriptCount": 3
                 }
             ]
         }
