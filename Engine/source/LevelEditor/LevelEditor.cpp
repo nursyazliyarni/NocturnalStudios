@@ -2995,7 +2995,7 @@ namespace NocturnalEngine {
         {
             mbuildCache.GetCache().erase(terase);
         }
-        std::filesystem::path exportCachePath{ EngineAssetPath / "ExportSelectionCache.json" };
+        std::filesystem::path exportCachePath{ EngineAssetPath.parent_path() / "ExportSelectionCache.json" };
         mbuildCache.SerializeToFile(exportCachePath.string());
         refreshBuildsize = false;
     }
@@ -3027,7 +3027,7 @@ namespace NocturnalEngine {
         mbuildSizeAnalyser = false;
     }
     void LevelEditor::LoadExportCache() {
-        std::filesystem::path exportCachePath{ EngineAssetPath / "ExportSelectionCache.json" };
+        std::filesystem::path exportCachePath{ EngineAssetPath.parent_path() / "ExportSelectionCache.json" };
         if (std::filesystem::exists(exportCachePath))
         {
             mbuildCache.DeserializeFromFile(exportCachePath.string());
