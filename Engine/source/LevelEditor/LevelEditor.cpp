@@ -163,6 +163,7 @@ namespace NocturnalEngine {
         mGameConfig= ServiceLocator::Get().GetGameConfig();
         mgameComponents = ServiceLocator::Get().GetGameComponents();
         LoadScriptsFromFile();
+        LoadExportCache();
         // Seed undo history with the initial editor state.
         PushUndoSnapshot();
 
@@ -205,6 +206,7 @@ namespace NocturnalEngine {
         // Draw modals outside BeginMainMenuBar
         if (mshowNewProjectPopup) DrawNewProjectPopup();
         if (mshowOpenProjectPopup) DrawOpenProjectPopup();
+        if (mbuildSizeAnalyser) DrawBuildSizeAnalyser();
         if (needCloseToRload)ShowReloadPrompt();
 
         if (is_ShowWindow)
@@ -385,10 +387,10 @@ namespace NocturnalEngine {
                     notInsideAnotherProjFolder = true;
                     }
                 }
-                /*if (ImGui::MenuItem("Open Game Project"))
+                if (ImGui::MenuItem("Build Size Analyser"))
                 {
-                    if (is_ShowWindow) mshowOpenProjectPopup = true;
-                }*/
+                    if (is_ShowWindow) mbuildSizeAnalyser = true;
+                }
                 ImGui::EndMenu();
             }
             {
@@ -2525,7 +2527,7 @@ namespace NocturnalEngine {
 
             if (mfileBrowsing)
             {
-                StupidFileBrowser();
+                StupidFileBrowser(mBrowsingPath,currPath);
             }
 
             ImGui::Spacing();
@@ -2607,7 +2609,7 @@ namespace NocturnalEngine {
     a directory to load the project into. I might chantge it so that if i ever 
     implement the open project function i can use it for both
     ****************************************************************************/
-    void LevelEditor::StupidFileBrowser() {
+    void LevelEditor::StupidFileBrowser( std::filesystem::path& browsingPath, std::filesystem::path& pathReference, bool isNewProj) {
         ImGui::OpenPopup("Browse");
 
         // Center the modal
@@ -2618,8 +2620,24 @@ namespace NocturnalEngine {
         if (ImGui::BeginPopupModal("Browse", &mfileBrowsing))
         {
                 
-                std::filesystem::path path = mBrowsingPath;
+                std::filesystem::path path = browsingPath;
                 std::string folderName = path.filename().string();
+                if (!isNewProj) {
+                    if (ImGui::Button("Up"))
+                    {
+                        std::filesystem::path absPath = std::filesystem::absolute(browsingPath);
+
+                        if (absPath.has_parent_path())
+                        {
+
+                            std::filesystem::path parent = absPath.parent_path();
+
+                            browsingPath = parent;
+                        }
+                    }
+                    ImGui::SameLine();
+                }
+
                 ImGui::Text("\\%s", folderName.c_str());
 
                 ImGui::Separator();
@@ -2632,14 +2650,14 @@ namespace NocturnalEngine {
                     showFoldernameInput = false;
                 }
                 else if (ImGui::IsWindowHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Left)) {
-                    currPath = mBrowsingPath;
+                    pathReference = browsingPath;
                 }
                 //our current working directory is sandbox/Gamename so go up one
-                DrawDirectoryTree(mBrowsingPath);
+                DrawDirectoryTree(browsingPath, pathReference);
 
                 if (!showFoldernameInput&&ImGui::BeginPopupContextWindow("SidebarContextMenu"))
                 {
-                    NewFolderPopupThingy(mBrowsingPath);
+                    NewFolderPopupThingy(browsingPath);
                     ImGui::EndPopup();
                 }
                 ImGui::EndChild();
@@ -2650,9 +2668,9 @@ namespace NocturnalEngine {
                 ImGui::SameLine();
 
 
-                if (!currPath.empty())
+                if (!pathReference.empty())
                 {
-                    std::filesystem::path relativePath = std::filesystem::relative(currPath, mBrowsingPath.parent_path());
+                    std::filesystem::path relativePath = std::filesystem::relative(pathReference, browsingPath.parent_path());
                     std::string pathStr = relativePath.string()+"\\";
 
                     size_t copyLen = std::min(pathStr.size(), sizeof(currPathDisplayBuffer) - 1);
@@ -2664,8 +2682,13 @@ namespace NocturnalEngine {
                 ImGui::InputText("##SelectedDirForNewFile", currPathDisplayBuffer, sizeof(currPathDisplayBuffer), ImGuiInputTextFlags_ReadOnly);
                 if (ImGui::Button("Confirm", ImVec2(120, 0)))
                 {
-                    mSelectedProjPath = currPath;
-                    notInsideAnotherProjFolder = p_ProjMaker.IsNotAnotherGameDirectory(mSelectedProjPath / fixedProjName);
+                    if (isNewProj){
+                        mSelectedProjPath = pathReference;
+                        notInsideAnotherProjFolder = p_ProjMaker.IsNotAnotherGameDirectory(mSelectedProjPath / fixedProjName);
+                    }
+                    else {
+                        ExportSelected(pathReference);
+                    }
                     mfileBrowsing = false;
 
                 }
@@ -2684,7 +2707,7 @@ namespace NocturnalEngine {
     /*!*************************************************************************
     This draws the directory tree. Its recursive but only if the directory is open 
     ****************************************************************************/
-    void LevelEditor::DrawDirectoryTree(const std::filesystem::path& path)
+    void LevelEditor::DrawDirectoryTree(const std::filesystem::path& path, std::filesystem::path& returnPath)
     {
         for (const auto& entry : std::filesystem::directory_iterator(path))
         {
@@ -2693,7 +2716,7 @@ namespace NocturnalEngine {
 
             const auto& dirPath = entry.path();
             std::string folderName = dirPath.filename().string();
-            bool isSelected = (dirPath == currPath);
+            bool isSelected = (dirPath == returnPath);
 
             if (isSelected)
             {
@@ -2714,7 +2737,7 @@ namespace NocturnalEngine {
             // If clicked, update curr path
             if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
             {
-                currPath = dirPath;
+                returnPath = dirPath;
             }
 
             //this hold priority over the other right click to add a new folder, u  can also delete
@@ -2738,7 +2761,7 @@ namespace NocturnalEngine {
 
             if (opened)
             {
-                DrawDirectoryTree(dirPath); // recursive call
+                DrawDirectoryTree(dirPath,currPath); // recursive call
                 ImGui::TreePop();
             }
         }
@@ -2823,5 +2846,208 @@ namespace NocturnalEngine {
             ImGui::EndPopup();
         }
     }
-    
+    void LevelEditor::DrawBuildSizeAnalyser() {
+        ImGui::OpenPopup("Build Size Analyser");
+
+        // Centers the modal
+        ImVec2 center = ImGui::GetMainViewport()->GetCenter();
+        ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+        ImGui::SetNextWindowSize(ImVec2(700, 800), ImGuiCond_Appearing);
+
+        if (ImGui::BeginPopupModal("Build Size Analyser", &mbuildSizeAnalyser))
+        {
+            ImGui::Text("Asset List");
+            if (ImGui::Button("Select All"))
+            {
+                for (std::pair<const std::filesystem::path, bool> &pair :  mbuildCache.GetCache())
+                    pair.second = true;
+
+                refreshBuildsize = true;
+            }
+            ImGui::SameLine();
+            if (ImGui::Button("Deselect All"))
+            {
+                for (std::pair<const std::filesystem::path, bool>& pair : mbuildCache.GetCache())
+                    pair.second = false;
+
+                refreshBuildsize = true;
+            }
+            ImGui::Separator();
+            ImGui::Spacing();
+            float childHeight = ImGui::GetContentRegionAvail().y - 75.0f; // Leave space for Cancel button
+            ImGui::BeginChild("AssetListChild", ImVec2(0, childHeight), false, ImGuiWindowFlags_None);
+
+            if (std::filesystem::exists(mAssetsPath))
+            {
+                AssetListSelectableTree(mAssetsPath);
+            }
+
+            ImGui::Text("hi");
+            ImGui::Separator();
+            ImGui::Spacing();
+
+            ImGui::EndChild();
+            ImGui::Separator();
+            //end of scrollable section
+            if (refreshBuildsize)RefreshBuildSize();
+            std::string buildSizeTotal = FormatSize(totalBuildBytes);
+            ImGui::Text("Total build size: %s", buildSizeTotal.c_str());
+
+            if (ImGui::Button("Export", ImVec2(120, 0)))
+            {
+                mfileBrowsing = true;
+                exportPath.clear();
+                exportParentPath = mAssetsPath;
+                exportPath = exportParentPath;
+            }
+
+
+            if (mfileBrowsing)
+            {
+                StupidFileBrowser(exportParentPath, exportPath,false);
+            }
+            ImGui::SameLine();
+            if (ImGui::Button("Cancel", ImVec2(120, 0)))
+            {
+                mbuildSizeAnalyser = false;
+
+            }
+            ImGui::EndPopup();
+        }
+    }
+    void LevelEditor::AssetListSelectableTree(const std::filesystem::path& path, bool parentSelectionChanged , bool newSelection ) {
+        for (const auto& entry : std::filesystem::directory_iterator(path))
+        {
+
+            const auto& dirPath = entry.path();
+            std::string folderName = dirPath.filename().string();
+
+            if (mbuildCache.GetCache().find(dirPath)==mbuildCache.GetCache().end())
+            {
+                mbuildCache.GetCache().emplace(dirPath, true);
+            }
+            std::string checkboxTitle{ "##" + folderName + "tick" };
+            if(parentSelectionChanged)mbuildCache.GetCache()[dirPath] = newSelection;
+            bool selectionChanged=ImGui::Checkbox(checkboxTitle.c_str(), &mbuildCache.GetCache()[dirPath]);
+            if (parentSelectionChanged)selectionChanged = true;
+            
+            ImGui::SameLine();
+            bool isDir = std::filesystem::is_directory(entry);
+            ImGuiTreeNodeFlags flags{};
+            if (!isDir) flags |= ImGuiTreeNodeFlags_Leaf;
+            else flags|=ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_DefaultOpen;
+
+
+            bool opened =ImGui::TreeNodeEx(folderName.c_str(), flags);
+
+            if (!isDir)
+            {
+                unsigned long long size = std::filesystem::file_size(dirPath);
+
+                std::string sizeStr = FormatSize(size);
+
+                float textWidth = ImGui::CalcTextSize(sizeStr.c_str()).x;
+                float availWidth = ImGui::GetContentRegionAvail().x;
+
+                ImGui::SameLine(availWidth - textWidth);
+                ImGui::Text("%s", sizeStr.c_str());
+
+            }
+            refreshBuildsize |= selectionChanged;
+
+
+            if (opened)
+            {
+                if (isDir)
+                {
+                    AssetListSelectableTree(dirPath,selectionChanged, mbuildCache.GetCache()[dirPath]); // recursive call
+                    
+
+                }
+                ImVec4 col = ImGui::GetStyleColorVec4(ImGuiCol_Separator);
+                col.w *= 0.3f; // reduce alpha for subtle look
+
+                ImGui::PushStyleColor(ImGuiCol_Separator, col);
+                ImGui::Separator();
+                ImGui::PopStyleColor();
+                ImGui::TreePop();
+            }
+
+        }
+    }
+
+    void LevelEditor::RefreshBuildSize() {
+        totalBuildBytes = 0;
+        std::vector< std::filesystem::path>toErase{};
+        for (const std::pair<std::filesystem::path,bool> pair:mbuildCache.GetCache())
+        {
+            if (!pair.second)continue;
+            if (std::filesystem::exists(pair.first)&&!std::filesystem::is_directory(pair.first))
+            {
+                totalBuildBytes += std::filesystem::file_size(pair.first);
+            }
+            if (!std::filesystem::exists(pair.first)) {
+                toErase.push_back(pair.first);
+            }
+
+        }
+        for (std::filesystem::path terase:toErase)
+        {
+            mbuildCache.GetCache().erase(terase);
+        }
+        std::filesystem::path exportCachePath{ EngineAssetPath / "ExportSelectionCache.json" };
+        mbuildCache.SerializeToFile(exportCachePath.string());
+        refreshBuildsize = false;
+    }
+
+    void LevelEditor::ExportSelected(const std::filesystem::path& dest)
+    {
+        std::filesystem::path root = mAssetsPath;
+        for (const std::pair<std::filesystem::path, bool> pair : mbuildCache.GetCache())
+        {
+
+            if (!pair.second) continue;
+            if (!std::filesystem::exists(pair.first))continue;
+            if (!std::filesystem::is_regular_file(pair.first)) continue;
+
+            std::filesystem::path relative = std::filesystem::relative(pair.first, root);
+            std::filesystem::path target = dest / relative;
+
+            std::error_code ec;
+
+            std::filesystem::create_directories(target.parent_path(), ec);
+
+            std::filesystem::copy_file(
+                pair.first,
+                target,
+                std::filesystem::copy_options::overwrite_existing,
+                ec
+            );
+        }
+        mbuildSizeAnalyser = false;
+    }
+    void LevelEditor::LoadExportCache() {
+        std::filesystem::path exportCachePath{ EngineAssetPath / "ExportSelectionCache.json" };
+        if (std::filesystem::exists(exportCachePath))
+        {
+            mbuildCache.DeserializeFromFile(exportCachePath.string());
+        }
+
+    }
+    std::string LevelEditor::FormatSize(std::uintmax_t size)
+    {
+        const char* suffix[] = { "B", "KB", "MB", "GB" };
+        int i = 0;
+        double dblSize = size;
+
+        while (dblSize >= 1024 && i < 3)
+        {
+            dblSize /= 1024;
+            i++;
+        }
+
+        char buf[64];
+        sprintf(buf, "%.2f %s", dblSize, suffix[i]);
+        return buf;
+    }
 }
