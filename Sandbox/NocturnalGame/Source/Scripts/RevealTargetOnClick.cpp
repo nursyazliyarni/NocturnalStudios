@@ -49,17 +49,25 @@ namespace NocturnalEngine
         if (!mHasTarget) // Skip if we didn't find the target entity
             return;
 
+
+        if (mInput->MousePressed(GLFW_MOUSE_BUTTON_LEFT) && IsMouseOver(entityID)
+            ||(mInput->IsGamepadConnected()&&mInput->GamepadPressed(GLFW_GAMEPAD_BUTTON_B))) 
+        {
+            ToggleTarget();
+            if (mVisible && p_ecs.HaveComponent<Transform>(mTarget)) // Follow cursor when visible
+            {
+                auto& transform = p_ecs.GetComponent<Transform>(mTarget);
+                transform.SetPos(p_GUI->MousePosition.x, p_GUI->MousePosition.y);
+            }
+            return;
+        }
+
         if (mVisible && p_ecs.HaveComponent<Transform>(mTarget)) // Follow cursor when visible
         {
             auto& transform = p_ecs.GetComponent<Transform>(mTarget);
             transform.SetPos(p_GUI->MousePosition.x, p_GUI->MousePosition.y);
         }
 
-        if (mInput->MousePressed(GLFW_MOUSE_BUTTON_LEFT) && IsMouseOver(entityID)) // Click on OwlMedicine to toggle
-        {
-            ToggleTarget();
-            return;
-        }
 
         if (mVisible && mInput->MousePressed(GLFW_MOUSE_BUTTON_LEFT))
         {
