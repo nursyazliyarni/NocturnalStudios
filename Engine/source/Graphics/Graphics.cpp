@@ -584,7 +584,7 @@ namespace NocturnalEngine {
 			{
 				if (!p_ecs.HaveComponent<Transform>(e)) continue;
 				auto& tr = p_ecs.GetComponent<Transform>(e);
-				pos = glm::vec2(tr.GetPos().x, tr.GetPos().y);
+				pos = glm::vec2(tr.GetWorldPos().x, tr.GetWorldPos().y);
 				pos.x += text.GetPosition()[0];
 				pos.y += text.GetPosition()[1];
 			}
