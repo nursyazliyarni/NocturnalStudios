@@ -120,7 +120,7 @@ namespace NocturnalEngine {
 		std::array<float, 4> rgba_color;
 		std::string mTextureName;
 		vec2D mUVcooridnates;
-		float mAlpha;
+		float mAlpha{1.0f};
 		int MaxIndex_X;
 		std::vector<float>displayTime;
 		const char* sprite_type_ToString(int enum_sprite_type);

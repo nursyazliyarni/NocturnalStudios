@@ -18,6 +18,7 @@
 #include "GUI/GUI.h"
 #include "ECS/SceneManager.h"
 #include "ECS/GameComponentReg.h"
+#include "ECS/PrefabManager.h"
 namespace NocturnalEngine {
     
     void NocturnalGameLayer::Init() {
@@ -108,6 +109,15 @@ namespace NocturnalEngine {
     void NocturnalGameLayer::InputUpdate(float dt) {
         if (!m_window)return;
         if (p_Editor->is_ShowWindow == false) {
+
+            if (p_Input->GamepadGotConnected())
+            {
+                
+            }
+            else if (p_Input->GamepadGotDisconnected()) {
+                
+            }
+
             if (p_Input->IsGamepadConnected() && p_Input->GetLastDevice() == InputDevice::Gamepad)
             {
                 static constexpr float CURSOR_SPEED = 800.0f; // pixels per second

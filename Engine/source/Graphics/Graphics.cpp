@@ -442,7 +442,8 @@ namespace NocturnalEngine {
 							{ transform.GetWorldPos().x, transform.GetWorldPos().y },
 							{ transform.GetScale().x, transform.GetScale().y },
 							transform.GetRot(),
-							renderTexture
+							renderTexture,
+							{ 1.f,1.f,1.f,sprite.GetAlpha()}
 						);
 					}
 
