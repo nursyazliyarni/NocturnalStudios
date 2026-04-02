@@ -201,7 +201,7 @@ namespace NocturnalEngine {
         void CombinedSceneUpdate(float dt);
         Entity GetEntityByName(const std::string name);
 
-        unsigned int levelNum{ 1 }, levelCount{ 3 };
+        unsigned int levelNum{ 2 }, levelCount{ 3 };
         bool levelDataLoaded{ false };
         bool LevelDataToMap(int levelN);
 

@@ -104,8 +104,8 @@ namespace NocturnalEngine {
 
         bool  mGamepadConnected = false;
 
-        unsigned char mGamepadCurr[14] = {};
-        unsigned char mGamepadPrev[14] = {};
+        unsigned char mGamepadCurr[15] = {};
+        unsigned char mGamepadPrev[15] = {};
 
         float mGamepadAxes[6] = {};
 
