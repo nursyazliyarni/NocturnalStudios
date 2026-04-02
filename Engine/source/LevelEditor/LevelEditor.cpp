@@ -163,6 +163,7 @@ namespace NocturnalEngine {
         mGameConfig= ServiceLocator::Get().GetGameConfig();
         mgameComponents = ServiceLocator::Get().GetGameComponents();
         LoadScriptsFromFile();
+        LoadExportCache();
         // Seed undo history with the initial editor state.
         PushUndoSnapshot();
 
@@ -205,6 +206,7 @@ namespace NocturnalEngine {
         // Draw modals outside BeginMainMenuBar
         if (mshowNewProjectPopup) DrawNewProjectPopup();
         if (mshowOpenProjectPopup) DrawOpenProjectPopup();
+        if (mbuildSizeAnalyser) DrawBuildSizeAnalyser();
         if (needCloseToRload)ShowReloadPrompt();
 
         if (is_ShowWindow)
@@ -385,10 +387,10 @@ namespace NocturnalEngine {
                     notInsideAnotherProjFolder = true;
                     }
                 }
-                /*if (ImGui::MenuItem("Open Game Project"))
+                if (ImGui::MenuItem("Build Size Analyser"))
                 {
-                    if (is_ShowWindow) mshowOpenProjectPopup = true;
-                }*/
+                    if (is_ShowWindow) mbuildSizeAnalyser = true;
+                }
                 ImGui::EndMenu();
             }
             {
@@ -1918,265 +1920,287 @@ namespace NocturnalEngine {
 
         bool changed = false;
         changed |= ImGui::Checkbox("Animated", &sprite.is_Animated);
-        // Animated is the single source of truth. Keep legacy field synced for compatibility.
-        if (sprite.is_SpriteSheet != sprite.is_Animated)
-        {
-            sprite.is_SpriteSheet = sprite.is_Animated;
-            changed = true;
-        }
 
-        const std::string& textureName = sprite.GetTexture();
-        ImGui::Text("Current Sprite Texture: %s", textureName.c_str());
-
-        if (!sprite.is_Animated)
-        {
-            ImGui::Text("Enable Animated to edit animation settings.");
-            ImGui::End();
-            return;
-        }
-
-        if (!sprite.stateManagerEnabled)
-        {
-            ImGui::Separator();
-            ImGui::Text("Spritesheet UV");
-            changed |= ImGui::DragFloat("U", &sprite.GetUVCoor().x, 0.5f);
-            changed |= ImGui::DragFloat("V", &sprite.GetUVCoor().y, 0.5f);
-        }
-
-        ImGui::Separator();
-        ImGui::Text("Animation State Manager");
-        changed |= ImGui::Checkbox("Enable State Manager", &sprite.stateManagerEnabled);
-
-        if (sprite.stateManagerEnabled)
-        {
-            // Shared picker used by each rule to select a texture from loaded assets.
-            auto drawStateTexturePicker = [&](const char* label, std::string& textureKey, int id)
+        if (sprite.Get_SPRITE_type() == Sprite::sprite_type::texture) {
+            // Animated is the single source of truth. Keep legacy field synced for compatibility.
+            if (sprite.is_SpriteSheet != sprite.is_Animated)
             {
-                ImGui::PushID(id);
-                ImGui::Text("%s", label); ImGui::SameLine();
-                ImGui::SetNextItemWidth(180.0f);
-                if (ImGui::BeginCombo("##StateTexture", textureKey.c_str()))
-                {
-                    for (auto& [str, tex] : ResourceManager::textures)
+                sprite.is_SpriteSheet = sprite.is_Animated;
+                changed = true;
+            }
+
+            const std::string& textureName = sprite.GetTexture();
+            ImGui::Text("Current Sprite Texture: %s", textureName.c_str());
+
+            if (!sprite.is_Animated)
+            {
+                ImGui::Text("Enable Animated to edit animation settings.");
+                ImGui::End();
+                return;
+            }
+
+            if (!sprite.stateManagerEnabled)
+            {
+                ImGui::Separator();
+                ImGui::Text("Spritesheet UV");
+                changed |= ImGui::DragFloat("U", &sprite.GetUVCoor().x, 0.5f);
+                changed |= ImGui::DragFloat("V", &sprite.GetUVCoor().y, 0.5f);
+            }
+
+            ImGui::Separator();
+            ImGui::Text("Animation State Manager");
+            changed |= ImGui::Checkbox("Enable State Manager", &sprite.stateManagerEnabled);
+
+            if (sprite.stateManagerEnabled)
+            {
+                // Shared picker used by each rule to select a texture from loaded assets.
+                auto drawStateTexturePicker = [&](const char* label, std::string& textureKey, int id)
                     {
-                        UNREFERENCED_PARAMETER(tex);
-                        if (ImGui::Selectable(str.c_str()))
+                        ImGui::PushID(id);
+                        ImGui::Text("%s", label); ImGui::SameLine();
+                        ImGui::SetNextItemWidth(180.0f);
+                        if (ImGui::BeginCombo("##StateTexture", textureKey.c_str()))
                         {
-                            textureKey = str;
+                            for (auto& [str, tex] : ResourceManager::textures)
+                            {
+                                UNREFERENCED_PARAMETER(tex);
+                                if (ImGui::Selectable(str.c_str()))
+                                {
+                                    textureKey = str;
+                                    changed = true;
+                                }
+                            }
+                            ImGui::EndCombo();
+                        }
+
+                        if (ImGui::BeginDragDropTarget())
+                        {
+                            if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Textures"))
+                            {
+                                textureKey = *(const std::string*)payload->Data;
+                                changed = true;
+                            }
+                            ImGui::EndDragDropTarget();
+                        }
+                        ImGui::PopID();
+                    };
+
+                std::vector<std::string> previewLabels{};
+                previewLabels.emplace_back("Auto");
+                // Preview options mirror the current rule list.
+                for (size_t i = 0; i < sprite.stateRules.size(); ++i)
+                {
+                    if (sprite.stateRules[i].name.empty())
+                        previewLabels.emplace_back("State " + std::to_string(i + 1));
+                    else
+                        previewLabels.push_back(sprite.stateRules[i].name);
+                }
+                std::vector<const char*> previewItems{};
+                previewItems.reserve(previewLabels.size());
+                for (const std::string& lbl : previewLabels)
+                    previewItems.push_back(lbl.c_str());
+                if (!previewItems.empty())
+                    changed |= ImGui::Combo("Preview State", &sprite.statePreviewMode, previewItems.data(), static_cast<int>(previewItems.size()));
+
+                if (ImGui::Button("Add State"))
+                {
+                    // New rules default to "Always" and current texture for quick setup.
+                    Sprite::AnimationStateRule r{};
+                    r.name = "State " + std::to_string(sprite.stateRules.size() + 1);
+                    r.textureKey = sprite.GetTexture();
+                    r.uSize = sprite.GetUVCoor().x;
+                    r.vSize = sprite.GetUVCoor().y;
+                    r.source = 3;
+                    r.compare = 0;
+                    r.threshold = 0.5f;
+                    r.priority = 0;
+                    r.enabled = true;
+                    sprite.stateRules.push_back(r);
+                    changed = true;
+                }
+
+                int deleteIndex = -1;
+                for (size_t i = 0; i < sprite.stateRules.size(); ++i)
+                {
+                    auto& rule = sprite.stateRules[i];
+                    ImGui::PushID(static_cast<int>(i) + 5100);
+
+                    std::string header = "Rule " + std::to_string(i + 1) + ": " +
+                        (rule.name.empty() ? "Unnamed" : rule.name) +
+                        "###AnimStateRule" + std::to_string(i);
+                    if (ImGui::TreeNode(header.c_str()))
+                    {
+                        changed |= ImGui::Checkbox("Enabled", &rule.enabled);
+
+                        char nameBuf[64]{};
+                        strncpy(nameBuf, rule.name.c_str(), sizeof(nameBuf) - 1);
+                        if (ImGui::InputText("State Name", nameBuf, sizeof(nameBuf)))
+                        {
+                            rule.name = nameBuf;
                             changed = true;
                         }
+
+                        drawStateTexturePicker("Texture", rule.textureKey, 6000 + static_cast<int>(i));
+                        changed |= ImGui::DragFloat("U", &rule.uSize, 0.5f, 1.0f, 4096.0f, "%.1f");
+                        changed |= ImGui::DragFloat("V", &rule.vSize, 0.5f, 1.0f, 4096.0f, "%.1f");
+
+                        const char* sourceItems[] = { "Hunger", "Health", "Sanity", "Always" };
+                        changed |= ImGui::Combo("Source", &rule.source, sourceItems, IM_ARRAYSIZE(sourceItems));
+
+                        const char* compareItems[] = { "<= Threshold", ">= Threshold" };
+                        changed |= ImGui::Combo("Condition", &rule.compare, compareItems, IM_ARRAYSIZE(compareItems));
+
+                        if (rule.source != 3)
+                            changed |= ImGui::SliderFloat("Threshold", &rule.threshold, 0.0f, 1.0f, "%.2f");
+                        else
+                            ImGui::TextDisabled("Always: threshold ignored");
+
+                        changed |= ImGui::DragInt("Priority", &rule.priority, 1.0f);
+
+                        if (ImGui::Button("Delete State"))
+                            deleteIndex = static_cast<int>(i);
+
+                        ImGui::TreePop();
                     }
-                    ImGui::EndCombo();
+                    ImGui::PopID();
                 }
 
-                if (ImGui::BeginDragDropTarget())
+                if (deleteIndex >= 0 && deleteIndex < static_cast<int>(sprite.stateRules.size()))
                 {
-                    if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Textures"))
-                    {
-                        textureKey = *(const std::string*)payload->Data;
-                        changed = true;
-                    }
+                    // Delete after the loop to avoid invalidating references while drawing.
+                    sprite.stateRules.erase(sprite.stateRules.begin() + deleteIndex);
+                    if (sprite.statePreviewMode > static_cast<int>(sprite.stateRules.size()))
+                        sprite.statePreviewMode = 0;
+                    changed = true;
+                    
                     ImGui::EndDragDropTarget();
                 }
-                ImGui::PopID();
-            };
 
-            std::vector<std::string> previewLabels{};
-            previewLabels.emplace_back("Auto");
-            // Preview options mirror the current rule list.
-            for (size_t i = 0; i < sprite.stateRules.size(); ++i)
-            {
-                if (sprite.stateRules[i].name.empty())
-                    previewLabels.emplace_back("State " + std::to_string(i + 1));
-                else
-                    previewLabels.push_back(sprite.stateRules[i].name);
-            }
-            std::vector<const char*> previewItems{};
-            previewItems.reserve(previewLabels.size());
-            for (const std::string& lbl : previewLabels)
-                previewItems.push_back(lbl.c_str());
-            if (!previewItems.empty())
-                changed |= ImGui::Combo("Preview State", &sprite.statePreviewMode, previewItems.data(), static_cast<int>(previewItems.size()));
-
-            if (ImGui::Button("Add State"))
-            {
-                // New rules default to "Always" and current texture for quick setup.
-                Sprite::AnimationStateRule r{};
-                r.name = "State " + std::to_string(sprite.stateRules.size() + 1);
-                r.textureKey = sprite.GetTexture();
-                r.uSize = sprite.GetUVCoor().x;
-                r.vSize = sprite.GetUVCoor().y;
-                r.source = 3;
-                r.compare = 0;
-                r.threshold = 0.5f;
-                r.priority = 0;
-                r.enabled = true;
-                sprite.stateRules.push_back(r);
-                changed = true;
-            }
-
-            int deleteIndex = -1;
-            for (size_t i = 0; i < sprite.stateRules.size(); ++i)
-            {
-                auto& rule = sprite.stateRules[i];
-                ImGui::PushID(static_cast<int>(i) + 5100);
-
-                std::string header = "Rule " + std::to_string(i + 1) + ": " +
-                    (rule.name.empty() ? "Unnamed" : rule.name) +
-                    "###AnimStateRule" + std::to_string(i);
-                if (ImGui::TreeNode(header.c_str()))
+                // Logic scripts do not run while editor is active, so apply preview texture directly here.
+                if (sprite.statePreviewMode > 0 &&
+                    sprite.statePreviewMode <= static_cast<int>(sprite.stateRules.size()))
                 {
-                    changed |= ImGui::Checkbox("Enabled", &rule.enabled);
+                    if (Animation::ApplyStateRule(sprite, sprite.statePreviewMode - 1))
+                        changed = true;
+                }
+            }
 
-                    char nameBuf[64]{};
-                    strncpy(nameBuf, rule.name.c_str(), sizeof(nameBuf) - 1);
-                    if (ImGui::InputText("State Name", nameBuf, sizeof(nameBuf)))
+            ImGui::Separator();
+            ImGui::Text("Spritesheet Timing Editor");
+
+            // Build editable spritesheet list from the active sprite texture + state-manager rules.
+            std::vector<std::string> editableTextures{};
+            auto appendUniqueTexture = [&](const std::string& key)
+                {
+                    if (key.empty())
+                        return;
+                    if (std::find(editableTextures.begin(), editableTextures.end(), key) == editableTextures.end())
+                        editableTextures.push_back(key);
+                };
+            appendUniqueTexture(textureName);
+            if (sprite.stateManagerEnabled)
+            {
+                for (const auto& rule : sprite.stateRules)
+                    appendUniqueTexture(rule.textureKey);
+            }
+
+            if (editableTextures.empty())
+            {
+                ImGui::TextDisabled("No spritesheets available to edit.");
+            }
+            else
+            {
+                static int selectedTimingSheet = 0;
+                if (selectedTimingSheet >= static_cast<int>(editableTextures.size()))
+                    selectedTimingSheet = 0;
+
+                std::vector<const char*> timingItems{};
+                timingItems.reserve(editableTextures.size());
+                for (const auto& key : editableTextures)
+                    timingItems.push_back(key.c_str());
+
+                changed |= ImGui::Combo("Timing Target", &selectedTimingSheet, timingItems.data(), static_cast<int>(timingItems.size()));
+                const std::string targetTexture = editableTextures[selectedTimingSheet];
+                ImGui::Text("Editing Texture: %s", targetTexture.c_str());
+                if (ImGui::Button("Set Current Sprite To Timing Target"))
+                {
+                    if (ResourceManager::GetTexture(targetTexture))
                     {
-                        rule.name = nameBuf;
+                        sprite.SetTexture(targetTexture);
+                        int x = 0;
+                        int y = sprite.GetIndex().y;
+                        sprite.SetIndex(x, y);
+                        sprite.internaltimer = 0.0f;
                         changed = true;
                     }
-
-                    drawStateTexturePicker("Texture", rule.textureKey, 6000 + static_cast<int>(i));
-                    changed |= ImGui::DragFloat("U", &rule.uSize, 0.5f, 1.0f, 4096.0f, "%.1f");
-                    changed |= ImGui::DragFloat("V", &rule.vSize, 0.5f, 1.0f, 4096.0f, "%.1f");
-
-                    const char* sourceItems[] = { "Hunger", "Health", "Sanity", "Always" };
-                    changed |= ImGui::Combo("Source", &rule.source, sourceItems, IM_ARRAYSIZE(sourceItems));
-
-                    const char* compareItems[] = { "<= Threshold", ">= Threshold" };
-                    changed |= ImGui::Combo("Condition", &rule.compare, compareItems, IM_ARRAYSIZE(compareItems));
-
-                    if (rule.source != 3)
-                        changed |= ImGui::SliderFloat("Threshold", &rule.threshold, 0.0f, 1.0f, "%.2f");
-                    else
-                        ImGui::TextDisabled("Always: threshold ignored");
-
-                    changed |= ImGui::DragInt("Priority", &rule.priority, 1.0f);
-
-                    if (ImGui::Button("Delete State"))
-                        deleteIndex = static_cast<int>(i);
-
-                    ImGui::TreePop();
                 }
-                ImGui::PopID();
-            }
 
-            if (deleteIndex >= 0 && deleteIndex < static_cast<int>(sprite.stateRules.size()))
-            {
-                // Delete after the loop to avoid invalidating references while drawing.
-                sprite.stateRules.erase(sprite.stateRules.begin() + deleteIndex);
-                if (sprite.statePreviewMode > static_cast<int>(sprite.stateRules.size()))
-                    sprite.statePreviewMode = 0;
-                changed = true;
-            }
-
-            // Logic scripts do not run while editor is active, so apply preview texture directly here.
-            if (sprite.statePreviewMode > 0 &&
-                sprite.statePreviewMode <= static_cast<int>(sprite.stateRules.size()))
-            {
-                if (Animation::ApplyStateRule(sprite, sprite.statePreviewMode - 1))
-                    changed = true;
-            }
-        }
-
-        ImGui::Separator();
-        ImGui::Text("Spritesheet Timing Editor");
-
-        // Build editable spritesheet list from the active sprite texture + state-manager rules.
-        std::vector<std::string> editableTextures{};
-        auto appendUniqueTexture = [&](const std::string& key)
-        {
-            if (key.empty())
-                return;
-            if (std::find(editableTextures.begin(), editableTextures.end(), key) == editableTextures.end())
-                editableTextures.push_back(key);
-        };
-        appendUniqueTexture(textureName);
-        if (sprite.stateManagerEnabled)
-        {
-            for (const auto& rule : sprite.stateRules)
-                appendUniqueTexture(rule.textureKey);
-        }
-
-        if (editableTextures.empty())
-        {
-            ImGui::TextDisabled("No spritesheets available to edit.");
-        }
-        else
-        {
-            static int selectedTimingSheet = 0;
-            if (selectedTimingSheet >= static_cast<int>(editableTextures.size()))
-                selectedTimingSheet = 0;
-
-            std::vector<const char*> timingItems{};
-            timingItems.reserve(editableTextures.size());
-            for (const auto& key : editableTextures)
-                timingItems.push_back(key.c_str());
-
-            changed |= ImGui::Combo("Timing Target", &selectedTimingSheet, timingItems.data(), static_cast<int>(timingItems.size()));
-            const std::string targetTexture = editableTextures[selectedTimingSheet];
-            ImGui::Text("Editing Texture: %s", targetTexture.c_str());
-            if (ImGui::Button("Set Current Sprite To Timing Target"))
-            {
-                if (ResourceManager::GetTexture(targetTexture))
+                int maxFrames = 1;
+                auto texIt = ResourceManager::textures.find(targetTexture);
+                if (texIt != ResourceManager::textures.end() && texIt->second)
                 {
-                    sprite.SetTexture(targetTexture);
-                    int x = 0;
-                    int y = sprite.GetIndex().y;
-                    sprite.SetIndex(x, y);
-                    sprite.internaltimer = 0.0f;
+                    const int texFrames = static_cast<int>(texIt->second->GetWidth() / 512);
+                    if (texFrames > 0)
+                        maxFrames = texFrames;
+                }
+
+                auto& targetTimes = Animation::spriteContainer[targetTexture];
+                if (targetTimes.empty())
+                {
+                    // If no data exists yet, bootstrap from current sprite timings or default values.
+                    if (targetTexture == textureName && !sprite.GetDisplayTime().empty())
+                        targetTimes = sprite.GetDisplayTime();
+                    else
+                        targetTimes.resize(maxFrames, 0.1f);
+                }
+
+                ImGui::Text("Detected Frames: %d", maxFrames);
+                if (ImGui::Button("Sync Frames To Texture Width"))
+                {
+                    targetTimes.resize(maxFrames > 0 ? maxFrames : 1, 0.1f);
                     changed = true;
+                }
+
+                for (int i = 0; i < static_cast<int>(targetTimes.size()); ++i)
+                {
+                    std::string label = "Frame " + std::to_string(i);
+                    if (ImGui::DragFloat(label.c_str(), &targetTimes[i], 0.005f, 0.0f, 10.0f, "%.3f s"))
+                        changed = true;
+                }
+
+                // Keep sprite-local timing in sync when editing the currently assigned sprite texture.
+                if (targetTexture == textureName)
+                {
+                    sprite.GetDisplayTime() = targetTimes;
+                    sprite.GetMaxIndex() = static_cast<int>(targetTimes.size());
                 }
             }
 
-            int maxFrames = 1;
-            auto texIt = ResourceManager::textures.find(targetTexture);
-            if (texIt != ResourceManager::textures.end() && texIt->second)
-            {
-                const int texFrames = static_cast<int>(texIt->second->GetWidth() / 512);
-                if (texFrames > 0)
-                    maxFrames = texFrames;
-            }
+            if (changed)
+                animationEditDirty = true;
 
-            auto& targetTimes = Animation::spriteContainer[targetTexture];
-            if (targetTimes.empty())
+            if (animationEditDirty && !ImGui::IsAnyItemActive())
             {
-                // If no data exists yet, bootstrap from current sprite timings or default values.
-                if (targetTexture == textureName && !sprite.GetDisplayTime().empty())
-                    targetTimes = sprite.GetDisplayTime();
-                else
-                    targetTimes.resize(maxFrames, 0.1f);
-            }
-
-            ImGui::Text("Detected Frames: %d", maxFrames);
-            if (ImGui::Button("Sync Frames To Texture Width"))
-            {
-                targetTimes.resize(maxFrames > 0 ? maxFrames : 1, 0.1f);
-                changed = true;
-            }
-
-            for (int i = 0; i < static_cast<int>(targetTimes.size()); ++i)
-            {
-                std::string label = "Frame " + std::to_string(i);
-                if (ImGui::DragFloat(label.c_str(), &targetTimes[i], 0.005f, 0.0f, 10.0f, "%.3f s"))
-                    changed = true;
-            }
-
-            // Keep sprite-local timing in sync when editing the currently assigned sprite texture.
-            if (targetTexture == textureName)
-            {
-                sprite.GetDisplayTime() = targetTimes;
-                sprite.GetMaxIndex() = static_cast<int>(targetTimes.size());
+                PushUndoSnapshotAndInvalidateRedo();
+                animationEditDirty = false;
             }
         }
 
-        if (changed)
-            animationEditDirty = true;
+        else { //here is the animation for shape
+            if (sprite.Get_SHAPE_type() == Sprite::shape_type::rectangle && sprite.is_Animated) {
+                ImGui::PushItemWidth(100.0f);
+                ImGui::Text("length of dashed lines"); ImGui::SameLine();
+                ImGui::DragFloat("##length of dashed lines", &sprite.line_len, 0.001f, 0.001f, 0.1f);
+                sprite.line_len = std::clamp(sprite.line_len, 0.001f, 0.1f);
 
-        if (animationEditDirty && !ImGui::IsAnyItemActive())
-        {
-            PushUndoSnapshotAndInvalidateRedo();
-            animationEditDirty = false;
+                ImGui::Text("distance between each dashed lines"); ImGui::SameLine();
+                ImGui::DragFloat("##distance between each dashed lines", &sprite.gap_len, 0.001f, 0.0f, 0.1f);
+                sprite.gap_len = std::clamp(sprite.gap_len, 0.001f, 0.1f);
+
+                ImGui::Text("movement speed of dashed lines"); ImGui::SameLine();
+                ImGui::DragFloat("##movement speed of dashed lines", &sprite.line_mvspeed, 0.01f, -1.0f, 1.0f);
+                sprite.line_mvspeed = std::clamp(sprite.line_mvspeed, -1.0f, 1.0f);
+            }
         }
 
         ImGui::End();
@@ -2393,7 +2417,7 @@ namespace NocturnalEngine {
 
             if (mfileBrowsing)
             {
-                StupidFileBrowser();
+                StupidFileBrowser(mBrowsingPath,currPath);
             }
 
             ImGui::Spacing();
@@ -2475,7 +2499,7 @@ namespace NocturnalEngine {
     a directory to load the project into. I might chantge it so that if i ever 
     implement the open project function i can use it for both
     ****************************************************************************/
-    void LevelEditor::StupidFileBrowser() {
+    void LevelEditor::StupidFileBrowser( std::filesystem::path& browsingPath, std::filesystem::path& pathReference, bool isNewProj) {
         ImGui::OpenPopup("Browse");
 
         // Center the modal
@@ -2486,8 +2510,24 @@ namespace NocturnalEngine {
         if (ImGui::BeginPopupModal("Browse", &mfileBrowsing))
         {
                 
-                std::filesystem::path path = mBrowsingPath;
+                std::filesystem::path path = browsingPath;
                 std::string folderName = path.filename().string();
+                if (!isNewProj) {
+                    if (ImGui::Button("Up"))
+                    {
+                        std::filesystem::path absPath = std::filesystem::absolute(browsingPath);
+
+                        if (absPath.has_parent_path())
+                        {
+
+                            std::filesystem::path parent = absPath.parent_path();
+
+                            browsingPath = parent;
+                        }
+                    }
+                    ImGui::SameLine();
+                }
+
                 ImGui::Text("\\%s", folderName.c_str());
 
                 ImGui::Separator();
@@ -2500,14 +2540,14 @@ namespace NocturnalEngine {
                     showFoldernameInput = false;
                 }
                 else if (ImGui::IsWindowHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Left)) {
-                    currPath = mBrowsingPath;
+                    pathReference = browsingPath;
                 }
                 //our current working directory is sandbox/Gamename so go up one
-                DrawDirectoryTree(mBrowsingPath);
+                DrawDirectoryTree(browsingPath, pathReference);
 
                 if (!showFoldernameInput&&ImGui::BeginPopupContextWindow("SidebarContextMenu"))
                 {
-                    NewFolderPopupThingy(mBrowsingPath);
+                    NewFolderPopupThingy(browsingPath);
                     ImGui::EndPopup();
                 }
                 ImGui::EndChild();
@@ -2518,9 +2558,9 @@ namespace NocturnalEngine {
                 ImGui::SameLine();
 
 
-                if (!currPath.empty())
+                if (!pathReference.empty())
                 {
-                    std::filesystem::path relativePath = std::filesystem::relative(currPath, mBrowsingPath.parent_path());
+                    std::filesystem::path relativePath = std::filesystem::relative(pathReference, browsingPath.parent_path());
                     std::string pathStr = relativePath.string()+"\\";
 
                     size_t copyLen = std::min(pathStr.size(), sizeof(currPathDisplayBuffer) - 1);
@@ -2532,8 +2572,13 @@ namespace NocturnalEngine {
                 ImGui::InputText("##SelectedDirForNewFile", currPathDisplayBuffer, sizeof(currPathDisplayBuffer), ImGuiInputTextFlags_ReadOnly);
                 if (ImGui::Button("Confirm", ImVec2(120, 0)))
                 {
-                    mSelectedProjPath = currPath;
-                    notInsideAnotherProjFolder = p_ProjMaker.IsNotAnotherGameDirectory(mSelectedProjPath / fixedProjName);
+                    if (isNewProj){
+                        mSelectedProjPath = pathReference;
+                        notInsideAnotherProjFolder = p_ProjMaker.IsNotAnotherGameDirectory(mSelectedProjPath / fixedProjName);
+                    }
+                    else {
+                        ExportSelected(pathReference);
+                    }
                     mfileBrowsing = false;
 
                 }
@@ -2552,7 +2597,7 @@ namespace NocturnalEngine {
     /*!*************************************************************************
     This draws the directory tree. Its recursive but only if the directory is open 
     ****************************************************************************/
-    void LevelEditor::DrawDirectoryTree(const std::filesystem::path& path)
+    void LevelEditor::DrawDirectoryTree(const std::filesystem::path& path, std::filesystem::path& returnPath)
     {
         for (const auto& entry : std::filesystem::directory_iterator(path))
         {
@@ -2561,7 +2606,7 @@ namespace NocturnalEngine {
 
             const auto& dirPath = entry.path();
             std::string folderName = dirPath.filename().string();
-            bool isSelected = (dirPath == currPath);
+            bool isSelected = (dirPath == returnPath);
 
             if (isSelected)
             {
@@ -2582,7 +2627,7 @@ namespace NocturnalEngine {
             // If clicked, update curr path
             if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
             {
-                currPath = dirPath;
+                returnPath = dirPath;
             }
 
             //this hold priority over the other right click to add a new folder, u  can also delete
@@ -2606,7 +2651,7 @@ namespace NocturnalEngine {
 
             if (opened)
             {
-                DrawDirectoryTree(dirPath); // recursive call
+                DrawDirectoryTree(dirPath,currPath); // recursive call
                 ImGui::TreePop();
             }
         }
@@ -2691,5 +2736,208 @@ namespace NocturnalEngine {
             ImGui::EndPopup();
         }
     }
-    
+    void LevelEditor::DrawBuildSizeAnalyser() {
+        ImGui::OpenPopup("Build Size Analyser");
+
+        // Centers the modal
+        ImVec2 center = ImGui::GetMainViewport()->GetCenter();
+        ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+        ImGui::SetNextWindowSize(ImVec2(700, 800), ImGuiCond_Appearing);
+
+        if (ImGui::BeginPopupModal("Build Size Analyser", &mbuildSizeAnalyser))
+        {
+            ImGui::Text("Asset List");
+            if (ImGui::Button("Select All"))
+            {
+                for (std::pair<const std::filesystem::path, bool> &pair :  mbuildCache.GetCache())
+                    pair.second = true;
+
+                refreshBuildsize = true;
+            }
+            ImGui::SameLine();
+            if (ImGui::Button("Deselect All"))
+            {
+                for (std::pair<const std::filesystem::path, bool>& pair : mbuildCache.GetCache())
+                    pair.second = false;
+
+                refreshBuildsize = true;
+            }
+            ImGui::Separator();
+            ImGui::Spacing();
+            float childHeight = ImGui::GetContentRegionAvail().y - 75.0f; // Leave space for Cancel button
+            ImGui::BeginChild("AssetListChild", ImVec2(0, childHeight), false, ImGuiWindowFlags_None);
+
+            if (std::filesystem::exists(mAssetsPath))
+            {
+                AssetListSelectableTree(mAssetsPath);
+            }
+
+            ImGui::Text("hi");
+            ImGui::Separator();
+            ImGui::Spacing();
+
+            ImGui::EndChild();
+            ImGui::Separator();
+            //end of scrollable section
+            if (refreshBuildsize)RefreshBuildSize();
+            std::string buildSizeTotal = FormatSize(totalBuildBytes);
+            ImGui::Text("Total build size: %s", buildSizeTotal.c_str());
+
+            if (ImGui::Button("Export", ImVec2(120, 0)))
+            {
+                mfileBrowsing = true;
+                exportPath.clear();
+                exportParentPath = mAssetsPath;
+                exportPath = exportParentPath;
+            }
+
+
+            if (mfileBrowsing)
+            {
+                StupidFileBrowser(exportParentPath, exportPath,false);
+            }
+            ImGui::SameLine();
+            if (ImGui::Button("Cancel", ImVec2(120, 0)))
+            {
+                mbuildSizeAnalyser = false;
+
+            }
+            ImGui::EndPopup();
+        }
+    }
+    void LevelEditor::AssetListSelectableTree(const std::filesystem::path& path, bool parentSelectionChanged , bool newSelection ) {
+        for (const auto& entry : std::filesystem::directory_iterator(path))
+        {
+
+            const auto& dirPath = entry.path();
+            std::string folderName = dirPath.filename().string();
+
+            if (mbuildCache.GetCache().find(dirPath)==mbuildCache.GetCache().end())
+            {
+                mbuildCache.GetCache().emplace(dirPath, true);
+            }
+            std::string checkboxTitle{ "##" + folderName + "tick" };
+            if(parentSelectionChanged)mbuildCache.GetCache()[dirPath] = newSelection;
+            bool selectionChanged=ImGui::Checkbox(checkboxTitle.c_str(), &mbuildCache.GetCache()[dirPath]);
+            if (parentSelectionChanged)selectionChanged = true;
+            
+            ImGui::SameLine();
+            bool isDir = std::filesystem::is_directory(entry);
+            ImGuiTreeNodeFlags flags{};
+            if (!isDir) flags |= ImGuiTreeNodeFlags_Leaf;
+            else flags|=ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_DefaultOpen;
+
+
+            bool opened =ImGui::TreeNodeEx(folderName.c_str(), flags);
+
+            if (!isDir)
+            {
+                unsigned long long size = std::filesystem::file_size(dirPath);
+
+                std::string sizeStr = FormatSize(size);
+
+                float textWidth = ImGui::CalcTextSize(sizeStr.c_str()).x;
+                float availWidth = ImGui::GetContentRegionAvail().x;
+
+                ImGui::SameLine(availWidth - textWidth);
+                ImGui::Text("%s", sizeStr.c_str());
+
+            }
+            refreshBuildsize |= selectionChanged;
+
+
+            if (opened)
+            {
+                if (isDir)
+                {
+                    AssetListSelectableTree(dirPath,selectionChanged, mbuildCache.GetCache()[dirPath]); // recursive call
+                    
+
+                }
+                ImVec4 col = ImGui::GetStyleColorVec4(ImGuiCol_Separator);
+                col.w *= 0.3f; // reduce alpha for subtle look
+
+                ImGui::PushStyleColor(ImGuiCol_Separator, col);
+                ImGui::Separator();
+                ImGui::PopStyleColor();
+                ImGui::TreePop();
+            }
+
+        }
+    }
+
+    void LevelEditor::RefreshBuildSize() {
+        totalBuildBytes = 0;
+        std::vector< std::filesystem::path>toErase{};
+        for (const std::pair<std::filesystem::path,bool> pair:mbuildCache.GetCache())
+        {
+            if (!pair.second)continue;
+            if (std::filesystem::exists(pair.first)&&!std::filesystem::is_directory(pair.first))
+            {
+                totalBuildBytes += std::filesystem::file_size(pair.first);
+            }
+            if (!std::filesystem::exists(pair.first)) {
+                toErase.push_back(pair.first);
+            }
+
+        }
+        for (std::filesystem::path terase:toErase)
+        {
+            mbuildCache.GetCache().erase(terase);
+        }
+        std::filesystem::path exportCachePath{ EngineAssetPath.parent_path() / "ExportSelectionCache.json" };
+        mbuildCache.SerializeToFile(exportCachePath.string());
+        refreshBuildsize = false;
+    }
+
+    void LevelEditor::ExportSelected(const std::filesystem::path& dest)
+    {
+        std::filesystem::path root = mAssetsPath;
+        for (const std::pair<std::filesystem::path, bool> pair : mbuildCache.GetCache())
+        {
+
+            if (!pair.second) continue;
+            if (!std::filesystem::exists(pair.first))continue;
+            if (!std::filesystem::is_regular_file(pair.first)) continue;
+
+            std::filesystem::path relative = std::filesystem::relative(pair.first, root);
+            std::filesystem::path target = dest / relative;
+
+            std::error_code ec;
+
+            std::filesystem::create_directories(target.parent_path(), ec);
+
+            std::filesystem::copy_file(
+                pair.first,
+                target,
+                std::filesystem::copy_options::overwrite_existing,
+                ec
+            );
+        }
+        mbuildSizeAnalyser = false;
+    }
+    void LevelEditor::LoadExportCache() {
+        std::filesystem::path exportCachePath{ EngineAssetPath.parent_path() / "ExportSelectionCache.json" };
+        if (std::filesystem::exists(exportCachePath))
+        {
+            mbuildCache.DeserializeFromFile(exportCachePath.string());
+        }
+
+    }
+    std::string LevelEditor::FormatSize(std::uintmax_t size)
+    {
+        const char* suffix[] = { "B", "KB", "MB", "GB" };
+        int i = 0;
+        double dblSize = size;
+
+        while (dblSize >= 1024 && i < 3)
+        {
+            dblSize /= 1024;
+            i++;
+        }
+
+        char buf[64];
+        sprintf(buf, "%.2f %s", dblSize, suffix[i]);
+        return buf;
+    }
 }

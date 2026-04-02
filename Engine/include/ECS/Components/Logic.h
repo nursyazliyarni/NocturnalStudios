@@ -42,7 +42,7 @@ namespace NocturnalEngine
 		virtual bool Serialize(rapidjson::PrettyWriter<rapidjson::StringBuffer>* writer) const;
 		std::vector<std::string> GetScriptNames() { return mScriptNameVector; }
 		void EndAllScripts();
-
+		virtual bool OnCompare(const IComponent& other) const { UNREFERENCED_PARAMETER(other); return false; } 
 		IScript* GetScriptByName(std::string ScriptName);
 
 		/*!*************************************************************************

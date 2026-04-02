@@ -338,17 +338,24 @@ namespace NocturnalEngine {
 		}
 		else
 		{
-			glViewport(0, 0, p_Editor->GetWindow()->Getter().m_Width, p_Editor->GetWindow()->Getter().m_Height);
+			const WindowProps windowProps = p_Editor->GetWindow()->Getter();
+			glViewport(static_cast<GLint>(windowProps.m_ViewportX),
+				static_cast<GLint>(windowProps.m_ViewportY),
+				static_cast<GLsizei>(windowProps.m_Width),
+				static_cast<GLsizei>(windowProps.m_Height));
 			NocturnalEngine::Graphic::mcamera->Resize(
-				static_cast<float>(p_Editor->GetWindow()->Getter().m_Width),
-				static_cast<float>(p_Editor->GetWindow()->Getter().m_Height)
+				static_cast<float>(windowProps.m_Width),
+				static_cast<float>(windowProps.m_Height)
 			);
 
 			mcamera = &camera;
-			glViewport(0, 0, p_Editor->GetWindow()->Getter().m_Width, p_Editor->GetWindow()->Getter().m_Height);
+			glViewport(static_cast<GLint>(windowProps.m_ViewportX),
+				static_cast<GLint>(windowProps.m_ViewportY),
+				static_cast<GLsizei>(windowProps.m_Width),
+				static_cast<GLsizei>(windowProps.m_Height));
 			mcamera->Resize(
-				static_cast<float>(p_Editor->GetWindow()->Getter().m_Width),
-				static_cast<float>(p_Editor->GetWindow()->Getter().m_Height)
+				static_cast<float>(windowProps.m_Width),
+				static_cast<float>(windowProps.m_Height)
 			);
 		}
 
@@ -408,7 +415,7 @@ namespace NocturnalEngine {
 						}
 					}
 
-					if (sprite.is_Animated)
+					if (sprite.is_Animated && sprite.Get_SPRITE_type() == Sprite::sprite_type::texture)
 					{
 						mAimator.UpdateAnimation(frametime, sprite);
 					}
@@ -428,23 +435,54 @@ namespace NocturnalEngine {
 							mIndex1
 						);
 					}
+
 					else if (sprite.Get_SPRITE_type() == Sprite::sprite_type::texture)
 					{
 						mRenderer->DrawQuad(
 							{ transform.GetPos().x, transform.GetPos().y },
 							{ transform.GetScale().x, transform.GetScale().y },
 							transform.GetRot(),
-							renderTexture
+							renderTexture,
+							{ 1.f,1.f,1.f,sprite.GetAlpha()}
 						);
 					}
+
 					else if (sprite.Get_SHAPE_type() == Sprite::shape_type::rectangle)
 					{
-						mRenderer->DrawRect(
-							{ transform.GetPos().x, transform.GetPos().y, 0.0f },
-							{ transform.GetScale().x, transform.GetScale().y },
-							{ sprite.rgba_color[0], sprite.rgba_color[1], sprite.rgba_color[2], sprite.rgba_color[3] }
-						);
+						if (sprite.is_Animated) {
+							if (p_ecs.HaveComponent<Text>(*i)) {
+								auto& text{ p_ecs.GetComponent<Text>(*i) };
+								if (text.GET_visibility()) {
+									mAimator.UpdateShapeAnimation(frametime, sprite);
+									mRenderer->DrawDashedRect(
+										{ transform.GetPos().x, transform.GetPos().y, 0.0f },
+										{ transform.GetScale().x, transform.GetScale().y },
+										{ sprite.rgba_color[0], sprite.rgba_color[1], sprite.rgba_color[2], sprite.rgba_color[3] },
+										sprite.offset, sprite.line_len, sprite.gap_len
+									);
+								}
+							}
+							
+							else {
+								mAimator.UpdateShapeAnimation(frametime, sprite);
+								mRenderer->DrawDashedRect(
+									{ transform.GetPos().x, transform.GetPos().y, 0.0f },
+									{ transform.GetScale().x, transform.GetScale().y },
+									{ sprite.rgba_color[0], sprite.rgba_color[1], sprite.rgba_color[2], sprite.rgba_color[3] },
+									sprite.offset, sprite.line_len, sprite.gap_len
+								);
+							}
+						}
+
+						else { //it is not animated shape
+							mRenderer->DrawRect(
+								{ transform.GetPos().x, transform.GetPos().y, 0.0f },
+								{ transform.GetScale().x, transform.GetScale().y },
+								{ sprite.rgba_color[0], sprite.rgba_color[1], sprite.rgba_color[2], sprite.rgba_color[3] }
+							);
+						}
 					}
+
 					else if (sprite.Get_SHAPE_type() == Sprite::shape_type::circle)
 					{
 						NocturnalEngine::Matrix4x4 translate = NocturnalEngine::Translate4x4(
@@ -547,7 +585,7 @@ namespace NocturnalEngine {
 			{
 				if (!p_ecs.HaveComponent<Transform>(e)) continue;
 				auto& tr = p_ecs.GetComponent<Transform>(e);
-				pos = glm::vec2(tr.GetPos().x, tr.GetPos().y);
+				pos = glm::vec2(tr.GetWorldPos().x, tr.GetWorldPos().y);
 				pos.x += text.GetPosition()[0];
 				pos.y += text.GetPosition()[1];
 			}
@@ -568,12 +606,9 @@ namespace NocturnalEngine {
 			if (!font)
 				font = mFont;
 			if (font) {
-				if (text.Get_TEXT_type() == Text::text_type::single_text) //single text
-					font->RenderText(text.GetContent(), pos, text.Get_line_height(), scale, *mcamera, col, text.Rot());
-
-				else { //array of text
-					if (!text.GET_mContent_array().empty())
-						font->RenderText(text.GET_current_mContent(text.current_index), text.GET_current_position(text.current_index), text.Get_line_height(), scale, *mcamera, col, text.Rot());
+				if (text.Get_TEXT_type() == Text::text_type::single_text && text.visibility) {
+				
+					font->RenderText(text.GetContent(), pos, text.Get_line_height(), scale, *mcamera, col, text.Rot(), c[3] );
 				}
 			}
 		}

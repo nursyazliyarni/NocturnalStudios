@@ -24,7 +24,8 @@ namespace NocturnalEngine {
 	****************************************************************************/
 	Sprite::Sprite() : mTextureName("Blank"), Index({ 0,0 }), mUVcooridnates({ 512.0f, 512.0f }),
 		is_SpriteSheet(false), is_Animated(false), mAlpha(1), MaxIndex_X(0), displayTime(GetMaxIndex()),
-		internaltimer(0), LayerOrder(0), SPRITE_type{ texture }, SHAPE_type{rectangle}, circle_radius{}, rgba_color{}
+		internaltimer(0), LayerOrder(0), SPRITE_type{ texture }, SHAPE_type{rectangle}, circle_radius{}, rgba_color{},
+		offset{0.0f},line_len{0.01f},gap_len{0.01f},line_mvspeed{}
 	{
 		// Provide one fallback rule so auto mode always has a valid default state.
 		AnimationStateRule idle{};
@@ -163,6 +164,13 @@ namespace NocturnalEngine {
 			SHAPE_type = obj["shape type"].GetInt();
 		if (obj.HasMember("circle radius") && obj["circle radius"].IsNumber())
 			circle_radius = obj["circle radius"].GetFloat();
+
+		if (obj.HasMember("length of dashed lines") && obj["length of dashed lines"].IsNumber())
+			line_len = obj["length of dashed lines"].GetFloat();
+		if (obj.HasMember("distance gap") && obj["distance gap"].IsNumber())
+			gap_len = obj["distance gap"].GetFloat();
+		if (obj.HasMember("line movement speed") && obj["line movement speed"].IsNumber())
+			line_mvspeed = obj["line movement speed"].GetFloat();
 
 		if (obj.HasMember("RGBA") && obj["RGBA"].IsArray())
 		{
@@ -314,6 +322,13 @@ namespace NocturnalEngine {
 		writer->Int(SHAPE_type);
 		writer->Key("circle radius");
 		writer->Double(circle_radius);
+
+		writer->Key("length of dashed lines");
+		writer->Double(line_len);
+		writer->Key("distance gap");
+		writer->Double(gap_len);
+		writer->Key("line movement speed");
+		writer->Double(line_mvspeed);
 
 		writer->Key("RGBA");
 		writer->StartArray(); //start array here

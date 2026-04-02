@@ -52,6 +52,50 @@ namespace NocturnalEngine {
 
 		bool isKeyPressed(keycode key);
 
+
+        // Gamepad
+        // Call once per frame (after glfwPollEvents) to sync gamepad state.
+        void PollGamepad(int joystickSlot = 0);  // slot 0 = player 1
+
+        bool IsGamepadConnected()const;
+        bool GamepadPressed(GamepadButton btn)const; // true on the frame it's first pressed
+        bool GamepadHeld(GamepadButton btn)const; // true while held
+        bool GamepadReleased(GamepadButton btn)const; // true on the frame it's released
+        float GetAxis(GamepadAxis axis)const; // -1.0�1.0 (triggers: 0.0�1.0)
+
+		bool GamepadGotDisconnected(){
+			if (controllerWasDisconnected) {
+				controllerWasDisconnected = false;
+				return true;
+			}
+			else return controllerWasDisconnected;
+		}
+
+		bool GamepadGotConnected() {
+			if (coltrollerWasConnected) {
+				coltrollerWasConnected = false;
+				return true;
+			}
+			else return coltrollerWasConnected;
+		}
+
+        void ResetGamepadButtons(); // call alongside ResetPressedKey each frame
+
+		InputDevice GetLastDevice() const { return mLastDevice; }
+		void SetLastDevice(InputDevice id) { 
+			if (mLastDevice!=id)deviceChanged = true;
+			mLastDevice = id; 
+		}
+
+		bool DeviceChanged() {
+			if (deviceChanged)
+			{
+				deviceChanged = false;
+				return true;
+			}
+			else return deviceChanged;
+		}
+
 	public:
 		//data
 		std::unordered_map<keycode, keystatus> mKeyStatus;
@@ -61,5 +105,21 @@ namespace NocturnalEngine {
 
 		double mMouseScrollStatus = 0.0f;
 
+        bool  mGamepadConnected = false,wasGamepadConnected=false;
+
+		bool coltrollerWasConnected{ false }, controllerWasDisconnected{ false };
+
+        unsigned char mGamepadCurr[15] = {};
+        unsigned char mGamepadPrev[15] = {};
+
+        float mGamepadAxes[6] = {};
+
+        static float ApplyDeadzone(float val)
+        {
+            return (std::abs(val) < DEADZONE) ? 0.0f : val;
+        }
+
+		InputDevice mLastDevice = InputDevice::KeyboardMouse;
+		bool deviceChanged{ false };
 	};
 }

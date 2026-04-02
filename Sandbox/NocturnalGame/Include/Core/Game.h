@@ -63,10 +63,12 @@ namespace NocturnalEngine {
         virtual void Shutdown();
 
         void RegisterScripts() override;
+        void GiveWindow(Window* window) override { m_window = window; }
+        void InputUpdate(float dt);
     private:
         ScriptFactory m_scriptFactory;
         LuminaraZoo m_gameConfig;
-        bool escPressedLastFrame{ false };
+        Window* m_window{ nullptr };
     };
 }
 

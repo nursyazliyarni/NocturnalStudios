@@ -98,6 +98,18 @@ namespace NocturnalEngine {
 		// 0=Auto, n>0 maps to stateRules[n-1].
 		int statePreviewMode{ 0 };
 		std::vector<AnimationStateRule> stateRules{};
+
+		enum sprite_type {
+			texture, shape, sprite_type_count
+		};
+		enum shape_type {
+			rectangle, circle, shape_type_count
+		};
+
+		float offset;
+		float line_len;
+		float gap_len;
+		float line_mvspeed;
 		
 		//altas 
 	private:
@@ -108,16 +120,9 @@ namespace NocturnalEngine {
 		std::array<float, 4> rgba_color;
 		std::string mTextureName;
 		vec2D mUVcooridnates;
-		float mAlpha;
+		float mAlpha{1.0f};
 		int MaxIndex_X;
 		std::vector<float>displayTime;
-
-		enum sprite_type {
-			texture, shape, sprite_type_count
-		};
-		enum shape_type {
-			rectangle, circle, shape_type_count
-		};
 		const char* sprite_type_ToString(int enum_sprite_type);
 		const char* shape_type_ToString(int enum_shape_type);
 		friend class Graphic;

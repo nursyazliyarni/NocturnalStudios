@@ -46,14 +46,13 @@ namespace NocturnalEngine {
 		void DrawQuad(const Mat4x4& transform, const Vec4& color);
 		void DrawQuadImpact(const Vec3& position, const vec2D& size, const Vec4& color);
 		void DrawQuad(const vec2D& position, const vec2D& size, const MultiRefs<Texture>& texture);
-		void DrawQuad(const Vec3& position, const vec2D& size, const MultiRefs<Texture>& texture);
-		void DrawQuad(const Mat4x4& transform, const MultiRefs<Texture>& texture);
-
+		void DrawQuad(const Vec3& position, const vec2D& size, const MultiRefs<Texture>& texture, const Vec4& color = { 1.0f, 1.0f, 1.0f, 1.0f });
+		void DrawQuad(const Mat4x4& transform, const MultiRefs<Texture>& texture, const Vec4& color = { 1.0f, 1.0f, 1.0f, 1.0f });
 		
 		void DrawQuad(const vec2D& position, const vec2D& size, float rotation, const Vec4& color);
 		void DrawQuad(const Vec3& position, const vec2D& size, float rotation, const Vec4& color);
-		void DrawQuad(const vec2D& position, const vec2D& size, float rotation, const MultiRefs<Texture>& texture);
-		void DrawQuad(const Vec3& position, const vec2D& size, float rotation, const MultiRefs<Texture>& texture);
+		void DrawQuad(const vec2D& position, const vec2D& size, float rotation, const MultiRefs<Texture>& texture, const Vec4& color = { 1.0f, 1.0f, 1.0f, 1.0f });
+		void DrawQuad(const Vec3& position, const vec2D& size, float rotation, const MultiRefs<Texture>& texture, const Vec4& color = { 1.0f, 1.0f, 1.0f, 1.0f });
 
 		//handle sprite draws
 		void DrawSprite(const vec2D& position, const vec2D& size, const float& rotation, const MultiRefs<SpriteRender>& sprite);
@@ -63,7 +62,11 @@ namespace NocturnalEngine {
 
 
 		void DrawLine(const Vec3& position0, const Vec3& position1, const Vec4& color);
+		void DrawDashedLine(const Vec3& point_1, const Vec3& point_2, const Vec4& color, float offset, float line_length,
+	    float line_gap);
 		void DrawRect(const Vec3& position, const vec2D& size, const Vec4& color);
+		void DrawDashedRect(const Vec3& position, const vec2D& size, const Vec4& color, float offset, float line_length,
+	    float line_gap);
 		void DrawCircle(const Mat4x4& transform, const Vec4& color, float depth = 0.01f, float decline = 0.01f);
 
 

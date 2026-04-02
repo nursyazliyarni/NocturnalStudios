@@ -37,7 +37,11 @@ namespace NocturnalEngine {
 		unsigned int m_Width,
 					 m_Height,
 					 m_CurrentWidth,
-					 m_CurrentHeight;
+					 m_CurrentHeight,
+					 m_WindowWidth,
+					 m_WindowHeight,
+					 m_ViewportX,
+					 m_ViewportY;
 		bool Vsync;
 		double mouseX, mouseY;
 	};
@@ -68,7 +72,9 @@ namespace NocturnalEngine {
 		WindowProps Getter() const { return m_windowData; }
 		GLFWwindow* GetWindow() const { return m_window; }
 		GLFWmonitor* GetMonitor() const { return m_monitor; }
-		
+		double& GetMouseX() { return m_windowData.mouseX; }
+		double& GetMouseY() { return m_windowData.mouseY; }
+
 
 	public:
 

@@ -28,6 +28,18 @@ namespace NocturnalEngine {
 	}
 
 	/*!*************************************************************************
+	Update shape animations based on delta time
+	****************************************************************************/
+	void Animation::UpdateShapeAnimation(float deltatime, Sprite& sprite)
+	{
+		if (sprite.Get_SHAPE_type() == Sprite::shape_type::rectangle) {
+			float patternLength = sprite.line_len + sprite.gap_len; //computes the full dash cycle length
+			sprite.offset += sprite.line_mvspeed * deltatime;
+			sprite.offset = fmod(sprite.offset, patternLength); //creates a seamless repeating motion
+		}
+	}
+
+	/*!*************************************************************************
 	Update animations based on delta time
 	****************************************************************************/
 	void Animation::UpdateAnimation(float deltatime, Sprite& sprite)

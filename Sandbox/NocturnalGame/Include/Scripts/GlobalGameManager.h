@@ -162,6 +162,11 @@ namespace NocturnalEngine {
          Entity resumeButtonE{ MAX_ENTITIES };
          Entity menuButtonE{ MAX_ENTITIES };
          bool escWasPressed = false;
+         std::string CanMoveScene(const std::string&, bool dir);
+
+         void AllFullStats();
+         void SetTime(float time) { gameTimeElapsed = time; }
+         void ReviveAll();
 
     private:
 
@@ -209,7 +214,7 @@ namespace NocturnalEngine {
         void CombinedSceneUpdate(float dt);
         Entity GetEntityByName(const std::string name);
 
-        unsigned int levelNum{ 1 }, levelCount{ 3 };
+        unsigned int levelNum{ 2 }, levelCount{ 3 };
         bool levelDataLoaded{ false };
         bool LevelDataToMap(int levelN);
 

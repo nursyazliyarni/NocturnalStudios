@@ -26,6 +26,7 @@
 #include "ResourceManager/ResourceManager.h"
 #include "ECS/ComponentRegistry.h"
 #include "core/IGameConfig.h"
+#include "ExportCache.h"
 
 #define p_Editor NocturnalEngine::LevelEditor::GetInstance()
 
@@ -189,6 +190,7 @@ namespace NocturnalEngine {
 
 		char prefabNameBuffer[128] = "";
 		
+		bool mbuildSizeAnalyser{ false };
 
 		/*!*************************************************************************
 		This draws the modal which prompts the user to select a path and set a name
@@ -207,12 +209,12 @@ namespace NocturnalEngine {
 		into. I might chantge it so that if i ever implement the open project 
 		function i can use it for both
 		****************************************************************************/
-		void StupidFileBrowser();
+		void StupidFileBrowser( std::filesystem::path& browsingPath, std::filesystem::path& pathReference, bool isNewProj=true);
 
 		/*!*************************************************************************
 		This draws the directory tree. Its recursive but only if the directory is open
 		****************************************************************************/
-		void DrawDirectoryTree(const std::filesystem::path& path);
+		void DrawDirectoryTree(const std::filesystem::path& path, std::filesystem::path& returnPath);
 
 		/*!*************************************************************************
 		This is a little popup function for the file browser if u right click the
@@ -226,6 +228,18 @@ namespace NocturnalEngine {
 		****************************************************************************/
 		void ShowReloadPrompt();
 
-		
+		void DrawHierarchyNode(Entity e);
+
+		void DrawBuildSizeAnalyser();
+
+		ExportCache mbuildCache{};
+		bool refreshBuildsize{ true };
+		unsigned long long totalBuildBytes{ 0 };
+		std::filesystem::path exportPath{}, exportParentPath{};
+		void AssetListSelectableTree(const std::filesystem::path& path,bool parentSelectionChanged=false,bool newSelection=false);
+		void RefreshBuildSize();
+		void ExportSelected(const std::filesystem::path& dest);
+		void LoadExportCache();
+		std::string FormatSize(std::uintmax_t size);
 	};
 }

@@ -118,12 +118,14 @@ namespace NocturnalEngine {
     /*!*************************************************************************
     Render font
     ****************************************************************************/
-    void Font::RenderText(const std::string& text, glm::vec2 position, int line_height, float scale, Camera2D& camera, glm::vec3 color,float rot)
+    void Font::RenderText(const std::string& text, glm::vec2 position, int line_height, float scale, Camera2D& camera, glm::vec3 color,float rot, float alpha )
 	{
 		UNREFERENCED_PARAMETER(line_height);
         // activate corresponding render state	
         TextShader->Bind();
         TextShader->SetUniform("u_ViewProjection", camera.GetViewProjectionMatrix());
+        TextShader->SetUniform("u_Alpha", alpha);
+
         
         glActiveTexture(GL_TEXTURE0);
         glBindVertexArray(mVao);

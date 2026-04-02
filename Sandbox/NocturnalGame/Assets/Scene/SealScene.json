@@ -56,6 +56,9 @@
                     "shape/texture": 0,
                     "shape type": 0,
                     "circle radius": 0.0,
+                    "length of dashed lines": 0.009999999776482582,
+                    "distance gap": 0.009999999776482582,
+                    "line movement speed": 0.0,
                     "RGBA": [
                         0.0,
                         0.0,
@@ -94,12 +97,18 @@
                 {
                     "Component": "Audio",
                     "0": {
-                        "AudioPath": "BGM_Ambience_Horse_01.wav",
+                        "AudioPath": "Luminara Zoo - Music - Level 1 (v2).wav",
                         "Channel": 2,
-                        "IsLooping": true,
+                        "IsLooping": false,
                         "VolumeLimit": 1.0
                     },
-                    "AudioArrCount": 1,
+                    "1": {
+                        "AudioPath": "Luminara Zoo - Music - Level 2 (v1).wav",
+                        "Channel": 2,
+                        "IsLooping": false,
+                        "VolumeLimit": 1.0
+                    },
+                    "AudioArrCount": 2,
                     "BGM Volume": 1.0,
                     "SFX Volume": 1.0,
                     "Master Volume": 1.0,
@@ -131,6 +140,15 @@
                     "Component": "Logic",
                     "0": "AudioManager",
                     "1": "BackgroundAudio",
+                    "Scripts": [
+                        {
+                            "ScriptName": "AudioManager"
+                        },
+                        {
+                            "ScriptName": "BackgroundAudio",
+                            "Background Audio Index": 0
+                        }
+                    ],
                     "ScriptCount": 2
                 }
             ]
@@ -179,6 +197,9 @@
                     "shape/texture": 0,
                     "shape type": 0,
                     "circle radius": 0.0,
+                    "length of dashed lines": 0.009999999776482582,
+                    "distance gap": 0.009999999776482582,
+                    "line movement speed": 0.0,
                     "RGBA": [
                         0.0,
                         0.0,
@@ -319,6 +340,9 @@
                     "shape/texture": 0,
                     "shape type": 0,
                     "circle radius": 0.0,
+                    "length of dashed lines": 0.009999999776482582,
+                    "distance gap": 0.009999999776482582,
+                    "line movement speed": 0.0,
                     "RGBA": [
                         0.0,
                         0.0,
@@ -357,31 +381,31 @@
                         "AudioPath": "SFX_Static_01.wav",
                         "Channel": 3,
                         "IsLooping": false,
-                        "VolumeLimit": 0.27399998903274536
+                        "VolumeLimit": 0.25
                     },
                     "1": {
                         "AudioPath": "SFX_Static_02.wav",
                         "Channel": 3,
                         "IsLooping": false,
-                        "VolumeLimit": 0.2980000078678131
+                        "VolumeLimit": 0.25
                     },
                     "2": {
                         "AudioPath": "SFX_Static_03.wav",
                         "Channel": 3,
                         "IsLooping": false,
-                        "VolumeLimit": 0.3449999988079071
+                        "VolumeLimit": 0.25
                     },
                     "3": {
                         "AudioPath": "SFX_Static_04.wav",
                         "Channel": 3,
                         "IsLooping": false,
-                        "VolumeLimit": 0.3100000023841858
+                        "VolumeLimit": 0.25
                     },
                     "4": {
                         "AudioPath": "SFX_Static_05.wav",
                         "Channel": 3,
                         "IsLooping": false,
-                        "VolumeLimit": 0.2980000078678131
+                        "VolumeLimit": 0.25
                     },
                     "AudioArrCount": 5,
                     "BGM Volume": 1.0,
@@ -435,7 +459,8 @@
                     "Line Height": 0,
                     "WorldSpace": false,
                     "Center": false,
-                    "LayeringOrder": 0
+                    "LayeringOrder": 0,
+                    "Visibility": true
                 },
                 {
                     "Component": "ButtonComponent",
@@ -509,6 +534,9 @@
                     "shape/texture": 0,
                     "shape type": 0,
                     "circle radius": 0.0,
+                    "length of dashed lines": 0.009999999776482582,
+                    "distance gap": 0.009999999776482582,
+                    "line movement speed": 0.0,
                     "RGBA": [
                         0.0,
                         0.0,
@@ -547,31 +575,31 @@
                         "AudioPath": "SFX_Static_01.wav",
                         "Channel": 3,
                         "IsLooping": false,
-                        "VolumeLimit": 0.3100000023841858
+                        "VolumeLimit": 0.25
                     },
                     "1": {
                         "AudioPath": "SFX_Static_02.wav",
                         "Channel": 3,
                         "IsLooping": false,
-                        "VolumeLimit": 0.2980000078678131
+                        "VolumeLimit": 0.25
                     },
                     "2": {
                         "AudioPath": "SFX_Static_03.wav",
                         "Channel": 3,
                         "IsLooping": false,
-                        "VolumeLimit": 0.3330000042915344
+                        "VolumeLimit": 0.25
                     },
                     "3": {
                         "AudioPath": "SFX_Static_04.wav",
                         "Channel": 3,
                         "IsLooping": false,
-                        "VolumeLimit": 0.3330000042915344
+                        "VolumeLimit": 0.25
                     },
                     "4": {
                         "AudioPath": "SFX_Static_05.wav",
                         "Channel": 3,
                         "IsLooping": false,
-                        "VolumeLimit": 0.3330000042915344
+                        "VolumeLimit": 0.25
                     },
                     "AudioArrCount": 5,
                     "BGM Volume": 1.0,
@@ -625,7 +653,8 @@
                     "Line Height": 0,
                     "WorldSpace": false,
                     "Center": false,
-                    "LayeringOrder": 0
+                    "LayeringOrder": 0,
+                    "Visibility": true
                 },
                 {
                     "Component": "ButtonComponent",
@@ -699,6 +728,9 @@
                     "shape/texture": 0,
                     "shape type": 0,
                     "circle radius": 0.0,
+                    "length of dashed lines": 0.009999999776482582,
+                    "distance gap": 0.009999999776482582,
+                    "line movement speed": 0.0,
                     "RGBA": [
                         0.0,
                         0.0,
@@ -737,31 +769,31 @@
                         "AudioPath": "SFX_Static_01.wav",
                         "Channel": 3,
                         "IsLooping": false,
-                        "VolumeLimit": 0.2980000078678131
+                        "VolumeLimit": 0.25
                     },
                     "1": {
                         "AudioPath": "SFX_Static_02.wav",
                         "Channel": 3,
                         "IsLooping": false,
-                        "VolumeLimit": 0.3449999988079071
+                        "VolumeLimit": 0.25
                     },
                     "2": {
                         "AudioPath": "SFX_Static_03.wav",
                         "Channel": 3,
                         "IsLooping": false,
-                        "VolumeLimit": 0.3330000042915344
+                        "VolumeLimit": 0.25
                     },
                     "3": {
                         "AudioPath": "SFX_Static_04.wav",
                         "Channel": 3,
                         "IsLooping": false,
-                        "VolumeLimit": 0.3100000023841858
+                        "VolumeLimit": 0.25
                     },
                     "4": {
                         "AudioPath": "SFX_Static_05.wav",
                         "Channel": 3,
                         "IsLooping": false,
-                        "VolumeLimit": 0.32100000977516174
+                        "VolumeLimit": 0.25
                     },
                     "AudioArrCount": 5,
                     "BGM Volume": 1.0,
@@ -815,7 +847,8 @@
                     "Line Height": 0,
                     "WorldSpace": false,
                     "Center": false,
-                    "LayeringOrder": 0
+                    "LayeringOrder": 0,
+                    "Visibility": true
                 },
                 {
                     "Component": "ButtonComponent",
@@ -889,6 +922,9 @@
                     "shape/texture": 0,
                     "shape type": 0,
                     "circle radius": 0.0,
+                    "length of dashed lines": 0.009999999776482582,
+                    "distance gap": 0.009999999776482582,
+                    "line movement speed": 0.0,
                     "RGBA": [
                         0.0,
                         0.0,
@@ -927,31 +963,31 @@
                         "AudioPath": "SFX_Static_01.wav",
                         "Channel": 3,
                         "IsLooping": false,
-                        "VolumeLimit": 0.3330000042915344
+                        "VolumeLimit": 0.25
                     },
                     "1": {
                         "AudioPath": "SFX_Static_02.wav",
                         "Channel": 3,
                         "IsLooping": false,
-                        "VolumeLimit": 0.28600001335144043
+                        "VolumeLimit": 0.25
                     },
                     "2": {
                         "AudioPath": "SFX_Static_03.wav",
                         "Channel": 3,
                         "IsLooping": false,
-                        "VolumeLimit": 0.3330000042915344
+                        "VolumeLimit": 0.25
                     },
                     "3": {
                         "AudioPath": "SFX_Static_04.wav",
                         "Channel": 3,
                         "IsLooping": false,
-                        "VolumeLimit": 0.2980000078678131
+                        "VolumeLimit": 0.25
                     },
                     "4": {
                         "AudioPath": "SFX_Static_05.wav",
                         "Channel": 3,
                         "IsLooping": false,
-                        "VolumeLimit": 0.2980000078678131
+                        "VolumeLimit": 0.25
                     },
                     "AudioArrCount": 5,
                     "BGM Volume": 1.0,
@@ -1009,6 +1045,9 @@
                     "shape/texture": 0,
                     "shape type": 0,
                     "circle radius": 0.0,
+                    "length of dashed lines": 0.009999999776482582,
+                    "distance gap": 0.009999999776482582,
+                    "line movement speed": 0.0,
                     "RGBA": [
                         0.0,
                         0.0,
@@ -1082,6 +1121,9 @@
                     "shape/texture": 0,
                     "shape type": 0,
                     "circle radius": 0.0,
+                    "length of dashed lines": 0.009999999776482582,
+                    "distance gap": 0.009999999776482582,
+                    "line movement speed": 0.0,
                     "RGBA": [
                         0.0,
                         0.0,
@@ -1231,6 +1273,9 @@
                     "shape/texture": 0,
                     "shape type": 0,
                     "circle radius": 0.0,
+                    "length of dashed lines": 0.009999999776482582,
+                    "distance gap": 0.009999999776482582,
+                    "line movement speed": 0.0,
                     "RGBA": [
                         0.0,
                         0.0,
@@ -1380,6 +1425,9 @@
                     "shape/texture": 0,
                     "shape type": 0,
                     "circle radius": 0.0,
+                    "length of dashed lines": 0.009999999776482582,
+                    "distance gap": 0.009999999776482582,
+                    "line movement speed": 0.0,
                     "RGBA": [
                         0.0,
                         0.0,
@@ -1463,7 +1511,8 @@
                     "Line Height": 0,
                     "WorldSpace": true,
                     "Center": false,
-                    "LayeringOrder": 0
+                    "LayeringOrder": 0,
+                    "Visibility": true
                 }
             ]
         },
@@ -1492,7 +1541,8 @@
                     "Line Height": 50,
                     "WorldSpace": false,
                     "Center": false,
-                    "LayeringOrder": 0
+                    "LayeringOrder": 0,
+                    "Visibility": true
                 }
             ]
         },
@@ -1521,7 +1571,8 @@
                     "Line Height": 50,
                     "WorldSpace": false,
                     "Center": false,
-                    "LayeringOrder": 0
+                    "LayeringOrder": 0,
+                    "Visibility": true
                 }
             ]
         },
@@ -1550,7 +1601,8 @@
                     "Line Height": 62,
                     "WorldSpace": false,
                     "Center": false,
-                    "LayeringOrder": 0
+                    "LayeringOrder": 0,
+                    "Visibility": true
                 }
             ]
         },
@@ -1579,6 +1631,9 @@
                     "shape/texture": 0,
                     "shape type": 0,
                     "circle radius": 0.0,
+                    "length of dashed lines": 0.009999999776482582,
+                    "distance gap": 0.009999999776482582,
+                    "line movement speed": 0.0,
                     "RGBA": [
                         0.0,
                         0.0,
@@ -1633,6 +1688,9 @@
                     "shape/texture": 0,
                     "shape type": 0,
                     "circle radius": 0.0,
+                    "length of dashed lines": 0.009999999776482582,
+                    "distance gap": 0.009999999776482582,
+                    "line movement speed": 0.0,
                     "RGBA": [
                         0.0,
                         0.0,
@@ -1688,7 +1746,8 @@
                     "Line Height": 0,
                     "WorldSpace": true,
                     "Center": false,
-                    "LayeringOrder": 0
+                    "LayeringOrder": 0,
+                    "Visibility": true
                 }
             ]
         },
@@ -1712,6 +1771,9 @@
                     "shape/texture": 0,
                     "shape type": 0,
                     "circle radius": 0.0,
+                    "length of dashed lines": 0.009999999776482582,
+                    "distance gap": 0.009999999776482582,
+                    "line movement speed": 0.0,
                     "RGBA": [
                         0.0,
                         0.0,
@@ -1766,6 +1828,9 @@
                     "shape/texture": 0,
                     "shape type": 0,
                     "circle radius": 0.0,
+                    "length of dashed lines": 0.009999999776482582,
+                    "distance gap": 0.009999999776482582,
+                    "line movement speed": 0.0,
                     "RGBA": [
                         0.0,
                         0.0,
@@ -1820,6 +1885,9 @@
                     "shape/texture": 0,
                     "shape type": 0,
                     "circle radius": 0.0,
+                    "length of dashed lines": 0.009999999776482582,
+                    "distance gap": 0.009999999776482582,
+                    "line movement speed": 0.0,
                     "RGBA": [
                         0.0,
                         0.0,
@@ -1874,6 +1942,9 @@
                     "shape/texture": 0,
                     "shape type": 0,
                     "circle radius": 0.0,
+                    "length of dashed lines": 0.009999999776482582,
+                    "distance gap": 0.009999999776482582,
+                    "line movement speed": 0.0,
                     "RGBA": [
                         0.0,
                         0.0,
@@ -1947,6 +2018,9 @@
                     "shape/texture": 0,
                     "shape type": 0,
                     "circle radius": 0.0,
+                    "length of dashed lines": 0.009999999776482582,
+                    "distance gap": 0.009999999776482582,
+                    "line movement speed": 0.0,
                     "RGBA": [
                         0.0,
                         0.0,
@@ -2001,6 +2075,9 @@
                     "shape/texture": 0,
                     "shape type": 0,
                     "circle radius": 0.0,
+                    "length of dashed lines": 0.009999999776482582,
+                    "distance gap": 0.009999999776482582,
+                    "line movement speed": 0.0,
                     "RGBA": [
                         0.0,
                         0.0,
@@ -2051,7 +2128,8 @@
                     "Line Height": 0,
                     "WorldSpace": false,
                     "Center": false,
-                    "LayeringOrder": 0
+                    "LayeringOrder": 0,
+                    "Visibility": true
                 }
             ]
         },
@@ -2075,6 +2153,9 @@
                     "shape/texture": 0,
                     "shape type": 0,
                     "circle radius": 0.0,
+                    "length of dashed lines": 0.009999999776482582,
+                    "distance gap": 0.009999999776482582,
+                    "line movement speed": 0.0,
                     "RGBA": [
                         0.0,
                         0.0,
@@ -2129,6 +2210,9 @@
                     "shape/texture": 0,
                     "shape type": 0,
                     "circle radius": 0.0,
+                    "length of dashed lines": 0.009999999776482582,
+                    "distance gap": 0.009999999776482582,
+                    "line movement speed": 0.0,
                     "RGBA": [
                         0.0,
                         0.0,
@@ -2183,6 +2267,9 @@
                     "shape/texture": 0,
                     "shape type": 0,
                     "circle radius": 0.0,
+                    "length of dashed lines": 0.009999999776482582,
+                    "distance gap": 0.009999999776482582,
+                    "line movement speed": 0.0,
                     "RGBA": [
                         0.0,
                         0.0,
@@ -2233,7 +2320,8 @@
                     "Line Height": 0,
                     "WorldSpace": false,
                     "Center": false,
-                    "LayeringOrder": 0
+                    "LayeringOrder": 0,
+                    "Visibility": true
                 }
             ]
         },
@@ -2276,6 +2364,9 @@
                     "shape/texture": 0,
                     "shape type": 0,
                     "circle radius": 0.0,
+                    "length of dashed lines": 0.009999999776482582,
+                    "distance gap": 0.009999999776482582,
+                    "line movement speed": 0.0,
                     "RGBA": [
                         0.0,
                         0.0,
@@ -2349,6 +2440,9 @@
                     "shape/texture": 0,
                     "shape type": 0,
                     "circle radius": 0.0,
+                    "length of dashed lines": 0.009999999776482582,
+                    "distance gap": 0.009999999776482582,
+                    "line movement speed": 0.0,
                     "RGBA": [
                         0.0,
                         0.0,
@@ -2426,7 +2520,8 @@
                     "Line Height": 0,
                     "WorldSpace": true,
                     "Center": false,
-                    "LayeringOrder": 0
+                    "LayeringOrder": 0,
+                    "Visibility": true
                 }
             ]
         },
@@ -2455,6 +2550,9 @@
                     "shape/texture": 0,
                     "shape type": 0,
                     "circle radius": 0.0,
+                    "length of dashed lines": 0.009999999776482582,
+                    "distance gap": 0.009999999776482582,
+                    "line movement speed": 0.0,
                     "RGBA": [
                         0.0,
                         0.0,
@@ -2514,6 +2612,9 @@
                     "shape/texture": 0,
                     "shape type": 0,
                     "circle radius": 0.0,
+                    "length of dashed lines": 0.009999999776482582,
+                    "distance gap": 0.009999999776482582,
+                    "line movement speed": 0.0,
                     "RGBA": [
                         0.0,
                         0.0,
@@ -2971,6 +3072,27 @@
                     "AltSceneSwitchFlag": false,
                     "AltSceneSwitch": "",
                     "ExitGameFlag": false
+                    }
+            ]
+        },
+        {"ID": 35,
+            "Prefab": "KeyboardButtonReaction",
+            "Components": [
+                {
+                    "Component": "Logic",
+                    "Scripts": [
+                        {
+                            "ScriptName": "KeyboardSceneSwitch",
+                            "SceneName": "Seal"
+                        },
+                        {
+                            "ScriptName": "AudioManager"
+                        },
+                        {
+                            "ScriptName": "CheatPanel"
+                        }
+                    ],
+                    "ScriptCount": 3
                 }
             ]
         }

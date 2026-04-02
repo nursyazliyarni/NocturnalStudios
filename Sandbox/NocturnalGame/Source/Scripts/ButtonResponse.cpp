@@ -103,27 +103,11 @@ namespace NocturnalEngine
 			}
 		}
 
-		if (buttonFlag ==0) return;
-
-		/*Collider& col{ p_ecs.GetComponent<Collider>(entityID) };
-		Transform& transform{ p_ecs.GetComponent<Transform>(entityID) };*/
-
-		//if (p_GUI->Check_HTP() == false) // if HTP mode is off allow button to be click and interacted with
-		//{
-		//	//this code is to check the current state of the mouse
-		//	if (curr_state != button_state::click)curr_state = button_state::idle;// return to idle whe the state is set to release at the start of the next game loop
-
-
-		//	if (p_Input->MousePressed(GLFW_MOUSE_BUTTON_LEFT) && curr_state == button_state::idle)
-		//	{
-		//		curr_state = button_state::click; //if left mouse is held down set mouse state to click
-		//	}
-
-		//	else if (p_Input->MouseIsReleased(GLFW_MOUSE_BUTTON_LEFT) && curr_state == button_state::click)
-		//	{
-		//		curr_state = button_state::release;//when mouse key is release set state to release
-		//	}
-		//}
+		// Click audio should only trigger once per press, not every frame while held.
+		if (curr_state != button_state::click)
+		{
+			clicked = false;
+		}
 
 		if (is_within_box(p_GUI->MousePosition, col, transform))//check if the system is hovering over an object, change to the hover sprite if it is
 		{
@@ -175,7 +159,11 @@ namespace NocturnalEngine
 
 			if (curr_state == button_state::click) 
 			{
-				if (buttonFlag & ButtonFlag::AUDIO_ON_CLICK) PlayAudio(false, buttonComponent);
+				if ((buttonFlag & ButtonFlag::AUDIO_ON_CLICK) && !clicked)
+				{
+					PlayAudio(false, buttonComponent);
+					clicked = true;
+				}
 
 				if (buttonFlag & ButtonFlag::TEX_CHANGE_ON_CLICK) ChangeTexture(buttonComponent.clickTexture);
 			}

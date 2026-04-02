@@ -46,7 +46,7 @@ namespace NocturnalEngine {
 
 		void Load(const std::string& fontpath, unsigned int fontsize = 50);
 
-		void RenderText(const std::string& text, glm::vec2 position, int line_height, float scale, Camera2D& camera, glm::vec3 color = glm::vec3(1.0f),float rot=0.f);
+		void RenderText(const std::string& text, glm::vec2 position, int line_height, float scale, Camera2D& camera, glm::vec3 color = glm::vec3(1.0f),float rot=0.f, float alpha = 1.0f);
 
 	private:
 		MultiRefs<Shader> TextShader;

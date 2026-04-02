@@ -22,6 +22,7 @@
 #include "Scripts/AnimalLogic.h"
 #include "ECS/Components/ButtonComponent.h"
 #include "graphics/Graphics.h"
+#include "Audio/AudioEngine.h"
 
 namespace NocturnalEngine {
 
@@ -421,6 +422,7 @@ namespace NocturnalEngine {
     }
     
     void GameManager::AddLogEntry(std::string message) {
+		p_Audio->PlaySound("Assets/Audio/Alert_v2.wav", Audio::AudioType::SFX);
         float timeInGameWorld{ gameTimeElapsed * GetTimeScale()};
         int hours{ static_cast<int>(timeInGameWorld / 3600.f) },
             mins{ static_cast<int>((timeInGameWorld - (static_cast<float>(hours) * 3600.f)) / 60.f) },
@@ -573,7 +575,51 @@ namespace NocturnalEngine {
             innerState = 2;
         }
     }
+    void GameManager::AllFullStats() {
+        if (!LevelDataToMap(levelNum)) {
+            AnimalAttributes defaultAttributes{};
+            defaultAttributes.SetDefault();
 
+            sceneAnimalMap.emplace("Flamingo", defaultAttributes);
+            sceneAnimalMap["Flamingo"].aA.SetAnimalType(AnimalAttributes::AnimalType::FLAMINGO);
+            sceneAnimalMap.emplace("Seal", defaultAttributes);
+            sceneAnimalMap["Seal"].aA.SetAnimalType(AnimalAttributes::AnimalType::SEAL);
+            sceneAnimalMap.emplace("Horse", defaultAttributes);
+            sceneAnimalMap["Horse"].aA.SetAnimalType(AnimalAttributes::AnimalType::HOESE);
+            sceneAnimalMap.emplace("Owl", defaultAttributes);
+            sceneAnimalMap["Owl"].aA.SetAnimalType(AnimalAttributes::AnimalType::OWL);
+            sceneAnimalMap["Owl"].aA.hungerDecayRate = 1.5; //owl special hunger
+        }
+    }
+
+    void GameManager::ReviveAll() {
+        deadAnimals = 0;
+
+        const std::map<int, LevelConfig::LevelData>& lvlDataMap = levelConfig.GetLevels();
+
+        for (std::pair<const std::string, AnimalData>& sceneAnimalPair : sceneAnimalMap) {
+            if (!sceneAnimalPair.second.aA.is_alive && !sceneAnimalPair.second.aA.isEscaped)continue;
+            if (lvlDataMap.empty() || lvlDataMap.find(levelNum) == lvlDataMap.end()) {
+                AnimalAttributes defaultAttributes{};
+                defaultAttributes.SetDefault();
+                sceneAnimalPair.second.aA = defaultAttributes;
+            }
+            else {
+                const LevelConfig::LevelData &lvlDat = lvlDataMap.at(levelNum);
+                int animalNum{ sceneAnimalPair.second.aA.WhatAnimalType() };
+                if (lvlDat.find(static_cast<LevelConfig::AnimalRef>(animalNum))==lvlDat.end())
+                {
+                    AnimalAttributes defaultAttributes{};
+                    defaultAttributes.SetDefault();
+                    sceneAnimalPair.second.aA = defaultAttributes;
+                }
+                else {
+                    sceneAnimalPair.second.aA = lvlDat.at(static_cast<LevelConfig::AnimalRef>(animalNum));
+                }
+            }
+        }
+
+    }
     void GameManager::CheckAndDecreaseStats(float& time, float& chance, double decayRate, double& attributeValue, float frametime, double decreaseScale) {
         if (decayRate <= 0.0)decayRate = 0.00000001;
         if (time >= (winRequirement / 72.f) / decayRate)

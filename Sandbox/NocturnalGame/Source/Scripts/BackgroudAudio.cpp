@@ -17,8 +17,69 @@
 #include "Scripts/BackgroundAudio.h"
 #include "Audio/AudioEngine.h"
 #include "ECS/Components/Audio.h"
+#include "Scripts/GlobalGameManager.h"
 
 namespace NocturnalEngine {
+	namespace
+	{
+		void ConfigureLevelBGM(Audio& audio, int bgAudioIndex)
+		{
+			std::vector<int> bgmTrackIndices{};
+			bgmTrackIndices.reserve(static_cast<size_t>(audio.GetSize()));
+
+			for (int i = 0; i < audio.GetSize(); ++i)
+			{
+				if (audio[i].mChannelGroup == Audio::AudioType::BGM)
+				{
+					bgmTrackIndices.push_back(i);
+				}
+			}
+
+			if (bgmTrackIndices.empty())
+			{
+				if (bgAudioIndex >= 0 && bgAudioIndex < audio.GetSize())
+				{
+					audio[bgAudioIndex].is_Looping = true;
+				}
+				return;
+			}
+
+			const int levelOffset = static_cast<int>(p_GameManager.CurrentLevel() > 0 ? p_GameManager.CurrentLevel() - 1 : 0);
+			int selectedBgmSlot = bgAudioIndex + levelOffset;
+			if (selectedBgmSlot < 0)
+			{
+				selectedBgmSlot = 0;
+			}
+			if (selectedBgmSlot >= static_cast<int>(bgmTrackIndices.size()))
+			{
+				selectedBgmSlot = static_cast<int>(bgmTrackIndices.size()) - 1;
+			}
+
+			const int selectedTrackIndex = bgmTrackIndices[static_cast<size_t>(selectedBgmSlot)];
+
+			for (const int idx : bgmTrackIndices)
+			{
+				Audio::AudioPiece& track = audio[idx];
+				const bool isSelectedTrack = (idx == selectedTrackIndex);
+
+				if (isSelectedTrack)
+				{
+					track.is_Looping = true;
+					track.should_stop = false;
+				}
+				else
+				{
+					track.is_Looping = false;
+					track.should_play = false;
+					if (track.is_Playing || track.triggered)
+					{
+						track.should_stop = true;
+					}
+				}
+			}
+		}
+	}
+
 	BackgroundAudio::BackgroundAudio(){}
 
 	BackgroundAudio* BackgroundAudio::Clone() const
@@ -31,7 +92,9 @@ namespace NocturnalEngine {
 		//check if it has an audio loaded 
 		if (p_ecs.HaveComponent<Audio>(GetScriptEntityID()) && (p_ecs.GetComponent<Audio>(GetScriptEntityID()).GetSize() > 0) )
 		{
-			p_ecs.GetComponent<Audio>(GetScriptEntityID())[0].is_Looping = true;
+			Audio& a{ p_ecs.GetComponent<Audio>(GetScriptEntityID()) };
+			ConfigureLevelBGM(a, bgAudioIndex);
+
 		}
 	}
 
@@ -40,7 +103,8 @@ namespace NocturnalEngine {
 		UNREFERENCED_PARAMETER(Frametime);
 		if (p_ecs.HaveComponent<Audio>(GetScriptEntityID()) && (p_ecs.GetComponent<Audio>(GetScriptEntityID()).GetSize() > 0))
 		{
-			p_ecs.GetComponent<Audio>(GetScriptEntityID())[0].is_Looping = true;
+			Audio& a{ p_ecs.GetComponent<Audio>(GetScriptEntityID()) };
+			ConfigureLevelBGM(a, bgAudioIndex);
 		}
 	}
 
@@ -48,8 +112,17 @@ namespace NocturnalEngine {
 	{
 		if (p_ecs.HaveComponent<Audio>(GetScriptEntityID()))
 		{
-			p_ecs.GetComponent<Audio>(GetScriptEntityID())[0].should_stop = true;
-			p_ecs.GetComponent<Audio>(GetScriptEntityID())[0].is_Looping = false;
+			Audio& a{ p_ecs.GetComponent<Audio>(GetScriptEntityID()) };
+			for (int i = 0; i < a.GetSize(); ++i)
+			{
+				if (a[i].mChannelGroup != Audio::AudioType::BGM)
+				{
+					continue;
+				}
+
+				a[i].should_stop = true;
+				a[i].is_Looping = false;
+			}
 		}
 		
 	}
