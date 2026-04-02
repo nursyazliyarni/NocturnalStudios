@@ -57,8 +57,8 @@ namespace NocturnalEngine
 		virtual void End() override;
 
 		bool Requirements(Entity e) override {
-			UNREFERENCED_PARAMETER(e);
-			return true;
+			if (p_ecs.HaveComponent<Sprite>(e))return true;
+			return false;
 			
 		}
 		std::vector<ScriptField> GetFields() override {

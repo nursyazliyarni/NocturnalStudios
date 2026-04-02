@@ -112,10 +112,14 @@ namespace NocturnalEngine {
 
             if (p_Input->GamepadGotConnected())
             {
-                
+                if (p_PrefabManager.CheckOrAddPrefabFromName("GamepadConnected")) {
+                    p_PrefabManager.CloneFromPrefab("GamepadConnected");
+                }
             }
             else if (p_Input->GamepadGotDisconnected()) {
-                
+                if (p_PrefabManager.CheckOrAddPrefabFromName("GamepadDisconnected")) {
+                    p_PrefabManager.CloneFromPrefab("GamepadDisconnected");
+                }
             }
 
             if (p_Input->IsGamepadConnected() && p_Input->GetLastDevice() == InputDevice::Gamepad)

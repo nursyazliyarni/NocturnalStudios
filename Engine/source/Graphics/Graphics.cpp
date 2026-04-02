@@ -606,8 +606,10 @@ namespace NocturnalEngine {
 			if (!font)
 				font = mFont;
 			if (font) {
-				if (text.Get_TEXT_type() == Text::text_type::single_text && text.visibility) //single text
-					font->RenderText(text.GetContent(), pos, text.Get_line_height(), scale, *mcamera, col, text.Rot());
+				if (text.Get_TEXT_type() == Text::text_type::single_text && text.visibility) {
+				
+					font->RenderText(text.GetContent(), pos, text.Get_line_height(), scale, *mcamera, col, text.Rot(), c[3] );
+				}
 			}
 		}
 

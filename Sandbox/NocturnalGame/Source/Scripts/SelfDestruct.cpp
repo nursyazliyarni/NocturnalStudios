@@ -29,11 +29,23 @@ namespace NocturnalEngine {
 	void SelfDestruct::Update(float Frametime)
 	{
 		timeSince += Frametime;
+		float timeleft{ timeTillDie - timeSince };
 		if (timeSince>=timeTillDie)
 		{
 			if (p_ecs.HaveComponent<Sprite>(entityID))
 			{
 				p_ecs.GetComponent<Sprite>(entityID).SetAlpha(0.f);
+			}
+			if (p_ecs.HaveComponent<Text>(entityID))p_ecs.GetComponent<Text>(entityID).SetContent("");
+		}
+		else {
+			if (p_ecs.HaveComponent<Sprite>(entityID))
+			{
+				p_ecs.GetComponent<Sprite>(entityID).SetAlpha(1.f*(timeleft/timeTillDie));
+			}
+			if (p_ecs.HaveComponent<Text>(entityID)) { 
+				float* c = p_ecs.GetComponent<Text>(entityID).GetColor();
+				p_ecs.GetComponent<Text>(entityID).SetColor(c[0],c[1],c[2],1.f * (timeleft / timeTillDie));
 			}
 		}
 
