@@ -28,6 +28,17 @@ namespace NocturnalEngine {
 	using mousestatus = int;
 	using mousecode = int;
 
+
+    using keystatus = int;
+    using keycode = int;
+    using mousestatus = int;
+    using mousecode = int;
+
+    using GamepadButton = int;
+    using GamepadAxis = int;
+
+	enum class InputDevice { KeyboardMouse, Gamepad };
+
 	class NOCTURNAL_ENGINE_API InputSystem
 	{
 	public:
@@ -61,7 +72,7 @@ namespace NocturnalEngine {
         bool GamepadPressed(GamepadButton btn)const; // true on the frame it's first pressed
         bool GamepadHeld(GamepadButton btn)const; // true while held
         bool GamepadReleased(GamepadButton btn)const; // true on the frame it's released
-        float GetAxis(GamepadAxis axis)const; // -1.0�1.0 (triggers: 0.0�1.0)
+        float GetAxis(GamepadAxis axis)const; // -1.0–1.0 (triggers: 0.0–1.0)
 
 		bool GamepadGotDisconnected(){
 			if (controllerWasDisconnected) {
@@ -104,6 +115,8 @@ namespace NocturnalEngine {
 		std::vector<mousecode> mouseReset;
 
 		double mMouseScrollStatus = 0.0f;
+    private:
+        static constexpr float DEADZONE = 0.15f;
 
         bool  mGamepadConnected = false,wasGamepadConnected=false;
 
