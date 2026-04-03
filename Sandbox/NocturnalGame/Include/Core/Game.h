@@ -69,6 +69,7 @@ namespace NocturnalEngine {
         ScriptFactory m_scriptFactory;
         LuminaraZoo m_gameConfig;
         Window* m_window{ nullptr };
+		bool escPressedLastFrame{ false }; //to track ESC key state for pause toggling
     };
 }
 

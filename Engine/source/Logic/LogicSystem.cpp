@@ -57,7 +57,7 @@ namespace NocturnalEngine
 				if (layer >= NocturnalEngine::Graphic::MAX_LAYERS)
 					layer = NocturnalEngine::Graphic::MAX_LAYERS - 1;
 
-				if (!NocturnalEngine::Graphic::layerEnabled[layer])
+				if (!NocturnalEngine::Graphic::layerEnabled[layer] && layer != 9)
 					continue;
 			}
 
@@ -67,7 +67,7 @@ namespace NocturnalEngine
 			{
 				for (auto i = LogicComp.GetScript().begin(); i != LogicComp.GetScript().end(); ++i)
 				{
-					if ((p_GUI->check_pause() == false || (*i)->GetScriptName() == "PauseMenu" || (*i)->GetScriptName() == "SliderScript"))
+					if ((p_GUI->check_pause() == false || (*i)->GetScriptName() == "PauseMenu" || (*i)->GetScriptName() == "SliderScript") || (*i)->GetScriptName() == "ButtonResponse")
 					{
 						
 						if (!(*i)->GetScriptInit())

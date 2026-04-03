@@ -69,6 +69,7 @@ namespace NocturnalEngine {
 			{
 				if (p_ecs.GetComponent<ItemsAttributes>(e).type == ItemsAttributes::ItemType::TOY) toyE = e;
 			}
+			cachedSceneName = p_GameManager.GetCurrentScene();
 		}
 	}
 
@@ -94,7 +95,7 @@ namespace NocturnalEngine {
 		AnimalAttributes& aA{ p_ecs.GetComponent<AnimalAttributes>(entityID) };
 
 
-		if (!aA.isEscaped&&aA.is_alive&&p_GameManager.GetGameState() != GameManager::GameState::ENDING) {
+		if (!aA.isEscaped&&aA.is_alive&&p_GameManager.GetGameState() != GameManager::GameState::PLAYING) {
 			aA.timeSinceLastFeed += Frametime;
 			//hunger>hp>sanity
 			CheckAndDecreaseStats(time.hunger, chance.hunger, aA.hungerDecayRate, aA.current_hunger, Frametime);
@@ -147,15 +148,20 @@ namespace NocturnalEngine {
 	void AnimalLogic::End()
 	{
 		// this is so that the state saves to the game manager upon unloading
-		if (!p_ecs.HaveComponent<AnimalAttributes>(entityID))return;
+		/*if (!p_ecs.HaveComponent<AnimalAttributes>(entityID))return;
 
 		AnimalAttributes& aA{ p_ecs.GetComponent<AnimalAttributes>(entityID) };
 		if (p_GameManager.GetGameState() == GameManager::GameState::ENDING)
 		{
 			aA.SetDefault();
 		}
-		p_GameManager.SaveAnimalAttributesToCurrentScene({ aA,chance.hunger,chance.hp,chance.sanity,time.hunger,time.hp,time.sanity });
-		
+		p_GameManager.SaveAnimalAttributesToCurrentScene({ aA,chance.hunger,chance.hp,chance.sanity,time.hunger,time.hp,time.sanity });*/
+		if (!p_ecs.HaveComponent<AnimalAttributes>(entityID)) return;
+		AnimalAttributes& aA{ p_ecs.GetComponent<AnimalAttributes>(entityID) };
+		if (p_GameManager.GetGameState() == GameManager::GameState::ENDING)
+			aA.SetDefault();
+		p_GameManager.SaveAnimalAttributesToScene(cachedSceneName,
+			{ aA, chance.hunger, chance.hp, chance.sanity, time.hunger, time.hp, time.sanity });
 
 	}
 

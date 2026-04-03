@@ -54,7 +54,7 @@ namespace NocturnalEngine
             ||(mInput->IsGamepadConnected()&&mInput->GamepadPressed(GLFW_GAMEPAD_BUTTON_B))) 
         {
             ToggleTarget();
-            if (mVisible && p_ecs.HaveComponent<Transform>(mTarget)) // Follow cursor when visible
+            if (mVisible && p_ecs.HaveComponent<Transform>(mTarget) && p_GameManager.GetGameState() == GameManager::GameState::PLAYING) // Follow cursor when visible
             {
                 auto& transform = p_ecs.GetComponent<Transform>(mTarget);
                 transform.SetPos(p_GUI->MousePosition.x, p_GUI->MousePosition.y);
