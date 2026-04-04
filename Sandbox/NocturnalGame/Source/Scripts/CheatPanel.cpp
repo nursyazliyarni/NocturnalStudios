@@ -36,7 +36,7 @@ namespace NocturnalEngine {
 		UNREFERENCED_PARAMETER(Frametime);
 
 		if (!setupDone)Start();
-#if DEBUG
+
 		if (!canCheat)
 		{
 			if (p_Input->isKeyPressed(GLFW_KEY_BACKSLASH))ToggleCheat();
@@ -48,7 +48,7 @@ namespace NocturnalEngine {
 			if (p_Input->isKeyPressed(GLFW_KEY_C))p_GameManager.ReviveAll();//revive all
 			if (p_Input->isKeyPressed(GLFW_KEY_BACKSLASH))ToggleCheat();
 		}
-#endif
+
 
 	}
 
