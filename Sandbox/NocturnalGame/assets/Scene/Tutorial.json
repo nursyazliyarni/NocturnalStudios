@@ -22,11 +22,15 @@
                 },
                 {
                     "Component": "Transform",
-                    "posX": 0.0,
-                    "posY": 0.0,
-                    "scaleX": 3.6449999809265137,
-                    "scaleY": 2.0,
-                    "Rot": 0.0
+                    "Position": {
+                        "x": 0.0,
+                        "y": 0.0
+                    },
+                    "Scale": {
+                        "x": 3.6449999809265137,
+                        "y": 2.0
+                    },
+                    "Rotation": 0.0
                 },
                 {
                     "Component": "NameTag",
@@ -82,7 +86,7 @@
                     },
                     "AudioArrCount": 1,
                     "BGM Volume": 1.0,
-                    "SFX Volume": 0.5730000138282776,
+                    "SFX Volume": 1.0,
                     "Master Volume": 1.0,
                     "RandomFromArray": false,
                     "Effects": {
@@ -110,8 +114,15 @@
                 },
                 {
                     "Component": "Logic",
-                    "0": "AudioManager",
-                    "1": "BackgroundAudio",
+                    "Scripts": [
+                        {
+                            "ScriptName": "AudioManager"
+                        },
+                        {
+                            "ScriptName": "BackgroundAudio",
+                            "Background Audio Index": 0
+                        }
+                    ],
                     "ScriptCount": 2
                 }
             ]
@@ -121,11 +132,15 @@
             "Components": [
                 {
                     "Component": "Transform",
-                    "posX": -0.9560700058937073,
-                    "posY": 0.25600001215934753,
-                    "scaleX": 1.0,
-                    "scaleY": 1.0,
-                    "Rot": 0.0
+                    "Position": {
+                        "x": -0.9560700058937073,
+                        "y": 0.25600001215934753
+                    },
+                    "Scale": {
+                        "x": 1.0,
+                        "y": 1.0
+                    },
+                    "Rotation": 0.0
                 },
                 {
                     "Component": "Collider",
@@ -165,7 +180,7 @@
                         0.0
                     ],
                     "TextureName": "Characters/flamingo_idle",
-                    "Index_X": 1,
+                    "Index_X": 2,
                     "Index_Y": 0,
                     "Ucoordinates": 528.0,
                     "Vcoordinates": 528.0,
@@ -228,7 +243,11 @@
                 },
                 {
                     "Component": "Logic",
-                    "0": "TutorialLogic",
+                    "Scripts": [
+                        {
+                            "ScriptName": "TutorialLogic"
+                        }
+                    ],
                     "ScriptCount": 1
                 },
                 {
@@ -260,11 +279,15 @@
             "Components": [
                 {
                     "Component": "Transform",
-                    "posX": -1.337353229522705,
-                    "posY": -0.6955225467681885,
-                    "scaleX": 0.30000001192092896,
-                    "scaleY": 0.30000001192092896,
-                    "Rot": 0.0
+                    "Position": {
+                        "x": -1.337353229522705,
+                        "y": -0.6955225467681885
+                    },
+                    "Scale": {
+                        "x": 0.30000001192092896,
+                        "y": 0.30000001192092896
+                    },
+                    "Rotation": 0.0
                 },
                 {
                     "Component": "Collider",
@@ -331,7 +354,11 @@
                 },
                 {
                     "Component": "Logic",
-                    "0": "DragAndDrop",
+                    "Scripts": [
+                        {
+                            "ScriptName": "DragAndDrop"
+                        }
+                    ],
                     "ScriptCount": 1
                 },
                 {
@@ -347,11 +374,15 @@
             "Components": [
                 {
                     "Component": "Transform",
-                    "posX": -0.6022435426712036,
-                    "posY": -0.7217352390289307,
-                    "scaleX": 0.25,
-                    "scaleY": 0.25,
-                    "Rot": 0.0
+                    "Position": {
+                        "x": -0.6022435426712036,
+                        "y": -0.7217352390289307
+                    },
+                    "Scale": {
+                        "x": 0.25,
+                        "y": 0.25
+                    },
+                    "Rotation": 0.0
                 },
                 {
                     "Component": "Collider",
@@ -418,7 +449,11 @@
                 },
                 {
                     "Component": "Logic",
-                    "0": "RevealTargetOnClick",
+                    "Scripts": [
+                        {
+                            "ScriptName": "RevealTargetOnClick"
+                        }
+                    ],
                     "ScriptCount": 1
                 },
                 {
@@ -434,11 +469,15 @@
             "Components": [
                 {
                     "Component": "Transform",
-                    "posX": -0.1607748568058014,
-                    "posY": -0.13524222373962402,
-                    "scaleX": 0.4000000059604645,
-                    "scaleY": 0.4000000059604645,
-                    "Rot": 0.0
+                    "Position": {
+                        "x": -0.1607748568058014,
+                        "y": -0.13524222373962402
+                    },
+                    "Scale": {
+                        "x": 0.4000000059604645,
+                        "y": 0.4000000059604645
+                    },
+                    "Rotation": 0.0
                 },
                 {
                     "Component": "Collider",
@@ -505,6 +544,7 @@
                 },
                 {
                     "Component": "Logic",
+                    "Scripts": [],
                     "ScriptCount": 0
                 },
                 {
@@ -519,206 +559,16 @@
             "ID": 5,
             "Components": [
                 {
-                    "Component": "Tag",
-                    "Tag": "SealBtn",
-                    "TargetTag": ""
-                },
-                {
                     "Component": "Transform",
-                    "posX": 0.4000000059604645,
-                    "posY": 0.11400000005960464,
-                    "scaleX": 0.13500000536441803,
-                    "scaleY": 0.12300000339746475,
-                    "Rot": 0.0
-                },
-                {
-                    "Component": "Collider",
-                    "ColliderType1": 2,
-                    "ColliderType2": 0,
-                    "minX1": 0.05000000074505806,
-                    "minX2": 0.0,
-                    "minY1": 0.05000000074505806,
-                    "minY2": 0.0,
-                    "maxX1": 0.05000000074505806,
-                    "maxX2": 0.0,
-                    "maxY1": 0.05000000074505806,
-                    "maxY2": 0.0,
-                    "offsetX1": 0.0,
-                    "offsetX2": 0.0,
-                    "offsetY1": 0.0,
-                    "offsetY2": 0.0,
-                    "radius1": 0.05000000074505806,
-                    "radius2": 0.0
-                },
-                {
-                    "Component": "NameTag",
-                    "NameTag": "SealBtn"
-                },
-                {
-                    "Component": "Sprite",
-                    "shape/texture": 0,
-                    "shape type": 0,
-                    "circle radius": 0.0,
-                    "length of dashed lines": 0.009999999776482582,
-                    "distance gap": 0.009999999776482582,
-                    "line movement speed": 0.0,
-                    "RGBA": [
-                        0.0,
-                        0.0,
-                        0.0,
-                        0.0
-                    ],
-                    "TextureName": "UI/cameraButtonUnlit",
-                    "Index_X": 0,
-                    "Index_Y": 0,
-                    "Ucoordinates": 512.0,
-                    "Vcoordinates": 512.0,
-                    "IsSpriteSheet": false,
-                    "IsAnimated": false,
-                    "MaxIndex": 0,
-                    "LayeringOrder": 4,
-                    "StateManagerEnabled": false,
-                    "StatePreviewInEditor": false,
-                    "StatePreviewMode": 0,
-                    "AnimationStates": [
-                        {
-                            "Name": "Idle",
-                            "Texture": "",
-                            "Ucoordinates": 512.0,
-                            "Vcoordinates": 512.0,
-                            "Source": 3,
-                            "Compare": 0,
-                            "Threshold": 0.0,
-                            "Priority": -100,
-                            "Enabled": true
-                        }
-                    ]
-                },
-                {
-                    "Component": "Audio",
-                    "0": {
-                        "AudioPath": "SFX_Static_01.wav",
-                        "Channel": 3,
-                        "IsLooping": false,
-                        "VolumeLimit": 0.3569999933242798
+                    "Position": {
+                        "x": -1.5640770196914673,
+                        "y": 0.7606481909751892
                     },
-                    "1": {
-                        "AudioPath": "SFX_Static_02.wav",
-                        "Channel": 3,
-                        "IsLooping": false,
-                        "VolumeLimit": 0.3449999988079071
+                    "Scale": {
+                        "x": 0.10000000149011612,
+                        "y": 0.10000000149011612
                     },
-                    "2": {
-                        "AudioPath": "SFX_Static_03.wav",
-                        "Channel": 3,
-                        "IsLooping": false,
-                        "VolumeLimit": 0.3330000042915344
-                    },
-                    "3": {
-                        "AudioPath": "SFX_Static_04.wav",
-                        "Channel": 3,
-                        "IsLooping": false,
-                        "VolumeLimit": 0.36899998784065247
-                    },
-                    "4": {
-                        "AudioPath": "SFX_Static_05.wav",
-                        "Channel": 3,
-                        "IsLooping": false,
-                        "VolumeLimit": 0.3569999933242798
-                    },
-                    "AudioArrCount": 5,
-                    "BGM Volume": 1.0,
-                    "SFX Volume": 0.5730000138282776,
-                    "Master Volume": 1.0,
-                    "RandomFromArray": true,
-                    "Effects": {
-                        "LowpassEnabled": false,
-                        "LowpassCutoff": 5000.0,
-                        "LowpassResonance": 1.0,
-                        "HighpassEnabled": false,
-                        "HighpassCutoff": 10.0,
-                        "HighpassResonance": 1.0,
-                        "EchoEnabled": false,
-                        "EchoDelay": 500.0,
-                        "EchoFeedback": 50.0,
-                        "EchoDryLevel": 0.0,
-                        "EchoWetLevel": -6.0,
-                        "ReverbEnabled": false,
-                        "ReverbDecayTime": 1500.0,
-                        "ReverbEarlyDelay": 7.0,
-                        "ReverbLateDelay": 11.0,
-                        "ReverbHFReference": 5000.0,
-                        "ReverbDiffusion": 100.0,
-                        "ReverbDensity": 100.0,
-                        "ReverbWetLevel": -6.0,
-                        "ReverbDryLevel": 0.0
-                    }
-                },
-                {
-                    "Component": "Logic",
-                    "0": "ButtonResponse",
-                    "1": "AudioManager",
-                    "ScriptCount": 2
-                },
-                {
-                    "Component": "Text",
-                    "text type": 0,
-                    "Content": "2",
-                    "Array of Content": [],
-                    "Vector of text position": [],
-                    "Font": "ChauPhilomeneOne-Regular",
-                    "Size": 32.5,
-                    "ColorR": 0.0,
-                    "ColorG": 0.0,
-                    "ColorB": 0.0,
-                    "ColorA": 1.0,
-                    "PosX": 0.38749998807907104,
-                    "PosY": 0.09799999743700027,
-                    "Rotation": 0.0,
-                    "Line Height": 0,
-                    "WorldSpace": false,
-                    "Center": false,
-                    "LayeringOrder": 0,
-                    "Visibility": true
-                },
-                {
-                    "Component": "ButtonComponent",
-                    "GoToSceneFlag": true,
-                    "GoToScene": "Assets/Scene/FlamingoScene.json",
-                    "AudioOnHoverFlag": false,
-                    "AudioOnHoverRandom": false,
-                    "HoverAudioIndex": 0,
-                    "AudioOnClickFlag": true,
-                    "AudioOnClickRandom": true,
-                    "TexChangeOnHoverFlag": false,
-                    "TexChangeOnHover": "",
-                    "TexChangeOnClickFlag": false,
-                    "TexChangeOnClick": "",
-                    "ScaleOnHoverFlag": false,
-                    "ScaleOnHover": 0.0,
-                    "SetGameStateFlag": false,
-                    "SetGameState": "STARTING",
-                    "ResetStatsFlag": false,
-                    "NextLevelFlag": false,
-                    "SetCameraZoomFlag": false,
-                    "SetCameraZoom": 0.0,
-                    "MuteAudioFlag": false,
-                    "AltSceneSwitchFlag": false,
-                    "AltSceneSwitch": "",
-                    "ExitGameFlag": false
-                }
-            ]
-        },
-        {
-            "ID": 6,
-            "Components": [
-                {
-                    "Component": "Transform",
-                    "posX": -1.5640770196914673,
-                    "posY": 0.7606481909751892,
-                    "scaleX": 0.10000000149011612,
-                    "scaleY": 0.10000000149011612,
-                    "Rot": 0.0
+                    "Rotation": 0.0
                 },
                 {
                     "Component": "NameTag",
@@ -767,15 +617,19 @@
             ]
         },
         {
-            "ID": 7,
+            "ID": 6,
             "Components": [
                 {
                     "Component": "Transform",
-                    "posX": -1.469074010848999,
-                    "posY": 0.7429999709129333,
-                    "scaleX": 1.0,
-                    "scaleY": 1.0,
-                    "Rot": 0.0
+                    "Position": {
+                        "x": -1.469074010848999,
+                        "y": 0.7429999709129333
+                    },
+                    "Scale": {
+                        "x": 1.0,
+                        "y": 1.0
+                    },
+                    "Rotation": 0.0
                 },
                 {
                     "Component": "NameTag",
@@ -783,6 +637,7 @@
                 },
                 {
                     "Component": "Logic",
+                    "Scripts": [],
                     "ScriptCount": 0
                 },
                 {
@@ -803,13 +658,13 @@
                     "Line Height": 0,
                     "WorldSpace": true,
                     "Center": false,
-                    "LayeringOrder": 0,
+                    "LayeringOrder": 4,
                     "Visibility": true
                 }
             ]
         },
         {
-            "ID": 8,
+            "ID": 7,
             "Components": [
                 {
                     "Component": "NameTag",
@@ -833,13 +688,13 @@
                     "Line Height": 50,
                     "WorldSpace": false,
                     "Center": false,
-                    "LayeringOrder": 0,
+                    "LayeringOrder": 4,
                     "Visibility": true
                 }
             ]
         },
         {
-            "ID": 9,
+            "ID": 8,
             "Components": [
                 {
                     "Component": "NameTag",
@@ -863,13 +718,13 @@
                     "Line Height": 50,
                     "WorldSpace": false,
                     "Center": false,
-                    "LayeringOrder": 0,
+                    "LayeringOrder": 4,
                     "Visibility": true
                 }
             ]
         },
         {
-            "ID": 10,
+            "ID": 9,
             "Components": [
                 {
                     "Component": "NameTag",
@@ -893,13 +748,13 @@
                     "Line Height": 62,
                     "WorldSpace": false,
                     "Center": false,
-                    "LayeringOrder": 0,
+                    "LayeringOrder": 4,
                     "Visibility": true
                 }
             ]
         },
         {
-            "ID": 11,
+            "ID": 10,
             "Components": [
                 {
                     "Component": "Tag",
@@ -908,11 +763,15 @@
                 },
                 {
                     "Component": "Transform",
-                    "posX": 0.0,
-                    "posY": 0.0,
-                    "scaleX": 0.20000000298023224,
-                    "scaleY": 0.20000000298023224,
-                    "Rot": 0.0
+                    "Position": {
+                        "x": 0.0,
+                        "y": 0.0
+                    },
+                    "Scale": {
+                        "x": 0.20000000298023224,
+                        "y": 0.20000000298023224
+                    },
+                    "Rotation": 0.0
                 },
                 {
                     "Component": "Collider",
@@ -980,15 +839,19 @@
             ]
         },
         {
-            "ID": 12,
+            "ID": 11,
             "Components": [
                 {
                     "Component": "Transform",
-                    "posX": 1.0999298095703125,
-                    "posY": -0.28999999165534973,
-                    "scaleX": 0.9850000143051147,
-                    "scaleY": 1.0800000429153442,
-                    "Rot": 0.0
+                    "Position": {
+                        "x": 1.0999298095703125,
+                        "y": -0.28999999165534973
+                    },
+                    "Scale": {
+                        "x": 0.9850000143051147,
+                        "y": 1.0800000429153442
+                    },
+                    "Rotation": 0.0
                 },
                 {
                     "Component": "NameTag",
@@ -1036,6 +899,7 @@
                 },
                 {
                     "Component": "Logic",
+                    "Scripts": [],
                     "ScriptCount": 0
                 },
                 {
@@ -1056,8 +920,69 @@
                     "Line Height": 0,
                     "WorldSpace": true,
                     "Center": false,
-                    "LayeringOrder": 0,
+                    "LayeringOrder": 4,
                     "Visibility": true
+                }
+            ]
+        },
+        {
+            "ID": 12,
+            "Components": [
+                {
+                    "Component": "Transform",
+                    "Position": {
+                        "x": 0.25099998712539673,
+                        "y": -0.28170931339263916
+                    },
+                    "Scale": {
+                        "x": 0.10000000149011612,
+                        "y": 0.10000000149011612
+                    },
+                    "Rotation": -179.99989318847656
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "CameraHighlight"
+                },
+                {
+                    "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "length of dashed lines": 0.009999999776482582,
+                    "distance gap": 0.009999999776482582,
+                    "line movement speed": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "TextureName": "UI/cameraHighlight",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": false,
+                    "MaxIndex": 0,
+                    "LayeringOrder": 1,
+                    "StateManagerEnabled": false,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
                 }
             ]
         },
@@ -1066,11 +991,15 @@
             "Components": [
                 {
                     "Component": "Transform",
-                    "posX": 0.25099998712539673,
-                    "posY": -0.28170931339263916,
-                    "scaleX": 0.10000000149011612,
-                    "scaleY": 0.10000000149011612,
-                    "Rot": -179.99989318847656
+                    "Position": {
+                        "x": -1.5640000104904175,
+                        "y": -0.28171229362487793
+                    },
+                    "Scale": {
+                        "x": 0.10000000149011612,
+                        "y": 0.10000000149011612
+                    },
+                    "Rotation": 90.0
                 },
                 {
                     "Component": "NameTag",
@@ -1123,11 +1052,15 @@
             "Components": [
                 {
                     "Component": "Transform",
-                    "posX": -1.5640000104904175,
-                    "posY": -0.28171229362487793,
-                    "scaleX": 0.10000000149011612,
-                    "scaleY": 0.10000000149011612,
-                    "Rot": 90.0
+                    "Position": {
+                        "x": 0.2513091266155243,
+                        "y": 0.7609999775886536
+                    },
+                    "Scale": {
+                        "x": 0.10000000149011612,
+                        "y": 0.10000000149011612
+                    },
+                    "Rotation": -90.0
                 },
                 {
                     "Component": "NameTag",
@@ -1180,68 +1113,15 @@
             "Components": [
                 {
                     "Component": "Transform",
-                    "posX": 0.2513091266155243,
-                    "posY": 0.7609999775886536,
-                    "scaleX": 0.10000000149011612,
-                    "scaleY": 0.10000000149011612,
-                    "Rot": -90.0
-                },
-                {
-                    "Component": "NameTag",
-                    "NameTag": "CameraHighlight"
-                },
-                {
-                    "Component": "Sprite",
-                    "shape/texture": 0,
-                    "shape type": 0,
-                    "circle radius": 0.0,
-                    "length of dashed lines": 0.009999999776482582,
-                    "distance gap": 0.009999999776482582,
-                    "line movement speed": 0.0,
-                    "RGBA": [
-                        0.0,
-                        0.0,
-                        0.0,
-                        0.0
-                    ],
-                    "TextureName": "UI/cameraHighlight",
-                    "Index_X": 0,
-                    "Index_Y": 0,
-                    "Ucoordinates": 512.0,
-                    "Vcoordinates": 512.0,
-                    "IsSpriteSheet": false,
-                    "IsAnimated": false,
-                    "MaxIndex": 0,
-                    "LayeringOrder": 1,
-                    "StateManagerEnabled": false,
-                    "StatePreviewInEditor": false,
-                    "StatePreviewMode": 0,
-                    "AnimationStates": [
-                        {
-                            "Name": "Idle",
-                            "Texture": "",
-                            "Ucoordinates": 512.0,
-                            "Vcoordinates": 512.0,
-                            "Source": 3,
-                            "Compare": 0,
-                            "Threshold": 0.0,
-                            "Priority": -100,
-                            "Enabled": true
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "ID": 16,
-            "Components": [
-                {
-                    "Component": "Transform",
-                    "posX": -0.6259999871253967,
-                    "posY": 0.2329999953508377,
-                    "scaleX": 2.2100000381469727,
-                    "scaleY": 1.3849999904632568,
-                    "Rot": 0.0
+                    "Position": {
+                        "x": -0.6259999871253967,
+                        "y": 0.2329999953508377
+                    },
+                    "Scale": {
+                        "x": 2.2100000381469727,
+                        "y": 1.3849999904632568
+                    },
+                    "Rotation": 0.0
                 },
                 {
                     "Component": "NameTag",
@@ -1290,15 +1170,19 @@
             ]
         },
         {
-            "ID": 17,
+            "ID": 16,
             "Components": [
                 {
                     "Component": "Transform",
-                    "posX": 0.4000000059604645,
-                    "posY": 0.23999999463558197,
-                    "scaleX": 0.13500000536441803,
-                    "scaleY": 0.12800000607967377,
-                    "Rot": 0.0
+                    "Position": {
+                        "x": 0.4000000059604645,
+                        "y": 0.23999999463558197
+                    },
+                    "Scale": {
+                        "x": 0.13500000536441803,
+                        "y": 0.12800000607967377
+                    },
+                    "Rotation": 0.0
                 },
                 {
                     "Component": "NameTag",
@@ -1362,13 +1246,13 @@
                     "Line Height": 0,
                     "WorldSpace": false,
                     "Center": false,
-                    "LayeringOrder": 0,
+                    "LayeringOrder": 4,
                     "Visibility": true
                 }
             ]
         },
         {
-            "ID": 18,
+            "ID": 17,
             "Components": [
                 {
                     "Component": "Tag",
@@ -1377,11 +1261,15 @@
                 },
                 {
                     "Component": "Transform",
-                    "posX": -0.6399999856948853,
-                    "posY": 0.23499999940395355,
-                    "scaleX": 2.059999942779541,
-                    "scaleY": 1.225000023841858,
-                    "Rot": 0.0
+                    "Position": {
+                        "x": -0.6399999856948853,
+                        "y": 0.23499999940395355
+                    },
+                    "Scale": {
+                        "x": 2.059999942779541,
+                        "y": 1.225000023841858
+                    },
+                    "Rotation": 0.0
                 },
                 {
                     "Component": "Collider",
@@ -1449,15 +1337,19 @@
             ]
         },
         {
-            "ID": 19,
+            "ID": 18,
             "Components": [
                 {
                     "Component": "Transform",
-                    "posX": 0.07999999821186066,
-                    "posY": 0.03999999910593033,
-                    "scaleX": 3.9200000762939453,
-                    "scaleY": 2.184999942779541,
-                    "Rot": 0.0
+                    "Position": {
+                        "x": 0.07999999821186066,
+                        "y": 0.03999999910593033
+                    },
+                    "Scale": {
+                        "x": 3.9200000762939453,
+                        "y": 2.184999942779541
+                    },
+                    "Rotation": 0.0
                 },
                 {
                     "Component": "NameTag",
@@ -1521,21 +1413,25 @@
                     "Line Height": 0,
                     "WorldSpace": false,
                     "Center": false,
-                    "LayeringOrder": 0,
+                    "LayeringOrder": 4,
                     "Visibility": true
                 }
             ]
         },
         {
-            "ID": 20,
+            "ID": 19,
             "Components": [
                 {
                     "Component": "Transform",
-                    "posX": 1.0950000286102295,
-                    "posY": 0.014999999664723873,
-                    "scaleX": 1.190000057220459,
-                    "scaleY": 1.850000023841858,
-                    "Rot": 0.0
+                    "Position": {
+                        "x": 1.0950000286102295,
+                        "y": 0.014999999664723873
+                    },
+                    "Scale": {
+                        "x": 1.190000057220459,
+                        "y": 1.850000023841858
+                    },
+                    "Rotation": 0.0
                 },
                 {
                     "Component": "NameTag",
@@ -1584,7 +1480,7 @@
             ]
         },
         {
-            "ID": 21,
+            "ID": 20,
             "Components": [
                 {
                     "Component": "Tag",
@@ -1593,11 +1489,15 @@
                 },
                 {
                     "Component": "Transform",
-                    "posX": -0.014999999664723873,
-                    "posY": 0.02500000037252903,
-                    "scaleX": 3.7049999237060547,
-                    "scaleY": 2.109999895095825,
-                    "Rot": 0.0
+                    "Position": {
+                        "x": -0.014999999664723873,
+                        "y": 0.02500000037252903
+                    },
+                    "Scale": {
+                        "x": 3.7049999237060547,
+                        "y": 2.109999895095825
+                    },
+                    "Rotation": 0.0
                 },
                 {
                     "Component": "NameTag",
@@ -1646,15 +1546,19 @@
             ]
         },
         {
-            "ID": 22,
+            "ID": 21,
             "Components": [
                 {
                     "Component": "Transform",
-                    "posX": -0.8450000286102295,
-                    "posY": 0.20000000298023224,
-                    "scaleX": 0.05000000074505806,
-                    "scaleY": 0.05000000074505806,
-                    "Rot": 0.0
+                    "Position": {
+                        "x": -0.8450000286102295,
+                        "y": 0.20000000298023224
+                    },
+                    "Scale": {
+                        "x": 0.05000000074505806,
+                        "y": 0.05000000074505806
+                    },
+                    "Rotation": 0.0
                 },
                 {
                     "Component": "Collider",
@@ -1722,15 +1626,19 @@
             ]
         },
         {
-            "ID": 23,
+            "ID": 22,
             "Components": [
                 {
                     "Component": "Transform",
-                    "posX": -1.0499999523162842,
-                    "posY": 0.2199999988079071,
-                    "scaleX": 0.6000000238418579,
-                    "scaleY": 1.0,
-                    "Rot": 0.0
+                    "Position": {
+                        "x": -1.0499999523162842,
+                        "y": 0.2199999988079071
+                    },
+                    "Scale": {
+                        "x": 0.6000000238418579,
+                        "y": 1.0
+                    },
+                    "Rotation": 0.0
                 },
                 {
                     "Component": "NameTag",
@@ -1779,7 +1687,11 @@
                 },
                 {
                     "Component": "Logic",
-                    "0": "TutorialLogic",
+                    "Scripts": [
+                        {
+                            "ScriptName": "TutorialLogic"
+                        }
+                    ],
                     "ScriptCount": 1
                 },
                 {
@@ -1800,7 +1712,7 @@
                     "Line Height": 0,
                     "WorldSpace": false,
                     "Center": false,
-                    "LayeringOrder": 0,
+                    "LayeringOrder": 4,
                     "Visibility": false
                 },
                 {
@@ -1810,15 +1722,19 @@
             ]
         },
         {
-            "ID": 24,
+            "ID": 23,
             "Components": [
                 {
                     "Component": "Transform",
-                    "posX": -1.0499999523162842,
-                    "posY": 0.2199999988079071,
-                    "scaleX": 0.6000000238418579,
-                    "scaleY": 1.0,
-                    "Rot": 0.0
+                    "Position": {
+                        "x": -1.0499999523162842,
+                        "y": 0.2199999988079071
+                    },
+                    "Scale": {
+                        "x": 0.6000000238418579,
+                        "y": 1.0
+                    },
+                    "Rotation": 0.0
                 },
                 {
                     "Component": "NameTag",
@@ -1867,7 +1783,11 @@
                 },
                 {
                     "Component": "Logic",
-                    "0": "TutorialLogic",
+                    "Scripts": [
+                        {
+                            "ScriptName": "TutorialLogic"
+                        }
+                    ],
                     "ScriptCount": 1
                 },
                 {
@@ -1888,7 +1808,7 @@
                     "Line Height": 0,
                     "WorldSpace": false,
                     "Center": false,
-                    "LayeringOrder": 0,
+                    "LayeringOrder": 4,
                     "Visibility": false
                 },
                 {
@@ -1898,15 +1818,19 @@
             ]
         },
         {
-            "ID": 25,
+            "ID": 24,
             "Components": [
                 {
                     "Component": "Transform",
-                    "posX": -1.0499999523162842,
-                    "posY": 0.2199999988079071,
-                    "scaleX": 0.6000000238418579,
-                    "scaleY": 1.0,
-                    "Rot": 0.0
+                    "Position": {
+                        "x": -1.0499999523162842,
+                        "y": 0.2199999988079071
+                    },
+                    "Scale": {
+                        "x": 0.6000000238418579,
+                        "y": 1.0
+                    },
+                    "Rotation": 0.0
                 },
                 {
                     "Component": "NameTag",
@@ -1955,7 +1879,11 @@
                 },
                 {
                     "Component": "Logic",
-                    "0": "TutorialLogic",
+                    "Scripts": [
+                        {
+                            "ScriptName": "TutorialLogic"
+                        }
+                    ],
                     "ScriptCount": 1
                 },
                 {
@@ -1976,7 +1904,7 @@
                     "Line Height": 0,
                     "WorldSpace": false,
                     "Center": false,
-                    "LayeringOrder": 0,
+                    "LayeringOrder": 4,
                     "Visibility": false
                 },
                 {
@@ -1986,15 +1914,19 @@
             ]
         },
         {
-            "ID": 26,
+            "ID": 25,
             "Components": [
                 {
                     "Component": "Transform",
-                    "posX": -1.0499999523162842,
-                    "posY": 0.2199999988079071,
-                    "scaleX": 0.6000000238418579,
-                    "scaleY": 1.0,
-                    "Rot": 0.0
+                    "Position": {
+                        "x": -1.0499999523162842,
+                        "y": 0.2199999988079071
+                    },
+                    "Scale": {
+                        "x": 0.6000000238418579,
+                        "y": 1.0
+                    },
+                    "Rotation": 0.0
                 },
                 {
                     "Component": "NameTag",
@@ -2043,7 +1975,11 @@
                 },
                 {
                     "Component": "Logic",
-                    "0": "TutorialLogic",
+                    "Scripts": [
+                        {
+                            "ScriptName": "TutorialLogic"
+                        }
+                    ],
                     "ScriptCount": 1
                 },
                 {
@@ -2064,7 +2000,7 @@
                     "Line Height": 0,
                     "WorldSpace": false,
                     "Center": false,
-                    "LayeringOrder": 0,
+                    "LayeringOrder": 4,
                     "Visibility": false
                 },
                 {
@@ -2074,15 +2010,19 @@
             ]
         },
         {
-            "ID": 27,
+            "ID": 26,
             "Components": [
                 {
                     "Component": "Transform",
-                    "posX": -1.350000023841858,
-                    "posY": -0.7200000286102295,
-                    "scaleX": 0.30000001192092896,
-                    "scaleY": 0.30000001192092896,
-                    "Rot": 0.0
+                    "Position": {
+                        "x": -1.350000023841858,
+                        "y": -0.7200000286102295
+                    },
+                    "Scale": {
+                        "x": 0.30000001192092896,
+                        "y": 0.30000001192092896
+                    },
+                    "Rotation": 0.0
                 },
                 {
                     "Component": "NameTag",
@@ -2131,7 +2071,11 @@
                 },
                 {
                     "Component": "Logic",
-                    "0": "TutorialLogic",
+                    "Scripts": [
+                        {
+                            "ScriptName": "TutorialLogic"
+                        }
+                    ],
                     "ScriptCount": 1
                 },
                 {
@@ -2152,7 +2096,7 @@
                     "Line Height": 0,
                     "WorldSpace": false,
                     "Center": false,
-                    "LayeringOrder": 0,
+                    "LayeringOrder": 4,
                     "Visibility": false
                 },
                 {
@@ -2162,15 +2106,19 @@
             ]
         },
         {
-            "ID": 28,
+            "ID": 27,
             "Components": [
                 {
                     "Component": "Transform",
-                    "posX": -1.0499999523162842,
-                    "posY": 0.2199999988079071,
-                    "scaleX": 0.6000000238418579,
-                    "scaleY": 1.0,
-                    "Rot": 0.0
+                    "Position": {
+                        "x": -1.0499999523162842,
+                        "y": 0.2199999988079071
+                    },
+                    "Scale": {
+                        "x": 0.6000000238418579,
+                        "y": 1.0
+                    },
+                    "Rotation": 0.0
                 },
                 {
                     "Component": "NameTag",
@@ -2219,7 +2167,11 @@
                 },
                 {
                     "Component": "Logic",
-                    "0": "TutorialLogic",
+                    "Scripts": [
+                        {
+                            "ScriptName": "TutorialLogic"
+                        }
+                    ],
                     "ScriptCount": 1
                 },
                 {
@@ -2240,7 +2192,7 @@
                     "Line Height": 0,
                     "WorldSpace": false,
                     "Center": false,
-                    "LayeringOrder": 0,
+                    "LayeringOrder": 4,
                     "Visibility": false
                 },
                 {
@@ -2250,15 +2202,19 @@
             ]
         },
         {
-            "ID": 29,
+            "ID": 28,
             "Components": [
                 {
                     "Component": "Transform",
-                    "posX": -0.6050000190734863,
-                    "posY": -0.7200000286102295,
-                    "scaleX": 0.30000001192092896,
-                    "scaleY": 0.30000001192092896,
-                    "Rot": 0.0
+                    "Position": {
+                        "x": -0.6050000190734863,
+                        "y": -0.7200000286102295
+                    },
+                    "Scale": {
+                        "x": 0.30000001192092896,
+                        "y": 0.30000001192092896
+                    },
+                    "Rotation": 0.0
                 },
                 {
                     "Component": "NameTag",
@@ -2307,7 +2263,11 @@
                 },
                 {
                     "Component": "Logic",
-                    "0": "TutorialLogic",
+                    "Scripts": [
+                        {
+                            "ScriptName": "TutorialLogic"
+                        }
+                    ],
                     "ScriptCount": 1
                 },
                 {
@@ -2328,7 +2288,7 @@
                     "Line Height": 0,
                     "WorldSpace": false,
                     "Center": false,
-                    "LayeringOrder": 0,
+                    "LayeringOrder": 4,
                     "Visibility": false
                 },
                 {
@@ -2338,15 +2298,19 @@
             ]
         },
         {
-            "ID": 30,
+            "ID": 29,
             "Components": [
                 {
                     "Component": "Transform",
-                    "posX": -1.0499999523162842,
-                    "posY": 0.2199999988079071,
-                    "scaleX": 0.6000000238418579,
-                    "scaleY": 1.0,
-                    "Rot": 0.0
+                    "Position": {
+                        "x": -1.0499999523162842,
+                        "y": 0.2199999988079071
+                    },
+                    "Scale": {
+                        "x": 0.6000000238418579,
+                        "y": 1.0
+                    },
+                    "Rotation": 0.0
                 },
                 {
                     "Component": "NameTag",
@@ -2395,7 +2359,11 @@
                 },
                 {
                     "Component": "Logic",
-                    "0": "TutorialLogic",
+                    "Scripts": [
+                        {
+                            "ScriptName": "TutorialLogic"
+                        }
+                    ],
                     "ScriptCount": 1
                 },
                 {
@@ -2416,7 +2384,7 @@
                     "Line Height": 0,
                     "WorldSpace": false,
                     "Center": false,
-                    "LayeringOrder": 0,
+                    "LayeringOrder": 4,
                     "Visibility": false
                 },
                 {
@@ -2426,15 +2394,19 @@
             ]
         },
         {
-            "ID": 31,
+            "ID": 30,
             "Components": [
                 {
                     "Component": "Transform",
-                    "posX": -0.1550000011920929,
-                    "posY": -0.23499999940395355,
-                    "scaleX": 0.30000001192092896,
-                    "scaleY": 0.30000001192092896,
-                    "Rot": 0.0
+                    "Position": {
+                        "x": -0.1550000011920929,
+                        "y": -0.23499999940395355
+                    },
+                    "Scale": {
+                        "x": 0.30000001192092896,
+                        "y": 0.30000001192092896
+                    },
+                    "Rotation": 0.0
                 },
                 {
                     "Component": "NameTag",
@@ -2483,7 +2455,11 @@
                 },
                 {
                     "Component": "Logic",
-                    "0": "TutorialLogic",
+                    "Scripts": [
+                        {
+                            "ScriptName": "TutorialLogic"
+                        }
+                    ],
                     "ScriptCount": 1
                 },
                 {
@@ -2504,7 +2480,7 @@
                     "Line Height": 0,
                     "WorldSpace": false,
                     "Center": false,
-                    "LayeringOrder": 0,
+                    "LayeringOrder": 4,
                     "Visibility": false
                 },
                 {
@@ -2518,11 +2494,15 @@
             "Components": [
                 {
                     "Component": "Transform",
-                    "posX": 1.100000023841858,
-                    "posY": -0.3100000023841858,
-                    "scaleX": 1.0,
-                    "scaleY": 1.100000023841858,
-                    "Rot": 0.0
+                    "Position": {
+                        "x": 1.100000023841858,
+                        "y": -0.3100000023841858
+                    },
+                    "Scale": {
+                        "x": 1.0,
+                        "y": 1.100000023841858
+                    },
+                    "Rotation": 0.0
                 },
                 {
                     "Component": "NameTag",
@@ -2571,7 +2551,11 @@
                 },
                 {
                     "Component": "Logic",
-                    "0": "TutorialLogic",
+                    "Scripts": [
+                        {
+                            "ScriptName": "TutorialLogic"
+                        }
+                    ],
                     "ScriptCount": 1
                 },
                 {
@@ -2592,7 +2576,7 @@
                     "Line Height": 0,
                     "WorldSpace": false,
                     "Center": false,
-                    "LayeringOrder": 0,
+                    "LayeringOrder": 4,
                     "Visibility": false
                 },
                 {
@@ -2606,11 +2590,15 @@
             "Components": [
                 {
                     "Component": "Transform",
-                    "posX": -1.2999999523162842,
-                    "posY": 0.75,
-                    "scaleX": 0.4000000059604645,
-                    "scaleY": 0.20000000298023224,
-                    "Rot": 0.0
+                    "Position": {
+                        "x": -1.2999999523162842,
+                        "y": 0.75
+                    },
+                    "Scale": {
+                        "x": 0.4000000059604645,
+                        "y": 0.20000000298023224
+                    },
+                    "Rotation": 0.0
                 },
                 {
                     "Component": "NameTag",
@@ -2659,7 +2647,11 @@
                 },
                 {
                     "Component": "Logic",
-                    "0": "TutorialLogic",
+                    "Scripts": [
+                        {
+                            "ScriptName": "TutorialLogic"
+                        }
+                    ],
                     "ScriptCount": 1
                 },
                 {
@@ -2680,7 +2672,7 @@
                     "Line Height": 0,
                     "WorldSpace": false,
                     "Center": false,
-                    "LayeringOrder": 0,
+                    "LayeringOrder": 4,
                     "Visibility": false
                 },
                 {
@@ -2694,11 +2686,15 @@
             "Components": [
                 {
                     "Component": "Transform",
-                    "posX": -0.2199999988079071,
-                    "posY": 0.1850000023841858,
-                    "scaleX": 1.0,
-                    "scaleY": 0.20000000298023224,
-                    "Rot": 0.0
+                    "Position": {
+                        "x": -0.2199999988079071,
+                        "y": 0.1850000023841858
+                    },
+                    "Scale": {
+                        "x": 1.0,
+                        "y": 0.20000000298023224
+                    },
+                    "Rotation": 0.0
                 },
                 {
                     "Component": "NameTag",
@@ -2747,7 +2743,11 @@
                 },
                 {
                     "Component": "Logic",
-                    "0": "TutorialLogic",
+                    "Scripts": [
+                        {
+                            "ScriptName": "TutorialLogic"
+                        }
+                    ],
                     "ScriptCount": 1
                 },
                 {
@@ -2768,8 +2768,212 @@
                     "Line Height": 0,
                     "WorldSpace": false,
                     "Center": false,
-                    "LayeringOrder": 0,
+                    "LayeringOrder": 4,
                     "Visibility": true
+                },
+                {
+                    "Component": "TutorialAttributes",
+                    "tutorial_order": 11
+                }
+            ]
+        },
+        {
+            "ID": 35,
+            "Components": [
+                {
+                    "Component": "Transform",
+                    "Position": {
+                        "x": 1.3949999809265137,
+                        "y": -0.7149999737739563
+                    },
+                    "Scale": {
+                        "x": 0.5,
+                        "y": 0.5
+                    },
+                    "Rotation": 0.0
+                },
+                {
+                    "Component": "Collider",
+                    "ColliderType1": 4,
+                    "ColliderType2": 0,
+                    "minX1": 0.0,
+                    "minX2": 0.0,
+                    "minY1": 0.0,
+                    "minY2": 0.0,
+                    "maxX1": 0.6000000238418579,
+                    "maxX2": 0.0,
+                    "maxY1": 0.4000000059604645,
+                    "maxY2": 0.0,
+                    "offsetX1": -0.30000001192092896,
+                    "offsetX2": 0.0,
+                    "offsetY1": -0.20000000298023224,
+                    "offsetY2": 0.0,
+                    "radius1": 0.0,
+                    "radius2": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "next_level_sign"
+                },
+                {
+                    "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "length of dashed lines": 0.009999999776482582,
+                    "distance gap": 0.009999999776482582,
+                    "line movement speed": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "TextureName": "UI/BlankArrow",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": false,
+                    "MaxIndex": 0,
+                    "LayeringOrder": 2,
+                    "StateManagerEnabled": false,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
+                },
+                {
+                    "Component": "Audio",
+                    "0": {
+                        "AudioPath": "SFX_Static_01.wav",
+                        "Channel": 3,
+                        "IsLooping": false,
+                        "VolumeLimit": 0.3569999933242798
+                    },
+                    "1": {
+                        "AudioPath": "SFX_Static_02.wav",
+                        "Channel": 3,
+                        "IsLooping": false,
+                        "VolumeLimit": 0.3449999988079071
+                    },
+                    "2": {
+                        "AudioPath": "SFX_Static_03.wav",
+                        "Channel": 3,
+                        "IsLooping": false,
+                        "VolumeLimit": 0.3330000042915344
+                    },
+                    "3": {
+                        "AudioPath": "SFX_Static_04.wav",
+                        "Channel": 3,
+                        "IsLooping": false,
+                        "VolumeLimit": 0.36899998784065247
+                    },
+                    "4": {
+                        "AudioPath": "SFX_Static_05.wav",
+                        "Channel": 3,
+                        "IsLooping": false,
+                        "VolumeLimit": 0.3569999933242798
+                    },
+                    "AudioArrCount": 5,
+                    "BGM Volume": 1.0,
+                    "SFX Volume": 1.0,
+                    "Master Volume": 1.0,
+                    "RandomFromArray": true,
+                    "Effects": {
+                        "LowpassEnabled": false,
+                        "LowpassCutoff": 5000.0,
+                        "LowpassResonance": 1.0,
+                        "HighpassEnabled": false,
+                        "HighpassCutoff": 10.0,
+                        "HighpassResonance": 1.0,
+                        "EchoEnabled": false,
+                        "EchoDelay": 500.0,
+                        "EchoFeedback": 50.0,
+                        "EchoDryLevel": 0.0,
+                        "EchoWetLevel": -6.0,
+                        "ReverbEnabled": false,
+                        "ReverbDecayTime": 1500.0,
+                        "ReverbEarlyDelay": 7.0,
+                        "ReverbLateDelay": 11.0,
+                        "ReverbHFReference": 5000.0,
+                        "ReverbDiffusion": 100.0,
+                        "ReverbDensity": 100.0,
+                        "ReverbWetLevel": -6.0,
+                        "ReverbDryLevel": 0.0
+                    }
+                },
+                {
+                    "Component": "Logic",
+                    "Scripts": [
+                        {
+                            "ScriptName": "TutorialLogic"
+                        },
+                        {
+                            "ScriptName": "ButtonResponse"
+                        }
+                    ],
+                    "ScriptCount": 2
+                },
+                {
+                    "Component": "Text",
+                    "text type": 0,
+                    "Content": "Next Level",
+                    "Array of Content": [],
+                    "Vector of text position": [],
+                    "Font": "ChauPhilomeneOne-Regular",
+                    "Size": 48.0,
+                    "ColorR": 1.0,
+                    "ColorG": 1.0,
+                    "ColorB": 1.0,
+                    "ColorA": 1.0,
+                    "PosX": 1.2400000095367432,
+                    "PosY": -0.7400000095367432,
+                    "Rotation": 0.0,
+                    "Line Height": 0,
+                    "WorldSpace": false,
+                    "Center": false,
+                    "LayeringOrder": 4,
+                    "Visibility": true
+                },
+                {
+                    "Component": "ButtonComponent",
+                    "Button logic is ON": true,
+                    "GoToSceneFlag": true,
+                    "GoToScene": "Assets/Scene/FlamingoScene.json",
+                    "AudioOnHoverFlag": false,
+                    "AudioOnHoverRandom": false,
+                    "HoverAudioIndex": 0,
+                    "AudioOnClickFlag": true,
+                    "AudioOnClickRandom": true,
+                    "TexChangeOnHoverFlag": false,
+                    "TexChangeOnHover": "",
+                    "TexChangeOnClickFlag": false,
+                    "TexChangeOnClick": "",
+                    "ScaleOnHoverFlag": false,
+                    "ScaleOnHover": 0.0,
+                    "SetGameStateFlag": false,
+                    "SetGameState": "STARTING",
+                    "ResetStatsFlag": false,
+                    "NextLevelFlag": false,
+                    "SetCameraZoomFlag": false,
+                    "SetCameraZoom": 0.0,
+                    "MuteAudioFlag": false,
+                    "AltSceneSwitchFlag": false,
+                    "AltSceneSwitch": "",
+                    "ExitGameFlag": false
                 },
                 {
                     "Component": "TutorialAttributes",

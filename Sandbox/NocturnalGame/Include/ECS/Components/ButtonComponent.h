@@ -74,10 +74,12 @@ namespace NocturnalEngine
 		****************************************************************************/
 		void SetComponentEntityID(Entity& entity) { entityID = entity; }
 
-		
+		bool GET_button_logic_ON() { return button_logic_ON; }
+		void SET_button_logic_ON(bool logic_state) { button_logic_ON = logic_state; }
 
 	private:
 		int flag{ 0 };
+		bool button_logic_ON{ true };
 
 		
 	};

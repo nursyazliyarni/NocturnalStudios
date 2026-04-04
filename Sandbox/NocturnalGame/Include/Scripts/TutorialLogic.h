@@ -18,6 +18,7 @@
 #include "pch.h"
 #include "Scripts/IScript.h"
 #include "Input/Input.h"
+#include "ECS/Components/TutorialAttributes.h"
 
 namespace NocturnalEngine
 {
@@ -65,8 +66,8 @@ namespace NocturnalEngine
 
 		bool Requirements(Entity e) override {
 			UNREFERENCED_PARAMETER(e);
-			//if (p_ecs.HaveComponent<Collider>(e)) { return true; }
-			return true;
+			if (p_ecs.HaveComponent<TutorialAttributes>(e)) { return true; }
+			return false;
 		}
 
 		virtual void SetScriptEntityID(Entity& entity) override { entityID = entity; }

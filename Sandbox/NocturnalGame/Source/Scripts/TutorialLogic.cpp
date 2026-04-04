@@ -16,6 +16,7 @@
 #include "pch.h"
 #include "Scripts/TutorialLogic.h"
 #include "ECS/Components/TutorialAttributes.h"
+#include "ECS/Components/ButtonComponent.h"
 #include "ECS/ECS.h"
 
 namespace NocturnalEngine {
@@ -23,6 +24,11 @@ namespace NocturnalEngine {
 	void TutorialLogic::Start()
 	{
 		if (p_ecs.HaveComponent<TutorialAttributes>(entityID) && p_ecs.HaveComponent<Text>(entityID)) {
+			if (p_ecs.HaveComponent<ButtonComponent>(entityID)) {
+				auto& button{ p_ecs.GetComponent<ButtonComponent>(entityID) };
+				button.SET_button_logic_ON(false);
+			}
+
 			auto& tutorial{ p_ecs.GetComponent<TutorialAttributes>(entityID) };
 			auto& text{ p_ecs.GetComponent<Text>(entityID) };
 			if (tutorial.tutorial_order == current_tutorial_order) {
@@ -40,7 +46,14 @@ namespace NocturnalEngine {
 		UNREFERENCED_PARAMETER(Frametime);
 		if (p_ecs.HaveComponent<TutorialAttributes>(entityID)) {
 			auto& tutorial{ p_ecs.GetComponent<TutorialAttributes>(entityID) };
-			if (InputSystem::GetInstance()->MousePressed(0)) {
+			if (current_tutorial_order == 11) { //this means we have reached the last tutorial
+				if (p_ecs.HaveComponent<ButtonComponent>(entityID)) {
+					auto& button{ p_ecs.GetComponent<ButtonComponent>(entityID) };
+					button.SET_button_logic_ON(true); //now button response logic is running for last tutorial
+				}
+			}
+
+			else if (InputSystem::GetInstance()->MousePressed(0)) {
 				current_tutorial_order++; //left click to move to next tutorial
 			}
 
