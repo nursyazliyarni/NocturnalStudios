@@ -70,6 +70,18 @@ namespace NocturnalEngine
 			!p_ecs.HaveComponent<Transform>(entityID)) return;
 
 		ButtonComponent& buttonComponent{ p_ecs.GetComponent<ButtonComponent>(entityID) };
+
+		bool isPauseButton = false;
+
+		if (p_ecs.HaveComponent<NameTag>(entityID))
+		{
+			const std::string& name = p_ecs.GetComponent<NameTag>(entityID).GetNameTag();
+			if (name == "Resume" || name == "Exit")
+				isPauseButton = true;
+		}
+		if (isPauseButton && !p_GameManager.IsPaused())
+			return;
+
 		int buttonFlag{ buttonComponent.Flag() };
 
 
