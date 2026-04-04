@@ -172,6 +172,8 @@ namespace NocturnalEngine {
 
     bool ButtonComponent::Deserialize(const rapidjson::Value& obj)
     {
+        if (obj.HasMember("Button logic is ON")) button_logic_ON = obj["Button logic is ON"].GetBool();
+
         const char* flagNames[] {
             "GoToSceneFlag",        // 1 << 0
             "AudioOnHoverFlag",     // 1 << 1
@@ -286,7 +288,7 @@ namespace NocturnalEngine {
 
     bool ButtonComponent::Serialize(rapidjson::PrettyWriter<rapidjson::StringBuffer>* writer) const
     {
-    
+        writer->Key("Button logic is ON");         writer->Bool(button_logic_ON);
 
         // GoToScene
         writer->Key("GoToSceneFlag");       writer->Bool((flag & (1 << 0)) != 0);

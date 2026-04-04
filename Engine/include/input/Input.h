@@ -74,6 +74,22 @@ namespace NocturnalEngine {
         bool GamepadReleased(GamepadButton btn)const; // true on the frame it's released
         float GetAxis(GamepadAxis axis)const; // -1.0–1.0 (triggers: 0.0–1.0)
 
+		bool GamepadGotDisconnected(){
+			if (controllerWasDisconnected) {
+				controllerWasDisconnected = false;
+				return true;
+			}
+			else return controllerWasDisconnected;
+		}
+
+		bool GamepadGotConnected() {
+			if (coltrollerWasConnected) {
+				coltrollerWasConnected = false;
+				return true;
+			}
+			else return coltrollerWasConnected;
+		}
+
         void ResetGamepadButtons(); // call alongside ResetPressedKey each frame
 
 		InputDevice GetLastDevice() const { return mLastDevice; }
@@ -102,10 +118,12 @@ namespace NocturnalEngine {
     private:
         static constexpr float DEADZONE = 0.15f;
 
-        bool  mGamepadConnected = false;
+        bool  mGamepadConnected = false,wasGamepadConnected=false;
 
-        unsigned char mGamepadCurr[14] = {};
-        unsigned char mGamepadPrev[14] = {};
+		bool coltrollerWasConnected{ false }, controllerWasDisconnected{ false };
+
+        unsigned char mGamepadCurr[15] = {};
+        unsigned char mGamepadPrev[15] = {};
 
         float mGamepadAxes[6] = {};
 

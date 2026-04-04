@@ -146,7 +146,8 @@ namespace NocturnalEngine {
 
     void InputSystem::PollGamepad(int joystickSlot)
     {
-        for (int i = 0; i < 14; i++)
+        wasGamepadConnected = mGamepadConnected;
+        for (int i = 0; i < 15; i++)
         {
             mGamepadPrev[i] = mGamepadCurr[i];
         }
@@ -156,16 +157,24 @@ namespace NocturnalEngine {
             !glfwGetGamepadState(joystickSlot, &state))
         {
             mGamepadConnected = false;
-            for (int i = 0; i < 14; i++)
+            for (int i = 0; i < 15; i++)
                 mGamepadCurr[i] = 0;
             for (int i = 0; i < 6; i++)
                 mGamepadAxes[i] = 0.0f;
+        }
+        else {
+            mGamepadConnected = true;
+        }
+        if (mGamepadConnected && !wasGamepadConnected)
+            coltrollerWasConnected = true;
+        if (!mGamepadConnected && wasGamepadConnected) {
+            controllerWasDisconnected = true;
             return;
         }
+            
 
-        mGamepadConnected = true;
 
-        for (int i = 0; i < 14; i++)
+        for (int i = 0; i < 15; i++)
         {
             mGamepadCurr[i] = state.buttons[i];
         }
@@ -184,7 +193,7 @@ namespace NocturnalEngine {
 
         // Check if any gamepad input is active this frame
         bool anyInput = false;
-        for (int i = 0; i < 14; i++)
+        for (int i = 0; i < 15; i++)
             if (mGamepadCurr[i]) { anyInput = true; break; }
 
         if (!anyInput)
@@ -194,6 +203,7 @@ namespace NocturnalEngine {
         if (anyInput) {
             SetLastDevice(InputDevice::Gamepad);
         }
+
     }
 
     void InputSystem::ResetGamepadButtons()

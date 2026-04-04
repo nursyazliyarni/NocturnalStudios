@@ -530,7 +530,7 @@ namespace NocturnalEngine {
 	/*!*************************************************************************
 Overload function for Draw Quad using vec3 position with texture
 ****************************************************************************/
-	void Renderer::DrawQuad(const Vec3& position, const vec2D& size, const MultiRefs<Texture>& texture)
+	void Renderer::DrawQuad(const Vec3& position, const vec2D& size, const MultiRefs<Texture>& texture, const Vec4& color )
 	{
 		Mat4x4 transform(1.0f);
 		Mat4x4 translate(1.0f);
@@ -539,13 +539,13 @@ Overload function for Draw Quad using vec3 position with texture
 		Scale4x4(scale, size.x, size.y, 1.0f);
 		transform = translate * scale;
 
-		DrawQuad(transform, texture);
+		DrawQuad(transform, texture, color);
 	}
 
 	/*!*************************************************************************
 	Overload function for Draw Quad using transform with texture
 	****************************************************************************/
-	void Renderer::DrawQuad(const Mat4x4& transform, const MultiRefs<Texture>& texture)
+	void Renderer::DrawQuad(const Mat4x4& transform, const MultiRefs<Texture>& texture, const Vec4& color )
 	{
 		MultiRefs<Texture> resolvedTex = texture && texture->GetRendererID() != 0 ? 
 			texture : ResourceManager::GetTexture("ERROR_MISSINGTEX");
@@ -574,7 +574,7 @@ Overload function for Draw Quad using vec3 position with texture
 		for (size_t i = 0; i < quadCount; i++)
 		{
 			r_Data.QuadVertexBufferPtr->Position = transform * r_Data.QuadVertexPosition[i];
-			r_Data.QuadVertexBufferPtr->Color = { 1.0f, 1.0f, 1.0f, 1.0f };
+			r_Data.QuadVertexBufferPtr->Color = color;
 			r_Data.QuadVertexBufferPtr->TexCoord = NocturnalEngine::vec2D(textureCoors[i].x, textureCoors[i].y);
 			r_Data.QuadVertexBufferPtr->TextureIndex = textureIndex;
 			r_Data.QuadVertexBufferPtr++;
@@ -615,15 +615,15 @@ Overload function for Draw Quad using vec3 position with texture
 	/*!*************************************************************************
 	Overload function for Draw Quad using vec2 position with rotation and texture
 	****************************************************************************/
-	void Renderer::DrawQuad(const vec2D& position, const vec2D& size, float rotation, const MultiRefs<Texture>& texture)
+	void Renderer::DrawQuad(const vec2D& position, const vec2D& size, float rotation, const MultiRefs<Texture>& texture, const Vec4& color)
 	{
-		DrawQuad({ position.x, position.y, 0.0f }, size, rotation, texture);
+		DrawQuad({ position.x, position.y, 0.0f }, size, rotation, texture,color);
 	}
 
 	/*!*************************************************************************
 	Overload function for Draw Quad using vec3 position with rotation and texture
 	****************************************************************************/
-	void Renderer::DrawQuad(const Vec3& position, const vec2D& size, float rotation, const MultiRefs<Texture>& texture)
+	void Renderer::DrawQuad(const Vec3& position, const vec2D& size, float rotation, const MultiRefs<Texture>& texture, const Vec4& color )
 	{
 		Mat4x4 transform(1.0f);
 		Mat4x4 translate(1.0f);
@@ -634,7 +634,7 @@ Overload function for Draw Quad using vec3 position with texture
 		Scale4x4(scale, size.x, size.y, 1.0f);
 		RotRad4x4(rot, rotation, { 0.0f, 0.0f, 1.0f });
 		transform = translate * rot * scale; 
-		DrawQuad(transform, texture);
+		DrawQuad(transform, texture,color);
 	}
 	/*!*************************************************************************
 	Overload function for Draw Quad using vec2 position with rotation and spritesheet

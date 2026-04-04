@@ -79,6 +79,8 @@ namespace NocturnalEngine {
 			}
 			if (p_GameManager.CurrentLevel() > 1 && (p_Input->KeyPressed(GLFW_KEY_4) || p_Input->KeyPressed(GLFW_KEY_D) || p_Input->GamepadPressed(GLFW_GAMEPAD_BUTTON_DPAD_LEFT)))
 			{
+
+				//std::cout << "going to owl\n";
 				std::vector<Audio::AudioPiece>& ar{ a.GetArr() };
 				if (!ar.empty()) a[GetRandomSoundIndex(ar)].should_play = true;
 				p_Scene->setSceneToLoad("Assets/Scene/OwlScene.json");

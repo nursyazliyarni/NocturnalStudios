@@ -83,6 +83,7 @@ EngineCore constructor
 		if (m_GameLayer) {
 			m_GameLayer->Init();
 			m_GameLayer->RegisterScripts(); 
+			m_GameLayer->GiveWindow(m_window);
 		}
 		p_Editor->Init(m_window);
 
@@ -121,7 +122,6 @@ EngineCore constructor
 			p_ecs.SetSystemSignature<PhysicsSystem>(signature);
 		}
 		mPosUpdate->Init();
-
 		m_window->Show();
 
 #if !DEBUG
@@ -181,12 +181,14 @@ EngineCore constructor
 
 			m_window->Update(Timer::GetInstance().GetGlobalDT());
 			p_Input->PollGamepad();
+			m_GameLayer->InputUpdate(Timer::GetInstance().GetGlobalDT());
 			mGraphics->Update(Timer::GetInstance().GetGlobalDT());
 
 #if !DEBUG
 			p_Editor->is_ShowWindow = false;
-#endif 
-			if (p_Editor->is_ShowWindow == false)m_window->HideShowCursor();
+#endif		
+
+
 			FramePerSec::GetInstance().EndFrameCount();
 			Timer::GetInstance().Update(Systems::API);
 			if(!end_state)end_state = p_Editor->ShouldEnd();

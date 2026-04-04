@@ -383,6 +383,54 @@ namespace NocturnalEngine {
 		VideoPlayback::CleanupMissing(p_ecs.GetAliveEntitiesSet());
 
 		p_GUI->VPmat = mcamera->GetViewProjectionMatrix();
+		const auto alive = p_ecs.GetAliveEntitiesSet();
+
+		auto DrawTextLayer = [&](int layer)
+		{
+			for (const auto& e : alive)
+			{
+				if (!p_ecs.HaveComponent<Text>(e)) continue;
+				auto& text = p_ecs.GetComponent<Text>(e);
+
+				int textLayer = text.Get_layering_order();
+				if (textLayer < 0) textLayer = 0;
+				if (textLayer >= Graphic::MAX_LAYERS) textLayer = Graphic::MAX_LAYERS - 1;
+				if (textLayer != layer) continue;
+
+				glm::vec2 pos(0.0f, 0.0f);
+				if (text.GetWorldSpace())
+				{
+					if (!p_ecs.HaveComponent<Transform>(e)) continue;
+					auto& tr = p_ecs.GetComponent<Transform>(e);
+					pos = glm::vec2(tr.GetWorldPos().x, tr.GetWorldPos().y);
+					pos.x += text.GetPosition()[0];
+					pos.y += text.GetPosition()[1];
+				}
+				else
+				{
+					pos = glm::vec2(text.GetPosition()[0], text.GetPosition()[1]);
+				}
+
+				float* c = text.GetColor();
+				if (c[3] <= 0.001f)
+					continue;
+				glm::vec3 col(c[0], c[1], c[2]);
+
+				float scale = text.GetSize() * 0.0000333f;
+				if (scale < 0.0001f) scale = 0.0008f;
+
+				std::shared_ptr<Font> font = ResourceManager::GetFont(text.GetFont());
+				if (!font)
+					font = mFont;
+				if (font)
+				{
+					if (text.Get_TEXT_type() == Text::text_type::single_text && text.visibility)
+					{
+						font->RenderText(text.GetContent(), pos, text.Get_line_height(), scale, *mcamera, col, text.Rot(), c[3]);
+					}
+				}
+			}
+		};
 
 		auto DrawSceneLayers = [&](int startOrderIndex, int endOrderIndex)
 		{
@@ -390,6 +438,8 @@ namespace NocturnalEngine {
 			{
 				int layer = Graphic::layerDrawOrder[orderIndex];
 				if (!Graphic::layerEnabled[layer]) continue;
+
+				mRenderer->Begin(*mcamera);
 
 				for (auto i = mEntities.begin(); i != mEntities.end(); ++i)
 				{
@@ -438,12 +488,28 @@ namespace NocturnalEngine {
 
 					else if (sprite.Get_SPRITE_type() == Sprite::sprite_type::texture)
 					{
-						mRenderer->DrawQuad(
-							{ transform.GetWorldPos().x, transform.GetWorldPos().y },
-							{ transform.GetScale().x, transform.GetScale().y },
-							transform.GetRot(),
-							renderTexture
-						);
+						if (p_ecs.HaveComponent<Text>(*i)) {
+							auto& text{ p_ecs.GetComponent<Text>(*i) };
+							if (text.GET_visibility()) {
+								mRenderer->DrawQuad(
+									{ transform.GetWorldPos().x, transform.GetWorldPos().y },
+									{ transform.GetScale().x, transform.GetScale().y },
+									transform.GetRot(),
+									renderTexture,
+									{ 1.f,1.f,1.f,sprite.GetAlpha() }
+								);
+							}
+						}
+
+						else {
+							mRenderer->DrawQuad(
+								{ transform.GetWorldPos().x, transform.GetWorldPos().y },
+								{ transform.GetScale().x, transform.GetScale().y },
+								transform.GetRot(),
+								renderTexture,
+								{ 1.f,1.f,1.f,sprite.GetAlpha() }
+							);
+						}
 					}
 
 					else if (sprite.Get_SHAPE_type() == Sprite::shape_type::rectangle)
@@ -536,21 +602,22 @@ namespace NocturnalEngine {
 						}
 					}
 				}
+
+				mRenderer->End();
+				DrawTextLayer(layer);
 			}
 		};
 
-		mRenderer->Begin(*mcamera);
 		DrawSceneLayers(0, 0);
-		mRenderer->End();
 
 		if (gSceneParticlesEnabled)
 		{
 			DrawSceneParticles();
 		}
 
-		mRenderer->Begin(*mcamera);
 		DrawSceneLayers(1, Graphic::MAX_LAYERS - 1);
 
+		mRenderer->Begin(*mcamera);
 		for (auto const& entity : mEntities)
 		{
 			if (p_ecs.HaveComponent<NameTag>(entity) && p_ecs.GetComponent<NameTag>(entity).GetNameTag() == "Splash Screen")
@@ -572,43 +639,6 @@ namespace NocturnalEngine {
 			mRenderer->DrawQuad({ camera.GetPosition().x + 0.526f, camera.GetPosition().y + -0.556f }, { 1.350f, 0.175f }, 0.0f, GETTEXTURE("ResumeButton"));
 		}
 		mRenderer->End();
-
-		const auto alive = p_ecs.GetAliveEntitiesSet();
-		for (const auto& e : alive)
-		{
-			if (!p_ecs.HaveComponent<Text>(e)) continue;
-			auto& text = p_ecs.GetComponent<Text>(e);
-
-			glm::vec2 pos(0.0f, 0.0f);
-			if (text.GetWorldSpace())
-			{
-				if (!p_ecs.HaveComponent<Transform>(e)) continue;
-				auto& tr = p_ecs.GetComponent<Transform>(e);
-				pos = glm::vec2(tr.GetPos().x, tr.GetPos().y);
-				pos.x += text.GetPosition()[0];
-				pos.y += text.GetPosition()[1];
-			}
-			else
-			{
-				pos = glm::vec2(text.GetPosition()[0], text.GetPosition()[1]);
-			}
-
-			float* c = text.GetColor();
-			if (c[3] <= 0.001f)
-				continue;
-			glm::vec3 col(c[0], c[1], c[2]);
-
-			float scale = text.GetSize() * 0.0000333f;
-			if (scale < 0.0001f) scale = 0.0008f;
-
-			std::shared_ptr<Font> font = ResourceManager::GetFont(text.GetFont());
-			if (!font)
-				font = mFont;
-			if (font) {
-				if (text.Get_TEXT_type() == Text::text_type::single_text && text.visibility) //single text
-					font->RenderText(text.GetContent(), pos, text.Get_line_height(), scale, *mcamera, col, text.Rot());
-			}
-		}
 
 		const float sceneTransitionAlpha = p_Scene->GetSceneTransitionAlpha();
 		if (sceneTransitionAlpha > 0.0f)

@@ -72,8 +72,9 @@ namespace NocturnalEngine {
 		WindowProps Getter() const { return m_windowData; }
 		GLFWwindow* GetWindow() const { return m_window; }
 		GLFWmonitor* GetMonitor() const { return m_monitor; }
-		
-		void HideShowCursor();
+		double& GetMouseX() { return m_windowData.mouseX; }
+		double& GetMouseY() { return m_windowData.mouseY; }
+
 
 	public:
 

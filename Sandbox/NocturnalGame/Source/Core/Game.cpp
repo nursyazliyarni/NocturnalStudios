@@ -18,6 +18,7 @@
 #include "GUI/GUI.h"
 #include "ECS/SceneManager.h"
 #include "ECS/GameComponentReg.h"
+#include "ECS/PrefabManager.h"
 namespace NocturnalEngine {
     
     void NocturnalGameLayer::Init() {
@@ -105,7 +106,62 @@ namespace NocturnalEngine {
     void NocturnalGameLayer::Shutdown() {
         
     }
+    void NocturnalGameLayer::InputUpdate(float dt) {
+        if (!m_window)return;
+        if (p_Editor->is_ShowWindow == false) {
 
+            if (p_Input->GamepadGotConnected())
+            {
+                if (p_PrefabManager.CheckOrAddPrefabFromName("GamepadConnected")) {
+                    p_PrefabManager.CloneFromPrefab("GamepadConnected");
+                }
+            }
+            else if (p_Input->GamepadGotDisconnected()) {
+                if (p_PrefabManager.CheckOrAddPrefabFromName("GamepadDisconnected")) {
+                    p_PrefabManager.CloneFromPrefab("GamepadDisconnected");
+                }
+            }
+
+            if (p_Input->IsGamepadConnected() && p_Input->GetLastDevice() == InputDevice::Gamepad)
+            {
+                static constexpr float CURSOR_SPEED = 800.0f; // pixels per second
+
+                float stickX = p_Input->GetAxis(GLFW_GAMEPAD_AXIS_LEFT_X);
+                float stickY = p_Input->GetAxis(GLFW_GAMEPAD_AXIS_LEFT_Y);
+
+                if (std::abs(stickX) > 0.0f || std::abs(stickY) > 0.0f)
+                {
+                    WindowProps windowData = m_window->Getter();
+                    // Read current cursor position
+                    double curX = windowData.mouseX;
+                    double curY = windowData.mouseY;
+
+                    // Move it
+                    curX += stickX * CURSOR_SPEED * dt;
+                    curY += stickY * CURSOR_SPEED * dt;
+
+                    // Clamp to window bounds
+                    curX = std::clamp(curX, 0.0, (double)windowData.m_Width);
+                    curY = std::clamp(curY, 0.0, (double)windowData.m_Height);
+
+                    // Write back into your existing mouse position data
+                    m_window->GetMouseX() = curX;
+                    m_window->GetMouseY() = curY;
+
+                    // Move the actual OS cursor to match (so your click detection stays in sync)
+                    glfwSetCursorPos(m_window->GetWindow(), curX, curY);
+                }
+
+                // A button = left click
+                if (p_Input->GamepadPressed(GLFW_GAMEPAD_BUTTON_A))
+                    p_Input->SetMouseStatus(GLFW_MOUSE_BUTTON_LEFT, GLFW_PRESS);
+                else if (p_Input->GamepadReleased(GLFW_GAMEPAD_BUTTON_A))
+                    p_Input->SetMouseStatus(GLFW_MOUSE_BUTTON_LEFT, GLFW_RELEASE);
+            }
+        }
+
+
+    }
     void NocturnalGameLayer::RegisterScripts() {
         // Register all scripts
         m_scriptFactory.RegisterAllGameScripts();

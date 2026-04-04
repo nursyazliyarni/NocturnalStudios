@@ -37,6 +37,8 @@
 #include "Scripts/EncryptionKey.h"
 #include "Scripts/KeysCollectedDisplay.h"
 #include "Scripts/KeyboardSceneSwitch.h"
+#include "Scripts/CheatPanel.h"
+#include "Scripts/SelfDestruct.h"
 
 
 namespace NocturnalEngine {
@@ -68,7 +70,8 @@ namespace NocturnalEngine {
             RegisterScriptType<EncryptionKey>();
             RegisterScriptType<KeysCollectedDisplay>();
             RegisterScriptType<KeyboardSceneSwitch>();
-
+            RegisterScriptType<CheatPanel>();
+            RegisterScriptType<SelfDestruct>();
         
 
     }

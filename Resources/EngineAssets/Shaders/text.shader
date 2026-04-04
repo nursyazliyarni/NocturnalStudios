@@ -22,9 +22,9 @@ out vec4 color;
 
 uniform sampler2D text;
 uniform vec3 textColor;
-
+uniform float u_Alpha;
 void main()
 {    
-    vec4 sampled = vec4(1.0, 1.0, 1.0, texture(text, TexCoords).r);
+    vec4 sampled = vec4(1.0, 1.0, 1.0, texture(text, TexCoords).r * u_Alpha);  
     color = vec4(textColor, 1.0) * sampled;
 }  
