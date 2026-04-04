@@ -234,13 +234,9 @@ void NocturnalEngine::SceneManager::setSceneToLoad(std::string s)
 {
 	if (ShouldUseFadeTransition(mCurrentScenePath, s))
 	{
-		// Queue the tutorial load so the current cutscene scene can fade fully to black first.
 		mQueuedSceneToLoad = s;
 		mTransitionPhase = TransitionPhase::FadeOut;
-		if (sceneToLoad.empty())
-		{
-			sceneToLoad = s;
-		}
+		mTransitionAlpha = 0.0f;
 		return;
 	}
 
@@ -249,7 +245,7 @@ void NocturnalEngine::SceneManager::setSceneToLoad(std::string s)
 
 void NocturnalEngine::SceneManager::checkForSceneToLoad()
 {
-	constexpr float kSceneTransitionDuration = 0.2f;
+	constexpr float kSceneTransitionDuration = 0.6f;
 	const float dt = Timer::GetInstance().GetGlobalDT();
 
 	if (mTransitionPhase == TransitionPhase::FadeOut)
@@ -293,7 +289,8 @@ float NocturnalEngine::SceneManager::GetSceneTransitionAlpha() const
 bool NocturnalEngine::SceneManager::ShouldUseFadeTransition(const std::string& currentScene, const std::string& nextScene) const
 {
 	// Only the cutscene-to-tutorial handoff uses this temporary black-screen transition.
-	return currentScene == "Assets/Scene/CutScene.json" && nextScene == "Assets/Scene/Tutorial.json";
+	return (currentScene == "Assets/Scene/Menu.json" && nextScene == "Assets/Scene/CutScene.json") ||
+		(currentScene == "Assets/Scene/CutScene.json" && nextScene == "Assets/Scene/Tutorial.json");
 }
 
 void NocturnalEngine::SceneManager::LoadSceneNow(const std::string& path)
