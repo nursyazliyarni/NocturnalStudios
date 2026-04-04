@@ -374,9 +374,12 @@ namespace NocturnalEngine {
             under20 = 0;
         }
         
-        currState = GameManager::GameState::ENDING;
+        currState = GameManager::GameState::PLAYING;
         targetVisibility = false;
-        hasInitialized = false;
+        if (!hasInitialized)
+        {
+            hasInitialized = true;
+        }
     }
 
     void GameManager::SaveAnimalAttributesToCurrentScene(AnimalData aA) {
