@@ -475,11 +475,12 @@
                     "Line Height": 0,
                     "WorldSpace": false,
                     "Center": false,
-                    "LayeringOrder": 0,
+                    "LayeringOrder": 7,
                     "Visibility": true
                 },
                 {
                     "Component": "ButtonComponent",
+                    "Button logic is ON": true,
                     "GoToSceneFlag": true,
                     "GoToScene": "Assets/Scene/FlamingoScene.json",
                     "AudioOnHoverFlag": false,
@@ -679,11 +680,12 @@
                     "Line Height": 0,
                     "WorldSpace": false,
                     "Center": false,
-                    "LayeringOrder": 0,
+                    "LayeringOrder": 7,
                     "Visibility": true
                 },
                 {
                     "Component": "ButtonComponent",
+                    "Button logic is ON": true,
                     "GoToSceneFlag": true,
                     "GoToScene": "Assets/Scene/SealScene.json",
                     "AudioOnHoverFlag": false,
@@ -883,11 +885,12 @@
                     "Line Height": 0,
                     "WorldSpace": false,
                     "Center": false,
-                    "LayeringOrder": 0,
+                    "LayeringOrder": 7,
                     "Visibility": true
                 },
                 {
                     "Component": "ButtonComponent",
+                    "Button logic is ON": true,
                     "GoToSceneFlag": true,
                     "GoToScene": "Assets/Scene/OwlScene.json",
                     "AudioOnHoverFlag": false,
@@ -1263,6 +1266,7 @@
                 },
                 {
                     "Component": "ButtonComponent",
+                    "Button logic is ON": true,
                     "GoToSceneFlag": false,
                     "GoToScene": "",
                     "AudioOnHoverFlag": false,
@@ -1427,6 +1431,7 @@
                 },
                 {
                     "Component": "ButtonComponent",
+                    "Button logic is ON": true,
                     "GoToSceneFlag": false,
                     "GoToScene": "",
                     "AudioOnHoverFlag": false,
@@ -2494,7 +2499,7 @@
                     "Line Height": 0,
                     "WorldSpace": false,
                     "Center": false,
-                    "LayeringOrder": 0,
+                    "LayeringOrder": 7,
                     "Visibility": true
                 }
             ]
@@ -2852,7 +2857,7 @@
             ]
         },
         {
-            "ID": 31,
+            "ID": 30,
             "Prefab": "KeyboardButtonReaction",
             "Components": [
                 {
