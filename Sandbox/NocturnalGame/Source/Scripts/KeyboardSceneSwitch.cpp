@@ -3,11 +3,12 @@
 	Project: NocturnalStudio
 
 	Brief:
-		This file contains the implementation of the KeyboardSceneSwitch script class which is responsible
-		for managing background audio playback within the engine.
+		This file contains the KeyboardSceneSwitch class declaration
+		 which is responsible for managing the switching between scenes during gameplay
+		 using the keyboard
 
 	Primary Author:
-		 LAU XIANG YANG (100%)
+		 LAYCOCK ENHUI SARAH (100%)
 		- Created the KeyboardSceneSwitch class and its function specification.
 
 	All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.

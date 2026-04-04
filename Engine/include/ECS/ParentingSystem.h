@@ -1,13 +1,13 @@
 /*!------------------------------------------------------------------------------------------------
-	File: EntityRelationships.h
+	File: ParentingSystem.h
 	Project: NocturnalStudio
 
 	Brief:
-		This file contains class and functions used by the HUD component
+		This file contains the class declarations for the parenting system
 
 	Primary Author:
-		 LAU XIANG YANG (100%)
-		- Created the Relationship.h file and its function specification.
+		 LAYCOCK ENHUI SARAH (100%)
+		- Created the ParentingSystem.h file and its function specification.
 
 	All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
 *------------------------------------------------------------------------------------------------*/

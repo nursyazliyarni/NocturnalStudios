@@ -36,6 +36,10 @@
           see how its done.
         - Changed the logic for deleting entities so that it no longer behaves weirdly when 
           deleting the top item in the list.
+        (04/04/2026)
+        - Added prefabs
+        - Added a Parenting System
+        - Added a Build Size Analyser
 
 
     All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.

@@ -3,8 +3,7 @@
 	Project: NocturnalStudio
 
 	Brief:
-		The CheatPanel system manages the displaying of the ingame log which tracks animals statuses
-		low hwalth, death etc
+		The CheatPanel system manages the displaying of the cheat panel
 
 	Primary Author:
 		 LAYCOCK ENHUI SARAH (100%)
@@ -37,6 +36,7 @@ namespace NocturnalEngine {
 		UNREFERENCED_PARAMETER(Frametime);
 
 		if (!setupDone)Start();
+#if DEBUG
 		if (!canCheat)
 		{
 			if (p_Input->isKeyPressed(GLFW_KEY_BACKSLASH))ToggleCheat();
@@ -48,7 +48,7 @@ namespace NocturnalEngine {
 			if (p_Input->isKeyPressed(GLFW_KEY_C))p_GameManager.ReviveAll();//revive all
 			if (p_Input->isKeyPressed(GLFW_KEY_BACKSLASH))ToggleCheat();
 		}
-
+#endif
 
 	}
 
