@@ -754,7 +754,7 @@ namespace NocturnalEngine {
                         glm::value_ptr(decompRot),
                         glm::value_ptr(decompScale));
                     // change size 
-                    trans.SetPos(decompTrans[0], decompTrans[1]);
+                    trans.SetPosFrmWorld(decompTrans[0], decompTrans[1]);
                     trans.SetRot(decompRot[2]);
                     trans.SetScale(decompScale[0], decompScale[1]);
 
