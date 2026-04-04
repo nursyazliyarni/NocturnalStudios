@@ -180,7 +180,7 @@
                         0.0
                     ],
                     "TextureName": "Characters/flamingo_idle",
-                    "Index_X": 1,
+                    "Index_X": 2,
                     "Index_Y": 0,
                     "Ucoordinates": 528.0,
                     "Vcoordinates": 528.0,
@@ -556,7 +556,7 @@
             ]
         },
         {
-            "ID": 6,
+            "ID": 5,
             "Components": [
                 {
                     "Component": "Transform",
@@ -617,7 +617,7 @@
             ]
         },
         {
-            "ID": 7,
+            "ID": 6,
             "Components": [
                 {
                     "Component": "Transform",
@@ -658,13 +658,13 @@
                     "Line Height": 0,
                     "WorldSpace": true,
                     "Center": false,
-                    "LayeringOrder": 0,
+                    "LayeringOrder": 4,
                     "Visibility": true
                 }
             ]
         },
         {
-            "ID": 8,
+            "ID": 7,
             "Components": [
                 {
                     "Component": "NameTag",
@@ -688,13 +688,13 @@
                     "Line Height": 50,
                     "WorldSpace": false,
                     "Center": false,
-                    "LayeringOrder": 0,
+                    "LayeringOrder": 4,
                     "Visibility": true
                 }
             ]
         },
         {
-            "ID": 9,
+            "ID": 8,
             "Components": [
                 {
                     "Component": "NameTag",
@@ -718,13 +718,13 @@
                     "Line Height": 50,
                     "WorldSpace": false,
                     "Center": false,
-                    "LayeringOrder": 0,
+                    "LayeringOrder": 4,
                     "Visibility": true
                 }
             ]
         },
         {
-            "ID": 10,
+            "ID": 9,
             "Components": [
                 {
                     "Component": "NameTag",
@@ -748,13 +748,13 @@
                     "Line Height": 62,
                     "WorldSpace": false,
                     "Center": false,
-                    "LayeringOrder": 0,
+                    "LayeringOrder": 4,
                     "Visibility": true
                 }
             ]
         },
         {
-            "ID": 11,
+            "ID": 10,
             "Components": [
                 {
                     "Component": "Tag",
@@ -839,7 +839,7 @@
             ]
         },
         {
-            "ID": 12,
+            "ID": 11,
             "Components": [
                 {
                     "Component": "Transform",
@@ -920,13 +920,13 @@
                     "Line Height": 0,
                     "WorldSpace": true,
                     "Center": false,
-                    "LayeringOrder": 0,
+                    "LayeringOrder": 4,
                     "Visibility": true
                 }
             ]
         },
         {
-            "ID": 13,
+            "ID": 12,
             "Components": [
                 {
                     "Component": "Transform",
@@ -987,7 +987,7 @@
             ]
         },
         {
-            "ID": 14,
+            "ID": 13,
             "Components": [
                 {
                     "Component": "Transform",
@@ -1048,7 +1048,7 @@
             ]
         },
         {
-            "ID": 15,
+            "ID": 14,
             "Components": [
                 {
                     "Component": "Transform",
@@ -1109,7 +1109,7 @@
             ]
         },
         {
-            "ID": 16,
+            "ID": 15,
             "Components": [
                 {
                     "Component": "Transform",
@@ -1170,7 +1170,7 @@
             ]
         },
         {
-            "ID": 17,
+            "ID": 16,
             "Components": [
                 {
                     "Component": "Transform",
@@ -1246,13 +1246,13 @@
                     "Line Height": 0,
                     "WorldSpace": false,
                     "Center": false,
-                    "LayeringOrder": 0,
+                    "LayeringOrder": 4,
                     "Visibility": true
                 }
             ]
         },
         {
-            "ID": 18,
+            "ID": 17,
             "Components": [
                 {
                     "Component": "Tag",
@@ -1337,7 +1337,7 @@
             ]
         },
         {
-            "ID": 19,
+            "ID": 18,
             "Components": [
                 {
                     "Component": "Transform",
@@ -1413,13 +1413,13 @@
                     "Line Height": 0,
                     "WorldSpace": false,
                     "Center": false,
-                    "LayeringOrder": 0,
+                    "LayeringOrder": 4,
                     "Visibility": true
                 }
             ]
         },
         {
-            "ID": 20,
+            "ID": 19,
             "Components": [
                 {
                     "Component": "Transform",
@@ -1480,7 +1480,7 @@
             ]
         },
         {
-            "ID": 21,
+            "ID": 20,
             "Components": [
                 {
                     "Component": "Tag",
@@ -1546,7 +1546,7 @@
             ]
         },
         {
-            "ID": 22,
+            "ID": 21,
             "Components": [
                 {
                     "Component": "Transform",
@@ -1626,7 +1626,7 @@
             ]
         },
         {
-            "ID": 23,
+            "ID": 22,
             "Components": [
                 {
                     "Component": "Transform",
@@ -1712,7 +1712,7 @@
                     "Line Height": 0,
                     "WorldSpace": false,
                     "Center": false,
-                    "LayeringOrder": 0,
+                    "LayeringOrder": 4,
                     "Visibility": false
                 },
                 {
@@ -1722,7 +1722,7 @@
             ]
         },
         {
-            "ID": 24,
+            "ID": 23,
             "Components": [
                 {
                     "Component": "Transform",
@@ -1808,7 +1808,7 @@
                     "Line Height": 0,
                     "WorldSpace": false,
                     "Center": false,
-                    "LayeringOrder": 0,
+                    "LayeringOrder": 4,
                     "Visibility": false
                 },
                 {
@@ -1818,7 +1818,7 @@
             ]
         },
         {
-            "ID": 25,
+            "ID": 24,
             "Components": [
                 {
                     "Component": "Transform",
@@ -1904,7 +1904,7 @@
                     "Line Height": 0,
                     "WorldSpace": false,
                     "Center": false,
-                    "LayeringOrder": 0,
+                    "LayeringOrder": 4,
                     "Visibility": false
                 },
                 {
@@ -1914,7 +1914,7 @@
             ]
         },
         {
-            "ID": 26,
+            "ID": 25,
             "Components": [
                 {
                     "Component": "Transform",
@@ -2000,7 +2000,7 @@
                     "Line Height": 0,
                     "WorldSpace": false,
                     "Center": false,
-                    "LayeringOrder": 0,
+                    "LayeringOrder": 4,
                     "Visibility": false
                 },
                 {
@@ -2010,7 +2010,7 @@
             ]
         },
         {
-            "ID": 27,
+            "ID": 26,
             "Components": [
                 {
                     "Component": "Transform",
@@ -2096,7 +2096,7 @@
                     "Line Height": 0,
                     "WorldSpace": false,
                     "Center": false,
-                    "LayeringOrder": 0,
+                    "LayeringOrder": 4,
                     "Visibility": false
                 },
                 {
@@ -2106,7 +2106,7 @@
             ]
         },
         {
-            "ID": 28,
+            "ID": 27,
             "Components": [
                 {
                     "Component": "Transform",
@@ -2192,7 +2192,7 @@
                     "Line Height": 0,
                     "WorldSpace": false,
                     "Center": false,
-                    "LayeringOrder": 0,
+                    "LayeringOrder": 4,
                     "Visibility": false
                 },
                 {
@@ -2202,7 +2202,7 @@
             ]
         },
         {
-            "ID": 29,
+            "ID": 28,
             "Components": [
                 {
                     "Component": "Transform",
@@ -2288,7 +2288,7 @@
                     "Line Height": 0,
                     "WorldSpace": false,
                     "Center": false,
-                    "LayeringOrder": 0,
+                    "LayeringOrder": 4,
                     "Visibility": false
                 },
                 {
@@ -2298,7 +2298,7 @@
             ]
         },
         {
-            "ID": 30,
+            "ID": 29,
             "Components": [
                 {
                     "Component": "Transform",
@@ -2384,7 +2384,7 @@
                     "Line Height": 0,
                     "WorldSpace": false,
                     "Center": false,
-                    "LayeringOrder": 0,
+                    "LayeringOrder": 4,
                     "Visibility": false
                 },
                 {
@@ -2394,7 +2394,7 @@
             ]
         },
         {
-            "ID": 32,
+            "ID": 30,
             "Components": [
                 {
                     "Component": "Transform",
@@ -2480,7 +2480,7 @@
                     "Line Height": 0,
                     "WorldSpace": false,
                     "Center": false,
-                    "LayeringOrder": 0,
+                    "LayeringOrder": 4,
                     "Visibility": false
                 },
                 {
@@ -2490,7 +2490,7 @@
             ]
         },
         {
-            "ID": 33,
+            "ID": 32,
             "Components": [
                 {
                     "Component": "Transform",
@@ -2576,7 +2576,7 @@
                     "Line Height": 0,
                     "WorldSpace": false,
                     "Center": false,
-                    "LayeringOrder": 0,
+                    "LayeringOrder": 4,
                     "Visibility": false
                 },
                 {
@@ -2586,7 +2586,7 @@
             ]
         },
         {
-            "ID": 34,
+            "ID": 33,
             "Components": [
                 {
                     "Component": "Transform",
@@ -2672,7 +2672,7 @@
                     "Line Height": 0,
                     "WorldSpace": false,
                     "Center": false,
-                    "LayeringOrder": 0,
+                    "LayeringOrder": 4,
                     "Visibility": false
                 },
                 {
@@ -2682,7 +2682,7 @@
             ]
         },
         {
-            "ID": 35,
+            "ID": 34,
             "Components": [
                 {
                     "Component": "Transform",
@@ -2768,7 +2768,7 @@
                     "Line Height": 0,
                     "WorldSpace": false,
                     "Center": false,
-                    "LayeringOrder": 0,
+                    "LayeringOrder": 4,
                     "Visibility": true
                 },
                 {
@@ -2778,7 +2778,7 @@
             ]
         },
         {
-            "ID": 36,
+            "ID": 35,
             "Components": [
                 {
                     "Component": "Transform",
@@ -2945,11 +2945,12 @@
                     "Line Height": 0,
                     "WorldSpace": false,
                     "Center": false,
-                    "LayeringOrder": 0,
+                    "LayeringOrder": 4,
                     "Visibility": true
                 },
                 {
                     "Component": "ButtonComponent",
+                    "Button logic is ON": true,
                     "GoToSceneFlag": true,
                     "GoToScene": "Assets/Scene/FlamingoScene.json",
                     "AudioOnHoverFlag": false,
