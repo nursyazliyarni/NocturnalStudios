@@ -734,7 +734,7 @@ namespace NocturnalEngine {
 
                 auto& trans = p_ecs.GetComponent<Transform>(selectedEntity);
 
-                transform = glm::translate(glm::mat4{ 1.0f }, glm::vec3(trans.GetPos().x, trans.GetPos().y, 0.0f))
+                transform = glm::translate(glm::mat4{ 1.0f }, glm::vec3(trans.GetWorldPos().x, trans.GetWorldPos().y, 0.0f))
                     * glm::rotate(glm::mat4(1.0f), glm::radians(trans.GetRot()), glm::vec3(0.0f, 0.0f, 1.0f))
                     * glm::scale(glm::mat4(1.f), { trans.GetScale().x,trans.GetScale().y ,1.0f });
 
