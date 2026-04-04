@@ -381,56 +381,8 @@ namespace NocturnalEngine {
 
 		UpdateSceneParticleSettingsFromScene();
 		VideoPlayback::CleanupMissing(p_ecs.GetAliveEntitiesSet());
-		const auto alive = p_ecs.GetAliveEntitiesSet();
 
 		p_GUI->VPmat = mcamera->GetViewProjectionMatrix();
-
-		auto DrawTextForLayer = [&](int layer)
-		{
-			for (const auto& e : alive)
-			{
-				if (!p_ecs.HaveComponent<Text>(e)) continue;
-
-				auto& text = p_ecs.GetComponent<Text>(e);
-				if (!text.GET_visibility()) continue;
-
-				int textLayer = text.Get_layering_order();
-				if (textLayer < 0) textLayer = 0;
-				if (textLayer >= Graphic::MAX_LAYERS) textLayer = Graphic::MAX_LAYERS - 1;
-				if (textLayer != layer) continue;
-
-				glm::vec2 pos(0.0f, 0.0f);
-				if (text.GetWorldSpace())
-				{
-					if (!p_ecs.HaveComponent<Transform>(e)) continue;
-					auto& tr = p_ecs.GetComponent<Transform>(e);
-					pos = glm::vec2(tr.GetWorldPos().x, tr.GetWorldPos().y);
-					pos.x += text.GetPosition()[0];
-					pos.y += text.GetPosition()[1];
-				}
-				else
-				{
-					pos = glm::vec2(text.GetPosition()[0], text.GetPosition()[1]);
-				}
-
-				float* c = text.GetColor();
-				if (c[3] <= 0.001f) continue;
-
-				glm::vec3 col(c[0], c[1], c[2]);
-
-				float scale = text.GetSize() * 0.0000333f;
-				if (scale < 0.0001f) scale = 0.0008f;
-
-				std::shared_ptr<Font> font = ResourceManager::GetFont(text.GetFont());
-				if (!font) font = mFont;
-				if (!font) continue;
-
-				if (text.Get_TEXT_type() == Text::text_type::single_text)
-				{
-					font->RenderText(text.GetContent(), pos, text.Get_line_height(), scale, *mcamera, col, text.Rot(), c[3]);
-				}
-			}
-		};
 
 		auto DrawSceneLayers = [&](int startOrderIndex, int endOrderIndex)
 		{
@@ -438,8 +390,6 @@ namespace NocturnalEngine {
 			{
 				int layer = Graphic::layerDrawOrder[orderIndex];
 				if (!Graphic::layerEnabled[layer]) continue;
-
-				mRenderer->Begin(*mcamera);
 
 				for (auto i = mEntities.begin(); i != mEntities.end(); ++i)
 				{
@@ -586,20 +536,19 @@ namespace NocturnalEngine {
 						}
 					}
 				}
-
-				mRenderer->End();
-
-				DrawTextForLayer(layer);
 			}
 		};
 
+		mRenderer->Begin(*mcamera);
 		DrawSceneLayers(0, 0);
+		mRenderer->End();
 
 		if (gSceneParticlesEnabled)
 		{
 			DrawSceneParticles();
 		}
 
+		mRenderer->Begin(*mcamera);
 		DrawSceneLayers(1, Graphic::MAX_LAYERS - 1);
 
 		for (auto const& entity : mEntities)
@@ -613,7 +562,6 @@ namespace NocturnalEngine {
 
 		if (p_GUI->check_pause() == true && p_GUI->Check_menu() == false)
 		{
-			mRenderer->Begin(*mcamera);
 			mRenderer->DrawQuad({ camera.GetPosition().x, camera.GetPosition().y }, { 3.52f, 1.89f }, 0.0f, GETTEXTURE("EndGameUI"));
 			mRenderer->DrawQuad({ camera.GetPosition().x + -0.89f, camera.GetPosition().y + -0.01f }, { 1.21f, 1.54f }, 0.0f, GETTEXTURE("Avatar"));
 			mRenderer->DrawQuad({ camera.GetPosition().x + 0.522f, camera.GetPosition().y + 0.118f }, { 1.125f, 1.222f }, 0.0f, GETTEXTURE("MenuPanel"));
@@ -622,7 +570,44 @@ namespace NocturnalEngine {
 			mRenderer->DrawQuad({ camera.GetPosition().x + 0.526f, camera.GetPosition().y + -0.007f }, { 0.802f, 0.123f }, 0.0f, GETTEXTURE("ResumeButton"));
 			mRenderer->DrawQuad({ camera.GetPosition().x + 0.526f, camera.GetPosition().y + -0.198f }, { 0.802f, 0.123f }, 0.0f, GETTEXTURE("ResumeButton"));
 			mRenderer->DrawQuad({ camera.GetPosition().x + 0.526f, camera.GetPosition().y + -0.556f }, { 1.350f, 0.175f }, 0.0f, GETTEXTURE("ResumeButton"));
-			mRenderer->End();
+		}
+		mRenderer->End();
+
+		const auto alive = p_ecs.GetAliveEntitiesSet();
+		for (const auto& e : alive)
+		{
+			if (!p_ecs.HaveComponent<Text>(e)) continue;
+			auto& text = p_ecs.GetComponent<Text>(e);
+
+			glm::vec2 pos(0.0f, 0.0f);
+			if (text.GetWorldSpace())
+			{
+				if (!p_ecs.HaveComponent<Transform>(e)) continue;
+				auto& tr = p_ecs.GetComponent<Transform>(e);
+				pos = glm::vec2(tr.GetPos().x, tr.GetPos().y);
+				pos.x += text.GetPosition()[0];
+				pos.y += text.GetPosition()[1];
+			}
+			else
+			{
+				pos = glm::vec2(text.GetPosition()[0], text.GetPosition()[1]);
+			}
+
+			float* c = text.GetColor();
+			if (c[3] <= 0.001f)
+				continue;
+			glm::vec3 col(c[0], c[1], c[2]);
+
+			float scale = text.GetSize() * 0.0000333f;
+			if (scale < 0.0001f) scale = 0.0008f;
+
+			std::shared_ptr<Font> font = ResourceManager::GetFont(text.GetFont());
+			if (!font)
+				font = mFont;
+			if (font) {
+				if (text.Get_TEXT_type() == Text::text_type::single_text && text.visibility) //single text
+					font->RenderText(text.GetContent(), pos, text.Get_line_height(), scale, *mcamera, col, text.Rot());
+			}
 		}
 
 		const float sceneTransitionAlpha = p_Scene->GetSceneTransitionAlpha();

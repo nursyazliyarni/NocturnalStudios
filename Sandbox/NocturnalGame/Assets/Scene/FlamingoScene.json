@@ -186,7 +186,7 @@
                         0.0
                     ],
                     "TextureName": "Characters/flamingo_angry",
-                    "Index_X": 2,
+                    "Index_X": 4,
                     "Index_Y": 0,
                     "Ucoordinates": 528.0,
                     "Vcoordinates": 528.0,
@@ -418,7 +418,6 @@
                 },
                 {
                     "Component": "ButtonComponent",
-                    "Button logic is ON": true,
                     "GoToSceneFlag": false,
                     "GoToScene": "",
                     "AudioOnHoverFlag": false,
@@ -583,7 +582,6 @@
                 },
                 {
                     "Component": "ButtonComponent",
-                    "Button logic is ON": true,
                     "GoToSceneFlag": false,
                     "GoToScene": "",
                     "AudioOnHoverFlag": false,
@@ -885,12 +883,11 @@
                     "Line Height": 0,
                     "WorldSpace": false,
                     "Center": false,
-                    "LayeringOrder": 7,
+                    "LayeringOrder": 0,
                     "Visibility": true
                 },
                 {
                     "Component": "ButtonComponent",
-                    "Button logic is ON": true,
                     "GoToSceneFlag": true,
                     "GoToScene": "Assets/Scene/SealScene.json",
                     "AudioOnHoverFlag": false,
@@ -1090,12 +1087,11 @@
                     "Line Height": 0,
                     "WorldSpace": false,
                     "Center": false,
-                    "LayeringOrder": 7,
+                    "LayeringOrder": 0,
                     "Visibility": true
                 },
                 {
                     "Component": "ButtonComponent",
-                    "Button logic is ON": true,
                     "GoToSceneFlag": true,
                     "GoToScene": "Assets/Scene/HorseScene.json",
                     "AudioOnHoverFlag": false,
@@ -1292,12 +1288,11 @@
                     "Line Height": 0,
                     "WorldSpace": false,
                     "Center": false,
-                    "LayeringOrder": 7,
+                    "LayeringOrder": 0,
                     "Visibility": true
                 },
                 {
                     "Component": "ButtonComponent",
-                    "Button logic is ON": true,
                     "GoToSceneFlag": true,
                     "GoToScene": "Assets/Scene/OwlScene.json",
                     "AudioOnHoverFlag": false,
@@ -2180,7 +2175,7 @@
                     "Line Height": 0,
                     "WorldSpace": false,
                     "Center": false,
-                    "LayeringOrder": 7,
+                    "LayeringOrder": 0,
                     "Visibility": true
                 }
             ]
