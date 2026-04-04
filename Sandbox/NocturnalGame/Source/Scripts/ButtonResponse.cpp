@@ -65,7 +65,7 @@ namespace NocturnalEngine
 		int buttonFlag{ buttonComponent.Flag() };
 
 
-		if (buttonFlag ==0) return;
+		if (buttonFlag ==0 || !buttonComponent.GET_button_logic_ON()) return;
 
 		Collider& col{ p_ecs.GetComponent<Collider>(entityID) };
 		Transform& transform{ p_ecs.GetComponent<Transform>(entityID) };

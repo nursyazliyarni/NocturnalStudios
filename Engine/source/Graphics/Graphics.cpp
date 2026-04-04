@@ -438,13 +438,28 @@ namespace NocturnalEngine {
 
 					else if (sprite.Get_SPRITE_type() == Sprite::sprite_type::texture)
 					{
-						mRenderer->DrawQuad(
-							{ transform.GetWorldPos().x, transform.GetWorldPos().y },
-							{ transform.GetScale().x, transform.GetScale().y },
-							transform.GetRot(),
-							renderTexture,
-							{ 1.f,1.f,1.f,sprite.GetAlpha()}
-						);
+						if (p_ecs.HaveComponent<Text>(*i)) {
+							auto& text{ p_ecs.GetComponent<Text>(*i) };
+							if (text.GET_visibility()) {
+								mRenderer->DrawQuad(
+									{ transform.GetWorldPos().x, transform.GetWorldPos().y },
+									{ transform.GetScale().x, transform.GetScale().y },
+									transform.GetRot(),
+									renderTexture,
+									{ 1.f,1.f,1.f,sprite.GetAlpha() }
+								);
+							}
+						}
+
+						else {
+							mRenderer->DrawQuad(
+								{ transform.GetWorldPos().x, transform.GetWorldPos().y },
+								{ transform.GetScale().x, transform.GetScale().y },
+								transform.GetRot(),
+								renderTexture,
+								{ 1.f,1.f,1.f,sprite.GetAlpha() }
+							);
+						}
 					}
 
 					else if (sprite.Get_SHAPE_type() == Sprite::shape_type::rectangle)
