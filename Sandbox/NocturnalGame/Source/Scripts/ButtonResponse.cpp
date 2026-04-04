@@ -54,7 +54,7 @@ namespace NocturnalEngine
 			if (!p_ecs.HaveComponent<NameTag>(entityID))
 				return;
 			const std::string& name = p_ecs.GetComponent<NameTag>(entityID).GetNameTag();
-			if (name != "Resume" && name != "Exit")
+			if (name != "Resume" && name!="Resume2"&&name!="Restart"&&name!="Info" && name != "Exit")
 				return;
 		}
 
@@ -116,6 +116,14 @@ namespace NocturnalEngine
 						{
 							p_GameManager.ResumeGame();
 							return;
+						}
+						else if (name == "Resume2")
+						{
+							p_GameManager.ResumeGame();
+							return;
+						}
+						else if (name == "Restart") {
+							p_GameManager.ResetSystem(true);
 						}
 						else if (name == "Exit")
 						{
