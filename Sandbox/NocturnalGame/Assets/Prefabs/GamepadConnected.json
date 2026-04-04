@@ -39,7 +39,7 @@
             "IsSpriteSheet": false,
             "IsAnimated": false,
             "MaxIndex": 0,
-            "LayeringOrder": 0,
+            "LayeringOrder": 9,
             "StateManagerEnabled": false,
             "StatePreviewInEditor": false,
             "StatePreviewMode": 0,
@@ -85,7 +85,7 @@
             "Line Height": 0,
             "WorldSpace": true,
             "Center": false,
-            "LayeringOrder": 0,
+            "LayeringOrder": 9,
             "Visibility": true
         }
     ]
