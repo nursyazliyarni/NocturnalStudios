@@ -227,5 +227,20 @@ namespace NocturnalEngine
 
 		isLocalSpace = true;
 	}
+
+	void Transform::SetPosFrmWorld(float posX, float posY) {
+
+		if (isLocalSpace) {
+			Entity parent = p_Heirarchy.GetParent(entityID);
+			vec2D parentPos{};
+			if (p_ecs.HaveComponent<Transform>(parent))parentPos = p_ecs.GetComponent<Transform>(parent).GetWorldPos();
+
+			mPosition = vec2D{ posX,posY } - parentPos;
+		}
+		else {
+			mPosition = vec2D{ posX,posY };
+		}
+
+	}
 	//End Transform
 }

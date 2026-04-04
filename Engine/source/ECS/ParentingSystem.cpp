@@ -1,13 +1,13 @@
 /*!------------------------------------------------------------------------------------------------
-	File: EntityRelationships.cpp
+	File: ParentingSystem.h
 	Project: NocturnalStudio
 
 	Brief:
 		This file is used to serialize and deserialize HUD components for ECS.
 
 	Primary Author:
-		 LAU XIANG YANG (100%)
-		- Created the HUD component class and its function specification.
+		 LAYCOCK ENHUI SARAH (100%)
+		- Created the heirarchy manager.
 
 	All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
 *------------------------------------------------------------------------------------------------*/

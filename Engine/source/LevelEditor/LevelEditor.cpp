@@ -8,7 +8,7 @@
         properties of the components and save them accordingly.
 	
     Primary Author:
-         LAU XIANG YANG (70%)
+         LAU XIANG YANG (60%)
 		- Created the LevelEditor class and its function specification.
     Secondary Author:
          Nur Syazliyarni (5%)
@@ -18,7 +18,7 @@
         Ang Yu Xuan (5%)
         - Adding in AnimalAttributes Component and ItemAttributes Component UI 
           onto the inspector of the level editor.
-        LAYCOCK ENHUI SARAH (20%)
+        LAYCOCK ENHUI SARAH (30%)
         - Added functionality for content browser, allowing for tetxures to be 
           selected and viewed directly in content browser instead of opening up 
           a seperate tab in imgui. 
@@ -36,6 +36,10 @@
           see how its done.
         - Changed the logic for deleting entities so that it no longer behaves weirdly when 
           deleting the top item in the list.
+        (04/04/2026)
+        - Added prefabs
+        - Added a Parenting System
+        - Added a Build Size Analyser
 
 
     All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
@@ -730,7 +734,7 @@ namespace NocturnalEngine {
 
                 auto& trans = p_ecs.GetComponent<Transform>(selectedEntity);
 
-                transform = glm::translate(glm::mat4{ 1.0f }, glm::vec3(trans.GetPos().x, trans.GetPos().y, 0.0f))
+                transform = glm::translate(glm::mat4{ 1.0f }, glm::vec3(trans.GetWorldPos().x, trans.GetWorldPos().y, 0.0f))
                     * glm::rotate(glm::mat4(1.0f), glm::radians(trans.GetRot()), glm::vec3(0.0f, 0.0f, 1.0f))
                     * glm::scale(glm::mat4(1.f), { trans.GetScale().x,trans.GetScale().y ,1.0f });
 
@@ -750,7 +754,7 @@ namespace NocturnalEngine {
                         glm::value_ptr(decompRot),
                         glm::value_ptr(decompScale));
                     // change size 
-                    trans.SetPos(decompTrans[0], decompTrans[1]);
+                    trans.SetPosFrmWorld(decompTrans[0], decompTrans[1]);
                     trans.SetRot(decompRot[2]);
                     trans.SetScale(decompScale[0], decompScale[1]);
 
