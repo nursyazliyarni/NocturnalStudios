@@ -8,7 +8,7 @@
         properties of the components and save them accordingly.
 	
     Primary Author:
-         LAU XIANG YANG (70%)
+         LAU XIANG YANG (60%)
 		- Created the LevelEditor class and its function specification.
     Secondary Author:
          Nur Syazliyarni (5%)
@@ -18,7 +18,7 @@
         Ang Yu Xuan (5%)
         - Adding in AnimalAttributes Component and ItemAttributes Component UI 
           onto the inspector of the level editor.
-        LAYCOCK ENHUI SARAH (20%)
+        LAYCOCK ENHUI SARAH (30%)
         - Added functionality for content browser, allowing for tetxures to be 
           selected and viewed directly in content browser instead of opening up 
           a seperate tab in imgui. 
