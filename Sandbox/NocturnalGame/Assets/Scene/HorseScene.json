@@ -9,7 +9,8 @@
         6,
         7,
         8,
-        9
+        9,
+        10
     ],
     "Entities": [
         {
@@ -153,7 +154,7 @@
             ]
         },
         {
-            "ID": 2,
+            "ID": 1,
             "Components": [
                 {
                     "Component": "Tag",
@@ -209,25 +210,27 @@
                         0.0,
                         0.0
                     ],
-                    "TextureName": "Characters/horse idle",
-                    "Index_X": 0,
+                    "TextureName": "Characters/horse sick distorted",
+                    "Index_X": 3,
                     "Index_Y": 0,
-                    "Ucoordinates": 517.0,
+                    "Ucoordinates": 512.0,
                     "Vcoordinates": 512.0,
                     "IsSpriteSheet": true,
                     "IsAnimated": true,
-                    "MaxIndex": 2,
-                    "DisplayTime 0": 0.5,
-                    "DisplayTime 1": 0.5,
+                    "MaxIndex": 4,
+                    "DisplayTime 0": 0.30000001192092896,
+                    "DisplayTime 1": 0.30000001192092896,
+                    "DisplayTime 2": 0.30000001192092896,
+                    "DisplayTime 3": 0.30000001192092896,
                     "LayeringOrder": 3,
                     "StateManagerEnabled": true,
                     "StatePreviewInEditor": false,
-                    "StatePreviewMode": 1,
+                    "StatePreviewMode": 0,
                     "AnimationStates": [
                         {
                             "Name": "Idle",
                             "Texture": "Characters/horse idle",
-                            "Ucoordinates": 517.0,
+                            "Ucoordinates": 512.0,
                             "Vcoordinates": 512.0,
                             "Source": 3,
                             "Compare": 0,
@@ -261,6 +264,50 @@
                             "Name": "Sick",
                             "Texture": "Characters/horse sick",
                             "Ucoordinates": 513.0,
+                            "Vcoordinates": 512.0,
+                            "Source": 1,
+                            "Compare": 0,
+                            "Threshold": 0.5,
+                            "Priority": 0,
+                            "Enabled": true
+                        },
+                        {
+                            "Name": "Distorted Idle",
+                            "Texture": "Characters/horse idle distorted",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.5,
+                            "Priority": -100,
+                            "Enabled": true
+                        },
+                        {
+                            "Name": "Distorted Angry",
+                            "Texture": "Characters/horse insane distorted",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
+                            "Source": 2,
+                            "Compare": 0,
+                            "Threshold": 0.5,
+                            "Priority": 0,
+                            "Enabled": true
+                        },
+                        {
+                            "Name": "Distorted Hungry",
+                            "Texture": "Characters/horse hungry distorted",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
+                            "Source": 0,
+                            "Compare": 0,
+                            "Threshold": 0.5,
+                            "Priority": 0,
+                            "Enabled": true
+                        },
+                        {
+                            "Name": "Distorted Sick",
+                            "Texture": "Characters/horse sick distorted",
+                            "Ucoordinates": 512.0,
                             "Vcoordinates": 512.0,
                             "Source": 1,
                             "Compare": 0,
@@ -303,7 +350,7 @@
             ]
         },
         {
-            "ID": 3,
+            "ID": 2,
             "Components": [
                 {
                     "Component": "Tag",
@@ -508,7 +555,7 @@
             ]
         },
         {
-            "ID": 4,
+            "ID": 3,
             "Components": [
                 {
                     "Component": "Tag",
@@ -713,7 +760,7 @@
             ]
         },
         {
-            "ID": 5,
+            "ID": 4,
             "Components": [
                 {
                     "Component": "Tag",
@@ -918,7 +965,7 @@
             ]
         },
         {
-            "ID": 6,
+            "ID": 5,
             "Components": [
                 {
                     "Component": "Tag",
@@ -1103,7 +1150,7 @@
             ]
         },
         {
-            "ID": 7,
+            "ID": 6,
             "Components": [
                 {
                     "Component": "Transform",
@@ -1164,7 +1211,7 @@
             ]
         },
         {
-            "ID": 8,
+            "ID": 7,
             "Components": [
                 {
                     "Component": "Transform",
@@ -1321,34 +1368,6 @@
                     "ExitGameFlag": false
                 },
                 {
-                    "Component": "ButtonComponent",
-                    "Button logic is ON": true,
-                    "GoToSceneFlag": false,
-                    "GoToScene": "",
-                    "AudioOnHoverFlag": false,
-                    "AudioOnHoverRandom": false,
-                    "HoverAudioIndex": 0,
-                    "AudioOnClickFlag": true,
-                    "AudioOnClickRandom": false,
-                    "ClickAudioIndex": 0,
-                    "TexChangeOnHoverFlag": false,
-                    "TexChangeOnHover": "",
-                    "TexChangeOnClickFlag": false,
-                    "TexChangeOnClick": "",
-                    "ScaleOnHoverFlag": false,
-                    "ScaleOnHover": 0.0,
-                    "SetGameStateFlag": false,
-                    "SetGameState": "STARTING",
-                    "ResetStatsFlag": false,
-                    "NextLevelFlag": false,
-                    "SetCameraZoomFlag": false,
-                    "SetCameraZoom": 0.0,
-                    "MuteAudioFlag": false,
-                    "AltSceneSwitchFlag": false,
-                    "AltSceneSwitch": "",
-                    "ExitGameFlag": false
-                },
-                {
                     "Component": "ItemsAttributes",
                     "type": 0,
                     "gain amount": 20.0,
@@ -1357,7 +1376,7 @@
             ]
         },
         {
-            "ID": 9,
+            "ID": 8,
             "Components": [
                 {
                     "Component": "Transform",
@@ -1522,7 +1541,7 @@
             ]
         },
         {
-            "ID": 10,
+            "ID": 9,
             "Components": [
                 {
                     "Component": "Transform",
@@ -1617,7 +1636,7 @@
             ]
         },
         {
-            "ID": 11,
+            "ID": 10,
             "Components": [
                 {
                     "Component": "Transform",
@@ -1668,7 +1687,7 @@
             ]
         },
         {
-            "ID": 12,
+            "ID": 11,
             "Components": [
                 {
                     "Component": "Transform",
@@ -1710,7 +1729,7 @@
             ]
         },
         {
-            "ID": 13,
+            "ID": 12,
             "Components": [
                 {
                     "Component": "Transform",
@@ -1752,7 +1771,7 @@
             ]
         },
         {
-            "ID": 14,
+            "ID": 13,
             "Components": [
                 {
                     "Component": "Transform",
@@ -1794,7 +1813,7 @@
             ]
         },
         {
-            "ID": 15,
+            "ID": 14,
             "Components": [
                 {
                     "Component": "Tag",
@@ -1860,7 +1879,7 @@
             ]
         },
         {
-            "ID": 16,
+            "ID": 15,
             "Components": [
                 {
                     "Component": "Transform",
@@ -1951,7 +1970,7 @@
             ]
         },
         {
-            "ID": 17,
+            "ID": 16,
             "Components": [
                 {
                     "Component": "Transform",
@@ -2012,7 +2031,7 @@
             ]
         },
         {
-            "ID": 18,
+            "ID": 17,
             "Components": [
                 {
                     "Component": "Transform",
@@ -2073,7 +2092,7 @@
             ]
         },
         {
-            "ID": 19,
+            "ID": 18,
             "Components": [
                 {
                     "Component": "Transform",
@@ -2134,7 +2153,7 @@
             ]
         },
         {
-            "ID": 20,
+            "ID": 19,
             "Components": [
                 {
                     "Component": "Transform",
@@ -2195,7 +2214,7 @@
             ]
         },
         {
-            "ID": 21,
+            "ID": 20,
             "Components": [
                 {
                     "Component": "Transform",
@@ -2275,7 +2294,7 @@
             ]
         },
         {
-            "ID": 22,
+            "ID": 21,
             "Components": [
                 {
                     "Component": "Transform",
@@ -2357,7 +2376,7 @@
             ]
         },
         {
-            "ID": 23,
+            "ID": 22,
             "Components": [
                 {
                     "Component": "Transform",
@@ -2418,7 +2437,7 @@
             ]
         },
         {
-            "ID": 24,
+            "ID": 23,
             "Components": [
                 {
                     "Component": "Transform",
@@ -2479,7 +2498,7 @@
             ]
         },
         {
-            "ID": 25,
+            "ID": 24,
             "Components": [
                 {
                     "Component": "Transform",
@@ -2561,7 +2580,7 @@
             ]
         },
         {
-            "ID": 26,
+            "ID": 25,
             "Components": [
                 {
                     "Component": "Transform",
@@ -2641,7 +2660,7 @@
             ]
         },
         {
-            "ID": 27,
+            "ID": 26,
             "Components": [
                 {
                     "Component": "Transform",
@@ -2730,7 +2749,7 @@
             ]
         },
         {
-            "ID": 28,
+            "ID": 27,
             "Components": [
                 {
                     "Component": "Transform",
@@ -2781,7 +2800,7 @@
             ]
         },
         {
-            "ID": 29,
+            "ID": 28,
             "Components": [
                 {
                     "Component": "Tag",
@@ -2866,7 +2885,7 @@
             ]
         },
         {
-            "ID": 31,
+            "ID": 29,
             "Components": [
                 {
                     "Component": "Tag",
@@ -2951,7 +2970,7 @@
             ]
         },
         {
-            "ID": 32,
+            "ID": 31,
             "Prefab": "KeyboardButtonReaction",
             "Components": [
                 {
@@ -2973,7 +2992,7 @@
             ]
         },
         {
-            "ID": 33,
+            "ID": 32,
             "Components": [
                 {
                     "Component": "Tag",
@@ -3039,7 +3058,7 @@
             ]
         },
         {
-            "ID": 34,
+            "ID": 33,
             "Components": [
                 {
                     "Component": "Tag",
@@ -3161,7 +3180,7 @@
             ]
         },
         {
-            "ID": 35,
+            "ID": 34,
             "Components": [
                 {
                     "Component": "Tag",
@@ -3283,7 +3302,7 @@
             ]
         },
         {
-            "ID": 36,
+            "ID": 35,
             "Components": [
                 {
                     "Component": "Tag",
@@ -3405,7 +3424,7 @@
             ]
         },
         {
-            "ID": 37,
+            "ID": 36,
             "Components": [
                 {
                     "Component": "Tag",
@@ -3527,7 +3546,7 @@
             ]
         },
         {
-            "ID": 38,
+            "ID": 37,
             "Components": [
                 {
                     "Component": "Tag",
@@ -3635,8 +3654,191 @@
                     "TexChangeOnClick": "",
                     "ScaleOnHoverFlag": false,
                     "ScaleOnHover": 0.0,
-                    "SetGameStateFlag": false,
-                    "SetGameState": "STARTING",
+                    "SetGameStateFlag": true,
+                    "SetGameState": "PAUSED",
+                    "ResetStatsFlag": false,
+                    "NextLevelFlag": false,
+                    "SetCameraZoomFlag": false,
+                    "SetCameraZoom": 0.0,
+                    "MuteAudioFlag": false,
+                    "AltSceneSwitchFlag": false,
+                    "AltSceneSwitch": "",
+                    "ExitGameFlag": false
+                }
+            ]
+        },
+        {
+            "ID": 38,
+            "Components": [
+                {
+                    "Component": "Transform",
+                    "Position": {
+                        "x": 0.0,
+                        "y": 0.0
+                    },
+                    "Scale": {
+                        "x": 3.140000104904175,
+                        "y": 1.8350000381469727
+                    },
+                    "Rotation": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "InfoScreen"
+                },
+                {
+                    "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "length of dashed lines": 0.009999999776482582,
+                    "distance gap": 0.009999999776482582,
+                    "line movement speed": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "TextureName": "HowToPlay/Manual2",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": false,
+                    "MaxIndex": 0,
+                    "LayeringOrder": 10,
+                    "StateManagerEnabled": false,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "ID": 39,
+            "Components": [
+                {
+                    "Component": "Tag",
+                    "Tag": "Resume3",
+                    "TargetTag": ""
+                },
+                {
+                    "Component": "Transform",
+                    "Position": {
+                        "x": 1.0099999904632568,
+                        "y": 0.6549999713897705
+                    },
+                    "Scale": {
+                        "x": 0.3050000071525574,
+                        "y": 0.07000000029802322
+                    },
+                    "Rotation": 0.0
+                },
+                {
+                    "Component": "Collider",
+                    "ColliderType1": 4,
+                    "ColliderType2": 0,
+                    "minX1": 0.03500000014901161,
+                    "minX2": 0.0,
+                    "minY1": 0.05000000074505806,
+                    "minY2": 0.0,
+                    "maxX1": 0.05999999865889549,
+                    "maxX2": 0.0,
+                    "maxY1": 0.05000000074505806,
+                    "maxY2": 0.0,
+                    "offsetX1": 0.0,
+                    "offsetX2": 0.0,
+                    "offsetY1": 0.0,
+                    "offsetY2": 0.0,
+                    "radius1": 0.0,
+                    "radius2": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "Resume3"
+                },
+                {
+                    "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "length of dashed lines": 0.009999999776482582,
+                    "distance gap": 0.009999999776482582,
+                    "line movement speed": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "TextureName": "Characters/Blank",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": false,
+                    "MaxIndex": 0,
+                    "LayeringOrder": 10,
+                    "StateManagerEnabled": false,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
+                },
+                {
+                    "Component": "Logic",
+                    "Scripts": [
+                        {
+                            "ScriptName": "ButtonResponse"
+                        }
+                    ],
+                    "ScriptCount": 1
+                },
+                {
+                    "Component": "ButtonComponent",
+                    "Button logic is ON": true,
+                    "GoToSceneFlag": false,
+                    "GoToScene": "",
+                    "AudioOnHoverFlag": false,
+                    "AudioOnHoverRandom": false,
+                    "HoverAudioIndex": 0,
+                    "AudioOnClickFlag": false,
+                    "AudioOnClickRandom": false,
+                    "ClickAudioIndex": 0,
+                    "TexChangeOnHoverFlag": false,
+                    "TexChangeOnHover": "",
+                    "TexChangeOnClickFlag": false,
+                    "TexChangeOnClick": "",
+                    "ScaleOnHoverFlag": false,
+                    "ScaleOnHover": 0.0,
+                    "SetGameStateFlag": true,
+                    "SetGameState": "PAUSED",
                     "ResetStatsFlag": false,
                     "NextLevelFlag": false,
                     "SetCameraZoomFlag": false,
