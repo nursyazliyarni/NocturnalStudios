@@ -33,8 +33,8 @@ namespace NocturnalEngine
 		selected = false;// set select to false at the start
 	
 		def_position = p_ecs.GetComponent<Transform>(GetScriptEntityID()).GetPos();//set defualt position at the start
-		limit.min = { def_position.x - 0.5f,def_position.y - 0.1f }; // set minium volume limit at the start
-		limit.max = { def_position.x+0.5f,def_position.y+0.1f }; // set maximum volume limit at the start
+		limit.min = { def_position.x - sliderWidth,def_position.y - 0.1f }; // set minium volume limit at the start
+		limit.max = { def_position.x+ sliderWidth,def_position.y+0.1f }; // set maximum volume limit at the start
 	}
 	/*!*************************************************************************
 	Update State of Slider Script
@@ -49,12 +49,12 @@ namespace NocturnalEngine
 		{
 			if (SliderCali == true)
 			{
-				p_ecs.GetComponent<Transform>(GetScriptEntityID()).SetPos(limit.min.x + 0.5f, p_ecs.GetComponent<Transform>(GetScriptEntityID()).GetPos().y);
+				p_ecs.GetComponent<Transform>(GetScriptEntityID()).SetPos(limit.min.x + sliderWidth, p_ecs.GetComponent<Transform>(GetScriptEntityID()).GetPos().y);
 				SliderCali = false;//slider have been calibrated
 			}
 			def_position = p_ecs.GetComponent<Transform>(GetScriptEntityID()).GetPos();
-			limit.min = { def_position.x - 0.5f,def_position.y - 0.1f }; // calculate the minimum position
-			limit.max = { def_position.x + 0.5f,def_position.y + 0.1f };// calculate the maximum position
+			limit.min = { def_position.x - sliderWidth,def_position.y - 0.1f }; // calculate the minimum position
+			limit.max = { def_position.x + sliderWidth,def_position.y + 0.1f };// calculate the maximum position
 			limitset = true;// let the entity know that limit have been set
 		}
 		//this set of codes are to allow easy access to the game component when coding
@@ -63,14 +63,14 @@ namespace NocturnalEngine
 		
 		if(p_Editor->is_ShowWindow == false) // when not in editor mode set the slider position in accordance to the current volume set
 		{ 
-			if(ID_tag.GetTargetTag()== "Master")
-			transform.SetPos(p_Audio->GetVolumeByChannel(p_Audio->GetMasterChannelGroup())+limit.min.x, transform.GetPos().y);
+			if (ID_tag.GetTargetTag() == "Master")
+				transform.SetPos(p_Audio->GetVolumeByChannel(p_Audio->GetMasterChannelGroup()) * (limit.max.x - limit.min.x) + limit.min.x, transform.GetPos().y);
 
 			if (ID_tag.GetTargetTag() == "BGM")
-				transform.SetPos(p_Audio->GetVolumeByChannel(p_Audio->GetBGMChannelGroup()) + limit.min.x, transform.GetPos().y);
+				transform.SetPos(p_Audio->GetVolumeByChannel(p_Audio->GetBGMChannelGroup()) * (limit.max.x - limit.min.x) + limit.min.x, transform.GetPos().y);
 
 			if (ID_tag.GetTargetTag() == "SFX")
-				transform.SetPos(p_Audio->GetVolumeByChannel(p_Audio->GetSFXChannelGroup()) + limit.min.x, transform.GetPos().y);
+				transform.SetPos(p_Audio->GetVolumeByChannel(p_Audio->GetSFXChannelGroup()) * (limit.max.x - limit.min.x) + limit.min.x, transform.GetPos().y);
 
 			SliderCali = true;
 			if((p_GUI->MousePosition.x +  camPos.x >= limit.min.x && p_GUI->MousePosition.y + camPos.y >= limit.min.y) &&
@@ -94,7 +94,7 @@ namespace NocturnalEngine
 			
 			if (ID_tag.GetTargetTag() == "Master")// when master is  being adjusted
 			{
-				p_Audio->SetVolumeByChannel(p_Audio->GetMasterChannelGroup(), transform.GetPos().x - limit.min.x / (limit.max.x - limit.min.x)); //calculate and set the volume of master
+				p_Audio->SetVolumeByChannel(p_Audio->GetMasterChannelGroup(), (transform.GetPos().x - limit.min.x )/ (limit.max.x - limit.min.x)); //calculate and set the volume of master
 				if (p_Audio->GetVolumeByChannel(p_Audio->GetMasterChannelGroup()) < 0.01)
 				{
 					p_Audio->SetVolumeByChannel(p_Audio->GetMasterChannelGroup(), 0.0f); // if it is less than 0.01, set sound to mute
@@ -104,7 +104,7 @@ namespace NocturnalEngine
 
 			if (ID_tag.GetTargetTag() == "BGM")
 			{
-				p_Audio->SetVolumeByChannel(p_Audio->GetBGMChannelGroup(), transform.GetPos().x - limit.min.x / (limit.max.x - limit.min.x));//calculate and set the volume of BGM
+				p_Audio->SetVolumeByChannel(p_Audio->GetBGMChannelGroup(), (transform.GetPos().x - limit.min.x) / (limit.max.x - limit.min.x));//calculate and set the volume of BGM
 				if (p_Audio->GetVolumeByChannel(p_Audio->GetBGMChannelGroup()) < 0.01) // if it is less than 0.01, set sound to mute
 				{
 					p_Audio->SetVolumeByChannel(p_Audio->GetBGMChannelGroup(), 0.0f);
@@ -114,7 +114,7 @@ namespace NocturnalEngine
 			}
 			if (ID_tag.GetTargetTag() == "SFX")
 			{
-				p_Audio->SetVolumeByChannel(p_Audio->GetSFXChannelGroup(), transform.GetPos().x - limit.min.x / (limit.max.x - limit.min.x));//calculate and set the volume of BGM
+				p_Audio->SetVolumeByChannel(p_Audio->GetSFXChannelGroup(), (transform.GetPos().x - limit.min.x )/ (limit.max.x - limit.min.x));//calculate and set the volume of BGM
 				if (p_Audio->GetVolumeByChannel(p_Audio->GetSFXChannelGroup()) < 0.01) // if it is less than 0.01, set sound to mute
 				{
 					p_Audio->SetVolumeByChannel(p_Audio->GetSFXChannelGroup(), 0.0f);

@@ -51,6 +51,12 @@ namespace NocturnalEngine {
 			return false;
 		}
 
+		std::vector<ScriptField> GetFields() override {
+			return {
+				{ "Slider Width",    &sliderWidth    }
+			};
+		}
+
 		/*!*************************************************************************
 		This function clones the script by allocating and constructing a copy of this
 		script and returning it
@@ -77,6 +83,8 @@ namespace NocturnalEngine {
 		bool ingame{};
 
 	private:
+		float sliderWidth{ 0.5f };
+
 		struct slider_bb
 		{
 			vec2D min;

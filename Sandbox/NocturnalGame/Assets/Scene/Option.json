@@ -9,7 +9,8 @@
         6,
         7,
         8,
-        9
+        9,
+        10
     ],
     "Entities": [
         {
@@ -129,7 +130,7 @@
                     "Component": "Transform",
                     "Position": {
                         "x": 0.0,
-                        "y": 0.10100000351667404
+                        "y": -0.022239267826080322
                     },
                     "Scale": {
                         "x": 1.440000057220459,
@@ -190,7 +191,7 @@
                     "Component": "Transform",
                     "Position": {
                         "x": 0.0,
-                        "y": -0.27300000190734863
+                        "y": -0.30750560760498047
                     },
                     "Scale": {
                         "x": 1.440000057220459,
@@ -316,8 +317,8 @@
                 {
                     "Component": "Transform",
                     "Position": {
-                        "x": -0.0076923668384552,
-                        "y": 0.10876978933811188
+                        "x": 0.0,
+                        "y": 0.00023640692234039307
                     },
                     "Scale": {
                         "x": 0.3050000071525574,
@@ -431,7 +432,8 @@
                             "ScriptName": "AudioManager"
                         },
                         {
-                            "ScriptName": "SliderScript"
+                            "ScriptName": "SliderScript",
+                            "Slider Width": 0.6700000166893005
                         }
                     ],
                     "ScriptCount": 2
@@ -450,7 +452,7 @@
                     "Component": "Transform",
                     "Position": {
                         "x": 0.0,
-                        "y": -0.23693659901618958
+                        "y": -0.2833864986896515
                     },
                     "Scale": {
                         "x": 0.3050000071525574,
@@ -564,7 +566,8 @@
                             "ScriptName": "AudioManager"
                         },
                         {
-                            "ScriptName": "SliderScript"
+                            "ScriptName": "SliderScript",
+                            "Slider Width": 0.6700000166893005
                         }
                     ],
                     "ScriptCount": 2
@@ -697,7 +700,8 @@
                             "ScriptName": "AudioManager"
                         },
                         {
-                            "ScriptName": "SliderScript"
+                            "ScriptName": "SliderScript",
+                            "Slider Width": 0.6700000166893005
                         }
                     ],
                     "ScriptCount": 2
@@ -771,9 +775,9 @@
                     "Vector of text position": [],
                     "Font": "ChauPhilomeneOne-Regular",
                     "Size": 68.4000015258789,
-                    "ColorR": 1.0,
-                    "ColorG": 1.0,
-                    "ColorB": 1.0,
+                    "ColorR": 0.30980393290519714,
+                    "ColorG": 0.05098039284348488,
+                    "ColorB": 0.05098039284348488,
                     "ColorA": 1.0,
                     "PosX": -0.11999999731779099,
                     "PosY": 0.4699999988079071,
@@ -971,6 +975,132 @@
                     "AltSceneSwitchFlag": false,
                     "AltSceneSwitch": "",
                     "ExitGameFlag": false
+                }
+            ]
+        },
+        {
+            "ID": 9,
+            "Components": [
+                {
+                    "Component": "Transform",
+                    "Position": {
+                        "x": -0.6954179406166077,
+                        "y": 0.08626414835453033
+                    },
+                    "Scale": {
+                        "x": 1.0,
+                        "y": 1.0
+                    },
+                    "Rotation": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "MasterText"
+                },
+                {
+                    "Component": "Text",
+                    "text type": 0,
+                    "Content": "MASTER",
+                    "Array of Content": [],
+                    "Vector of text position": [],
+                    "Font": "ChauPhilomeneOne-Regular",
+                    "Size": 57.400001525878906,
+                    "ColorR": 0.30980393290519714,
+                    "ColorG": 0.05098039284348488,
+                    "ColorB": 0.05098039284348488,
+                    "ColorA": 1.0,
+                    "PosX": 0.019999999552965164,
+                    "PosY": 0.0,
+                    "Rotation": 0.0,
+                    "Line Height": 0,
+                    "WorldSpace": true,
+                    "Center": false,
+                    "LayeringOrder": 7,
+                    "Visibility": true
+                }
+            ]
+        },
+        {
+            "ID": 10,
+            "Components": [
+                {
+                    "Component": "Transform",
+                    "Position": {
+                        "x": -0.6954179406166077,
+                        "y": -0.20570695400238037
+                    },
+                    "Scale": {
+                        "x": 1.0,
+                        "y": 1.0
+                    },
+                    "Rotation": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "BGMText"
+                },
+                {
+                    "Component": "Text",
+                    "text type": 0,
+                    "Content": "BGM",
+                    "Array of Content": [],
+                    "Vector of text position": [],
+                    "Font": "ChauPhilomeneOne-Regular",
+                    "Size": 57.400001525878906,
+                    "ColorR": 0.30980393290519714,
+                    "ColorG": 0.05098039284348488,
+                    "ColorB": 0.05098039284348488,
+                    "ColorA": 1.0,
+                    "PosX": 0.019999999552965164,
+                    "PosY": 0.0,
+                    "Rotation": 0.0,
+                    "Line Height": 0,
+                    "WorldSpace": true,
+                    "Center": false,
+                    "LayeringOrder": 7,
+                    "Visibility": true
+                }
+            ]
+        },
+        {
+            "ID": 11,
+            "Components": [
+                {
+                    "Component": "Transform",
+                    "Position": {
+                        "x": -0.6954179406166077,
+                        "y": -0.48042476177215576
+                    },
+                    "Scale": {
+                        "x": 1.0,
+                        "y": 1.0
+                    },
+                    "Rotation": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "SFXText"
+                },
+                {
+                    "Component": "Text",
+                    "text type": 0,
+                    "Content": "SFX",
+                    "Array of Content": [],
+                    "Vector of text position": [],
+                    "Font": "ChauPhilomeneOne-Regular",
+                    "Size": 57.400001525878906,
+                    "ColorR": 0.30882352590560913,
+                    "ColorG": 0.04995673894882202,
+                    "ColorB": 0.04995673894882202,
+                    "ColorA": 1.0,
+                    "PosX": 0.019999999552965164,
+                    "PosY": 0.0,
+                    "Rotation": 0.0,
+                    "Line Height": 0,
+                    "WorldSpace": true,
+                    "Center": false,
+                    "LayeringOrder": 7,
+                    "Visibility": true
                 }
             ]
         }
