@@ -57,6 +57,7 @@ namespace NocturnalEngine {
     ****************************************************************************/
     void GameManager::Init() {
         Graphic::layerEnabled[9] = false; //hide pause layer on start
+        Graphic::layerEnabled[10] = false; //hide info layer on start
         p_GUI->set_pause(false);
         if (hasInitialized) return; //already set up, don't reinitialize
         hasInitialized = true;
@@ -181,6 +182,7 @@ namespace NocturnalEngine {
         if (!IsPaused())
         {
             Graphic::layerEnabled[9] = false;
+            Graphic::layerEnabled[10] = false;
         }
 
         if (p_Scene->isGameplay&& currState !=GameState::PAUSED)
@@ -354,6 +356,7 @@ namespace NocturnalEngine {
     ****************************************************************************/
     void GameManager::ResetSystem(bool resetStats) {
         Graphic::layerEnabled[9] = false;
+        Graphic::layerEnabled[10] = false;
         p_GUI->set_pause(false);
 
         AnimalAttributes defaultAttributes{};
@@ -737,7 +740,7 @@ namespace NocturnalEngine {
         return true; 
     }
 
-    //Pause and resume functions, also a function to check if the game is paused
+    //==========Pause and resume functions, also a function to check if the game is paused=========
     void GameManager::PauseGame() {
         if (currState == GameState::PAUSED) return;
         prePauseState = currState;
@@ -763,5 +766,13 @@ namespace NocturnalEngine {
             sceneAnimalMap.emplace(sceneName, aA);
         else
             it->second = aA;
+    }
+    //=================Functions to show info screen===============
+    void GameManager::ShowInfo() {
+        Graphic::layerEnabled[10] = true;   //show info layer
+    }
+
+    void GameManager::HideInfo() {
+        Graphic::layerEnabled[10] = false;  //hide info layer
     }
 }

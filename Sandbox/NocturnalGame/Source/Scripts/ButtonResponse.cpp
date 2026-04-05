@@ -54,7 +54,7 @@ namespace NocturnalEngine
 			if (!p_ecs.HaveComponent<NameTag>(entityID))
 				return;
 			const std::string& name = p_ecs.GetComponent<NameTag>(entityID).GetNameTag();
-			if (name != "Resume" && name!="Resume2"&&name!="Restart"&&name!="Info" && name != "Exit")
+			if (name != "Resume" && name!="Resume2"&&name!="Restart"&&name!="Info"&&name!="Resume3" && name != "Exit")
 				return;
 		}
 
@@ -76,7 +76,7 @@ namespace NocturnalEngine
 		if (p_ecs.HaveComponent<NameTag>(entityID))
 		{
 			const std::string& name = p_ecs.GetComponent<NameTag>(entityID).GetNameTag();
-			if (name == "Resume" || name == "Exit")
+			if (name == "Resume" || name == "Exit"||name=="Info"||name=="Resum3")
 				isPauseButton = true;
 		}
 		if (isPauseButton && !p_GameManager.IsPaused())
@@ -124,6 +124,17 @@ namespace NocturnalEngine
 						}
 						else if (name == "Restart") {
 							p_GameManager.ResetSystem(true);
+						}
+						else if (name == "Info") {
+							std::cout << "Info clicked\n";
+							p_GameManager.ShowInfo();
+							p_GameManager.SetState(GameManager::GameState::PAUSED);
+							return;
+						}
+						else if (name == "Resume3")
+						{
+							p_GameManager.HideInfo();
+							return;
 						}
 						else if (name == "Exit")
 						{
