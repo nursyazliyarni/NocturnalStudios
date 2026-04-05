@@ -186,7 +186,7 @@
                         0.0,
                         0.0
                     ],
-                    "TextureName": "Characters/flamingoDistortedAngry",
+                    "TextureName": "Characters/flamingoIdle",
                     "Index_X": 0,
                     "Index_Y": 0,
                     "Ucoordinates": 512.0,
@@ -214,7 +214,7 @@
                             "Source": 3,
                             "Compare": 0,
                             "Threshold": 0.0,
-                            "Priority": -100,
+                            "Priority": 1,
                             "Enabled": true
                         },
                         {
@@ -224,7 +224,7 @@
                             "Vcoordinates": 512.0,
                             "Source": 0,
                             "Compare": 0,
-                            "Threshold": 0.800000011920929,
+                            "Threshold": 0.550000011920929,
                             "Priority": 10,
                             "Enabled": true
                         },
@@ -235,7 +235,7 @@
                             "Vcoordinates": 512.0,
                             "Source": 1,
                             "Compare": 0,
-                            "Threshold": 0.8999999761581421,
+                            "Threshold": 0.550000011920929,
                             "Priority": 20,
                             "Enabled": true
                         },
@@ -246,19 +246,8 @@
                             "Vcoordinates": 512.0,
                             "Source": 2,
                             "Compare": 0,
-                            "Threshold": 0.7400000095367432,
+                            "Threshold": 0.550000011920929,
                             "Priority": 30,
-                            "Enabled": true
-                        },
-                        {
-                            "Name": "Distorted Idle",
-                            "Texture": "Characters/flamingoDistoretedIdle",
-                            "Ucoordinates": 528.0,
-                            "Vcoordinates": 528.0,
-                            "Source": 3,
-                            "Compare": 0,
-                            "Threshold": 0.5,
-                            "Priority": -100,
                             "Enabled": true
                         },
                         {
@@ -268,8 +257,8 @@
                             "Vcoordinates": 528.0,
                             "Source": 0,
                             "Compare": 0,
-                            "Threshold": 0.800000011920929,
-                            "Priority": 0,
+                            "Threshold": 0.30000001192092896,
+                            "Priority": 11,
                             "Enabled": true
                         },
                         {
@@ -279,8 +268,8 @@
                             "Vcoordinates": 528.0,
                             "Source": 1,
                             "Compare": 0,
-                            "Threshold": 0.8999999761581421,
-                            "Priority": 0,
+                            "Threshold": 0.30000001192092896,
+                            "Priority": 21,
                             "Enabled": true
                         },
                         {
@@ -290,8 +279,8 @@
                             "Vcoordinates": 512.0,
                             "Source": 2,
                             "Compare": 0,
-                            "Threshold": 0.7400000095367432,
-                            "Priority": 0,
+                            "Threshold": 0.30000001192092896,
+                            "Priority": 31,
                             "Enabled": true
                         }
                     ]

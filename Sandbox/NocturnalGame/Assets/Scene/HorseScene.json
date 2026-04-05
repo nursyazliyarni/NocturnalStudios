@@ -154,7 +154,7 @@
             ]
         },
         {
-            "ID": 1,
+            "ID": 2,
             "Components": [
                 {
                     "Component": "Tag",
@@ -210,8 +210,8 @@
                         0.0,
                         0.0
                     ],
-                    "TextureName": "Characters/horse sick distorted",
-                    "Index_X": 3,
+                    "TextureName": "Characters/horse idle",
+                    "Index_X": 0,
                     "Index_Y": 0,
                     "Ucoordinates": 512.0,
                     "Vcoordinates": 512.0,
@@ -245,8 +245,8 @@
                             "Vcoordinates": 512.0,
                             "Source": 2,
                             "Compare": 0,
-                            "Threshold": 0.5,
-                            "Priority": 0,
+                            "Threshold": 0.55,
+                            "Priority": 30,
                             "Enabled": true
                         },
                         {
@@ -256,8 +256,8 @@
                             "Vcoordinates": 512.0,
                             "Source": 0,
                             "Compare": 0,
-                            "Threshold": 0.5,
-                            "Priority": 0,
+                            "Threshold": 0.55,
+                            "Priority": 10,
                             "Enabled": true
                         },
                         {
@@ -267,19 +267,8 @@
                             "Vcoordinates": 512.0,
                             "Source": 1,
                             "Compare": 0,
-                            "Threshold": 0.5,
-                            "Priority": 0,
-                            "Enabled": true
-                        },
-                        {
-                            "Name": "Distorted Idle",
-                            "Texture": "Characters/horse idle distorted",
-                            "Ucoordinates": 512.0,
-                            "Vcoordinates": 512.0,
-                            "Source": 3,
-                            "Compare": 0,
-                            "Threshold": 0.5,
-                            "Priority": -100,
+                            "Threshold": 0.55,
+                            "Priority": 20,
                             "Enabled": true
                         },
                         {
@@ -289,8 +278,8 @@
                             "Vcoordinates": 512.0,
                             "Source": 2,
                             "Compare": 0,
-                            "Threshold": 0.5,
-                            "Priority": 0,
+                            "Threshold": 0.30000001192092896,
+                            "Priority": 31,
                             "Enabled": true
                         },
                         {
@@ -300,8 +289,8 @@
                             "Vcoordinates": 512.0,
                             "Source": 0,
                             "Compare": 0,
-                            "Threshold": 0.5,
-                            "Priority": 0,
+                            "Threshold": 0.30000001192092896,
+                            "Priority": 11,
                             "Enabled": true
                         },
                         {
@@ -311,8 +300,8 @@
                             "Vcoordinates": 512.0,
                             "Source": 1,
                             "Compare": 0,
-                            "Threshold": 0.5,
-                            "Priority": 0,
+                            "Threshold": 0.30000001192092896,
+                            "Priority": 21,
                             "Enabled": true
                         }
                     ]
@@ -350,7 +339,7 @@
             ]
         },
         {
-            "ID": 2,
+            "ID": 3,
             "Components": [
                 {
                     "Component": "Tag",
@@ -438,31 +427,31 @@
                         "AudioPath": "SFX_Static_01.wav",
                         "Channel": 3,
                         "IsLooping": false,
-                        "VolumeLimit": 0.075
+                        "VolumeLimit": 0.07500000298023224
                     },
                     "1": {
                         "AudioPath": "SFX_Static_02.wav",
                         "Channel": 3,
                         "IsLooping": false,
-                        "VolumeLimit": 0.075
+                        "VolumeLimit": 0.07500000298023224
                     },
                     "2": {
                         "AudioPath": "SFX_Static_03.wav",
                         "Channel": 3,
                         "IsLooping": false,
-                        "VolumeLimit": 0.075
+                        "VolumeLimit": 0.07500000298023224
                     },
                     "3": {
                         "AudioPath": "SFX_Static_04.wav",
                         "Channel": 3,
                         "IsLooping": false,
-                        "VolumeLimit": 0.075
+                        "VolumeLimit": 0.07500000298023224
                     },
                     "4": {
                         "AudioPath": "SFX_Static_05.wav",
                         "Channel": 3,
                         "IsLooping": false,
-                        "VolumeLimit": 0.075
+                        "VolumeLimit": 0.07500000298023224
                     },
                     "AudioArrCount": 5,
                     "BGM Volume": 1.0,
@@ -555,7 +544,7 @@
             ]
         },
         {
-            "ID": 3,
+            "ID": 4,
             "Components": [
                 {
                     "Component": "Tag",
@@ -643,31 +632,31 @@
                         "AudioPath": "SFX_Static_01.wav",
                         "Channel": 3,
                         "IsLooping": false,
-                        "VolumeLimit": 0.075
+                        "VolumeLimit": 0.07500000298023224
                     },
                     "1": {
                         "AudioPath": "SFX_Static_02.wav",
                         "Channel": 3,
                         "IsLooping": false,
-                        "VolumeLimit": 0.075
+                        "VolumeLimit": 0.07500000298023224
                     },
                     "2": {
                         "AudioPath": "SFX_Static_03.wav",
                         "Channel": 3,
                         "IsLooping": false,
-                        "VolumeLimit": 0.075
+                        "VolumeLimit": 0.07500000298023224
                     },
                     "3": {
                         "AudioPath": "SFX_Static_04.wav",
                         "Channel": 3,
                         "IsLooping": false,
-                        "VolumeLimit": 0.075
+                        "VolumeLimit": 0.07500000298023224
                     },
                     "4": {
                         "AudioPath": "SFX_Static_05.wav",
                         "Channel": 3,
                         "IsLooping": false,
-                        "VolumeLimit": 0.075
+                        "VolumeLimit": 0.07500000298023224
                     },
                     "AudioArrCount": 5,
                     "BGM Volume": 1.0,
@@ -760,7 +749,7 @@
             ]
         },
         {
-            "ID": 4,
+            "ID": 5,
             "Components": [
                 {
                     "Component": "Tag",
@@ -848,31 +837,31 @@
                         "AudioPath": "SFX_Static_01.wav",
                         "Channel": 3,
                         "IsLooping": false,
-                        "VolumeLimit": 0.075
+                        "VolumeLimit": 0.07500000298023224
                     },
                     "1": {
                         "AudioPath": "SFX_Static_02.wav",
                         "Channel": 3,
                         "IsLooping": false,
-                        "VolumeLimit": 0.075
+                        "VolumeLimit": 0.07500000298023224
                     },
                     "2": {
                         "AudioPath": "SFX_Static_03.wav",
                         "Channel": 3,
                         "IsLooping": false,
-                        "VolumeLimit": 0.075
+                        "VolumeLimit": 0.07500000298023224
                     },
                     "3": {
                         "AudioPath": "SFX_Static_04.wav",
                         "Channel": 3,
                         "IsLooping": false,
-                        "VolumeLimit": 0.075
+                        "VolumeLimit": 0.07500000298023224
                     },
                     "4": {
                         "AudioPath": "SFX_Static_05.wav",
                         "Channel": 3,
                         "IsLooping": false,
-                        "VolumeLimit": 0.075
+                        "VolumeLimit": 0.07500000298023224
                     },
                     "AudioArrCount": 5,
                     "BGM Volume": 1.0,
@@ -965,7 +954,7 @@
             ]
         },
         {
-            "ID": 5,
+            "ID": 6,
             "Components": [
                 {
                     "Component": "Tag",
@@ -1053,31 +1042,31 @@
                         "AudioPath": "SFX_Static_01.wav",
                         "Channel": 3,
                         "IsLooping": false,
-                        "VolumeLimit": 0.075
+                        "VolumeLimit": 0.07500000298023224
                     },
                     "1": {
                         "AudioPath": "SFX_Static_02.wav",
                         "Channel": 3,
                         "IsLooping": false,
-                        "VolumeLimit": 0.075
+                        "VolumeLimit": 0.07500000298023224
                     },
                     "2": {
                         "AudioPath": "SFX_Static_03.wav",
                         "Channel": 3,
                         "IsLooping": false,
-                        "VolumeLimit": 0.075
+                        "VolumeLimit": 0.07500000298023224
                     },
                     "3": {
                         "AudioPath": "SFX_Static_04.wav",
                         "Channel": 3,
                         "IsLooping": false,
-                        "VolumeLimit": 0.075
+                        "VolumeLimit": 0.07500000298023224
                     },
                     "4": {
                         "AudioPath": "SFX_Static_05.wav",
                         "Channel": 3,
                         "IsLooping": false,
-                        "VolumeLimit": 0.075
+                        "VolumeLimit": 0.07500000298023224
                     },
                     "AudioArrCount": 5,
                     "BGM Volume": 1.0,
@@ -1150,7 +1139,7 @@
             ]
         },
         {
-            "ID": 6,
+            "ID": 7,
             "Components": [
                 {
                     "Component": "Transform",
@@ -1211,7 +1200,7 @@
             ]
         },
         {
-            "ID": 7,
+            "ID": 8,
             "Components": [
                 {
                     "Component": "Transform",
@@ -1376,7 +1365,7 @@
             ]
         },
         {
-            "ID": 8,
+            "ID": 9,
             "Components": [
                 {
                     "Component": "Transform",
@@ -1541,7 +1530,7 @@
             ]
         },
         {
-            "ID": 9,
+            "ID": 10,
             "Components": [
                 {
                     "Component": "Transform",
@@ -1636,7 +1625,7 @@
             ]
         },
         {
-            "ID": 10,
+            "ID": 11,
             "Components": [
                 {
                     "Component": "Transform",
@@ -1687,7 +1676,7 @@
             ]
         },
         {
-            "ID": 11,
+            "ID": 12,
             "Components": [
                 {
                     "Component": "Transform",
@@ -1729,7 +1718,7 @@
             ]
         },
         {
-            "ID": 12,
+            "ID": 13,
             "Components": [
                 {
                     "Component": "Transform",
@@ -1771,7 +1760,7 @@
             ]
         },
         {
-            "ID": 13,
+            "ID": 14,
             "Components": [
                 {
                     "Component": "Transform",
@@ -1813,7 +1802,7 @@
             ]
         },
         {
-            "ID": 14,
+            "ID": 15,
             "Components": [
                 {
                     "Component": "Tag",
@@ -1879,7 +1868,7 @@
             ]
         },
         {
-            "ID": 15,
+            "ID": 16,
             "Components": [
                 {
                     "Component": "Transform",
@@ -1970,7 +1959,7 @@
             ]
         },
         {
-            "ID": 16,
+            "ID": 17,
             "Components": [
                 {
                     "Component": "Transform",
@@ -2031,7 +2020,7 @@
             ]
         },
         {
-            "ID": 17,
+            "ID": 18,
             "Components": [
                 {
                     "Component": "Transform",
@@ -2092,7 +2081,7 @@
             ]
         },
         {
-            "ID": 18,
+            "ID": 19,
             "Components": [
                 {
                     "Component": "Transform",
@@ -2153,7 +2142,7 @@
             ]
         },
         {
-            "ID": 19,
+            "ID": 20,
             "Components": [
                 {
                     "Component": "Transform",
@@ -2214,7 +2203,7 @@
             ]
         },
         {
-            "ID": 20,
+            "ID": 21,
             "Components": [
                 {
                     "Component": "Transform",
@@ -2294,7 +2283,7 @@
             ]
         },
         {
-            "ID": 21,
+            "ID": 22,
             "Components": [
                 {
                     "Component": "Transform",
@@ -2376,7 +2365,7 @@
             ]
         },
         {
-            "ID": 22,
+            "ID": 23,
             "Components": [
                 {
                     "Component": "Transform",
@@ -2437,7 +2426,7 @@
             ]
         },
         {
-            "ID": 23,
+            "ID": 24,
             "Components": [
                 {
                     "Component": "Transform",
@@ -2498,7 +2487,7 @@
             ]
         },
         {
-            "ID": 24,
+            "ID": 25,
             "Components": [
                 {
                     "Component": "Transform",
@@ -2580,7 +2569,7 @@
             ]
         },
         {
-            "ID": 25,
+            "ID": 26,
             "Components": [
                 {
                     "Component": "Transform",
@@ -2660,7 +2649,7 @@
             ]
         },
         {
-            "ID": 26,
+            "ID": 27,
             "Components": [
                 {
                     "Component": "Transform",
@@ -2749,7 +2738,7 @@
             ]
         },
         {
-            "ID": 27,
+            "ID": 28,
             "Components": [
                 {
                     "Component": "Transform",
@@ -2800,7 +2789,7 @@
             ]
         },
         {
-            "ID": 28,
+            "ID": 29,
             "Components": [
                 {
                     "Component": "Tag",
@@ -2885,7 +2874,7 @@
             ]
         },
         {
-            "ID": 29,
+            "ID": 31,
             "Components": [
                 {
                     "Component": "Tag",
@@ -2970,7 +2959,7 @@
             ]
         },
         {
-            "ID": 31,
+            "ID": 32,
             "Prefab": "KeyboardButtonReaction",
             "Components": [
                 {
@@ -2992,7 +2981,7 @@
             ]
         },
         {
-            "ID": 32,
+            "ID": 33,
             "Components": [
                 {
                     "Component": "Tag",
@@ -3058,7 +3047,7 @@
             ]
         },
         {
-            "ID": 33,
+            "ID": 34,
             "Components": [
                 {
                     "Component": "Tag",
@@ -3180,7 +3169,7 @@
             ]
         },
         {
-            "ID": 34,
+            "ID": 35,
             "Components": [
                 {
                     "Component": "Tag",
@@ -3302,7 +3291,7 @@
             ]
         },
         {
-            "ID": 35,
+            "ID": 36,
             "Components": [
                 {
                     "Component": "Tag",
@@ -3424,7 +3413,7 @@
             ]
         },
         {
-            "ID": 36,
+            "ID": 37,
             "Components": [
                 {
                     "Component": "Tag",
@@ -3546,7 +3535,7 @@
             ]
         },
         {
-            "ID": 37,
+            "ID": 38,
             "Components": [
                 {
                     "Component": "Tag",
@@ -3668,7 +3657,7 @@
             ]
         },
         {
-            "ID": 38,
+            "ID": 39,
             "Components": [
                 {
                     "Component": "Transform",
@@ -3729,7 +3718,7 @@
             ]
         },
         {
-            "ID": 39,
+            "ID": 40,
             "Components": [
                 {
                     "Component": "Tag",

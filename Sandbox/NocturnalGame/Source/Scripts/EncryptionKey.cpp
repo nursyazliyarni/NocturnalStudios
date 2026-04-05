@@ -216,10 +216,16 @@ namespace NocturnalEngine
                 case Collider::ColliderType::rect:
                 case Collider::ColliderType::box:
                 {
-                    vec2D minPt{ offsetPos.x - collider[i].mMin.x, offsetPos.y - collider[i].mMin.y };
-                    vec2D maxPt{ offsetPos.x + collider[i].mMax.x, offsetPos.y + collider[i].mMax.y };
-                    if (mousePos.x > minPt.x && mousePos.x < maxPt.x &&
-                        mousePos.y > minPt.y && mousePos.y < maxPt.y)
+                    const float halfWidth = std::max(std::abs(collider[i].mMin.x), std::abs(collider[i].mMax.x));
+                    const float halfHeight = std::max(std::abs(collider[i].mMin.y), std::abs(collider[i].mMax.y));
+
+                    if (halfWidth <= 0.0f || halfHeight <= 0.0f)
+                        break;
+
+                    vec2D minPt{ offsetPos.x - halfWidth, offsetPos.y - halfHeight };
+                    vec2D maxPt{ offsetPos.x + halfWidth, offsetPos.y + halfHeight };
+                    if (mousePos.x >= minPt.x && mousePos.x <= maxPt.x &&
+                        mousePos.y >= minPt.y && mousePos.y <= maxPt.y)
                         return true;
                     break;
                 }
