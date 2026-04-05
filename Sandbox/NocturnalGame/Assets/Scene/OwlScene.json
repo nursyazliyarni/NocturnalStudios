@@ -276,7 +276,7 @@
                             "Vcoordinates": 512.0,
                             "Source": 2,
                             "Compare": 0,
-                            "Threshold": 0.30000001192092896,
+                            "Threshold": 0.20000000298023224,
                             "Priority": 31,
                             "Enabled": true
                         },
@@ -287,7 +287,7 @@
                             "Vcoordinates": 512.0,
                             "Source": 0,
                             "Compare": 0,
-                            "Threshold": 0.30000001192092896,
+                            "Threshold": 0.20000000298023224,
                             "Priority": 11,
                             "Enabled": true
                         },
@@ -298,7 +298,7 @@
                             "Vcoordinates": 512.0,
                             "Source": 1,
                             "Compare": 0,
-                            "Threshold": 0.30000001192092896,
+                            "Threshold": 0.20000000298023224,
                             "Priority": 21,
                             "Enabled": true
                         }
