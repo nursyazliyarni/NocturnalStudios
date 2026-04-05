@@ -24,6 +24,7 @@
 #include "ECS/Components/ButtonComponent.h"
 #include "Audio/AudioEngine.h"
 #include "graphics/Graphics.h"
+#include "Video/VideoPlayback.h"
 
 namespace NocturnalEngine {
 
@@ -366,6 +367,7 @@ namespace NocturnalEngine {
         Graphic::layerEnabled[9] = false;
         Graphic::layerEnabled[10] = false;
         p_GUI->set_pause(false);
+        VideoPlayback::Shutdown();
         EncryptionKey::ResetRunState();
 
         AnimalAttributes defaultAttributes{};
