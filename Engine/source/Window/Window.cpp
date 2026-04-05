@@ -151,56 +151,36 @@ namespace NocturnalEngine{
 			m_windowData.m_CurrentHeight = m_windowData.m_Height;
 		}
 
+		glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE); // Hide on creation
 		std::string winTitle = m_windowData.Title;
 #if DEBUG
 		winTitle = "[NocturnalEngine] Editing " + winTitle;
 #endif
-
-#if !DEBUG
-		const GLFWvidmode* mode = m_monitor ? glfwGetVideoMode(m_monitor) : nullptr;
-		const int fullscreenWidth = mode ? mode->width : static_cast<int>(m_windowData.m_CurrentWidth);
-		const int fullscreenHeight = mode ? mode->height : static_cast<int>(m_windowData.m_CurrentHeight);
-		if (mode)
-		{
-			glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate);
-		}
-
-		m_window = glfwCreateWindow(fullscreenWidth,
-			fullscreenHeight,
+		//create window
+		m_window = glfwCreateWindow(m_windowData.m_CurrentWidth,
+			m_windowData.m_CurrentHeight,
 			winTitle.c_str(),
-			m_monitor, nullptr);
+			NULL, NULL);
 
-		m_windowData.m_WindowWidth = static_cast<unsigned int>(fullscreenWidth);
-		m_windowData.m_WindowHeight = static_cast<unsigned int>(fullscreenHeight);
-#else
-		m_window = glfwCreateWindow(static_cast<int>(m_windowData.m_CurrentWidth),
-			static_cast<int>(m_windowData.m_CurrentHeight),
-			winTitle.c_str(),
-			nullptr, nullptr);
-
-		m_windowData.m_WindowWidth = m_windowData.m_CurrentWidth;
-		m_windowData.m_WindowHeight = m_windowData.m_CurrentHeight;
-#endif
+		glfwMakeContextCurrent(m_window);
+		glfwSetWindowUserPointer(m_window, &m_windowData);
 
 		if (!m_window)
 		{
 			std::cout << "Failed to create window !" << std::endl;
 			glfwTerminate();
-			return;
 		}
 
-		glfwMakeContextCurrent(m_window);
-		glfwSetWindowUserPointer(m_window, &m_windowData);
-
 		NOCTURNAL_ENGINE_INFO("Generating Window {0} : SIZE ({1},{2})", m_windowData.Title, m_windowData.m_Width, m_windowData.m_Height);
-		
 
-		if(glewInit() != GLEW_OK)
+
+		if (glewInit() != GLEW_OK)
 			NOCTURNAL_ENGINE_ASSERT(!glewInit(), "GLEW init has failed - abort program...");
 
 		//context
 		ToggleVsync(true);
 
+		glfwSetWindowSizeCallback(m_window, Window_size_callback);
 		glfwSetCursorPosCallback(m_window, Mouseposition_callback);
 		glfwSetKeyCallback(m_window, Key_callback);
 		glfwSetScrollCallback(m_window, Mousescroll_callback);
@@ -209,30 +189,23 @@ namespace NocturnalEngine{
 		glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 		glfwSetDropCallback(m_window, drop_callback);
 #if !DEBUG
-		glfwSetWindowFocusCallback(m_window, OnWindowFocus);
+		//glfwSetWindowFocusCallback(m_window, OnWindowFocus);
 #endif
-
-		int framebufferWidth = 0, framebufferHeight = 0;
-		glfwGetFramebufferSize(m_window, &framebufferWidth, &framebufferHeight);
-		Window_size_callback(m_window, framebufferWidth, framebufferHeight);
-
 		/* Make the window's context current */
 	}
 
 
 	void Window::Show() {
-#if 0
-#if !DEBUG		
+#if !DEBUG        
 		const GLFWvidmode* mode = glfwGetVideoMode(m_monitor);
 		m_windowData.m_Width = mode->width;
 		m_windowData.m_Height = mode->height;
 
 		glfwSetWindowMonitor(
-			m_window, m_monitor,
+			m_window, NULL,
 			0, 0,
 			m_windowData.m_Width, m_windowData.m_Height, 0);
-#endif	
-#endif
+#endif    
 		// Finally show the window
 		glfwShowWindow(m_window);
 	}
