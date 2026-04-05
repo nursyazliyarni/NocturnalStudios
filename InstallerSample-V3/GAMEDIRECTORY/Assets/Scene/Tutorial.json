@@ -1,0 +1,3027 @@
+{
+    "LayerDrawOrder": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+    ],
+    "Entities": [
+        {
+            "ID": 0,
+            "Components": [
+                {
+                    "Component": "Tag",
+                    "Tag": "Untagged",
+                    "TargetTag": ""
+                },
+                {
+                    "Component": "Transform",
+                    "Position": {
+                        "x": 0.0,
+                        "y": 0.0
+                    },
+                    "Scale": {
+                        "x": 3.6449999809265137,
+                        "y": 2.0
+                    },
+                    "Rotation": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "flamingoBG"
+                },
+                {
+                    "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "length of dashed lines": 0.009999999776482582,
+                    "distance gap": 0.009999999776482582,
+                    "line movement speed": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "TextureName": "UI/blackbg",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": false,
+                    "MaxIndex": 0,
+                    "LayeringOrder": 0,
+                    "StateManagerEnabled": false,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
+                },
+                {
+                    "Component": "Audio",
+                    "0": {
+                        "AudioPath": "BGM_Ambience_Flamingo_01.wav",
+                        "Channel": 2,
+                        "IsLooping": true,
+                        "VolumeLimit": 1.0
+                    },
+                    "AudioArrCount": 1,
+                    "BGM Volume": 1.0,
+                    "SFX Volume": 1.0,
+                    "Master Volume": 1.0,
+                    "RandomFromArray": false,
+                    "Effects": {
+                        "LowpassEnabled": false,
+                        "LowpassCutoff": 5000.0,
+                        "LowpassResonance": 1.0,
+                        "HighpassEnabled": false,
+                        "HighpassCutoff": 10.0,
+                        "HighpassResonance": 1.0,
+                        "EchoEnabled": false,
+                        "EchoDelay": 500.0,
+                        "EchoFeedback": 50.0,
+                        "EchoDryLevel": 0.0,
+                        "EchoWetLevel": -6.0,
+                        "ReverbEnabled": false,
+                        "ReverbDecayTime": 1500.0,
+                        "ReverbEarlyDelay": 7.0,
+                        "ReverbLateDelay": 11.0,
+                        "ReverbHFReference": 5000.0,
+                        "ReverbDiffusion": 100.0,
+                        "ReverbDensity": 100.0,
+                        "ReverbWetLevel": -6.0,
+                        "ReverbDryLevel": 0.0
+                    }
+                },
+                {
+                    "Component": "Logic",
+                    "Scripts": [
+                        {
+                            "ScriptName": "AudioManager"
+                        },
+                        {
+                            "ScriptName": "BackgroundAudio",
+                            "Background Audio Index": 0
+                        }
+                    ],
+                    "ScriptCount": 2
+                }
+            ]
+        },
+        {
+            "ID": 1,
+            "Components": [
+                {
+                    "Component": "Transform",
+                    "Position": {
+                        "x": -0.9560700058937073,
+                        "y": 0.25600001215934753
+                    },
+                    "Scale": {
+                        "x": 1.0,
+                        "y": 1.0
+                    },
+                    "Rotation": 0.0
+                },
+                {
+                    "Component": "Collider",
+                    "ColliderType1": 5,
+                    "ColliderType2": 5,
+                    "minX1": -0.10000000149011612,
+                    "minX2": 0.20000000298023224,
+                    "minY1": 0.05000000074505806,
+                    "minY2": 0.10000000149011612,
+                    "maxX1": 0.20000000298023224,
+                    "maxX2": 0.20000000298023224,
+                    "maxY1": 0.36000001430511475,
+                    "maxY2": 0.10000000149011612,
+                    "offsetX1": 0.0,
+                    "offsetX2": -0.05000000074505806,
+                    "offsetY1": 0.05000000074505806,
+                    "offsetY2": 0.05000000074505806,
+                    "radius1": 0.0,
+                    "radius2": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "Flamingo"
+                },
+                {
+                    "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "length of dashed lines": 0.009999999776482582,
+                    "distance gap": 0.009999999776482582,
+                    "line movement speed": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "TextureName": "Characters/flamingo_idle",
+                    "Index_X": 1,
+                    "Index_Y": 0,
+                    "Ucoordinates": 528.0,
+                    "Vcoordinates": 528.0,
+                    "IsSpriteSheet": true,
+                    "IsAnimated": true,
+                    "MaxIndex": 3,
+                    "DisplayTime 0": 1.2999999523162842,
+                    "DisplayTime 1": 1.2999999523162842,
+                    "DisplayTime 2": 1.2999999523162842,
+                    "LayeringOrder": 1,
+                    "StateManagerEnabled": true,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 1,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "Characters/flamingo_idle",
+                            "Ucoordinates": 528.0,
+                            "Vcoordinates": 528.0,
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        },
+                        {
+                            "Name": "Hungry",
+                            "Texture": "Characters/flamingo_hungry",
+                            "Ucoordinates": 528.0,
+                            "Vcoordinates": 528.0,
+                            "Source": 0,
+                            "Compare": 0,
+                            "Threshold": 0.800000011920929,
+                            "Priority": 10,
+                            "Enabled": true
+                        },
+                        {
+                            "Name": "Sick",
+                            "Texture": "Characters/flamingo_sick",
+                            "Ucoordinates": 528.0,
+                            "Vcoordinates": 528.0,
+                            "Source": 1,
+                            "Compare": 0,
+                            "Threshold": 0.8999999761581421,
+                            "Priority": 20,
+                            "Enabled": true
+                        },
+                        {
+                            "Name": "Angry",
+                            "Texture": "Characters/flamingo_angry",
+                            "Ucoordinates": 528.0,
+                            "Vcoordinates": 528.0,
+                            "Source": 2,
+                            "Compare": 0,
+                            "Threshold": 0.7400000095367432,
+                            "Priority": 30,
+                            "Enabled": true
+                        }
+                    ]
+                },
+                {
+                    "Component": "Logic",
+                    "Scripts": [
+                        {
+                            "ScriptName": "TutorialLogic"
+                        }
+                    ],
+                    "ScriptCount": 1
+                },
+                {
+                    "Component": "Draggable",
+                    "isTarget": true
+                },
+                {
+                    "Component": "AnimalAttributes",
+                    "Animal Type": 0,
+                    "Current Health": 94.95833307038993,
+                    "Max Health": 100.0,
+                    "Current Hunger": 79.8333322815597,
+                    "Max Hunger": 100.0,
+                    "Current Sanity": 98.2833332438022,
+                    "Max Sanity": 100.0,
+                    "Health Decay Rate": 1.0,
+                    "Hunger Decay Rate": 1.0,
+                    "Sanity Decay Rate": 1.0,
+                    "IS_alive": true
+                },
+                {
+                    "Component": "TutorialAttributes",
+                    "tutorial_order": 100
+                }
+            ]
+        },
+        {
+            "ID": 2,
+            "Components": [
+                {
+                    "Component": "Transform",
+                    "Position": {
+                        "x": -1.337353229522705,
+                        "y": -0.6955225467681885
+                    },
+                    "Scale": {
+                        "x": 0.30000001192092896,
+                        "y": 0.30000001192092896
+                    },
+                    "Rotation": 0.0
+                },
+                {
+                    "Component": "Collider",
+                    "ColliderType1": 5,
+                    "ColliderType2": 0,
+                    "minX1": 0.10000000149011612,
+                    "minX2": 0.0,
+                    "minY1": 0.14000000059604645,
+                    "minY2": 0.0,
+                    "maxX1": 0.10000000149011612,
+                    "maxX2": 0.0,
+                    "maxY1": 0.10999999940395355,
+                    "maxY2": 0.0,
+                    "offsetX1": 0.0,
+                    "offsetX2": 0.0,
+                    "offsetY1": 0.0,
+                    "offsetY2": 0.0,
+                    "radius1": 0.0,
+                    "radius2": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "flamingo food"
+                },
+                {
+                    "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "length of dashed lines": 0.009999999776482582,
+                    "distance gap": 0.009999999776482582,
+                    "line movement speed": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "TextureName": "Play/Food",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": false,
+                    "MaxIndex": 0,
+                    "LayeringOrder": 2,
+                    "StateManagerEnabled": false,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
+                },
+                {
+                    "Component": "Logic",
+                    "Scripts": [
+                        {
+                            "ScriptName": "DragAndDrop"
+                        }
+                    ],
+                    "ScriptCount": 1
+                },
+                {
+                    "Component": "ItemsAttributes",
+                    "type": 0,
+                    "gain amount": 20.0,
+                    "is_dragging": false
+                }
+            ]
+        },
+        {
+            "ID": 3,
+            "Components": [
+                {
+                    "Component": "Transform",
+                    "Position": {
+                        "x": -0.6022435426712036,
+                        "y": -0.7217352390289307
+                    },
+                    "Scale": {
+                        "x": 0.25,
+                        "y": 0.25
+                    },
+                    "Rotation": 0.0
+                },
+                {
+                    "Component": "Collider",
+                    "ColliderType1": 5,
+                    "ColliderType2": 0,
+                    "minX1": 0.10000000149011612,
+                    "minX2": 0.0,
+                    "minY1": 0.10000000149011612,
+                    "minY2": 0.0,
+                    "maxX1": 0.10000000149011612,
+                    "maxX2": 0.0,
+                    "maxY1": 0.10499999672174454,
+                    "maxY2": 0.0,
+                    "offsetX1": 0.0,
+                    "offsetX2": 0.0,
+                    "offsetY1": 0.0,
+                    "offsetY2": 0.0,
+                    "radius1": 0.0,
+                    "radius2": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "flamingo medicine"
+                },
+                {
+                    "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "length of dashed lines": 0.009999999776482582,
+                    "distance gap": 0.009999999776482582,
+                    "line movement speed": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "TextureName": "Play/Medicine",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": false,
+                    "MaxIndex": 0,
+                    "LayeringOrder": 2,
+                    "StateManagerEnabled": false,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
+                },
+                {
+                    "Component": "Logic",
+                    "Scripts": [
+                        {
+                            "ScriptName": "RevealTargetOnClick"
+                        }
+                    ],
+                    "ScriptCount": 1
+                },
+                {
+                    "Component": "ItemsAttributes",
+                    "type": 1,
+                    "gain amount": 20.0,
+                    "is_dragging": false
+                }
+            ]
+        },
+        {
+            "ID": 4,
+            "Components": [
+                {
+                    "Component": "Transform",
+                    "Position": {
+                        "x": -0.1607748568058014,
+                        "y": -0.13524222373962402
+                    },
+                    "Scale": {
+                        "x": 0.4000000059604645,
+                        "y": 0.4000000059604645
+                    },
+                    "Rotation": 0.0
+                },
+                {
+                    "Component": "Collider",
+                    "ColliderType1": 5,
+                    "ColliderType2": 0,
+                    "minX1": 0.20000000298023224,
+                    "minX2": 0.0,
+                    "minY1": 0.15000000596046448,
+                    "minY2": 0.0,
+                    "maxX1": 0.20000000298023224,
+                    "maxX2": 0.0,
+                    "maxY1": 0.11500000208616257,
+                    "maxY2": 0.0,
+                    "offsetX1": 0.0,
+                    "offsetX2": 0.0,
+                    "offsetY1": 0.0,
+                    "offsetY2": 0.0,
+                    "radius1": 0.0,
+                    "radius2": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "flamingo toy"
+                },
+                {
+                    "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "length of dashed lines": 0.009999999776482582,
+                    "distance gap": 0.009999999776482582,
+                    "line movement speed": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "TextureName": "Play/flamingo_toy",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": false,
+                    "MaxIndex": 0,
+                    "LayeringOrder": 2,
+                    "StateManagerEnabled": false,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
+                },
+                {
+                    "Component": "Logic",
+                    "Scripts": [],
+                    "ScriptCount": 0
+                },
+                {
+                    "Component": "ItemsAttributes",
+                    "type": 2,
+                    "gain amount": 20.0,
+                    "is_dragging": false
+                }
+            ]
+        },
+        {
+            "ID": 5,
+            "Components": [
+                {
+                    "Component": "Transform",
+                    "Position": {
+                        "x": -1.5640770196914673,
+                        "y": 0.7606481909751892
+                    },
+                    "Scale": {
+                        "x": 0.10000000149011612,
+                        "y": 0.10000000149011612
+                    },
+                    "Rotation": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "CameraHighlight"
+                },
+                {
+                    "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "length of dashed lines": 0.009999999776482582,
+                    "distance gap": 0.009999999776482582,
+                    "line movement speed": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "TextureName": "UI/cameraHighlight",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": false,
+                    "MaxIndex": 0,
+                    "LayeringOrder": 1,
+                    "StateManagerEnabled": false,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "ID": 6,
+            "Components": [
+                {
+                    "Component": "Transform",
+                    "Position": {
+                        "x": -1.469074010848999,
+                        "y": 0.7429999709129333
+                    },
+                    "Scale": {
+                        "x": 1.0,
+                        "y": 1.0
+                    },
+                    "Rotation": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "TimerDisplay"
+                },
+                {
+                    "Component": "Logic",
+                    "Scripts": [],
+                    "ScriptCount": 0
+                },
+                {
+                    "Component": "Text",
+                    "text type": 0,
+                    "Content": "00:20:08",
+                    "Array of Content": [],
+                    "Vector of text position": [],
+                    "Font": "DSEG7Classic-Bold",
+                    "Size": 35.29999923706055,
+                    "ColorR": 0.0,
+                    "ColorG": 1.0,
+                    "ColorB": 0.08823513984680176,
+                    "ColorA": 1.0,
+                    "PosX": 0.0,
+                    "PosY": 0.0,
+                    "Rotation": 0.0,
+                    "Line Height": 0,
+                    "WorldSpace": true,
+                    "Center": false,
+                    "LayeringOrder": 4,
+                    "Visibility": true
+                }
+            ]
+        },
+        {
+            "ID": 7,
+            "Components": [
+                {
+                    "Component": "NameTag",
+                    "NameTag": "flamingo_title"
+                },
+                {
+                    "Component": "Text",
+                    "text type": 0,
+                    "Content": "FLAMINGO",
+                    "Array of Content": [],
+                    "Vector of text position": [],
+                    "Font": "ChauPhilomeneOne-Regular",
+                    "Size": 72.0,
+                    "ColorR": 0.31651291251182556,
+                    "ColorG": 0.7254902124404907,
+                    "ColorB": 0.3285415470600128,
+                    "ColorA": 1.0,
+                    "PosX": 0.6399999856948853,
+                    "PosY": 0.6299999952316284,
+                    "Rotation": 0.0,
+                    "Line Height": 50,
+                    "WorldSpace": false,
+                    "Center": false,
+                    "LayeringOrder": 4,
+                    "Visibility": true
+                }
+            ]
+        },
+        {
+            "ID": 8,
+            "Components": [
+                {
+                    "Component": "NameTag",
+                    "NameTag": "flamingo enclosure"
+                },
+                {
+                    "Component": "Text",
+                    "text type": 0,
+                    "Content": "Enclosure 3 - 05-02-4B",
+                    "Array of Content": [],
+                    "Vector of text position": [],
+                    "Font": "ChauPhilomeneOne-Regular",
+                    "Size": 36.0,
+                    "ColorR": 0.31651291251182556,
+                    "ColorG": 0.7254902124404907,
+                    "ColorB": 0.3285415470600128,
+                    "ColorA": 1.0,
+                    "PosX": 0.6399999856948853,
+                    "PosY": 0.550000011920929,
+                    "Rotation": 0.0,
+                    "Line Height": 50,
+                    "WorldSpace": false,
+                    "Center": false,
+                    "LayeringOrder": 4,
+                    "Visibility": true
+                }
+            ]
+        },
+        {
+            "ID": 9,
+            "Components": [
+                {
+                    "Component": "NameTag",
+                    "NameTag": "flamingo_intro"
+                },
+                {
+                    "Component": "Text",
+                    "text type": 0,
+                    "Content": "A pink bird loved by many, despite\nits legs not being of optimal\ncondition due to _____",
+                    "Array of Content": [],
+                    "Vector of text position": [],
+                    "Font": "ChauPhilomeneOne-Regular",
+                    "Size": 36.0,
+                    "ColorR": 0.4215686321258545,
+                    "ColorG": 0.41214776039123535,
+                    "ColorB": 0.41123607754707336,
+                    "ColorA": 0.501960813999176,
+                    "PosX": 0.6399999856948853,
+                    "PosY": 0.4399999976158142,
+                    "Rotation": 0.0,
+                    "Line Height": 62,
+                    "WorldSpace": false,
+                    "Center": false,
+                    "LayeringOrder": 4,
+                    "Visibility": true
+                }
+            ]
+        },
+        {
+            "ID": 10,
+            "Components": [
+                {
+                    "Component": "Tag",
+                    "Tag": "target",
+                    "TargetTag": ""
+                },
+                {
+                    "Component": "Transform",
+                    "Position": {
+                        "x": 0.0,
+                        "y": 0.0
+                    },
+                    "Scale": {
+                        "x": 0.20000000298023224,
+                        "y": 0.20000000298023224
+                    },
+                    "Rotation": 0.0
+                },
+                {
+                    "Component": "Collider",
+                    "ColliderType1": 5,
+                    "ColliderType2": 0,
+                    "minX1": 0.05000000074505806,
+                    "minX2": 0.0,
+                    "minY1": 0.05000000074505806,
+                    "minY2": 0.0,
+                    "maxX1": 0.0,
+                    "maxX2": 0.0,
+                    "maxY1": 0.0,
+                    "maxY2": 0.0,
+                    "offsetX1": 0.02500000037252903,
+                    "offsetX2": 0.0,
+                    "offsetY1": 0.02500000037252903,
+                    "offsetY2": 0.0,
+                    "radius1": 0.0,
+                    "radius2": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "Target"
+                },
+                {
+                    "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "length of dashed lines": 0.009999999776482582,
+                    "distance gap": 0.009999999776482582,
+                    "line movement speed": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "TextureName": "UI/target",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": false,
+                    "MaxIndex": 0,
+                    "LayeringOrder": 4,
+                    "StateManagerEnabled": false,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "ID": 11,
+            "Components": [
+                {
+                    "Component": "Transform",
+                    "Position": {
+                        "x": 1.0999298095703125,
+                        "y": -0.28999999165534973
+                    },
+                    "Scale": {
+                        "x": 0.9850000143051147,
+                        "y": 1.0800000429153442
+                    },
+                    "Rotation": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "LogObj"
+                },
+                {
+                    "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "length of dashed lines": 0.009999999776482582,
+                    "distance gap": 0.009999999776482582,
+                    "line movement speed": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "TextureName": "UI/PlaceholderLogbg",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": false,
+                    "MaxIndex": 0,
+                    "LayeringOrder": 2,
+                    "StateManagerEnabled": false,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
+                },
+                {
+                    "Component": "Logic",
+                    "Scripts": [],
+                    "ScriptCount": 0
+                },
+                {
+                    "Component": "Text",
+                    "text type": 0,
+                    "Content": "[00:00:00] This a Log Entry",
+                    "Array of Content": [],
+                    "Vector of text position": [],
+                    "Font": "Jersey10Charted-Regular",
+                    "Size": 48.0,
+                    "ColorR": 1.0,
+                    "ColorG": 0.0,
+                    "ColorB": 0.0,
+                    "ColorA": 1.0,
+                    "PosX": -0.4699999988079071,
+                    "PosY": 0.4699999988079071,
+                    "Rotation": 0.0,
+                    "Line Height": 0,
+                    "WorldSpace": true,
+                    "Center": false,
+                    "LayeringOrder": 4,
+                    "Visibility": true
+                }
+            ]
+        },
+        {
+            "ID": 12,
+            "Components": [
+                {
+                    "Component": "Transform",
+                    "Position": {
+                        "x": 0.25099998712539673,
+                        "y": -0.28170931339263916
+                    },
+                    "Scale": {
+                        "x": 0.10000000149011612,
+                        "y": 0.10000000149011612
+                    },
+                    "Rotation": -179.99989318847656
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "CameraHighlight"
+                },
+                {
+                    "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "length of dashed lines": 0.009999999776482582,
+                    "distance gap": 0.009999999776482582,
+                    "line movement speed": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "TextureName": "UI/cameraHighlight",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": false,
+                    "MaxIndex": 0,
+                    "LayeringOrder": 1,
+                    "StateManagerEnabled": false,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "ID": 13,
+            "Components": [
+                {
+                    "Component": "Transform",
+                    "Position": {
+                        "x": -1.5640000104904175,
+                        "y": -0.28171229362487793
+                    },
+                    "Scale": {
+                        "x": 0.10000000149011612,
+                        "y": 0.10000000149011612
+                    },
+                    "Rotation": 90.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "CameraHighlight"
+                },
+                {
+                    "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "length of dashed lines": 0.009999999776482582,
+                    "distance gap": 0.009999999776482582,
+                    "line movement speed": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "TextureName": "UI/cameraHighlight",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": false,
+                    "MaxIndex": 0,
+                    "LayeringOrder": 1,
+                    "StateManagerEnabled": false,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "ID": 14,
+            "Components": [
+                {
+                    "Component": "Transform",
+                    "Position": {
+                        "x": 0.2513091266155243,
+                        "y": 0.7609999775886536
+                    },
+                    "Scale": {
+                        "x": 0.10000000149011612,
+                        "y": 0.10000000149011612
+                    },
+                    "Rotation": -90.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "CameraHighlight"
+                },
+                {
+                    "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "length of dashed lines": 0.009999999776482582,
+                    "distance gap": 0.009999999776482582,
+                    "line movement speed": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "TextureName": "UI/cameraHighlight",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": false,
+                    "MaxIndex": 0,
+                    "LayeringOrder": 1,
+                    "StateManagerEnabled": false,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "ID": 15,
+            "Components": [
+                {
+                    "Component": "Transform",
+                    "Position": {
+                        "x": -0.6259999871253967,
+                        "y": 0.2329999953508377
+                    },
+                    "Scale": {
+                        "x": 2.2100000381469727,
+                        "y": 1.3849999904632568
+                    },
+                    "Rotation": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "Panel"
+                },
+                {
+                    "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "length of dashed lines": 0.009999999776482582,
+                    "distance gap": 0.009999999776482582,
+                    "line movement speed": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "TextureName": "UI/panel",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": false,
+                    "MaxIndex": 0,
+                    "LayeringOrder": 3,
+                    "StateManagerEnabled": false,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "ID": 16,
+            "Components": [
+                {
+                    "Component": "Transform",
+                    "Position": {
+                        "x": 0.4000000059604645,
+                        "y": 0.23999999463558197
+                    },
+                    "Scale": {
+                        "x": 0.13500000536441803,
+                        "y": 0.12800000607967377
+                    },
+                    "Rotation": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "FlamingoBtn"
+                },
+                {
+                    "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "length of dashed lines": 0.009999999776482582,
+                    "distance gap": 0.009999999776482582,
+                    "line movement speed": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "TextureName": "UI/cameraButtonLit",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": false,
+                    "MaxIndex": 0,
+                    "LayeringOrder": 4,
+                    "StateManagerEnabled": false,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
+                },
+                {
+                    "Component": "Text",
+                    "text type": 0,
+                    "Content": "1",
+                    "Array of Content": [],
+                    "Vector of text position": [],
+                    "Font": "ChauPhilomeneOne-Regular",
+                    "Size": 32.5,
+                    "ColorR": 0.0,
+                    "ColorG": 0.0,
+                    "ColorB": 0.0,
+                    "ColorA": 1.0,
+                    "PosX": 0.38499999046325684,
+                    "PosY": 0.2280000001192093,
+                    "Rotation": 0.0,
+                    "Line Height": 0,
+                    "WorldSpace": false,
+                    "Center": false,
+                    "LayeringOrder": 4,
+                    "Visibility": true
+                }
+            ]
+        },
+        {
+            "ID": 17,
+            "Components": [
+                {
+                    "Component": "Tag",
+                    "Tag": "Untagged",
+                    "TargetTag": ""
+                },
+                {
+                    "Component": "Transform",
+                    "Position": {
+                        "x": -0.6399999856948853,
+                        "y": 0.23499999940395355
+                    },
+                    "Scale": {
+                        "x": 2.059999942779541,
+                        "y": 1.225000023841858
+                    },
+                    "Rotation": 0.0
+                },
+                {
+                    "Component": "Collider",
+                    "ColliderType1": 5,
+                    "ColliderType2": 0,
+                    "minX1": 1.9700000286102295,
+                    "minX2": 0.0,
+                    "minY1": 1.225000023841858,
+                    "minY2": 0.0,
+                    "maxX1": 0.0,
+                    "maxX2": 0.0,
+                    "maxY1": 0.0,
+                    "maxY2": 0.0,
+                    "offsetX1": 0.9700000286102295,
+                    "offsetX2": 0.0,
+                    "offsetY1": 0.6200000047683716,
+                    "offsetY2": 0.0,
+                    "radius1": 0.0,
+                    "radius2": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "Environment"
+                },
+                {
+                    "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "length of dashed lines": 0.009999999776482582,
+                    "distance gap": 0.009999999776482582,
+                    "line movement speed": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "TextureName": "Environment/flamingoCage",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": false,
+                    "MaxIndex": 0,
+                    "LayeringOrder": 0,
+                    "StateManagerEnabled": false,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "ID": 18,
+            "Components": [
+                {
+                    "Component": "Transform",
+                    "Position": {
+                        "x": 0.07999999821186066,
+                        "y": 0.03999999910593033
+                    },
+                    "Scale": {
+                        "x": 3.9200000762939453,
+                        "y": 2.184999942779541
+                    },
+                    "Rotation": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "InventoryBar"
+                },
+                {
+                    "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "length of dashed lines": 0.009999999776482582,
+                    "distance gap": 0.009999999776482582,
+                    "line movement speed": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "TextureName": "UI/inventory",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": false,
+                    "MaxIndex": 0,
+                    "LayeringOrder": 1,
+                    "StateManagerEnabled": false,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
+                },
+                {
+                    "Component": "Text",
+                    "text type": 0,
+                    "Content": "INVENTORY",
+                    "Array of Content": [],
+                    "Vector of text position": [],
+                    "Font": "ChauPhilomeneOne-Regular",
+                    "Size": 36.79999923706055,
+                    "ColorR": 0.46568626165390015,
+                    "ColorG": 1.0,
+                    "ColorB": 0.48109906911849976,
+                    "ColorA": 1.0,
+                    "PosX": -0.7599999904632568,
+                    "PosY": -0.5799999833106995,
+                    "Rotation": 0.0,
+                    "Line Height": 0,
+                    "WorldSpace": false,
+                    "Center": false,
+                    "LayeringOrder": 4,
+                    "Visibility": true
+                }
+            ]
+        },
+        {
+            "ID": 19,
+            "Components": [
+                {
+                    "Component": "Transform",
+                    "Position": {
+                        "x": 1.0950000286102295,
+                        "y": 0.014999999664723873
+                    },
+                    "Scale": {
+                        "x": 1.190000057220459,
+                        "y": 1.850000023841858
+                    },
+                    "Rotation": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "LogBar"
+                },
+                {
+                    "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "length of dashed lines": 0.009999999776482582,
+                    "distance gap": 0.009999999776482582,
+                    "line movement speed": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "TextureName": "UI/right panel",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": false,
+                    "MaxIndex": 0,
+                    "LayeringOrder": 1,
+                    "StateManagerEnabled": false,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "ID": 20,
+            "Components": [
+                {
+                    "Component": "Tag",
+                    "Tag": "Untagged",
+                    "TargetTag": ""
+                },
+                {
+                    "Component": "Transform",
+                    "Position": {
+                        "x": -0.014999999664723873,
+                        "y": 0.02500000037252903
+                    },
+                    "Scale": {
+                        "x": 3.7049999237060547,
+                        "y": 2.109999895095825
+                    },
+                    "Rotation": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "BgWires"
+                },
+                {
+                    "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "length of dashed lines": 0.009999999776482582,
+                    "distance gap": 0.009999999776482582,
+                    "line movement speed": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "TextureName": "UI/background",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": false,
+                    "MaxIndex": 0,
+                    "LayeringOrder": 0,
+                    "StateManagerEnabled": false,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "ID": 21,
+            "Components": [
+                {
+                    "Component": "Transform",
+                    "Position": {
+                        "x": -0.8450000286102295,
+                        "y": 0.20000000298023224
+                    },
+                    "Scale": {
+                        "x": 0.05000000074505806,
+                        "y": 0.05000000074505806
+                    },
+                    "Rotation": 0.0
+                },
+                {
+                    "Component": "Collider",
+                    "ColliderType1": 5,
+                    "ColliderType2": 0,
+                    "minX1": 0.05000000074505806,
+                    "minX2": 0.0,
+                    "minY1": 0.05000000074505806,
+                    "minY2": 0.0,
+                    "maxX1": 0.0,
+                    "maxX2": 0.0,
+                    "maxY1": 0.0,
+                    "maxY2": 0.0,
+                    "offsetX1": 0.02500000037252903,
+                    "offsetX2": 0.0,
+                    "offsetY1": 0.02500000037252903,
+                    "offsetY2": 0.0,
+                    "radius1": 0.0,
+                    "radius2": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "PainSpot"
+                },
+                {
+                    "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "length of dashed lines": 0.009999999776482582,
+                    "distance gap": 0.009999999776482582,
+                    "line movement speed": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "TextureName": "UI/painSpot",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": false,
+                    "MaxIndex": 0,
+                    "LayeringOrder": 2,
+                    "StateManagerEnabled": false,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "ID": 22,
+            "Components": [
+                {
+                    "Component": "Transform",
+                    "Position": {
+                        "x": -1.0499999523162842,
+                        "y": 0.2199999988079071
+                    },
+                    "Scale": {
+                        "x": 0.6000000238418579,
+                        "y": 1.0
+                    },
+                    "Rotation": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "gameplay_tutorial#0"
+                },
+                {
+                    "Component": "Sprite",
+                    "shape/texture": 1,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "length of dashed lines": 0.04100000113248825,
+                    "distance gap": 0.035999998450279236,
+                    "line movement speed": -0.2800000011920929,
+                    "RGBA": [
+                        1.0,
+                        0.0,
+                        0.0,
+                        1.0
+                    ],
+                    "TextureName": "Blank",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": true,
+                    "MaxIndex": 1,
+                    "DisplayTime 0": 0.10000000149011612,
+                    "LayeringOrder": 0,
+                    "StateManagerEnabled": false,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
+                },
+                {
+                    "Component": "Logic",
+                    "Scripts": [
+                        {
+                            "ScriptName": "TutorialLogic"
+                        }
+                    ],
+                    "ScriptCount": 1
+                },
+                {
+                    "Component": "Text",
+                    "text type": 0,
+                    "Content": "Please take care of this poor animal!!!",
+                    "Array of Content": [],
+                    "Vector of text position": [],
+                    "Font": "ChauPhilomeneOne-Regular",
+                    "Size": 32.0,
+                    "ColorR": 1.0,
+                    "ColorG": 1.0,
+                    "ColorB": 1.0,
+                    "ColorA": 1.0,
+                    "PosX": -0.699999988079071,
+                    "PosY": 0.4300000071525574,
+                    "Rotation": 0.0,
+                    "Line Height": 0,
+                    "WorldSpace": false,
+                    "Center": false,
+                    "LayeringOrder": 4,
+                    "Visibility": false
+                },
+                {
+                    "Component": "TutorialAttributes",
+                    "tutorial_order": 0
+                }
+            ]
+        },
+        {
+            "ID": 23,
+            "Components": [
+                {
+                    "Component": "Transform",
+                    "Position": {
+                        "x": -1.0499999523162842,
+                        "y": 0.2199999988079071
+                    },
+                    "Scale": {
+                        "x": 0.6000000238418579,
+                        "y": 1.0
+                    },
+                    "Rotation": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "gameplay_tutorial#1"
+                },
+                {
+                    "Component": "Sprite",
+                    "shape/texture": 1,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "length of dashed lines": 0.04100000113248825,
+                    "distance gap": 0.035999998450279236,
+                    "line movement speed": -0.2800000011920929,
+                    "RGBA": [
+                        1.0,
+                        0.0,
+                        0.0,
+                        1.0
+                    ],
+                    "TextureName": "Blank",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": true,
+                    "MaxIndex": 1,
+                    "DisplayTime 0": 0.10000000149011612,
+                    "LayeringOrder": 0,
+                    "StateManagerEnabled": false,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
+                },
+                {
+                    "Component": "Logic",
+                    "Scripts": [
+                        {
+                            "ScriptName": "TutorialLogic"
+                        }
+                    ],
+                    "ScriptCount": 1
+                },
+                {
+                    "Component": "Text",
+                    "text type": 0,
+                    "Content": "Observe the animal to know how to \ncare for it!!!",
+                    "Array of Content": [],
+                    "Vector of text position": [],
+                    "Font": "ChauPhilomeneOne-Regular",
+                    "Size": 32.0,
+                    "ColorR": 1.0,
+                    "ColorG": 1.0,
+                    "ColorB": 1.0,
+                    "ColorA": 1.0,
+                    "PosX": -0.699999988079071,
+                    "PosY": 0.4300000071525574,
+                    "Rotation": 0.0,
+                    "Line Height": 0,
+                    "WorldSpace": false,
+                    "Center": false,
+                    "LayeringOrder": 4,
+                    "Visibility": false
+                },
+                {
+                    "Component": "TutorialAttributes",
+                    "tutorial_order": 1
+                }
+            ]
+        },
+        {
+            "ID": 24,
+            "Components": [
+                {
+                    "Component": "Transform",
+                    "Position": {
+                        "x": -1.0499999523162842,
+                        "y": 0.2199999988079071
+                    },
+                    "Scale": {
+                        "x": 0.6000000238418579,
+                        "y": 1.0
+                    },
+                    "Rotation": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "gameplay_tutorial#2"
+                },
+                {
+                    "Component": "Sprite",
+                    "shape/texture": 1,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "length of dashed lines": 0.04100000113248825,
+                    "distance gap": 0.035999998450279236,
+                    "line movement speed": -0.2800000011920929,
+                    "RGBA": [
+                        1.0,
+                        0.0,
+                        0.0,
+                        1.0
+                    ],
+                    "TextureName": "Blank",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": true,
+                    "MaxIndex": 1,
+                    "DisplayTime 0": 0.10000000149011612,
+                    "LayeringOrder": 0,
+                    "StateManagerEnabled": false,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
+                },
+                {
+                    "Component": "Logic",
+                    "Scripts": [
+                        {
+                            "ScriptName": "TutorialLogic"
+                        }
+                    ],
+                    "ScriptCount": 1
+                },
+                {
+                    "Component": "Text",
+                    "text type": 0,
+                    "Content": "The animal is idle-no extra care \nis needed now!!!",
+                    "Array of Content": [],
+                    "Vector of text position": [],
+                    "Font": "ChauPhilomeneOne-Regular",
+                    "Size": 32.0,
+                    "ColorR": 1.0,
+                    "ColorG": 1.0,
+                    "ColorB": 1.0,
+                    "ColorA": 1.0,
+                    "PosX": -0.699999988079071,
+                    "PosY": 0.4300000071525574,
+                    "Rotation": 0.0,
+                    "Line Height": 0,
+                    "WorldSpace": false,
+                    "Center": false,
+                    "LayeringOrder": 4,
+                    "Visibility": false
+                },
+                {
+                    "Component": "TutorialAttributes",
+                    "tutorial_order": 2
+                }
+            ]
+        },
+        {
+            "ID": 25,
+            "Components": [
+                {
+                    "Component": "Transform",
+                    "Position": {
+                        "x": -1.0499999523162842,
+                        "y": 0.2199999988079071
+                    },
+                    "Scale": {
+                        "x": 0.6000000238418579,
+                        "y": 1.0
+                    },
+                    "Rotation": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "gameplay_tutorial#3"
+                },
+                {
+                    "Component": "Sprite",
+                    "shape/texture": 1,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "length of dashed lines": 0.04100000113248825,
+                    "distance gap": 0.035999998450279236,
+                    "line movement speed": -0.2800000011920929,
+                    "RGBA": [
+                        1.0,
+                        0.0,
+                        0.0,
+                        1.0
+                    ],
+                    "TextureName": "Blank",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": true,
+                    "MaxIndex": 1,
+                    "DisplayTime 0": 0.10000000149011612,
+                    "LayeringOrder": 0,
+                    "StateManagerEnabled": false,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
+                },
+                {
+                    "Component": "Logic",
+                    "Scripts": [
+                        {
+                            "ScriptName": "TutorialLogic"
+                        }
+                    ],
+                    "ScriptCount": 1
+                },
+                {
+                    "Component": "Text",
+                    "text type": 0,
+                    "Content": "The animal is hungry-feed the flamingo now!!!",
+                    "Array of Content": [],
+                    "Vector of text position": [],
+                    "Font": "ChauPhilomeneOne-Regular",
+                    "Size": 32.0,
+                    "ColorR": 1.0,
+                    "ColorG": 1.0,
+                    "ColorB": 1.0,
+                    "ColorA": 1.0,
+                    "PosX": -0.699999988079071,
+                    "PosY": 0.4300000071525574,
+                    "Rotation": 0.0,
+                    "Line Height": 0,
+                    "WorldSpace": false,
+                    "Center": false,
+                    "LayeringOrder": 4,
+                    "Visibility": false
+                },
+                {
+                    "Component": "TutorialAttributes",
+                    "tutorial_order": 3
+                }
+            ]
+        },
+        {
+            "ID": 26,
+            "Components": [
+                {
+                    "Component": "Transform",
+                    "Position": {
+                        "x": -1.350000023841858,
+                        "y": -0.7200000286102295
+                    },
+                    "Scale": {
+                        "x": 0.30000001192092896,
+                        "y": 0.30000001192092896
+                    },
+                    "Rotation": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "gameplay_tutorial#4"
+                },
+                {
+                    "Component": "Sprite",
+                    "shape/texture": 1,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "length of dashed lines": 0.04100000113248825,
+                    "distance gap": 0.035999998450279236,
+                    "line movement speed": -0.2800000011920929,
+                    "RGBA": [
+                        1.0,
+                        0.0,
+                        0.0,
+                        1.0
+                    ],
+                    "TextureName": "Blank",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": true,
+                    "MaxIndex": 1,
+                    "DisplayTime 0": 0.10000000149011612,
+                    "LayeringOrder": 1,
+                    "StateManagerEnabled": false,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
+                },
+                {
+                    "Component": "Logic",
+                    "Scripts": [
+                        {
+                            "ScriptName": "TutorialLogic"
+                        }
+                    ],
+                    "ScriptCount": 1
+                },
+                {
+                    "Component": "Text",
+                    "text type": 0,
+                    "Content": "Drag the food to the animal \nwhen it's hungry!!!",
+                    "Array of Content": [],
+                    "Vector of text position": [],
+                    "Font": "ChauPhilomeneOne-Regular",
+                    "Size": 32.0,
+                    "ColorR": 1.0,
+                    "ColorG": 1.0,
+                    "ColorB": 1.0,
+                    "ColorA": 1.0,
+                    "PosX": -1.6200000047683716,
+                    "PosY": -0.46000000834465027,
+                    "Rotation": 0.0,
+                    "Line Height": 0,
+                    "WorldSpace": false,
+                    "Center": false,
+                    "LayeringOrder": 4,
+                    "Visibility": false
+                },
+                {
+                    "Component": "TutorialAttributes",
+                    "tutorial_order": 4
+                }
+            ]
+        },
+        {
+            "ID": 27,
+            "Components": [
+                {
+                    "Component": "Transform",
+                    "Position": {
+                        "x": -1.0499999523162842,
+                        "y": 0.2199999988079071
+                    },
+                    "Scale": {
+                        "x": 0.6000000238418579,
+                        "y": 1.0
+                    },
+                    "Rotation": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "gameplay_tutorial#5"
+                },
+                {
+                    "Component": "Sprite",
+                    "shape/texture": 1,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "length of dashed lines": 0.04100000113248825,
+                    "distance gap": 0.035999998450279236,
+                    "line movement speed": -0.2800000011920929,
+                    "RGBA": [
+                        1.0,
+                        0.0,
+                        0.0,
+                        1.0
+                    ],
+                    "TextureName": "Blank",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": true,
+                    "MaxIndex": 1,
+                    "DisplayTime 0": 0.10000000149011612,
+                    "LayeringOrder": 0,
+                    "StateManagerEnabled": false,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
+                },
+                {
+                    "Component": "Logic",
+                    "Scripts": [
+                        {
+                            "ScriptName": "TutorialLogic"
+                        }
+                    ],
+                    "ScriptCount": 1
+                },
+                {
+                    "Component": "Text",
+                    "text type": 0,
+                    "Content": "The animal is sick-cure the flamingo now!!!",
+                    "Array of Content": [],
+                    "Vector of text position": [],
+                    "Font": "ChauPhilomeneOne-Regular",
+                    "Size": 32.0,
+                    "ColorR": 1.0,
+                    "ColorG": 1.0,
+                    "ColorB": 1.0,
+                    "ColorA": 1.0,
+                    "PosX": -0.699999988079071,
+                    "PosY": 0.4300000071525574,
+                    "Rotation": 0.0,
+                    "Line Height": 0,
+                    "WorldSpace": false,
+                    "Center": false,
+                    "LayeringOrder": 4,
+                    "Visibility": false
+                },
+                {
+                    "Component": "TutorialAttributes",
+                    "tutorial_order": 5
+                }
+            ]
+        },
+        {
+            "ID": 28,
+            "Components": [
+                {
+                    "Component": "Transform",
+                    "Position": {
+                        "x": -0.6050000190734863,
+                        "y": -0.7200000286102295
+                    },
+                    "Scale": {
+                        "x": 0.30000001192092896,
+                        "y": 0.30000001192092896
+                    },
+                    "Rotation": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "gameplay_tutorial#6"
+                },
+                {
+                    "Component": "Sprite",
+                    "shape/texture": 1,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "length of dashed lines": 0.04100000113248825,
+                    "distance gap": 0.035999998450279236,
+                    "line movement speed": -0.2800000011920929,
+                    "RGBA": [
+                        1.0,
+                        0.0,
+                        0.0,
+                        1.0
+                    ],
+                    "TextureName": "Blank",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": true,
+                    "MaxIndex": 1,
+                    "DisplayTime 0": 0.10000000149011612,
+                    "LayeringOrder": 1,
+                    "StateManagerEnabled": false,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
+                },
+                {
+                    "Component": "Logic",
+                    "Scripts": [
+                        {
+                            "ScriptName": "TutorialLogic"
+                        }
+                    ],
+                    "ScriptCount": 1
+                },
+                {
+                    "Component": "Text",
+                    "text type": 0,
+                    "Content": "A red dot marks the pain spot. \nDrag the injection onto it to heal the animal.",
+                    "Array of Content": [],
+                    "Vector of text position": [],
+                    "Font": "ChauPhilomeneOne-Regular",
+                    "Size": 32.0,
+                    "ColorR": 1.0,
+                    "ColorG": 1.0,
+                    "ColorB": 1.0,
+                    "ColorA": 1.0,
+                    "PosX": -0.44999998807907104,
+                    "PosY": -0.699999988079071,
+                    "Rotation": 0.0,
+                    "Line Height": 0,
+                    "WorldSpace": false,
+                    "Center": false,
+                    "LayeringOrder": 4,
+                    "Visibility": false
+                },
+                {
+                    "Component": "TutorialAttributes",
+                    "tutorial_order": 6
+                }
+            ]
+        },
+        {
+            "ID": 29,
+            "Components": [
+                {
+                    "Component": "Transform",
+                    "Position": {
+                        "x": -1.0499999523162842,
+                        "y": 0.2199999988079071
+                    },
+                    "Scale": {
+                        "x": 0.6000000238418579,
+                        "y": 1.0
+                    },
+                    "Rotation": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "gameplay_tutorial#7"
+                },
+                {
+                    "Component": "Sprite",
+                    "shape/texture": 1,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "length of dashed lines": 0.04100000113248825,
+                    "distance gap": 0.035999998450279236,
+                    "line movement speed": -0.2800000011920929,
+                    "RGBA": [
+                        1.0,
+                        0.0,
+                        0.0,
+                        1.0
+                    ],
+                    "TextureName": "Blank",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": true,
+                    "MaxIndex": 1,
+                    "DisplayTime 0": 0.10000000149011612,
+                    "LayeringOrder": 0,
+                    "StateManagerEnabled": false,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
+                },
+                {
+                    "Component": "Logic",
+                    "Scripts": [
+                        {
+                            "ScriptName": "TutorialLogic"
+                        }
+                    ],
+                    "ScriptCount": 1
+                },
+                {
+                    "Component": "Text",
+                    "text type": 0,
+                    "Content": "The animal is angry-find its hidden toy to calm it!!!",
+                    "Array of Content": [],
+                    "Vector of text position": [],
+                    "Font": "ChauPhilomeneOne-Regular",
+                    "Size": 32.0,
+                    "ColorR": 1.0,
+                    "ColorG": 1.0,
+                    "ColorB": 1.0,
+                    "ColorA": 1.0,
+                    "PosX": -0.699999988079071,
+                    "PosY": 0.4300000071525574,
+                    "Rotation": 0.0,
+                    "Line Height": 0,
+                    "WorldSpace": false,
+                    "Center": false,
+                    "LayeringOrder": 4,
+                    "Visibility": false
+                },
+                {
+                    "Component": "TutorialAttributes",
+                    "tutorial_order": 7
+                }
+            ]
+        },
+        {
+            "ID": 30,
+            "Components": [
+                {
+                    "Component": "Transform",
+                    "Position": {
+                        "x": -0.1550000011920929,
+                        "y": -0.23499999940395355
+                    },
+                    "Scale": {
+                        "x": 0.30000001192092896,
+                        "y": 0.30000001192092896
+                    },
+                    "Rotation": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "gameplay_tutorial#8"
+                },
+                {
+                    "Component": "Sprite",
+                    "shape/texture": 1,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "length of dashed lines": 0.04100000113248825,
+                    "distance gap": 0.035999998450279236,
+                    "line movement speed": -0.2800000011920929,
+                    "RGBA": [
+                        1.0,
+                        0.0,
+                        0.0,
+                        1.0
+                    ],
+                    "TextureName": "Blank",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": true,
+                    "MaxIndex": 1,
+                    "DisplayTime 0": 0.10000000149011612,
+                    "LayeringOrder": 1,
+                    "StateManagerEnabled": false,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
+                },
+                {
+                    "Component": "Logic",
+                    "Scripts": [
+                        {
+                            "ScriptName": "TutorialLogic"
+                        }
+                    ],
+                    "ScriptCount": 1
+                },
+                {
+                    "Component": "Text",
+                    "text type": 0,
+                    "Content": "Toy found-the flamingo is calm. In-game, \nlook for hiding spots and click to uncover \nthe toy.",
+                    "Array of Content": [],
+                    "Vector of text position": [],
+                    "Font": "ChauPhilomeneOne-Regular",
+                    "Size": 32.0,
+                    "ColorR": 1.0,
+                    "ColorG": 1.0,
+                    "ColorB": 1.0,
+                    "ColorA": 1.0,
+                    "PosX": -0.6000000238418579,
+                    "PosY": 0.029999999329447746,
+                    "Rotation": 0.0,
+                    "Line Height": 0,
+                    "WorldSpace": false,
+                    "Center": false,
+                    "LayeringOrder": 4,
+                    "Visibility": false
+                },
+                {
+                    "Component": "TutorialAttributes",
+                    "tutorial_order": 8
+                }
+            ]
+        },
+        {
+            "ID": 32,
+            "Components": [
+                {
+                    "Component": "Transform",
+                    "Position": {
+                        "x": 1.100000023841858,
+                        "y": -0.3100000023841858
+                    },
+                    "Scale": {
+                        "x": 1.0,
+                        "y": 1.100000023841858
+                    },
+                    "Rotation": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "gameplay_tutorial#9"
+                },
+                {
+                    "Component": "Sprite",
+                    "shape/texture": 1,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "length of dashed lines": 0.04100000113248825,
+                    "distance gap": 0.035999998450279236,
+                    "line movement speed": -0.2800000011920929,
+                    "RGBA": [
+                        1.0,
+                        0.0,
+                        0.0,
+                        1.0
+                    ],
+                    "TextureName": "Blank",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": true,
+                    "MaxIndex": 1,
+                    "DisplayTime 0": 0.10000000149011612,
+                    "LayeringOrder": 1,
+                    "StateManagerEnabled": false,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
+                },
+                {
+                    "Component": "Logic",
+                    "Scripts": [
+                        {
+                            "ScriptName": "TutorialLogic"
+                        }
+                    ],
+                    "ScriptCount": 1
+                },
+                {
+                    "Component": "Text",
+                    "text type": 0,
+                    "Content": "Use the log to infer whether the animal is \nIDLE, HUNGRY, SICK, or ANGRY.",
+                    "Array of Content": [],
+                    "Vector of text position": [],
+                    "Font": "ChauPhilomeneOne-Regular",
+                    "Size": 32.0,
+                    "ColorR": 1.0,
+                    "ColorG": 1.0,
+                    "ColorB": 1.0,
+                    "ColorA": 1.0,
+                    "PosX": 0.6299999952316284,
+                    "PosY": 0.07000000029802322,
+                    "Rotation": 0.0,
+                    "Line Height": 0,
+                    "WorldSpace": false,
+                    "Center": false,
+                    "LayeringOrder": 4,
+                    "Visibility": false
+                },
+                {
+                    "Component": "TutorialAttributes",
+                    "tutorial_order": 9
+                }
+            ]
+        },
+        {
+            "ID": 33,
+            "Components": [
+                {
+                    "Component": "Transform",
+                    "Position": {
+                        "x": -1.2999999523162842,
+                        "y": 0.75
+                    },
+                    "Scale": {
+                        "x": 0.4000000059604645,
+                        "y": 0.20000000298023224
+                    },
+                    "Rotation": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "gameplay_tutorial#10"
+                },
+                {
+                    "Component": "Sprite",
+                    "shape/texture": 1,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "length of dashed lines": 0.04100000113248825,
+                    "distance gap": 0.035999998450279236,
+                    "line movement speed": -0.2800000011920929,
+                    "RGBA": [
+                        1.0,
+                        0.0,
+                        0.0,
+                        1.0
+                    ],
+                    "TextureName": "Blank",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": true,
+                    "MaxIndex": 1,
+                    "DisplayTime 0": 0.10000000149011612,
+                    "LayeringOrder": 1,
+                    "StateManagerEnabled": false,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
+                },
+                {
+                    "Component": "Logic",
+                    "Scripts": [
+                        {
+                            "ScriptName": "TutorialLogic"
+                        }
+                    ],
+                    "ScriptCount": 1
+                },
+                {
+                    "Component": "Text",
+                    "text type": 0,
+                    "Content": "Timer indicates time elapsed since \nthe game started",
+                    "Array of Content": [],
+                    "Vector of text position": [],
+                    "Font": "ChauPhilomeneOne-Regular",
+                    "Size": 32.0,
+                    "ColorR": 1.0,
+                    "ColorG": 1.0,
+                    "ColorB": 1.0,
+                    "ColorA": 1.0,
+                    "PosX": -1.059999942779541,
+                    "PosY": 0.800000011920929,
+                    "Rotation": 0.0,
+                    "Line Height": 0,
+                    "WorldSpace": false,
+                    "Center": false,
+                    "LayeringOrder": 4,
+                    "Visibility": false
+                },
+                {
+                    "Component": "TutorialAttributes",
+                    "tutorial_order": 10
+                }
+            ]
+        },
+        {
+            "ID": 34,
+            "Components": [
+                {
+                    "Component": "Transform",
+                    "Position": {
+                        "x": -0.2199999988079071,
+                        "y": 0.1850000023841858
+                    },
+                    "Scale": {
+                        "x": 1.0,
+                        "y": 0.20000000298023224
+                    },
+                    "Rotation": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "gameplay_tutorial#11"
+                },
+                {
+                    "Component": "Sprite",
+                    "shape/texture": 1,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "length of dashed lines": 0.04100000113248825,
+                    "distance gap": 0.035999998450279236,
+                    "line movement speed": -0.2800000011920929,
+                    "RGBA": [
+                        1.0,
+                        0.0,
+                        0.0,
+                        1.0
+                    ],
+                    "TextureName": "Blank",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": true,
+                    "MaxIndex": 1,
+                    "DisplayTime 0": 0.10000000149011612,
+                    "LayeringOrder": 1,
+                    "StateManagerEnabled": false,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
+                },
+                {
+                    "Component": "Logic",
+                    "Scripts": [
+                        {
+                            "ScriptName": "TutorialLogic"
+                        }
+                    ],
+                    "ScriptCount": 1
+                },
+                {
+                    "Component": "Text",
+                    "text type": 0,
+                    "Content": "Congrats! You've completed the tutorial. Now \nyou can move on to the main game",
+                    "Array of Content": [],
+                    "Vector of text position": [],
+                    "Font": "ChauPhilomeneOne-Regular",
+                    "Size": 32.0,
+                    "ColorR": 1.0,
+                    "ColorG": 1.0,
+                    "ColorB": 1.0,
+                    "ColorA": 1.0,
+                    "PosX": -0.6899999976158142,
+                    "PosY": 0.20000000298023224,
+                    "Rotation": 0.0,
+                    "Line Height": 0,
+                    "WorldSpace": false,
+                    "Center": false,
+                    "LayeringOrder": 4,
+                    "Visibility": true
+                },
+                {
+                    "Component": "TutorialAttributes",
+                    "tutorial_order": 11
+                }
+            ]
+        },
+        {
+            "ID": 35,
+            "Components": [
+                {
+                    "Component": "Transform",
+                    "Position": {
+                        "x": 1.3450000286102295,
+                        "y": -0.6840000152587891
+                    },
+                    "Scale": {
+                        "x": 0.5799999833106995,
+                        "y": 0.3700000047683716
+                    },
+                    "Rotation": 0.0
+                },
+                {
+                    "Component": "Collider",
+                    "ColliderType1": 4,
+                    "ColliderType2": 0,
+                    "minX1": 0.0,
+                    "minX2": 0.0,
+                    "minY1": 0.0,
+                    "minY2": 0.0,
+                    "maxX1": 0.6000000238418579,
+                    "maxX2": 0.0,
+                    "maxY1": 0.4000000059604645,
+                    "maxY2": 0.0,
+                    "offsetX1": -0.30000001192092896,
+                    "offsetX2": 0.0,
+                    "offsetY1": -0.20000000298023224,
+                    "offsetY2": 0.0,
+                    "radius1": 0.0,
+                    "radius2": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "next_level_sign"
+                },
+                {
+                    "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "length of dashed lines": 0.009999999776482582,
+                    "distance gap": 0.009999999776482582,
+                    "line movement speed": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "TextureName": "UI/BlankArrow",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": false,
+                    "MaxIndex": 0,
+                    "LayeringOrder": 2,
+                    "StateManagerEnabled": false,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
+                },
+                {
+                    "Component": "Audio",
+                    "0": {
+                        "AudioPath": "SFX_Static_01.wav",
+                        "Channel": 3,
+                        "IsLooping": false,
+                        "VolumeLimit": 0.3569999933242798
+                    },
+                    "1": {
+                        "AudioPath": "SFX_Static_02.wav",
+                        "Channel": 3,
+                        "IsLooping": false,
+                        "VolumeLimit": 0.3449999988079071
+                    },
+                    "2": {
+                        "AudioPath": "SFX_Static_03.wav",
+                        "Channel": 3,
+                        "IsLooping": false,
+                        "VolumeLimit": 0.3330000042915344
+                    },
+                    "3": {
+                        "AudioPath": "SFX_Static_04.wav",
+                        "Channel": 3,
+                        "IsLooping": false,
+                        "VolumeLimit": 0.36899998784065247
+                    },
+                    "4": {
+                        "AudioPath": "SFX_Static_05.wav",
+                        "Channel": 3,
+                        "IsLooping": false,
+                        "VolumeLimit": 0.3569999933242798
+                    },
+                    "AudioArrCount": 5,
+                    "BGM Volume": 1.0,
+                    "SFX Volume": 1.0,
+                    "Master Volume": 1.0,
+                    "RandomFromArray": true,
+                    "Effects": {
+                        "LowpassEnabled": false,
+                        "LowpassCutoff": 5000.0,
+                        "LowpassResonance": 1.0,
+                        "HighpassEnabled": false,
+                        "HighpassCutoff": 10.0,
+                        "HighpassResonance": 1.0,
+                        "EchoEnabled": false,
+                        "EchoDelay": 500.0,
+                        "EchoFeedback": 50.0,
+                        "EchoDryLevel": 0.0,
+                        "EchoWetLevel": -6.0,
+                        "ReverbEnabled": false,
+                        "ReverbDecayTime": 1500.0,
+                        "ReverbEarlyDelay": 7.0,
+                        "ReverbLateDelay": 11.0,
+                        "ReverbHFReference": 5000.0,
+                        "ReverbDiffusion": 100.0,
+                        "ReverbDensity": 100.0,
+                        "ReverbWetLevel": -6.0,
+                        "ReverbDryLevel": 0.0
+                    }
+                },
+                {
+                    "Component": "Logic",
+                    "Scripts": [
+                        {
+                            "ScriptName": "TutorialLogic"
+                        },
+                        {
+                            "ScriptName": "ButtonResponse"
+                        }
+                    ],
+                    "ScriptCount": 2
+                },
+                {
+                    "Component": "Text",
+                    "text type": 0,
+                    "Content": "Next Level",
+                    "Array of Content": [],
+                    "Vector of text position": [],
+                    "Font": "ChauPhilomeneOne-Regular",
+                    "Size": 48.0,
+                    "ColorR": 1.0,
+                    "ColorG": 1.0,
+                    "ColorB": 1.0,
+                    "ColorA": 1.0,
+                    "PosX": 1.1699999570846558,
+                    "PosY": -0.7200000286102295,
+                    "Rotation": 0.0,
+                    "Line Height": 0,
+                    "WorldSpace": false,
+                    "Center": false,
+                    "LayeringOrder": 4,
+                    "Visibility": true
+                },
+                {
+                    "Component": "ButtonComponent",
+                    "Button logic is ON": true,
+                    "GoToSceneFlag": true,
+                    "GoToScene": "Assets/Scene/FlamingoScene.json",
+                    "AudioOnHoverFlag": false,
+                    "AudioOnHoverRandom": false,
+                    "HoverAudioIndex": 0,
+                    "AudioOnClickFlag": true,
+                    "AudioOnClickRandom": true,
+                    "TexChangeOnHoverFlag": false,
+                    "TexChangeOnHover": "",
+                    "TexChangeOnClickFlag": false,
+                    "TexChangeOnClick": "",
+                    "ScaleOnHoverFlag": false,
+                    "ScaleOnHover": 0.0,
+                    "SetGameStateFlag": false,
+                    "SetGameState": "STARTING",
+                    "ResetStatsFlag": false,
+                    "NextLevelFlag": false,
+                    "SetCameraZoomFlag": false,
+                    "SetCameraZoom": 0.0,
+                    "MuteAudioFlag": false,
+                    "AltSceneSwitchFlag": false,
+                    "AltSceneSwitch": "",
+                    "ExitGameFlag": false
+                },
+                {
+                    "Component": "TutorialAttributes",
+                    "tutorial_order": 11
+                }
+            ]
+        },
+        {
+            "ID": 36,
+            "Components": [
+                {
+                    "Component": "Transform",
+                    "Position": {
+                        "x": 1.0499999523162842,
+                        "y": 0.8230000138282776
+                    },
+                    "Scale": {
+                        "x": 1.0,
+                        "y": 1.0
+                    },
+                    "Rotation": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "tutorial_skip_hint"
+                },
+                {
+                    "Component": "Text",
+                    "text type": 0,
+                    "Content": "Press 'X' to skip tutorial",
+                    "Array of Content": [],
+                    "Vector of text position": [],
+                    "Font": "ChauPhilomeneOne-Regular",
+                    "Size": 26.0,
+                    "ColorR": 1.0,
+                    "ColorG": 1.0,
+                    "ColorB": 1.0,
+                    "ColorA": 1.0,
+                    "PosX": 0.9200000166893005,
+                    "PosY": 0.8299999833106995,
+                    "Rotation": 0.0,
+                    "Line Height": 0,
+                    "WorldSpace": false,
+                    "Center": false,
+                    "LayeringOrder": 4,
+                    "Visibility": true
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,978 @@
+{
+    "LayerDrawOrder": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+    ],
+    "Entities": [
+        {
+            "ID": 0,
+            "Components": [
+                {
+                    "Component": "Transform",
+                    "Position": {
+                        "x": 0.0,
+                        "y": 0.0
+                    },
+                    "Scale": {
+                        "x": 3.6449999809265137,
+                        "y": 2.0
+                    },
+                    "Rotation": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "OptionBG"
+                },
+                {
+                    "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "length of dashed lines": 0.009999999776482582,
+                    "distance gap": 0.009999999776482582,
+                    "line movement speed": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "TextureName": "UI/menu_bg",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": false,
+                    "MaxIndex": 0,
+                    "LayeringOrder": 0,
+                    "StateManagerEnabled": false,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
+                },
+                {
+                    "Component": "Audio",
+                    "0": {
+                        "AudioPath": "Luminara Zoo - Music - Menu (v1).wav",
+                        "Channel": 2,
+                        "IsLooping": false,
+                        "VolumeLimit": 1.0
+                    },
+                    "AudioArrCount": 1,
+                    "BGM Volume": 1.0,
+                    "SFX Volume": 1.0,
+                    "Master Volume": 1.0,
+                    "RandomFromArray": false,
+                    "Effects": {
+                        "LowpassEnabled": false,
+                        "LowpassCutoff": 5000.0,
+                        "LowpassResonance": 1.0,
+                        "HighpassEnabled": false,
+                        "HighpassCutoff": 10.0,
+                        "HighpassResonance": 1.0,
+                        "EchoEnabled": false,
+                        "EchoDelay": 500.0,
+                        "EchoFeedback": 50.0,
+                        "EchoDryLevel": 0.0,
+                        "EchoWetLevel": -6.0,
+                        "ReverbEnabled": false,
+                        "ReverbDecayTime": 1500.0,
+                        "ReverbEarlyDelay": 7.0,
+                        "ReverbLateDelay": 11.0,
+                        "ReverbHFReference": 5000.0,
+                        "ReverbDiffusion": 100.0,
+                        "ReverbDensity": 100.0,
+                        "ReverbWetLevel": -6.0,
+                        "ReverbDryLevel": 0.0
+                    }
+                },
+                {
+                    "Component": "Logic",
+                    "Scripts": [
+                        {
+                            "ScriptName": "AudioManager"
+                        },
+                        {
+                            "ScriptName": "BackgroundAudio",
+                            "Background Audio Index": 0
+                        }
+                    ],
+                    "ScriptCount": 2
+                }
+            ]
+        },
+        {
+            "ID": 1,
+            "Components": [
+                {
+                    "Component": "Transform",
+                    "Position": {
+                        "x": 0.0,
+                        "y": 0.10100000351667404
+                    },
+                    "Scale": {
+                        "x": 1.440000057220459,
+                        "y": 1.0
+                    },
+                    "Rotation": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "Master Slider"
+                },
+                {
+                    "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "length of dashed lines": 0.009999999776482582,
+                    "distance gap": 0.009999999776482582,
+                    "line movement speed": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "TextureName": "UI/options_slider",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": false,
+                    "MaxIndex": 0,
+                    "LayeringOrder": 1,
+                    "StateManagerEnabled": false,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "ID": 2,
+            "Components": [
+                {
+                    "Component": "Transform",
+                    "Position": {
+                        "x": 0.0,
+                        "y": -0.27300000190734863
+                    },
+                    "Scale": {
+                        "x": 1.440000057220459,
+                        "y": 1.0
+                    },
+                    "Rotation": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "BGM Slider"
+                },
+                {
+                    "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "length of dashed lines": 0.009999999776482582,
+                    "distance gap": 0.009999999776482582,
+                    "line movement speed": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "TextureName": "UI/options_slider",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": false,
+                    "MaxIndex": 0,
+                    "LayeringOrder": 1,
+                    "StateManagerEnabled": false,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "ID": 3,
+            "Components": [
+                {
+                    "Component": "Transform",
+                    "Position": {
+                        "x": 0.0,
+                        "y": -0.5879999995231628
+                    },
+                    "Scale": {
+                        "x": 1.440000057220459,
+                        "y": 1.0
+                    },
+                    "Rotation": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "SFX Slider"
+                },
+                {
+                    "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "length of dashed lines": 0.009999999776482582,
+                    "distance gap": 0.009999999776482582,
+                    "line movement speed": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "TextureName": "UI/options_slider",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": false,
+                    "MaxIndex": 0,
+                    "LayeringOrder": 1,
+                    "StateManagerEnabled": false,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "ID": 4,
+            "Components": [
+                {
+                    "Component": "Tag",
+                    "Tag": "Untagged",
+                    "TargetTag": "Master"
+                },
+                {
+                    "Component": "Transform",
+                    "Position": {
+                        "x": -0.0076923668384552,
+                        "y": 0.10876978933811188
+                    },
+                    "Scale": {
+                        "x": 0.3050000071525574,
+                        "y": 0.2199999988079071
+                    },
+                    "Rotation": 0.0
+                },
+                {
+                    "Component": "Collider",
+                    "ColliderType1": 0,
+                    "ColliderType2": 0,
+                    "minX1": 0.0,
+                    "minX2": 0.0,
+                    "minY1": 0.0,
+                    "minY2": 0.0,
+                    "maxX1": 0.0,
+                    "maxX2": 0.0,
+                    "maxY1": 0.0,
+                    "maxY2": 0.0,
+                    "offsetX1": 0.0,
+                    "offsetX2": 0.0,
+                    "offsetY1": 0.0,
+                    "offsetY2": 0.0,
+                    "radius1": 0.0,
+                    "radius2": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "Master"
+                },
+                {
+                    "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "length of dashed lines": 0.009999999776482582,
+                    "distance gap": 0.009999999776482582,
+                    "line movement speed": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "TextureName": "UI/options_sliderdot",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": false,
+                    "MaxIndex": 0,
+                    "LayeringOrder": 2,
+                    "StateManagerEnabled": false,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
+                },
+                {
+                    "Component": "Audio",
+                    "0": {
+                        "AudioPath": "UI ButtonClick_old.wav",
+                        "Channel": 3,
+                        "IsLooping": false,
+                        "VolumeLimit": 1.0
+                    },
+                    "AudioArrCount": 1,
+                    "BGM Volume": 1.0,
+                    "SFX Volume": 1.0,
+                    "Master Volume": 1.0,
+                    "RandomFromArray": false,
+                    "Effects": {
+                        "LowpassEnabled": false,
+                        "LowpassCutoff": 5000.0,
+                        "LowpassResonance": 1.0,
+                        "HighpassEnabled": false,
+                        "HighpassCutoff": 10.0,
+                        "HighpassResonance": 1.0,
+                        "EchoEnabled": false,
+                        "EchoDelay": 500.0,
+                        "EchoFeedback": 50.0,
+                        "EchoDryLevel": 0.0,
+                        "EchoWetLevel": -6.0,
+                        "ReverbEnabled": false,
+                        "ReverbDecayTime": 1500.0,
+                        "ReverbEarlyDelay": 7.0,
+                        "ReverbLateDelay": 11.0,
+                        "ReverbHFReference": 5000.0,
+                        "ReverbDiffusion": 100.0,
+                        "ReverbDensity": 100.0,
+                        "ReverbWetLevel": -6.0,
+                        "ReverbDryLevel": 0.0
+                    }
+                },
+                {
+                    "Component": "Logic",
+                    "Scripts": [
+                        {
+                            "ScriptName": "AudioManager"
+                        },
+                        {
+                            "ScriptName": "SliderScript"
+                        }
+                    ],
+                    "ScriptCount": 2
+                }
+            ]
+        },
+        {
+            "ID": 5,
+            "Components": [
+                {
+                    "Component": "Tag",
+                    "Tag": "Untagged",
+                    "TargetTag": "BGM"
+                },
+                {
+                    "Component": "Transform",
+                    "Position": {
+                        "x": 0.0,
+                        "y": -0.23693659901618958
+                    },
+                    "Scale": {
+                        "x": 0.3050000071525574,
+                        "y": 0.2199999988079071
+                    },
+                    "Rotation": 0.0
+                },
+                {
+                    "Component": "Collider",
+                    "ColliderType1": 0,
+                    "ColliderType2": 0,
+                    "minX1": 0.0,
+                    "minX2": 0.0,
+                    "minY1": 0.0,
+                    "minY2": 0.0,
+                    "maxX1": 0.0,
+                    "maxX2": 0.0,
+                    "maxY1": 0.0,
+                    "maxY2": 0.0,
+                    "offsetX1": 0.0,
+                    "offsetX2": 0.0,
+                    "offsetY1": 0.0,
+                    "offsetY2": 0.0,
+                    "radius1": 0.0,
+                    "radius2": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "BGM"
+                },
+                {
+                    "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "length of dashed lines": 0.009999999776482582,
+                    "distance gap": 0.009999999776482582,
+                    "line movement speed": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "TextureName": "UI/options_sliderdot",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": false,
+                    "MaxIndex": 0,
+                    "LayeringOrder": 2,
+                    "StateManagerEnabled": false,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
+                },
+                {
+                    "Component": "Audio",
+                    "0": {
+                        "AudioPath": "UI ButtonClick_old.wav",
+                        "Channel": 3,
+                        "IsLooping": false,
+                        "VolumeLimit": 1.0
+                    },
+                    "AudioArrCount": 1,
+                    "BGM Volume": 1.0,
+                    "SFX Volume": 1.0,
+                    "Master Volume": 1.0,
+                    "RandomFromArray": false,
+                    "Effects": {
+                        "LowpassEnabled": false,
+                        "LowpassCutoff": 5000.0,
+                        "LowpassResonance": 1.0,
+                        "HighpassEnabled": false,
+                        "HighpassCutoff": 10.0,
+                        "HighpassResonance": 1.0,
+                        "EchoEnabled": false,
+                        "EchoDelay": 500.0,
+                        "EchoFeedback": 50.0,
+                        "EchoDryLevel": 0.0,
+                        "EchoWetLevel": -6.0,
+                        "ReverbEnabled": false,
+                        "ReverbDecayTime": 1500.0,
+                        "ReverbEarlyDelay": 7.0,
+                        "ReverbLateDelay": 11.0,
+                        "ReverbHFReference": 5000.0,
+                        "ReverbDiffusion": 100.0,
+                        "ReverbDensity": 100.0,
+                        "ReverbWetLevel": -6.0,
+                        "ReverbDryLevel": 0.0
+                    }
+                },
+                {
+                    "Component": "Logic",
+                    "Scripts": [
+                        {
+                            "ScriptName": "AudioManager"
+                        },
+                        {
+                            "ScriptName": "SliderScript"
+                        }
+                    ],
+                    "ScriptCount": 2
+                }
+            ]
+        },
+        {
+            "ID": 6,
+            "Components": [
+                {
+                    "Component": "Tag",
+                    "Tag": "Untagged",
+                    "TargetTag": "SFX"
+                },
+                {
+                    "Component": "Transform",
+                    "Position": {
+                        "x": 0.0,
+                        "y": -0.5581620335578918
+                    },
+                    "Scale": {
+                        "x": 0.3050000071525574,
+                        "y": 0.2199999988079071
+                    },
+                    "Rotation": 0.0
+                },
+                {
+                    "Component": "Collider",
+                    "ColliderType1": 0,
+                    "ColliderType2": 0,
+                    "minX1": 0.0,
+                    "minX2": 0.0,
+                    "minY1": 0.0,
+                    "minY2": 0.0,
+                    "maxX1": 0.0,
+                    "maxX2": 0.0,
+                    "maxY1": 0.0,
+                    "maxY2": 0.0,
+                    "offsetX1": 0.0,
+                    "offsetX2": 0.0,
+                    "offsetY1": 0.0,
+                    "offsetY2": 0.0,
+                    "radius1": 0.0,
+                    "radius2": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "SFX"
+                },
+                {
+                    "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "length of dashed lines": 0.009999999776482582,
+                    "distance gap": 0.009999999776482582,
+                    "line movement speed": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "TextureName": "UI/options_sliderdot",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": false,
+                    "MaxIndex": 0,
+                    "LayeringOrder": 2,
+                    "StateManagerEnabled": false,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
+                },
+                {
+                    "Component": "Audio",
+                    "0": {
+                        "AudioPath": "UI ButtonClick_old.wav",
+                        "Channel": 3,
+                        "IsLooping": false,
+                        "VolumeLimit": 1.0
+                    },
+                    "AudioArrCount": 1,
+                    "BGM Volume": 1.0,
+                    "SFX Volume": 1.0,
+                    "Master Volume": 1.0,
+                    "RandomFromArray": false,
+                    "Effects": {
+                        "LowpassEnabled": false,
+                        "LowpassCutoff": 5000.0,
+                        "LowpassResonance": 1.0,
+                        "HighpassEnabled": false,
+                        "HighpassCutoff": 10.0,
+                        "HighpassResonance": 1.0,
+                        "EchoEnabled": false,
+                        "EchoDelay": 500.0,
+                        "EchoFeedback": 50.0,
+                        "EchoDryLevel": 0.0,
+                        "EchoWetLevel": -6.0,
+                        "ReverbEnabled": false,
+                        "ReverbDecayTime": 1500.0,
+                        "ReverbEarlyDelay": 7.0,
+                        "ReverbLateDelay": 11.0,
+                        "ReverbHFReference": 5000.0,
+                        "ReverbDiffusion": 100.0,
+                        "ReverbDensity": 100.0,
+                        "ReverbWetLevel": -6.0,
+                        "ReverbDryLevel": 0.0
+                    }
+                },
+                {
+                    "Component": "Logic",
+                    "Scripts": [
+                        {
+                            "ScriptName": "AudioManager"
+                        },
+                        {
+                            "ScriptName": "SliderScript"
+                        }
+                    ],
+                    "ScriptCount": 2
+                }
+            ]
+        },
+        {
+            "ID": 7,
+            "Components": [
+                {
+                    "Component": "Transform",
+                    "Position": {
+                        "x": 0.0,
+                        "y": 0.0
+                    },
+                    "Scale": {
+                        "x": 1.899999976158142,
+                        "y": 1.4700000286102295
+                    },
+                    "Rotation": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "BackBoard"
+                },
+                {
+                    "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "length of dashed lines": 0.009999999776482582,
+                    "distance gap": 0.009999999776482582,
+                    "line movement speed": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "TextureName": "UI/options page",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": false,
+                    "MaxIndex": 0,
+                    "LayeringOrder": 0,
+                    "StateManagerEnabled": false,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
+                },
+                {
+                    "Component": "Text",
+                    "text type": 0,
+                    "Content": "AUDIO",
+                    "Array of Content": [],
+                    "Vector of text position": [],
+                    "Font": "ChauPhilomeneOne-Regular",
+                    "Size": 68.4000015258789,
+                    "ColorR": 1.0,
+                    "ColorG": 1.0,
+                    "ColorB": 1.0,
+                    "ColorA": 1.0,
+                    "PosX": -0.11999999731779099,
+                    "PosY": 0.4699999988079071,
+                    "Rotation": 0.0,
+                    "Line Height": 0,
+                    "WorldSpace": false,
+                    "Center": false,
+                    "LayeringOrder": 0,
+                    "Visibility": true
+                }
+            ]
+        },
+        {
+            "ID": 8,
+            "Components": [
+                {
+                    "Component": "Tag",
+                    "Tag": "Back",
+                    "TargetTag": ""
+                },
+                {
+                    "Component": "Transform",
+                    "Position": {
+                        "x": 1.1330000162124634,
+                        "y": -0.8117144107818604
+                    },
+                    "Scale": {
+                        "x": 0.8169999718666077,
+                        "y": 0.4390000104904175
+                    },
+                    "Rotation": -179.99989318847656
+                },
+                {
+                    "Component": "Collider",
+                    "ColliderType1": 4,
+                    "ColliderType2": 0,
+                    "minX1": -1.0,
+                    "minX2": 0.0,
+                    "minY1": 0.0,
+                    "minY2": 0.0,
+                    "maxX1": 1.8700000047683716,
+                    "maxX2": 0.0,
+                    "maxY1": 0.20000000298023224,
+                    "maxY2": 0.0,
+                    "offsetX1": -1.399999976158142,
+                    "offsetX2": 0.0,
+                    "offsetY1": -0.10999999940395355,
+                    "offsetY2": 0.0,
+                    "radius1": 0.0,
+                    "radius2": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "Back Button"
+                },
+                {
+                    "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "length of dashed lines": 0.009999999776482582,
+                    "distance gap": 0.009999999776482582,
+                    "line movement speed": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "TextureName": "UI/BlankArrow",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": false,
+                    "MaxIndex": 0,
+                    "LayeringOrder": 0,
+                    "StateManagerEnabled": false,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
+                },
+                {
+                    "Component": "Audio",
+                    "0": {
+                        "AudioPath": "UI_Back_v2.wav",
+                        "Channel": 3,
+                        "IsLooping": false,
+                        "VolumeLimit": 0.6069999933242798
+                    },
+                    "1": {
+                        "AudioPath": "UI_Hover.wav",
+                        "Channel": 3,
+                        "IsLooping": false,
+                        "VolumeLimit": 0.6069999933242798
+                    },
+                    "AudioArrCount": 2,
+                    "BGM Volume": 1.0,
+                    "SFX Volume": 1.0,
+                    "Master Volume": 1.0,
+                    "RandomFromArray": false,
+                    "Effects": {
+                        "LowpassEnabled": false,
+                        "LowpassCutoff": 5000.0,
+                        "LowpassResonance": 1.0,
+                        "HighpassEnabled": false,
+                        "HighpassCutoff": 10.0,
+                        "HighpassResonance": 1.0,
+                        "EchoEnabled": false,
+                        "EchoDelay": 500.0,
+                        "EchoFeedback": 50.0,
+                        "EchoDryLevel": 0.0,
+                        "EchoWetLevel": -6.0,
+                        "ReverbEnabled": false,
+                        "ReverbDecayTime": 1500.0,
+                        "ReverbEarlyDelay": 7.0,
+                        "ReverbLateDelay": 11.0,
+                        "ReverbHFReference": 5000.0,
+                        "ReverbDiffusion": 100.0,
+                        "ReverbDensity": 100.0,
+                        "ReverbWetLevel": -6.0,
+                        "ReverbDryLevel": 0.0
+                    }
+                },
+                {
+                    "Component": "Logic",
+                    "Scripts": [
+                        {
+                            "ScriptName": "ButtonResponse"
+                        },
+                        {
+                            "ScriptName": "AudioManager"
+                        }
+                    ],
+                    "ScriptCount": 2
+                },
+                {
+                    "Component": "Text",
+                    "text type": 0,
+                    "Content": "Back",
+                    "Array of Content": [],
+                    "Vector of text position": [],
+                    "Font": "ExcelsiorSans",
+                    "Size": 92.0,
+                    "ColorR": 0.27843138575553894,
+                    "ColorG": 0.1921568661928177,
+                    "ColorB": 0.07450980693101883,
+                    "ColorA": 1.0,
+                    "PosX": 1.0199999809265137,
+                    "PosY": -0.8700000047683716,
+                    "Rotation": 0.0,
+                    "Line Height": 0,
+                    "WorldSpace": false,
+                    "Center": false,
+                    "LayeringOrder": 0,
+                    "Visibility": true
+                },
+                {
+                    "Component": "ButtonComponent",
+                    "Button logic is ON": true,
+                    "GoToSceneFlag": true,
+                    "GoToScene": "Assets/Scene/Menu.json",
+                    "AudioOnHoverFlag": true,
+                    "AudioOnHoverRandom": false,
+                    "HoverAudioIndex": 1,
+                    "AudioOnClickFlag": true,
+                    "AudioOnClickRandom": false,
+                    "ClickAudioIndex": 0,
+                    "TexChangeOnHoverFlag": false,
+                    "TexChangeOnHover": "",
+                    "TexChangeOnClickFlag": false,
+                    "TexChangeOnClick": "",
+                    "ScaleOnHoverFlag": true,
+                    "ScaleOnHover": 1.0499999523162842,
+                    "SetGameStateFlag": false,
+                    "SetGameState": "STARTING",
+                    "ResetStatsFlag": false,
+                    "NextLevelFlag": false,
+                    "SetCameraZoomFlag": false,
+                    "SetCameraZoom": 0.0,
+                    "MuteAudioFlag": false,
+                    "AltSceneSwitchFlag": false,
+                    "AltSceneSwitch": "",
+                    "ExitGameFlag": false
+                }
+            ]
+        }
+    ]
+}

@@ -12,8 +12,10 @@ current Init order, the array indices are:
 6: Tag
 7: Audio
 8: HUDComponent
-9: AnimalAttributes
-10: ItemsAttributes
+9: Draggable
+10: Text
+11: AnimalAttributes
+12: ItemsAttributes
 
 In the .json file, each entity’s “Components” array must have one entry per registered component
 in exactly this order. If the entity doesn’t have that component, the entry should be an empty object {}.

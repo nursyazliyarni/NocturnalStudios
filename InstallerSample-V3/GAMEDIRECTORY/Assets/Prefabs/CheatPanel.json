@@ -1,0 +1,112 @@
+{
+    "Name": "CheatPanel",
+    "Components": [
+        {
+            "Component": "Transform",
+            "Position": {
+                "x": -0.7530826926231384,
+                "y": 0.20623469352722168
+            },
+            "Scale": {
+                "x": 0.7481295466423035,
+                "y": 0.5564166903495789
+            },
+            "Rotation": 0.0
+        },
+        {
+            "Component": "NameTag",
+            "NameTag": "Cheat Panel"
+        },
+        {
+            "Component": "Sprite",
+            "shape/texture": 0,
+            "shape type": 0,
+            "circle radius": 0.0,
+            "length of dashed lines": 0.009999999776482582,
+            "distance gap": 0.009999999776482582,
+            "line movement speed": 0.0,
+            "RGBA": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ],
+            "TextureName": "UI/PlaceholderLogbg",
+            "Index_X": 0,
+            "Index_Y": 0,
+            "Ucoordinates": 512.0,
+            "Vcoordinates": 512.0,
+            "IsSpriteSheet": false,
+            "IsAnimated": false,
+            "MaxIndex": 0,
+            "LayeringOrder": 8,
+            "StateManagerEnabled": false,
+            "StatePreviewInEditor": false,
+            "StatePreviewMode": 0,
+            "AnimationStates": [
+                {
+                    "Name": "Idle",
+                    "Texture": "",
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "Source": 3,
+                    "Compare": 0,
+                    "Threshold": 0.0,
+                    "Priority": -100,
+                    "Enabled": true
+                }
+            ]
+        }
+    ],
+    "Children": [
+        {
+            "Components": [
+                {
+                    "Component": "Transform",
+                    "IsLocalSpace": true,
+                    "Position": {
+                        "x": -0.30694112181663513,
+                        "y": 0.1942882537841797
+                    },
+                    "Scale": {
+                        "x": 1.0,
+                        "y": 1.0
+                    },
+                    "Rotation": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "Text"
+                },
+                {
+                    "Component": "Text",
+                    "text type": 0,
+                    "Content": "Cheats:\nz - set all stats to full\nx - set time to 5:59\nc - revive all animals\n\nto close this tab, press \\",
+                    "Array of Content": [
+                        "Cheats:"
+                    ],
+                    "Vector of text position": [
+                        [
+                            0.0,
+                            0.0
+                        ]
+                    ],
+                    "Font": "Jersey10Charted-Regular",
+                    "Size": 44.400001525878906,
+                    "ColorR": 1.0,
+                    "ColorG": 1.0,
+                    "ColorB": 1.0,
+                    "ColorA": 1.0,
+                    "PosX": 0.0,
+                    "PosY": 0.0,
+                    "Rotation": 0.0,
+                    "Line Height": 0,
+                    "WorldSpace": true,
+                    "Center": false,
+                    "LayeringOrder": 8,
+                    "Visibility": true
+                }
+            ]
+        }
+    ]
+}

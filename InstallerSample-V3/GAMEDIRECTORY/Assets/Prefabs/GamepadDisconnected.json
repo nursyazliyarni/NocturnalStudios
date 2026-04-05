@@ -1,0 +1,92 @@
+{
+    "Name": "GamepadDisconnected",
+    "Components": [
+        {
+            "Component": "Transform",
+          "Position": {
+            "x": -1.373,
+            "y": 0.783
+          },
+            "Scale": {
+                "x": 0.8307111859321594,
+                "y": 0.3494703471660614
+            },
+            "Rotation": 0.0
+        },
+        {
+            "Component": "NameTag",
+            "NameTag": "Idk"
+        },
+        {
+            "Component": "Sprite",
+            "shape/texture": 0,
+            "shape type": 0,
+            "circle radius": 0.0,
+            "length of dashed lines": 0.009999999776482582,
+            "distance gap": 0.009999999776482582,
+            "line movement speed": 0.0,
+            "RGBA": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ],
+            "TextureName": "UI/BlankArrow",
+            "Index_X": 0,
+            "Index_Y": 0,
+            "Ucoordinates": 512.0,
+            "Vcoordinates": 512.0,
+            "IsSpriteSheet": false,
+            "IsAnimated": false,
+            "MaxIndex": 0,
+            "LayeringOrder": 8,
+            "StateManagerEnabled": false,
+            "StatePreviewInEditor": false,
+            "StatePreviewMode": 0,
+            "AnimationStates": [
+                {
+                    "Name": "Idle",
+                    "Texture": "",
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "Source": 3,
+                    "Compare": 0,
+                    "Threshold": 0.0,
+                    "Priority": -100,
+                    "Enabled": true
+                }
+            ]
+        },
+        {
+            "Component": "Logic",
+            "Scripts": [
+                {
+                    "ScriptName": "SelfDestruct",
+                    "TimeTillDie": 1.0
+                }
+            ],
+            "ScriptCount": 1
+        },
+        {
+            "Component": "Text",
+            "text type": 0,
+            "Content": "Gamepad\nDisconnected",
+            "Array of Content": [],
+            "Vector of text position": [],
+            "Font": "ChauPhilomeneOne-Regular",
+            "Size": 38.599998474121094,
+            "ColorR": 0.2647058963775635,
+            "ColorG": 0.19623957574367523,
+            "ColorB": 0.17517302930355072,
+            "ColorA": 1.0,
+            "PosX": -0.17000000178813934,
+            "PosY": 0.019999999552965164,
+            "Rotation": 0.0,
+            "Line Height": 0,
+            "WorldSpace": true,
+            "Center": false,
+            "LayeringOrder": 8,
+            "Visibility": true
+        }
+    ]
+}

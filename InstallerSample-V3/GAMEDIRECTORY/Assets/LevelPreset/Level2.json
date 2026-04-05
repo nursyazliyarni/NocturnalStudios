@@ -1,0 +1,69 @@
+{
+    "LevelIndex":2,
+    "ExtraScenes": [
+        "HiddenEnding"
+    ],
+    "LevelData":[
+
+        {
+            "Animal":"Flamingo",
+            "Attributes":{
+                "Animal Type": 0,
+                "Current Health": 100.0,
+                "Max Health": 100.0,
+                "Current Hunger": 100.0,
+                "Max Hunger": 100.0,
+                "Current Sanity": 100.0,
+                "Max Sanity": 100.0,
+                "Health Decay Rate": 1.0,
+                "Hunger Decay Rate": 1.4,
+                "Sanity Decay Rate": 1.0,
+                "IS_alive": true
+            }
+        },
+        {"Animal":"Seal",
+            "Attributes":{
+                "Animal Type": 1,
+                    "Current Health": 100.0,
+                    "Max Health": 100.0,
+                    "Current Hunger": 100.0,
+                    "Max Hunger": 100.0,
+                    "Current Sanity": 100.0,
+                    "Max Sanity": 100.0,
+                    "Health Decay Rate": 1.0,
+                    "Hunger Decay Rate": 1.5,
+                    "Sanity Decay Rate": 1.0,
+                    "IS_alive": true
+            }
+            },{"Animal":"Horse",
+            "Attributes":{
+                    "Animal Type": 2,
+                    "Current Health": 100.0,
+                    "Max Health": 100.0,
+                    "Current Hunger": 100.0,
+                    "Max Hunger": 100.0,
+                    "Current Sanity": 100.0,
+                    "Max Sanity": 100.0,
+                    "Health Decay Rate": 1.0,
+                    "Hunger Decay Rate": 1.3,
+                    "Sanity Decay Rate": 1.0,
+                    "IS_alive": true
+            }},{
+                "Animal":"Owl",
+            "Attributes":{
+                "Animal Type": 3,
+                "Current Health": 100.0,
+                    "Max Health": 100.0,
+                    "Current Hunger": 100.0,
+                    "Max Hunger": 100.0,
+                    "Current Sanity": 100.0,
+                    "Max Sanity": 100.0,
+                    "Health Decay Rate": 1.0,
+                    "Hunger Decay Rate": 1.0,
+                    "Sanity Decay Rate": 1.0,
+                    "IS_alive": true
+            }
+            }
+    ]
+
+}
