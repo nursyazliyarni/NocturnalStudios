@@ -46,6 +46,7 @@ namespace NocturnalEngine
         std::string audioPath{};
         Audio::AudioType audioChannelGroup{ Audio::AudioType::MASTER };
         bool audioLoop{ false };
+        float audioStartDelay{ 0.0f };
 
     private:
         std::vector<std::pair<std::string, std::filesystem::directory_entry>> LoadVideosFromFiles() const;
