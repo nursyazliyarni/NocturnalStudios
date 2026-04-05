@@ -76,7 +76,7 @@ namespace NocturnalEngine
 		if (p_ecs.HaveComponent<NameTag>(entityID))
 		{
 			const std::string& name = p_ecs.GetComponent<NameTag>(entityID).GetNameTag();
-			if (name == "Resume" || name == "Exit"||name=="Info"||name=="Resum3")
+			if (name == "Resume" || name == "Exit"||name=="Info"||name=="Resum3"||name=="Restart")
 				isPauseButton = true;
 		}
 		if (isPauseButton && !p_GameManager.IsPaused())
