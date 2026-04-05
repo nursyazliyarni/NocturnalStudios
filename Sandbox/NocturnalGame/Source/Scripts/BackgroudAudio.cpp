@@ -120,7 +120,15 @@ namespace NocturnalEngine {
 					continue;
 				}
 
+				if (a[i].triggered || a[i].is_Playing)
+				{
+					p_Audio->FadeOutAndStopChannel(a[i].mChannel);
+				}
+
 				a[i].should_stop = true;
+				a[i].should_play = false;
+				a[i].is_Playing = false;
+				a[i].triggered = false;
 				a[i].is_Looping = false;
 			}
 		}
