@@ -49,6 +49,7 @@ namespace NocturnalEngine
         if (obj.HasMember("AudioPath") && obj["AudioPath"].IsString()) audioPath = obj["AudioPath"].GetString();
         if (obj.HasMember("AudioChannelGroup") && obj["AudioChannelGroup"].IsInt()) audioChannelGroup = static_cast<Audio::AudioType>(obj["AudioChannelGroup"].GetInt());
         if (obj.HasMember("AudioLoop") && obj["AudioLoop"].IsBool()) audioLoop = obj["AudioLoop"].GetBool();
+        if (obj.HasMember("AudioStartDelay") && obj["AudioStartDelay"].IsNumber()) audioStartDelay = obj["AudioStartDelay"].GetFloat();
         return true;
     }
 
@@ -80,6 +81,8 @@ namespace NocturnalEngine
         writer->Int(static_cast<int>(audioChannelGroup));
         writer->Key("AudioLoop");
         writer->Bool(audioLoop);
+        writer->Key("AudioStartDelay");
+        writer->Double(audioStartDelay);
         return true;
     }
 
@@ -205,6 +208,7 @@ namespace NocturnalEngine
                 changed = true;
             }
             changed |= ImGui::Checkbox("Loop Attached Audio", &audioLoop);
+            changed |= ImGui::DragFloat("Audio Start Delay", &audioStartDelay, 0.01f, 0.0f, 30.0f, "%.2f s");
 
             int currentSkipKey = 0;
             for (int i = 0; i < static_cast<int>(std::size(kSkipKeyOptions)); ++i)

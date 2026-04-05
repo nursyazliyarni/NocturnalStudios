@@ -4,8 +4,7 @@
 	Project: NocturnalStudio
 
 	Brief:
-		The CheatPanel system manages the displaying of the ingame log which tracks animals statuses
-		low hwalth, death etc
+		The CheatPanel system manages displaying a cheat panel
 
 	Primary Author:
 		 LAYCOCK ENHUI SARAH (100%)

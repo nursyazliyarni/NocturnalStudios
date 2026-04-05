@@ -49,6 +49,14 @@ namespace NocturnalEngine
 
 	void ButtonResponse::Update(float Frametime)
 	{
+		if (p_GameManager.GetGameState() == GameManager::GameState::PAUSED)
+		{
+			if (!p_ecs.HaveComponent<NameTag>(entityID))
+				return;
+			const std::string& name = p_ecs.GetComponent<NameTag>(entityID).GetNameTag();
+			if (name != "Resume" && name!="Resume2"&&name!="Restart"&&name!="Info"&&name!="Resume3" && name != "Exit")
+				return;
+		}
 
 		Graphic::camera.SetPosition({ 0.0f,0.0f,0.0f });// ensure that camera is set to  center at the start
 		UNREFERENCED_PARAMETER(Frametime);
@@ -62,6 +70,18 @@ namespace NocturnalEngine
 			!p_ecs.HaveComponent<Transform>(entityID)) return;
 
 		ButtonComponent& buttonComponent{ p_ecs.GetComponent<ButtonComponent>(entityID) };
+
+		bool isPauseButton = false;
+
+		if (p_ecs.HaveComponent<NameTag>(entityID))
+		{
+			const std::string& name = p_ecs.GetComponent<NameTag>(entityID).GetNameTag();
+			if (name == "Resume" || name == "Exit"||name=="Info"||name=="Resum3"||name=="Restart")
+				isPauseButton = true;
+		}
+		if (isPauseButton && !p_GameManager.IsPaused())
+			return;
+
 		int buttonFlag{ buttonComponent.Flag() };
 
 
@@ -84,90 +104,130 @@ namespace NocturnalEngine
 			else if (p_Input->MouseIsReleased(GLFW_MOUSE_BUTTON_LEFT) && curr_state == button_state::click)
 			{
 				curr_state = button_state::release;//when mouse key is release set state to release
-			}
-		}
 
-		// Click audio should only trigger once per press, not every frame while held.
-		if (curr_state != button_state::click)
-		{
-			clicked = false;
-		}
-
-		if (is_within_box(p_GUI->MousePosition, col, transform))//check if the system is hovering over an object, change to the hover sprite if it is
-		{
-			if (initial_hover)
-			{
-				initial_hover = false;
-				leftcollider = false;
-				entercollider = true;
-			}
-
-			if (entercollider)
-			{
-				if (buttonFlag & ButtonFlag::AUDIO_ON_HOVER) PlayAudio(true, buttonComponent);
-
-				if (buttonFlag & ButtonFlag::TEX_CHANGE_ON_HOVER) ChangeTexture(buttonComponent.hoverTexture);
-
-				if (buttonFlag & ButtonFlag::SCALE_ON_HOVER)ScaleButton(buttonComponent.hoverScale,transform);
-
-				entercollider = false;
-			}
-			
-			if (curr_state == button_state::release)// when mouse button is release, call the button functions, release is selected to prevent function from calling when mouse is held down 
-			{
-				// goes to a scene
-				if (buttonFlag & ButtonFlag::GOTO_SCENE) p_Scene->setSceneToLoad(buttonComponent.gotoScene);
-
-				// resets stats
-				if (buttonFlag & ButtonFlag::RESET_STATS) p_GameManager.ResetSystem(true);
-
-				// sets the game state
-				if (buttonFlag & ButtonFlag::SET_GAME_STATE) p_GameManager.SetState(static_cast<GameManager::GameState>(buttonComponent.stateToSet));
-
-				//calls the next level function
-				if (buttonFlag & ButtonFlag::NEXT_LEVEL) p_GameManager.NextLevel();
-
-				//sets volume to mute
-				if (buttonFlag & ButtonFlag::MUTE_AUDIO) p_Audio->SetVolumeByChannel(p_Audio->GetMasterChannelGroup(), 0.0f); //tell the system to mute
-
-				//sets camera zoom
-				if (buttonFlag & ButtonFlag::SET_CAMERA_ZOOM) Graphic::mcamera->SetZoomLevel(buttonComponent.cameraZoom);
-
-				//unused, was for a prototype single-scene game
-				if (buttonFlag & ButtonFlag::ALT_SCENE_SWITCH) p_GameManager.SetSceneToSwitch(buttonComponent.altSceneSwitch);
-
-				//exits the game
-				if (buttonFlag & ButtonFlag::EXIT_GAME) p_GUI->toggle_script();
-
-			}
-
-			if (curr_state == button_state::click) 
-			{
-				if ((buttonFlag & ButtonFlag::AUDIO_ON_CLICK) && !clicked)
+				//pause menu buttons handle click with proper hit test
+				if (p_ecs.HaveComponent<NameTag>(entityID))
 				{
-					PlayAudio(false, buttonComponent);
-					clicked = true;
+					const std::string& name = p_ecs.GetComponent<NameTag>(entityID).GetNameTag();
+					if (curr_state == button_state::release && is_within_box(p_GUI->MousePosition, col, transform))
+					{
+						curr_state = button_state::release;//when mouse key is release set state to release
+						if (name == "Resume")
+						{
+							p_GameManager.ResumeGame();
+							return;
+						}
+						else if (name == "Resume2")
+						{
+							p_GameManager.ResumeGame();
+							return;
+						}
+						else if (name == "Restart") {
+							p_GameManager.ResetSystem(true);
+						}
+						else if (name == "Info") {
+							std::cout << "Info clicked\n";
+							p_GameManager.ShowInfo();
+							return;
+						}
+						else if (name == "Resume3")
+						{
+							p_GameManager.HideInfo();
+							return;
+						}
+						else if (name == "Exit")
+						{
+							p_GameManager.ResumeGame();
+							p_GameManager.ResetSystem(false);
+							p_Scene->setSceneToLoad("Assets/Scene/Menu.json");
+							return;
+						}
+					}
+				}
+			}
+
+			// Click audio should only trigger once per press, not every frame while held.
+			if (curr_state != button_state::click)
+			{
+				clicked = false;
+			}
+
+			if (is_within_box(p_GUI->MousePosition, col, transform))//check if the system is hovering over an object, change to the hover sprite if it is
+			{
+				if (initial_hover)
+				{
+					initial_hover = false;
+					leftcollider = false;
+					entercollider = true;
 				}
 
-				if (buttonFlag & ButtonFlag::TEX_CHANGE_ON_CLICK) ChangeTexture(buttonComponent.clickTexture);
+				if (entercollider)
+				{
+					if (buttonFlag & ButtonFlag::AUDIO_ON_HOVER) PlayAudio(true, buttonComponent);
+
+					if (buttonFlag & ButtonFlag::TEX_CHANGE_ON_HOVER) ChangeTexture(buttonComponent.hoverTexture);
+
+					if (buttonFlag & ButtonFlag::SCALE_ON_HOVER)ScaleButton(buttonComponent.hoverScale, transform);
+
+					entercollider = false;
+				}
+
+				if (curr_state == button_state::release)// when mouse button is release, call the button functions, release is selected to prevent function from calling when mouse is held down 
+				{
+					// goes to a scene
+					if (buttonFlag & ButtonFlag::GOTO_SCENE) p_Scene->setSceneToLoad(buttonComponent.gotoScene);
+
+					// resets stats
+					if (buttonFlag & ButtonFlag::RESET_STATS) p_GameManager.ResetSystem(true);
+
+					// sets the game state
+					if (buttonFlag & ButtonFlag::SET_GAME_STATE) p_GameManager.SetState(static_cast<GameManager::GameState>(buttonComponent.stateToSet));
+
+					//calls the next level function
+					if (buttonFlag & ButtonFlag::NEXT_LEVEL) p_GameManager.NextLevel();
+
+					//sets volume to mute
+					if (buttonFlag & ButtonFlag::MUTE_AUDIO) p_Audio->SetVolumeByChannel(p_Audio->GetMasterChannelGroup(), 0.0f); //tell the system to mute
+
+					//sets camera zoom
+					if (buttonFlag & ButtonFlag::SET_CAMERA_ZOOM) Graphic::mcamera->SetZoomLevel(buttonComponent.cameraZoom);
+
+					//unused, was for a prototype single-scene game
+					if (buttonFlag & ButtonFlag::ALT_SCENE_SWITCH) p_GameManager.SetSceneToSwitch(buttonComponent.altSceneSwitch);
+
+					//exits the game
+					if (buttonFlag & ButtonFlag::EXIT_GAME) p_GUI->toggle_script();
+
+				}
+
+				if (curr_state == button_state::click)
+				{
+					if ((buttonFlag & ButtonFlag::AUDIO_ON_CLICK) && !clicked)
+					{
+						PlayAudio(false, buttonComponent);
+						clicked = true;
+					}
+
+					if (buttonFlag & ButtonFlag::TEX_CHANGE_ON_CLICK) ChangeTexture(buttonComponent.clickTexture);
+				}
 			}
-		}
-		else 
-		{
-			if (!leftcollider) 
+			else
 			{
-				//changes texture back
-				if (buttonFlag & ButtonFlag::TEX_CHANGE_ON_HOVER) ChangeTexture(originalTexture);
+				if (!leftcollider)
+				{
+					//changes texture back
+					if (buttonFlag & ButtonFlag::TEX_CHANGE_ON_HOVER) ChangeTexture(originalTexture);
 
-				//unscales the button
-				if (buttonFlag & ButtonFlag::SCALE_ON_HOVER)ScaleButton(1.f/buttonComponent.hoverScale, transform);
+					//unscales the button
+					if (buttonFlag & ButtonFlag::SCALE_ON_HOVER)ScaleButton(1.f / buttonComponent.hoverScale, transform);
 
-				//tells the audio to mute 
-				if (buttonFlag & ButtonFlag::AUDIO_ON_HOVER)MuteAudio();
+					//tells the audio to mute 
+					if (buttonFlag & ButtonFlag::AUDIO_ON_HOVER)MuteAudio();
 
-				leftcollider = true;
-				initial_hover = true;
-				entercollider = false;
+					leftcollider = true;
+					initial_hover = true;
+					entercollider = false;
+				}
 			}
 		}
 

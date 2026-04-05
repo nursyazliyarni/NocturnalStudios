@@ -60,6 +60,10 @@ namespace NocturnalEngine
 		void checkForSceneToLoad();
 		void changeScene();
 		float GetSceneTransitionAlpha() const;
+		const std::string& GetPendingSceneToLoad() const
+		{
+			return !mQueuedSceneToLoad.empty() ? mQueuedSceneToLoad : sceneToLoad;
+		}
 
 		bool isGameplay{};
 	private:

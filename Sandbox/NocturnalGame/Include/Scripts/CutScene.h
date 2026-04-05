@@ -30,6 +30,7 @@
 #include <cctype>
 #include <string>
 #include <vector>
+#include "Scripts/GlobalGameManager.h"
 
 namespace NocturnalEngine
 {
@@ -244,6 +245,9 @@ namespace NocturnalEngine
 		****************************************************************************/
 			virtual void Update(float Frametime) override
 			{
+				if (p_GameManager.IsPaused())
+					return;
+
 				if (mCutImages.empty())
 					return;
 

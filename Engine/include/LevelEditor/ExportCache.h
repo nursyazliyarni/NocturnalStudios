@@ -1,13 +1,13 @@
 /*!------------------------------------------------------------------------------------------------
-	File: IComponent.h
+	File: ExportCache.h
 	Project: NocturnalStudio
 
 	Brief:
-		This file contains the abstract class for IComponent
+		This file contains the class for ExportCache
 
 	Primary Author:
-		 LAU XIANG YANG (100%)
-		- Created the IComponent.h file and its function specification.
+		 LAYCOCK ENHUI SARAH (100%)
+		- Created the ExportCache.h file and its function specification.
 
 	All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
 *------------------------------------------------------------------------------------------------*/
@@ -18,11 +18,9 @@
 
 namespace NocturnalEngine
 {
-	//When Buiilding a New Component
-	//Ensure that the SceneManager Init has the component registered
-	//Ensure that the Serialize and De-Serialize functions in the SceneManager has those components checked
+	
 	/*!*************************************************************************
-	Interface Class for IComponent
+	Class for ExportCache
 	****************************************************************************/
 	class ExportCache : public JSONSerializer
 	{

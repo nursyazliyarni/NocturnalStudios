@@ -19,6 +19,7 @@
 #include "ECS/Components/Collider.h"
 #include "ECS/Components/Sprite.h"
 #include "ECS/Components/Transform.h"
+#include "Scripts/GlobalGameManager.h"
 
 namespace NocturnalEngine
 {
@@ -76,7 +77,7 @@ namespace NocturnalEngine
         const double maxHealth = attrs.maxHealth > 0.0 ? attrs.maxHealth : 1.0;
         const double healthRatio = attrs.current_health / maxHealth;
 
-        while (mSpots.size() < mThresholds.size() && healthRatio <= mThresholds[mSpots.size()])
+        while (mSpots.size() < mThresholds.size() && healthRatio <= mThresholds[mSpots.size()] && p_GameManager.GetGameState() == GameManager::GameState::PLAYING)
         {
             SpawnSpot();
         }

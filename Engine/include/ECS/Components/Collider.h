@@ -67,7 +67,16 @@ namespace NocturnalEngine
 			return mColArr[i];
 		}
 
+		const Colpiece& operator[](int i) const {
+			return mColArr[i];
+		}
+
 		Colpiece* GetCollisionArray()
+		{
+			return mColArr;
+		}
+
+		const Colpiece* GetCollisionArray() const
 		{
 			return mColArr;
 		}

@@ -20,8 +20,10 @@
 #include "core/Log.h"
 #include "Math/Random.h"
 #include "Scripts/AnimalLogic.h"
+#include "Scripts/EncryptionKey.h"
 #include "ECS/Components/ButtonComponent.h"
 #include "Audio/AudioEngine.h"
+#include "graphics/Graphics.h"
 
 namespace NocturnalEngine {
 
@@ -55,6 +57,12 @@ namespace NocturnalEngine {
     initialization, this function is empty
     ****************************************************************************/
     void GameManager::Init() {
+        Graphic::layerEnabled[9] = false; //hide pause layer on start
+        Graphic::layerEnabled[10] = false; //hide info layer on start
+        p_GUI->set_pause(false);
+        if (hasInitialized) return; //already set up, don't reinitialize
+        hasInitialized = true;
+
         if (!levelConfig.SetupLevelData("Assets/LevelPreset")||levelConfig.GetLevels().find(levelNum)==levelConfig.GetLevels().end()) {
             AnimalAttributes defaultAttributes{};
             defaultAttributes.SetDefault();
@@ -172,7 +180,11 @@ namespace NocturnalEngine {
     ****************************************************************************/
     void GameManager::Update(float dt) {
        
-        
+        if (!IsPaused())
+        {
+            Graphic::layerEnabled[9] = false;
+            Graphic::layerEnabled[10] = false;
+        }
 
         if (p_Scene->isGameplay&& currState !=GameState::PAUSED)
         {
@@ -290,6 +302,13 @@ namespace NocturnalEngine {
             }
         }
 
+        Entity inventoryBtn{ GetEntityByName("InventoryBtn") };
+        if (inventoryBtn != MAX_ENTITIES && p_ecs.HaveComponent<ButtonComponent>(inventoryBtn))
+        {
+            p_ecs.GetComponent<ButtonComponent>(inventoryBtn).SET_button_logic_ON(
+                levelConfig.HasExtraScene(static_cast<int>(levelNum), "hiddenending"));
+        }
+
         targetVisibility = false;
         auto it = sceneAnimalMap.find(gs);
         if (it != sceneAnimalMap.end()) {
@@ -344,7 +363,10 @@ namespace NocturnalEngine {
     Therefore this function is empty
     ****************************************************************************/
     void GameManager::ResetSystem(bool resetStats) {
-
+        Graphic::layerEnabled[9] = false;
+        Graphic::layerEnabled[10] = false;
+        p_GUI->set_pause(false);
+        EncryptionKey::ResetRunState();
 
         AnimalAttributes defaultAttributes{};
         defaultAttributes.SetDefault();
@@ -364,8 +386,12 @@ namespace NocturnalEngine {
             under20 = 0;
         }
         
-        currState = GameManager::GameState::ENDING;
+        currState = GameManager::GameState::PLAYING;
         targetVisibility = false;
+        if (!hasInitialized)
+        {
+            hasInitialized = true;
+        }
     }
 
     void GameManager::SaveAnimalAttributesToCurrentScene(AnimalData aA) {
@@ -710,6 +736,20 @@ namespace NocturnalEngine {
              }
         }
 
+        ExtraSceneSet extraScenes{};
+        if (obj.HasMember("ExtraScenes") && obj["ExtraScenes"].IsArray())
+        {
+            for (const rapidjson::Value& scene : obj["ExtraScenes"].GetArray())
+            {
+                if (!scene.IsString())
+                    continue;
+
+                std::string sceneName = scene.GetString();
+                std::transform(sceneName.begin(), sceneName.end(), sceneName.begin(), ::tolower);
+                extraScenes.insert(sceneName);
+            }
+        }
+
         for (int i = 1; i < 5; i++)
         {
             if (leveldat.find(static_cast<AnimalRef>(i)) != leveldat.end())continue;
@@ -720,6 +760,54 @@ namespace NocturnalEngine {
         }
 
         levelList.emplace(levelIndex, leveldat);
+        extraScenesByLevel[levelIndex] = std::move(extraScenes);
         return true; 
+    }
+
+    bool LevelConfig::HasExtraScene(int levelIndex, const std::string& sceneName) const
+    {
+        auto levelIt = extraScenesByLevel.find(levelIndex);
+        if (levelIt == extraScenesByLevel.end())
+            return false;
+
+        std::string normalizedName = sceneName;
+        std::transform(normalizedName.begin(), normalizedName.end(), normalizedName.begin(), ::tolower);
+        return levelIt->second.find(normalizedName) != levelIt->second.end();
+    }
+
+    //==========Pause and resume functions, also a function to check if the game is paused=========
+    void GameManager::PauseGame() {
+        if (currState == GameState::PAUSED) return;
+        prePauseState = currState;
+        currState = GameState::PAUSED;
+        Graphic::layerEnabled[9] = true;   //show pause layer
+        p_GUI->set_pause(true);
+    }
+
+    void GameManager::ResumeGame() {
+        if (currState != GameState::PAUSED) return;
+        currState = prePauseState;
+        Graphic::layerEnabled[9] = false;  //hide pause layer
+        p_GUI->set_pause(false);
+    }
+
+    bool GameManager::IsPaused() const {
+        return currState == GameState::PAUSED;
+    }
+    void GameManager::SaveAnimalAttributesToScene(const std::string& sceneName, AnimalData aA) {
+        if (currState == GameManager::GameState::ENDING) return;
+        auto it = sceneAnimalMap.find(sceneName);
+        if (it == sceneAnimalMap.end())
+            sceneAnimalMap.emplace(sceneName, aA);
+        else
+            it->second = aA;
+    }
+    //=================Functions to show info screen===============
+    void GameManager::ShowInfo() {
+        Graphic::layerEnabled[10] = true;   //show info layer
+    }
+
+    void GameManager::HideInfo() {
+        Graphic::layerEnabled[10] = false;  //hide info layer
     }
 }

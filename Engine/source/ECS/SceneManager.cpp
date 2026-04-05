@@ -8,13 +8,14 @@
 		saved into a json file for future loading
 	
     Primary Author:
-         LAU XIANG YANG (80%)
+         LAU XIANG YANG (75%)
 		- Created the scene manager and its function specification.
     Secondary Author:
          Nur Syazliyarni (5%)
         - Added Text component handling in scene load/save.
-		LAYCOCK ENHUI SARAH (15%)
+		LAYCOCK ENHUI SARAH (20%)
 		- Redid the serialization and deserialization
+		- In serialization & deserialization, added implementation for prefabs and parenting
 
     All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
 *------------------------------------------------------------------------------------------------*/
@@ -234,13 +235,9 @@ void NocturnalEngine::SceneManager::setSceneToLoad(std::string s)
 {
 	if (ShouldUseFadeTransition(mCurrentScenePath, s))
 	{
-		// Queue the tutorial load so the current cutscene scene can fade fully to black first.
 		mQueuedSceneToLoad = s;
 		mTransitionPhase = TransitionPhase::FadeOut;
-		if (sceneToLoad.empty())
-		{
-			sceneToLoad = s;
-		}
+		mTransitionAlpha = 0.0f;
 		return;
 	}
 
@@ -249,7 +246,7 @@ void NocturnalEngine::SceneManager::setSceneToLoad(std::string s)
 
 void NocturnalEngine::SceneManager::checkForSceneToLoad()
 {
-	constexpr float kSceneTransitionDuration = 0.2f;
+	constexpr float kSceneTransitionDuration = 0.6f;
 	const float dt = Timer::GetInstance().GetGlobalDT();
 
 	if (mTransitionPhase == TransitionPhase::FadeOut)
@@ -293,7 +290,8 @@ float NocturnalEngine::SceneManager::GetSceneTransitionAlpha() const
 bool NocturnalEngine::SceneManager::ShouldUseFadeTransition(const std::string& currentScene, const std::string& nextScene) const
 {
 	// Only the cutscene-to-tutorial handoff uses this temporary black-screen transition.
-	return currentScene == "Assets/Scene/CutScene.json" && nextScene == "Assets/Scene/Tutorial.json";
+	return (currentScene == "Assets/Scene/Menu.json" && nextScene == "Assets/Scene/CutScene.json") ||
+		(currentScene == "Assets/Scene/CutScene.json" && nextScene == "Assets/Scene/Tutorial.json");
 }
 
 void NocturnalEngine::SceneManager::LoadSceneNow(const std::string& path)
@@ -369,6 +367,27 @@ void NocturnalEngine::SceneManager::LoadSceneNow(const std::string& path)
 	}
 
 	if (path == "Assets/Scene/CutScene.json")
+	{
+		isGameplay = false;
+		Graphic::camera.SetZoomLevel(1.0f);
+		Graphic::camera.SetPosition({ 0.0f,0.0f,0.0f });
+	}
+
+	if (path == "Assets/Scene/hiddenEnding.json")
+	{
+		isGameplay = false;
+		Graphic::camera.SetZoomLevel(1.0f);
+		Graphic::camera.SetPosition({ 0.0f,0.0f,0.0f });
+	}
+
+	if (path == "Assets/Scene/goodEndingScene.json")
+	{
+		isGameplay = false;
+		Graphic::camera.SetZoomLevel(1.0f);
+		Graphic::camera.SetPosition({ 0.0f,0.0f,0.0f });
+	}
+
+	if (path == "Assets/Scene/badEndingScene.json")
 	{
 		isGameplay = false;
 		Graphic::camera.SetZoomLevel(1.0f);
@@ -468,7 +487,9 @@ bool NocturnalEngine::SceneManager::NewDeserialize(const rapidjson::Value& obj) 
 	}
 	return true;
 }
-
+/*!*************************************************************************
+Deserializes an entity, recursive for parenting
+****************************************************************************/
 NocturnalEngine::Entity NocturnalEngine::SceneManager::DeserializeEntity(const rapidjson::Value& ent, PrefabManager& prefabs, std::unordered_map<Entity, Entity>& entityOldIDMap, Entity parent) const {
 
 	const std::unordered_map<std::string, ComponentRegistry::ComponentDescriptor>& ecr = p_ECompReg.GetAll();
@@ -739,6 +760,9 @@ bool NocturnalEngine::SceneManager::NewSerialize(rapidjson::PrettyWriter<rapidjs
 
 }
 
+/*!*************************************************************************
+Serializes an entity, recursive for parenting
+****************************************************************************/
 void NocturnalEngine::SceneManager::SerializeEntity(rapidjson::PrettyWriter<rapidjson::StringBuffer>* writer, Entity j, PrefabManager& prefabs) const {
 
 	//Skip entities with no components

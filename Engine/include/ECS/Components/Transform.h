@@ -29,11 +29,15 @@ namespace NocturnalEngine
 		bool ToEditor()override;
 
 		vec2D& GetPos() { return mPosition; }
+		const vec2D& GetPos() const { return mPosition; }
 		vec2D& GetScale() { return mScale; }
+		const vec2D& GetScale() const { return mScale; }
 		float& GetRot() { return mRot; }
+		const float& GetRot() const { return mRot; }
 
 		void SetPos(vec2D Pos) { mPosition = Pos; }
 		void SetPos(float posX, float posY) { mPosition = vec2D(posX, posY); }
+		void SetPosFrmWorld(float posX, float posY);
 		void SetPosFromCenterLeft(vec2D Pos) { mPosition = vec2D(Pos.x + mScale.x / 2.f, Pos.y); }
 		void SetPosFromCenterLeft(float posX, float posY) { mPosition = vec2D(posX + mScale.x / 2.f, posY); }
 		void SetScale(vec2D Scale) { mScale = Scale; }

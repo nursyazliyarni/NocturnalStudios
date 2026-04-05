@@ -20,6 +20,9 @@
 #define p_PrefabManager NocturnalEngine::PrefabManager::GetInstance()
 namespace NocturnalEngine
 {
+	/*!*************************************************************************
+	Prefabmanager class
+	****************************************************************************/
 	class PrefabManager:public JSONSerializer {
 	public:
 		struct PrefabInfo

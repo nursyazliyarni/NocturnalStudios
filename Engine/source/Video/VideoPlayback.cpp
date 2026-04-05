@@ -15,6 +15,7 @@
 #include "ECS/SceneManager.h"
 #include "Input/Input.h"
 #include "ResourceManager/ResourceManager.h"
+#include <cmath>
 #include <cstdio>
 #include "../../../lib/pl_mpeg/pl_mpeg.h"
 
@@ -24,6 +25,8 @@ namespace NocturnalEngine
 {
     namespace
     {
+        constexpr float kVideoStartupBufferSeconds = 0.15f;
+
         std::filesystem::path ResolveAssetPath(const std::filesystem::path& subdirectory, const std::string& relativePath)
         {
             const std::filesystem::path requestedPath{ relativePath };
@@ -63,6 +66,13 @@ namespace NocturnalEngine
             std::string loadedPath{};
             std::string loadedAudioPath{};
             int audioChannelId{ -1 };
+            double playbackTimeSeconds{ 0.0 };
+            double frameDurationSeconds{ 1.0 / 30.0 };
+            double durationSeconds{ 0.0 };
+            float startupDelayRemaining{ kVideoStartupBufferSeconds };
+            float audioDelayElapsed{ 0.0f };
+            bool hasPresentedFrame{ false };
+            bool editorResetApplied{ false };
             bool completed{ false };
         };
 
@@ -100,6 +110,7 @@ namespace NocturnalEngine
                 state->rgbaBuffer[alphaIndex] = 255;
             }
             state->texture->SetTextureData(state->rgbaBuffer.data(), static_cast<unsigned int>(state->rgbaBuffer.size()));
+            state->hasPresentedFrame = true;
         }
 
         void DestroyState(VideoRuntimeState& state)
@@ -113,6 +124,13 @@ namespace NocturnalEngine
             state.rgbaBuffer.clear();
             state.loadedPath.clear();
             state.loadedAudioPath.clear();
+            state.playbackTimeSeconds = 0.0;
+            state.frameDurationSeconds = 1.0 / 30.0;
+            state.durationSeconds = 0.0;
+            state.startupDelayRemaining = kVideoStartupBufferSeconds;
+            state.audioDelayElapsed = 0.0f;
+            state.hasPresentedFrame = false;
+            state.editorResetApplied = false;
             if (state.audioChannelId >= 0)
             {
                 p_Audio->FadeOutAndStopChannel(state.audioChannelId);
@@ -157,6 +175,28 @@ namespace NocturnalEngine
             state.loadedAudioPath = fullPathString;
         }
 
+        bool TryGetAttachedAudioTimeSeconds(const Video& video, const VideoRuntimeState& state, double& outTimeSeconds)
+        {
+            if (state.audioChannelId < 0)
+                return false;
+
+            auto channelIt = p_Audio->mChannelMap.find(state.audioChannelId);
+            if (channelIt == p_Audio->mChannelMap.end() || !channelIt->second)
+                return false;
+
+            bool isPlaying = false;
+            channelIt->second->isPlaying(&isPlaying);
+            if (!isPlaying)
+                return false;
+
+            unsigned int positionMs = 0;
+            if (channelIt->second->getPosition(&positionMs, FMOD_TIMEUNIT_MS) != FMOD_OK)
+                return false;
+
+            outTimeSeconds = (static_cast<double>(positionMs) / 1000.0) + std::max(0.0f, video.audioStartDelay);
+            return true;
+        }
+
         bool LoadState(Entity entity, Video& video, VideoRuntimeState& state)
         {
             DestroyState(state);
@@ -192,6 +232,12 @@ namespace NocturnalEngine
                 return false;
             }
 
+            const double frameRate = plm_get_framerate(state.decoder);
+            if (frameRate > 0.0)
+            {
+                state.frameDurationSeconds = 1.0 / frameRate;
+            }
+            state.durationSeconds = std::max(0.0, plm_get_duration(state.decoder));
             state.texture = ResourceManager::GenTexture(static_cast<unsigned int>(width), static_cast<unsigned int>(height));
             state.rgbaBuffer.resize(static_cast<std::size_t>(width) * static_cast<std::size_t>(height) * 4u);
             state.loadedPath = video.GetVideoPath();
@@ -200,14 +246,40 @@ namespace NocturnalEngine
             if (firstFrame)
             {
                 UploadFrame(state.decoder, firstFrame, &state);
+                state.playbackTimeSeconds = std::max(0.0, firstFrame->time);
             }
             else
             {
                 plm_rewind(state.decoder);
+                state.playbackTimeSeconds = 0.0;
             }
 
             NOCTURNAL_ENGINE_INFO("Loaded video '{}' for entity {}", fullPath.string(), entity);
             return true;
+        }
+
+        void DecodeVideoToTime(VideoRuntimeState& state, double targetTimeSeconds)
+        {
+            if (!state.decoder)
+                return;
+
+            constexpr double epsilon = 1e-4;
+            const double frameDuration = std::max(state.frameDurationSeconds, 1.0 / 240.0);
+            plm_frame_t* latestFrame = nullptr;
+
+            while (plm_get_time(state.decoder) + frameDuration <= targetTimeSeconds + epsilon)
+            {
+                plm_frame_t* decodedFrame = plm_decode_video(state.decoder);
+                if (!decodedFrame)
+                    break;
+
+                latestFrame = decodedFrame;
+            }
+
+            if (latestFrame)
+            {
+                UploadFrame(state.decoder, latestFrame, &state);
+            }
         }
 
         bool SkipRequested(const Video& video)
@@ -258,12 +330,50 @@ namespace NocturnalEngine
         if (!shouldAdvancePlayback)
         {
             StopAttachedAudio(state);
+            if (!state.editorResetApplied && state.decoder)
+            {
+                state.completed = false;
+                video.finished = false;
+                state.playbackTimeSeconds = 0.0;
+                state.startupDelayRemaining = kVideoStartupBufferSeconds;
+                state.audioDelayElapsed = 0.0f;
+                state.hasPresentedFrame = false;
+                plm_rewind(state.decoder);
+
+                if (plm_frame_t* firstFrame = plm_decode_video(state.decoder))
+                {
+                    UploadFrame(state.decoder, firstFrame, &state);
+                    state.playbackTimeSeconds = std::max(0.0, firstFrame->time);
+                }
+                else
+                {
+                    plm_rewind(state.decoder);
+                }
+
+                state.editorResetApplied = true;
+            }
             return state.texture;
         }
 
+        state.editorResetApplied = false;
+
         if (!state.completed)
         {
-            StartAttachedAudio(video, state);
+            if (state.startupDelayRemaining > 0.0f)
+            {
+                state.startupDelayRemaining = std::max(0.0f, state.startupDelayRemaining - std::max(0.0f, deltaTime));
+            }
+            else
+            {
+                state.audioDelayElapsed += deltaTime;
+            }
+
+            if (state.startupDelayRemaining <= 0.0f &&
+                state.hasPresentedFrame &&
+                state.audioDelayElapsed >= std::max(0.0f, video.audioStartDelay))
+            {
+                StartAttachedAudio(video, state);
+            }
         }
 
         if (!editorActive && SkipRequested(video))
@@ -277,9 +387,52 @@ namespace NocturnalEngine
         if (!state.completed)
         {
             plm_set_loop(state.decoder, video.loop ? TRUE : FALSE);
-            plm_decode(state.decoder, static_cast<double>(deltaTime));
 
-            if (!video.loop && plm_has_ended(state.decoder))
+            if (state.startupDelayRemaining > 0.0f)
+            {
+                return state.texture;
+            }
+
+            double audioDrivenPlaybackTimeSeconds = 0.0;
+            if (TryGetAttachedAudioTimeSeconds(video, state, audioDrivenPlaybackTimeSeconds))
+            {
+                state.playbackTimeSeconds = audioDrivenPlaybackTimeSeconds;
+            }
+            else
+            {
+                state.playbackTimeSeconds += std::max(0.0f, deltaTime);
+            }
+
+            if (video.loop && state.durationSeconds > 0.0)
+            {
+                state.playbackTimeSeconds = std::fmod(state.playbackTimeSeconds, state.durationSeconds);
+                if (state.playbackTimeSeconds < 0.0)
+                    state.playbackTimeSeconds += state.durationSeconds;
+            }
+
+            constexpr double seekCatchupThresholdSeconds = 0.25;
+            const double targetTimeSeconds = (!video.loop && state.durationSeconds > 0.0)
+                ? std::min(state.playbackTimeSeconds, state.durationSeconds)
+                : state.playbackTimeSeconds;
+            const double currentDecoderTimeSeconds = plm_get_time(state.decoder);
+
+            if (targetTimeSeconds > currentDecoderTimeSeconds + seekCatchupThresholdSeconds)
+            {
+                const double seekTimeSeconds = (video.loop || state.durationSeconds <= 0.0)
+                    ? targetTimeSeconds
+                    : std::min(targetTimeSeconds, state.durationSeconds);
+
+                if (!plm_seek(state.decoder, seekTimeSeconds, TRUE))
+                {
+                    DecodeVideoToTime(state, targetTimeSeconds);
+                }
+            }
+            else
+            {
+                DecodeVideoToTime(state, targetTimeSeconds);
+            }
+
+            if (!video.loop && ((state.durationSeconds > 0.0 && state.playbackTimeSeconds >= state.durationSeconds) || plm_has_ended(state.decoder)))
             {
                 HandleVideoFinished(video, state);
             }

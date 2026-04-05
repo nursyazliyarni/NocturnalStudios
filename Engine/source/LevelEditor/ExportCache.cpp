@@ -1,13 +1,13 @@
 /*!------------------------------------------------------------------------------------------------
-	File: IComponent.h
+	File: ExportCache.cpp
 	Project: NocturnalStudio
 
 	Brief:
-		This file contains the abstract class for IComponent
+		This file contains the serialization and deserialization for ExportCache
 
 	Primary Author:
-		 LAU XIANG YANG (100%)
-		- Created the IComponent.h file and its function specification.
+		 LAYCOCK ENHUI SARAH (100%)
+		- Created the ExportCache.cpp file and its function specification.
 
 	All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
 *------------------------------------------------------------------------------------------------*/
@@ -19,7 +19,9 @@
 namespace NocturnalEngine
 {
 
-
+	/*!*************************************************************************
+	Deserializes export cache
+	****************************************************************************/
 	bool ExportCache::Deserialize(const rapidjson::Value& obj) {
 		if (!obj.IsArray())return false;
 
@@ -31,6 +33,9 @@ namespace NocturnalEngine
 		}
 		return true;
 	}
+	/*!*************************************************************************
+	Serializes export cache
+	****************************************************************************/
 	bool ExportCache::Serialize(rapidjson::PrettyWriter<rapidjson::StringBuffer>* writer) const {
 		writer->StartArray();
 		for (const std::pair< std::filesystem::path, bool>& pair : mbuildCache) {

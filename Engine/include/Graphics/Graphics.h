@@ -46,7 +46,7 @@ namespace NocturnalEngine {
 		inline static Camera2D scene_camera { -1.0f, 1.0f, -1.0f , 1.0f };
 		inline static Camera2D *mcamera = nullptr;
 
-		static constexpr int MAX_LAYERS = 10;
+		static constexpr int MAX_LAYERS = 11;
 		inline static std::array<bool, MAX_LAYERS> layerEnabled{}; // all default false, set true in Init
 		inline static std::array<int, MAX_LAYERS> layerDrawOrder{}; // order to draw layers default set in Init
 

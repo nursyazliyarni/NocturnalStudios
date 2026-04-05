@@ -38,6 +38,7 @@ namespace NocturnalEngine {
 
         
         typedef std::map<AnimalRef, AnimalAttributes> LevelData;
+        using ExtraSceneSet = std::unordered_set<std::string>;
         
         
         bool SetupLevelData(const std::string& folderPath);
@@ -47,9 +48,11 @@ namespace NocturnalEngine {
         virtual bool Serialize(rapidjson::PrettyWriter<rapidjson::StringBuffer>* writer) const override { UNREFERENCED_PARAMETER(writer); return true; }
 
         const std::map<int,LevelData>& GetLevels() const { return levelList; }
+        bool HasExtraScene(int levelIndex, const std::string& sceneName) const;
 
     private:
         std::map<int,LevelData> levelList{};
+        std::map<int, ExtraSceneSet> extraScenesByLevel{};
     };
 
 
@@ -154,6 +157,24 @@ namespace NocturnalEngine {
          void AllFullStats();
          void SetTime(float time) { gameTimeElapsed = time; }
          void ReviveAll();
+
+         //============for pause menu==============
+         void PauseGame();
+         void ResumeGame();
+         bool IsPaused() const;
+         const std::string& GetCurrentScene() const { return currScene; }
+         void SaveAnimalAttributesToScene(const std::string& sceneName, AnimalData aA);
+         bool hasInitialized{ false };
+
+         //=========entities for pause menu=========
+         Entity pausePanelE{ MAX_ENTITIES };
+         Entity resumeButtonE{ MAX_ENTITIES };
+         Entity menuButtonE{ MAX_ENTITIES };
+         bool escWasPressed = false;
+
+         //=======for info in pause==========
+         void ShowInfo();
+         void HideInfo();
 
     private:
 

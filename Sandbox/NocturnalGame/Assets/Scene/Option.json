@@ -9,7 +9,8 @@
         6,
         7,
         8,
-        9
+        9,
+        10
     ],
     "Entities": [
         {
@@ -17,11 +18,15 @@
             "Components": [
                 {
                     "Component": "Transform",
-                    "posX": 0.0,
-                    "posY": 0.0,
-                    "scaleX": 3.6449999809265137,
-                    "scaleY": 2.0,
-                    "Rot": 0.0
+                    "Position": {
+                        "x": 0.0,
+                        "y": 0.0
+                    },
+                    "Scale": {
+                        "x": 3.6449999809265137,
+                        "y": 2.0
+                    },
+                    "Rotation": 0.0
                 },
                 {
                     "Component": "NameTag",
@@ -32,6 +37,9 @@
                     "shape/texture": 0,
                     "shape type": 0,
                     "circle radius": 0.0,
+                    "length of dashed lines": 0.009999999776482582,
+                    "distance gap": 0.009999999776482582,
+                    "line movement speed": 0.0,
                     "RGBA": [
                         0.0,
                         0.0,
@@ -102,8 +110,15 @@
                 },
                 {
                     "Component": "Logic",
-                    "0": "AudioManager",
-                    "1": "BackgroundAudio",
+                    "Scripts": [
+                        {
+                            "ScriptName": "AudioManager"
+                        },
+                        {
+                            "ScriptName": "BackgroundAudio",
+                            "Background Audio Index": 0
+                        }
+                    ],
                     "ScriptCount": 2
                 }
             ]
@@ -113,11 +128,15 @@
             "Components": [
                 {
                     "Component": "Transform",
-                    "posX": 0.0,
-                    "posY": 0.29146337509155273,
-                    "scaleX": 1.639686942100525,
-                    "scaleY": 1.0,
-                    "Rot": 0.0
+                    "Position": {
+                        "x": 0.0,
+                        "y": 0.0
+                    },
+                    "Scale": {
+                        "x": 1.100000023841858,
+                        "y": 1.0
+                    },
+                    "Rotation": 0.0
                 },
                 {
                     "Component": "NameTag",
@@ -128,13 +147,16 @@
                     "shape/texture": 0,
                     "shape type": 0,
                     "circle radius": 0.0,
+                    "length of dashed lines": 0.009999999776482582,
+                    "distance gap": 0.009999999776482582,
+                    "line movement speed": 0.0,
                     "RGBA": [
                         0.0,
                         0.0,
                         0.0,
                         0.0
                     ],
-                    "TextureName": "UI/MASTER_VOLUME",
+                    "TextureName": "UI/options_slider",
                     "Index_X": 0,
                     "Index_Y": 0,
                     "Ucoordinates": 512.0,
@@ -142,7 +164,7 @@
                     "IsSpriteSheet": false,
                     "IsAnimated": false,
                     "MaxIndex": 0,
-                    "LayeringOrder": 0,
+                    "LayeringOrder": 1,
                     "StateManagerEnabled": false,
                     "StatePreviewInEditor": false,
                     "StatePreviewMode": 0,
@@ -159,6 +181,27 @@
                             "Enabled": true
                         }
                     ]
+                },
+                {
+                    "Component": "Text",
+                    "text type": 0,
+                    "Content": "Master",
+                    "Array of Content": [],
+                    "Vector of text position": [],
+                    "Font": "ExcelsiorSans",
+                    "Size": 92.0,
+                    "ColorR": 0.27843138575553894,
+                    "ColorG": 0.1921568661928177,
+                    "ColorB": 0.07450980693101883,
+                    "ColorA": 1.0,
+                    "PosX": -0.699999988079071,
+                    "PosY": 0.10000000149011612,
+                    "Rotation": 0.0,
+                    "Line Height": 0,
+                    "WorldSpace": false,
+                    "Center": false,
+                    "LayeringOrder": 0,
+                    "Visibility": true
                 }
             ]
         },
@@ -167,11 +210,15 @@
             "Components": [
                 {
                     "Component": "Transform",
-                    "posX": 0.0,
-                    "posY": 0.0,
-                    "scaleX": 1.639686942100525,
-                    "scaleY": 1.0,
-                    "Rot": 0.0
+                    "Position": {
+                        "x": 0.0,
+                        "y": -0.27300000190734863
+                    },
+                    "Scale": {
+                        "x": 1.100000023841858,
+                        "y": 1.0
+                    },
+                    "Rotation": 0.0
                 },
                 {
                     "Component": "NameTag",
@@ -182,13 +229,16 @@
                     "shape/texture": 0,
                     "shape type": 0,
                     "circle radius": 0.0,
+                    "length of dashed lines": 0.009999999776482582,
+                    "distance gap": 0.009999999776482582,
+                    "line movement speed": 0.0,
                     "RGBA": [
                         0.0,
                         0.0,
                         0.0,
                         0.0
                     ],
-                    "TextureName": "UI/BGM_VOLUME",
+                    "TextureName": "UI/options_slider",
                     "Index_X": 0,
                     "Index_Y": 0,
                     "Ucoordinates": 512.0,
@@ -196,7 +246,7 @@
                     "IsSpriteSheet": false,
                     "IsAnimated": false,
                     "MaxIndex": 0,
-                    "LayeringOrder": 0,
+                    "LayeringOrder": 1,
                     "StateManagerEnabled": false,
                     "StatePreviewInEditor": false,
                     "StatePreviewMode": 0,
@@ -213,6 +263,27 @@
                             "Enabled": true
                         }
                     ]
+                },
+                {
+                    "Component": "Text",
+                    "text type": 0,
+                    "Content": "BGM",
+                    "Array of Content": [],
+                    "Vector of text position": [],
+                    "Font": "ExcelsiorSans",
+                    "Size": 92.0,
+                    "ColorR": 0.27843138575553894,
+                    "ColorG": 0.1921568661928177,
+                    "ColorB": 0.07450980693101883,
+                    "ColorA": 1.0,
+                    "PosX": -0.699999988079071,
+                    "PosY": -0.16500000655651093,
+                    "Rotation": 0.0,
+                    "Line Height": 0,
+                    "WorldSpace": false,
+                    "Center": false,
+                    "LayeringOrder": 0,
+                    "Visibility": true
                 }
             ]
         },
@@ -221,11 +292,15 @@
             "Components": [
                 {
                     "Component": "Transform",
-                    "posX": 0.0,
-                    "posY": -0.3009999990463257,
-                    "scaleX": 1.639686942100525,
-                    "scaleY": 1.0,
-                    "Rot": 0.0
+                    "Position": {
+                        "x": 0.0,
+                        "y": -0.5299999713897705
+                    },
+                    "Scale": {
+                        "x": 1.100000023841858,
+                        "y": 1.0
+                    },
+                    "Rotation": 0.0
                 },
                 {
                     "Component": "NameTag",
@@ -236,13 +311,16 @@
                     "shape/texture": 0,
                     "shape type": 0,
                     "circle radius": 0.0,
+                    "length of dashed lines": 0.009999999776482582,
+                    "distance gap": 0.009999999776482582,
+                    "line movement speed": 0.0,
                     "RGBA": [
                         0.0,
                         0.0,
                         0.0,
                         0.0
                     ],
-                    "TextureName": "UI/SFX_VOULME",
+                    "TextureName": "UI/options_slider",
                     "Index_X": 0,
                     "Index_Y": 0,
                     "Ucoordinates": 512.0,
@@ -250,7 +328,7 @@
                     "IsSpriteSheet": false,
                     "IsAnimated": false,
                     "MaxIndex": 0,
-                    "LayeringOrder": 0,
+                    "LayeringOrder": 1,
                     "StateManagerEnabled": false,
                     "StatePreviewInEditor": false,
                     "StatePreviewMode": 0,
@@ -267,6 +345,27 @@
                             "Enabled": true
                         }
                     ]
+                },
+                {
+                    "Component": "Text",
+                    "text type": 0,
+                    "Content": "SFX",
+                    "Array of Content": [],
+                    "Vector of text position": [],
+                    "Font": "ExcelsiorSans",
+                    "Size": 92.0,
+                    "ColorR": 0.27843138575553894,
+                    "ColorG": 0.1921568661928177,
+                    "ColorB": 0.05882352963089943,
+                    "ColorA": 1.0,
+                    "PosX": -0.699999988079071,
+                    "PosY": -0.41999998688697815,
+                    "Rotation": 0.0,
+                    "Line Height": 0,
+                    "WorldSpace": false,
+                    "Center": false,
+                    "LayeringOrder": 0,
+                    "Visibility": true
                 }
             ]
         },
@@ -280,11 +379,15 @@
                 },
                 {
                     "Component": "Transform",
-                    "posX": 0.0,
-                    "posY": 0.23399999737739563,
-                    "scaleX": 0.09000003337860107,
-                    "scaleY": 0.09000003337860107,
-                    "Rot": 0.0
+                    "Position": {
+                        "x": -0.0076923668384552,
+                        "y": 0.019999999552965164
+                    },
+                    "Scale": {
+                        "x": 0.3050000071525574,
+                        "y": 0.2199999988079071
+                    },
+                    "Rotation": 0.0
                 },
                 {
                     "Component": "Collider",
@@ -314,13 +417,16 @@
                     "shape/texture": 0,
                     "shape type": 0,
                     "circle radius": 0.0,
+                    "length of dashed lines": 0.009999999776482582,
+                    "distance gap": 0.009999999776482582,
+                    "line movement speed": 0.0,
                     "RGBA": [
                         0.0,
                         0.0,
                         0.0,
                         0.0
                     ],
-                    "TextureName": "UI/VolumeBall",
+                    "TextureName": "UI/options_sliderdot",
                     "Index_X": 0,
                     "Index_Y": 0,
                     "Ucoordinates": 512.0,
@@ -328,7 +434,7 @@
                     "IsSpriteSheet": false,
                     "IsAnimated": false,
                     "MaxIndex": 0,
-                    "LayeringOrder": 1,
+                    "LayeringOrder": 2,
                     "StateManagerEnabled": false,
                     "StatePreviewInEditor": false,
                     "StatePreviewMode": 0,
@@ -384,8 +490,14 @@
                 },
                 {
                     "Component": "Logic",
-                    "0": "AudioManager",
-                    "1": "SliderScript",
+                    "Scripts": [
+                        {
+                            "ScriptName": "AudioManager"
+                        },
+                        {
+                            "ScriptName": "SliderScript"
+                        }
+                    ],
                     "ScriptCount": 2
                 }
             ]
@@ -400,11 +512,15 @@
                 },
                 {
                     "Component": "Transform",
-                    "posX": 0.0,
-                    "posY": -0.06014096736907959,
-                    "scaleX": 0.10000000149011612,
-                    "scaleY": 0.10000000149011612,
-                    "Rot": 0.0
+                    "Position": {
+                        "x": 0.0,
+                        "y": -0.25
+                    },
+                    "Scale": {
+                        "x": 0.3050000071525574,
+                        "y": 0.2199999988079071
+                    },
+                    "Rotation": 0.0
                 },
                 {
                     "Component": "Collider",
@@ -434,13 +550,16 @@
                     "shape/texture": 0,
                     "shape type": 0,
                     "circle radius": 0.0,
+                    "length of dashed lines": 0.009999999776482582,
+                    "distance gap": 0.009999999776482582,
+                    "line movement speed": 0.0,
                     "RGBA": [
                         0.0,
                         0.0,
                         0.0,
                         0.0
                     ],
-                    "TextureName": "UI/VolumeBall",
+                    "TextureName": "UI/options_sliderdot",
                     "Index_X": 0,
                     "Index_Y": 0,
                     "Ucoordinates": 512.0,
@@ -448,7 +567,7 @@
                     "IsSpriteSheet": false,
                     "IsAnimated": false,
                     "MaxIndex": 0,
-                    "LayeringOrder": 1,
+                    "LayeringOrder": 2,
                     "StateManagerEnabled": false,
                     "StatePreviewInEditor": false,
                     "StatePreviewMode": 0,
@@ -504,8 +623,14 @@
                 },
                 {
                     "Component": "Logic",
-                    "0": "AudioManager",
-                    "1": "SliderScript",
+                    "Scripts": [
+                        {
+                            "ScriptName": "AudioManager"
+                        },
+                        {
+                            "ScriptName": "SliderScript"
+                        }
+                    ],
                     "ScriptCount": 2
                 }
             ]
@@ -520,11 +645,15 @@
                 },
                 {
                     "Component": "Transform",
-                    "posX": 0.0,
-                    "posY": -0.35943663120269775,
-                    "scaleX": 0.10000000149011612,
-                    "scaleY": 0.10000000149011612,
-                    "Rot": 0.0
+                    "Position": {
+                        "x": 0.0,
+                        "y": -0.5099999904632568
+                    },
+                    "Scale": {
+                        "x": 0.3050000071525574,
+                        "y": 0.2199999988079071
+                    },
+                    "Rotation": 0.0
                 },
                 {
                     "Component": "Collider",
@@ -554,13 +683,16 @@
                     "shape/texture": 0,
                     "shape type": 0,
                     "circle radius": 0.0,
+                    "length of dashed lines": 0.009999999776482582,
+                    "distance gap": 0.009999999776482582,
+                    "line movement speed": 0.0,
                     "RGBA": [
                         0.0,
                         0.0,
                         0.0,
                         0.0
                     ],
-                    "TextureName": "UI/VolumeBall",
+                    "TextureName": "UI/options_sliderdot",
                     "Index_X": 0,
                     "Index_Y": 0,
                     "Ucoordinates": 512.0,
@@ -568,7 +700,7 @@
                     "IsSpriteSheet": false,
                     "IsAnimated": false,
                     "MaxIndex": 0,
-                    "LayeringOrder": 1,
+                    "LayeringOrder": 2,
                     "StateManagerEnabled": false,
                     "StatePreviewInEditor": false,
                     "StatePreviewMode": 0,
@@ -624,8 +756,14 @@
                 },
                 {
                     "Component": "Logic",
-                    "0": "AudioManager",
-                    "1": "SliderScript",
+                    "Scripts": [
+                        {
+                            "ScriptName": "AudioManager"
+                        },
+                        {
+                            "ScriptName": "SliderScript"
+                        }
+                    ],
                     "ScriptCount": 2
                 }
             ]
@@ -635,28 +773,35 @@
             "Components": [
                 {
                     "Component": "Transform",
-                    "posX": 0.028999999165534973,
-                    "posY": 0.06199999898672104,
-                    "scaleX": 1.2899999618530273,
-                    "scaleY": 0.49000000953674316,
-                    "Rot": 0.0
+                    "Position": {
+                        "x": 0.0,
+                        "y": 0.0
+                    },
+                    "Scale": {
+                        "x": 1.899999976158142,
+                        "y": 1.4700000286102295
+                    },
+                    "Rotation": 0.0
                 },
                 {
                     "Component": "NameTag",
-                    "NameTag": "none"
+                    "NameTag": "BackBoard"
                 },
                 {
                     "Component": "Sprite",
                     "shape/texture": 0,
                     "shape type": 0,
                     "circle radius": 0.0,
+                    "length of dashed lines": 0.009999999776482582,
+                    "distance gap": 0.009999999776482582,
+                    "line movement speed": 0.0,
                     "RGBA": [
                         0.0,
                         0.0,
                         0.0,
                         0.0
                     ],
-                    "TextureName": "UI/VOULME_SLIDERBAR",
+                    "TextureName": "UI/options page",
                     "Index_X": 0,
                     "Index_Y": 0,
                     "Ucoordinates": 512.0,
@@ -681,119 +826,32 @@
                             "Enabled": true
                         }
                     ]
+                },
+                {
+                    "Component": "Text",
+                    "text type": 0,
+                    "Content": "AUDIO",
+                    "Array of Content": [],
+                    "Vector of text position": [],
+                    "Font": "ChauPhilomeneOne-Regular",
+                    "Size": 68.4000015258789,
+                    "ColorR": 1.0,
+                    "ColorG": 1.0,
+                    "ColorB": 1.0,
+                    "ColorA": 1.0,
+                    "PosX": -0.11999999731779099,
+                    "PosY": 0.4699999988079071,
+                    "Rotation": 0.0,
+                    "Line Height": 0,
+                    "WorldSpace": false,
+                    "Center": false,
+                    "LayeringOrder": 0,
+                    "Visibility": true
                 }
             ]
         },
         {
             "ID": 8,
-            "Components": [
-                {
-                    "Component": "Transform",
-                    "posX": 0.029899999499320984,
-                    "posY": -0.2409999966621399,
-                    "scaleX": 1.2899999618530273,
-                    "scaleY": 0.49000000953674316,
-                    "Rot": 0.0
-                },
-                {
-                    "Component": "NameTag",
-                    "NameTag": "none"
-                },
-                {
-                    "Component": "Sprite",
-                    "shape/texture": 0,
-                    "shape type": 0,
-                    "circle radius": 0.0,
-                    "RGBA": [
-                        0.0,
-                        0.0,
-                        0.0,
-                        0.0
-                    ],
-                    "TextureName": "UI/VOULME_SLIDERBAR",
-                    "Index_X": 0,
-                    "Index_Y": 0,
-                    "Ucoordinates": 512.0,
-                    "Vcoordinates": 512.0,
-                    "IsSpriteSheet": false,
-                    "IsAnimated": false,
-                    "MaxIndex": 0,
-                    "LayeringOrder": 0,
-                    "StateManagerEnabled": false,
-                    "StatePreviewInEditor": false,
-                    "StatePreviewMode": 0,
-                    "AnimationStates": [
-                        {
-                            "Name": "Idle",
-                            "Texture": "",
-                            "Ucoordinates": 512.0,
-                            "Vcoordinates": 512.0,
-                            "Source": 3,
-                            "Compare": 0,
-                            "Threshold": 0.0,
-                            "Priority": -100,
-                            "Enabled": true
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "ID": 9,
-            "Components": [
-                {
-                    "Component": "Transform",
-                    "posX": 0.029999999329447746,
-                    "posY": 0.35100001096725464,
-                    "scaleX": 1.2899999618530273,
-                    "scaleY": 0.49000000953674316,
-                    "Rot": 0.0
-                },
-                {
-                    "Component": "NameTag",
-                    "NameTag": "none"
-                },
-                {
-                    "Component": "Sprite",
-                    "shape/texture": 0,
-                    "shape type": 0,
-                    "circle radius": 0.0,
-                    "RGBA": [
-                        0.0,
-                        0.0,
-                        0.0,
-                        0.0
-                    ],
-                    "TextureName": "UI/VOULME_SLIDERBAR",
-                    "Index_X": 0,
-                    "Index_Y": 0,
-                    "Ucoordinates": 512.0,
-                    "Vcoordinates": 512.0,
-                    "IsSpriteSheet": false,
-                    "IsAnimated": false,
-                    "MaxIndex": 0,
-                    "LayeringOrder": 0,
-                    "StateManagerEnabled": false,
-                    "StatePreviewInEditor": false,
-                    "StatePreviewMode": 0,
-                    "AnimationStates": [
-                        {
-                            "Name": "Idle",
-                            "Texture": "",
-                            "Ucoordinates": 512.0,
-                            "Vcoordinates": 512.0,
-                            "Source": 3,
-                            "Compare": 0,
-                            "Threshold": 0.0,
-                            "Priority": -100,
-                            "Enabled": true
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "ID": 10,
             "Components": [
                 {
                     "Component": "Tag",
@@ -802,11 +860,15 @@
                 },
                 {
                     "Component": "Transform",
-                    "posX": 1.1330000162124634,
-                    "posY": -0.7269999980926514,
-                    "scaleX": 0.8169999718666077,
-                    "scaleY": 0.4390000104904175,
-                    "Rot": 180.0
+                    "Position": {
+                        "x": 1.1330000162124634,
+                        "y": -0.8117144107818604
+                    },
+                    "Scale": {
+                        "x": 0.8169999718666077,
+                        "y": 0.4390000104904175
+                    },
+                    "Rotation": -179.99989318847656
                 },
                 {
                     "Component": "Collider",
@@ -836,6 +898,9 @@
                     "shape/texture": 0,
                     "shape type": 0,
                     "circle radius": 0.0,
+                    "length of dashed lines": 0.009999999776482582,
+                    "distance gap": 0.009999999776482582,
+                    "line movement speed": 0.0,
                     "RGBA": [
                         0.0,
                         0.0,
@@ -912,8 +977,14 @@
                 },
                 {
                     "Component": "Logic",
-                    "0": "ButtonResponse",
-                    "1": "AudioManager",
+                    "Scripts": [
+                        {
+                            "ScriptName": "ButtonResponse"
+                        },
+                        {
+                            "ScriptName": "AudioManager"
+                        }
+                    ],
                     "ScriptCount": 2
                 },
                 {
@@ -929,15 +1000,17 @@
                     "ColorB": 0.07450980693101883,
                     "ColorA": 1.0,
                     "PosX": 1.0199999809265137,
-                    "PosY": -0.7699999809265137,
+                    "PosY": -0.8700000047683716,
                     "Rotation": 0.0,
                     "Line Height": 0,
                     "WorldSpace": false,
                     "Center": false,
-                    "LayeringOrder": 0
+                    "LayeringOrder": 0,
+                    "Visibility": true
                 },
                 {
                     "Component": "ButtonComponent",
+                    "Button logic is ON": true,
                     "GoToSceneFlag": true,
                     "GoToScene": "Assets/Scene/Menu.json",
                     "AudioOnHoverFlag": true,

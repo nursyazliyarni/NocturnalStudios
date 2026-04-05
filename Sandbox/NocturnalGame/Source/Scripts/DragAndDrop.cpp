@@ -116,7 +116,7 @@ namespace NocturnalEngine {
 	}
 
 	void DragAndDrop::DragCheck() {
-		if (mInput->MousePressed(0) && p_ecs.HaveComponent<Transform>(entityID)) {
+		if (mInput->MousePressed(0) && p_ecs.HaveComponent<Transform>(entityID) && p_GameManager.GetGameState() == GameManager::GameState::PLAYING) {
 			vec2D mPos{ p_GUI->MousePosition.x,p_GUI->MousePosition.y };
 			Transform& t = p_ecs.GetComponent<Transform>(entityID);
 

@@ -59,7 +59,7 @@ namespace NocturnalEngine {
                 }
             }
         }
-        if (p_Editor->is_ShowWindow == false &&
+        /*if (p_Editor->is_ShowWindow == false &&
             p_Input->KeyPressed(GLFW_KEY_ESCAPE) &&
             (p_Scene->isGameplay || p_GUI->check_pause() || isHowToPlayScene))
         {
@@ -75,6 +75,28 @@ namespace NocturnalEngine {
             }
             p_GUI->sub_menu = false;
             p_Scene->setSceneToLoad("Assets/Scene/Menu.json");
+        }*/
+        bool escDown = p_Input->KeyPressed(GLFW_KEY_ESCAPE);
+        bool escTriggered = escDown && !escPressedLastFrame;
+        escPressedLastFrame = escDown;
+
+        if (p_Editor->is_ShowWindow == false &&
+            escTriggered &&
+            (p_Scene->isGameplay || p_GUI->check_pause() || isHowToPlayScene))
+        {
+            if (isHowToPlayScene) {
+                p_Scene->setSceneToLoad("Assets/Scene/Menu.json");
+                return;
+            }
+
+            if (p_Scene->isGameplay) {
+                if (p_GameManager.IsPaused()) {
+                    p_GameManager.ResumeGame();
+                }
+                else {
+                    p_GameManager.PauseGame();
+                }
+            }
         }
 
         p_GameManager.Update(dt);
