@@ -474,7 +474,7 @@
                     "ScaleOnHover": 0.0,
                     "SetGameStateFlag": false,
                     "SetGameState": "STARTING",
-                    "ResetStatsFlag": true,
+                    "ResetStatsFlag": false,
                     "NextLevelFlag": true,
                     "SetCameraZoomFlag": false,
                     "SetCameraZoom": 0.0,

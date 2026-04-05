@@ -103,8 +103,6 @@ namespace NocturnalEngine
     {
         if (!mHasHidingSpots)
             return;
-        if (!IsKeyInteractableForCurrentLevel())
-            return;
 
         if (mRevealActive)
         {
@@ -236,21 +234,20 @@ namespace NocturnalEngine
             return false;
         }
 
-        // Fallback: use transform AABB if key has no collider.
-        vec2D minPt = transform.GetMinPos();
-        vec2D maxPt = transform.GetMaxPos();
-        return mousePos.x > minPt.x && mousePos.x < maxPt.x &&
-               mousePos.y > minPt.y && mousePos.y < maxPt.y;
+        // Fallback: use a slightly generous AABB around the key transform.
+        const vec2D pos = transform.GetPos();
+        const vec2D scale = transform.GetScale();
+        const float halfWidth = std::max(0.08f, std::abs(scale.x) * 0.75f);
+        const float halfHeight = std::max(0.08f, std::abs(scale.y) * 0.75f);
+        vec2D minPt{ pos.x - halfWidth, pos.y - halfHeight };
+        vec2D maxPt{ pos.x + halfWidth, pos.y + halfHeight };
+        return mousePos.x >= minPt.x && mousePos.x <= maxPt.x &&
+               mousePos.y >= minPt.y && mousePos.y <= maxPt.y;
     }
 
     bool EncryptionKey::IsKeyInteractableForCurrentLevel() const
     {
-        const unsigned int level = p_GameManager.CurrentLevel();
-        // Level 1: only Flamingo scene key is clickable.
-        if (level <= 1)
-            return mSceneKeyId == "scene:flamingobtn";
-
-        // Level 2+: all animal scene keys are clickable.
+        UNREFERENCED_PARAMETER(mSceneKeyId);
         return true;
     }
 

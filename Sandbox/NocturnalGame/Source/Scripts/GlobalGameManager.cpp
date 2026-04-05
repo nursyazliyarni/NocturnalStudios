@@ -368,7 +368,10 @@ namespace NocturnalEngine {
         Graphic::layerEnabled[10] = false;
         p_GUI->set_pause(false);
         VideoPlayback::Shutdown();
-        EncryptionKey::ResetRunState();
+        if (resetStats)
+        {
+            EncryptionKey::ResetRunState();
+        }
 
         AnimalAttributes defaultAttributes{};
         defaultAttributes.SetDefault();
@@ -383,6 +386,9 @@ namespace NocturnalEngine {
         diegeticLogEntries.clear();
         if (resetStats)
         {
+            levelNum = 1;
+            levelDataLoaded = false;
+            LevelDataToMap(levelNum);
             deadAnimals = 0;
             escapedAnimals = 0;
             under20 = 0;
