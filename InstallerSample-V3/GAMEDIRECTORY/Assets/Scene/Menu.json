@@ -300,7 +300,7 @@
                     "ScaleOnHover": 1.2000000476837158,
                     "SetGameStateFlag": true,
                     "SetGameState": "PLAYING",
-                    "ResetStatsFlag": false,
+                    "ResetStatsFlag": true,
                     "NextLevelFlag": false,
                     "SetCameraZoomFlag": false,
                     "SetCameraZoom": 0.0,
