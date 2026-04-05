@@ -469,7 +469,9 @@ bool NocturnalEngine::SceneManager::NewDeserialize(const rapidjson::Value& obj) 
 	}
 	return true;
 }
-
+/*!*************************************************************************
+Deserializes an entity, recursive for parenting
+****************************************************************************/
 NocturnalEngine::Entity NocturnalEngine::SceneManager::DeserializeEntity(const rapidjson::Value& ent, PrefabManager& prefabs, std::unordered_map<Entity, Entity>& entityOldIDMap, Entity parent) const {
 
 	const std::unordered_map<std::string, ComponentRegistry::ComponentDescriptor>& ecr = p_ECompReg.GetAll();
@@ -740,6 +742,9 @@ bool NocturnalEngine::SceneManager::NewSerialize(rapidjson::PrettyWriter<rapidjs
 
 }
 
+/*!*************************************************************************
+Serializes an entity, recursive for parenting
+****************************************************************************/
 void NocturnalEngine::SceneManager::SerializeEntity(rapidjson::PrettyWriter<rapidjson::StringBuffer>* writer, Entity j, PrefabManager& prefabs) const {
 
 	//Skip entities with no components

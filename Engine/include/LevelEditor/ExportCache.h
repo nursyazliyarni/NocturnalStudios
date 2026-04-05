@@ -18,11 +18,9 @@
 
 namespace NocturnalEngine
 {
-	//When Buiilding a New Component
-	//Ensure that the SceneManager Init has the component registered
-	//Ensure that the Serialize and De-Serialize functions in the SceneManager has those components checked
+	
 	/*!*************************************************************************
-	Interface Class for IComponent
+	Class for ExportCache
 	****************************************************************************/
 	class ExportCache : public JSONSerializer
 	{

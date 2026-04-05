@@ -19,7 +19,9 @@
 namespace NocturnalEngine
 {
 
-
+	/*!*************************************************************************
+	Deserializes export cache
+	****************************************************************************/
 	bool ExportCache::Deserialize(const rapidjson::Value& obj) {
 		if (!obj.IsArray())return false;
 
@@ -31,6 +33,9 @@ namespace NocturnalEngine
 		}
 		return true;
 	}
+	/*!*************************************************************************
+	Serializes export cache
+	****************************************************************************/
 	bool ExportCache::Serialize(rapidjson::PrettyWriter<rapidjson::StringBuffer>* writer) const {
 		writer->StartArray();
 		for (const std::pair< std::filesystem::path, bool>& pair : mbuildCache) {
