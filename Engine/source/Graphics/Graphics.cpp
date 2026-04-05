@@ -317,7 +317,7 @@ namespace NocturnalEngine {
 		}
 
 		for (int i = 0; i < Graphic::MAX_LAYERS; ++i)
-			Graphic::layerEnabled[i] = (i != 9);
+			Graphic::layerEnabled[i] = (i != 9 || i!=10);
 
 		for (int i = 0; i < Graphic::MAX_LAYERS; ++i)
 			Graphic::layerDrawOrder[i] = i;

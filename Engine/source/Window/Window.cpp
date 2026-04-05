@@ -23,6 +23,74 @@
 namespace NocturnalEngine{
 	bool Window::isWindowNotFocus = false;
 
+	namespace
+	{
+		struct WindowedBounds
+		{
+			int x = 100;
+			int y = 100;
+			int width = 1280;
+			int height = 720;
+			bool valid = false;
+		};
+
+		WindowedBounds g_windowedBounds{};
+
+		void ToggleFullscreenWindow(GLFWwindow* window, WindowProps& data)
+		{
+			if (!window)
+			{
+				return;
+			}
+
+			const bool isFullscreen = glfwGetWindowMonitor(window) != nullptr;
+			if (isFullscreen)
+			{
+				int restoreX = g_windowedBounds.x;
+				int restoreY = g_windowedBounds.y;
+				int restoreWidth = g_windowedBounds.width;
+				int restoreHeight = g_windowedBounds.height;
+
+				if (!g_windowedBounds.valid)
+				{
+					restoreWidth = static_cast<int>(data.m_CurrentWidth > 0 ? data.m_CurrentWidth : data.m_Width);
+					restoreHeight = static_cast<int>(data.m_CurrentHeight > 0 ? data.m_CurrentHeight : data.m_Height);
+
+					if (GLFWmonitor* monitor = glfwGetPrimaryMonitor())
+					{
+						if (const GLFWvidmode* mode = glfwGetVideoMode(monitor))
+						{
+							restoreX = (mode->width - restoreWidth) / 2;
+							restoreY = (mode->height - restoreHeight) / 2;
+						}
+					}
+				}
+
+				glfwSetWindowMonitor(window, nullptr, restoreX, restoreY, restoreWidth, restoreHeight, 0);
+			}
+			else
+			{
+				glfwGetWindowPos(window, &g_windowedBounds.x, &g_windowedBounds.y);
+				glfwGetWindowSize(window, &g_windowedBounds.width, &g_windowedBounds.height);
+				g_windowedBounds.valid = true;
+
+				GLFWmonitor* monitor = glfwGetPrimaryMonitor();
+				if (!monitor)
+				{
+					return;
+				}
+
+				const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+				if (!mode)
+				{
+					return;
+				}
+
+				glfwSetWindowMonitor(window, monitor, 0, 0, mode->width, mode->height, mode->refreshRate);
+			}
+		}
+	}
+
 	Window::Window() : m_window{ nullptr }, m_monitor{ nullptr },
 		m_windowData{ windowData.GetTitle(), windowData.GetWidth(), windowData.GetHeight(), windowData.GetCurrWidth(), windowData.GetCurrHeight(), 0, 0, 0, 0, false, 0.0, 0.0 },//should be serialized
 		m_vsync{ false }, previousTime{glfwGetTime()}, frameCount{0}
@@ -301,9 +369,29 @@ namespace NocturnalEngine{
 	****************************************************************************/
 	void Window::Key_callback(GLFWwindow* window, int key, int scancode, int action, int mode)
 	{
-		UNREFERENCED_PARAMETER(window);
-		(void)scancode, (void)mode;
-		InputSystem::GetInstance()->SetKeyStatus(key, action);		
+		(void)scancode;
+		InputSystem::GetInstance()->SetKeyStatus(key, action);
+
+		if (action != GLFW_PRESS || !window)
+		{
+			return;
+		}
+
+		const bool isToggleFullscreenKey = (key == GLFW_KEY_F11) ||
+			((key == GLFW_KEY_ENTER || key == GLFW_KEY_KP_ENTER) && ((mode & GLFW_MOD_ALT) != 0));
+
+		if (!isToggleFullscreenKey)
+		{
+			return;
+		}
+
+		WindowProps* data = static_cast<WindowProps*>(glfwGetWindowUserPointer(window));
+		if (!data)
+		{
+			return;
+		}
+
+		ToggleFullscreenWindow(window, *data);
 	}
 
 	/*!*************************************************************************
