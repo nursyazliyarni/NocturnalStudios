@@ -1,5 +1,8 @@
 {
     "LevelIndex":2,
+    "ExtraScenes": [
+        "HiddenEnding"
+    ],
     "LevelData":[
 
         {
