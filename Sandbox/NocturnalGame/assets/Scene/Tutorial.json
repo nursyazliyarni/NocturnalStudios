@@ -179,7 +179,7 @@
                         0.0,
                         0.0
                     ],
-                    "TextureName": "Characters/flamingo_idle",
+                    "TextureName": "Characters/flamingoIdle",
                     "Index_X": 1,
                     "Index_Y": 0,
                     "Ucoordinates": 528.0,
@@ -197,7 +197,7 @@
                     "AnimationStates": [
                         {
                             "Name": "Idle",
-                            "Texture": "Characters/flamingo_idle",
+                            "Texture": "Characters/flamingoIdle",
                             "Ucoordinates": 528.0,
                             "Vcoordinates": 528.0,
                             "Source": 3,
@@ -208,7 +208,7 @@
                         },
                         {
                             "Name": "Hungry",
-                            "Texture": "Characters/flamingo_hungry",
+                            "Texture": "Characters/flamingoEat",
                             "Ucoordinates": 528.0,
                             "Vcoordinates": 528.0,
                             "Source": 0,
@@ -219,7 +219,7 @@
                         },
                         {
                             "Name": "Sick",
-                            "Texture": "Characters/flamingo_sick",
+                            "Texture": "Characters/flamingoSick",
                             "Ucoordinates": 528.0,
                             "Vcoordinates": 528.0,
                             "Source": 1,
@@ -230,7 +230,7 @@
                         },
                         {
                             "Name": "Angry",
-                            "Texture": "Characters/flamingo_angry",
+                            "Texture": "Characters/flamingoAngry",
                             "Ucoordinates": 528.0,
                             "Vcoordinates": 528.0,
                             "Source": 2,
@@ -1658,7 +1658,7 @@
                         0.0,
                         1.0
                     ],
-                    "TextureName": "Blank",
+                    "TextureName": "Characters/Blank",
                     "Index_X": 0,
                     "Index_Y": 0,
                     "Ucoordinates": 512.0,
@@ -1754,7 +1754,7 @@
                         0.0,
                         1.0
                     ],
-                    "TextureName": "Blank",
+                    "TextureName": "Characters/Blank",
                     "Index_X": 0,
                     "Index_Y": 0,
                     "Ucoordinates": 512.0,
@@ -1850,7 +1850,7 @@
                         0.0,
                         1.0
                     ],
-                    "TextureName": "Blank",
+                    "TextureName": "Characters/Blank",
                     "Index_X": 0,
                     "Index_Y": 0,
                     "Ucoordinates": 512.0,
@@ -1946,7 +1946,7 @@
                         0.0,
                         1.0
                     ],
-                    "TextureName": "Blank",
+                    "TextureName": "Characters/Blank",
                     "Index_X": 0,
                     "Index_Y": 0,
                     "Ucoordinates": 512.0,
@@ -2042,7 +2042,7 @@
                         0.0,
                         1.0
                     ],
-                    "TextureName": "Blank",
+                    "TextureName": "Characters/Blank",
                     "Index_X": 0,
                     "Index_Y": 0,
                     "Ucoordinates": 512.0,
@@ -2138,7 +2138,7 @@
                         0.0,
                         1.0
                     ],
-                    "TextureName": "Blank",
+                    "TextureName": "Characters/Blank",
                     "Index_X": 0,
                     "Index_Y": 0,
                     "Ucoordinates": 512.0,
@@ -2234,7 +2234,7 @@
                         0.0,
                         1.0
                     ],
-                    "TextureName": "Blank",
+                    "TextureName": "Characters/Blank",
                     "Index_X": 0,
                     "Index_Y": 0,
                     "Ucoordinates": 512.0,
@@ -2330,7 +2330,7 @@
                         0.0,
                         1.0
                     ],
-                    "TextureName": "Blank",
+                    "TextureName": "Characters/Blank",
                     "Index_X": 0,
                     "Index_Y": 0,
                     "Ucoordinates": 512.0,
@@ -2426,7 +2426,7 @@
                         0.0,
                         1.0
                     ],
-                    "TextureName": "Blank",
+                    "TextureName": "Characters/Blank",
                     "Index_X": 0,
                     "Index_Y": 0,
                     "Ucoordinates": 512.0,
@@ -2522,7 +2522,7 @@
                         0.0,
                         1.0
                     ],
-                    "TextureName": "Blank",
+                    "TextureName": "Characters/Blank",
                     "Index_X": 0,
                     "Index_Y": 0,
                     "Ucoordinates": 512.0,
@@ -2618,7 +2618,7 @@
                         0.0,
                         1.0
                     ],
-                    "TextureName": "Blank",
+                    "TextureName": "Characters/Blank",
                     "Index_X": 0,
                     "Index_Y": 0,
                     "Ucoordinates": 512.0,
@@ -2714,7 +2714,7 @@
                         0.0,
                         1.0
                     ],
-                    "TextureName": "Blank",
+                    "TextureName": "Characters/Blank",
                     "Index_X": 0,
                     "Index_Y": 0,
                     "Ucoordinates": 512.0,
@@ -2814,6 +2814,11 @@
                 {
                     "Component": "NameTag",
                     "NameTag": "next_level_sign"
+                },
+                {
+                    "Component": "Tag",
+                    "Tag": "Untagged",
+                    "TargetTag": ""
                 },
                 {
                     "Component": "Sprite",
@@ -2995,6 +3000,11 @@
                         "y": 1.0
                     },
                     "Rotation": 0.0
+                },
+                {
+                    "Component": "Tag",
+                    "Tag": "Untagged",
+                    "TargetTag": ""
                 },
                 {
                     "Component": "NameTag",

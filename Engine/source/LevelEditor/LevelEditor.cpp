@@ -2187,9 +2187,9 @@ namespace NocturnalEngine {
                     sprite.stateRules.erase(sprite.stateRules.begin() + deleteIndex);
                     if (sprite.statePreviewMode > static_cast<int>(sprite.stateRules.size()))
                         sprite.statePreviewMode = 0;
+                    else if (sprite.statePreviewMode > 0 && (sprite.statePreviewMode - 1) >= deleteIndex)
+                        sprite.statePreviewMode = std::max(0, sprite.statePreviewMode - 1);
                     changed = true;
-                    
-                    ImGui::EndDragDropTarget();
                 }
 
                 // Logic scripts do not run while editor is active, so apply preview texture directly here.

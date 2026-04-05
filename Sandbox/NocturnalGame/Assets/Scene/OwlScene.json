@@ -210,8 +210,8 @@
                         0.0,
                         0.0
                     ],
-                    "TextureName": "Characters/owl sick",
-                    "Index_X": 1,
+                    "TextureName": "Characters/owl idle",
+                    "Index_X": 0,
                     "Index_Y": 0,
                     "Ucoordinates": 512.0,
                     "Vcoordinates": 512.0,
@@ -223,7 +223,7 @@
                     "LayeringOrder": 1,
                     "StateManagerEnabled": true,
                     "StatePreviewInEditor": false,
-                    "StatePreviewMode": 4,
+                    "StatePreviewMode": 0,
                     "AnimationStates": [
                         {
                             "Name": "Idle",
@@ -243,8 +243,8 @@
                             "Vcoordinates": 512.0,
                             "Source": 2,
                             "Compare": 0,
-                            "Threshold": 0.5,
-                            "Priority": 0,
+                            "Threshold": 0.55,
+                            "Priority": 30,
                             "Enabled": true
                         },
                         {
@@ -254,8 +254,8 @@
                             "Vcoordinates": 536.5,
                             "Source": 0,
                             "Compare": 0,
-                            "Threshold": 0.5,
-                            "Priority": 0,
+                            "Threshold": 0.55,
+                            "Priority": 10,
                             "Enabled": true
                         },
                         {
@@ -265,19 +265,8 @@
                             "Vcoordinates": 512.0,
                             "Source": 1,
                             "Compare": 0,
-                            "Threshold": 0.5,
-                            "Priority": 0,
-                            "Enabled": true
-                        },
-                        {
-                            "Name": "Distorted Idle",
-                            "Texture": "Characters/owl idle distorted",
-                            "Ucoordinates": 512.0,
-                            "Vcoordinates": 512.0,
-                            "Source": 3,
-                            "Compare": 0,
-                            "Threshold": 0.5,
-                            "Priority": 0,
+                            "Threshold": 0.55,
+                            "Priority": 20,
                             "Enabled": true
                         },
                         {
@@ -287,8 +276,8 @@
                             "Vcoordinates": 512.0,
                             "Source": 2,
                             "Compare": 0,
-                            "Threshold": 0.5,
-                            "Priority": 0,
+                            "Threshold": 0.30000001192092896,
+                            "Priority": 31,
                             "Enabled": true
                         },
                         {
@@ -298,8 +287,8 @@
                             "Vcoordinates": 512.0,
                             "Source": 0,
                             "Compare": 0,
-                            "Threshold": 0.5,
-                            "Priority": 0,
+                            "Threshold": 0.30000001192092896,
+                            "Priority": 11,
                             "Enabled": true
                         },
                         {
@@ -309,8 +298,8 @@
                             "Vcoordinates": 512.0,
                             "Source": 1,
                             "Compare": 0,
-                            "Threshold": 0.5,
-                            "Priority": 0,
+                            "Threshold": 0.30000001192092896,
+                            "Priority": 21,
                             "Enabled": true
                         }
                     ]
@@ -436,31 +425,31 @@
                         "AudioPath": "SFX_Static_01.wav",
                         "Channel": 3,
                         "IsLooping": false,
-                        "VolumeLimit": 0.25
+                        "VolumeLimit": 0.075
                     },
                     "1": {
                         "AudioPath": "SFX_Static_02.wav",
                         "Channel": 3,
                         "IsLooping": false,
-                        "VolumeLimit": 0.25
+                        "VolumeLimit": 0.075
                     },
                     "2": {
                         "AudioPath": "SFX_Static_03.wav",
                         "Channel": 3,
                         "IsLooping": false,
-                        "VolumeLimit": 0.25
+                        "VolumeLimit": 0.075
                     },
                     "3": {
                         "AudioPath": "SFX_Static_04.wav",
                         "Channel": 3,
                         "IsLooping": false,
-                        "VolumeLimit": 0.25
+                        "VolumeLimit": 0.075
                     },
                     "4": {
                         "AudioPath": "SFX_Static_05.wav",
                         "Channel": 3,
                         "IsLooping": false,
-                        "VolumeLimit": 0.25
+                        "VolumeLimit": 0.075
                     },
                     "AudioArrCount": 5,
                     "BGM Volume": 1.0,
@@ -647,31 +636,31 @@
                         "AudioPath": "SFX_Static_01.wav",
                         "Channel": 3,
                         "IsLooping": false,
-                        "VolumeLimit": 0.25
+                        "VolumeLimit": 0.075
                     },
                     "1": {
                         "AudioPath": "SFX_Static_02.wav",
                         "Channel": 3,
                         "IsLooping": false,
-                        "VolumeLimit": 0.25
+                        "VolumeLimit": 0.075
                     },
                     "2": {
                         "AudioPath": "SFX_Static_03.wav",
                         "Channel": 3,
                         "IsLooping": false,
-                        "VolumeLimit": 0.25
+                        "VolumeLimit": 0.075
                     },
                     "3": {
                         "AudioPath": "SFX_Static_04.wav",
                         "Channel": 3,
                         "IsLooping": false,
-                        "VolumeLimit": 0.25
+                        "VolumeLimit": 0.075
                     },
                     "4": {
                         "AudioPath": "SFX_Static_05.wav",
                         "Channel": 3,
                         "IsLooping": false,
-                        "VolumeLimit": 0.25
+                        "VolumeLimit": 0.075
                     },
                     "AudioArrCount": 5,
                     "BGM Volume": 1.0,
@@ -852,31 +841,31 @@
                         "AudioPath": "SFX_Static_01.wav",
                         "Channel": 3,
                         "IsLooping": false,
-                        "VolumeLimit": 0.25
+                        "VolumeLimit": 0.075
                     },
                     "1": {
                         "AudioPath": "SFX_Static_02.wav",
                         "Channel": 3,
                         "IsLooping": false,
-                        "VolumeLimit": 0.25
+                        "VolumeLimit": 0.075
                     },
                     "2": {
                         "AudioPath": "SFX_Static_03.wav",
                         "Channel": 3,
                         "IsLooping": false,
-                        "VolumeLimit": 0.25
+                        "VolumeLimit": 0.075
                     },
                     "3": {
                         "AudioPath": "SFX_Static_04.wav",
                         "Channel": 3,
                         "IsLooping": false,
-                        "VolumeLimit": 0.25
+                        "VolumeLimit": 0.075
                     },
                     "4": {
                         "AudioPath": "SFX_Static_05.wav",
                         "Channel": 3,
                         "IsLooping": false,
-                        "VolumeLimit": 0.25
+                        "VolumeLimit": 0.075
                     },
                     "AudioArrCount": 5,
                     "BGM Volume": 1.0,
@@ -1057,31 +1046,31 @@
                         "AudioPath": "SFX_Static_01.wav",
                         "Channel": 3,
                         "IsLooping": false,
-                        "VolumeLimit": 0.25
+                        "VolumeLimit": 0.075
                     },
                     "1": {
                         "AudioPath": "SFX_Static_02.wav",
                         "Channel": 3,
                         "IsLooping": false,
-                        "VolumeLimit": 0.25
+                        "VolumeLimit": 0.075
                     },
                     "2": {
                         "AudioPath": "SFX_Static_03.wav",
                         "Channel": 3,
                         "IsLooping": false,
-                        "VolumeLimit": 0.25
+                        "VolumeLimit": 0.075
                     },
                     "3": {
                         "AudioPath": "SFX_Static_04.wav",
                         "Channel": 3,
                         "IsLooping": false,
-                        "VolumeLimit": 0.25
+                        "VolumeLimit": 0.075
                     },
                     "4": {
                         "AudioPath": "SFX_Static_05.wav",
                         "Channel": 3,
                         "IsLooping": false,
-                        "VolumeLimit": 0.25
+                        "VolumeLimit": 0.075
                     },
                     "AudioArrCount": 5,
                     "BGM Volume": 1.0,

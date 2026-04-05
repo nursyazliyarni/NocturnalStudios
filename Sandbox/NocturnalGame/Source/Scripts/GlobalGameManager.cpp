@@ -430,7 +430,7 @@ namespace NocturnalEngine {
         }
         else {
             levelNum = 1;
-            p_Scene->setSceneToLoad("Assets/Scene/Menu.json");//reset the game level in game over
+            p_Scene->setSceneToLoad("Assets/Scene/badEndingScene.json");
         }
 
     }
