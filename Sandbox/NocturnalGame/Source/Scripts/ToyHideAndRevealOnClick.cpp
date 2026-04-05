@@ -9,11 +9,29 @@
 #include "GUI/GUI.h"
 #include "Scripts/GlobalGameManager.h"
 #include "Math/Random.h"
+#include "Audio/AudioEngine.h"
 
 namespace NocturnalEngine
 {
     namespace
     {
+        std::string GetToyAudioPath(const AnimalAttributes& animalAttributes)
+        {
+            switch (animalAttributes.WhatAnimalType())
+            {
+            case 1:
+                return "Assets/Audio/FlamingoToy.wav";
+            case 2:
+                return "Assets/Audio/SealToy.wav";
+            case 3:
+                return "Assets/Audio/HorseToy.wav";
+            case 4:
+                return "Assets/Audio/OwlToy.wav";
+            default:
+                return {};
+            }
+        }
+
         // Per-toy runtime memory:
         // - enteredOnce: whether this toy has already been seen in this run
         // - pendingHiddenPos: where to hide the toy the next time scene loads
@@ -234,6 +252,13 @@ namespace NocturnalEngine
         iA.toyIsHidden = false;
         hasBeenHidden = false;
         aa.timeSinceSanity = -10.f;
+
+        const std::string toyAudioPath = GetToyAudioPath(aa);
+        if (!toyAudioPath.empty())
+        {
+            const int toyChannel = p_Audio->PlaySound(toyAudioPath, Audio::AudioType::SFX);
+            p_Audio->SetVolume(toyChannel, 0.3f);
+        }
 
         t.SetPos(ogPos);
         s.SetLayerOrder(ogLayer);

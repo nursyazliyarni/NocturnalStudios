@@ -43,6 +43,11 @@ namespace NocturnalEngine {
 	{
 		UNREFERENCED_PARAMETER(Frametime);
 
+		if (sceneName == "HiddenEnding")
+		{
+			return;
+		}
+
 		if (!p_ecs.HaveComponent<Audio>(GetScriptEntityID())) return;
 
 		Audio &a { p_ecs.GetComponent<Audio>(GetScriptEntityID()) };
