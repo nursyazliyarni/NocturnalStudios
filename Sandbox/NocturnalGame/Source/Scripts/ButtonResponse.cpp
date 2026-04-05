@@ -128,7 +128,6 @@ namespace NocturnalEngine
 						else if (name == "Info") {
 							std::cout << "Info clicked\n";
 							p_GameManager.ShowInfo();
-							p_GameManager.SetState(GameManager::GameState::PAUSED);
 							return;
 						}
 						else if (name == "Resume3")

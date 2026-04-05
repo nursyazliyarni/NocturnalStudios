@@ -154,7 +154,7 @@
             ]
         },
         {
-            "ID": 2,
+            "ID": 1,
             "Components": [
                 {
                     "Component": "Tag",
@@ -211,7 +211,7 @@
                         0.0
                     ],
                     "TextureName": "Characters/horse idle",
-                    "Index_X": 0,
+                    "Index_X": 1,
                     "Index_Y": 0,
                     "Ucoordinates": 517.0,
                     "Vcoordinates": 512.0,
@@ -304,7 +304,7 @@
             ]
         },
         {
-            "ID": 3,
+            "ID": 2,
             "Components": [
                 {
                     "Component": "Tag",
@@ -509,7 +509,7 @@
             ]
         },
         {
-            "ID": 4,
+            "ID": 3,
             "Components": [
                 {
                     "Component": "Tag",
@@ -714,7 +714,7 @@
             ]
         },
         {
-            "ID": 5,
+            "ID": 4,
             "Components": [
                 {
                     "Component": "Tag",
@@ -919,7 +919,7 @@
             ]
         },
         {
-            "ID": 6,
+            "ID": 5,
             "Components": [
                 {
                     "Component": "Tag",
@@ -1076,7 +1076,7 @@
             ]
         },
         {
-            "ID": 7,
+            "ID": 6,
             "Components": [
                 {
                     "Component": "Transform",
@@ -1137,7 +1137,7 @@
             ]
         },
         {
-            "ID": 8,
+            "ID": 7,
             "Components": [
                 {
                     "Component": "Transform",
@@ -1302,7 +1302,7 @@
             ]
         },
         {
-            "ID": 9,
+            "ID": 8,
             "Components": [
                 {
                     "Component": "Transform",
@@ -1467,7 +1467,7 @@
             ]
         },
         {
-            "ID": 10,
+            "ID": 9,
             "Components": [
                 {
                     "Component": "Transform",
@@ -1562,7 +1562,7 @@
             ]
         },
         {
-            "ID": 11,
+            "ID": 10,
             "Components": [
                 {
                     "Component": "Transform",
@@ -1613,7 +1613,7 @@
             ]
         },
         {
-            "ID": 12,
+            "ID": 11,
             "Components": [
                 {
                     "Component": "Transform",
@@ -1655,7 +1655,7 @@
             ]
         },
         {
-            "ID": 13,
+            "ID": 12,
             "Components": [
                 {
                     "Component": "Transform",
@@ -1697,7 +1697,7 @@
             ]
         },
         {
-            "ID": 14,
+            "ID": 13,
             "Components": [
                 {
                     "Component": "Transform",
@@ -1739,7 +1739,7 @@
             ]
         },
         {
-            "ID": 15,
+            "ID": 14,
             "Components": [
                 {
                     "Component": "Tag",
@@ -1805,7 +1805,7 @@
             ]
         },
         {
-            "ID": 16,
+            "ID": 15,
             "Components": [
                 {
                     "Component": "Transform",
@@ -1896,7 +1896,7 @@
             ]
         },
         {
-            "ID": 17,
+            "ID": 16,
             "Components": [
                 {
                     "Component": "Transform",
@@ -1957,7 +1957,7 @@
             ]
         },
         {
-            "ID": 18,
+            "ID": 17,
             "Components": [
                 {
                     "Component": "Transform",
@@ -2018,7 +2018,7 @@
             ]
         },
         {
-            "ID": 19,
+            "ID": 18,
             "Components": [
                 {
                     "Component": "Transform",
@@ -2079,7 +2079,7 @@
             ]
         },
         {
-            "ID": 20,
+            "ID": 19,
             "Components": [
                 {
                     "Component": "Transform",
@@ -2140,7 +2140,7 @@
             ]
         },
         {
-            "ID": 21,
+            "ID": 20,
             "Components": [
                 {
                     "Component": "Transform",
@@ -2220,7 +2220,7 @@
             ]
         },
         {
-            "ID": 22,
+            "ID": 21,
             "Components": [
                 {
                     "Component": "Transform",
@@ -2302,7 +2302,7 @@
             ]
         },
         {
-            "ID": 23,
+            "ID": 22,
             "Components": [
                 {
                     "Component": "Transform",
@@ -2363,7 +2363,7 @@
             ]
         },
         {
-            "ID": 24,
+            "ID": 23,
             "Components": [
                 {
                     "Component": "Transform",
@@ -2424,7 +2424,7 @@
             ]
         },
         {
-            "ID": 25,
+            "ID": 24,
             "Components": [
                 {
                     "Component": "Transform",
@@ -2506,7 +2506,7 @@
             ]
         },
         {
-            "ID": 26,
+            "ID": 25,
             "Components": [
                 {
                     "Component": "Transform",
@@ -2586,7 +2586,7 @@
             ]
         },
         {
-            "ID": 27,
+            "ID": 26,
             "Components": [
                 {
                     "Component": "Transform",
@@ -2675,7 +2675,7 @@
             ]
         },
         {
-            "ID": 28,
+            "ID": 27,
             "Components": [
                 {
                     "Component": "Transform",
@@ -2726,7 +2726,7 @@
             ]
         },
         {
-            "ID": 29,
+            "ID": 28,
             "Components": [
                 {
                     "Component": "Tag",
@@ -2811,7 +2811,7 @@
             ]
         },
         {
-            "ID": 31,
+            "ID": 29,
             "Components": [
                 {
                     "Component": "Tag",
@@ -2896,7 +2896,7 @@
             ]
         },
         {
-            "ID": 32,
+            "ID": 31,
             "Prefab": "KeyboardButtonReaction",
             "Components": [
                 {
@@ -2918,7 +2918,7 @@
             ]
         },
         {
-            "ID": 33,
+            "ID": 32,
             "Components": [
                 {
                     "Component": "Tag",
@@ -2984,7 +2984,7 @@
             ]
         },
         {
-            "ID": 34,
+            "ID": 33,
             "Components": [
                 {
                     "Component": "Tag",
@@ -3106,7 +3106,7 @@
             ]
         },
         {
-            "ID": 35,
+            "ID": 34,
             "Components": [
                 {
                     "Component": "Tag",
@@ -3228,7 +3228,7 @@
             ]
         },
         {
-            "ID": 36,
+            "ID": 35,
             "Components": [
                 {
                     "Component": "Tag",
@@ -3350,7 +3350,7 @@
             ]
         },
         {
-            "ID": 37,
+            "ID": 36,
             "Components": [
                 {
                     "Component": "Tag",
@@ -3472,7 +3472,7 @@
             ]
         },
         {
-            "ID": 38,
+            "ID": 37,
             "Components": [
                 {
                     "Component": "Tag",
@@ -3580,8 +3580,8 @@
                     "TexChangeOnClick": "",
                     "ScaleOnHoverFlag": false,
                     "ScaleOnHover": 0.0,
-                    "SetGameStateFlag": false,
-                    "SetGameState": "STARTING",
+                    "SetGameStateFlag": true,
+                    "SetGameState": "PAUSED",
                     "ResetStatsFlag": false,
                     "NextLevelFlag": false,
                     "SetCameraZoomFlag": false,
@@ -3764,7 +3764,7 @@
                     "ScaleOnHoverFlag": false,
                     "ScaleOnHover": 0.0,
                     "SetGameStateFlag": true,
-                    "SetGameState": "PLAYING",
+                    "SetGameState": "PAUSED",
                     "ResetStatsFlag": false,
                     "NextLevelFlag": false,
                     "SetCameraZoomFlag": false,

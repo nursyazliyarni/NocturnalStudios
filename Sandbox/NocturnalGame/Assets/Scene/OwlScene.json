@@ -211,7 +211,7 @@
                         0.0
                     ],
                     "TextureName": "Characters/owl insanity",
-                    "Index_X": 0,
+                    "Index_X": 1,
                     "Index_Y": 0,
                     "Ucoordinates": 534.5,
                     "Vcoordinates": 536.5,
@@ -2866,7 +2866,7 @@
             ]
         },
         {
-            "ID": 30,
+            "ID": 31,
             "Prefab": "KeyboardButtonReaction",
             "Components": [
                 {
@@ -3550,8 +3550,8 @@
                     "TexChangeOnClick": "",
                     "ScaleOnHoverFlag": false,
                     "ScaleOnHover": 0.0,
-                    "SetGameStateFlag": false,
-                    "SetGameState": "STARTING",
+                    "SetGameStateFlag": true,
+                    "SetGameState": "PAUSED",
                     "ResetStatsFlag": false,
                     "NextLevelFlag": false,
                     "SetCameraZoomFlag": false,
@@ -3734,7 +3734,7 @@
                     "ScaleOnHoverFlag": false,
                     "ScaleOnHover": 0.0,
                     "SetGameStateFlag": true,
-                    "SetGameState": "PLAYING",
+                    "SetGameState": "PAUSED",
                     "ResetStatsFlag": false,
                     "NextLevelFlag": false,
                     "SetCameraZoomFlag": false,
