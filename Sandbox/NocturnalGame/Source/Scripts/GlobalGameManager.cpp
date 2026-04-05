@@ -20,6 +20,7 @@
 #include "core/Log.h"
 #include "Math/Random.h"
 #include "Scripts/AnimalLogic.h"
+#include "Scripts/EncryptionKey.h"
 #include "ECS/Components/ButtonComponent.h"
 #include "Audio/AudioEngine.h"
 #include "graphics/Graphics.h"
@@ -301,6 +302,13 @@ namespace NocturnalEngine {
             }
         }
 
+        Entity inventoryBtn{ GetEntityByName("InventoryBtn") };
+        if (inventoryBtn != MAX_ENTITIES && p_ecs.HaveComponent<ButtonComponent>(inventoryBtn))
+        {
+            p_ecs.GetComponent<ButtonComponent>(inventoryBtn).SET_button_logic_ON(
+                levelConfig.HasExtraScene(static_cast<int>(levelNum), "hiddenending"));
+        }
+
         targetVisibility = false;
         auto it = sceneAnimalMap.find(gs);
         if (it != sceneAnimalMap.end()) {
@@ -358,6 +366,7 @@ namespace NocturnalEngine {
         Graphic::layerEnabled[9] = false;
         Graphic::layerEnabled[10] = false;
         p_GUI->set_pause(false);
+        EncryptionKey::ResetRunState();
 
         AnimalAttributes defaultAttributes{};
         defaultAttributes.SetDefault();
@@ -727,6 +736,20 @@ namespace NocturnalEngine {
              }
         }
 
+        ExtraSceneSet extraScenes{};
+        if (obj.HasMember("ExtraScenes") && obj["ExtraScenes"].IsArray())
+        {
+            for (const rapidjson::Value& scene : obj["ExtraScenes"].GetArray())
+            {
+                if (!scene.IsString())
+                    continue;
+
+                std::string sceneName = scene.GetString();
+                std::transform(sceneName.begin(), sceneName.end(), sceneName.begin(), ::tolower);
+                extraScenes.insert(sceneName);
+            }
+        }
+
         for (int i = 1; i < 5; i++)
         {
             if (leveldat.find(static_cast<AnimalRef>(i)) != leveldat.end())continue;
@@ -737,7 +760,19 @@ namespace NocturnalEngine {
         }
 
         levelList.emplace(levelIndex, leveldat);
+        extraScenesByLevel[levelIndex] = std::move(extraScenes);
         return true; 
+    }
+
+    bool LevelConfig::HasExtraScene(int levelIndex, const std::string& sceneName) const
+    {
+        auto levelIt = extraScenesByLevel.find(levelIndex);
+        if (levelIt == extraScenesByLevel.end())
+            return false;
+
+        std::string normalizedName = sceneName;
+        std::transform(normalizedName.begin(), normalizedName.end(), normalizedName.begin(), ::tolower);
+        return levelIt->second.find(normalizedName) != levelIt->second.end();
     }
 
     //==========Pause and resume functions, also a function to check if the game is paused=========

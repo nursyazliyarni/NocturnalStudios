@@ -373,6 +373,27 @@ void NocturnalEngine::SceneManager::LoadSceneNow(const std::string& path)
 		Graphic::camera.SetPosition({ 0.0f,0.0f,0.0f });
 	}
 
+	if (path == "Assets/Scene/hiddenEnding.json")
+	{
+		isGameplay = false;
+		Graphic::camera.SetZoomLevel(1.0f);
+		Graphic::camera.SetPosition({ 0.0f,0.0f,0.0f });
+	}
+
+	if (path == "Assets/Scene/goodEndingScene.json")
+	{
+		isGameplay = false;
+		Graphic::camera.SetZoomLevel(1.0f);
+		Graphic::camera.SetPosition({ 0.0f,0.0f,0.0f });
+	}
+
+	if (path == "Assets/Scene/badEndingScene.json")
+	{
+		isGameplay = false;
+		Graphic::camera.SetZoomLevel(1.0f);
+		Graphic::camera.SetPosition({ 0.0f,0.0f,0.0f });
+	}
+
 	if (path == "Assets/Scene/HowToPlay.json")
 	{
 		isGameplay = false;
