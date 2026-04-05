@@ -22,18 +22,34 @@
                 },
                 {
                     "Component": "Transform",
-                    "posX": 0.0,
-                    "posY": 0.0,
-                    "scaleX": 3.6449999809265137,
-                    "scaleY": 1.9999960660934448,
-                    "Rot": 0.0
+                    "Position": {
+                        "x": 0.0,
+                        "y": 0.0
+                    },
+                    "Scale": {
+                        "x": 3.6449999809265137,
+                        "y": 1.9999960660934448
+                    },
+                    "Rotation": 0.0
                 },
                 {
                     "Component": "NameTag",
-                    "NameTag": "Background"
+                    "NameTag": "HTPBackground"
                 },
                 {
                     "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "length of dashed lines": 0.009999999776482582,
+                    "distance gap": 0.009999999776482582,
+                    "line movement speed": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
                     "TextureName": "UI/menu_bg",
                     "Index_X": 0,
                     "Index_Y": 0,
@@ -50,6 +66,8 @@
                         {
                             "Name": "Idle",
                             "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
                             "Source": 3,
                             "Compare": 0,
                             "Threshold": 0.0,
@@ -63,7 +81,8 @@
                     "0": {
                         "AudioPath": "Luminara Zoo - Music - Menu (v1).wav",
                         "Channel": 2,
-                        "IsLooping": false
+                        "IsLooping": false,
+                        "VolumeLimit": 1.0
                     },
                     "AudioArrCount": 1,
                     "BGM Volume": 1.0,
@@ -95,8 +114,15 @@
                 },
                 {
                     "Component": "Logic",
-                    "0": "AudioManager",
-                    "1": "BackgroundAudio",
+                    "Scripts": [
+                        {
+                            "ScriptName": "AudioManager"
+                        },
+                        {
+                            "ScriptName": "BackgroundAudio",
+                            "Background Audio Index": 0
+                        }
+                    ],
                     "ScriptCount": 2
                 }
             ]
@@ -111,23 +137,27 @@
                 },
                 {
                     "Component": "Transform",
-                    "posX": -1.1100000143051147,
-                    "posY": 0.4449999928474426,
-                    "scaleX": 0.3499999940395355,
-                    "scaleY": 0.3499999940395355,
-                    "Rot": 6.0
+                    "Position": {
+                        "x": -0.9350000023841858,
+                        "y": 0.6449999809265137
+                    },
+                    "Scale": {
+                        "x": 0.3499999940395355,
+                        "y": 0.3499999940395355
+                    },
+                    "Rotation": 0.0
                 },
                 {
                     "Component": "Collider",
                     "ColliderType1": 4,
                     "ColliderType2": 0,
-                    "minX1": 0.15000000596046448,
+                    "minX1": 0.10000000149011612,
                     "minX2": 0.0,
                     "minY1": 0.05000000074505806,
                     "minY2": 0.0,
-                    "maxX1": 0.20000000298023224,
+                    "maxX1": 0.38999998569488525,
                     "maxX2": 0.0,
-                    "maxY1": 0.05000000074505806,
+                    "maxY1": 0.07999999821186066,
                     "maxY2": 0.0,
                     "offsetX1": 0.0,
                     "offsetX2": 0.0,
@@ -142,7 +172,19 @@
                 },
                 {
                     "Component": "Sprite",
-                    "TextureName": "HowToPlay/overviewtag",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "length of dashed lines": 0.009999999776482582,
+                    "distance gap": 0.009999999776482582,
+                    "line movement speed": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "TextureName": "Characters/Blank",
                     "Index_X": 0,
                     "Index_Y": 0,
                     "Ucoordinates": 512.0,
@@ -158,6 +200,8 @@
                         {
                             "Name": "Idle",
                             "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
                             "Source": 3,
                             "Compare": 0,
                             "Threshold": 0.0,
@@ -171,7 +215,8 @@
                     "0": {
                         "AudioPath": "UI_PageFlick_v1.wav",
                         "Channel": 3,
-                        "IsLooping": false
+                        "IsLooping": false,
+                        "VolumeLimit": 1.0
                     },
                     "AudioArrCount": 1,
                     "BGM Volume": 1.0,
@@ -203,18 +248,25 @@
                 },
                 {
                     "Component": "Logic",
-                    "0": "ButtonResponse",
-                    "1": "AudioManager",
+                    "Scripts": [
+                        {
+                            "ScriptName": "ButtonResponse"
+                        },
+                        {
+                            "ScriptName": "AudioManager"
+                        }
+                    ],
                     "ScriptCount": 2
                 },
                 {
                     "Component": "ButtonComponent",
+                    "Button logic is ON": true,
                     "GoToSceneFlag": true,
                     "GoToScene": "Assets/Scene/HowToPlay.json",
                     "AudioOnHoverFlag": false,
                     "AudioOnHoverRandom": false,
                     "HoverAudioIndex": 0,
-                    "AudioOnClickFlag": true,
+                    "AudioOnClickFlag": false,
                     "AudioOnClickRandom": false,
                     "ClickAudioIndex": 0,
                     "TexChangeOnHoverFlag": false,
@@ -246,23 +298,27 @@
                 },
                 {
                     "Component": "Transform",
-                    "posX": -1.1749999523162842,
-                    "posY": 0.2849999964237213,
-                    "scaleX": 0.3499999940395355,
-                    "scaleY": 0.3499999940395355,
-                    "Rot": 6.0005998611450195
+                    "Position": {
+                        "x": -1.1100000143051147,
+                        "y": 0.2849999964237213
+                    },
+                    "Scale": {
+                        "x": 0.3499999940395355,
+                        "y": 0.3499999940395355
+                    },
+                    "Rotation": 6.0005998611450195
                 },
                 {
                     "Component": "Collider",
                     "ColliderType1": 4,
                     "ColliderType2": 0,
-                    "minX1": 0.15000000596046448,
+                    "minX1": 0.10000000149011612,
                     "minX2": 0.0,
-                    "minY1": 0.05000000074505806,
+                    "minY1": 0.05999999865889549,
                     "minY2": 0.0,
-                    "maxX1": 0.20000000298023224,
+                    "maxX1": 0.1599999964237213,
                     "maxX2": 0.0,
-                    "maxY1": 0.05000000074505806,
+                    "maxY1": 0.019999999552965164,
                     "maxY2": 0.0,
                     "offsetX1": 0.0,
                     "offsetX2": 0.0,
@@ -277,7 +333,19 @@
                 },
                 {
                     "Component": "Sprite",
-                    "TextureName": "HowToPlay/flamingotag",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "length of dashed lines": 0.009999999776482582,
+                    "distance gap": 0.009999999776482582,
+                    "line movement speed": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "TextureName": "Characters/Blank",
                     "Index_X": 0,
                     "Index_Y": 0,
                     "Ucoordinates": 512.0,
@@ -293,79 +361,8 @@
                         {
                             "Name": "Idle",
                             "Texture": "",
-                            "Source": 3,
-                            "Compare": 0,
-                            "Threshold": 0.0,
-                            "Priority": -100,
-                            "Enabled": true
-                        }
-                    ]
-                },
-                {
-                    "Component": "Logic",
-                    "0": "ButtonResponse",
-                    "1": "AudioManager",
-                    "ScriptCount": 2
-                }
-            ]
-        },
-        {
-            "ID": 3,
-            "Components": [
-                {
-                    "Component": "Tag",
-                    "Tag": "SealTab",
-                    "TargetTag": ""
-                },
-                {
-                    "Component": "Transform",
-                    "posX": -1.1100000143051147,
-                    "posY": 0.16500000655651093,
-                    "scaleX": 0.3499999940395355,
-                    "scaleY": 0.3499999940395355,
-                    "Rot": 6.0
-                },
-                {
-                    "Component": "Collider",
-                    "ColliderType1": 4,
-                    "ColliderType2": 0,
-                    "minX1": 0.15000000596046448,
-                    "minX2": 0.0,
-                    "minY1": 0.05000000074505806,
-                    "minY2": 0.0,
-                    "maxX1": 0.20000000298023224,
-                    "maxX2": 0.0,
-                    "maxY1": 0.05000000074505806,
-                    "maxY2": 0.0,
-                    "offsetX1": 0.0,
-                    "offsetX2": 0.0,
-                    "offsetY1": 0.0,
-                    "offsetY2": 0.0,
-                    "radius1": 0.0,
-                    "radius2": 0.0
-                },
-                {
-                    "Component": "NameTag",
-                    "NameTag": "SealTag"
-                },
-                {
-                    "Component": "Sprite",
-                    "TextureName": "HowToPlay/sealtag",
-                    "Index_X": 0,
-                    "Index_Y": 0,
-                    "Ucoordinates": 512.0,
-                    "Vcoordinates": 512.0,
-                    "IsSpriteSheet": false,
-                    "IsAnimated": false,
-                    "MaxIndex": 0,
-                    "LayeringOrder": 0,
-                    "StateManagerEnabled": false,
-                    "StatePreviewInEditor": false,
-                    "StatePreviewMode": 0,
-                    "AnimationStates": [
-                        {
-                            "Name": "Idle",
-                            "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
                             "Source": 3,
                             "Compare": 0,
                             "Threshold": 0.0,
@@ -379,7 +376,8 @@
                     "0": {
                         "AudioPath": "UI_PageFlick_v1.wav",
                         "Channel": 3,
-                        "IsLooping": false
+                        "IsLooping": false,
+                        "VolumeLimit": 1.0
                     },
                     "AudioArrCount": 1,
                     "BGM Volume": 1.0,
@@ -411,12 +409,180 @@
                 },
                 {
                     "Component": "Logic",
-                    "0": "ButtonResponse",
-                    "1": "AudioManager",
+                    "Scripts": [
+                        {
+                            "ScriptName": "ButtonResponse"
+                        },
+                        {
+                            "ScriptName": "AudioManager"
+                        }
+                    ],
                     "ScriptCount": 2
                 },
                 {
                     "Component": "ButtonComponent",
+                    "Button logic is ON": true,
+                    "GoToSceneFlag": true,
+                    "GoToScene": "Assets/Scene/Manual_Flamingo.json",
+                    "AudioOnHoverFlag": false,
+                    "AudioOnHoverRandom": false,
+                    "HoverAudioIndex": 0,
+                    "AudioOnClickFlag": true,
+                    "AudioOnClickRandom": false,
+                    "ClickAudioIndex": 0,
+                    "TexChangeOnHoverFlag": false,
+                    "TexChangeOnHover": "",
+                    "TexChangeOnClickFlag": false,
+                    "TexChangeOnClick": "",
+                    "ScaleOnHoverFlag": false,
+                    "ScaleOnHover": 0.0,
+                    "SetGameStateFlag": false,
+                    "SetGameState": "STARTING",
+                    "ResetStatsFlag": false,
+                    "NextLevelFlag": false,
+                    "SetCameraZoomFlag": false,
+                    "SetCameraZoom": 0.0,
+                    "MuteAudioFlag": false,
+                    "AltSceneSwitchFlag": false,
+                    "AltSceneSwitch": "",
+                    "ExitGameFlag": false
+                }
+            ]
+        },
+        {
+            "ID": 3,
+            "Components": [
+                {
+                    "Component": "Tag",
+                    "Tag": "SealTab",
+                    "TargetTag": ""
+                },
+                {
+                    "Component": "Transform",
+                    "Position": {
+                        "x": -1.1100000143051147,
+                        "y": 0.16500000655651093
+                    },
+                    "Scale": {
+                        "x": 0.3499999940395355,
+                        "y": 0.3499999940395355
+                    },
+                    "Rotation": 6.0
+                },
+                {
+                    "Component": "Collider",
+                    "ColliderType1": 4,
+                    "ColliderType2": 0,
+                    "minX1": 0.10000000149011612,
+                    "minX2": 0.0,
+                    "minY1": 0.05999999865889549,
+                    "minY2": 0.0,
+                    "maxX1": 0.1599999964237213,
+                    "maxX2": 0.0,
+                    "maxY1": 0.019999999552965164,
+                    "maxY2": 0.0,
+                    "offsetX1": 0.0,
+                    "offsetX2": 0.0,
+                    "offsetY1": 0.0,
+                    "offsetY2": 0.0,
+                    "radius1": 0.0,
+                    "radius2": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "SealTag"
+                },
+                {
+                    "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "length of dashed lines": 0.009999999776482582,
+                    "distance gap": 0.009999999776482582,
+                    "line movement speed": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "TextureName": "Characters/Blank",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": false,
+                    "MaxIndex": 0,
+                    "LayeringOrder": 0,
+                    "StateManagerEnabled": false,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
+                },
+                {
+                    "Component": "Audio",
+                    "0": {
+                        "AudioPath": "UI_PageFlick_v1.wav",
+                        "Channel": 3,
+                        "IsLooping": false,
+                        "VolumeLimit": 1.0
+                    },
+                    "AudioArrCount": 1,
+                    "BGM Volume": 1.0,
+                    "SFX Volume": 1.0,
+                    "Master Volume": 1.0,
+                    "RandomFromArray": false,
+                    "Effects": {
+                        "LowpassEnabled": false,
+                        "LowpassCutoff": 5000.0,
+                        "LowpassResonance": 1.0,
+                        "HighpassEnabled": false,
+                        "HighpassCutoff": 10.0,
+                        "HighpassResonance": 1.0,
+                        "EchoEnabled": false,
+                        "EchoDelay": 500.0,
+                        "EchoFeedback": 50.0,
+                        "EchoDryLevel": 0.0,
+                        "EchoWetLevel": -6.0,
+                        "ReverbEnabled": false,
+                        "ReverbDecayTime": 1500.0,
+                        "ReverbEarlyDelay": 7.0,
+                        "ReverbLateDelay": 11.0,
+                        "ReverbHFReference": 5000.0,
+                        "ReverbDiffusion": 100.0,
+                        "ReverbDensity": 100.0,
+                        "ReverbWetLevel": -6.0,
+                        "ReverbDryLevel": 0.0
+                    }
+                },
+                {
+                    "Component": "Logic",
+                    "Scripts": [
+                        {
+                            "ScriptName": "ButtonResponse"
+                        },
+                        {
+                            "ScriptName": "AudioManager"
+                        }
+                    ],
+                    "ScriptCount": 2
+                },
+                {
+                    "Component": "ButtonComponent",
+                    "Button logic is ON": true,
                     "GoToSceneFlag": true,
                     "GoToScene": "Assets/Scene/Manual_Seal.json",
                     "AudioOnHoverFlag": false,
@@ -454,23 +620,27 @@
                 },
                 {
                     "Component": "Transform",
-                    "posX": -1.1100000143051147,
-                    "posY": 0.04500000178813934,
-                    "scaleX": 0.3499999940395355,
-                    "scaleY": 0.3499999940395355,
-                    "Rot": 6.0
+                    "Position": {
+                        "x": -1.1100000143051147,
+                        "y": 0.054999999701976776
+                    },
+                    "Scale": {
+                        "x": 0.3499999940395355,
+                        "y": 0.3499999940395355
+                    },
+                    "Rotation": 6.0
                 },
                 {
                     "Component": "Collider",
                     "ColliderType1": 4,
                     "ColliderType2": 0,
-                    "minX1": 0.15000000596046448,
+                    "minX1": 0.10000000149011612,
                     "minX2": 0.0,
-                    "minY1": 0.05000000074505806,
+                    "minY1": 0.05999999865889549,
                     "minY2": 0.0,
-                    "maxX1": 0.20000000298023224,
+                    "maxX1": 0.1599999964237213,
                     "maxX2": 0.0,
-                    "maxY1": 0.05000000074505806,
+                    "maxY1": 0.019999999552965164,
                     "maxY2": 0.0,
                     "offsetX1": 0.0,
                     "offsetX2": 0.0,
@@ -485,7 +655,19 @@
                 },
                 {
                     "Component": "Sprite",
-                    "TextureName": "HowToPlay/horsetag",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "length of dashed lines": 0.009999999776482582,
+                    "distance gap": 0.009999999776482582,
+                    "line movement speed": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "TextureName": "Characters/Blank",
                     "Index_X": 0,
                     "Index_Y": 0,
                     "Ucoordinates": 512.0,
@@ -501,6 +683,8 @@
                         {
                             "Name": "Idle",
                             "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
                             "Source": 3,
                             "Compare": 0,
                             "Threshold": 0.0,
@@ -514,7 +698,8 @@
                     "0": {
                         "AudioPath": "UI_PageFlick_v1.wav",
                         "Channel": 3,
-                        "IsLooping": false
+                        "IsLooping": false,
+                        "VolumeLimit": 1.0
                     },
                     "AudioArrCount": 1,
                     "BGM Volume": 1.0,
@@ -546,12 +731,19 @@
                 },
                 {
                     "Component": "Logic",
-                    "0": "ButtonResponse",
-                    "1": "AudioManager",
+                    "Scripts": [
+                        {
+                            "ScriptName": "ButtonResponse"
+                        },
+                        {
+                            "ScriptName": "AudioManager"
+                        }
+                    ],
                     "ScriptCount": 2
                 },
                 {
                     "Component": "ButtonComponent",
+                    "Button logic is ON": true,
                     "GoToSceneFlag": true,
                     "GoToScene": "Assets/Scene/Manual_Horse.json",
                     "AudioOnHoverFlag": false,
@@ -589,23 +781,27 @@
                 },
                 {
                     "Component": "Transform",
-                    "posX": -1.1100000143051147,
-                    "posY": -0.07500000298023224,
-                    "scaleX": 0.3499999940395355,
-                    "scaleY": 0.3499999940395355,
-                    "Rot": 6.0
+                    "Position": {
+                        "x": -1.1100000143051147,
+                        "y": -0.05000000074505806
+                    },
+                    "Scale": {
+                        "x": 0.3499999940395355,
+                        "y": 0.3499999940395355
+                    },
+                    "Rotation": 6.0
                 },
                 {
                     "Component": "Collider",
                     "ColliderType1": 4,
                     "ColliderType2": 0,
-                    "minX1": 0.15000000596046448,
+                    "minX1": 0.10000000149011612,
                     "minX2": 0.0,
-                    "minY1": 0.05000000074505806,
+                    "minY1": 0.05999999865889549,
                     "minY2": 0.0,
-                    "maxX1": 0.20000000298023224,
+                    "maxX1": 0.1599999964237213,
                     "maxX2": 0.0,
-                    "maxY1": 0.05000000074505806,
+                    "maxY1": 0.019999999552965164,
                     "maxY2": 0.0,
                     "offsetX1": 0.0,
                     "offsetX2": 0.0,
@@ -620,7 +816,19 @@
                 },
                 {
                     "Component": "Sprite",
-                    "TextureName": "HowToPlay/owltag",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "length of dashed lines": 0.009999999776482582,
+                    "distance gap": 0.009999999776482582,
+                    "line movement speed": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "TextureName": "Characters/Blank",
                     "Index_X": 0,
                     "Index_Y": 0,
                     "Ucoordinates": 512.0,
@@ -636,6 +844,8 @@
                         {
                             "Name": "Idle",
                             "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
                             "Source": 3,
                             "Compare": 0,
                             "Threshold": 0.0,
@@ -649,7 +859,8 @@
                     "0": {
                         "AudioPath": "UI_PageFlick_v1.wav",
                         "Channel": 3,
-                        "IsLooping": false
+                        "IsLooping": false,
+                        "VolumeLimit": 1.0
                     },
                     "AudioArrCount": 1,
                     "BGM Volume": 1.0,
@@ -681,12 +892,19 @@
                 },
                 {
                     "Component": "Logic",
-                    "0": "ButtonResponse",
-                    "1": "AudioManager",
+                    "Scripts": [
+                        {
+                            "ScriptName": "ButtonResponse"
+                        },
+                        {
+                            "ScriptName": "AudioManager"
+                        }
+                    ],
                     "ScriptCount": 2
                 },
                 {
                     "Component": "ButtonComponent",
+                    "Button logic is ON": true,
                     "GoToSceneFlag": true,
                     "GoToScene": "Assets/Scene/Manual_Owl.json",
                     "AudioOnHoverFlag": false,
@@ -719,16 +937,20 @@
             "Components": [
                 {
                     "Component": "Tag",
-                    "Tag": "HealthTab",
+                    "Tag": "AnimalTab",
                     "TargetTag": ""
                 },
                 {
                     "Component": "Transform",
-                    "posX": -1.065000057220459,
-                    "posY": -0.23000000417232513,
-                    "scaleX": 0.3499999940395355,
-                    "scaleY": 0.3499999940395355,
-                    "Rot": 6.0
+                    "Position": {
+                        "x": -0.3449999988079071,
+                        "y": 0.6700000166893005
+                    },
+                    "Scale": {
+                        "x": 0.3499999940395355,
+                        "y": 0.3499999940395355
+                    },
+                    "Rotation": 6.0
                 },
                 {
                     "Component": "Collider",
@@ -738,9 +960,9 @@
                     "minX2": 0.0,
                     "minY1": 0.05000000074505806,
                     "minY2": 0.0,
-                    "maxX1": 0.15000000596046448,
+                    "maxX1": 0.30000001192092896,
                     "maxX2": 0.0,
-                    "maxY1": 0.05000000074505806,
+                    "maxY1": 0.07999999821186066,
                     "maxY2": 0.0,
                     "offsetX1": 0.0,
                     "offsetX2": 0.0,
@@ -751,11 +973,23 @@
                 },
                 {
                     "Component": "NameTag",
-                    "NameTag": "HealthTag"
+                    "NameTag": "AnimalTag"
                 },
                 {
                     "Component": "Sprite",
-                    "TextureName": "HowToPlay/healthtag",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "length of dashed lines": 0.009999999776482582,
+                    "distance gap": 0.009999999776482582,
+                    "line movement speed": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "TextureName": "Characters/Blank",
                     "Index_X": 0,
                     "Index_Y": 0,
                     "Ucoordinates": 512.0,
@@ -771,6 +1005,8 @@
                         {
                             "Name": "Idle",
                             "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
                             "Source": 3,
                             "Compare": 0,
                             "Threshold": 0.0,
@@ -780,45 +1016,41 @@
                     ]
                 },
                 {
-                    "Component": "Audio",
-                    "0": {
-                        "AudioPath": "UI_PageFlick_v1.wav",
-                        "Channel": 3,
-                        "IsLooping": false
-                    },
-                    "AudioArrCount": 1,
-                    "BGM Volume": 1.0,
-                    "SFX Volume": 1.0,
-                    "Master Volume": 1.0,
-                    "RandomFromArray": false,
-                    "Effects": {
-                        "LowpassEnabled": false,
-                        "LowpassCutoff": 5000.0,
-                        "LowpassResonance": 1.0,
-                        "HighpassEnabled": false,
-                        "HighpassCutoff": 10.0,
-                        "HighpassResonance": 1.0,
-                        "EchoEnabled": false,
-                        "EchoDelay": 500.0,
-                        "EchoFeedback": 50.0,
-                        "EchoDryLevel": 0.0,
-                        "EchoWetLevel": -6.0,
-                        "ReverbEnabled": false,
-                        "ReverbDecayTime": 1500.0,
-                        "ReverbEarlyDelay": 7.0,
-                        "ReverbLateDelay": 11.0,
-                        "ReverbHFReference": 5000.0,
-                        "ReverbDiffusion": 100.0,
-                        "ReverbDensity": 100.0,
-                        "ReverbWetLevel": -6.0,
-                        "ReverbDryLevel": 0.0
-                    }
+                    "Component": "Logic",
+                    "Scripts": [
+                        {
+                            "ScriptName": "ButtonResponse"
+                        }
+                    ],
+                    "ScriptCount": 1
                 },
                 {
-                    "Component": "Logic",
-                    "0": "ButtonResponse",
-                    "1": "AudioManager",
-                    "ScriptCount": 2
+                    "Component": "ButtonComponent",
+                    "Button logic is ON": true,
+                    "GoToSceneFlag": true,
+                    "GoToScene": "Assets/Scene/Manual_Flamingo.json",
+                    "AudioOnHoverFlag": false,
+                    "AudioOnHoverRandom": false,
+                    "HoverAudioIndex": 0,
+                    "AudioOnClickFlag": false,
+                    "AudioOnClickRandom": false,
+                    "ClickAudioIndex": 0,
+                    "TexChangeOnHoverFlag": false,
+                    "TexChangeOnHover": "",
+                    "TexChangeOnClickFlag": false,
+                    "TexChangeOnClick": "",
+                    "ScaleOnHoverFlag": false,
+                    "ScaleOnHover": 0.0,
+                    "SetGameStateFlag": false,
+                    "SetGameState": "STARTING",
+                    "ResetStatsFlag": false,
+                    "NextLevelFlag": false,
+                    "SetCameraZoomFlag": false,
+                    "SetCameraZoom": 0.0,
+                    "MuteAudioFlag": false,
+                    "AltSceneSwitchFlag": false,
+                    "AltSceneSwitch": "",
+                    "ExitGameFlag": false
                 }
             ]
         },
@@ -826,44 +1058,36 @@
             "ID": 7,
             "Components": [
                 {
-                    "Component": "Tag",
-                    "Tag": "HungerTab",
-                    "TargetTag": ""
-                },
-                {
                     "Component": "Transform",
-                    "posX": -1.065000057220459,
-                    "posY": -0.3799999952316284,
-                    "scaleX": 0.3499999940395355,
-                    "scaleY": 0.3499999940395355,
-                    "Rot": 6.0
-                },
-                {
-                    "Component": "Collider",
-                    "ColliderType1": 4,
-                    "ColliderType2": 0,
-                    "minX1": 0.1899999976158142,
-                    "minX2": 0.0,
-                    "minY1": 0.05000000074505806,
-                    "minY2": 0.0,
-                    "maxX1": 0.15000000596046448,
-                    "maxX2": 0.0,
-                    "maxY1": 0.05000000074505806,
-                    "maxY2": 0.0,
-                    "offsetX1": 0.0,
-                    "offsetX2": 0.0,
-                    "offsetY1": 0.0,
-                    "offsetY2": 0.0,
-                    "radius1": 0.0,
-                    "radius2": 0.0
+                    "Position": {
+                        "x": 0.1899999976158142,
+                        "y": 0.02500000037252903
+                    },
+                    "Scale": {
+                        "x": 2.984999895095825,
+                        "y": 1.7450000047683716
+                    },
+                    "Rotation": 0.0
                 },
                 {
                     "Component": "NameTag",
-                    "NameTag": "HungerTag"
+                    "NameTag": "Manual"
                 },
                 {
                     "Component": "Sprite",
-                    "TextureName": "HowToPlay/hungertag",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "length of dashed lines": 0.009999999776482582,
+                    "distance gap": 0.009999999776482582,
+                    "line movement speed": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "TextureName": "HowToPlay/Flamingo_Info",
                     "Index_X": 0,
                     "Index_Y": 0,
                     "Ucoordinates": 512.0,
@@ -879,6 +1103,8 @@
                         {
                             "Name": "Idle",
                             "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
                             "Source": 3,
                             "Compare": 0,
                             "Threshold": 0.0,
@@ -886,47 +1112,6 @@
                             "Enabled": true
                         }
                     ]
-                },
-                {
-                    "Component": "Audio",
-                    "0": {
-                        "AudioPath": "UI_PageFlick_v1.wav",
-                        "Channel": 3,
-                        "IsLooping": false
-                    },
-                    "AudioArrCount": 1,
-                    "BGM Volume": 1.0,
-                    "SFX Volume": 1.0,
-                    "Master Volume": 1.0,
-                    "RandomFromArray": false,
-                    "Effects": {
-                        "LowpassEnabled": false,
-                        "LowpassCutoff": 5000.0,
-                        "LowpassResonance": 1.0,
-                        "HighpassEnabled": false,
-                        "HighpassCutoff": 10.0,
-                        "HighpassResonance": 1.0,
-                        "EchoEnabled": false,
-                        "EchoDelay": 500.0,
-                        "EchoFeedback": 50.0,
-                        "EchoDryLevel": 0.0,
-                        "EchoWetLevel": -6.0,
-                        "ReverbEnabled": false,
-                        "ReverbDecayTime": 1500.0,
-                        "ReverbEarlyDelay": 7.0,
-                        "ReverbLateDelay": 11.0,
-                        "ReverbHFReference": 5000.0,
-                        "ReverbDiffusion": 100.0,
-                        "ReverbDensity": 100.0,
-                        "ReverbWetLevel": -6.0,
-                        "ReverbDryLevel": 0.0
-                    }
-                },
-                {
-                    "Component": "Logic",
-                    "0": "ButtonResponse",
-                    "1": "AudioManager",
-                    "ScriptCount": 2
                 }
             ]
         },
@@ -935,177 +1120,30 @@
             "Components": [
                 {
                     "Component": "Tag",
-                    "Tag": "SanityTab",
-                    "TargetTag": ""
-                },
-                {
-                    "Component": "Transform",
-                    "posX": -1.065000057220459,
-                    "posY": -0.5249999761581421,
-                    "scaleX": 0.3499999940395355,
-                    "scaleY": 0.3499999940395355,
-                    "Rot": 6.0
-                },
-                {
-                    "Component": "Collider",
-                    "ColliderType1": 4,
-                    "ColliderType2": 0,
-                    "minX1": 0.1899999976158142,
-                    "minX2": 0.0,
-                    "minY1": 0.05000000074505806,
-                    "minY2": 0.0,
-                    "maxX1": 0.15000000596046448,
-                    "maxX2": 0.0,
-                    "maxY1": 0.05000000074505806,
-                    "maxY2": 0.0,
-                    "offsetX1": 0.0,
-                    "offsetX2": 0.0,
-                    "offsetY1": 0.0,
-                    "offsetY2": 0.0,
-                    "radius1": 0.0,
-                    "radius2": 0.0
-                },
-                {
-                    "Component": "NameTag",
-                    "NameTag": "SanityTag"
-                },
-                {
-                    "Component": "Sprite",
-                    "TextureName": "HowToPlay/sanitytag",
-                    "Index_X": 0,
-                    "Index_Y": 0,
-                    "Ucoordinates": 512.0,
-                    "Vcoordinates": 512.0,
-                    "IsSpriteSheet": false,
-                    "IsAnimated": false,
-                    "MaxIndex": 0,
-                    "LayeringOrder": 0,
-                    "StateManagerEnabled": false,
-                    "StatePreviewInEditor": false,
-                    "StatePreviewMode": 0,
-                    "AnimationStates": [
-                        {
-                            "Name": "Idle",
-                            "Texture": "",
-                            "Source": 3,
-                            "Compare": 0,
-                            "Threshold": 0.0,
-                            "Priority": -100,
-                            "Enabled": true
-                        }
-                    ]
-                },
-                {
-                    "Component": "Audio",
-                    "0": {
-                        "AudioPath": "UI_PageFlick_v1.wav",
-                        "Channel": 3,
-                        "IsLooping": false
-                    },
-                    "AudioArrCount": 1,
-                    "BGM Volume": 1.0,
-                    "SFX Volume": 1.0,
-                    "Master Volume": 1.0,
-                    "RandomFromArray": false,
-                    "Effects": {
-                        "LowpassEnabled": false,
-                        "LowpassCutoff": 5000.0,
-                        "LowpassResonance": 1.0,
-                        "HighpassEnabled": false,
-                        "HighpassCutoff": 10.0,
-                        "HighpassResonance": 1.0,
-                        "EchoEnabled": false,
-                        "EchoDelay": 500.0,
-                        "EchoFeedback": 50.0,
-                        "EchoDryLevel": 0.0,
-                        "EchoWetLevel": -6.0,
-                        "ReverbEnabled": false,
-                        "ReverbDecayTime": 1500.0,
-                        "ReverbEarlyDelay": 7.0,
-                        "ReverbLateDelay": 11.0,
-                        "ReverbHFReference": 5000.0,
-                        "ReverbDiffusion": 100.0,
-                        "ReverbDensity": 100.0,
-                        "ReverbWetLevel": -6.0,
-                        "ReverbDryLevel": 0.0
-                    }
-                },
-                {
-                    "Component": "Logic",
-                    "0": "ButtonResponse",
-                    "1": "AudioManager",
-                    "ScriptCount": 2
-                }
-            ]
-        },
-        {
-            "ID": 9,
-            "Components": [
-                {
-                    "Component": "Transform",
-                    "posX": 0.1899999976158142,
-                    "posY": 0.02500000037252903,
-                    "scaleX": 2.984999895095825,
-                    "scaleY": 1.7450000047683716,
-                    "Rot": 0.0
-                },
-                {
-                    "Component": "NameTag",
-                    "NameTag": "Manual"
-                },
-                {
-                    "Component": "Sprite",
-                    "TextureName": "HowToPlay/flamingohtp",
-                    "Index_X": 0,
-                    "Index_Y": 0,
-                    "Ucoordinates": 512.0,
-                    "Vcoordinates": 512.0,
-                    "IsSpriteSheet": false,
-                    "IsAnimated": false,
-                    "MaxIndex": 0,
-                    "LayeringOrder": 0,
-                    "StateManagerEnabled": false,
-                    "StatePreviewInEditor": false,
-                    "StatePreviewMode": 0,
-                    "AnimationStates": [
-                        {
-                            "Name": "Idle",
-                            "Texture": "",
-                            "Source": 3,
-                            "Compare": 0,
-                            "Threshold": 0.0,
-                            "Priority": -100,
-                            "Enabled": true
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "ID": 10,
-            "Components": [
-                {
-                    "Component": "Tag",
                     "Tag": "XButton",
                     "TargetTag": ""
                 },
                 {
                     "Component": "Transform",
-                    "posX": 1.1299999952316284,
-                    "posY": 0.6449999809265137,
-                    "scaleX": 0.10000000149011612,
-                    "scaleY": 0.10000000149011612,
-                    "Rot": 0.0
+                    "Position": {
+                        "x": 1.1299999952316284,
+                        "y": 0.6449999809265137
+                    },
+                    "Scale": {
+                        "x": 0.10000000149011612,
+                        "y": 0.10000000149011612
+                    },
+                    "Rotation": 0.0
                 },
                 {
                     "Component": "Collider",
                     "ColliderType1": 4,
                     "ColliderType2": 0,
-                    "minX1": 0.05000000074505806,
+                    "minX1": 0.019999999552965164,
                     "minX2": 0.0,
                     "minY1": 0.05000000074505806,
                     "minY2": 0.0,
-                    "maxX1": 0.05000000074505806,
+                    "maxX1": 0.07999999821186066,
                     "maxX2": 0.0,
                     "maxY1": 0.05000000074505806,
                     "maxY2": 0.0,
@@ -1122,7 +1160,19 @@
                 },
                 {
                     "Component": "Sprite",
-                    "TextureName": "UI/Xmark",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "length of dashed lines": 0.009999999776482582,
+                    "distance gap": 0.009999999776482582,
+                    "line movement speed": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "TextureName": "Characters/Blank",
                     "Index_X": 0,
                     "Index_Y": 0,
                     "Ucoordinates": 512.0,
@@ -1138,6 +1188,8 @@
                         {
                             "Name": "Idle",
                             "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
                             "Source": 3,
                             "Compare": 0,
                             "Threshold": 0.0,
@@ -1151,7 +1203,8 @@
                     "0": {
                         "AudioPath": "UI_Back_v2.wav",
                         "Channel": 3,
-                        "IsLooping": false
+                        "IsLooping": false,
+                        "VolumeLimit": 0.5600000023841858
                     },
                     "AudioArrCount": 1,
                     "BGM Volume": 1.0,
@@ -1183,12 +1236,19 @@
                 },
                 {
                     "Component": "Logic",
-                    "0": "ButtonResponse",
-                    "1": "AudioManager",
+                    "Scripts": [
+                        {
+                            "ScriptName": "ButtonResponse"
+                        },
+                        {
+                            "ScriptName": "AudioManager"
+                        }
+                    ],
                     "ScriptCount": 2
                 },
                 {
                     "Component": "ButtonComponent",
+                    "Button logic is ON": true,
                     "GoToSceneFlag": true,
                     "GoToScene": "Assets/Scene/Menu.json",
                     "AudioOnHoverFlag": false,
@@ -1201,7 +1261,7 @@
                     "TexChangeOnHover": "",
                     "TexChangeOnClickFlag": false,
                     "TexChangeOnClick": "",
-                    "ScaleOnHoverFlag": true,
+                    "ScaleOnHoverFlag": false,
                     "ScaleOnHover": 1.100000023841858,
                     "SetGameStateFlag": false,
                     "SetGameState": "STARTING",
