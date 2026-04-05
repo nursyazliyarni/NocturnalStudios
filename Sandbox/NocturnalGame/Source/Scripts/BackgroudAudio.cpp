@@ -28,6 +28,10 @@ namespace NocturnalEngine {
 			return scenePath == "Assets/Scene/Menu.json" ||
 				scenePath == "Assets/Scene/Option.json" ||
 				scenePath == "Assets/Scene/HowToPlay.json" ||
+				scenePath == "Assets/Scene/Manual_Flamingo.json" ||
+				scenePath == "Assets/Scene/Manual_Seal.json" ||
+				scenePath == "Assets/Scene/Manual_Horse.json" ||
+				scenePath == "Assets/Scene/Manual_Owl.json" ||
 				scenePath == "Assets/Scene/Quit.json";
 		}
 
@@ -121,7 +125,7 @@ namespace NocturnalEngine {
 	{
 		if (p_ecs.HaveComponent<Audio>(GetScriptEntityID()))
 		{
-			const std::string& nextScene = p_Scene->GetQueuedSceneToLoad();
+			const std::string& nextScene = p_Scene->GetPendingSceneToLoad();
 			const bool preserveMenuBgm = IsMenuFlowScene(nextScene);
 			Audio& a{ p_ecs.GetComponent<Audio>(GetScriptEntityID()) };
 			for (int i = 0; i < a.GetSize(); ++i)
