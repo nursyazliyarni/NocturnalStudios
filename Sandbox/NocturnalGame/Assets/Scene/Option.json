@@ -9,7 +9,8 @@
         6,
         7,
         8,
-        9
+        9,
+        10
     ],
     "Entities": [
         {
@@ -129,10 +130,10 @@
                     "Component": "Transform",
                     "Position": {
                         "x": 0.0,
-                        "y": 0.10100000351667404
+                        "y": 0.0
                     },
                     "Scale": {
-                        "x": 1.440000057220459,
+                        "x": 1.100000023841858,
                         "y": 1.0
                     },
                     "Rotation": 0.0
@@ -180,6 +181,27 @@
                             "Enabled": true
                         }
                     ]
+                },
+                {
+                    "Component": "Text",
+                    "text type": 0,
+                    "Content": "Master",
+                    "Array of Content": [],
+                    "Vector of text position": [],
+                    "Font": "ExcelsiorSans",
+                    "Size": 92.0,
+                    "ColorR": 0.27843138575553894,
+                    "ColorG": 0.1921568661928177,
+                    "ColorB": 0.07450980693101883,
+                    "ColorA": 1.0,
+                    "PosX": -0.699999988079071,
+                    "PosY": 0.10000000149011612,
+                    "Rotation": 0.0,
+                    "Line Height": 0,
+                    "WorldSpace": false,
+                    "Center": false,
+                    "LayeringOrder": 0,
+                    "Visibility": true
                 }
             ]
         },
@@ -193,7 +215,7 @@
                         "y": -0.27300000190734863
                     },
                     "Scale": {
-                        "x": 1.440000057220459,
+                        "x": 1.100000023841858,
                         "y": 1.0
                     },
                     "Rotation": 0.0
@@ -241,6 +263,27 @@
                             "Enabled": true
                         }
                     ]
+                },
+                {
+                    "Component": "Text",
+                    "text type": 0,
+                    "Content": "BGM",
+                    "Array of Content": [],
+                    "Vector of text position": [],
+                    "Font": "ExcelsiorSans",
+                    "Size": 92.0,
+                    "ColorR": 0.27843138575553894,
+                    "ColorG": 0.1921568661928177,
+                    "ColorB": 0.07450980693101883,
+                    "ColorA": 1.0,
+                    "PosX": -0.699999988079071,
+                    "PosY": -0.16500000655651093,
+                    "Rotation": 0.0,
+                    "Line Height": 0,
+                    "WorldSpace": false,
+                    "Center": false,
+                    "LayeringOrder": 0,
+                    "Visibility": true
                 }
             ]
         },
@@ -251,10 +294,10 @@
                     "Component": "Transform",
                     "Position": {
                         "x": 0.0,
-                        "y": -0.5879999995231628
+                        "y": -0.5299999713897705
                     },
                     "Scale": {
-                        "x": 1.440000057220459,
+                        "x": 1.100000023841858,
                         "y": 1.0
                     },
                     "Rotation": 0.0
@@ -302,6 +345,27 @@
                             "Enabled": true
                         }
                     ]
+                },
+                {
+                    "Component": "Text",
+                    "text type": 0,
+                    "Content": "SFX",
+                    "Array of Content": [],
+                    "Vector of text position": [],
+                    "Font": "ExcelsiorSans",
+                    "Size": 92.0,
+                    "ColorR": 0.27843138575553894,
+                    "ColorG": 0.1921568661928177,
+                    "ColorB": 0.05882352963089943,
+                    "ColorA": 1.0,
+                    "PosX": -0.699999988079071,
+                    "PosY": -0.41999998688697815,
+                    "Rotation": 0.0,
+                    "Line Height": 0,
+                    "WorldSpace": false,
+                    "Center": false,
+                    "LayeringOrder": 0,
+                    "Visibility": true
                 }
             ]
         },
@@ -317,7 +381,7 @@
                     "Component": "Transform",
                     "Position": {
                         "x": -0.0076923668384552,
-                        "y": 0.10876978933811188
+                        "y": 0.019999999552965164
                     },
                     "Scale": {
                         "x": 0.3050000071525574,
@@ -450,7 +514,7 @@
                     "Component": "Transform",
                     "Position": {
                         "x": 0.0,
-                        "y": -0.23693659901618958
+                        "y": -0.25
                     },
                     "Scale": {
                         "x": 0.3050000071525574,
@@ -583,7 +647,7 @@
                     "Component": "Transform",
                     "Position": {
                         "x": 0.0,
-                        "y": -0.5581620335578918
+                        "y": -0.5099999904632568
                     },
                     "Scale": {
                         "x": 0.3050000071525574,
