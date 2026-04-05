@@ -18,8 +18,14 @@
 #include "ECS/Components/TutorialAttributes.h"
 #include "ECS/Components/ButtonComponent.h"
 #include "ECS/ECS.h"
+#include <GLFW/glfw3.h>
 
 namespace NocturnalEngine {
+
+	namespace
+	{
+		constexpr int kFinalTutorialOrder = 11;
+	}
 
 	void TutorialLogic::Start()
 	{
@@ -46,15 +52,19 @@ namespace NocturnalEngine {
 		UNREFERENCED_PARAMETER(Frametime);
 		if (p_ecs.HaveComponent<TutorialAttributes>(entityID)) {
 			auto& tutorial{ p_ecs.GetComponent<TutorialAttributes>(entityID) };
-			if (current_tutorial_order == 11) { //this means we have reached the last tutorial
+			if (InputSystem::GetInstance()->KeyPressed(GLFW_KEY_X)) {
+				current_tutorial_order = kFinalTutorialOrder;
+			}
+			else if (current_tutorial_order < kFinalTutorialOrder && InputSystem::GetInstance()->MousePressed(0)) {
+				++current_tutorial_order; //left click to move to next tutorial
+			}
+
+			if (current_tutorial_order >= kFinalTutorialOrder) { //this means we have reached the last tutorial
+				current_tutorial_order = kFinalTutorialOrder;
 				if (p_ecs.HaveComponent<ButtonComponent>(entityID)) {
 					auto& button{ p_ecs.GetComponent<ButtonComponent>(entityID) };
 					button.SET_button_logic_ON(true); //now button response logic is running for last tutorial
 				}
-			}
-
-			else if (InputSystem::GetInstance()->MousePressed(0)) {
-				current_tutorial_order++; //left click to move to next tutorial
 			}
 
 			if (p_ecs.HaveComponent<Text>(entityID)) {
