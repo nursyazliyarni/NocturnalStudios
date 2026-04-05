@@ -44,9 +44,15 @@ namespace NocturnalEngine
                 animalEntity = e;
                 continue;
             }
-            if (p_ecs.HaveComponent<Tag>(e)&& p_ecs.GetComponent<Tag>(e).GetTag()=="HidingSpot")
+            if (p_ecs.HaveComponent<NameTag>(e) &&
+                p_ecs.GetComponent<NameTag>(e).GetNameTag() == "Bush")
             {
-                if (p_ecs.HaveComponent<Transform>(e)&&p_ecs.HaveComponent<Sprite>(e)) hidingSpots.push_back(e);
+                if (p_ecs.HaveComponent<Transform>(e) &&
+                    p_ecs.HaveComponent<Sprite>(e) &&
+                    p_ecs.HaveComponent<Collider>(e))
+                {
+                    hidingSpots.push_back(e);
+                }
             }
         }
 
@@ -120,21 +126,58 @@ namespace NocturnalEngine
         {
             hideIndex = Random::Range(0, static_cast<int>(hidingSpots.size()) - 1);
             
-            Transform& hidingTransform{ p_ecs.GetComponent<Transform>(hidingSpots[hideIndex]) };
             Sprite& hidingSprite{ p_ecs.GetComponent<Sprite>(hidingSpots[hideIndex]) }, &itemSprite{ p_ecs.GetComponent<Sprite>(entityID) };
             
             int hidingLayer = hidingSprite.LayerOrder > 1 ? hidingSprite.LayerOrder - 1: 1;
             itemSprite.SetLayerOrder(hidingLayer);
-            itemTransform.SetPos(hidingTransform.GetPos());
-            
-            itemTransform.MoveY(-1.f * hidingTransform.GetScale().y / 6.f);
-            itemTransform.MoveX(-1.f*hidingTransform.GetScale().x / 2.f+Random::Range(0.f, hidingTransform.GetScale().x / 8.f));
+            itemTransform.SetPos(GetRandomPointInBush(hidingSpots[hideIndex]));
 
         }
         //std::cout << "toy hidden\n";
         hasBeenHidden = true;
 
         return hideIndex;
+    }
+
+    vec2D ToyHideAndRevealOnClick::GetRandomPointInBush(Entity bushEntity) const
+    {
+        if (!p_ecs.HaveComponent<Transform>(bushEntity) || !p_ecs.HaveComponent<Collider>(bushEntity))
+            return p_ecs.GetComponent<Transform>(entityID).GetPos();
+
+        const Transform& bushTransform{ p_ecs.GetComponent<Transform>(bushEntity) };
+        const Collider& bushCollider{ p_ecs.GetComponent<Collider>(bushEntity) };
+
+        for (int i = 0; i < 2; ++i)
+        {
+            if (bushCollider[i].mCol != Collider::ColliderType::rect &&
+                bushCollider[i].mCol != Collider::ColliderType::box)
+            {
+                continue;
+            }
+
+            const vec2D offsetPos{
+                bushTransform.GetPos().x + bushCollider[i].mOffset.x,
+                bushTransform.GetPos().y + bushCollider[i].mOffset.y
+            };
+            const vec2D minPt{
+                offsetPos.x - bushCollider[i].mMin.x,
+                offsetPos.y - bushCollider[i].mMin.y
+            };
+            const vec2D maxPt{
+                offsetPos.x + bushCollider[i].mMax.x,
+                offsetPos.y + bushCollider[i].mMax.y
+            };
+
+            const float insetX = std::max(0.0f, (maxPt.x - minPt.x) * 0.15f);
+            const float insetY = std::max(0.0f, (maxPt.y - minPt.y) * 0.15f);
+
+            return {
+                Random::Range(minPt.x + insetX, maxPt.x - insetX),
+                Random::Range(minPt.y + insetY, maxPt.y - insetY)
+            };
+        }
+
+        return bushTransform.GetPos();
     }
 
 

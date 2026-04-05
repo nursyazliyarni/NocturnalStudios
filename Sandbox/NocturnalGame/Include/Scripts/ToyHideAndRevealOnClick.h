@@ -56,6 +56,7 @@ namespace NocturnalEngine
         int HideToy();        
         void IsMouseNearHiddenSpot(ItemsAttributes& iA, AnimalAttributes& aa);
         void ResetThing(ItemsAttributes& iA, AnimalAttributes& aa, Transform& t, Sprite& s);
+        vec2D GetRandomPointInBush(Entity bushEntity) const;
 
     private:
         // Finds environment entity used as hide-area bounds.

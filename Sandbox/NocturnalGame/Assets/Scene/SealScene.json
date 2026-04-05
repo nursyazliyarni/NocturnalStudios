@@ -213,13 +213,13 @@
                         0.0
                     ],
                     "TextureName": "Characters/seal sick",
-                    "Index_X": 3,
+                    "Index_X": 1,
                     "Index_Y": 0,
                     "Ucoordinates": 603.5,
                     "Vcoordinates": 458.0,
                     "IsSpriteSheet": true,
                     "IsAnimated": true,
-                    "MaxIndex": 5,
+                    "MaxIndex": 3,
                     "DisplayTime 0": 0.5,
                     "DisplayTime 1": 0.5,
                     "DisplayTime 2": 0.5,
@@ -2706,13 +2706,32 @@
                     "Component": "Transform",
                     "Position": {
                         "x": 0.09541279822587967,
-                        "y": -0.10915482044219971
+                        "y": -0.11400000005960464
                     },
                     "Scale": {
-                        "x": 0.5827340483665466,
-                        "y": 0.6988232731819153
+                        "x": 0.7730000019073486,
+                        "y": 0.7889999747276306
                     },
                     "Rotation": 0.0
+                },
+                {
+                    "Component": "Collider",
+                    "ColliderType1": 4,
+                    "ColliderType2": 0,
+                    "minX1": 0.0,
+                    "minX2": 0.0,
+                    "minY1": 0.0,
+                    "minY2": 0.0,
+                    "maxX1": 0.550000011920929,
+                    "maxX2": 0.0,
+                    "maxY1": 0.44999998807907104,
+                    "maxY2": 0.0,
+                    "offsetX1": -0.20000000298023224,
+                    "offsetX2": 0.0,
+                    "offsetY1": -0.30000001192092896,
+                    "offsetY2": 0.0,
+                    "radius1": 0.0,
+                    "radius2": 0.0
                 },
                 {
                     "Component": "NameTag",
@@ -2732,7 +2751,7 @@
                         0.0,
                         0.0
                     ],
-                    "TextureName": "Environment/bush",
+                    "TextureName": "Environment/SealRock",
                     "Index_X": 0,
                     "Index_Y": 0,
                     "Ucoordinates": 512.0,
@@ -2771,14 +2790,33 @@
                 {
                     "Component": "Transform",
                     "Position": {
-                        "x": -1.2770640850067139,
-                        "y": -0.13732385635375977
+                        "x": -1.3869999647140503,
+                        "y": -0.0820000022649765
                     },
                     "Scale": {
-                        "x": 0.47050386667251587,
-                        "y": 0.5375560522079468
+                        "x": 0.8309999704360962,
+                        "y": 0.8629999756813049
                     },
                     "Rotation": 0.0
+                },
+                {
+                    "Component": "Collider",
+                    "ColliderType1": 4,
+                    "ColliderType2": 0,
+                    "minX1": 0.0,
+                    "minX2": 0.0,
+                    "minY1": 0.0,
+                    "minY2": 0.0,
+                    "maxX1": 0.44999998807907104,
+                    "maxX2": 0.0,
+                    "maxY1": 0.44999998807907104,
+                    "maxY2": 0.0,
+                    "offsetX1": -0.20000000298023224,
+                    "offsetX2": 0.0,
+                    "offsetY1": -0.30000001192092896,
+                    "offsetY2": 0.0,
+                    "radius1": 0.0,
+                    "radius2": 0.0
                 },
                 {
                     "Component": "NameTag",
@@ -2798,7 +2836,7 @@
                         0.0,
                         0.0
                     ],
-                    "TextureName": "Environment/bush",
+                    "TextureName": "Environment/SealRock",
                     "Index_X": 0,
                     "Index_Y": 0,
                     "Ucoordinates": 512.0,
@@ -2806,7 +2844,7 @@
                     "IsSpriteSheet": false,
                     "IsAnimated": false,
                     "MaxIndex": 0,
-                    "LayeringOrder": 2,
+                    "LayeringOrder": 1,
                     "StateManagerEnabled": false,
                     "StatePreviewInEditor": false,
                     "StatePreviewMode": 0,
