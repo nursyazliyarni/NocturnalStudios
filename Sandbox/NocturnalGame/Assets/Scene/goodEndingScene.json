@@ -1,0 +1,141 @@
+{
+    "LayerDrawOrder": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+    ],
+    "Entities": [
+        {
+            "ID": 0,
+            "Components": [
+                {
+                    "Component": "Tag",
+                    "Tag": "CutScene",
+                    "TargetTag": ""
+                },
+                {
+                    "Component": "Transform",
+                    "Position": {
+                        "x": 0.0,
+                        "y": 0.0
+                    },
+                    "Scale": {
+                        "x": 3.6449999809265137,
+                        "y": 1.9999960660934448
+                    },
+                    "Rotation": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "GoodEndingVideo"
+                },
+                {
+                    "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "length of dashed lines": 0.009999999776482582,
+                    "distance gap": 0.009999999776482582,
+                    "line movement speed": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "TextureName": "Characters/Blank",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": false,
+                    "MaxIndex": 0,
+                    "LayeringOrder": 0,
+                    "StateManagerEnabled": false,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
+                },
+                {
+                    "Component": "Video",
+                    "VideoPath": "GoodEnding.mpg",
+                    "Enabled": true,
+                    "Loop": false,
+                    "PlayInEditor": false,
+                    "AllowSkip": true,
+                    "SkipOnMouseClick": false,
+                    "RestartOnEnable": true,
+                    "HideWhenFinished": false,
+                    "SkipKey": 88,
+                    "NextScene": "Assets/Scene/Menu.json",
+                    "AudioPath": "GoodEnding.wav",
+                    "AudioChannelGroup": 1,
+                    "AudioLoop": false,
+                    "AudioStartDelay": 0.0
+                }
+            ]
+        },
+        {
+            "ID": 2,
+            "Components": [
+                {
+                    "Component": "Transform",
+                    "Position": {
+                        "x": 0.0,
+                        "y": 0.0
+                    },
+                    "Scale": {
+                        "x": 1.0,
+                        "y": 1.0
+                    },
+                    "Rotation": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "SkipPrompt"
+                },
+                {
+                    "Component": "Text",
+                    "text type": 0,
+                    "Content": "Press 'X' to skip",
+                    "Array of Content": [],
+                    "Vector of text position": [],
+                    "Font": "ChauPhilomeneOne-Regular",
+                    "Size": 36.0,
+                    "ColorR": 1.0,
+                    "ColorG": 1.0,
+                    "ColorB": 1.0,
+                    "ColorA": 1.0,
+                    "PosX": 1.340000033378601,
+                    "PosY": 0.8199999928474426,
+                    "Rotation": 0.0,
+                    "Line Height": 0,
+                    "WorldSpace": false,
+                    "Center": false,
+                    "LayeringOrder": 1,
+                    "Visibility": true
+                }
+            ]
+        }
+    ]
+}
