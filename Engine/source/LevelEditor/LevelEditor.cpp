@@ -65,6 +65,7 @@
 #include "Core/Log.h"
 #include "Audio/AudioEngine.h"
 #include "Animation/Animation.h"
+#include "Video/VideoPlayback.h"
 
 #include "ECS/Components/Components.h"
 #include "ECS/SceneManager.h"
@@ -451,6 +452,7 @@ namespace NocturnalEngine {
                         mCurrentScene = mGameConfig->mainMenuScene;
                     }
                     p_Audio->StopChannel(CAudioEngine::channel_groups::master);
+                    VideoPlayback::Shutdown();
                     
                     
                     
