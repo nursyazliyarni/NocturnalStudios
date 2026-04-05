@@ -16,6 +16,7 @@
 #include "pch.h"
 #include "Scripts/EndScreenDisplay.h"
 #include "ECS/ECS.h"
+#include "ECS/Components/Audio.h"
 #include "Scripts/GlobalGameManager.h"
 
 
@@ -23,6 +24,15 @@ namespace NocturnalEngine {
 
 	void EndScreenDisplay::Start()
 	{
+		if (p_ecs.HaveComponent<Audio>(entityID))
+		{
+			auto& audio = p_ecs.GetComponent<Audio>(entityID);
+			if (audio.GetSize() > 0)
+			{
+				audio[0].should_play = true;
+			}
+		}
+
 		fileBG = GetEntityByName("FileBG");
 		dayE = GetEntityByName("DayIndicator");
 		escapedStats= GetEntityByName("EscapedStats");

@@ -25,10 +25,51 @@ namespace NocturnalEngine {
 	namespace
 	{
 		constexpr int kFinalTutorialOrder = 11;
+		int sCurrentTutorialOrder = 0;
+
+		std::string ResolveTutorialAnimalTexture(Sprite& sprite, int tutorialOrder)
+		{
+			if (sprite.stateRules.empty())
+			{
+				return sprite.GetTexture();
+			}
+
+			size_t stateIndex = 0;
+			switch (tutorialOrder)
+			{
+			case 3:
+			case 4:
+				stateIndex = 1;
+				break;
+			case 5:
+			case 6:
+				stateIndex = 2;
+				break;
+			case 7:
+			case 8:
+				stateIndex = 3;
+				break;
+			default:
+				stateIndex = 0;
+				break;
+			}
+
+			if (stateIndex >= sprite.stateRules.size() ||
+				sprite.stateRules[stateIndex].textureKey.empty())
+			{
+				return sprite.stateRules.front().textureKey.empty()
+					? sprite.GetTexture()
+					: sprite.stateRules.front().textureKey;
+			}
+
+			return sprite.stateRules[stateIndex].textureKey;
+		}
 	}
 
 	void TutorialLogic::Start()
 	{
+		sCurrentTutorialOrder = 0;
+
 		if (p_ecs.HaveComponent<TutorialAttributes>(entityID) && p_ecs.HaveComponent<Text>(entityID)) {
 			if (p_ecs.HaveComponent<ButtonComponent>(entityID)) {
 				auto& button{ p_ecs.GetComponent<ButtonComponent>(entityID) };
@@ -37,7 +78,7 @@ namespace NocturnalEngine {
 
 			auto& tutorial{ p_ecs.GetComponent<TutorialAttributes>(entityID) };
 			auto& text{ p_ecs.GetComponent<Text>(entityID) };
-			if (tutorial.tutorial_order == current_tutorial_order) {
+			if (tutorial.tutorial_order == sCurrentTutorialOrder) {
 				text.SET_visibility(true);
 			}
 
@@ -52,15 +93,24 @@ namespace NocturnalEngine {
 		UNREFERENCED_PARAMETER(Frametime);
 		if (p_ecs.HaveComponent<TutorialAttributes>(entityID)) {
 			auto& tutorial{ p_ecs.GetComponent<TutorialAttributes>(entityID) };
-			if (InputSystem::GetInstance()->KeyPressed(GLFW_KEY_X)) {
-				current_tutorial_order = kFinalTutorialOrder;
-			}
-			else if (current_tutorial_order < kFinalTutorialOrder && InputSystem::GetInstance()->MousePressed(0)) {
-				++current_tutorial_order; //left click to move to next tutorial
+			if (tutorial.tutorial_order == 100)
+			{
+				InputSystem* input = InputSystem::GetInstance().get();
+				if (!input)
+				{
+					return;
+				}
+
+				if (input->KeyPressed(GLFW_KEY_X)) {
+					sCurrentTutorialOrder = kFinalTutorialOrder;
+				}
+				else if (sCurrentTutorialOrder < kFinalTutorialOrder && input->MousePressed(0)) {
+					++sCurrentTutorialOrder; //left click to move to next tutorial
+				}
 			}
 
-			if (current_tutorial_order >= kFinalTutorialOrder) { //this means we have reached the last tutorial
-				current_tutorial_order = kFinalTutorialOrder;
+			if (sCurrentTutorialOrder >= kFinalTutorialOrder) { //this means we have reached the last tutorial
+				sCurrentTutorialOrder = kFinalTutorialOrder;
 				if (p_ecs.HaveComponent<ButtonComponent>(entityID)) {
 					auto& button{ p_ecs.GetComponent<ButtonComponent>(entityID) };
 					button.SET_button_logic_ON(true); //now button response logic is running for last tutorial
@@ -69,7 +119,7 @@ namespace NocturnalEngine {
 
 			if (p_ecs.HaveComponent<Text>(entityID)) {
 				auto& text{ p_ecs.GetComponent<Text>(entityID) };
-				if (tutorial.tutorial_order == current_tutorial_order) {
+				if (tutorial.tutorial_order == sCurrentTutorialOrder) {
 					text.SET_visibility(true);
 				}
 
@@ -80,30 +130,14 @@ namespace NocturnalEngine {
 				
 			if (p_ecs.HaveComponent<Sprite>(entityID) && tutorial.tutorial_order == 100) {
 				auto& sprite{ p_ecs.GetComponent<Sprite>(entityID) };
-				//idle,hungry,sick,angry(4 states for animal)
-				switch (current_tutorial_order) {
-				case 3: //hungry
-					sprite.GetTexture() = sprite.stateRules[1].textureKey;
-					break;
-				case 4: //hungry
-					sprite.GetTexture() = sprite.stateRules[1].textureKey; break;
-				case 5: //sick
-					sprite.GetTexture() = sprite.stateRules[2].textureKey; break;
-				case 6: //sick
-					sprite.GetTexture() = sprite.stateRules[2].textureKey; break;
-				case 7: //angry
-					sprite.GetTexture() = sprite.stateRules[3].textureKey; break;
-				case 8: //angry
-					sprite.GetTexture() = sprite.stateRules[3].textureKey; break;
-				default: sprite.GetTexture() = sprite.stateRules[0].textureKey; break; //idle
-				}
+				sprite.GetTexture() = ResolveTutorialAnimalTexture(sprite, sCurrentTutorialOrder);
 			}
 		}
 	}
 
 	void TutorialLogic::End()
 	{
-		
+		sCurrentTutorialOrder = 0;
 	}
 
 }

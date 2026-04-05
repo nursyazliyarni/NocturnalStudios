@@ -1650,6 +1650,146 @@
             "ID": 14,
             "Components": [
                 {
+                    "Component": "Transform",
+                    "Position": {
+                        "x": -0.6259999871253967,
+                        "y": 0.2329999953508377
+                    },
+                    "Scale": {
+                        "x": 1.399999976158142,
+                        "y": 0.6200000047683716
+                    },
+                    "Rotation": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "PasswordInput"
+                },
+                {
+                    "Component": "Sprite",
+                    "shape/texture": 0,
+                    "shape type": 0,
+                    "circle radius": 0.0,
+                    "length of dashed lines": 0.009999999776482582,
+                    "distance gap": 0.009999999776482582,
+                    "line movement speed": 0.0,
+                    "RGBA": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "TextureName": "UI/Login",
+                    "Index_X": 0,
+                    "Index_Y": 0,
+                    "Ucoordinates": 512.0,
+                    "Vcoordinates": 512.0,
+                    "IsSpriteSheet": false,
+                    "IsAnimated": false,
+                    "MaxIndex": 0,
+                    "LayeringOrder": 6,
+                    "StateManagerEnabled": false,
+                    "StatePreviewInEditor": false,
+                    "StatePreviewMode": 0,
+                    "AnimationStates": [
+                        {
+                            "Name": "Idle",
+                            "Texture": "",
+                            "Ucoordinates": 512.0,
+                            "Vcoordinates": 512.0,
+                            "Source": 3,
+                            "Compare": 0,
+                            "Threshold": 0.0,
+                            "Priority": -100,
+                            "Enabled": true
+                        }
+                    ]
+                },
+                {
+                    "Component": "Logic",
+                    "Scripts": [
+                        {
+                            "ScriptName": "HiddenEndingPasswordInput",
+                            "MaxLength": 4,
+                            "ForceUppercase": true
+                        }
+                    ],
+                    "ScriptCount": 1
+                },
+                {
+                    "Component": "Text",
+                    "text type": 0,
+                    "Content": "HELP",
+                    "Array of Content": [],
+                    "Vector of text position": [],
+                    "Font": "ChauPhilomeneOne-Regular",
+                    "Size": 28.0,
+                    "ColorR": 1.0,
+                    "ColorG": 1.0,
+                    "ColorB": 1.0,
+                    "ColorA": 1.0,
+                    "PosX": -0.7260000109672546,
+                    "PosY": 0.2329999953508377,
+                    "Rotation": 0.0,
+                    "Line Height": 0,
+                    "WorldSpace": false,
+                    "Center": true,
+                    "LayeringOrder": 7,
+                    "Visibility": true
+                }
+            ]
+        },
+        {
+            "ID": 15,
+            "Components": [
+                {
+                    "Component": "Tag",
+                    "Tag": "Untagged",
+                    "TargetTag": ""
+                },
+                {
+                    "Component": "Transform",
+                    "Position": {
+                        "x": -0.626000165939331,
+                        "y": 0.22108644247055054
+                    },
+                    "Scale": {
+                        "x": 1.0,
+                        "y": 1.0
+                    },
+                    "Rotation": 0.0
+                },
+                {
+                    "Component": "NameTag",
+                    "NameTag": "PasswordHint"
+                },
+                {
+                    "Component": "Text",
+                    "text type": 0,
+                    "Content": "Type password and press Enter",
+                    "Array of Content": [],
+                    "Vector of text position": [],
+                    "Font": "ChauPhilomeneOne-Regular",
+                    "Size": 18.0,
+                    "ColorR": 1.0,
+                    "ColorG": 1.0,
+                    "ColorB": 1.0,
+                    "ColorA": 1.0,
+                    "PosX": -0.8360000252723694,
+                    "PosY": 0.23999999463558197,
+                    "Rotation": 0.0,
+                    "Line Height": 0,
+                    "WorldSpace": false,
+                    "Center": true,
+                    "LayeringOrder": 7,
+                    "Visibility": true
+                }
+            ]
+        },
+        {
+            "ID": 16,
+            "Components": [
+                {
                     "Component": "Tag",
                     "Tag": "Untagged",
                     "TargetTag": ""
@@ -1713,7 +1853,7 @@
             ]
         },
         {
-            "ID": 16,
+            "ID": 18,
             "Prefab": "KeyboardButtonReaction",
             "Components": [
                 {
@@ -1721,7 +1861,7 @@
                     "Scripts": [
                         {
                             "ScriptName": "KeyboardSceneSwitch",
-                            "SceneName": "Flamingo"
+                            "SceneName": "HiddenEnding"
                         },
                         {
                             "ScriptName": "AudioManager"
@@ -1735,7 +1875,7 @@
             ]
         },
         {
-            "ID": 17,
+            "ID": 19,
             "Components": [
                 {
                     "Component": "Tag",
@@ -1801,7 +1941,7 @@
             ]
         },
         {
-            "ID": 18,
+            "ID": 20,
             "Components": [
                 {
                     "Component": "Tag",
@@ -1923,7 +2063,7 @@
             ]
         },
         {
-            "ID": 19,
+            "ID": 21,
             "Components": [
                 {
                     "Component": "Tag",
@@ -2045,7 +2185,7 @@
             ]
         },
         {
-            "ID": 20,
+            "ID": 22,
             "Components": [
                 {
                     "Component": "Tag",
@@ -2167,7 +2307,7 @@
             ]
         },
         {
-            "ID": 21,
+            "ID": 23,
             "Components": [
                 {
                     "Component": "Tag",
@@ -2289,7 +2429,7 @@
             ]
         },
         {
-            "ID": 22,
+            "ID": 24,
             "Components": [
                 {
                     "Component": "Tag",

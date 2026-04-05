@@ -14,6 +14,7 @@
 
 #include "pch.h"
 #include "ECS/Components/Text.h"
+#include "Graphics/Graphics.h"
 #include "ResourceManager/ResourceManager.h"
 #include <imgui.h>
 
@@ -157,7 +158,7 @@ namespace NocturnalEngine
             ImGui::Text("Line Height"); ImGui::SameLine();
             ImGui::DragInt("##Line Height", &Get_line_height(), 1);
             ImGui::Text("Layering Order"); ImGui::SameLine();
-            ImGui::DragInt("##Layering Order", &LayerOrder, 1, 0, 9);
+            ImGui::DragInt("##Layering Order", &LayerOrder, 1, 0, NocturnalEngine::Graphic::MAX_LAYERS - 1);
             ImGui::Checkbox("Is Visible", &visibility);
         }
         return changed;

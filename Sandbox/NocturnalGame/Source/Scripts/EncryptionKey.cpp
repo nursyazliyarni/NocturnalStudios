@@ -21,6 +21,7 @@
 #include "ECS/Components/Sprite.h"
 #include "GUI/GUI.h"
 #include "Scripts/GlobalGameManager.h"
+#include "Math/Random.h"
 #include <algorithm>
 #include <cctype>
 #include <array>
@@ -57,9 +58,14 @@ namespace NocturnalEngine
         if (!p_ecs.HaveComponent<Transform>(entityID))
             return;
 
-        mOriginalScale = p_ecs.GetComponent<Transform>(entityID).GetScale();
-        FindEnvironment();
-        if (!mHasEnvironment)
+        auto& keyTransform = p_ecs.GetComponent<Transform>(entityID);
+        mOriginalScale = keyTransform.GetScale();
+        mOriginalPos = keyTransform.GetPos();
+        if (p_ecs.HaveComponent<Sprite>(entityID))
+            mOriginalLayer = p_ecs.GetComponent<Sprite>(entityID).LayerOrder;
+
+        FindHidingSpots();
+        if (!mHasHidingSpots)
             return;
 
         mSceneKeyId = BuildSceneKey();
@@ -69,156 +75,116 @@ namespace NocturnalEngine
             p_ecs.GetComponent<Sprite>(entityID).SetTexture(ResolveAssignedTextureKey());
         }
 
-        // Place key at random spot, then start hidden.
-        auto& keyT = p_ecs.GetComponent<Transform>(entityID);
-        mHiddenPos = RandomPointInsideEnvironment();
-        keyT.SetPos(mHiddenPos.x, mHiddenPos.y);
-        keyT.SetScale(0.0f, 0.0f);
-
         mCollectionKeyId = ResolveAssignedTextureKey();
         mCollected = IsCollected(mCollectionKeyId);
-        mRevealed = false;
+        mRevealActive = false;
+        mRevealTimer = 0.0f;
+
+        if (mCollected)
+        {
+            keyTransform.SetScale(0.0f, 0.0f);
+            return;
+        }
+
+        const int hideIndex = Random::Range(0, static_cast<int>(mHidingSpots.size()) - 1);
+        const Entity bushEntity = mHidingSpots[static_cast<size_t>(hideIndex)];
+        mHiddenPos = GetRandomPointInBush(bushEntity);
+        keyTransform.SetPos(mHiddenPos.x, mHiddenPos.y);
+
+        if (p_ecs.HaveComponent<Sprite>(entityID) && p_ecs.HaveComponent<Sprite>(bushEntity))
+        {
+            auto& keySprite = p_ecs.GetComponent<Sprite>(entityID);
+            auto& bushSprite = p_ecs.GetComponent<Sprite>(bushEntity);
+            keySprite.SetLayerOrder(std::max(1, bushSprite.LayerOrder - 1));
+        }
     }
 
-    // Two-step interaction:
-    // - click near hidden spot -> reveal
-    // - click on visible key -> collect
     void EncryptionKey::Update(float dt)
     {
-        UNREFERENCED_PARAMETER(dt);
-        if (!mHasEnvironment || mCollected)
-            return;
-        if (!IsKeyInteractableForCurrentLevel())
+        if (!mHasHidingSpots)
             return;
 
-        if (!mInput->MousePressed(GLFW_MOUSE_BUTTON_LEFT))
-            return;
-
-        // First click near hidden position reveals the key.
-        if (!mRevealed)
+        if (mRevealActive)
         {
-            if (IsMouseNearHiddenSpot())
+            mRevealTimer -= dt;
+            if (mRevealTimer <= 0.0f && p_ecs.HaveComponent<Transform>(entityID))
             {
-                auto& keyT = p_ecs.GetComponent<Transform>(entityID);
-                keyT.SetPos(mHiddenPos.x, mHiddenPos.y);
-                keyT.SetScale(mOriginalScale.x, mOriginalScale.y);
-                mRevealed = true;
+                p_ecs.GetComponent<Transform>(entityID).SetScale(0.0f, 0.0f);
+                mRevealActive = false;
             }
             return;
         }
 
-        // Second click on revealed key collects it.
+        if (mCollected || !mInput->MousePressed(GLFW_MOUSE_BUTTON_LEFT))
+            return;
+
         if (IsMouseOverKey())
         {
             CollectKey();
         }
     }
 
-    // Find first environment object with Transform + Collider bounds.
-    void EncryptionKey::FindEnvironment()
+    void EncryptionKey::FindHidingSpots()
     {
-        mEnvironment = 0;
-        mHasEnvironment = false;
+        mHidingSpots.clear();
+        mHasHidingSpots = false;
 
         for (Entity e : p_ecs.GetAliveEntitiesSet())
         {
-            if (!p_ecs.HaveComponent<NameTag>(e) || !p_ecs.HaveComponent<Transform>(e) || !p_ecs.HaveComponent<Collider>(e))
+            if (!p_ecs.HaveComponent<NameTag>(e) ||
+                !p_ecs.HaveComponent<Transform>(e) ||
+                !p_ecs.HaveComponent<Collider>(e) ||
+                !p_ecs.HaveComponent<Sprite>(e))
                 continue;
 
-            std::string tag = p_ecs.GetComponent<NameTag>(e).GetNameTag();
-            for (char& ch : tag)
-                ch = static_cast<char>(std::tolower(static_cast<unsigned char>(ch)));
-
-            if (tag.find("environment") != std::string::npos)
+            if (p_ecs.GetComponent<NameTag>(e).GetNameTag() == "Bush")
             {
-                mEnvironment = e;
-                mHasEnvironment = true;
-                return;
+                mHidingSpots.push_back(e);
             }
         }
+
+        mHasHidingSpots = !mHidingSpots.empty();
     }
 
-    // Compute key half-size used to keep full key inside environment bounds.
-    vec2D EncryptionKey::GetKeyHalfExtents()
+    vec2D EncryptionKey::GetRandomPointInBush(Entity bushEntity) const
     {
-        if (p_ecs.HaveComponent<Collider>(entityID))
+        if (!p_ecs.HaveComponent<Transform>(bushEntity) || !p_ecs.HaveComponent<Collider>(bushEntity))
+            return p_ecs.GetComponent<Transform>(entityID).GetPos();
+
+        const Transform& bushTransform{ p_ecs.GetComponent<Transform>(bushEntity) };
+        const Collider& bushCollider{ p_ecs.GetComponent<Collider>(bushEntity) };
+
+        for (int i = 0; i < 2; ++i)
         {
-            auto& c = p_ecs.GetComponent<Collider>(entityID)[0];
-            if (c.mCol == Collider::ColliderType::circle ||
-                c.mCol == Collider::ColliderType::bubble ||
-                c.mCol == Collider::ColliderType::bossball)
+            if (bushCollider[i].mCol != Collider::ColliderType::rect &&
+                bushCollider[i].mCol != Collider::ColliderType::box)
             {
-                const float r = std::max(c.mRadius, 0.001f);
-                return { r, r };
+                continue;
             }
-            if (c.mCol == Collider::ColliderType::rect || c.mCol == Collider::ColliderType::box)
-            {
-                const float hx = std::max(std::max(std::abs(c.mMin.x), std::abs(c.mMax.x)), 0.001f);
-                const float hy = std::max(std::max(std::abs(c.mMin.y), std::abs(c.mMax.y)), 0.001f);
-                return { hx, hy };
-            }
+
+            const vec2D offsetPos{
+                bushTransform.GetPos().x + bushCollider[i].mOffset.x,
+                bushTransform.GetPos().y + bushCollider[i].mOffset.y
+            };
+            const vec2D minPt{
+                offsetPos.x - bushCollider[i].mMin.x,
+                offsetPos.y - bushCollider[i].mMin.y
+            };
+            const vec2D maxPt{
+                offsetPos.x + bushCollider[i].mMax.x,
+                offsetPos.y + bushCollider[i].mMax.y
+            };
+
+            const float insetX = std::max(0.0f, (maxPt.x - minPt.x) * 0.15f);
+            const float insetY = std::max(0.0f, (maxPt.y - minPt.y) * 0.15f);
+
+            return {
+                Random::Range(minPt.x + insetX, maxPt.x - insetX),
+                Random::Range(minPt.y + insetY, maxPt.y - insetY)
+            };
         }
 
-        const float hx = std::max(std::abs(mOriginalScale.x) * 0.5f, 0.001f);
-        const float hy = std::max(std::abs(mOriginalScale.y) * 0.5f, 0.001f);
-        return { hx, hy };
-    }
-
-    // Randomly pick one point inside environment collider while respecting key size.
-    vec2D EncryptionKey::RandomPointInsideEnvironment()
-    {
-        auto& envT = p_ecs.GetComponent<Transform>(mEnvironment);
-        auto& envCol = p_ecs.GetComponent<Collider>(mEnvironment)[0];
-        const vec2D keyHalf = GetKeyHalfExtents();
-
-        vec2D minP = envT.GetMinPos();
-        vec2D maxP = envT.GetMaxPos();
-
-        if (envCol.mCol == Collider::ColliderType::rect || envCol.mCol == Collider::ColliderType::box)
-        {
-            const vec2D center{ envT.GetPos().x + envCol.mOffset.x, envT.GetPos().y + envCol.mOffset.y };
-            minP = { center.x - envCol.mMin.x, center.y - envCol.mMin.y };
-            maxP = { center.x + envCol.mMax.x, center.y + envCol.mMax.y };
-        }
-        else if (envCol.mCol == Collider::ColliderType::circle ||
-                 envCol.mCol == Collider::ColliderType::bubble ||
-                 envCol.mCol == Collider::ColliderType::bossball)
-        {
-            const vec2D center{ envT.GetPos().x + envCol.mOffset.x, envT.GetPos().y + envCol.mOffset.y };
-            minP = { center.x - envCol.mRadius, center.y - envCol.mRadius };
-            maxP = { center.x + envCol.mRadius, center.y + envCol.mRadius };
-        }
-
-        minP.x += keyHalf.x;
-        minP.y += keyHalf.y;
-        maxP.x -= keyHalf.x;
-        maxP.y -= keyHalf.y;
-
-        if (maxP.x <= minP.x) { const float mid = (minP.x + maxP.x) * 0.5f; minP.x = maxP.x = mid; }
-        if (maxP.y <= minP.y) { const float mid = (minP.y + maxP.y) * 0.5f; minP.y = maxP.y = mid; }
-
-        std::uniform_real_distribution<float> distX(minP.x, maxP.x);
-        std::uniform_real_distribution<float> distY(minP.y, maxP.y);
-        vec2D candidate{ distX(mRng), distY(mRng) };
-
-        if (envCol.mCol == Collider::ColliderType::circle ||
-            envCol.mCol == Collider::ColliderType::bubble ||
-            envCol.mCol == Collider::ColliderType::bossball)
-        {
-            const vec2D center{ envT.GetPos().x + envCol.mOffset.x, envT.GetPos().y + envCol.mOffset.y };
-            const float keyRadius = std::max(keyHalf.x, keyHalf.y);
-            const float allowedRadius = std::max(0.0f, envCol.mRadius - keyRadius);
-
-            for (int i = 0; i < 12; ++i)
-            {
-                if (distance(candidate, center) <= allowedRadius)
-                    return candidate;
-                candidate = { distX(mRng), distY(mRng) };
-            }
-            return center;
-        }
-
-        return candidate;
+        return bushTransform.GetPos();
     }
 
     // Hit test used only after key is revealed.
@@ -248,10 +214,16 @@ namespace NocturnalEngine
                 case Collider::ColliderType::rect:
                 case Collider::ColliderType::box:
                 {
-                    vec2D minPt{ offsetPos.x - collider[i].mMin.x, offsetPos.y - collider[i].mMin.y };
-                    vec2D maxPt{ offsetPos.x + collider[i].mMax.x, offsetPos.y + collider[i].mMax.y };
-                    if (mousePos.x > minPt.x && mousePos.x < maxPt.x &&
-                        mousePos.y > minPt.y && mousePos.y < maxPt.y)
+                    const float halfWidth = std::max(std::abs(collider[i].mMin.x), std::abs(collider[i].mMax.x));
+                    const float halfHeight = std::max(std::abs(collider[i].mMin.y), std::abs(collider[i].mMax.y));
+
+                    if (halfWidth <= 0.0f || halfHeight <= 0.0f)
+                        break;
+
+                    vec2D minPt{ offsetPos.x - halfWidth, offsetPos.y - halfHeight };
+                    vec2D maxPt{ offsetPos.x + halfWidth, offsetPos.y + halfHeight };
+                    if (mousePos.x >= minPt.x && mousePos.x <= maxPt.x &&
+                        mousePos.y >= minPt.y && mousePos.y <= maxPt.y)
                         return true;
                     break;
                 }
@@ -262,28 +234,20 @@ namespace NocturnalEngine
             return false;
         }
 
-        // Fallback: use transform AABB if key has no collider.
-        vec2D minPt = transform.GetMinPos();
-        vec2D maxPt = transform.GetMaxPos();
-        return mousePos.x > minPt.x && mousePos.x < maxPt.x &&
-               mousePos.y > minPt.y && mousePos.y < maxPt.y;
-    }
-
-    // Hidden key reveal check.
-    bool EncryptionKey::IsMouseNearHiddenSpot() const
-    {
-        vec2D mouse{ p_GUI->MousePosition.x, p_GUI->MousePosition.y };
-        return distance(mouse, mHiddenPos) <= mRevealRadius;
+        // Fallback: use a slightly generous AABB around the key transform.
+        const vec2D pos = transform.GetPos();
+        const vec2D scale = transform.GetScale();
+        const float halfWidth = std::max(0.08f, std::abs(scale.x) * 0.75f);
+        const float halfHeight = std::max(0.08f, std::abs(scale.y) * 0.75f);
+        vec2D minPt{ pos.x - halfWidth, pos.y - halfHeight };
+        vec2D maxPt{ pos.x + halfWidth, pos.y + halfHeight };
+        return mousePos.x >= minPt.x && mousePos.x <= maxPt.x &&
+               mousePos.y >= minPt.y && mousePos.y <= maxPt.y;
     }
 
     bool EncryptionKey::IsKeyInteractableForCurrentLevel() const
     {
-        const unsigned int level = p_GameManager.CurrentLevel();
-        // Level 1: only Flamingo scene key is clickable.
-        if (level <= 1)
-            return mSceneKeyId == "scene:flamingobtn";
-
-        // Level 2+: all animal scene keys are clickable.
+        UNREFERENCED_PARAMETER(mSceneKeyId);
         return true;
     }
 
@@ -364,7 +328,6 @@ namespace NocturnalEngine
         return sCollectedKeys.find(keyId) != sCollectedKeys.end();
     }
 
-    // Add key to shared inventory if capacity allows, then hide it.
     void EncryptionKey::CollectKey()
     {
         if (mCollected)
@@ -375,10 +338,20 @@ namespace NocturnalEngine
             sCollectedKeys.insert(mCollectionKeyId);
         }
 
-        if (p_ecs.HaveComponent<Transform>(entityID))
-            p_ecs.GetComponent<Transform>(entityID).SetScale(0.0f, 0.0f);
-
         mCollected = true;
-        mRevealed = false;
+        mRevealActive = true;
+        mRevealTimer = mRevealDuration;
+
+        if (p_ecs.HaveComponent<Transform>(entityID))
+        {
+            auto& keyTransform = p_ecs.GetComponent<Transform>(entityID);
+            keyTransform.SetPos(mHiddenPos.x, mHiddenPos.y);
+            keyTransform.SetScale(mOriginalScale.x, mOriginalScale.y);
+        }
+
+        if (p_ecs.HaveComponent<Sprite>(entityID))
+        {
+            p_ecs.GetComponent<Sprite>(entityID).SetLayerOrder(mOriginalLayer);
+        }
     }
 }

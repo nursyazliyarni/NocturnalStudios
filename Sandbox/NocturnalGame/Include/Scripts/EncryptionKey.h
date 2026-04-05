@@ -28,9 +28,9 @@
 namespace NocturnalEngine
 {
     // Handles the "hidden key" mini-loop:
-    // 1) key is hidden at random spot inside Environment bounds
-    // 2) first click reveals key
-    // 3) second click collects key into shared array (max 4) and hides it again
+    // 1) key is hidden behind a random bush
+    // 2) first click collects key into shared array (max 4)
+    // 3) collected key reveals in front briefly, then hides again
     class EncryptionKey : public IScript
     {
     public:
@@ -56,19 +56,15 @@ namespace NocturnalEngine
         virtual Entity& GetScriptEntityID() override { return entityID; }
 
     private:
-        // Finds the scene object tagged as Environment.
-        void FindEnvironment();
-        // Picks one random valid point inside environment collider bounds.
-        vec2D RandomPointInsideEnvironment();
-        // Returns half-size of key for bound clamping (collider first, transform fallback).
-        vec2D GetKeyHalfExtents();
+        // Finds all bush entities used as hiding spots.
+        void FindHidingSpots();
+        // Picks one random valid point inside a bush collider.
+        vec2D GetRandomPointInBush(Entity bushEntity) const;
         // Checks click hit on visible key.
         bool IsMouseOverKey();
-        // Checks click proximity to hidden key location.
-        bool IsMouseNearHiddenSpot() const;
         // Returns whether this scene key is interactable at the current level.
         bool IsKeyInteractableForCurrentLevel() const;
-        // Adds key to shared collection and hides it.
+        // Adds key to shared collection and starts the reveal window.
         void CollectKey();
         // Builds a stable scene id used for per-run letter assignment.
         std::string BuildSceneKey() const;
@@ -81,23 +77,25 @@ namespace NocturnalEngine
 
     private:
         InputSystem* mInput{ nullptr };
-        // Cached environment entity used for random placement.
-        Entity mEnvironment{ 0 };
-        bool mHasEnvironment{ false };
+        // Bush entities used to hide the key.
+        std::vector<Entity> mHidingSpots{};
+        bool mHasHidingSpots{ false };
         // Runtime key state flags.
         bool mCollected{ false };
-        bool mRevealed{ false };
-        // Hidden location where key is placed while invisible.
+        bool mRevealActive{ false };
+        // Hidden location where key is placed behind a bush.
         vec2D mHiddenPos{};
         // Scene-stable id for per-run scene assignment.
         std::string mSceneKeyId{};
         // Letter-stable id for cross-scene key tracking.
         std::string mCollectionKeyId{};
-        // Original scale to restore on reveal.
+        // Original state to restore during the brief reveal.
         vec2D mOriginalScale{};
+        vec2D mOriginalPos{};
+        int mOriginalLayer{ 0 };
         std::mt19937 mRng{ std::random_device{}() };
-        // Radius around hidden location that counts as first "reveal" click.
-        float mRevealRadius{ 0.08f };
+        float mRevealTimer{ 0.0f };
+        float mRevealDuration{ 2.0f };
 
         // Shared across all EncryptionKey instances.
         // Acts like the player's collected key inventory.

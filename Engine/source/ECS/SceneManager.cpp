@@ -383,6 +383,7 @@ void NocturnalEngine::SceneManager::LoadSceneNow(const std::string& path)
 	if (path == "Assets/Scene/goodEndingScene.json")
 	{
 		isGameplay = false;
+		p_Audio->StopChannel(CAudioEngine::channel_groups::bgm);
 		Graphic::camera.SetZoomLevel(1.0f);
 		Graphic::camera.SetPosition({ 0.0f,0.0f,0.0f });
 	}
@@ -390,6 +391,7 @@ void NocturnalEngine::SceneManager::LoadSceneNow(const std::string& path)
 	if (path == "Assets/Scene/badEndingScene.json")
 	{
 		isGameplay = false;
+		p_Audio->StopChannel(CAudioEngine::channel_groups::bgm);
 		Graphic::camera.SetZoomLevel(1.0f);
 		Graphic::camera.SetPosition({ 0.0f,0.0f,0.0f });
 	}

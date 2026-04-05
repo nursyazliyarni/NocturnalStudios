@@ -113,7 +113,6 @@ namespace NocturnalEngine{
 	****************************************************************************/
 	void Window::Init()
 	{
-
 		/* Initialize the library */
 		if (!glfwInit())
 		{
@@ -193,9 +192,9 @@ namespace NocturnalEngine{
 		glfwSetWindowUserPointer(m_window, &m_windowData);
 
 		NOCTURNAL_ENGINE_INFO("Generating Window {0} : SIZE ({1},{2})", m_windowData.Title, m_windowData.m_Width, m_windowData.m_Height);
-		
 
-		if(glewInit() != GLEW_OK)
+
+		if (glewInit() != GLEW_OK)
 			NOCTURNAL_ENGINE_ASSERT(!glewInit(), "GLEW init has failed - abort program...");
 
 		//context
@@ -222,7 +221,7 @@ namespace NocturnalEngine{
 
 	void Window::Show() {
 #if 0
-#if !DEBUG		
+#if !DEBUG        
 		const GLFWvidmode* mode = glfwGetVideoMode(m_monitor);
 		m_windowData.m_Width = mode->width;
 		m_windowData.m_Height = mode->height;
@@ -231,7 +230,7 @@ namespace NocturnalEngine{
 			m_window, m_monitor,
 			0, 0,
 			m_windowData.m_Width, m_windowData.m_Height, 0);
-#endif	
+#endif    
 #endif
 		// Finally show the window
 		glfwShowWindow(m_window);

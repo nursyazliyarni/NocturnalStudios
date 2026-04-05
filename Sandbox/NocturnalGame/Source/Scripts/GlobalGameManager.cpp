@@ -24,6 +24,7 @@
 #include "ECS/Components/ButtonComponent.h"
 #include "Audio/AudioEngine.h"
 #include "graphics/Graphics.h"
+#include "Video/VideoPlayback.h"
 
 namespace NocturnalEngine {
 
@@ -366,7 +367,11 @@ namespace NocturnalEngine {
         Graphic::layerEnabled[9] = false;
         Graphic::layerEnabled[10] = false;
         p_GUI->set_pause(false);
-        EncryptionKey::ResetRunState();
+        VideoPlayback::Shutdown();
+        if (resetStats)
+        {
+            EncryptionKey::ResetRunState();
+        }
 
         AnimalAttributes defaultAttributes{};
         defaultAttributes.SetDefault();
@@ -381,6 +386,9 @@ namespace NocturnalEngine {
         diegeticLogEntries.clear();
         if (resetStats)
         {
+            levelNum = 1;
+            levelDataLoaded = false;
+            LevelDataToMap(levelNum);
             deadAnimals = 0;
             escapedAnimals = 0;
             under20 = 0;
@@ -430,7 +438,7 @@ namespace NocturnalEngine {
         }
         else {
             levelNum = 1;
-            p_Scene->setSceneToLoad("Assets/Scene/Menu.json");//reset the game level in game over
+            p_Scene->setSceneToLoad("Assets/Scene/badEndingScene.json");
         }
 
     }

@@ -95,7 +95,7 @@ namespace NocturnalEngine {
 		AnimalAttributes& aA{ p_ecs.GetComponent<AnimalAttributes>(entityID) };
 
 
-		if (!aA.isEscaped&&aA.is_alive&&p_GameManager.GetGameState() != GameManager::GameState::PLAYING) {
+		if (!aA.isEscaped&&aA.is_alive&&p_GameManager.GetGameState() == GameManager::GameState::PLAYING) {
 			aA.timeSinceLastFeed += Frametime;
 			//hunger>hp>sanity
 			CheckAndDecreaseStats(time.hunger, chance.hunger, aA.hungerDecayRate, aA.current_hunger, Frametime);
