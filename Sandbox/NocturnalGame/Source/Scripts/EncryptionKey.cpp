@@ -23,9 +23,28 @@
 #include "Scripts/GlobalGameManager.h"
 #include <algorithm>
 #include <cctype>
+#include <array>
+#include <random>
 
 namespace NocturnalEngine
 {
+    namespace
+    {
+        constexpr std::array<const char*, 4> kSceneIds{
+            "scene:flamingobtn",
+            "scene:sealbtn",
+            "scene:horsebtn",
+            "scene:owlbtn"
+        };
+
+        constexpr std::array<const char*, 4> kEncryptionTextureKeys{
+            "Play/encryption_h",
+            "Play/encryption_e",
+            "Play/encryption_l",
+            "Play/encryption_p"
+        };
+    }
+
     // Cache input singleton.
     EncryptionKey::EncryptionKey()
         : mInput{ InputSystem::GetInstance().get() }
@@ -43,13 +62,20 @@ namespace NocturnalEngine
         if (!mHasEnvironment)
             return;
 
+        mSceneKeyId = BuildSceneKey();
+        EnsureSceneAssignments();
+        if (p_ecs.HaveComponent<Sprite>(entityID))
+        {
+            p_ecs.GetComponent<Sprite>(entityID).SetTexture(ResolveAssignedTextureKey());
+        }
+
         // Place key at random spot, then start hidden.
         auto& keyT = p_ecs.GetComponent<Transform>(entityID);
         mHiddenPos = RandomPointInsideEnvironment();
         keyT.SetPos(mHiddenPos.x, mHiddenPos.y);
         keyT.SetScale(0.0f, 0.0f);
 
-        mCollectionKeyId = BuildCollectionKey();
+        mCollectionKeyId = ResolveAssignedTextureKey();
         mCollected = IsCollected(mCollectionKeyId);
         mRevealed = false;
     }
@@ -255,13 +281,13 @@ namespace NocturnalEngine
         const unsigned int level = p_GameManager.CurrentLevel();
         // Level 1: only Flamingo scene key is clickable.
         if (level <= 1)
-            return mCollectionKeyId == "scene:flamingobtn";
+            return mSceneKeyId == "scene:flamingobtn";
 
         // Level 2+: all animal scene keys are clickable.
         return true;
     }
 
-    std::string EncryptionKey::BuildCollectionKey() const
+    std::string EncryptionKey::BuildSceneKey() const
     {
         // Prefer scene identity from the currently lit camera button.
         for (Entity e : p_ecs.GetAliveEntitiesSet())
@@ -299,6 +325,37 @@ namespace NocturnalEngine
 
         // Final fallback keeps behavior deterministic.
         return std::string("entity:") + std::to_string(entityID);
+    }
+
+    void EncryptionKey::EnsureSceneAssignments()
+    {
+        if (!sSceneAssignments.empty())
+            return;
+
+        std::array<std::string, kEncryptionTextureKeys.size()> shuffledTextures{};
+        for (size_t i = 0; i < kEncryptionTextureKeys.size(); ++i)
+            shuffledTextures[i] = kEncryptionTextureKeys[i];
+
+        std::mt19937 rng{ std::random_device{}() };
+        std::shuffle(shuffledTextures.begin(), shuffledTextures.end(), rng);
+
+        for (size_t i = 0; i < kSceneIds.size(); ++i)
+            sSceneAssignments.emplace(kSceneIds[i], shuffledTextures[i]);
+    }
+
+    std::string EncryptionKey::ResolveAssignedTextureKey() const
+    {
+        auto it = sSceneAssignments.find(mSceneKeyId);
+        if (it != sSceneAssignments.end())
+            return it->second;
+
+        return "Play/encryption_h";
+    }
+
+    void EncryptionKey::ResetRunState()
+    {
+        sCollectedKeys.clear();
+        sSceneAssignments.clear();
     }
 
     // Shared collected-list lookup.

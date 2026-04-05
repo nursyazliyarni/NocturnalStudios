@@ -20,6 +20,7 @@
 #include "core/Log.h"
 #include "Math/Random.h"
 #include "Scripts/AnimalLogic.h"
+#include "Scripts/EncryptionKey.h"
 #include "ECS/Components/ButtonComponent.h"
 #include "Audio/AudioEngine.h"
 #include "graphics/Graphics.h"
@@ -355,6 +356,7 @@ namespace NocturnalEngine {
     void GameManager::ResetSystem(bool resetStats) {
         Graphic::layerEnabled[9] = false;
         p_GUI->set_pause(false);
+        EncryptionKey::ResetRunState();
 
         AnimalAttributes defaultAttributes{};
         defaultAttributes.SetDefault();

@@ -21,6 +21,7 @@
 #include "Math/Vmath.h"
 #include "Scripts/IScript.h"
 #include <random>
+#include <unordered_map>
 #include <string>
 #include <unordered_set>
 
@@ -45,6 +46,7 @@ namespace NocturnalEngine
         virtual std::string GetScriptName() override { return "encryptionkey"; }
         static size_t GetCollectedCount() { return sCollectedKeys.size(); }
         static size_t GetMaxKeys() { return kMaxKeys; }
+        static void ResetRunState();
 
         virtual EncryptionKey* Clone() const override
         {
@@ -68,8 +70,12 @@ namespace NocturnalEngine
         bool IsKeyInteractableForCurrentLevel() const;
         // Adds key to shared collection and hides it.
         void CollectKey();
-        // Builds a scene-stable collection id for this key.
-        std::string BuildCollectionKey() const;
+        // Builds a stable scene id used for per-run letter assignment.
+        std::string BuildSceneKey() const;
+        // Assigns one unique encryption letter texture to each animal scene for this run.
+        static void EnsureSceneAssignments();
+        // Returns assigned letter texture key for the current scene.
+        std::string ResolveAssignedTextureKey() const;
         // Checks whether this key id is already in collected list.
         bool IsCollected(const std::string& keyId) const;
 
@@ -83,7 +89,9 @@ namespace NocturnalEngine
         bool mRevealed{ false };
         // Hidden location where key is placed while invisible.
         vec2D mHiddenPos{};
-        // Scene-stable id for cross-scene key tracking.
+        // Scene-stable id for per-run scene assignment.
+        std::string mSceneKeyId{};
+        // Letter-stable id for cross-scene key tracking.
         std::string mCollectionKeyId{};
         // Original scale to restore on reveal.
         vec2D mOriginalScale{};
@@ -94,6 +102,8 @@ namespace NocturnalEngine
         // Shared across all EncryptionKey instances.
         // Acts like the player's collected key inventory.
         static inline std::unordered_set<std::string> sCollectedKeys{};
+        // Per-run scene -> letter texture assignment.
+        static inline std::unordered_map<std::string, std::string> sSceneAssignments{};
         // Hard cap requested: player can collect at most 4 keys.
         static constexpr size_t kMaxKeys = 4;
     };
