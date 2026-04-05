@@ -17,11 +17,20 @@
 #include "Scripts/BackgroundAudio.h"
 #include "Audio/AudioEngine.h"
 #include "ECS/Components/Audio.h"
+#include "ECS/SceneManager.h"
 #include "Scripts/GlobalGameManager.h"
 
 namespace NocturnalEngine {
 	namespace
 	{
+		bool IsMenuFlowScene(const std::string& scenePath)
+		{
+			return scenePath == "Assets/Scene/Menu.json" ||
+				scenePath == "Assets/Scene/Option.json" ||
+				scenePath == "Assets/Scene/HowToPlay.json" ||
+				scenePath == "Assets/Scene/Quit.json";
+		}
+
 		void ConfigureLevelBGM(Audio& audio, int bgAudioIndex)
 		{
 			std::vector<int> bgmTrackIndices{};
@@ -112,6 +121,8 @@ namespace NocturnalEngine {
 	{
 		if (p_ecs.HaveComponent<Audio>(GetScriptEntityID()))
 		{
+			const std::string& nextScene = p_Scene->GetQueuedSceneToLoad();
+			const bool preserveMenuBgm = IsMenuFlowScene(nextScene);
 			Audio& a{ p_ecs.GetComponent<Audio>(GetScriptEntityID()) };
 			for (int i = 0; i < a.GetSize(); ++i)
 			{
@@ -120,9 +131,16 @@ namespace NocturnalEngine {
 					continue;
 				}
 
-				if (a[i].triggered || a[i].is_Playing)
+				if (!preserveMenuBgm && (a[i].triggered || a[i].is_Playing))
 				{
 					p_Audio->FadeOutAndStopChannel(a[i].mChannel);
+				}
+
+				if (preserveMenuBgm)
+				{
+					a[i].should_stop = false;
+					a[i].should_play = false;
+					continue;
 				}
 
 				a[i].should_stop = true;
