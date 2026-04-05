@@ -1,3 +1,20 @@
+/*!------------------------------------------------------------------------------------------------
+    File: main.cpp
+    Project: NocturnalStudios
+
+    Date:
+        2026-04-05
+
+    Brief:
+        Contains the main entry point for the game executable.
+
+    Primary Author:
+         Nur Syazliyarni (100%)
+        - Added the file header.
+        - Email: nursyazliyarni.b
+
+    All content (c) 2026 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
 
 #ifndef _DEBUG
 #pragma comment(linker, "/SUBSYSTEM:windows /ENTRY:mainCRTStartup")

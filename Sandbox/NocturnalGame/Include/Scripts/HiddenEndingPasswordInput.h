@@ -1,3 +1,21 @@
+/*!------------------------------------------------------------------------------------------------
+    File: HiddenEndingPasswordInput.h
+    Project: NocturnalStudios
+
+    Date:
+        2026-04-05
+
+    Brief:
+        Declares the hidden ending password input script.
+
+    Primary Author:
+         Nur Syazliyarni (100%)
+        - Added the file header.
+        - Email: nursyazliyarni.b
+
+    All content (c) 2026 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
+
 #pragma once
 
 #include "Scripts/IScript.h"

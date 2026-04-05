@@ -1,3 +1,21 @@
+/*!------------------------------------------------------------------------------------------------
+    File: HiddenEndingSubmitButton.cpp
+    Project: NocturnalStudios
+
+    Date:
+        2026-04-05
+
+    Brief:
+        Handles submit interactions for the hidden ending password flow.
+
+    Primary Author:
+         Nur Syazliyarni (100%)
+        - Added the file header.
+        - Email: nursyazliyarni.b
+
+    All content (c) 2026 DigiPen Institute of Technology Singapore, all rights reserved.
+*------------------------------------------------------------------------------------------------*/
+
 #include "pch.h"
 #include "Scripts/HiddenEndingSubmitButton.h"
 #include "Scripts/HiddenEndingPasswordInput.h"

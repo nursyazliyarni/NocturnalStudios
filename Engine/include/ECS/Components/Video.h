@@ -2,10 +2,18 @@
     File: Video.h
     Project: NocturnalStudio
 
+    Date:
+        2026-04-05
+
     Brief:
         Contains the component related to MPEG video playback in ECS.
 
-    All content (c) 2025 DigiPen Institute of Technology Singapore, all rights reserved.
+    Primary Author:
+         Nur Syazliyarni (100%)
+        - Added the file header metadata.
+        - Email: nursyazliyarni.b
+
+    All content (c) 2026 DigiPen Institute of Technology Singapore, all rights reserved.
 *------------------------------------------------------------------------------------------------*/
 
 #pragma once
